@@ -11,5 +11,12 @@
   },
   "require": {
     "webonyx/graphql-php": "^0.12.6"
+  },
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
+      ]
+    }
   }
 }
