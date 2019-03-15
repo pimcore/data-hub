@@ -4,7 +4,7 @@
 
 ## Short Introduction Video
 
-[![Preview](img/graphql/intro_preview.png)](./doc/img/graphql/intro.mp4)
+[![Preview](img/graphql/intro_preview.png)](./img/graphql/intro.mp4)
 
 ## Samples
 
