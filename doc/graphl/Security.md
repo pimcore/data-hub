@@ -1,0 +1,33 @@
+## Security
+
+## Authentication
+
+### Supported Methods
+
+* API Key
+
+## Workspace Settings
+
+* Read
+
+Similar to [Workspace Permissions](https://pimcore.com/docs/5.x/Development_Documentation/Administration_of_Pimcore/Users_and_Roles.html) 
+
+![Settings](../img/graphql/security1.png)
+
+* Write (to be implemented)
+
+## Error Handling  - Configuration Values
+
+The default behavior for associated/related objects or assets you are not allowed to view is to simply null it out.
+You can change that via a configuration setting.
+
+* 1 = the entire query will fail
+* 2 = null it out/skip it for multirelations (default)
+ 
+```
+pimcore_data_hub:
+    graphql:
+        not_allowed_policy: 2
+```
+
+

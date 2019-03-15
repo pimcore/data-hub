@@ -1,0 +1,17 @@
+.plugin_pimcore_datahub_icon  {
+    background: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) center center no-repeat !important;
+}
+
+.plugin_pimcore_datahub_icon_graphql {
+    background: url(/bundles/pimcoredatahub/img/graphql.svg) center center no-repeat !important;
+}
+
+.plugin_pimcore_datahub_icon_locked {
+    background: url(/bundles/pimcoreadmin/img/twemoji/1f510.svg) center center no-repeat !important;
+}
+
+#plugin_pimcore_datahub_icon_toolbar {
+    background-image: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) !important;
+    filter: grayscale(0%) !important;
+    -webkit-filter: grayscale(0%) !important;
+}

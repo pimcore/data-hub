@@ -1,0 +1,16 @@
+{
+  "name": "pimcore/data-hub",
+  "license": "GPL-3.0+",
+  "type": "pimcore-bundle",
+    "config": {
+  },
+  "autoload": {
+    "psr-4": {
+      "": "src"
+    }
+  },
+  "require": {
+    "pimcore/pimcore": "^5.7",
+    "webonyx/graphql-php": "^0.12.6"
+  }
+}

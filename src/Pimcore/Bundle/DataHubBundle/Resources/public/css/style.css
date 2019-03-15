@@ -1,0 +1,9 @@
+.plugin_pimcore_datahub_statusbar {
+    background-color: #eaeaea;
+    border-width: 1px 0 0 0;
+    border-color: #d0d0d0;
+}
+
+.plugin_pimcore_datahub_status {
+    background: url(/bundles/pimcoreadmin/img/icon/cog_go.png) no-repeat !important;
+}
