@@ -122,25 +122,25 @@ Also see the samples listed above.
 See the [Localization Page](graphl/Localization.md) to learn more.
  
  
-### Pagination
+## Pagination
 
 Example:
 see [Get News Listing](graphl/Sample2.md)
 
-### Simple Sorting
+## Simple Sorting
 ```
 {  getNewsListing(sortBy:"title", sortOrder:"ASC") {
     edges {
       node {
 ```
 
-### Filtering
+## Filtering
 
 You can use Pimcore's webservice filter logic
 as described [here](https://pimcore.com/docs/5.x/Development_Documentation/Web_Services/Query_Filters.html).
 
 See Example: [Filtered News Listing](graphl/Filtering.md)
 
-### Endpoint + Hands-on-testing using iExplorer
+## Endpoint + Hands-on-testing using iExplorer
 
 ![Open iExplorer](img/graphql/open_explorer.png)
