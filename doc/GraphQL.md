@@ -29,9 +29,17 @@
 
 The standard endpoint is
 ```
-/pimcore-graphql-webservices/{clientname}?apikey={yourApiKey}
+/pimcore-graphql-webservices/{configurationname}?apikey={yourApiKey}
 ```
 
+So if your configuration name is _blogdemo_ and your apikey _123456_
+then your endpoint would be
+
+```
+/pimcore-graphql-webservices/blogdemo?apikey=12345
+```
+
+Here is a configuration example showing how to override the standard endpoint:
 
 ```
 # app/config/routing.yml

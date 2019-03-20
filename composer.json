@@ -2,7 +2,7 @@
   "name": "pimcore/data-hub",
   "license": "GPL-3.0+",
   "type": "pimcore-bundle",
-    "config": {
+  "config": {
   },
   "autoload": {
     "psr-4": {
