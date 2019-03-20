@@ -359,7 +359,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
 
             $workspaces = $dataDecoded['workspaces'];
-            unset($dataDecoded['workspaces']);
 
             WorkspaceHelper::saveWorkspaces($config, $workspaces);
 
