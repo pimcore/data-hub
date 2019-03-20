@@ -19,11 +19,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
-use Pimcore\Tests\Helper\Pimcore;
 
 class DefaultValue extends AbstractValue
 {
@@ -55,16 +52,10 @@ class DefaultValue extends AbstractValue
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
             if ($value) {
-                if ($value instanceof ElementInterface) {
-                    $configuration = $this->context['configuration'];
-                    if (!WorkspaceHelper::isAllowed($value, $configuration, 'read')) {
-                        if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                            throw new \Exception('not allowed to view ' . $value->getFullPath());
-                        } else {
-                            return null;
-                        }
-                    }
-                }
+
+                /** @var  $graphQLService Service */
+                $graphQLService = \Pimcore::getContainer()->get(Service::class);
+                $value = $graphQLService->getElementFromArrayObject($value);
 
                 $result = new \stdClass();
                 $result->value = $value;

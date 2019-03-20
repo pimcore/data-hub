@@ -9,20 +9,17 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\ObjectMetadata;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 class ObjectMetadataType extends ObjectType
 {
@@ -39,7 +36,7 @@ class ObjectMetadataType extends ObjectType
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
-        $config['name'] = 'object_'.$class->getName().'_'.$fieldDefinition->getName();
+        $config['name'] = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
         $this->build($config);
         parent::__construct($config);
     }
@@ -57,68 +54,18 @@ class ObjectMetadataType extends ObjectType
         $className = $fieldDefinition->getAllowedClassId();
         $elementTypeDefinition = ClassTypeDefinitions::get($className);
 
-        $fields = ['element'  =>
-                       [
-                           'type'    => $elementTypeDefinition,
-                           'resolve' => function (
-                               $value = null,
-                               $args = [],
-                               $context,
-                               ResolveInfo $resolveInfo = null
-                           ) use (
-                               $fieldDefinition,
-                               $class,
-                                $fieldHelper
-                           ) {
-                               $element = null;
+        $resolver = new ObjectMetadata($fieldDefinition, $class, $fieldHelper);
 
-                               if (!$value['element']) {
-                                   return null;
-                               }
+        $fields = ['element' =>
+            [
+                'type' => $elementTypeDefinition,
+                'resolve' => [$resolver, "resolveElement"]
+            ],
+            'metadata' => [
+                'type' => Type::listOf(new ElementMetadataKeyValuePairType()),
+                'resolve' => [$resolver, "resolveMetadata"]
 
-                               if ($value['element']['__elementType'] == 'object') {
-                                   $element = AbstractObject::getById($value['element']['__destId']);
-                               } else {
-                                   if ($value['element']['__elementType'] == 'asset') {
-                                       $element = Asset::getById($value['element']['__destId']);
-                                   }
-                               }
-
-                               if (!$element) {
-                                   return null;
-                               }
-
-                               $data = $value['element'];
-                               $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
-
-                               return $data;
-                           },
-
-                       ],
-                   'metadata' => [
-                       'type'    => Type::listOf(new ElementMetadataKeyValuePairType()),
-                       'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                           if ($value && $value['element']) {
-
-                               /** @var $relation ElementMetadata */
-                               $relation = $value['element']['__relation'];
-                               $meta = $relation->getData();
-                               $result = [];
-                               if ($meta) {
-                                   foreach ($meta as $metaItemKey => $metaItemValue) {
-                                       $result[] = [
-                                           'name'  => $metaItemKey,
-                                           'value' => $metaItemValue,
-                                       ];
-                                   }
-                               }
-
-                               return $result;
-                           }
-
-                           return null;
-                       },
-                   ]];
+            ]];
 
         $config['fields'] = $fields;
 

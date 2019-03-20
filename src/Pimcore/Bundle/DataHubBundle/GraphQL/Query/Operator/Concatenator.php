@@ -17,7 +17,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
-use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 

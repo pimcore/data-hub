@@ -30,6 +30,7 @@ class Element
     public static function getInstance()
     {
         if (!self::$instance) {
+            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element();
             self::$instance =
                 new InterfaceType(
                     [
@@ -39,8 +40,7 @@ class Element
                                 'type' => Type::id(),
                             ]
                             ],
-                        'resolveType' => function ($value) {
-                        },
+                        'resolveType' => [$resolver, "resolveType"]
                     ]
                 );
         }

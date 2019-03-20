@@ -16,12 +16,9 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\MultihrefMetadata;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 class MultihrefMetadataType extends ObjectType
 {
@@ -51,67 +48,15 @@ class MultihrefMetadataType extends ObjectType
         $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
         $fieldDefinition = $this->fieldDefinition;
         $class = $this->class;
+        $resolver = new MultihrefMetadata($fieldDefinition, $class, $fieldHelper);
         $fields = ['element'  =>
                        [
                            'type'    => new HrefType($this->fieldDefinition, $this->class),
-                           'resolve' => function (
-                               $value = null,
-                               $args = [],
-                               $context,
-                               ResolveInfo $resolveInfo = null
-                           ) use (
-                               $fieldDefinition,
-                               $class,
-                                $fieldHelper
-                           ) {
-                               $element = null;
-
-                               if (!$value['element']) {
-                                   return null;
-                               }
-
-                               if ($value['element']['__elementType'] == 'object') {
-                                   $element = AbstractObject::getById($value['element']['__destId']);
-                               } else {
-                                   if ($value['element']['__elementType'] == 'asset') {
-                                       $element = Asset::getById($value['element']['__destId']);
-                                   }
-                               }
-
-                               if (!$element) {
-                                   return null;
-                               }
-
-                               $data = $value['element'];
-                               $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
-
-                               return $data;
-                           },
-
+                           'resolve' => [$resolver, "resolveElement"]
                        ],
                    'metadata' => [
                        'type'    => Type::listOf(new ElementMetadataKeyValuePairType()),
-                       'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                           if ($value && $value['element']) {
-
-                               /** @var $relation ElementMetadata */
-                               $relation = $value['element']['__relation'];
-                               $meta = $relation->getData();
-                               $result = [];
-                               if ($meta) {
-                                   foreach ($meta as $metaItemKey => $metaItemValue) {
-                                       $result[] = [
-                                           'name'  => $metaItemKey,
-                                           'value' => $metaItemValue,
-                                       ];
-                                   }
-                               }
-
-                               return $result;
-                           }
-
-                           return null;
-                       },
+                       'resolve' => [$resolver, "resolveMetadata"]
                    ]];
 
         $config['fields'] = $fields;

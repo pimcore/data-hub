@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Tests\Helper\Pimcore;
 
 class PimcoreObjectType extends ObjectType
 {

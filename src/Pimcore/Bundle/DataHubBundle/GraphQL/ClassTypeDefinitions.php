@@ -33,16 +33,6 @@ class ClassTypeDefinitions
         $listing = new ClassDefinition\Listing();
         $listing = $listing->load();
 
-//        PimcoreObjectType::setSkipOperators(true);
-//
-//        foreach ($listing as $class) {
-//            $objectType = new PimcoreObjectType($class, [], $context);;
-//            self::$definitions[$class->getName()] = $objectType;
-//            $objectType->build($context);
-//        }
-//
-//        PimcoreObjectType::setSkipOperators(false);
-
         foreach ($listing as $class) {
             $objectType = new PimcoreObjectType($class, [], $context);
             self::$definitions[$class->getName()] = $objectType;

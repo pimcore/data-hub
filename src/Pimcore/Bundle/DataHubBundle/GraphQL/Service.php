@@ -231,4 +231,21 @@ class Service
     {
         $this->supportedQueryDataTypes = $supportedQueryDataTypes;
     }
+
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function getElementFromArrayObject($value) {
+        if ($value instanceof \ArrayObject) {
+            $value = $value->getArrayCopy();
+            if (isset($value["__elementType"])) {
+                $value = \Pimcore\Model\Element\Service::getElementById($value["__elementType"], $value["id"]);
+            }
+        }
+
+        return $value;
+
+    }
 }

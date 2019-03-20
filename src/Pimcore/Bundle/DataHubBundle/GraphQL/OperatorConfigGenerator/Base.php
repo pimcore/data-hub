@@ -15,12 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator;
 
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\OperatorTypeDefinitionInterface;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryInterface;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 abstract class Base implements OperatorTypeDefinitionInterface
@@ -54,28 +50,12 @@ abstract class Base implements OperatorTypeDefinitionInterface
 
         $type = $this->getGraphQlType($typeName, $nodeDef, $class, $container, $params);
 
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Base($typeName, $attributes, $class, $container);
+
         return $this->enrichConfig([
             'name' => $fieldname,
             'type' => $type,
-            'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) use (
-                $typeName,
-                $attributes,
-                $class,
-                $container
-            ) {
-                $service = \Pimcore::getContainer()->get(Service::class);
-                /** @var OperatorFactoryInterface $factory */
-
-                /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
-                $operatorImpl = $service->buildOperator($typeName, $attributes);
-                $element = AbstractObject::getById($value['id']);
-                $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);
-                if ($valueFromOperator) {
-                    return $valueFromOperator->value;
-                } else {
-                    return null;
-                }
-            }
+            'resolve' => [$resolver, "resolve"]
 
         ], $container);
     }

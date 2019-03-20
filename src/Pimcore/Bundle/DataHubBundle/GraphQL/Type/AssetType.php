@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Asset;
 
@@ -63,67 +62,35 @@ class AssetType extends ObjectType
      */
     public function build(&$config)
     {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetType();
         $config['fields'] = [
             'creationDate' => Type::int(),
-            'id' =>  ['name' => 'id',
+            'id' => ['name' => 'id',
                 'type' => Type::id(),
             ],
             'filename' => Type::string(),
             'fullpath' => [
-                'type' =>Type::string(),
+                'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
 
-                    ]
-                ],
+                ]
+            ],
             'mimetype' => Type::string(),
 
             'modificationDateDate' => Type::int(),
             'type' => Type::string(),
             'filesize' => Type::int(),
             'data' => [
-                'type' =>Type::string(),
+                'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
 
                 ]
             ],
             'metadata' => [
-                'type'    => Type::listOf(new AssetMetadataItem()),
-                'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                    $assetId = $value['id'];
-                    $asset = Asset::getById($assetId);
-                    if ($asset) {
-                        $metadata = $asset->getObjectVar('metadata');
-                        if ($metadata) {
-                            $map = [];
-                            $keys = [];
-                            $language = \Pimcore::getContainer()->get('pimcore.locale')->findLocale();
-
-                            foreach ($metadata as $item) {
-                                $keys[$item['name']] = 1;
-                                $l = $item['language'] ? $item['language'] : 'default';
-                                $map[$l][$item['name']] = $item;
-                            }
-
-                            $result = [];
-
-                            foreach ($keys as $key => $found) {
-                                if ($map[$language][$key]) {
-                                    $result[] = $map[$language][$key];
-                                } elseif ($map['default'][$key]) {
-                                    $result[] = $map['default'][$key];
-                                }
-                            }
-
-                            if ($result) {
-                                return $result;
-                            }
-                        }
-                    }
-
-                    return null;
-                }
+                'type' => Type::listOf(new AssetMetadataItem()),
+                'resolve' => [$resolver, "resolve"]
             ]
         ];
     }

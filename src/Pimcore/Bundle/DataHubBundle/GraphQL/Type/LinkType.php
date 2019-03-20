@@ -16,9 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\DataObject\Data\Link;
 
 class LinkType extends ObjectType
 {
@@ -27,38 +25,17 @@ class LinkType extends ObjectType
     public static function getInstance()
     {
         if (!self::$instance) {
+            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Link();
             $config =
                 [
                     'fields' => [
                         'text' => [
                             'type'    => Type::string(),
-                            'resolve' => function (
-                                $value = null,
-                                $args = [],
-                                $context,
-                                ResolveInfo $resolveInfo = null
-                            ) {
-                                if ($value instanceof Link) {
-                                    return $value->getText();
-                                }
-
-                                return null;
-                            },
+                            'resolve' => [$resolver, "resolveText"]
                         ],
                         'path' => [
                             'type'    => Type::string(),
-                            'resolve' => function (
-                                $value = null,
-                                $args = [],
-                                $context,
-                                ResolveInfo $resolveInfo = null
-                            ) {
-                                if ($value instanceof Link) {
-                                    return $value->getPath();
-                                }
-
-                                return null;
-                            },
+                            'resolve' => [$resolver, "resolvePath"]
                         ]
                     ],
                 ];

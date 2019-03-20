@@ -15,12 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator;
 
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGeneratorInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use Pimcore\Model\DataObject\Concrete;
 
 class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
 {
@@ -84,12 +82,7 @@ class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
      */
     public function getResolver($fieldDefinition, $class)
     {
-        return function ($value = null, $args = [], $context = null, ResolveInfo $resolveInfo = null) use ($fieldDefinition, $class) {
-            $getter = 'get' . ucfirst($fieldDefinition->getName());
-            $o = Concrete::getById($value['id']);
-            $result = $o->$getter();
-
-            return $result;
-        };
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($fieldDefinition, $class);
+        return [$resolver, "resolve"];
     }
 }

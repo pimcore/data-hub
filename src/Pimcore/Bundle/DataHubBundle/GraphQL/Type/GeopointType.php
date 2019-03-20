@@ -9,16 +9,14 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\DataObject\Data\Geopoint;
 
 class GeopointType extends ObjectType
 {
@@ -26,39 +24,18 @@ class GeopointType extends ObjectType
 
     public static function getInstance()
     {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Geopoint();
         if (!self::$instance) {
             $config =
                 [
                     'fields' => [
                         'longitude' => [
-                            'type'    => Type::float(),
-                            'resolve' => function (
-                                $value = null,
-                                $args = [],
-                                $context,
-                                ResolveInfo $resolveInfo = null
-                            ) {
-                                if ($value instanceof Geopoint) {
-                                    return $value->getLongitude();
-                                }
-
-                                return null;
-                            },
+                            'type' => Type::float(),
+                            'resolve' => [$resolver, "resolveLongitude"]
                         ],
-                        'latitude'  => [
-                            'type'    => Type::float(),
-                            'resolve' => function (
-                                $value = null,
-                                $args = [],
-                                $context,
-                                ResolveInfo $resolveInfo = null
-                            ) {
-                                if ($value instanceof Geopoint) {
-                                    return $value->getLatitude();
-                                }
-
-                                return null;
-                            },
+                        'latitude' => [
+                            'type' => Type::float(),
+                            'resolve' => [$resolver, "resolveLatitude"]
                         ],
 
                     ],
