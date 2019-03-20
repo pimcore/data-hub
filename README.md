@@ -13,7 +13,7 @@ A short introduction video of an output channel based on the GraphQL query langu
 
 ## Install
 ```bash 
-composer require pimcore/data-hub
+composer require pimcore/data-hub:dev-master
 ```
 
 ## Supported Channels
