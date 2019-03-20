@@ -269,7 +269,6 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
             data: this.data.schema.queryEntities
         });
 
-
         this.querySchemaGrid = Ext.create('Ext.grid.Panel', {
             frame: false,
             bodyCls: "pimcore_editable_grid",
@@ -314,11 +313,8 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                                             function (data, settings) {
                                                 record.set('columnConfig', data);
                                             }, null);
-
                                     }
-
                                 }.bind(this)
-
                             }]
                     },
                     {
@@ -453,7 +449,6 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                 type: 'ajax',
                 reader: {
                     type: 'json',
-                    // rootProperty: "options",
                     idProperty: 'text'
                 }
             },
@@ -467,11 +462,10 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
             {
                 xtype: "combo",
                 fieldLabel: t("plugin_pimcore_datahub_configpanel_entity"),
-                name: "version",
                 store: entityStore,
                 triggerAction: 'all',
                 editable: false,
-                width: 400
+                width: 450
             }
         );
 
