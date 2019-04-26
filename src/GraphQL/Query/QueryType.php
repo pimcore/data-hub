@@ -129,7 +129,7 @@ class QueryType extends ObjectType
                     'after' => ['type' => Type::int()],
                     'sortBy' => ['type' => Type::string()],
                     'sortOrder' => ['type' => Type::string()],
-                    'filter' => ['type' => Type::string()]
+                    'filter' => ['type' => Type::string()],
                     'published' => ['type' => Type::boolean()],
                 ],
                 'type' => $listingType,
