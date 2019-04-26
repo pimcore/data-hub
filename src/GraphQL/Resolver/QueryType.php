@@ -225,6 +225,11 @@ class QueryType
             $objectList->setOrder($order);
         }
 
+        // Include unpublished
+        if ($args['published'] === false) {
+            $objectList->setUnpublished(true);
+        }
+
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $sqlListCondition = $configuration->getSqlObjectCondition();
