@@ -142,11 +142,6 @@ class QueryType extends ObjectType
 
             $config['fields']['get' . ucfirst($class->getName()) . 'Listing'] = $defListing;
             $config['fields']['get' . ucfirst($class->getName())] = $defGet;
-
-//            p_r($defGet["type"]);
-//            die();
-//            serialize($defGet["type"]);
-
         }
     }
 
