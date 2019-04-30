@@ -16,15 +16,16 @@
 
 pimcore.registerNS("pimcore.plugin.datahub.operator.thumbnailhtml");
 
-pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.plugin.datahub.operator.thumbnailhtml = Class.create(pimcore.plugin.datahub.Abstract, {
     operatorGroup: "transformer",
     type: "operator",
-    class: "Thumbnail",
+    class: "ThumbnailHtml",
     iconCls: "pimcore_icon_thumbnails",
-    defaultText: "Thumbnail",
+    defaultText: "Thumbnail HTML",
+    group: "other",
 
     getConfigTreeNode: function(configAttributes) {
-        if(configAttributes) {
+        if (configAttributes) {
             var node = {
                 draggable: true,
                 iconCls: this.iconCls,
@@ -38,9 +39,8 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
                 isChildAllowed: this.allowChild
             };
         } else {
-
             //For building up operator list
-            var configAttributes = { type: this.type, class: this.class, label: this.getDefaultText()};
+            var configAttributes = { type: this.type, class: this.class, label: this.getDefaultText() };
 
             var node = {
                 draggable: true,
@@ -53,9 +53,9 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
             };
         }
         node.isOperator = true;
+
         return node;
     },
-
 
     getCopyNode: function(source) {
         var copy = source.createNode({
@@ -72,9 +72,9 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
                 class: this.class
             }
         });
+
         return copy;
     },
-
 
     getConfigDialog: function(node, params) {
         this.node = node;
@@ -86,13 +86,12 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
             value: this.node.data.configAttributes.label
         });
 
-
-        this.thumbnailConfigField = new Ext.form.ComboBox({
+        this.thumbnailHtmlConfigField = new Ext.form.ComboBox({
             width: 500,
             autoSelect: true,
             valueField: "id",
             displayField: "id",
-            value: this.node.data.configAttributes.thumbnailConfig,
+            value: this.node.data.configAttributes.thumbnailHtmlConfig,
             fieldLabel: t("thumbnail"),
             store: new Ext.data.Store({
                 autoDestroy: true,
@@ -106,7 +105,7 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
                 },
                 listeners: {
                     load: function() {
-                        this.thumbnailConfigField.setValue(this.node.data.configAttributes.thumbnailConfig);
+                        this.thumbnailHtmlConfigField.setValue(this.node.data.configAttributes.thumbnailHtmlConfig);
                     }.bind(this)
                 },
                 fields: ['id']
@@ -117,7 +116,7 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
         this.configPanel = new Ext.Panel({
             layout: "form",
             bodyStyle: "padding: 10px;",
-            items: [this.textField, this.thumbnailConfigField],
+            items: [this.textField, this.thumbnailHtmlConfigField],
             buttons: [{
                 text: t("apply"),
                 iconCls: "pimcore_icon_apply",
@@ -135,15 +134,15 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
             layout: "fit",
             items: [this.configPanel]
         });
-
         this.window.show();
+
         return this.window;
     },
 
     commitData: function(params) {
         this.node.set('isOperator', true);
         this.node.data.configAttributes.label = this.textField.getValue();
-        this.node.data.configAttributes.thumbnailConfig = this.thumbnailConfigField.getValue();
+        this.node.data.configAttributes.thumbnailHtmlConfig = this.thumbnailHtmlConfigField.getValue();
         this.window.close();
 
         if (params && params.callback) {
@@ -155,6 +154,7 @@ pimcore.plugin.datahub.operator.thumbnail = Class.create(pimcore.plugin.datahub.
         if (targetNode.childNodes.length > 0) {
             return false;
         }
+
         return true;
     }
 });

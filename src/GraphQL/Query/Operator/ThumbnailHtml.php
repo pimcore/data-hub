@@ -21,12 +21,16 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Asset;
 
+/**
+ * Class ThumbnailHtml
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator
+ */
 class ThumbnailHtml extends AbstractOperator
 {
-    private $thumbnailConfig;
+    private $thumbnailHtmlConfig;
 
     /**
-     * Thumbnail constructor.
+     * ThumbnailHtml constructor.
      *
      * @param array $config
      * @param null $context
@@ -35,7 +39,7 @@ class ThumbnailHtml extends AbstractOperator
     {
         parent::__construct($config, $context);
 
-        $this->thumbnailConfig = $config['thumbnailConfig'];
+        $this->thumbnailHtmlConfig = $config['thumbnailHtmlConfig'];
     }
 
     /**
@@ -48,16 +52,16 @@ class ThumbnailHtml extends AbstractOperator
     {
         $result = new \stdClass();
         $result->label = $this->label;
-        if (!$this->thumbnailConfig) {
+        if (!$this->thumbnailHtmlConfig) {
             return $result;
         }
 
-        $childs = $this->getChilds();
+        $children = $this->getChilds();
 
-        if (!$childs) {
+        if (!$children) {
             return $result;
         } else {
-            $c = $childs[0];
+            $c = $children[0];
 
             $service = \Pimcore::getContainer()->get(Service::class);
             $valueResolver = $service->buildValueResolverFromAttributes($c);
@@ -67,7 +71,7 @@ class ThumbnailHtml extends AbstractOperator
                 $result->value = null;
                 if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
                     $childValue = $result->value = $childResult->value;
-                    $thumbnail = $childValue->getThumbnail($this->thumbnailConfig, false);
+                    $thumbnail = $childValue->getThumbnail($this->thumbnailHtmlConfig, false);
                     $result->value = $thumbnail->getHtml();
                 }
             }
