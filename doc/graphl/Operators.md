@@ -8,10 +8,15 @@ Utilizes the PHP date formatter.
 
 ![Datahub Configs](../img/graphql/date_formatter.png)
 
-####  Asset Thumbnail
+#### Asset Thumbnail
 
 Returns the thumbnail URL of the assigned image.
 
+![Thumbnail Config](../img/graphql/operator_thumbnail.png)
+
+#### Asset Thumbnail HTML
+
+Returns the thumbnail HTML tag of the assigned image.
 
 ![Thumbnail Config](../img/graphql/operator_thumbnail.png)
 
