@@ -150,6 +150,14 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                                 'type' => Type::string()
                             ]
                         ];
+                    case 'published':
+                        return [
+                            'key' => $key,
+                            'config' => [
+                                'name' => $key,
+                                'type' => Type::boolean(),
+                            ]
+                        ];
                     default: return null;
                 }
             } else {

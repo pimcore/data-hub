@@ -149,6 +149,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/add-folder")
      *
      * @param Request $request
+     * 
+     * @throws \Exception
      *
      * @return JsonResponse
      */
@@ -237,6 +239,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      *
+     * @throws \Exception
+     *
      * @return JsonResponse
      */
     public function addAction(Request $request)
@@ -267,6 +271,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/clone")
      *
      * @param Request $request
+     *
+     * @throws \Exception
      *
      * @return JsonResponse
      */
@@ -301,6 +307,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/get")
      *
      * @param Request $request
+     *
+     * @throws \Exception
      *
      * @return JsonResponse
      */
@@ -337,6 +345,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/save")
      *
      * @param Request $request
+     *
+     * @throws \Exception
      *
      * @return JsonResponse
      */
@@ -376,6 +386,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/get-explorer-url")
      *
      * @param Request $request
+     *
+     * @throws \Exception
      *
      * @return JsonResponse
      */

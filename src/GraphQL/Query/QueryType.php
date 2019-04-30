@@ -129,7 +129,8 @@ class QueryType extends ObjectType
                     'after' => ['type' => Type::int()],
                     'sortBy' => ['type' => Type::string()],
                     'sortOrder' => ['type' => Type::string()],
-                    'filter' => ['type' => Type::string()]
+                    'filter' => ['type' => Type::string()],
+                    'published' => ['type' => Type::boolean()],
                 ],
                 'type' => $listingType,
                 'resolve' => [$resolver, "resolveListing"]
@@ -142,11 +143,6 @@ class QueryType extends ObjectType
 
             $config['fields']['get' . ucfirst($class->getName()) . 'Listing'] = $defListing;
             $config['fields']['get' . ucfirst($class->getName())] = $defGet;
-
-//            p_r($defGet["type"]);
-//            die();
-//            serialize($defGet["type"]);
-
         }
     }
 
