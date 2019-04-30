@@ -13,9 +13,11 @@ services:
     # Field helper
     pimcore.datahub.graphql.fieldhelper.object:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper
+        public: true
 
     pimcore.datahub.graphql.fieldhelper.asset:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper
+        public: true
 
     #
     # data types factories
@@ -255,6 +257,3 @@ services:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Trimmer
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: trimmer }
-
-
-
