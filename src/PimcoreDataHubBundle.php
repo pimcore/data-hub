@@ -122,6 +122,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/operator/Merge.js',
             '/bundles/pimcoredatahub/js/operator/Substring.js',
             '/bundles/pimcoredatahub/js/operator/Thumbnail.js',
+            '/bundles/pimcoredatahub/js/operator/ThumbnailHtml.js',
             '/bundles/pimcoredatahub/js/operator/TranslateValue.js',
             '/bundles/pimcoredatahub/js/operator/Trimmer.js',
             '/bundles/pimcoredatahub/js/workspace/asset.js',

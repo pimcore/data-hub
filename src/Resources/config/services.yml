@@ -13,9 +13,11 @@ services:
     # Field helper
     pimcore.datahub.graphql.fieldhelper.object:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper
+        public: true
 
     pimcore.datahub.graphql.fieldhelper.asset:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper
+        public: true
 
     #
     # data types factories
@@ -176,6 +178,11 @@ services:
         tags:
         - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnail }
 
+    pimcore.datahub.graphql.query_typegenerator_operator_thumbnailhtml:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\ThumbnailHtml
+        tags:
+        - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnailhtml }
+
     pimcore.datahub.graphql.query_typegenerator_operator_translatevalue:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\TranslateValue
         tags:
@@ -222,6 +229,13 @@ services:
         tags:
         - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnail }
 
+    pimcore.datahub.graphql.query_operator.factory.thumbnailhtml:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
+        arguments:
+            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
+        tags:
+        - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnailhtml }
+
     pimcore.datahub.graphql.query_operator.factory.merge:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:
@@ -243,6 +257,3 @@ services:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Trimmer
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: trimmer }
-
-
-
