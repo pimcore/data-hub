@@ -46,7 +46,6 @@ operator_text: "Text"
 operator_merge: "Merge"
 operator_substring: "Substring"
 operator_thumbnail: "Thumbnail"
+operator_thumbnail_html: "Thumbnail HTML"
 operator_translate_value: "Translate Value"
 operator_trimmer: "Trimmer"
-
-
