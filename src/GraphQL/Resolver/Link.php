@@ -21,7 +21,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 class Link
 {
 
-
     /**
      * @param null $value
      * @param array $args
@@ -30,10 +29,10 @@ class Link
      * @return array
      * @throws \Exception
      */
-    public function resolveLongitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveText($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Geopoint) {
-            return $value->getLongitude();
+        if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
+            return $value->getText();
         }
 
         return null;
@@ -47,10 +46,10 @@ class Link
      * @return array
      * @throws \Exception
      */
-    public function resolveLatitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Geopoint) {
-            return $value->getLatitude();
+        if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
+            return $value->getPath();
         }
 
         return null;
