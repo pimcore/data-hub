@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 use GraphQL\Language\AST\ArgumentNode;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Language\AST\InlineFragmentNode;
-use GraphQL\Language\AST\Node;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Language\AST\SelectionSetNode;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -82,7 +81,7 @@ abstract class AbstractFieldHelper
 
 
     /**
-     * @param Node $ast
+     * @param FieldNode $ast
      *
      * @return array
      */
