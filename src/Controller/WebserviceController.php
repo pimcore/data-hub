@@ -25,12 +25,15 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Logger;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class WebserviceController extends FrontendController
 {
     /**
      * @param Request $request
+     *
+     * @return JsonResponse
      *
      * @throws \Exception
      */
@@ -124,9 +127,8 @@ class WebserviceController extends FrontendController
                 ],
             ];
         }
-        header('Content-Type: application/json');
-        echo json_encode($output);
-        die();
+
+        return new JsonResponse($output);
     }
 
     /**
