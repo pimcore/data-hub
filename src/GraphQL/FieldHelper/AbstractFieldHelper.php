@@ -58,23 +58,21 @@ abstract class AbstractFieldHelper
         $arguments = $this->getArguments($ast);
         $languageArgument = isset($arguments['language']) ? $arguments['language'] : null;
 
-        $realName = $astName;
-
         if (method_exists($container, $getter)) {
             if ($languageArgument) {
                 if ($ast->alias) {
                     // defer it
-                    $data[$realName] = function ($source, $args, $context, ResolveInfo $info) use (
+                    $data[$astName] = function ($source, $args, $context, ResolveInfo $info) use (
                         $container,
                         $getter
                     ) {
                         return $container->$getter($args['language']);
                     };
                 } else {
-                    $data[$realName] = $container->$getter($languageArgument);
+                    $data[$astName] = $container->$getter($languageArgument);
                 }
             } else {
-                $data[$realName] = $container->$getter();
+                $data[$astName] = $container->$getter();
             }
         }
     }
@@ -125,18 +123,16 @@ abstract class AbstractFieldHelper
                     foreach ($selections as $selectionNode) {
                         if ($selectionNode instanceof FieldNode) {
                             $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
-                        } else {
-                            if ($selectionNode instanceof InlineFragmentNode) {
-                                /** @var $selectionSetNode SelectionSetNode */
-                                $inlineSelectionSetNode = $selectionNode->selectionSet;
-                                /** @var $inlineSelections NodeList[] */
-                                $inlineSelections = $inlineSelectionSetNode->selections;
-                                $count = $inlineSelections->count();
-                                for ($i = 0; $i < $count; $i++) {
-                                    $inlineNode = $inlineSelections[$i];
-                                    if ($inlineNode instanceof FieldNode) {
-                                        $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
-                                    }
+                        } elseif ($selectionNode instanceof InlineFragmentNode) {
+                            /** @var $selectionSetNode SelectionSetNode */
+                            $inlineSelectionSetNode = $selectionNode->selectionSet;
+                            /** @var $inlineSelections NodeList[] */
+                            $inlineSelections = $inlineSelectionSetNode->selections;
+                            $count = $inlineSelections->count();
+                            for ($i = 0; $i < $count; $i++) {
+                                $inlineNode = $inlineSelections[$i];
+                                if ($inlineNode instanceof FieldNode) {
+                                    $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
                                 }
                             }
                         }
