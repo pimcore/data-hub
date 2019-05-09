@@ -77,7 +77,6 @@ abstract class AbstractFieldHelper
         }
     }
 
-
     /**
      * @param FieldNode $ast
      *
@@ -111,8 +110,14 @@ abstract class AbstractFieldHelper
      */
     public function extractData(&$data = [], $container, $args, $context, ResolveInfo $resolveInfo = null)
     {
-        $resolveInfo = (array)$resolveInfo;
-        $fieldAstList = (array)$resolveInfo['fieldNodes'];
+        if (method_exists($container, 'getId')) {
+            // we have to at least add the ID and pass it around even if not requested because we need it internally
+            // to resolve fields of linked elements (such as asset image and so on)
+            $data['id'] = $container->getId();
+        }
+
+        $resolveInfo = (array) $resolveInfo;
+        $fieldAstList = (array) $resolveInfo['fieldNodes'];
 
         foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
