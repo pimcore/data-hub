@@ -573,7 +573,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         var tree = classTreeHelper.getClassTree(url, classId, objectId);
 
         tree.addListener("itemdblclick", function (tree, record, item, index, e, eOpts) {
-            if (!record.data.root && record.datatype != "layout" && record.data.dataType != 'localizedfields') {
+            if (!record.data.root && record.data.type != "layout" && record.data.dataType != 'localizedfields') {
 
                 if (!this.checkSupported(record)) {
                     return;

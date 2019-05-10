@@ -21,6 +21,7 @@ use GraphQL\Language\AST\InlineFragmentNode;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Language\AST\SelectionSetNode;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 abstract class AbstractFieldHelper
 {
@@ -119,7 +120,7 @@ abstract class AbstractFieldHelper
         $resolveInfo = (array) $resolveInfo;
         $fieldAstList = (array) $resolveInfo['fieldNodes'];
 
-        foreach ($fieldAstList as $astNode) {
+      foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
                 /** @var $selectionSet SelectionSetNode */
                 $selectionSet = $astNode->selectionSet;
