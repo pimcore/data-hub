@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /**
  * Pimcore
  *
@@ -24,6 +24,10 @@ use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\Service;
 
+/**
+ * Class ImageGallery
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper
+ */
 class ImageGallery
 {
     /**
@@ -45,7 +49,7 @@ class ImageGallery
      * Objects constructor.
      *
      * @param $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      */
     public function __construct(ClassDefinition\Data $fieldDefinition, ClassDefinition $class)
     {
@@ -60,7 +64,7 @@ class ImageGallery
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null Empty array will return null
+     * @return array|null Empty set return null
      *
      * @throws \Exception
      */
@@ -77,15 +81,18 @@ class ImageGallery
                 /** @var $relation AbstractElement */
                 foreach ($relations as $relation) {
                     if ($relation instanceof Hotspotimage) {
-                        $relation = $relation->getImage();
+                        $image = $relation->getImage();
                     }
 
-                    if ($relation instanceof Asset) {
+                    if ($image instanceof Asset) {
                         $data = [];
-                        $this->fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
+                        $this->fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
                         $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
-                        $data['__elementType'] = Service::getType($relation);
-                        $data['__elementSubtype'] = $relation->getType();
+                        $data['crop'] = $relation->getCrop();
+                        $data['hotspots'] = $relation->getHotspots();
+                        $data['marker'] = $relation->getMarker();
+                        $data['__elementType'] = Service::getType($image);
+                        $data['__elementSubtype'] = $image->getType();
                     } else {
                         continue;
                     }

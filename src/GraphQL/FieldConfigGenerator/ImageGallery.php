@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /**
  * Pimcore
  *
@@ -16,9 +16,12 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * Class ImageGallery
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator
+ */
 class ImageGallery extends Base
 {
     /**
@@ -48,7 +51,7 @@ class ImageGallery extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(AssetType::getInstance());
+        return Type::listOf(\Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType::getInstance());
     }
 
     /**
