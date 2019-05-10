@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Document;
 use Pimcore\Db;
 use Pimcore\Logger;
-use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
@@ -107,13 +106,6 @@ class WorkspaceHelper
         if ($element instanceof Document) {
             // no support for documents right now
             return false;
-        }
-
-        // Custom rule for hotspotimages
-        if ($element instanceof OwnerAwareFieldInterface) {
-            if ($element instanceof Hotspotimage) {
-                return true;
-            }
         }
 
         $elementType = Service::getElementType($element);

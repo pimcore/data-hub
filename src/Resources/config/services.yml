@@ -66,6 +66,11 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_datatype_image }
 
+    pimcore.datahub.graphql.query_typegenerator_datatype_imageGallery:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\ImageGallery
+        tags:
+            - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_datatype_imageGallery }
+
     pimcore.datahub.graphql.query_typegenerator_datatype_link:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Link
         tags:
