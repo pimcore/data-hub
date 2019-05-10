@@ -22,29 +22,31 @@ use Symfony\Component\HttpFoundation\Request;
 class GraphQLExplorerController extends Controller
 {
     /**
+     * @param Request $request
+     *
      * @Cache(expires="tomorrow", public=true)
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Exception
      */
     public function explorerAction(Request $request)
     {
-        $allParams = array_merge($request->request->all(), $request->query->all());
+        $urlParams = array_merge($request->request->all(), $request->query->all());
 
-        $clientname = $request->get('clientname');
+        $clientName = $request->get('clientname');
 
         $route = \Pimcore::getContainer()->get('router')->getRouteCollection()->get('admin_pimcoredatahub_webservice');
         if ($route) {
             $url = $route->getPath();
             $url = str_replace('/{clientname}', '', $url);
         } else {
-            throw now \Exception('unable to resolve');
+            throw new \Exception('unable to resolve');
         }
 
-        if ($clientname) {
-            $url .= '/' . $clientname;
+        if ($clientName) {
+            $url .= '/' . $clientName;
         }
-
-        $urlParams = $allParams;
 
         if ($urlParams) {
             $url = $url . '?' . http_build_query($urlParams);
