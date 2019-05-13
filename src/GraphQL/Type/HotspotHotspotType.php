@@ -35,12 +35,14 @@ class HotspotHotspotType extends ObjectType
     public static function getInstance()
     {
         if (!self::$instance) {
+            $metadataConfig['fields']['type'] = Type::string();
             $config = [
                 'fields' => [
                     'top' => Type::float(),
                     'left' => Type::float(),
                     'height' => Type::float(),
                     'width' => Type::float(),
+                    'data' => Type::listOf(new ElementMetadataKeyValuePairType($metadataConfig)),
                 ],
             ];
             self::$instance = new static($config);
