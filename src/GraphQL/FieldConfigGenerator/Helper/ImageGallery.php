@@ -85,12 +85,14 @@ class ImageGallery
                     }
 
                     if ($image instanceof Asset) {
-                        $data = [];
+                        $data = new \ArrayObject();
+                        $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
                         $this->fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
                         $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
                         $data['crop'] = $relation->getCrop();
                         $data['hotspots'] = $relation->getHotspots();
                         $data['marker'] = $relation->getMarker();
+                        $data['image'] = $image->getType();
                         $data['__elementType'] = Service::getType($image);
                         $data['__elementSubtype'] = $image->getType();
                     } else {
