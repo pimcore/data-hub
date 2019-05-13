@@ -35,10 +35,12 @@ class HotspotMarkerType extends ObjectType
     public static function getInstance()
     {
         if (!self::$instance) {
+            $metadataConfig['fields']['type'] = Type::string();
             $config = [
                 'fields' => [
                     'top' => Type::float(),
                     'left' => Type::float(),
+                    'data' => Type::listOf(new ElementMetadataKeyValuePairType($metadataConfig)),
                     'name' => Type::string(),
                 ],
             ];
