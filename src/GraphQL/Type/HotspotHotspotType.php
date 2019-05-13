@@ -43,6 +43,7 @@ class HotspotHotspotType extends ObjectType
                     'height' => Type::float(),
                     'width' => Type::float(),
                     'data' => Type::listOf(new ElementMetadataKeyValuePairType($metadataConfig)),
+                    'name' => Type::string(),
                 ],
             ];
             self::$instance = new static($config);
