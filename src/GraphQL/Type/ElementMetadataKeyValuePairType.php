@@ -30,7 +30,7 @@ class ElementMetadataKeyValuePairType extends ObjectType
     protected static $instance;
 
     /**
-     * PimcoreObjectType constructor.
+     * ElementMetadataKeyValuePairType constructor.
      *
      * @param $class
      */

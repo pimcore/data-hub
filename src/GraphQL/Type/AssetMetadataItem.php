@@ -21,7 +21,7 @@ use GraphQL\Type\Definition\Type;
 class AssetMetadataItem extends ObjectType
 {
     /**
-     * PimcoreObjectType constructor.
+     * AssetMetadataItem constructor.
      *
      * @param $class
      */

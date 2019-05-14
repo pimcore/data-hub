@@ -47,7 +47,7 @@ class HotspotType extends ObjectType
     }
 
     /**
-     * AssetType constructor.
+     * HotspotType constructor.
      *
      * @param array $config
      * @param array $context
