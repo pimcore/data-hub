@@ -185,24 +185,24 @@ class QueryType
         return $value['edges'];
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
-     * @return mixed
+     * @return array
+     * @throws \Exception
      */
     public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $localeService = \Pimcore::getContainer()->get('pimcore.locale');
             $localeService->setLocale($args['defaultLanguage']);
         }
 
         $modelFactory = \Pimcore::getContainer()->get('pimcore.model.factory');
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
         if (isset($args['ids'])) {
@@ -226,7 +226,7 @@ class QueryType
         }
 
         // Include unpublished
-        if ($args['published'] === false) {
+        if (isset($args['published']) && $args['published'] === false) {
             $objectList->setUnpublished(true);
         }
 
