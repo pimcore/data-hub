@@ -16,6 +16,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
 /**
@@ -34,13 +36,36 @@ class HotspotType
      */
     public function resolveImage($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $asset = Asset::getById($value['id']);
-        $return = [];
-        foreach ($asset->getObjectVars() as $fieldName => $var) {
-            $return[$fieldName] = $var;
+        if ($args && $args['defaultLanguage']) {
+            $localeService = \Pimcore::getContainer()->get('pimcore.locale');
+            $localeService->setLocale($args['defaultLanguage']);
         }
 
-        return !empty($return) ? $return : null;
+        $asset = Asset::getById($value['id']);
+        if (!$asset instanceof Asset) {
+            return null;
+        }
+
+        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view asset ' . $asset->getFullPath());
+            } else {
+                return null;
+            }
+        }
+
+        $data = new \ArrayObject(['data' => null]);
+        $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
+
+        $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.asset');
+        $fieldHelper->extractData($data, $asset, $args, $context, $resolveInfo);
+        $data = $data->getArrayCopy();
+
+        if ($data['data']) {
+            $data['data'] = base64_encode($data['data']);
+        }
+
+        return $data;
     }
 
     /**
