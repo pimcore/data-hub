@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\DataObject\Data\Hotspotimage;
 
 /**
  * Class HotspotType
