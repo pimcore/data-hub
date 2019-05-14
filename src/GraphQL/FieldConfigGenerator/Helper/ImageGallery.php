@@ -85,7 +85,7 @@ class ImageGallery
                     }
 
                     if ($image instanceof Asset) {
-                        $data = new \ArrayObject();
+                        $data = new \ArrayObject(['data' => null]);
                         $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
                         $this->fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
                         $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
