@@ -205,21 +205,21 @@ class QueryType
         /** @var $listClass Listing */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
-        if ($args['ids']) {
+        if (isset($args['ids'])) {
             $conditionParts[] = '(o_id IN (' . $args['ids'] . '))';
         }
 
         // paging
-        if ($args['first']) {
+        if (isset($args['first'])) {
             $objectList->setLimit($args['first']);
         }
 
-        if ($args['after']) {
+        if (isset($args['after'])) {
             $objectList->setOffset($args['after']);
         }
 
         // sorting
-        if ($args['sortBy']) {
+        if (isset($args['sortBy'])) {
             $order = $args['sortOrder'] ? $args['sortOrder'] : 'ASC';
             $objectList->setOrderKey($args['sortBy']);
             $objectList->setOrder($order);
@@ -246,7 +246,7 @@ class QueryType
                                                     (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
                                                  )';
 
-        if ($args['filter']) {
+        if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);
             if (!$filter) {
                 throw new \Exception('unable to decode filter');
