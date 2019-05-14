@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Pimcore
  *
@@ -27,6 +28,9 @@ use Pimcore\Model\Asset;
  */
 class ThumbnailHtml extends AbstractOperator
 {
+    /**
+     * @var string|null
+     */
     private $thumbnailHtmlConfig;
 
     /**

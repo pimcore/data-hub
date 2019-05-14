@@ -20,7 +20,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 class Link
 {
-
     /**
      * @param null $value
      * @param array $args
@@ -54,6 +53,5 @@ class Link
 
         return null;
     }
-
 }
 

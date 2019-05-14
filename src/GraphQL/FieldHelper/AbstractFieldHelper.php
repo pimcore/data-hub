@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 use GraphQL\Language\AST\ArgumentNode;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Language\AST\InlineFragmentNode;
-use GraphQL\Language\AST\Node;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Language\AST\SelectionSetNode;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -60,30 +59,27 @@ abstract class AbstractFieldHelper
         $arguments = $this->getArguments($ast);
         $languageArgument = isset($arguments['language']) ? $arguments['language'] : null;
 
-        $realName = $astName;
-
         if (method_exists($container, $getter)) {
             if ($languageArgument) {
                 if ($ast->alias) {
                     // defer it
-                    $data[$realName] = function ($source, $args, $context, ResolveInfo $info) use (
+                    $data[$astName] = function ($source, $args, $context, ResolveInfo $info) use (
                         $container,
                         $getter
                     ) {
                         return $container->$getter($args['language']);
                     };
                 } else {
-                    $data[$realName] = $container->$getter($languageArgument);
+                    $data[$astName] = $container->$getter($languageArgument);
                 }
             } else {
-                $data[$realName] = $container->$getter();
+                $data[$astName] = $container->$getter();
             }
         }
     }
 
-
     /**
-     * @param Node $ast
+     * @param FieldNode $ast
      *
      * @return array
      */
@@ -118,12 +114,13 @@ abstract class AbstractFieldHelper
         if ($container instanceof ElementInterface) {
             // we have to at least add the ID and pass it around even if not requested because we need it internally
             // to resolve fields of linked elements (such as asset image and so on)
-            $data["id"] = $container->getId();
+            $data['id'] = $container->getId();
         }
-        $resolveInfo = (array)$resolveInfo;
-        $fieldAstList = (array)$resolveInfo['fieldNodes'];
 
-        foreach ($fieldAstList as $astNode) {
+        $resolveInfo = (array) $resolveInfo;
+        $fieldAstList = (array) $resolveInfo['fieldNodes'];
+
+      foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
                 /** @var $selectionSet SelectionSetNode */
                 $selectionSet = $astNode->selectionSet;
@@ -132,18 +129,16 @@ abstract class AbstractFieldHelper
                     foreach ($selections as $selectionNode) {
                         if ($selectionNode instanceof FieldNode) {
                             $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
-                        } else {
-                            if ($selectionNode instanceof InlineFragmentNode) {
-                                /** @var $selectionSetNode SelectionSetNode */
-                                $inlineSelectionSetNode = $selectionNode->selectionSet;
-                                /** @var $inlineSelections NodeList[] */
-                                $inlineSelections = $inlineSelectionSetNode->selections;
-                                $count = $inlineSelections->count();
-                                for ($i = 0; $i < $count; $i++) {
-                                    $inlineNode = $inlineSelections[$i];
-                                    if ($inlineNode instanceof FieldNode) {
-                                        $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
-                                    }
+                        } elseif ($selectionNode instanceof InlineFragmentNode) {
+                            /** @var $selectionSetNode SelectionSetNode */
+                            $inlineSelectionSetNode = $selectionNode->selectionSet;
+                            /** @var $inlineSelections NodeList[] */
+                            $inlineSelections = $inlineSelectionSetNode->selections;
+                            $count = $inlineSelections->count();
+                            for ($i = 0; $i < $count; $i++) {
+                                $inlineNode = $inlineSelections[$i];
+                                if ($inlineNode instanceof FieldNode) {
+                                    $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
                                 }
                             }
                         }

@@ -18,8 +18,17 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
+/**
+ * Class ElementMetadataKeyValuePairType
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\Type
+ */
 class ElementMetadataKeyValuePairType extends ObjectType
 {
+    /**
+     * @var self
+     */
+    protected static $instance;
+
     /**
      * PimcoreObjectType constructor.
      *
@@ -33,13 +42,23 @@ class ElementMetadataKeyValuePairType extends ObjectType
     }
 
     /**
+     * @return ElementMetadataKeyValuePairType
+     */
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
+    }
+
+    /**
      * @param array $config
      */
     public function build(&$config)
     {
-        $config['fields'] = [
-            'name'  => Type::string(),
-            'value' => Type::string(),
-        ];
+        $config['fields']['name'] = Type::string();
+        $config['fields']['value'] = Type::string();
     }
 }

@@ -20,8 +20,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 class Geopoint
 {
-
-
     /**
      * @param null $value
      * @param array $args
@@ -32,7 +30,7 @@ class Geopoint
      */
     public function resolveLongitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Link) {
+        if ($value instanceof Geopoint) {
             return $value->getLongitude();
         }
 
@@ -49,12 +47,11 @@ class Geopoint
      */
     public function resolveLatitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Link) {
+        if ($value instanceof Geopoint) {
             return $value->getLatitude();
         }
 
         return null;
     }
-
 }
 

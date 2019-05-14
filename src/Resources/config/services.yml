@@ -66,6 +66,11 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_datatype_image }
 
+    pimcore.datahub.graphql.query_typegenerator_datatype_imageGallery:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\ImageGallery
+        tags:
+            - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_datatype_imageGallery }
+
     pimcore.datahub.graphql.query_typegenerator_datatype_link:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Link
         tags:
@@ -231,6 +236,13 @@ services:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnailhtml }
+
+    pimcore.datahub.graphql.query_operator.factory.thumbnailhtml:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
+        arguments:
+            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
+        tags:
+        - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnailhtml }
 
     pimcore.datahub.graphql.query_operator.factory.merge:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory

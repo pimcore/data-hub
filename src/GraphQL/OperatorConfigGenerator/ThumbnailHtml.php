@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Pimcore
  *
@@ -14,6 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator;
 
+/**
+ * Class ThumbnailHtml
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator
+ */
 class ThumbnailHtml extends StringBase
 {
 }

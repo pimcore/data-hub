@@ -19,6 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Document;
 use Pimcore\Db;
 use Pimcore\Logger;
+use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 
@@ -94,13 +95,13 @@ class WorkspaceHelper
     }
 
     /**
-     * @param ElementInterface $element
+     * @param ElementInterface|OwnerAwareFieldInterface $element
      * @param Configuration $configuration
      * @param string $type
      *
      * @return bool
      */
-    public static function isAllowed(ElementInterface $element, Configuration $configuration, string $type)
+    public static function isAllowed($element, Configuration $configuration, string $type)
     {
         if ($element instanceof Document) {
             // no support for documents right now
