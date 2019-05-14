@@ -237,13 +237,6 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnailhtml }
 
-    pimcore.datahub.graphql.query_operator.factory.thumbnailhtml:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
-        tags:
-        - { name: pimcore.datahub.graphql.query_operator_factory, id: thumbnailhtml }
-
     pimcore.datahub.graphql.query_operator.factory.merge:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:
