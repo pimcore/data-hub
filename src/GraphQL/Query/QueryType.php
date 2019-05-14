@@ -33,7 +33,7 @@ class QueryType extends ObjectType
      */
     public function __construct($config = [], $context = [])
     {
-        if (!$config['name']) {
+        if (!isset($config['name'])) {
             $config['name'] = 'Query';
         }
 
