@@ -50,18 +50,17 @@ class DefaultValue extends AbstractValue
             $args = null;
             $context = null;
 
-            $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
+            $value = $resolveFn($valueParams, $args, $context, $resolveInfo);
             if ($value) {
-
-                /** @var  $graphQLService Service */
+                /** @var Service $graphQLService */
                 $graphQLService = \Pimcore::getContainer()->get(Service::class);
-                $value = $graphQLService->getElementFromArrayObject($value);
-
                 $result = new \stdClass();
-                $result->value = $value;
+                $result->value = $graphQLService->getElementFromArrayObject($value);
 
                 return $result;
             }
         }
+
+        return null;
     }
 }
