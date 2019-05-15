@@ -27,7 +27,7 @@ class MultihrefMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * PimcoreObjectType constructor.
+     * MultihrefMetadataType constructor.
      *
      * @param $class
      */

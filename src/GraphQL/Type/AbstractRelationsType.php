@@ -31,7 +31,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
     protected $fieldDefinition;
 
     /**
-     * PimcoreObjectType constructor.
+     * AbstractRelationsType constructor.
      *
      * @param $class
      */

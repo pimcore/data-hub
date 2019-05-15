@@ -28,7 +28,7 @@ class ObjectMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * PimcoreObjectType constructor.
+     * ObjectMetadataType constructor.
      *
      * @param $class
      */
