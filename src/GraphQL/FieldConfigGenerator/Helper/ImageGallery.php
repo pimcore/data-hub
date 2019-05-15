@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -83,8 +84,7 @@ class ImageGallery
                     }
 
                     if ($image instanceof Asset) {
-                        $data = new \ArrayObject();
-                        $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
+                        $data = new ElementDescriptor();
                         $this->getGraphQlService()->getAssetFieldHelper()->extractData($data, $image, $args, $context, $resolveInfo);
                         $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
                         $data['crop'] = $relation->getCrop();

@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -82,14 +83,12 @@ class ObjectsMetadata
                         }
                     }
 
-                    $data = new \ArrayObject();
-                    $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
-
+                    $data = new ElementDescriptor();
                     $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                     $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
 
                     $element = $relation->getElement();
-                    $elementData = [];
+                    $elementData = new ElementDescriptor();
 
                     $type = Service::getType($element);
                     if ($element instanceof Concrete) {
