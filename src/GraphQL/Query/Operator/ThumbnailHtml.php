@@ -56,26 +56,20 @@ class ThumbnailHtml extends AbstractOperator
     {
         $result = new \stdClass();
         $result->label = $this->label;
-        if (!$this->thumbnailHtmlConfig) {
-            return $result;
-        }
+        $result->value = null;
 
         $children = $this->getChilds();
-
-        if (!$children) {
-            return $result;
-        } else {
+        if ($children && $this->thumbnailHtmlConfig) {
             $c = $children[0];
 
+            /** @var Service $service */
             $service = \Pimcore::getContainer()->get(Service::class);
             $valueResolver = $service->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             if ($childResult) {
-                $result->value = null;
                 if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
-                    $childValue = $result->value = $childResult->value;
-                    $thumbnail = $childValue->getThumbnail($this->thumbnailHtmlConfig, false);
+                    $thumbnail = $childResult->value->getThumbnail($this->thumbnailHtmlConfig, false);
                     $result->value = $thumbnail->getHtml();
                 }
             }
