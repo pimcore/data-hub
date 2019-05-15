@@ -17,10 +17,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 
 abstract class AbstractOperator implements OperatorInterface
 {
+
+    use ServiceTrait;
     /**
      * @var string
      */
@@ -30,6 +33,7 @@ abstract class AbstractOperator implements OperatorInterface
      * @var mixed
      */
     protected $context;
+
 
     /**
      * @var ConfigElementInterface[]
@@ -78,4 +82,5 @@ abstract class AbstractOperator implements OperatorInterface
     {
         $this->label = $label;
     }
+
 }

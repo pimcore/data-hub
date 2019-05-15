@@ -19,7 +19,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class DateFormatter extends AbstractOperator
 {
@@ -47,9 +46,7 @@ class DateFormatter extends AbstractOperator
             return $result;
         } else {
             $c = $childs[0];
-            /** @var Service $service */
-            $service = \Pimcore::getContainer()->get(Service::class);
-            $valueResolver = $service->buildValueResolverFromAttributes($c);
+            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             if (!is_null($childResult)) {

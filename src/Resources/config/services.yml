@@ -1,5 +1,10 @@
 services:
 
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
     Pimcore\Bundle\DataHubBundle\Controller\:
         resource: '../../Controller'
         public: true
@@ -7,17 +12,20 @@ services:
         autoconfigure: true
         tags: ['controller.service_arguments']
 
-    Pimcore\Bundle\DataHubBundle\GraphQL\Service:
-        public: true
+    Pimcore\Bundle\DataHubBundle\GraphQL\Service: ~
 
     # Field helper
     pimcore.datahub.graphql.fieldhelper.object:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper
-        public: true
+        public: false
+        calls:
+            - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
 
     pimcore.datahub.graphql.fieldhelper.asset:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper
-        public: true
+        public: false
+        calls:
+            - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
 
     #
     # data types factories
@@ -257,3 +265,23 @@ services:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Trimmer
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: trimmer }
+
+    pimcore.datahub.graphql.type.asset:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType
+        tags:
+            - { name: pimcore.datahub.graphql.type, id: asset }
+
+    pimcore.datahub.graphql.type.asset_metadata_item:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem
+        tags:
+            - { name: pimcore.datahub.graphql.type, id: asset_metadata_item }
+
+    pimcore.datahub.graphql.type.hotspot:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType
+        tags:
+            - { name: pimcore.datahub.graphql.type, id: hotspot }
+
+    pimcore.datahub.graphql.type.manytoone:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType
+        tags:
+            - { name: pimcore.datahub.graphql.type, id: manytoone }

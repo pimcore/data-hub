@@ -16,12 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\Concrete;
 
 class AssetBase
 {
+
+    use ServiceTrait;
+
     /**
      * @var
      */
@@ -32,16 +37,18 @@ class AssetBase
      */
     public $class;
 
+
     /**
-     * Objects constructor.
-     *
+     * AssetBase constructor.
+     * @param Service $graphQlService
      * @param $fieldDefinition
      * @param $class
      */
-    public function __construct($fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
+        $this->setGraphQLService($graphQlService);
     }
 
     /**
@@ -79,7 +86,7 @@ class AssetBase
             $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
 
             /** @var $fieldHelper \Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper */
-            $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.asset');
+            $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
             $fieldHelper->extractData($data, $assetElement, $args, $context, $resolveInfo);
 
             $data['id'] = $assetElement->getId();

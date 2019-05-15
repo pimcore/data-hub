@@ -18,7 +18,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 
@@ -39,23 +38,21 @@ class DefaultValue extends AbstractValue
             }
 
             $class = $element->getClass();
-            $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+            $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $fieldDefinition = $fieldHelper->getFieldDefinitionFromKey($class, $this->attribute);
-            $service = \Pimcore::getContainer()->get(Service::class);
+
             $valueParams = [
                 'id' => $element->getId(),
             ];
 
-            $resolveFn = $service->buildDataQueryResolver($fieldDefinition, $class);
+            $resolveFn = $this->getGraphQlService()->buildDataQueryResolver($fieldDefinition, $class);
             $args = null;
             $context = null;
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
             if ($value) {
 
-                /** @var  $graphQLService Service */
-                $graphQLService = \Pimcore::getContainer()->get(Service::class);
-                $value = $graphQLService->getElementFromArrayObject($value);
+                $value = $this->getGraphQlService()->getElementFromArrayObject($value);
 
                 $result = new \stdClass();
                 $result->value = $value;

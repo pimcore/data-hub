@@ -21,23 +21,29 @@ use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
+use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
+use Pimcore\Model\Factory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class WebserviceController extends FrontendController
 {
     /**
+     * @param Service $service
+     * @param LocaleServiceInterface $localeService
+     * @param Factory $modelFactory
      * @param Request $request
      *
      * @return JsonResponse
      *
      * @throws \Exception
      */
-    public function webonyxAction(Request $request)
+    public function webonyxAction(Service $service, LocaleServiceInterface $localeService, Factory $modelFactory, Request $request)
     {
         $clientname = $request->get('clientname');
 
@@ -55,16 +61,16 @@ class WebserviceController extends FrontendController
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
 
-        $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
+        $config = $this->container->getParameter('pimcore_data_hub');
 
         if (isset($config['graphql']) && isset($config['graphql']['not_allowed_policy'])) {
             PimcoreDataHubBundle::setNotAllowedPolicy($config['graphql']['not_allowed_policy']);
         }
         Runtime::set('datahub_context', $context);
 
-        ClassTypeDefinitions::build($context);
+        ClassTypeDefinitions::build($service, $context);
 
-        $queryType = new QueryType([], $context);
+        $queryType = new QueryType($service, $localeService, $modelFactory, [], $context);
 
         try {
             $schema = new \GraphQL\Type\Schema(

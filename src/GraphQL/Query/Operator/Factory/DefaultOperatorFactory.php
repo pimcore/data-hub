@@ -18,21 +18,41 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\OperatorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class DefaultOperatorFactory implements OperatorFactoryInterface
 {
+
+    use ServiceTrait;
+
     /**
      * @var string
      */
     private $className;
 
-    public function __construct(string $className)
+
+
+    /**
+     * DefaultOperatorFactory constructor.
+     * @param string $className
+     */
+    public function __construct(Service $graphQlService, string $className)
     {
         $this->className = $className;
+        $this->setGraphQLService($graphQlService);
     }
 
+    /**
+     * @param array $configElement
+     * @param null $context
+     * @return OperatorInterface
+     */
     public function build(array $configElement = [], $context = null): OperatorInterface
     {
-        return new $this->className($configElement, $context);
+        $operatorImpl = new $this->className($configElement, $context);;
+        $operatorImpl->setGraphQlService($this->getGraphQlService());
+        return $operatorImpl;
     }
+
 }

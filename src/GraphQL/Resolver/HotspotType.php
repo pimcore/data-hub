@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 
 /**
@@ -24,6 +25,9 @@ use Pimcore\Model\Asset;
  */
 class HotspotType
 {
+
+    use ServiceTrait;
+
     /**
      * @param null $value
      * @param array $args

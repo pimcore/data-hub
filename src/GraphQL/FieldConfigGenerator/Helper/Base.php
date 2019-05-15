@@ -16,10 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\Concrete;
 
 class Base
 {
+    use ServiceTrait;
+
     /**
      * @var
      */
@@ -30,16 +34,19 @@ class Base
      */
     public $class;
 
+
+
     /**
-     * Objects constructor.
-     *
+     * Base constructor.
+     * @param Service $graphQlService
      * @param $fieldDefinition
      * @param $class
      */
-    public function __construct($fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
+        $this->setGraphQLService($graphQlService);
     }
 
     /**

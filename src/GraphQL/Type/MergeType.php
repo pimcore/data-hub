@@ -19,6 +19,8 @@ use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -27,23 +29,30 @@ class MergeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    use ServiceTrait;
+
     protected $nodeDef;
 
     protected $class;
 
     protected $container;
 
-    public function __construct($nodeDef, $class = null, $container = null, $config = [])
+    /**
+     * MergeType constructor.
+     * @param Service $graphQlService
+     * @param $nodeDef
+     * @param null $class
+     * @param null $container
+     * @param array $config
+     */
+    public function __construct(Service $graphQlService, $nodeDef, $class = null, $container = null, $config = [])
     {
+        $this->setGraphQLService($graphQlService);
         $this->nodeDef = $nodeDef;
         $this->class = $class;
         $this->container = $container;
         parent::__construct($config);
     }
-
-//    public function resolve ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-//        Logger::debug("huhu");
-//    }
 
     /**
      * @return mixed
@@ -61,12 +70,15 @@ class MergeType extends UnionType implements ContainerAwareInterface
         $this->class = $class;
     }
 
+    /**
+     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     */
     public function getTypes()
     {
         $nodeDef = $this->nodeDef;
         $childTypes = [];
         $attributes = $nodeDef['attributes'];
-        $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
         if ($attributes['childs']) {
             foreach ($attributes['childs'] as $childDef) {
@@ -93,7 +105,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
                 return $type;
             } else {
                 if ($element['__elementType'] == 'asset') {
-                    return AssetType::getInstance();
+                    return $this->getGraphQlService()->getTypeDefinition("asset");
                 }
             }
         }
@@ -102,13 +114,17 @@ class MergeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return Data\Href
+     * @return Data
      */
     public function getFieldDefinition(): Data
     {
         return $this->fieldDefinition;
     }
 
+    /**
+     * @param $childTypes
+     * @param $result
+     */
     public function buildChildTypes($childTypes, &$result)
     {
         if (!$childTypes) {

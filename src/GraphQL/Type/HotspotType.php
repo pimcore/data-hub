@@ -17,6 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 /**
  * Class HotspotType
@@ -24,36 +26,19 @@ use GraphQL\Type\Definition\Type;
  */
 class HotspotType extends ObjectType
 {
-    /**
-     * @var self
-     */
-    private static $instance;
+
+    use ServiceTrait;
 
     /**
      * @var string
      */
     protected $fieldname;
 
-    /**
-     * @return HotspotType
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self(['name' => 'hotspotimage']);
-        }
 
-        return self::$instance;
-    }
-
-    /**
-     * HotspotType constructor.
-     *
-     * @param array $config
-     * @param array $context
-     */
-    public function __construct($config = [], $context = [])
+    public function __construct(Service $graphQlService, AssetType $assetType, $config = ['name' => 'hotspotimage'], $context = [])
     {
+        $this->setGraphQLService($graphQlService);
+        $this->assetType = $assetType;
         $this->build($config);
         parent::__construct($config);
     }
@@ -64,9 +49,10 @@ class HotspotType extends ObjectType
     public function build(&$config)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
+
         $config['fields'] = [
             'image' => [
-                'type' => AssetType::getInstance(),
+                'type' => $this->assetType,
                 'resolve' => [$resolver, "resolveImage"],
             ],
             'crop' => [

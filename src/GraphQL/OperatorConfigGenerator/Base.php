@@ -17,17 +17,34 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\OperatorTypeDefinitionInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 abstract class Base implements OperatorTypeDefinitionInterface
 {
+
+    /**
+     * @var Service
+     */
+    protected $graphQlService;
+
     /**
      * Base constructor.
+     * @param Service $graphQlService
      */
-    public function __construct()
+    public function __construct(Service $graphQlService)
     {
+        $this->graphQlService = $graphQlService;
     }
 
+    /**
+     * @param $typeName
+     * @param $nodeDef
+     * @param null $class
+     * @param null $container
+     * @param array $params
+     * @return \GraphQL\Type\Definition\StringType
+     */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])
     {
         return Type::string();
@@ -51,6 +68,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
         $type = $this->getGraphQlType($typeName, $nodeDef, $class, $container, $params);
 
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Base($typeName, $attributes, $class, $container);
+        $resolver->setGraphQlService($this->graphQlService);
 
         return $this->enrichConfig([
             'name' => $fieldname,
@@ -89,4 +107,5 @@ abstract class Base implements OperatorTypeDefinitionInterface
     {
         return Type::string();
     }
+
 }

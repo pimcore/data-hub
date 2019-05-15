@@ -40,11 +40,11 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function processQueryTypes(ContainerBuilder $container)
     {
-        $graphQLService = $container->getDefinition(Service::class);
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
 
         $this->createLocatorForTaggedServices(
             $container,
-            $graphQLService,
+            $graphQLServiceDefinition,
             'graphql query_typegenerator',
             'pimcore.datahub.graphql.query_typegenerator',
             '$queryTypeGeneratorFactories'
@@ -52,7 +52,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         $this->createLocatorForTaggedServices(
             $container,
-            $graphQLService,
+            $graphQLServiceDefinition,
             'graphql query operator',
             'pimcore.datahub.graphql.query_operator_factory',
             '$queryOperatorFactories'
@@ -60,10 +60,16 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         $this->getSupportedQueryDataTypes(
             $container,
-            $graphQLService,
+            $graphQLServiceDefinition,
             'graphql query_typegenerator',
             'pimcore.datahub.graphql.query_typegenerator'
         );
+
+        $this->registerDataTypes(
+            $container,
+            $graphQLServiceDefinition
+        );
+
     }
 
     /**
@@ -146,4 +152,28 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         $definition->addMethodCall('setSupportedQueryDataTypes', [array_keys($mapping)]);
     }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param Definition $definition
+
+     */
+    private function registerDataTypes(
+        ContainerBuilder $container,
+        Definition $graphQLServiceDefinition
+    ) {
+        $resolvers = $container->findTaggedServiceIds("pimcore.datahub.graphql.type");
+
+        $dataTypes = [];
+
+        foreach ($resolvers as $id => $tagEntries) {
+            foreach ($tagEntries as $tagEntry) {
+                $typeDef = $container->getDefinition($id);
+                $dataTypes[$tagEntry["id"]] = $typeDef;
+            }
+        }
+
+        $graphQLServiceDefinition->addMethodCall('registerDataTypes', [$dataTypes]);
+    }
+
 }

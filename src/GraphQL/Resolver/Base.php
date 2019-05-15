@@ -16,13 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryInterface;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
 
 
 class Base
 {
+
+    use ServiceTrait;
 
     protected $typeName;
 
@@ -50,11 +51,8 @@ class Base
 
     public function resolve($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $service = \Pimcore::getContainer()->get(Service::class);
-        /** @var OperatorFactoryInterface $factory */
-
         /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
-        $operatorImpl = $service->buildOperator($this->typeName, $this->attributes);
+        $operatorImpl = $this->getGraphQlService()->buildOperator($this->typeName, $this->attributes);
 
         $element = AbstractObject::getById($value['id']);
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);

@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Asset;
 use Pimcore\Model\Asset\Image;
 use Pimcore\Model\Asset\Video;
 

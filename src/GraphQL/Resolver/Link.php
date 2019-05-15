@@ -16,10 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 
 class Link
 {
+
+    use ServiceTrait;
+
     /**
      * @param null $value
      * @param array $args

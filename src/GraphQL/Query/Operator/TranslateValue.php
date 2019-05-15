@@ -18,7 +18,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class TranslateValue extends AbstractOperator
 {
@@ -27,7 +26,6 @@ class TranslateValue extends AbstractOperator
 
     public function __construct(array $config = [], $context = null)
     {
-
         //TODO use translator factory from grid config
         parent::__construct($config, $context);
 
@@ -41,21 +39,17 @@ class TranslateValue extends AbstractOperator
         $result->label = $this->label;
         $result->value = null;
 
-        $translator = \Pimcore::getContainer()->get("pimcore.translator");
+        $translator = $this->getGraphQlService()->getTranslator();
 
         $childs = $this->getChilds();
         if ($childs[0]) {
-
-            $service = \Pimcore::getContainer()->get(Service::class);
-            $valueResolver = $service->buildValueResolverFromAttributes($childs[0]);
-
+            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($childs[0]);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             if ($childResult) {
-                $result->value = $translator->trans($this->prefix . $childResult, []);
+                $result->value = $translator->trans($this->prefix . $childResult->value, []);
                 return $result;
             }
-
         }
 
         return null;

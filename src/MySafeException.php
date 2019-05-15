@@ -30,9 +30,9 @@ class MySafeException extends \Exception implements ClientAware
      * @param null $category
      * @param string $message
      * @param int $code
-     * @param Throwable|null $previous
+     * @param \Throwable|null $previous
      */
-    public function __construct($category = null, $message = '', $code = 0, Throwable $previous = null)
+    public function __construct($category = null, $message = '', $code = 0, \Throwable $previous = null)
     {
         $this->category = $category;
         parent::__construct($message, $code, $previous);

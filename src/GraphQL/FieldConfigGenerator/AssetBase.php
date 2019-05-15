@@ -38,7 +38,7 @@ class AssetBase extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return AssetType::getInstance();
+        return $this->getGraphQlService()->getTypeDefinition("asset");
     }
 
     /**
@@ -49,7 +49,7 @@ class AssetBase extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\AssetBase($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\AssetBase($this->graphQlService, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 
