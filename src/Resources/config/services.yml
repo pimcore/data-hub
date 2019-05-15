@@ -178,12 +178,12 @@ services:
     pimcore.datahub.graphql.query_typegenerator_operator_thumbnail:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\Thumbnail
         tags:
-        - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnail }
+            - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnail }
 
     pimcore.datahub.graphql.query_typegenerator_operator_thumbnailhtml:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\ThumbnailHtml
         tags:
-        - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnailhtml }
+            - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_thumbnailhtml }
 
     pimcore.datahub.graphql.query_typegenerator_operator_translatevalue:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\TranslateValue
