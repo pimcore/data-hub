@@ -26,8 +26,8 @@ class Merge extends StringBase
     protected function getFieldname($attributes)
     {
         $label = ($attributes['label'] ? $attributes['label'] : '#'.uniqid());
-        $label = strtolower($label);
-        $fieldname = preg_replace('/[^a-z0-9\-\.~_]+/', '_', $label);
+        $label = lcfirst($label);
+        $fieldname = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $label);
 
         return $fieldname;
     }
