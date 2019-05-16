@@ -63,7 +63,7 @@ class ImageGallery extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($this->graphQlService, $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($this->getGraphQlService(), $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }
