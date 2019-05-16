@@ -24,11 +24,13 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  */
 class ImageGallery extends Base
 {
+    const TYPE = 'imageGallery';
+
     /**
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
-     *
+     * @throws \Exception
      * @return mixed
      */
     public function getGraphQlFieldConfig(Data $fieldDefinition, $class = null, $container = null)
@@ -48,6 +50,7 @@ class ImageGallery extends Base
      * @param null $class
      * @param null $container
      * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @throws \Exception
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
@@ -63,7 +66,7 @@ class ImageGallery extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($this->graphQlService, $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($this->getGraphQlService(), $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

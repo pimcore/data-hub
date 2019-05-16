@@ -94,7 +94,7 @@ class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->graphQlService, $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->getGraphQlService(), $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 

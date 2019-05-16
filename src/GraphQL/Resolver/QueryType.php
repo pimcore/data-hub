@@ -185,13 +185,13 @@ class QueryType
         return $value['edges'];
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
-     * @return mixed
+     * @return array
+     * @throws \Exception
      */
     public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -201,31 +201,31 @@ class QueryType
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
-        if ($args['ids']) {
+        if (isset($args['ids'])) {
             $conditionParts[] = '(o_id IN (' . $args['ids'] . '))';
         }
 
         // paging
-        if ($args['first']) {
+        if (isset($args['first'])) {
             $objectList->setLimit($args['first']);
         }
 
-        if ($args['after']) {
+        if (isset($args['after'])) {
             $objectList->setOffset($args['after']);
         }
 
         // sorting
-        if ($args['sortBy']) {
+        if (isset($args['sortBy'])) {
             $order = $args['sortOrder'] ? $args['sortOrder'] : 'ASC';
             $objectList->setOrderKey($args['sortBy']);
             $objectList->setOrder($order);
         }
 
         // Include unpublished
-        if ($args['published'] === false) {
+        if (isset($args['published']) && $args['published'] === false) {
             $objectList->setUnpublished(true);
         }
 
@@ -245,7 +245,7 @@ class QueryType
                                                     (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
                                                  )';
 
-        if ($args['filter']) {
+        if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);
             if (!$filter) {
                 throw new \Exception('unable to decode filter');

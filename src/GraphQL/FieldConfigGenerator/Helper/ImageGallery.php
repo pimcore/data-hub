@@ -90,6 +90,7 @@ class ImageGallery
                         $data['crop'] = $relation->getCrop();
                         $data['hotspots'] = $relation->getHotspots();
                         $data['marker'] = $relation->getMarker();
+                        $data['img'] = $image;
                         $data['image'] = $image->getType();
                         $data['__elementType'] = Service::getType($image);
                         $data['__elementSubtype'] = $image->getType();

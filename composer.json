@@ -4,6 +4,7 @@
   "type": "pimcore-bundle",
   "description": "Pimcore Data Hub - Early Preview",
   "config": {
+    "discard-changes": true
   },
   "autoload": {
     "psr-4": {

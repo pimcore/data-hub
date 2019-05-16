@@ -48,33 +48,31 @@ class ThumbnailHtml extends AbstractOperator
     /**
      * @param \Pimcore\Model\Element\ElementInterface $element
      * @param ResolveInfo|null $resolveInfo
-     *
      * @return \stdClass|null
+     * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();
         $result->label = $this->label;
-        if (!$this->thumbnailHtmlConfig) {
-            return $result;
-        }
+        $result->value = null;
 
         $children = $this->getChilds();
-
-        if (!$children) {
-            return $result;
-        } else {
+        if ($children && $this->thumbnailHtmlConfig) {
             $c = $children[0];
-
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
-
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+
             if ($childResult) {
-                $result->value = null;
+                // We may get a single asset (e.g. regular asset element) or an array of assets (e.g. from a gallery element)
                 if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
-                    $childValue = $result->value = $childResult->value;
-                    $thumbnail = $childValue->getThumbnail($this->thumbnailHtmlConfig, false);
+                    $thumbnail = $childResult->value->getThumbnail($this->thumbnailHtmlConfig, false);
                     $result->value = $thumbnail->getHtml();
+                } elseif (!empty($childResult->value)) {
+                    $result->value = [];
+                    foreach ($childResult->value as $value) {
+                        $result->value[] = $value['img']->getThumbnail($this->thumbnailHtmlConfig, false)->getHtml();
+                    }
                 }
             }
         }

@@ -91,7 +91,7 @@ class QueryType extends ObjectType
      */
     protected function getResolver($class = null, $configuration = null) {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
-        $resolver->setGraphQlService($this->graphQlService);
+        $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
     }
 

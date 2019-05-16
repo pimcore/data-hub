@@ -55,7 +55,7 @@ class Objects extends Base implements TypeDefinitionInterface
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(new HrefType($fieldDefinition, $class));
+        return Type::listOf(new HrefType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
     /**
@@ -66,7 +66,7 @@ class Objects extends Base implements TypeDefinitionInterface
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Objects($this->graphQlService, $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Objects($this->getGraphQlService(), $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

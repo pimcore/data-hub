@@ -62,5 +62,20 @@ class Base
             return null;
         }
     }
+
+    /**
+     * Helper method that allows dynamic inspection into the resolver attributes.
+     *
+     * @param string $type
+     * @return string|null
+     */
+    public function getResolverAttribute(string $type): string
+    {
+        if (isset($this->attributes['childs'][0]) && !empty($this->attributes['childs'][0])) {
+            return $this->attributes['childs'][0]['attributes'][$type];
+        } else {
+            return null;
+        }
+    }
 }
 

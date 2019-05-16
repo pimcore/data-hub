@@ -49,7 +49,7 @@ class AssetBase extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\AssetBase($this->graphQlService, $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\AssetBase($this->getGraphQlService(), $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 
