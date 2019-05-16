@@ -54,7 +54,8 @@ admin_pimcoredatahub_webservice:
 ```
 
 ## Extending it
-* [Add custom operator](./graphl/AddCustomOperator.md)
+* [Add a custom datatype](./graphl/AddCustomDatatype.md)
+* [Add a custom operator](./graphl/AddCustomOperator.md)
 
 ## Supported datatypes
 
