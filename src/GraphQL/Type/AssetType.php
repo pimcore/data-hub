@@ -30,7 +30,7 @@ class AssetType extends ObjectType
     protected $fieldname;
 
     /**
-     * @var Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem
+     * @var AssetMetadataItem
      */
     protected $assetMetadataItemType;
 

@@ -5,6 +5,14 @@ services:
         autoconfigure: true
         public: false
 
+
+    pimcore.datahub.graphql.type.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType'
+    pimcore.datahub.graphql.type.asset_metadata_item: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem'
+    pimcore.datahub.graphql.type.asset_metadata_hotspot: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType'
+    pimcore.datahub.graphql.type.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType'
+    pimcore.datahub.graphql.fieldhelper.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper'
+    pimcore.datahub.graphql.fieldhelper.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper'
+
     Pimcore\Bundle\DataHubBundle\Controller\:
         resource: '../../Controller'
         public: true
@@ -15,14 +23,12 @@ services:
     Pimcore\Bundle\DataHubBundle\GraphQL\Service: ~
 
     # Field helper
-    pimcore.datahub.graphql.fieldhelper.object:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper
+    Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper:
         public: false
         calls:
             - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
 
-    pimcore.datahub.graphql.fieldhelper.asset:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper
+    Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper:
         public: false
         calls:
             - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
@@ -275,22 +281,20 @@ services:
     #
     # type definitions
     #
-    pimcore.datahub.graphql.type.asset:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType
+    Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType:
+        class:
         tags:
             - { name: pimcore.datahub.graphql.type, id: asset }
 
-    pimcore.datahub.graphql.type.asset_metadata_item:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem
+    Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem:
         tags:
             - { name: pimcore.datahub.graphql.type, id: asset_metadata_item }
 
-    pimcore.datahub.graphql.type.hotspot:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType
+    Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType:
         tags:
             - { name: pimcore.datahub.graphql.type, id: hotspot }
 
-    pimcore.datahub.graphql.type.manytoone:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType
+    Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType:
         tags:
             - { name: pimcore.datahub.graphql.type, id: manytoone }
+
