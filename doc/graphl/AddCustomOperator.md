@@ -1,4 +1,4 @@
-## Add Custom Operator
+## Add a Custom Operator
 
 There are two things that need to be one:
 - add a type definition
