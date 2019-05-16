@@ -48,8 +48,8 @@ class ThumbnailHtml extends AbstractOperator
     /**
      * @param \Pimcore\Model\Element\ElementInterface $element
      * @param ResolveInfo|null $resolveInfo
-     *
      * @return \stdClass|null
+     * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
@@ -60,14 +60,19 @@ class ThumbnailHtml extends AbstractOperator
         $children = $this->getChilds();
         if ($children && $this->thumbnailHtmlConfig) {
             $c = $children[0];
-
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
-
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+
             if ($childResult) {
+                // We may get a single asset (e.g. regular asset element) or an array of assets (e.g. from a gallery element)
                 if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
                     $thumbnail = $childResult->value->getThumbnail($this->thumbnailHtmlConfig, false);
                     $result->value = $thumbnail->getHtml();
+                } elseif (!empty($childResult->value)) {
+                    $result->value = [];
+                    foreach ($childResult->value as $value) {
+                        $result->value[] = $value['img']->getThumbnail($this->thumbnailHtmlConfig, false)->getHtml();
+                    }
                 }
             }
         }
