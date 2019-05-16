@@ -218,6 +218,17 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
     },
 
+    openConfigDialog: function(element, copy) {
+        var window = element.getConfigDialog(copy, null);
+
+        if (window) {
+            //this is needed because of new focus management of extjs6
+            setTimeout(function () {
+                window.focus();
+            }, 250);
+        }
+    },
+
 
     getSelectionPanel: function () {
         if (!this.selectionPanel) {
@@ -311,20 +322,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                                     var element = this.getConfigElement(elementConfig);
                                     var copy = element.getCopyNode(record);
                                     data.records = [copy]; // assign the copy as the new dropNode
-                                    var configWindow = element.getConfigDialog(copy,
-                                        {
-                                            callback: function() {
-                                                console.log("callback not needed for now");
-                                            }.bind(this)
-                                        });
-
-                                    if (configWindow) {
-                                        //this is needed because of new focus management of extjs6
-                                        setTimeout(function () {
-                                            configWindow.focus();
-                                        }, 250);
-                                    }
-
+                                    this.openConfigDialog(element, copy);
                                 } else {
 
                                     if (!this.checkSupported(record)) {
@@ -371,18 +369,8 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                                     var copy = element.getCopyNode(record);
                                     data.records = [copy]; // assign the copy as the new dropNode
-                                    var window = element.getConfigDialog(copy, {
-                                        callback: function(){
-                                            console.log("callback not needed for now");
-                                        }.bind(this)
-                                    });
 
-                                    if (window) {
-                                        //this is needed because of new focus management of extjs6
-                                        setTimeout(function () {
-                                            window.focus();
-                                        }, 250);
-                                    }
+                                    this.openConfigDialog(element, copy);
 
                                     record.parentNode.removeChild(record);
                                 }
@@ -601,7 +589,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     getOperatorTrees: function () {
         var operators = Object.keys(pimcore.plugin.datahub.operator);
         var operatorGroups = [];
-        // var childs = [];
+
         for (var i = 0; i < operators.length; i++) {
             var operator = operators[i];
             if (!operator) {
@@ -708,6 +696,26 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 children: groupNodes
             }
         });
+
+        tree.addListener("itemdblclick", function (tree, record, item, index, e, eOpts) {
+            var copy = Ext.apply({}, record.data);
+            delete copy.id;
+            var addedNode = this.selectionPanel.getRootNode().appendChild(copy);
+
+            var attr = record.data;
+            if (record.data.configAttributes) {
+                attr = record.data.configAttributes;
+            }
+
+            var elementConfig =  {
+                "isOperator": true,
+                "attributes": attr
+            }
+
+            var element = this.getConfigElement(elementConfig);
+            this.openConfigDialog(element, addedNode);
+
+        }.bind(this));
 
         return tree;
     },

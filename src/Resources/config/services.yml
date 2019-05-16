@@ -28,9 +28,8 @@ services:
             - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
 
     #
-    # data types factories
+    # built-in datatypes type genrator
     #
-
     pimcore.datahub.graphql.query_typegenerator_datatype_checkbox:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Checkbox
         tags:
@@ -158,6 +157,9 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_datatype_wysiwyg }
 
+    #
+    # type generators for operators
+    #
     pimcore.datahub.graphql.query_typegenerator_operator_concatenator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\Concatenator
         tags:
@@ -203,6 +205,9 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_trimmer }
 
+    #
+    # operator factory definitions
+    #
     pimcore.datahub.graphql.query_operator.factory.concatenator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:
@@ -266,6 +271,10 @@ services:
         tags:
             - { name: pimcore.datahub.graphql.query_operator_factory, id: trimmer }
 
+
+    #
+    # type definitions
+    #
     pimcore.datahub.graphql.type.asset:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType
         tags:

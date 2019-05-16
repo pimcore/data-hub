@@ -53,6 +53,9 @@ admin_pimcoredatahub_webservice:
   defaults: { _controller: PimcoreDataHubBundle:Webservice:webonyx }
 ```
 
+## Extending it
+* [Add custom operator](./graphl/AddCustomOperator.md)
+
 ## Supported datatypes
 
 Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
