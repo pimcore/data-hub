@@ -23,6 +23,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/admin/pimcoredatahub/config")
@@ -47,6 +48,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @return array
      */
     private function buildItem($configuration)
+
     {
         $type = $configuration->getType() ? $configuration->getType() : 'graphql';
 
@@ -307,12 +309,13 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/get")
      *
      * @param Request $request
+     * @param Service $graphQlService
      *
      * @throws \Exception
      *
      * @return JsonResponse
      */
-    public function getAction(Request $request)
+    public function getAction(Request $request, Service $graphQlService)
     {
         $this->checkPermission('plugin_datahub_config');
 
@@ -328,9 +331,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $config['workspaces'] = WorkspaceHelper::loadWorkspaces($configuration);
 
         //TODO we probably need this stuff only for graphql stuff
-        /** @var $service Service */
-        $service = \Pimcore::getContainer()->get(Service::class);
-        $supportedQueryDataTypes = $service->getSupportedQueryDataTypes();
+        $supportedQueryDataTypes = $graphQlService->getSupportedQueryDataTypes();
 
         return new JsonResponse(
             [
@@ -385,17 +386,18 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     /**
      * @Route("/get-explorer-url")
      *
+     * @param RouterInterface $routingService
      * @param Request $request
      *
      * @throws \Exception
      *
      * @return JsonResponse
      */
-    public function getExplorerUrlAction(Request $request)
+    public function getExplorerUrlAction(RouterInterface $routingService, Request $request)
     {
         $name = $request->get('name');
 
-        $route = \Pimcore::getContainer()->get('router')->getRouteCollection()->get('admin_pimcoredatahub_config');
+        $route = $routingService->getRouteCollection()->get('admin_pimcoredatahub_config');
         if ($route) {
             $url = $route->getPath();
             $url = str_replace('{clientname}', $name, $url);

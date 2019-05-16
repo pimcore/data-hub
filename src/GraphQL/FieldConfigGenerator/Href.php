@@ -45,7 +45,7 @@ class Href extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return new HrefType($fieldDefinition, $class, ['description' => 'pseudo class for field ' . $fieldDefinition->getName()]);
+        return new HrefType($this->getGraphQlService(), $fieldDefinition, $class, ['description' => 'pseudo class for field ' . $fieldDefinition->getName()]);
     }
 
     /**
@@ -56,7 +56,7 @@ class Href extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Href($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Href($this->graphQlService, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

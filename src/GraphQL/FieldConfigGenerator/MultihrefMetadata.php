@@ -49,7 +49,7 @@ class MultihrefMetadata extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(new MultihrefMetadataType($fieldDefinition, $class));
+        return Type::listOf(new MultihrefMetadataType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
     /**
@@ -60,7 +60,7 @@ class MultihrefMetadata extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\MultihrefMetadata($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\MultihrefMetadata($this->graphQlService, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
     }

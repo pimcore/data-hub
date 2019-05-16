@@ -18,7 +18,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Asset;
 
 class Thumbnail extends AbstractOperator
@@ -59,8 +58,7 @@ class Thumbnail extends AbstractOperator
         } else {
             $c = $childs[0];
 
-            $service = \Pimcore::getContainer()->get(Service::class);
-            $valueResolver = $service->buildValueResolverFromAttributes($c);
+            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             if ($childResult) {

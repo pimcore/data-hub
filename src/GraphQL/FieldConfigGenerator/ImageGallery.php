@@ -51,7 +51,8 @@ class ImageGallery extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(\Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType::getInstance());
+        $hotspotType = $this->getGraphQlService()->getTypeDefinition("hotspot");
+        return Type::listOf($hotspotType);
     }
 
     /**
@@ -62,7 +63,7 @@ class ImageGallery extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ImageGallery($this->graphQlService, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

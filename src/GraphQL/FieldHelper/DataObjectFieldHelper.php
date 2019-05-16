@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGeneratorInterface;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
@@ -55,9 +54,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     {
         $typeName = $fieldDefinition->getFieldtype();
 
-        /** @var $service Service */
-        $service = \Pimcore::getContainer()->get(Service::class);
-        $typeDef = $service->buildDataQueryConfig($typeName, $fieldDefinition, $class, $container);
+        $typeDef = $this->getGraphQlService()->buildDataQueryConfig($typeName, $fieldDefinition, $class, $container);
 
         return $typeDef;
     }
@@ -74,9 +71,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $attributes = $nodeDef['attributes'];
         $operatorTypeName = $attributes['class'];
 
-        /** @var $service Service */
-        $service = \Pimcore::getContainer()->get(Service::class);
-        $typeDef = $service->buildOperatorQueryConfig($operatorTypeName, $nodeDef, $class, $container, $params);
+        $typeDef = $this->getGraphQlService()->buildOperatorQueryConfig($operatorTypeName, $nodeDef, $class, $container, $params);
 
         return $typeDef;
     }
@@ -90,9 +85,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     {
         $typeName = $fieldDefinition->getFieldtype();
 
-        /** @var $service Service */
-        $service = \Pimcore::getContainer()->get(Service::class);
-        $isSupported = $service->supportsDataQueryType($typeName);
+        $isSupported = $this->getGraphQlService()->supportsDataQueryType($typeName);
 
         return $isSupported;
     }
@@ -216,17 +209,15 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     public function getGraphQlTypeFromNodeConf($nodeConf, $class, $container = null)
     {
         $attributes = $nodeConf['attributes'];
-        /** @var $service Service */
-        $service = \Pimcore::getContainer()->get(Service::class);
 
         if ($nodeConf['isOperator']) {
             $operatorTypeName = $attributes['class'];
-            $type = $service->buildOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
+            $type = $this->getGraphQlService()->buildOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
             $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);
             /** @var FieldConfigGeneratorInterface $factory */
-            $type = $service->buildDataQueryType($fieldDefinition, $class, $container);
+            $type = $this->getGraphQlService()->buildDataQueryType($fieldDefinition, $class, $container);
         }
 
         return $type;

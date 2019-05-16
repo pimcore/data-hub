@@ -25,16 +25,18 @@ class ClassTypeDefinitions
      */
     public static $definitions = [];
 
+
     /**
+     * @param Service $graphQlService
      * @param array $context
      */
-    public static function build($context = [])
+    public static function build(Service $graphQlService, $context = [])
     {
         $listing = new ClassDefinition\Listing();
         $listing = $listing->load();
 
         foreach ($listing as $class) {
-            $objectType = new PimcoreObjectType($class, [], $context);
+            $objectType = new PimcoreObjectType($graphQlService, $class, [], $context);
             self::$definitions[$class->getName()] = $objectType;
             $objectType->build($context);
         }

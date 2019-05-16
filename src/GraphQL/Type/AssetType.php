@@ -17,22 +17,23 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
 {
+    use ServiceTrait;
+
     private static $instance;
 
     protected $fieldname;
 
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self(['name' => 'asset']);
-        }
+    /**
+     * @var Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem
+     */
+    protected $assetMetadataItemType;
 
-        return self::$instance;
-    }
 
     /**
      * AssetType constructor.
@@ -40,8 +41,10 @@ class AssetType extends ObjectType
      * @param array $config
      * @param array $context
      */
-    public function __construct($config = [], $context = [])
+    public function __construct(Service $graphQlService, AssetMetadataItem $assetMetadataItemType, $config = ["name" => "asset"], $context = [])
     {
+        $this->setGraphQLService($graphQlService);
+        $this->assetMetadataItemType = $assetMetadataItemType;
         $this->build($config);
         parent::__construct($config);
     }
@@ -63,6 +66,8 @@ class AssetType extends ObjectType
     public function build(&$config)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetType();
+        $resolver->setGraphQLService($this->getGraphQlService());
+
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => ['name' => 'id',
@@ -89,7 +94,7 @@ class AssetType extends ObjectType
                 ]
             ],
             'metadata' => [
-                'type' => Type::listOf(new AssetMetadataItem()),
+                'type' => Type::listOf($this->assetMetadataItemType),
                 'resolve' => [$resolver, "resolve"]
             ]
         ];

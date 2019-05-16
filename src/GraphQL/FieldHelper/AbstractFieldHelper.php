@@ -21,10 +21,21 @@ use GraphQL\Language\AST\InlineFragmentNode;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Language\AST\SelectionSetNode;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Element\ElementInterface;
 
 abstract class AbstractFieldHelper
 {
+
+    use ServiceTrait;
+
+    /**
+     * AbstractFieldHelper constructor.
+     */
+    public function __construct()
+    {
+    }
+
     /**
      * @param $container
      * @param $astName

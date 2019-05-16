@@ -16,12 +16,17 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
+use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\Factory;
+use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
 
 class Service
@@ -29,28 +34,72 @@ class Service
     /***
      * @var ContainerInterface
      */
-    private $queryTypeGeneratorFactories;
+    protected $queryTypeGeneratorFactories;
 
     /**
      * @var ContainerInterface
      */
-    private $queryOperatorFactories;
+    protected $queryOperatorFactories;
 
     /**
      * @var array
      */
-    private $supportedQueryDataTypes;
+    protected $supportedQueryDataTypes;
+
+    /**
+     * @var DataObjectFieldHelper
+     */
+    protected $objectFieldHelper;
+
+    /**
+     * @var AssetFieldHelper
+     */
+    protected $assetFieldHelper;
+
+    /**
+     * @var LocaleServiceInterface
+     */
+    protected $localeService;
+
+    /**
+     * @var Translator
+     */
+    protected $translator;
+
+    /**
+     * @var Factory
+     */
+    protected $modelFactory;
+
+    /**
+     * @var array
+     */
+    protected $dataTypes = [];
 
     /**
      * Service constructor.
-     *
+     * @param AssetFieldHelper $assetFieldHelper
+     * @param DataObjectFieldHelper $objectFieldHelper
+     * @param LocaleServiceInterface $localeService
+     * @param Factory $modelFactory
+     * @param Translator $translator
      * @param ContainerInterface $queryTypeGeneratorFactories
      * @param ContainerInterface $queryOperatorFactories
      */
     public function __construct(
+        AssetFieldHelper $assetFieldHelper,
+        DataObjectFieldHelper $objectFieldHelper,
+        LocaleServiceInterface $localeService,
+        Factory $modelFactory,
+        Translator $translator,
         ContainerInterface $queryTypeGeneratorFactories,
         ContainerInterface $queryOperatorFactories
     ) {
+        $this->assetFieldHelper = $assetFieldHelper;
+        $this->objectFieldHelper = $objectFieldHelper;
+        $this->localeService = $localeService;
+        $this->modelFactory = $modelFactory;
+        $this->translator = $translator;
         $this->queryTypeGeneratorFactories = $queryTypeGeneratorFactories;
         $this->queryOperatorFactories = $queryOperatorFactories;
     }
@@ -200,6 +249,11 @@ class Service
         return $this->queryOperatorFactories->has('query_operator_' . $typeName);
     }
 
+    /**
+     * @param $nodeConfig
+     * @return mixed|DefaultValue
+     * @throws \Exception
+     */
     public function buildValueResolverFromAttributes($nodeConfig)
     {
         $attributes = $nodeConfig['attributes'];
@@ -211,6 +265,7 @@ class Service
         } else {
             $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
             $operatorImpl = new DefaultValue($attributes, $context);
+            $operatorImpl->setGraphQlService($this);
 
             return $operatorImpl;
         }
@@ -248,4 +303,78 @@ class Service
         return $value;
 
     }
+
+    /**
+     * @return AssetFieldHelper
+     */
+    public function getAssetFieldHelper() {
+        return $this->assetFieldHelper;
+    }
+
+    /**
+     * @return DataObjectFieldHelper
+     */
+    public function getObjectFieldHelper() {
+        return $this->objectFieldHelper;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getQueryTypeGeneratorFactories(): ContainerInterface
+    {
+        return $this->queryTypeGeneratorFactories;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getQueryOperatorFactories(): ContainerInterface
+    {
+        return $this->queryOperatorFactories;
+    }
+
+    /**
+     * @return LocaleServiceInterface
+     */
+    public function getLocaleService(): LocaleServiceInterface
+    {
+        return $this->localeService;
+    }
+
+    /**
+     * @return Factory
+     */
+    public function getModelFactory(): Factory
+    {
+        return $this->modelFactory;
+    }
+
+    /**
+     * @return Translator
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param $dataTypes
+     */
+    public function registerDataTypes($dataTypes) {
+        $this->dataTypes = $dataTypes;
+    }
+
+    /**
+     * @param $typename
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getTypeDefinition($typename) {
+        if (isset($this->dataTypes[$typename])) {
+            return $this->dataTypes[$typename];
+        }
+        throw new \Exception("unknown type: " . $typename);
+    }
+
 }

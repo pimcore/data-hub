@@ -16,6 +16,8 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
@@ -26,6 +28,8 @@ use Pimcore\Model\Element\Service;
 
 class Objects
 {
+    use ServiceTrait;
+
     /**
      * @var
      */
@@ -38,14 +42,15 @@ class Objects
 
     /**
      * Objects constructor.
-     *
+     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
      * @param $fieldDefinition
      * @param $class
      */
-    public function __construct($fieldDefinition, $class)
+    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
+        $this->setGraphQLService($graphQlService);
     }
 
     /**
@@ -77,10 +82,9 @@ class Objects
                         }
                     }
 
-                    $data = new \ArrayObject();
-                    $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
+                    $data = new ElementDescriptor();
 
-                    $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+                    $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                     $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
 
                     $type = Service::getType($relation);

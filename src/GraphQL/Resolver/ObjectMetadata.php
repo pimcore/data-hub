@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
@@ -23,6 +24,8 @@ use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 class ObjectMetadata
 {
+
+    use ServiceTrait;
 
     protected $fieldDefinition;
 

@@ -49,7 +49,8 @@ class ObjectsMetadata extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(new ObjectMetadataType($fieldDefinition, $class));
+        $type = new ObjectMetadataType($this->graphQlService, $fieldDefinition, $class);
+        return Type::listOf($type);
     }
 
     /**
@@ -60,7 +61,7 @@ class ObjectsMetadata extends Base
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ObjectsMetadata($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\ObjectsMetadata($this->graphQlService, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
     }

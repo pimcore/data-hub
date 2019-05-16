@@ -18,33 +18,57 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\Factory;
 
 class QueryType extends ObjectType
 {
+
+    use ServiceTrait;
+
+    /**
+     * @var LocaleServiceInterface
+     */
+    protected $localeService;
+
+    /**
+     * @var Factory
+     */
+    protected $modelFactory;
+
+
     /**
      * QueryType constructor.
-     *
+     * @param Service $graphQlService
+     * @param LocaleServiceInterface $localeService
+     * @param Factory $modelFactory
      * @param array $config
      * @param array $context
-     *
      * @throws \Exception
      */
-    public function __construct($config = [], $context = [])
+    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, $config = [], $context = [])
     {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
         }
+        $this->setGraphQLService($graphQlService);
+        $this->localeService = $localeService;
+        $this->modelFactory = $modelFactory;
 
         $this->build($config, $context);
         parent::__construct($config);
     }
 
+    /**
+     * @param array $config
+     * @param array $context
+     */
     public function buildAssetQueries(&$config = [], $context = [])
     {
-
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType();
+        $resolver = $this->getResolver();
 
         // GETTER DEFINITION
         $defGet = [
@@ -53,13 +77,29 @@ class QueryType extends ObjectType
                 'id' => ['type' => Type::nonNull(Type::int())],
                 'defaultLanguage' => ['type' => Type::string()],
             ],
-            'type' => AssetType::getInstance(),
+            'type' => $this->getGraphQlService()->getTypeDefinition("asset"),
             'resolve' => [$resolver, "resolveAssetGetter"]
         ];
 
         $config['fields']['getAsset'] = $defGet;
     }
 
+    /**
+     * @param null $class
+     * @param null $configuration
+     * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
+     */
+    protected function getResolver($class = null, $configuration = null) {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
+        $resolver->setGraphQlService($this->graphQlService);
+        return $resolver;
+    }
+
+    /**
+     * @param array $config
+     * @param array $context
+     * @throws \Exception
+     */
     public function buildDataObjectQueries(&$config = [], $context = [])
     {
         $listing = new ClassDefinition\Listing();
@@ -75,7 +115,7 @@ class QueryType extends ObjectType
                 continue;
             }
 
-            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
+            $resolver = $this->getResolver($class, $configuration);
 
             // GETTER DEFINITION
             $defGet = [

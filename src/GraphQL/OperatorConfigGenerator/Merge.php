@@ -22,19 +22,12 @@ use Pimcore\Model\DataObject\Localizedfield;
 
 class Merge extends StringBase
 {
-    /**
-     * Base constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     protected function getFieldname($attributes)
     {
         $label = ($attributes['label'] ? $attributes['label'] : '#'.uniqid());
-        $label = strtolower($label);
-        $fieldname = preg_replace('/[^a-z0-9\-\.~_]+/', '_', $label);
+        $label = lcfirst($label);
+        $fieldname = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $label);
 
         return $fieldname;
     }
@@ -53,10 +46,9 @@ class Merge extends StringBase
         $fieldname = $this->getFieldname($attributes);
 
         $type = $this->getGraphQlType($typeName, $nodeConfig, $class, $container, $params);
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Merge(                 $typeName,
-            $attributes,
-            $class,
-            $container);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Merge($typeName, $attributes, $class, $container);
+        $resolver->setGraphQlService($this->graphQlService);
+
 
         return $this->enrichConfig(
             [
@@ -94,10 +86,7 @@ class Merge extends StringBase
         $fieldname = $this->getFieldname($attributes);
         $typename = 'operator_'.$fieldname;
 
-        $mergeType = new MergeType($nodeDef, $class, $container, [
-            'name' => $typename
-        ]
-        );
+        $mergeType = new MergeType($this->graphQlService, $nodeDef, $class, $container, ['name' => $typename]);
 
         $result = ListOfType::listOf($mergeType);
 

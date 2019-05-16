@@ -18,7 +18,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 
 class Concatenator extends AbstractOperator
@@ -48,9 +47,7 @@ class Concatenator extends AbstractOperator
         $valueArray = [];
 
         foreach ($childs as $c) {
-            /** @var Service $service */
-            $service = \Pimcore::getContainer()->get(Service::class);
-            $valueResolver = $service->buildValueResolverFromAttributes($c);
+            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             $childValues = $childResult->value;

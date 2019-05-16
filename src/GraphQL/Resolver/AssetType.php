@@ -16,11 +16,21 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 
 
 class AssetType
 {
+
+    use ServiceTrait;
+
+    /**
+     * AssetType constructor.
+     */
+    public function __construct()
+    {
+    }
 
 
     /**
@@ -40,7 +50,7 @@ class AssetType
             if ($metadata) {
                 $map = [];
                 $keys = [];
-                $language = \Pimcore::getContainer()->get('pimcore.locale')->findLocale();
+                $language = $this->getGraphQlService()->getLocaleService()->findLocale();
 
                 foreach ($metadata as $item) {
                     $keys[$item['name']] = 1;

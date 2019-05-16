@@ -21,11 +21,15 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Model\DataObject\ClassDefinition;
 
 class PimcoreObjectType extends ObjectType
 {
+    use ServiceTrait;
+
     /** @var ClassDefinition */
     protected $class;
 
@@ -33,18 +37,19 @@ class PimcoreObjectType extends ObjectType
 
     protected $fields;
 
+
     /**
      * PimcoreObjectType constructor.
-     *
+     * @param Service $service
      * @param $class
      * @param array $config
      * @param array $context
      */
-    public function __construct($class, $config = [], $context = [])
+    public function __construct(Service $graphQlService, $class, $config = [], $context = [])
     {
         $this->class = $class;
-        $this->name =
-        $config['name'] = 'object_' . $class->getName();
+        $this->name = $config['name'] = 'object_' . $class->getName();
+        $this->setGraphQLService($graphQlService);
         $config['interfaces'] = [Element::getInstance()];
         parent::__construct($config);
     }
@@ -55,8 +60,8 @@ class PimcoreObjectType extends ObjectType
      */
     public function build($context = [])
     {
-        // these are the systen fields that are always available, maybe move some of them to FieldHelper so that they
-        // are only visible if explicitely configured by the user
+        // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
+        // are only visible if explicitly configured by the user
         $fields = ['id' =>
             ['name' => 'id',
                 'type' => Type::id(),
@@ -83,7 +88,7 @@ class PimcoreObjectType extends ObjectType
                     }
 
                     /** @var $fieldHelper DataObjectFieldHelper */
-                    $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+                    $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                     $result = $fieldHelper->getFieldConfigFromConfig($column, $this->class, ['isRoot' => true]);
                     if ($result) {
                         $fields[$result['key']] = $result['config'];

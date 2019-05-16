@@ -17,6 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
@@ -27,6 +29,8 @@ use Pimcore\Model\DataObject\Listing;
 
 class QueryType
 {
+
+    use ServiceTrait;
 
     /**
      * @var null
@@ -60,8 +64,7 @@ class QueryType
     public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         if ($args && $args['defaultLanguage']) {
-            $localeService = \Pimcore::getContainer()->get('pimcore.locale');
-            $localeService->setLocale($args['defaultLanguage']);
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
         $assetElement = Asset::getById($args['id']);
@@ -77,10 +80,8 @@ class QueryType
             }
         }
 
-        $data = new \ArrayObject();
-        $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
-
-        $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.asset');
+        $data = new ElementDescriptor();
+        $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
         $fieldHelper->extractData($data, $assetElement, $args, $context, $resolveInfo);
         $data = $data->getArrayCopy();
 
@@ -105,11 +106,10 @@ class QueryType
     {
 
         if ($args && $args['defaultLanguage']) {
-            $localeService = \Pimcore::getContainer()->get('pimcore.locale');
-            $localeService->setLocale($args['defaultLanguage']);
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $modelFactory = \Pimcore::getContainer()->get('pimcore.model.factory');
+        $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var $listClass Listing */
         $objectList = $modelFactory->build($listClass);
@@ -143,7 +143,7 @@ class QueryType
 
         $data = [];
         $data['id'] = $object->getId();
-        $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
         $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
 
         return $data;
@@ -165,7 +165,7 @@ class QueryType
 
         $data = [];
         if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read')) {
-            $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
+            $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         }
 
@@ -195,12 +195,11 @@ class QueryType
      */
     public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && isset($args['defaultLanguage'])) {
-            $localeService = \Pimcore::getContainer()->get('pimcore.locale');
-            $localeService->setLocale($args['defaultLanguage']);
+        if ($args && $args['defaultLanguage']) {
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $modelFactory = \Pimcore::getContainer()->get('pimcore.model.factory');
+        $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);

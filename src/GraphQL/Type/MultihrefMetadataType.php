@@ -18,22 +18,35 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\MultihrefMetadata;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class MultihrefMetadataType extends ObjectType
 {
+    use ServiceTrait;
+
+    /**
+     * @var null
+     */
     protected $class;
 
+    /**
+     * @var Data
+     */
     protected $fieldDefinition;
 
     /**
      * MultihrefMetadataType constructor.
-     *
-     * @param $class
+     * @param Service $graphQlService
+     * @param Data|null $fieldDefinition
+     * @param null $class
+     * @param array $config
      */
-    public function __construct(Data $fieldDefinition = null, $class = null, $config = [])
+    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])
     {
         $this->class = $class;
+        $this->setGraphQlService($graphQlService);
         $this->fieldDefinition = $fieldDefinition;
         $config['name'] = 'object_'.$class->getName().'_'.$fieldDefinition->getName();
         $this->build($config);
@@ -45,13 +58,12 @@ class MultihrefMetadataType extends ObjectType
      */
     public function build(&$config)
     {
-        $fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.object');
         $fieldDefinition = $this->fieldDefinition;
         $class = $this->class;
-        $resolver = new MultihrefMetadata($fieldDefinition, $class, $fieldHelper);
+        $resolver = new MultihrefMetadata($fieldDefinition, $class, $this->getGraphQlService()->getObjectFieldHelper());
         $fields = ['element'  =>
                        [
-                           'type'    => new HrefType($this->fieldDefinition, $this->class),
+                           'type'    => new HrefType($this->getGraphQlService(), $this->fieldDefinition, $this->class),
                            'resolve' => [$resolver, "resolveElement"]
                        ],
                    'metadata' => [

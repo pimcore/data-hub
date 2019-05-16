@@ -18,6 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Type;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -26,8 +28,13 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    use ServiceTrait;
+
     protected $class;
 
+    /**
+     * @var Data
+     */
     protected $fieldDefinition;
 
     /**
@@ -35,12 +42,15 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
      *
      * @param $class
      */
-    public function __construct(Data $fieldDefinition = null, $class = null, $config = [])
+    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
-        $name = 'object_'.$class->getName().'_'.$fieldDefinition->getName();
-        if ($fieldDefinition instanceof Data\MultihrefMetadata || $fieldDefinition instanceof Data\ObjectsMetadata) {
+        $this->setGraphQLService($graphQlService);
+        if ($class && $fieldDefinition) {
+            $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+        }
+        if ($fieldDefinition instanceof Data\AdvancedManyToManyRelation || $fieldDefinition instanceof Data\AdvancedManyToManyObjectRelation) {
             $name .= '_element';
         }
 
@@ -94,7 +104,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
         if (!$fd instanceof Data\ManyToManyObjectRelation) {
             if ($fd->getAssetsAllowed()) {
-                $types[] = AssetType::getInstance();
+                $types[] = $this->getGraphQlService()->getTypeDefinition("asset");
             }
         }
 
@@ -113,7 +123,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
                 return $type;
             } else {
                 if ($element['__elementType'] == 'asset') {
-                    return  AssetType::getInstance();
+                    return  $this->getGraphQlService()->getTypeDefinition("asset");
                 }
             }
         }
@@ -121,6 +131,9 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
         return null;
     }
 
+    /**
+     * @return Data
+     */
     public function getFieldDefinition(): Data
     {
         return $this->fieldDefinition;

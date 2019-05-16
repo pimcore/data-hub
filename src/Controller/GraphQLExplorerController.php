@@ -18,10 +18,12 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 class GraphQLExplorerController extends Controller
 {
     /**
+     * @param RouterInterface $routingService
      * @param Request $request
      *
      * @Cache(expires="tomorrow", public=true)
@@ -30,13 +32,13 @@ class GraphQLExplorerController extends Controller
      *
      * @throws \Exception
      */
-    public function explorerAction(Request $request)
+    public function explorerAction(RouterInterface $routingService, Request $request)
     {
         $urlParams = array_merge($request->request->all(), $request->query->all());
 
         $clientName = $request->get('clientname');
 
-        $route = \Pimcore::getContainer()->get('router')->getRouteCollection()->get('admin_pimcoredatahub_webservice');
+        $route = $routingService->getRouteCollection()->get('admin_pimcoredatahub_webservice');
         if ($route) {
             $url = $route->getPath();
             $url = str_replace('/{clientname}', '', $url);

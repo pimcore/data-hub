@@ -17,16 +17,28 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGeneratorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
 {
+
+    use ServiceTrait;
+
+    /**
+     * @var Service
+     */
+    protected $graphQlService;
+
     /**
      * Base constructor.
+     * @param Service $graphQlService
      */
-    public function __construct()
+    public function __construct(Service $graphQlService)
     {
+        $this->setGraphQLService($graphQlService);
     }
 
     /**
@@ -82,7 +94,8 @@ class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
      */
     public function getResolver($fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->graphQlService, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
+
 }

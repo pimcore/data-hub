@@ -16,7 +16,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -30,6 +31,8 @@ use Pimcore\Model\Element\Service;
  */
 class ImageGallery
 {
+    use ServiceTrait;
+
     /**
      * @var ClassDefinition\Data\ImageGallery
      */
@@ -40,22 +43,18 @@ class ImageGallery
      */
     public $class;
 
-    /**
-     * @var AssetFieldHelper
-     */
-    protected $fieldHelper;
 
     /**
-     * Objects constructor.
-     *
-     * @param $fieldDefinition
+     * ImageGallery constructor.
+     * @param Service $graphQlService
+     * @param ClassDefinition\Data $fieldDefinition
      * @param ClassDefinition $class
      */
-    public function __construct(ClassDefinition\Data $fieldDefinition, ClassDefinition $class)
+    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, ClassDefinition\Data $fieldDefinition, ClassDefinition $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
-        $this->fieldHelper = \Pimcore::getContainer()->get('pimcore.datahub.graphql.fieldhelper.asset');
+        $this->setGraphQLService($graphQlService);
     }
 
     /**
@@ -85,9 +84,8 @@ class ImageGallery
                     }
 
                     if ($image instanceof Asset) {
-                        $data = new \ArrayObject(['data' => null]);
-                        $data->setFlags(\ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS);
-                        $this->fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
+                        $data = new ElementDescriptor();
+                        $this->getGraphQlService()->getAssetFieldHelper()->extractData($data, $image, $args, $context, $resolveInfo);
                         $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
                         $data['crop'] = $relation->getCrop();
                         $data['hotspots'] = $relation->getHotspots();

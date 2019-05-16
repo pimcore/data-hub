@@ -17,8 +17,12 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+
 abstract class AbstractValue implements ValueInterface
 {
+    use ServiceTrait;
+
     /**
      * @var string
      */
@@ -37,6 +41,11 @@ abstract class AbstractValue implements ValueInterface
      */
     protected $context;
 
+    /**
+     * AbstractValue constructor.
+     * @param $config
+     * @param null $context
+     */
     public function __construct($config, $context = null)
     {
         $this->attribute = $config['attribute'];
@@ -45,8 +54,12 @@ abstract class AbstractValue implements ValueInterface
         $this->dataType = $config['dataType'];
     }
 
+    /**
+     * @return string
+     */
     public function getLabel()
     {
         return $this->label;
     }
+
 }
