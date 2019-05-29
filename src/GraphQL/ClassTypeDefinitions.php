@@ -38,7 +38,10 @@ class ClassTypeDefinitions
         foreach ($listing as $class) {
             $objectType = new PimcoreObjectType($graphQlService, $class, [], $context);
             self::$definitions[$class->getName()] = $objectType;
-            $objectType->build($context);
+        }
+
+        foreach (self::$definitions as $name => $definition) {
+            $definition->build($context);
         }
     }
 
