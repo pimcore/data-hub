@@ -6,6 +6,10 @@ services:
         public: false
 
 
+    # auto-register all commands as services
+    Pimcore\Bundle\DataHubBundle\Command\:
+        resource: '../../Command'
+
     pimcore.datahub.graphql.type.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType'
     pimcore.datahub.graphql.type.asset_metadata_item: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetMetadataItem'
     pimcore.datahub.graphql.type.asset_metadata_hotspot: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType'

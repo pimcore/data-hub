@@ -157,3 +157,24 @@ See Example: [Filtered News Listing](graphl/Filtering.md)
 ## Endpoint + Hands-on-testing using iExplorer
 
 ![Open iExplorer](img/graphql/open_explorer.png)
+
+## Configuration & Deployment
+
+The configuration file can be found `var/config/datahub-configurations.php`.
+
+As a workspace permission index is kept in the database as well you have to run the `datahub:graphql:rebuild-definitions` 
+to rebuild the index.
+
+Either call 
+
+```
+datahub:graphql:rebuild-definitions
+``` 
+
+to do that for all definitions, or
+
+```
+datahub:graphql:rebuild-definitions --definitions=newsapp,otherendpoint
+```
+
+for specific definitions.

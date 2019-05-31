@@ -166,6 +166,7 @@ class Configuration extends AbstractModel
             }
         }
         $this->getDao()->save();
+        WorkspaceHelper::saveWorkspaces($this, $this->configuration["workspaces"]);
     }
 
     public function delete()

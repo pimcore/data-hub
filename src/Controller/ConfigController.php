@@ -328,7 +328,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $config = $configuration->getConfiguration();
         $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ? $config['schema']['queryEntities'] : []);
-        $config['workspaces'] = WorkspaceHelper::loadWorkspaces($configuration);
 
         //TODO we probably need this stuff only for graphql stuff
         $supportedQueryDataTypes = $graphQlService->getSupportedQueryDataTypes();
@@ -370,9 +369,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
 
             $workspaces = $dataDecoded['workspaces'];
-
-            WorkspaceHelper::saveWorkspaces($config, $workspaces);
-
             $dataDecoded['schema']['queryEntities'] = $transformedEntities;
             $config->setConfiguration($dataDecoded);
             $config->save();
