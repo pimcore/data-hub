@@ -170,6 +170,11 @@ services:
     #
     # type generators for operators
     #
+    pimcore.datahub.graphql.query_typegenerator_operator_alias:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\Alias
+        tags:
+            - { name: pimcore.datahub.graphql.query_typegenerator, id: typegenerator_operator_alias }
+
     pimcore.datahub.graphql.query_typegenerator_operator_concatenator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\OperatorConfigGenerator\Concatenator
         tags:
@@ -218,6 +223,14 @@ services:
     #
     # operator factory definitions
     #
+
+    pimcore.datahub.graphql.query_operator.factory.alias:
+        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
+        arguments:
+            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Alias
+        tags:
+            - { name: pimcore.datahub.graphql.query_operator_factory, id: alias }
+
     pimcore.datahub.graphql.query_operator.factory.concatenator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:

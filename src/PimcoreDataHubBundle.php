@@ -115,6 +115,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/Abstract.js',
             '/bundles/pimcoredatahub/js/value/DefaultValue.js',
             '/bundles/pimcoredatahub/js/Abstract.js',
+            '/bundles/pimcoredatahub/js/operator/Alias.js',
             '/bundles/pimcoredatahub/js/operator/Concatenator.js',
             '/bundles/pimcoredatahub/js/operator/DateFormatter.js',
             '/bundles/pimcoredatahub/js/operator/ElementCounter.js',

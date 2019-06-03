@@ -2,6 +2,10 @@
 
 ![Overview](../img/graphql/operators_overview.png)
 
+#### Alias
+
+Simply gives the child node a different name.
+
 #### Date Formatter
 
 Utilizes the PHP date formatter.

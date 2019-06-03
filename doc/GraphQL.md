@@ -96,6 +96,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 Check out the [Operators](graphl/Operators.md) page for more info.
 
+* Alias
 * Asset Thumbnail
 * Asset Thumbnail HTML
 * Concatenator
