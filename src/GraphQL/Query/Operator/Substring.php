@@ -31,7 +31,6 @@ class Substring extends AbstractOperator
     {
         parent::__construct($config, $context);
 
-        $this->label = $config['cssClass'];
         $this->start = $config['start'];
         $this->length = $config['length'];
         $this->ellipses = $config['ellipses'];

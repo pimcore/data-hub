@@ -21,18 +21,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 class Alias extends AbstractOperator
 {
-    private $start;
-
-    private $length;
-
-    private $ellipses;
-
-    public function __construct(array $config = [], $context = null)
-    {
-        parent::__construct($config, $context);
-
-        $this->label = $config['cssClass'];
-    }
 
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
@@ -46,14 +34,12 @@ class Alias extends AbstractOperator
         } else {
             $c = $childs[0];
 
-            $valueArray = [];
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $valueFromChild = $valueResolver->getLabeledValue($element, $resolveInfo);;
             if ($valueFromChild) {
                 $result->value = $valueFromChild->value;
             }
-
         }
 
         return $result;
