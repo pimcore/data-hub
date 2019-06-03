@@ -22,19 +22,20 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class MultihrefMetadata extends Base
 {
     /**
+     * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig(Data $fieldDefinition, $class = null, $container = null)
+    public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig(
+        return $this->enrichConfig($fieldDefinition, $class, $attribute,
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
-                'resolve' => $this->getResolver($fieldDefinition, $class)
+                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
             ],
             $container
         );
@@ -53,14 +54,15 @@ class MultihrefMetadata extends Base
     }
 
     /**
+     * @param $attribute
      * @param Data $fieldDefinition
      * @param $class
      *
      * @return \Closure
      */
-    public function getResolver($fieldDefinition, $class)
+    public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\MultihrefMetadata($this->getGraphQlService(), $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\MultihrefMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
     }

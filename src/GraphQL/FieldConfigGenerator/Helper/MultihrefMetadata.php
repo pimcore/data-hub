@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
@@ -21,7 +21,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\Element\Service;
@@ -41,15 +40,22 @@ class MultihrefMetadata
     public $class;
 
     /**
+     * @var
+     */
+    public $attribute;
+
+    /**
      * MultihrefMetadata constructor.
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
+     * @param $attribute
      * @param $fieldDefinition
      * @param $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $fieldDefinition, $class)
+    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
+        $this->attribute = $attribute;
         $this->setGraphQLService($graphQlService);
     }
 
@@ -65,55 +71,50 @@ class MultihrefMetadata
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $containerObjectId = $value['id'];
-        $o = AbstractObject::getById($containerObjectId);
-        if ($o) {
-            $getter = 'get'.ucfirst($this->fieldDefinition->getName());
-            $relations = $o->$getter();
-            $result = [];
-            if ($relations) {
-                /** @var $relation ElementMetadata */
-                foreach ($relations as $relation) {
-                    $element = $relation->getElement();
-                    if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                        if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                            throw new \Exception('not allowed to view ' . $relation->getFullPath());
-                        } else {
-                            continue;
-                        }
-                    }
-
-                    $data = new ElementDescriptor();
-                    $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                    $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
-
-                    $element = $relation->getElement();
-                    $elementData = [];
-
-                    $type = Service::getType($element);
-                    if ($element instanceof Concrete) {
-                        $subtype = $element->getClass()->getName();
-                        $elementData['__elementType'] = $type;
-                        $elementData['__elementSubtype'] = $subtype;
+        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args);
+        if ($relations) {
+            /** @var $relation ElementMetadata */
+            foreach ($relations as $relation) {
+                $element = $relation->getElement();
+                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                        throw new \Exception('not allowed to view ' . $relation->getFullPath());
                     } else {
-                        if ($element instanceof Asset) {
-                            $elementData['data'] = $elementData['data'] ? base64_encode(
-                                $elementData['data']
-                            ) : null;
-                            $elementData['__elementType'] = 'asset';
-                            $elementData['__elementSubtype'] = $element->getType();
-                        }
+                        continue;
                     }
-                    $elementData['__relation'] = $relation;
-                    $elementData['__destId'] = $relation->getElementId();
-                    $data['element'] = $elementData;
-                    $data['metadata'] = microtime();
-
-                    $result[] = $data;
                 }
 
-                return $result;
+                $data = new ElementDescriptor();
+                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+                $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
+
+                $element = $relation->getElement();
+                $elementData = [];
+
+                $type = Service::getType($element);
+                if ($element instanceof Concrete) {
+                    $subtype = $element->getClass()->getName();
+                    $elementData['__elementType'] = $type;
+                    $elementData['__elementSubtype'] = $subtype;
+                } else {
+                    if ($element instanceof Asset) {
+                        $elementData['data'] = $elementData['data'] ? base64_encode(
+                            $elementData['data']
+                        ) : null;
+                        $elementData['__elementType'] = 'asset';
+                        $elementData['__elementSubtype'] = $element->getType();
+                    }
+                }
+                $elementData['__relation'] = $relation;
+                $elementData['__destId'] = $relation->getElementId();
+                $data['element'] = $elementData;
+                $data['metadata'] = microtime();
+
+                $result[] = $data;
             }
+
+            return $result;
+
         }
 
         return null;

@@ -20,13 +20,14 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 interface FieldConfigGeneratorInterface
 {
     /**
+     * @param array $columnConfig
      * @param Data $fieldDefinition
      * @param $class
      * @param $container
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig(Data $fieldDefinition, $class, $container);
+    public function getGraphQlFieldConfig($columnConfig, Data $fieldDefinition, $class, $container);
 
     /**
      * @param Data $fieldDefinition
@@ -38,10 +39,11 @@ interface FieldConfigGeneratorInterface
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null);
 
     /**
+     * @param $attribute
      * @param $fieldDefinition
      * @param $class
      *
      * @return mixed
      */
-    public function getResolver($fieldDefinition, $class);
+    public function getResolver($attribute, $fieldDefinition, $class);
 }

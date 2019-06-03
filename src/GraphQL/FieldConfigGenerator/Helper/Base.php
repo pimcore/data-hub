@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\Concrete;
 
 class Base
 {
@@ -34,19 +33,27 @@ class Base
      */
     public $class;
 
+    /**
+     * @var
+     */
+    public $attribute;
+
 
 
     /**
      * Base constructor.
      * @param Service $graphQlService
+     * @param $attribute
      * @param $fieldDefinition
      * @param $class
+     * @param $attribute
      */
-    public function __construct(Service $graphQlService, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
         $this->setGraphQLService($graphQlService);
+        $this->attribute = $attribute;
     }
 
     /**
@@ -61,10 +68,7 @@ class Base
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $getter = 'get' . ucfirst($this->fieldDefinition->getName());
-        $o = Concrete::getById($value['id']);
-        $result = $o->$getter();
-
+        $result = Service::resolveValue($value["id"], $this->fieldDefinition, $this->attribute, $args);
         return $result;
     }
 }

@@ -42,36 +42,46 @@ class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
     }
 
     /**
+     * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig(Data $fieldDefinition, $class = null, $container = null)
+    public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig([
+        return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
             'type' => $this->getFieldType($fieldDefinition, $class, $container)
         ], $container);
     }
 
     /**
-     * @param $config
+     * @param $fieldDefinition
+     * @param $class
+     * @param $attribute
+     * @param $grapQLConfig
      * @param $container
      *
      * @return mixed
      */
-    public function enrichConfig($config, $container = null)
+    public function enrichConfig($fieldDefinition, $class, $attribute, $grapQLConfig, $container = null)
     {
         if ($container instanceof Data\Localizedfields) {
-            $config['args'] = $config['args'] ? $config['args'] : [];
-            $config['args'] = array_merge($config['args'],
+            $grapQLConfig['args'] = $grapQLConfig['args'] ? $grapQLConfig['args'] : [];
+            $grapQLConfig['args'] = array_merge($grapQLConfig['args'],
                 ['language' => ['type' => Type::string()]
             ]);
         }
 
-        return $config;
+        // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
+        if (strpos($attribute, "~") !== FALSE && !$grapQLConfig['resolve']) {
+            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+            $grapQLConfig['resolve'] = [$resolver, "resolve"];
+        }
+
+        return $grapQLConfig;
     }
 
     /**
@@ -87,14 +97,15 @@ class Base implements FieldConfigGeneratorInterface, TypeDefinitionInterface
     }
 
     /**
+     * @param $attribute
      * @param Data $fieldDefinition
      * @param $class
      *
      * @return \Closure
      */
-    public function getResolver($fieldDefinition, $class)
+    public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->getGraphQlService(), $fieldDefinition, $class);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGenerator\Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 

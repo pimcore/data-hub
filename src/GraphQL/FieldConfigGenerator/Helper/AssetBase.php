@@ -38,17 +38,24 @@ class AssetBase
      */
     public $class;
 
+    /**
+     * @var
+     */
+    public $attribute;
+
 
     /**
      * AssetBase constructor.
      * @param Service $graphQlService
+     * @param $attribute
      * @param $fieldDefinition
      * @param $class
      */
-    public function __construct(Service $graphQlService, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
+        $this->attribute = $attribute;
         $this->setGraphQLService($graphQlService);
     }
 

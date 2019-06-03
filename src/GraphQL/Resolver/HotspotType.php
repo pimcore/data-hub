@@ -44,6 +44,11 @@ class HotspotType
             $return[$fieldName] = $var;
         }
 
+        // enrich data
+        $return["fullpath"] = $asset->getFullPath();
+        $return["filesize"] = $asset->getFileSize();
+        $return["creationDate"] = 123;
+
         return !empty($return) ? $return : null;
     }
 

@@ -22,6 +22,7 @@ use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Localizedfield;
+use Pimcore\Model\DataObject\Objectbrick\Definition;
 
 class DataObjectFieldHelper extends AbstractFieldHelper
 {
@@ -44,17 +45,18 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
+     * @param $attribute
      * @param Data|string $fieldDefinition
      * @param $class
      * @param $container
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig($fieldDefinition, $class, $container)
+    public function getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container)
     {
         $typeName = $fieldDefinition->getFieldtype();
 
-        $typeDef = $this->getGraphQlService()->buildDataQueryConfig($typeName, $fieldDefinition, $class, $container);
+        $typeDef = $this->getGraphQlService()->buildDataQueryConfig($attribute, $typeName, $fieldDefinition, $class, $container);
 
         return $typeDef;
     }
@@ -163,10 +165,11 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                 }
 
                 if ($this->supportsGraphQL($fieldDefinition)) {
-                    $key = $fieldDefinition->getName();
+                    $fieldName = $fieldDefinition->getName();
 
-                    $result = ['key' => $key,
+                    $result = ['key' => $fieldName,
                         'config' => $this->getGraphQlFieldConfig(
+                            $key,
                             $fieldDefinition,
                             $class,
                             $container
@@ -187,7 +190,36 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      */
     public function getFieldDefinitionFromKey($class, $key, &$container = null)
     {
-        $fieldDefinition = $class->getFieldDefinition($key);
+
+        $fieldDefinition = null;
+        $parts = explode('~', $key);
+
+        if (substr($key, 0, 1) == '~') {
+            // classification store ...
+        } elseif (count($parts) > 1) {
+            $brickType = $parts[0];
+
+            if (strpos($brickType, '?') !== false) {
+                $brickDescriptor = substr($brickType, 1);
+                $brickDescriptor = json_decode($brickDescriptor, true);
+                $brickType = $brickDescriptor['containerKey'];
+            }
+
+            $brickKey = $parts[1];
+
+            $brickDefinition = Definition::getByKey($brickType);
+
+            if ($brickDescriptor) {
+                $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                $container = $fieldDefinitionLocalizedFields;
+                $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
+            } else {
+                $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
+            }
+        } else {
+            $fieldDefinition = $class->getFieldDefinition($key);
+        }
+
         if (!$fieldDefinition) {
             $container = $class->getFieldDefinition('localizedfields');
             $lfDefs = $container;

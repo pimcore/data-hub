@@ -95,7 +95,7 @@ class AssetType extends ObjectType
             ],
             'metadata' => [
                 'type' => Type::listOf($this->assetMetadataItemType),
-                'resolve' => [$resolver, "resolve"]
+                'resolve' => [$resolver, "resolveMetadata"]
             ]
         ];
     }

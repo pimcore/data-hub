@@ -21,15 +21,16 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class Numeric extends Base
 {
     /**
+     * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig(Data $fieldDefinition, $class = null, $container = null)
+    public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig([
+        return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
             'type' => $this->getFieldType($fieldDefinition, $class, $container)
         ], $container);
