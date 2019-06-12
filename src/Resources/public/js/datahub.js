@@ -31,7 +31,7 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
             var menu = pimcore.globalmanager.get("layout_toolbar").settingsMenu;
             menu.add({
                 text: t("plugin_pimcore_datahub_toolbar"),
-                iconCls: "plugin_pimcore_datahub_icon",
+                iconCls: "plugin_pimcore_datahub_nav_icon",
                 handler: function () {
                     try {
                         pimcore.globalmanager.get("plugin_pimcore_datahub_config").activate();

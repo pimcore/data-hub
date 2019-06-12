@@ -2,6 +2,14 @@
     background: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) center center no-repeat !important;
 }
 
+.plugin_pimcore_datahub_nav_icon {
+    background: url(/bundles/pimcoreadmin/img/flat-color-icons/electronics.svg) center center no-repeat;
+}
+
+.pimcore_version_6 .plugin_pimcore_datahub_nav_icon {
+    background: url(/bundles/pimcoreadmin/img/flat-white-icons/electronics.svg) center center no-repeat;
+}
+
 .plugin_pimcore_datahub_icon_graphql {
     background: url(/bundles/pimcoredatahub/img/graphql.svg) center center no-repeat !important;
 }
