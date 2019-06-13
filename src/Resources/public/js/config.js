@@ -155,7 +155,8 @@ pimcore.plugin.datahub.config = Class.create({
                 var data = Ext.decode(response.responseText);
 
                 pimcore.plugin.datahub.graphql = pimcore.plugin.datahub.graphql || {};
-                pimcore.plugin.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLDataTypes;
+                pimcore.plugin.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLQueryDataTypes;
+                pimcore.plugin.datahub.graphql.supportedMutationDataTypes = data.supportedGraphQLMutationDataTypes;
 
                 var fieldPanel = new pimcore.plugin.datahub.configItem(data, this);
                 pimcore.layout.refresh();

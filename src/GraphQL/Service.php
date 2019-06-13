@@ -26,6 +26,7 @@ use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
@@ -38,15 +39,30 @@ class Service
      */
     protected $queryTypeGeneratorFactories;
 
+    /***
+     * @var ContainerInterface
+     */
+    protected $mutationTypeGeneratorFactories;
+
     /**
      * @var ContainerInterface
      */
     protected $queryOperatorFactories;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $mutationOperatorFactories;
+
+    /**
      * @var array
      */
     protected $supportedQueryDataTypes;
+
+    /**
+     * @var array
+     */
+    protected $supportedMutationDataTypes;
 
     /**
      * @var DataObjectFieldHelper
@@ -87,6 +103,8 @@ class Service
      * @param Translator $translator
      * @param ContainerInterface $queryTypeGeneratorFactories
      * @param ContainerInterface $queryOperatorFactories
+     * @param ContainerInterface $mutationTypeGeneratorFactories
+     * @param ContainerInterface $mutationOperatorFactories
      */
     public function __construct(
         AssetFieldHelper $assetFieldHelper,
@@ -95,7 +113,9 @@ class Service
         Factory $modelFactory,
         Translator $translator,
         ContainerInterface $queryTypeGeneratorFactories,
-        ContainerInterface $queryOperatorFactories
+        ContainerInterface $queryOperatorFactories,
+        ContainerInterface $mutationTypeGeneratorFactories,
+        ContainerInterface $mutationOperatorFactories
     )
     {
         $this->assetFieldHelper = $assetFieldHelper;
@@ -105,6 +125,8 @@ class Service
         $this->translator = $translator;
         $this->queryTypeGeneratorFactories = $queryTypeGeneratorFactories;
         $this->queryOperatorFactories = $queryOperatorFactories;
+        $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
+        $this->mutationOperatorFactories = $mutationOperatorFactories;
     }
 
     /**
@@ -116,13 +138,28 @@ class Service
      *
      * @return mixed
      */
-    public function buildDataQueryConfig($attribute, $typeName, Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
+    public function buildQueryDataConfig($attribute, $typeName, Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
     {
-
-        /** @var FieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_datatype_' . $typeName);
+        /** @var QueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $typeName);
         $result = $factory->getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container);
+        return $result;
+    }
 
+
+    /**
+     * @param $nodeDef
+     * @param $typeName
+     * @param ClassDefinition|null $class
+     * @param null $container
+     * @return mixed
+     */
+    public function buildMutationDataConfig($nodeDef, ClassDefinition $class = null, $container = null)
+    {
+        /** @var MutationFieldConfigGeneratorInterface $factory */
+        $typeName = $nodeDef["attributes"]["dataType"];
+        $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationdatatype_' . $typeName);
+        $result = $factory->getGraphQlMutationFieldConfig($nodeDef, $class, $container);
         return $result;
     }
 
@@ -138,8 +175,8 @@ class Service
     public function buildDataQueryResolver($attribute, Data $fieldDefinition = null, ClassDefinition $class = null)
     {
         $name = $fieldDefinition->getFieldtype();
-        /** @var FieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_datatype_' . $name);
+        /** @var QueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $name);
         $resolver = $factory->getResolver($attribute, $fieldDefinition, $class);
 
         return $resolver;
@@ -156,8 +193,8 @@ class Service
     public function buildDataQueryType(Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
     {
         $name = $fieldDefinition->getFieldtype();
-        /** @var FieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_datatype_' . $name);
+        /** @var QueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $name);
         $result = $factory->getFieldType($fieldDefinition, $class, $container);
 
         return $result;
@@ -168,47 +205,9 @@ class Service
      *
      * @return bool
      */
-    public function supportsDataQueryType($typeName)
+    public function supportsQueryDataType($typeName)
     {
-        return $this->queryTypeGeneratorFactories->has('typegenerator_datatype_' . $typeName);
-    }
-
-    /**
-     * @param $typeName
-     * @param $nodeDef
-     * @param Data|null $fieldDefinition
-     * @param ClassDefinition|null $class
-     * @param null $container
-     *
-     * @return mixed
-     */
-    public function buildOperatorQueryConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
-    {
-        $typeName = strtolower($typeName);
-        /** @var FieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_operator_' . $typeName);
-        $result = $factory->getGraphQlOperatorConfig($typeName, $nodeDef, $class, $container, $params);
-
-        return $result;
-    }
-
-    /**
-     * @param $typeName
-     * @param $nodeDef
-     * @param Data|null $fieldDefinition
-     * @param ClassDefinition|null $class
-     * @param null $container
-     *
-     * @return mixed
-     */
-    public function buildOperatorQueryType($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
-    {
-        $typeName = strtolower($typeName);
-        /** @var FieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_operator_' . $typeName);
-        $result = $factory->getGraphQlOperatorConfig($typeName, $nodeDef, $class, $container, $params);
-
-        return $result;
+        return $this->queryTypeGeneratorFactories->has('typegenerator_querydatatype_' . $typeName);
     }
 
     /**
@@ -216,9 +215,68 @@ class Service
      *
      * @return bool
      */
-    public function supportsOperatorQueryType($typeName)
+    public function supportsMutationDataType($typeName)
     {
-        return $this->queryTypeGeneratorFactories->has('typegenerator_operator_' . $typeName);
+        return $this->mutationTypeGeneratorFactories->has('typegenerator_mutationdatatype_' . $typeName);
+    }
+
+
+    /**
+     * @param $typeName
+     * @param $nodeDef
+     * @param Data|null $fieldDefinition
+     * @param ClassDefinition|null $class
+     * @param null $container
+     *
+     * @return mixed
+     */
+    public function buildQueryOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    {
+        $typeName = strtolower($typeName);
+        /** @var QueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_queryoperator_' . $typeName);
+        $result = $factory->getGraphQlQueryOperatorConfig($typeName, $nodeDef, $class, $container, $params);
+        return $result;
+    }
+
+    /**
+     * @param $typeName
+     * @param $nodeDef
+     * @param ClassDefinition|null $class
+     * @param null $container
+     * @param array $params
+     * @return mixed
+     * @throws \Exception
+     */
+    public function buildMutationOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    {
+        $typeName = strtolower($typeName);
+
+        // $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationoperator_' . $typeName);
+        $factory = $this->mutationOperatorFactories->get($typeName);
+        $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        $configGenerator = $factory->build($nodeDef["attributes"], $context);
+        $result = $configGenerator->getGraphQlMutationOperatorConfig($nodeDef, $class, $container, $params);
+        return $result;
+    }
+
+    /**
+     * @param $mode
+     * @param $typeName
+     * @param $nodeDef
+     * @param ClassDefinition|null $class
+     * @param null $container
+     * @param array $params
+     * @return mixed
+     */
+    public function buildOperatorQueryType($mode, $typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    {
+        $typeName = strtolower($typeName);
+        /** @var QueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_operator_' . $typeName);
+        $result = $factory->getGraphQlOperatorConfig($mode, $typeName, $nodeDef, $class, $container, $params);
+
+        return $result;
     }
 
     /**
@@ -230,7 +288,7 @@ class Service
      *
      * @return mixed
      */
-    public function buildOperator($typeName, $attributes = null, ClassDefinition $class = null, $container = null)
+    public function buildQueryOperator($typeName, $attributes = null, ClassDefinition $class = null, $container = null)
     {
         $typeName = strtolower($typeName);
         /** @var OperatorFactoryInterface $factory */
@@ -243,18 +301,6 @@ class Service
     }
 
     /**
-     * @param $typeName
-     *
-     * @return bool
-     */
-    public function supportsOperator($typeName)
-    {
-        $typeName = strtolower($typeName);
-
-        return $this->queryOperatorFactories->has('query_operator_' . $typeName);
-    }
-
-    /**
      * @param $nodeConfig
      * @return mixed|DefaultValue
      * @throws \Exception
@@ -264,7 +310,7 @@ class Service
         $attributes = $nodeConfig['attributes'];
         if ($nodeConfig['isOperator']) {
             $class = $attributes['class'];
-            $operatorImpl = $this->buildOperator($class, $attributes);
+            $operatorImpl = $this->buildQueryOperator($class, $attributes);
 
             return $operatorImpl;
         } else {
@@ -290,6 +336,22 @@ class Service
     public function setSupportedQueryDataTypes($supportedQueryDataTypes)
     {
         $this->supportedQueryDataTypes = $supportedQueryDataTypes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedMutationDataTypes(): array
+    {
+        return $this->supportedMutationDataTypes;
+    }
+
+    /**
+     * @param array $supportedMutationDataTypes
+     */
+    public function setSupportedMutationDataTypes(array $supportedMutationDataTypes): void
+    {
+        $this->supportedMutationDataTypes = $supportedMutationDataTypes;
     }
 
 
@@ -445,6 +507,101 @@ class Service
     }
 
     /**
+     * @param $object
+     * @param Data $fieldDefinition
+     * @param $attribute
+     * @param array $args
+     * @return \stdclass|null
+     * @throws \Exception
+     */
+    public static function setValue($object, /* Data $fieldDefinition, */ $attribute, $callback)
+    {
+
+        $setter = $attribute ? 'set' . ucfirst($attribute) : $attribute;
+
+        if (!$object) {
+            return null;
+        }
+        $container = $object;
+
+        /** @var Concrete $element */
+        $attributeParts = explode('~', $attribute);
+
+        $brickType = null;
+        $brickKey = null;
+
+        if (substr($attribute, 0, 1) == '~') {
+            // key value, ignore for now
+        } elseif (count($attributeParts) > 1) {
+            // TODO once the datahub gets integrated into the core we should try to share this code
+            // with Pimcore\Model\DataObject\Service::gridObjectData
+            $context = ["object" => $object];
+
+            // brick
+            $brickType = $attributeParts[0];
+            if (strpos($brickType, '?') !== false) {
+                $brickDescriptor = substr($brickType, 1);
+                $brickDescriptor = json_decode($brickDescriptor, true);
+                $brickType = $brickDescriptor['containerKey'];
+            }
+
+            $brickKey = $attributeParts[1];
+            $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+
+            $brickClass = Definition::getByKey($brickType);
+            $context['outerFieldname'] = $key;
+
+            if ($brickDescriptor) {
+                $def = $brickClass->getFieldDefinition($brickKey);
+                if (!$def) {
+                    $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                    $localizedFields = $brickClass->getFieldDefinition($innerContainer);
+                    $def = $localizedFields->getFieldDefinition($brickDescriptor['brickfield']);
+                }
+            } else {
+                $def = $brickClass->getFieldDefinition($brickKey, $context);
+            }
+
+            if (!empty($key)) {
+                // if the definition is not set try to get the definition from localized fields
+                if (!$def) {
+                    if ($locFields = $object->getClass()->getFieldDefinition('localizedfields')) {
+                        $def = $locFields->getFieldDefinition($key, $context);
+                    }
+                }
+                $brickGetter = "get" . ucfirst($key);
+
+                $brickContainer = $object->$brickGetter();
+                $subBrickGetter = "get" . ucfirst($brickType);
+                $subBrickSetter = "set" . ucfirst($brickType);
+                $subBrickType = $brickContainer->$subBrickGetter();
+
+                if (!$subBrickType) {
+                    /** @var  $brickClass AbstractData */
+                    $brickClass = 'Pimcore\\Model\\DataObject\\Objectbrick\\Data\\' . ucfirst($brickType);
+                    $subBrickType = new $brickClass($object);
+                    $subBrickSetter = "set" . ucfirst($brickType);
+                    $brickContainer->$subBrickSetter($subBrickType);
+                }
+
+                $innerSetter = "set" . ucfirst($def->getName());
+                $result = $callback($subBrickType, $innerSetter);
+
+                $brickContainer->$subBrickSetter($subBrickType);
+
+
+                return $result;
+
+            }
+
+        } else if (method_exists($container, $setter)) {
+            $result = $callback($container, $setter);
+        }
+        return $result;
+    }
+
+
+    /**
      * @param $objectId
      * @param Data $fieldDefinition
      * @param $attribute
@@ -514,6 +671,55 @@ class Service
         }
         return $result;
     }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getMutationTypeGeneratorFactories(): ContainerInterface
+    {
+        return $this->mutationTypeGeneratorFactories;
+    }
+
+    /**
+     * @param ContainerInterface $mutationTypeGeneratorFactories
+     */
+    public function setMutationTypeGeneratorFactories(ContainerInterface $mutationTypeGeneratorFactories): void
+    {
+        $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getMutationOperatorFactories(): ContainerInterface
+    {
+        return $this->mutationOperatorFactories;
+    }
+
+    /**
+     * @param ContainerInterface $mutationOperatorFactories
+     */
+    public function setMutationOperatorFactories(ContainerInterface $mutationOperatorFactories): void
+    {
+        $this->mutationOperatorFactories = $mutationOperatorFactories;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataTypes(): array
+    {
+        return $this->dataTypes;
+    }
+
+    /**
+     * @param array $dataTypes
+     */
+    public function setDataTypes(array $dataTypes): void
+    {
+        $this->dataTypes = $dataTypes;
+    }
+
 
 
 

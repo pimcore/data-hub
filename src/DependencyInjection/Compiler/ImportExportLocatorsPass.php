@@ -32,13 +32,18 @@ class ImportExportLocatorsPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $this->processQueryTypes($container);
-        // ... $this->processMutationTypes($container);
+        $this->processMutationTypes($container);
+
+
+        $this->registerDataTypes(
+            $container
+        );
     }
 
     /**
      * @param ContainerBuilder $container
      */
-    private function processQueryTypes(ContainerBuilder $container)
+    protected function processQueryTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
 
@@ -46,7 +51,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql query_typegenerator',
-            'pimcore.datahub.graphql.query_typegenerator',
+            'pimcore.datahub.graphql.querytypegenerator',
             '$queryTypeGeneratorFactories'
         );
 
@@ -54,22 +59,51 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql query operator',
-            'pimcore.datahub.graphql.query_operator_factory',
+            'pimcore.datahub.graphql.queryoperator_factory',
             '$queryOperatorFactories'
         );
 
-        $this->getSupportedQueryDataTypes(
+        $this->getSupportedDataTypes(
+            'query',
             $container,
             $graphQLServiceDefinition,
             'graphql query_typegenerator',
-            'pimcore.datahub.graphql.query_typegenerator'
+            'pimcore.datahub.graphql.querytypegenerator'
         );
+    }
 
-        $this->registerDataTypes(
+
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    protected function processMutationTypes(ContainerBuilder $container)
+    {
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
+
+        $this->createLocatorForTaggedServices(
             $container,
-            $graphQLServiceDefinition
+            $graphQLServiceDefinition,
+            'graphql mutation_typegenerator',
+            'pimcore.datahub.graphql.mutationtypegenerator',
+            '$mutationTypeGeneratorFactories'
         );
 
+        $this->createLocatorForTaggedServices(
+            $container,
+            $graphQLServiceDefinition,
+            'graphql mutation operator',
+            'pimcore.datahub.graphql.mutationoperator_factory',
+            '$mutationOperatorFactories'
+        );
+
+        $this->getSupportedDataTypes(
+            'mutation',
+            $container,
+            $graphQLServiceDefinition,
+            'graphql mutation_typegenerator',
+            'pimcore.datahub.graphql.mutationtypegenerator'
+        );
     }
 
     /**
@@ -113,12 +147,14 @@ class ImportExportLocatorsPass implements CompilerPassInterface
     }
 
     /**
+     * @param string $operationType
      * @param ContainerBuilder $container
      * @param Definition $definition
      * @param string $type
      * @param string $tag
      */
-    private function getSupportedQueryDataTypes(
+    private function getSupportedDataTypes(
+        $operationType,
         ContainerBuilder $container,
         Definition $definition,
         string $type,
@@ -128,7 +164,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         $mapping = [];
 
-        $needle = 'typegenerator_datatype_';
+        $needle = 'typegenerator_' . $operationType . 'datatype_';
         $lengthOfNeedle = strlen($needle);
 
         foreach ($resolvers as $id => $tagEntries) {
@@ -150,7 +186,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             }
         }
 
-        $definition->addMethodCall('setSupportedQueryDataTypes', [array_keys($mapping)]);
+        $definition->addMethodCall('setSupported' . ucfirst($operationType) . 'DataTypes', [array_keys($mapping)]);
     }
 
     /**
@@ -159,9 +195,10 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
      */
     private function registerDataTypes(
-        ContainerBuilder $container,
-        Definition $graphQLServiceDefinition
+        ContainerBuilder $container
     ) {
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
+
         $resolvers = $container->findTaggedServiceIds("pimcore.datahub.graphql.type");
 
         $dataTypes = [];

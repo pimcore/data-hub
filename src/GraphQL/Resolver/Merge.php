@@ -57,7 +57,7 @@ class Merge
     public function resolve($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
-        $operatorImpl = $this->getGraphQlService()->buildOperator($this->typeName, $this->attributes);
+        $operatorImpl = $this->getGraphQlService()->buildQueryOperator($this->typeName, $this->attributes);
 
         $element = AbstractObject::getById($value['id']);
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);

@@ -9,14 +9,14 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldConfigGeneratorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGeneratorInterface;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
@@ -52,15 +52,25 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      *
      * @return mixed
      */
-    public function getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container)
+    public function getGraphQlQueryFieldConfig($attribute, $fieldDefinition, $class, $container)
     {
         $typeName = $fieldDefinition->getFieldtype();
-
-        $typeDef = $this->getGraphQlService()->buildDataQueryConfig($attribute, $typeName, $fieldDefinition, $class, $container);
-
+        $typeDef = $this->getGraphQlService()->buildQueryDataConfig($attribute, $typeName, $fieldDefinition, $class, $container);
         return $typeDef;
     }
 
+
+    /**
+     * @param $nodeDef
+     * @param $class
+     * @param $container
+     * @return mixed
+     */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container)
+    {
+        $typeDef = $this->getGraphQlService()->buildMutationDataConfig($nodeDef, $class, $container);
+        return $typeDef;
+    }
     /**
      * @param mixed $nodeDef
      * @param $class
@@ -68,44 +78,49 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      *
      * @return mixed
      */
-    public function getGraphQlOperatorConfig($nodeDef, $class, $container, $params = [])
+    public function getGraphQlOperatorConfig($mode, $nodeDef, $class, $container, $params = [])
     {
         $attributes = $nodeDef['attributes'];
         $operatorTypeName = $attributes['class'];
 
-        $typeDef = $this->getGraphQlService()->buildOperatorQueryConfig($operatorTypeName, $nodeDef, $class, $container, $params);
+        $builder = "build" . ucfirst($mode) . "OperatorConfig";
+        $typeDef = $this->getGraphQlService()->$builder($operatorTypeName, $nodeDef, $class, $container, $params);
 
         return $typeDef;
     }
 
     /**
      * @param Data $fieldDefinition
-     *
+     * @param string $operationType
      * @return bool
+     * @throws \Exception
      */
-    public function supportsGraphQL(Data $fieldDefinition)
+    public function supportsGraphQL(Data $fieldDefinition, string $operationType)
     {
         $typeName = $fieldDefinition->getFieldtype();
 
-        $isSupported = $this->getGraphQlService()->supportsDataQueryType($typeName);
-
-        return $isSupported;
+        switch ($operationType) {
+            case 'query':
+                return $this->getGraphQlService()->supportsQueryDataType($typeName);
+            case 'mutation':
+                return $this->getGraphQlService()->supportsMutationDataType($typeName);
+            default:
+                throw new \Exception("unknown operation type");
+        }
     }
 
     /**
      * @param $nodeDef
      * @param $class
-     * @param array $params
-     * @param bool $ignoreSupports
      *
      * @return array|bool
      */
-    public function getFieldConfigFromConfig($nodeDef, $class, $params = [], $ignoreSupports = false)
+    public function getQueryFieldConfigFromConfig($nodeDef, $class)
     {
         $container = null;
         $result = false;
 
-        $attributes =  $nodeDef['attributes'];
+        $attributes = $nodeDef['attributes'];
 
         if ($nodeDef['isOperator']) {
             $key = $attributes['label'];
@@ -115,6 +130,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $result = [
                 'key' => $key,
                 'config' => $this->getGraphQlOperatorConfig(
+                    "query",
                     $nodeDef,
                     $class,
                     null,
@@ -153,7 +169,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                                 'type' => Type::boolean(),
                             ]
                         ];
-                    default: return null;
+                    default:
+                        return null;
                 }
             } else {
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
@@ -164,16 +181,96 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                     return false;
                 }
 
-                if ($this->supportsGraphQL($fieldDefinition)) {
+                if ($this->supportsGraphQL($fieldDefinition, 'query')) {
                     $fieldName = $fieldDefinition->getName();
 
                     $result = ['key' => $fieldName,
-                        'config' => $this->getGraphQlFieldConfig(
+                        'config' => $this->getGraphQlQueryFieldConfig(
                             $key,
                             $fieldDefinition,
                             $class,
                             $container
                         )];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param $nodeDef
+     * @param $class
+     * @param $inputFields
+     *
+     * @return Data
+     */
+    public function getMutationFieldConfigFromConfig($nodeDef, $class, $inputFields)
+    {
+        $container = null;
+        $result = false;
+
+        $attributes = $nodeDef['attributes'];
+
+        if ($nodeDef['isOperator']) {
+            $key = $attributes['label'];
+            $key = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $key);
+
+            $result = $this->getGraphQlOperatorConfig(
+                "mutation",
+                $nodeDef,
+                $class,
+                null,
+                []
+            );
+
+            $result["key"] = $key;
+        } else {
+            $key = $attributes['attribute'];
+
+
+            // system columns which are not part of the common set (see PimcoreObjectType)
+            if ($attributes['dataType'] == 'system') {
+                switch ($key) {
+                    case 'key':
+                        return [
+                            'key' => $key,
+                            'arg' => ['type' => Type::string()],
+                            'processor' => function($object, $newValue, $args) {
+                                $object->setKey($newValue);
+                            }
+
+                        ];
+                    case 'published':
+                        return [
+                            'key' => $key,
+                            'arg' => ['type' => Type::boolean()],
+                            'processor' => function($object, $newValue, $args) {
+                                $object->setPublished($newValue);
+                            }
+                        ];
+                    default:
+                        return null;
+                }
+            } else {
+                /** @var  $fieldDefinition */
+                $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
+
+                if (!$fieldDefinition) {
+                    Logger::error('could not resolve field ' . $key);
+                    return false;
+                }
+
+                if ($this->supportsGraphQL($fieldDefinition, 'mutation')) {
+                    $fieldName = $fieldDefinition->getName();
+
+                    $result = $this->getGraphQlMutationFieldConfig(
+                        $nodeDef,
+                        $class,
+                        $container
+                    );
+                    $result['key'] = $fieldName;
                 }
             }
         }
@@ -210,9 +307,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $brickDefinition = Definition::getByKey($brickType);
 
             if ($brickDescriptor) {
-                $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
-                $container = $fieldDefinitionLocalizedFields;
-                $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
+                $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
+                if (!$fieldDefinition) {
+                    $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                    $container = $fieldDefinitionLocalizedFields;
+                    $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
+                }
             } else {
                 $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
             }
@@ -247,8 +347,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $type = $this->getGraphQlService()->buildOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
-            $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);
-            /** @var FieldConfigGeneratorInterface $factory */
+            $fieldDefinition = $this->getQueryFieldDefinitionFromKey($class, $key);
+            /** @var QueryFieldConfigGeneratorInterface $factory */
             $type = $this->getGraphQlService()->buildDataQueryType($fieldDefinition, $class, $container);
         }
 

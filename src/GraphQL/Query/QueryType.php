@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Localization\LocaleServiceInterface;
+use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Factory;
 
@@ -66,22 +67,56 @@ class QueryType extends ObjectType
      * @param array $config
      * @param array $context
      */
+    public function buildFolderQueries($type, &$config = [], $context = [])
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if ($entities[$type . "_folder"]["read"]) {
+            $resolver = $this->getResolver();
+
+            // GETTER DEFINITION
+            $defGet = [
+                'name' => 'get' . ucfirst($type) . "Folder",
+                'args' => [
+                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'defaultLanguage' => ['type' => Type::string()],
+                ],
+                'type' => $this->getGraphQlService()->getTypeDefinition("_" . $type . "_folder"),
+                'resolve' => [$resolver, "resolve" . ucfirst($type) . "FolderGetter"]
+            ];
+
+            $config['fields']['get' . ucfirst($type) . "Folder"] = $defGet;
+        }
+    }
+
+    /**
+     * @param array $config
+     * @param array $context
+     */
     public function buildAssetQueries(&$config = [], $context = [])
     {
-        $resolver = $this->getResolver();
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
 
-        // GETTER DEFINITION
-        $defGet = [
-            'name' => 'getAsset',
-            'args' => [
-                'id' => ['type' => Type::nonNull(Type::int())],
-                'defaultLanguage' => ['type' => Type::string()],
-            ],
-            'type' => $this->getGraphQlService()->getTypeDefinition("asset"),
-            'resolve' => [$resolver, "resolveAssetGetter"]
-        ];
+        if ($entities["asset"]["read"]) {
+            $resolver = $this->getResolver();
 
-        $config['fields']['getAsset'] = $defGet;
+            // GETTER DEFINITION
+            $defGet = [
+                'name' => 'getAsset',
+                'args' => [
+                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'defaultLanguage' => ['type' => Type::string()],
+                ],
+                'type' => $this->getGraphQlService()->getTypeDefinition("asset"),
+                'resolve' => [$resolver, "resolveAssetGetter"]
+            ];
+
+            $config['fields']['getAsset'] = $defGet;
+        }
     }
 
     /**
@@ -102,16 +137,14 @@ class QueryType extends ObjectType
      */
     public function buildDataObjectQueries(&$config = [], $context = [])
     {
-        $listing = new ClassDefinition\Listing();
-        $listing = $listing->load();
-
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getQueryEntities();
 
-        foreach ($listing as $class) {
-            $className = $class->getName();
-            if (!in_array($className, $entities)) {
+        foreach ($entities as $entity) {
+            $class = ClassDefinition::getByName($entity);
+            if (!$class) {
+                Logger::error("class " . $entity . " not found");
                 continue;
             }
 
@@ -125,9 +158,10 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
-                'resolve' => [$resolver, "resolveGetter"]
+                'resolve' => [$resolver, "resolveObjectGetter"]
             ];
 
+            // LISTING DEFINITION
             $edgeType = new ObjectType(
                 [
                     'name' => ucfirst($class->getName()) . 'Edge',
@@ -141,7 +175,6 @@ class QueryType extends ObjectType
                 ]
             );
 
-            // LISTING DEFINITION
             $listingType = new ObjectType(
                 [
                     'name' => ucfirst($class->getName()) . 'Connection',
@@ -196,5 +229,7 @@ class QueryType extends ObjectType
     {
         $this->buildAssetQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
+        $this->buildFolderQueries("asset", $config, $context);
+        $this->buildFolderQueries("object", $config, $context);
     }
 }

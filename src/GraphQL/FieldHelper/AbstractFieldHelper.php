@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
@@ -66,7 +66,7 @@ abstract class AbstractFieldHelper
         // example for http://webonyx.github.io/graphql-php/error-handling/
 //         throw new MySafeException("fieldhelper", "TBD customized error message");
 
-        $getter = 'get'.ucfirst($astName);
+        $getter = 'get' . ucfirst($astName);
         $arguments = $this->getArguments($ast);
         $languageArgument = isset($arguments['language']) ? $arguments['language'] : null;
 
@@ -128,10 +128,10 @@ abstract class AbstractFieldHelper
             $data['id'] = $container->getId();
         }
 
-        $resolveInfo = (array) $resolveInfo;
-        $fieldAstList = (array) $resolveInfo['fieldNodes'];
+        $resolveInfo = (array)$resolveInfo;
+        $fieldAstList = (array)$resolveInfo['fieldNodes'];
 
-      foreach ($fieldAstList as $astNode) {
+        foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
                 /** @var $selectionSet SelectionSetNode */
                 $selectionSet = $astNode->selectionSet;

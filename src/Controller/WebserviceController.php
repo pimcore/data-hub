@@ -20,6 +20,7 @@ use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -71,18 +72,25 @@ class WebserviceController extends FrontendController
         ClassTypeDefinitions::build($service, $context);
 
         $queryType = new QueryType($service, $localeService, $modelFactory, [], $context);
+        $mutationType = new MutationType($service, $localeService, $modelFactory, [], $context);
+
 
         try {
+            $schemaConfig = [
+                'query' => $queryType
+            ];
+            if (!$mutationType->isEmpty()) {
+                $schemaConfig['mutation'] = $mutationType;
+            }
             $schema = new \GraphQL\Type\Schema(
-                [
-                    'query' => $queryType,
-                ]
+                $schemaConfig
             );
         } catch (\Exception $e) {
             Warning::enable(false);
             $schema = new \GraphQL\Type\Schema(
                 [
                     'query' => $queryType,
+                    'mutation' => $mutationType
                 ]
             );
             $schema->assertValid();

@@ -33,7 +33,7 @@ class Geopoint
      */
     public function resolveLongitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Geopoint) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLongitude();
         }
 
@@ -50,7 +50,7 @@ class Geopoint
      */
     public function resolveLatitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof Geopoint) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLatitude();
         }
 

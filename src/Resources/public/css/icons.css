@@ -22,6 +22,11 @@
     background: url(/bundles/pimcoreadmin/img/twemoji/1f510.svg) center center no-repeat !important;
 }
 
+.plugin_pimcore_datahub_icon_ifempty {
+    background: url(/bundles/pimcoreadmin/img/flat-color-icons/disclaimer.svg) center center no-repeat !important;
+}
+
+
 #plugin_pimcore_datahub_icon_toolbar {
     background-image: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) !important;
     filter: grayscale(0%) !important;

@@ -48,7 +48,7 @@ class ClassTypeDefinitions
     /**
      * @param $class
      *
-     * @return AbstractObjectType
+     * @return PimcoreObjectType
      *
      * @throws \Exception
      */

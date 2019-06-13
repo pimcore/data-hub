@@ -19,13 +19,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
 {
     use ServiceTrait;
-
-    private static $instance;
 
     protected $fieldname;
 
@@ -34,10 +31,10 @@ class AssetType extends ObjectType
      */
     protected $assetMetadataItemType;
 
-
     /**
      * AssetType constructor.
-     *
+     * @param Service $graphQlService
+     * @param AssetMetadataItem $assetMetadataItemType
      * @param array $config
      * @param array $context
      */
@@ -49,16 +46,6 @@ class AssetType extends ObjectType
         parent::__construct($config);
     }
 
-    public static function extractCommonFields(Asset $asset)
-    {
-        return [
-            'id' => $asset->getId(),
-            'fullpath' => $asset->getFullPath(),
-            'type' => $asset->getType()
-//            ,
-//            "data" => $asset->getData()
-        ];
-    }
 
     /**
      * @param array $config
@@ -83,7 +70,7 @@ class AssetType extends ObjectType
             ],
             'mimetype' => Type::string(),
 
-            'modificationDateDate' => Type::int(),
+            'modificationDate' => Type::int(),
             'type' => Type::string(),
             'filesize' => Type::int(),
             'data' => [

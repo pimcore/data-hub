@@ -1,6 +1,6 @@
-## Operators
+## Query Operators
 
-![Overview](../img/graphql/operators_overview.png)
+![Overview](../img/graphql/queryoperators_overview.png)
 
 #### Alias
 
@@ -94,7 +94,7 @@ Adds some static text.
 
 Similar to Pimcore's [Translate Value](https://pimcore.com/docs/5.x/User_Documentation/DataObjects/Grid_Configuration_Operators/Operators/TranslateValue.html)
 
-Example: [Website Translations](Sample8.md)
+Example: [Website Translations](querysamples/Sample8.md)
 
 #### Trimmer
 
