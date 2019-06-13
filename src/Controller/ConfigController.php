@@ -328,15 +328,33 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $config = $configuration->getConfiguration();
         $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ? $config['schema']['queryEntities'] : []);
+        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ? $config['schema']['mutationEntities'] : []);
+        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ? $config['schema']['specialEntities'] : [];
+
+
+        if (!$config['schema']['specialEntities']) {
+            $config['schema']['specialEntities'] = [];
+        }
+
+        $specialSettings = ["asset", "asset_folder", "object_folder"];
+        foreach ($specialSettings as $key) {
+            if (!$config['schema']['specialEntities'][$key]) {
+                !$config['schema']['specialEntities'][$key] = ["id" => $key];
+            }
+        }
+
+        $config['schema']['specialEntities'] = array_values($config['schema']['specialEntities']);
 
         //TODO we probably need this stuff only for graphql stuff
         $supportedQueryDataTypes = $graphQlService->getSupportedQueryDataTypes();
+        $supportedMutationDataTypes = $graphQlService->getSupportedMutationDataTypes();
 
         return new JsonResponse(
             [
                 'name' => $configuration->getName(),
                 'configuration' => $config,
-                'supportedGraphQLDataTypes' => $supportedQueryDataTypes
+                'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
+                'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
             ]
         );
     }
@@ -361,15 +379,17 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $dataDecoded['general']['name'];
             $config = Dao::getByName($name);
 
-            $transformedEntities = [];
-            if ($dataDecoded['schema']['queryEntities']) {
-                foreach ($dataDecoded['schema']['queryEntities'] as $entity) {
-                    $transformedEntities[$entity['id']] = $entity;
+            $keys = ['queryEntities', 'mutationEntities','specialEntities'];
+            foreach ($keys as $key) {
+                $transformedEntities = [];
+                if ($dataDecoded['schema'][$key]) {
+                    foreach ($dataDecoded['schema'][$key] as $entity) {
+                        $transformedEntities[$entity['id']] = $entity;
+                    }
                 }
+                $dataDecoded['schema'][$key] = $transformedEntities;
             }
 
-            $workspaces = $dataDecoded['workspaces'];
-            $dataDecoded['schema']['queryEntities'] = $transformedEntities;
             $config->setConfiguration($dataDecoded);
             $config->save();
 

@@ -103,6 +103,10 @@ class WorkspaceHelper
      */
     public static function isAllowed($element, Configuration $configuration, string $type)
     {
+        if (!$element) {
+            return false;
+        }
+
         if ($element instanceof Document) {
             // no support for documents right now
             return false;

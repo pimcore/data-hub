@@ -79,7 +79,7 @@ class PimcoreObjectType extends ObjectType
             /** @var $configurationItem Configuration */
             $configurationItem = $context['configuration'];
 
-            $columns = $configurationItem->getColumnConfig($this->class->getName())['columns'];
+            $columns = $configurationItem->getQueryColumnConfig($this->class->getName())['columns'];
 
             if ($columns) {
                 foreach ($columns as $column) {
@@ -89,7 +89,7 @@ class PimcoreObjectType extends ObjectType
 
                     /** @var $fieldHelper DataObjectFieldHelper */
                     $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                    $result = $fieldHelper->getFieldConfigFromConfig($column, $this->class, ['isRoot' => true]);
+                    $result = $fieldHelper->getQueryFieldConfigFromConfig($column, $this->class);
                     if ($result) {
                         $fields[$result['key']] = $result['config'];
                     }

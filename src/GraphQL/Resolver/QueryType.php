@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 
 
@@ -51,6 +52,70 @@ class QueryType
     {
         $this->class = $class;
         $this->configuration = $configuration;
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
+    {
+        if ($args && $args['defaultLanguage']) {
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
+        }
+
+        if ($elementType == "asset") {
+            $element = Asset\Folder::getById($args['id']);
+        } else if ($elementType == "object") {
+            $element = Folder::getById($args['id']);
+        }
+
+        if (!$element) {
+            return null;
+        }
+
+        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view asset ' . $element->getFullPath());
+            } else {
+                return null;
+            }
+        }
+
+        $data = new ElementDescriptor();
+        $getter = "get" . ucfirst($elementType) . "FieldHelper";
+        $fieldHelper = $this->getGraphQlService()->$getter();
+        $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+        $data = $data->getArrayCopy();
+        return $data;
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
 
     /**
@@ -90,7 +155,6 @@ class QueryType
         }
 
         return $data;
-
     }
 
 
@@ -102,8 +166,12 @@ class QueryType
      * @return array
      * @throws \Exception
      */
-    public function resolveGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+
+        if (!$args["id"]) {
+            return null;
+        }
 
         if ($args && $args['defaultLanguage']) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -131,6 +199,7 @@ class QueryType
         }
 
         $objectList->setLimit(1);
+        $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
             throw new \Exception('element not found');

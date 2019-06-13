@@ -36,16 +36,16 @@ pimcore.plugin.datahub.workspace.asset = Class.create({
         var check;
         for (var i=0; i<availableRights.length; i++) {
 
-            var disabled = availableRights[i] == "write";
+            // var disabled = availableRights[i] == "write";
             var checkConfig = {
                 text: t("plugin_pimcore_datahub_workspace_permission_" + availableRights[i]),
                 dataIndex: availableRights[i],
-                disabled: disabled,
+                // disabled: disabled,
                 width: 70
             };
-            if (availableRights[i] == "write") {
-                checkConfig.tooltip = t("plugin_pimcore_datahub_type_locked");
-            }
+            // if (availableRights[i] == "write") {
+            //     checkConfig.tooltip = t("plugin_pimcore_datahub_type_locked");
+            // }
 
             check = new Ext.grid.column.Check(checkConfig);
 

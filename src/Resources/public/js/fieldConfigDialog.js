@@ -18,8 +18,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     data: {},
     brickKeys: [],
 
-    initialize: function (generalConfig, columnConfig, callback, settings) {
+    initialize: function (type, generalConfig, columnConfig, callback, settings) {
 
+        this.type = type;
         this.generalConfig = generalConfig || {};
         this.columnConfig = columnConfig || {};
         this.columnConfig.columns = this.columnConfig.columns || [];
@@ -36,7 +37,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
             layout: "border",
             iconCls: "pimcore_icon_table",
             title: t("plugin_pimcore_datahub_configpanel_fields"),
-            items: [// this.getLanguageSelection(),
+            items: [
                 this.getSelectionPanel(), this.getLeftPanel()]
 
         });
@@ -61,12 +62,11 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
             }
         );
 
-
         this.window = new Ext.Window({
             width: 950,
             height: '95%',
             modal: true,
-            title: t('plugin_pimcore_datahub_configpanel_schema_fields') + ' - ' + this.generalConfig.className,
+            title: t("plugin_pimcore_datahub_" + this.type) + " " + t('plugin_pimcore_datahub_configpanel_schema_fields') + ' - ' + this.generalConfig.className,
             layout: "fit",
             items: [this.tabPanel],
             buttons: buttons
@@ -74,7 +74,6 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
         this.window.show();
     },
-
 
     doBuildChannelConfigTree: function (configuration) {
 
@@ -218,7 +217,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
     },
 
-    openConfigDialog: function(element, copy) {
+    openConfigDialog: function (element, copy) {
         var window = element.getConfigDialog(copy, null);
 
         if (window) {
@@ -314,7 +313,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                                     if (record.data.configAttributes) {
                                         attr = record.data.configAttributes;
                                     }
-                                    var elementConfig =  {
+                                    var elementConfig = {
                                         "isOperator": true,
                                         "attributes": attr
                                     }
@@ -523,13 +522,13 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                     text: t('edit'),
                     iconCls: "pimcore_icon_edit",
                     handler: function (node) {
-                        var nodeConfig =  {
-                            "isOperator" : node.data.isOperator,
+                        var nodeConfig = {
+                            "isOperator": node.data.isOperator,
                             "attributes": node.data.configAttributes
                         }
                         this.getConfigElement(nodeConfig).getConfigDialog(node,
                             {
-                                callback: function() {
+                                callback: function () {
                                     console.log("callback not needed for now");
                                 }.bind(this)
                             });
@@ -587,7 +586,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     },
 
     getOperatorTrees: function () {
-        var operators = Object.keys(pimcore.plugin.datahub.operator);
+        var operators = pimcore.plugin.datahub[this.type + "operator"] ? Object.keys(pimcore.plugin.datahub[this.type + "operator"]) : [];
         var operatorGroups = [];
 
         for (var i = 0; i < operators.length; i++) {
@@ -597,7 +596,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 continue;
             }
             if (!this.availableOperators || this.availableOperators.indexOf(operator) >= 0) {
-                var nodeConfig = pimcore.plugin.datahub.operator[operator].prototype;
+                var nodeConfig = pimcore.plugin.datahub[this.type + "operator"][operator].prototype;
                 var configTreeNode = nodeConfig.getConfigTreeNode();
 
                 var operatorGroup = nodeConfig.operatorGroup ? nodeConfig.operatorGroup : "other";
@@ -707,7 +706,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 attr = record.data.configAttributes;
             }
 
-            var elementConfig =  {
+            var elementConfig = {
                 "isOperator": true,
                 "attributes": attr
             }
@@ -725,25 +724,25 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         var attributes = configAttributes.attributes;
         if (attributes && attributes.class && attributes.type) {
             var jsClass = attributes.class.toLowerCase();
-            if (pimcore.plugin.datahub[attributes.type] && pimcore.plugin.datahub[attributes.type][jsClass]) {
-                element = new pimcore.plugin.datahub[attributes.type][jsClass](this.generalConfig.classId);
+            if (pimcore.plugin.datahub[this.type + attributes.type] && pimcore.plugin.datahub[this.type + attributes.type][jsClass]) {
+                element = new pimcore.plugin.datahub[this.type + attributes.type][jsClass](this.generalConfig.classId);
             }
         } else {
             var dataType = attributes.dataType.toLowerCase();
-            if (pimcore.plugin.datahub.value[dataType]) {
-                element = new pimcore.plugin.datahub.value[dataType](this.generalConfig.classId);
+            if (pimcore.plugin.datahub[this.type + "value"] && pimcore.plugin.datahub[this.type + "value"][dataType]) {
+                element = new pimcore.plugin.datahub[this.type + "value"][dataType](this.generalConfig.classId);
             } else {
-                element = new pimcore.plugin.datahub.value.defaultvalue(this.generalConfig.classId);
+                element = new pimcore.plugin.datahub[this.type + "value"]["defaultvalue"](this.generalConfig.classId);
             }
         }
         return element;
     },
 
-    checkSupported: function(record) {
+    checkSupported: function (record) {
         if (record.data.type == "data") {
             var dataType = record.data.dataType;
-            if (dataType != "system" && !in_array(dataType, pimcore.plugin.datahub.graphql.supportedQueryDataTypes)) {
-                Ext.MessageBox.alert(t("error"), sprintf(t('plugin_pimcore_datahub_datatype_not_supported_yet'), dataType));
+            if (dataType != "system" && !in_array(dataType, pimcore.plugin.datahub.graphql["supported" + ucfirst(this.type) + "DataTypes"])) {
+                Ext.MessageBox.alert(t("error"), sprintf(t("plugin_pimcore_datahub_" + this.type) + " " + t('plugin_pimcore_datahub_datatype_not_supported_yet'), dataType));
                 return false;
             }
         }

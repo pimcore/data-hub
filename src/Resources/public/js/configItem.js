@@ -250,101 +250,9 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
 
     getSchema: function () {
 
-        var schemaToolbar = Ext.create('Ext.Toolbar', {
-            cls: 'main-toolbar',
-            items: [
-                {
-                    text: t('add'),
-                    handler: this.onAdd.bind(this),
-                    iconCls: "pimcore_icon_add"
-                }
-            ]
-        });
-
-        this.schemaStore = Ext.create('Ext.data.Store', {
-            reader: {
-                type: 'memory'
-            },
-            fields: ['id', 'columnConfig'],
-            data: this.data.schema.queryEntities
-        });
-
-        this.querySchemaGrid = Ext.create('Ext.grid.Panel', {
-            frame: false,
-            bodyCls: "pimcore_editable_grid",
-            autoScroll: true,
-            store: this.schemaStore,
-            columnLines: true,
-            stripeRows: true,
-            columns: {
-                items: [
-                    {
-                        text: t("plugin_pimcore_datahub_configpanel_entity"),
-                        sortable: true,
-                        dataIndex: 'id',
-                        editable: false,
-                        filter: 'string',
-                        flex: 1
-                    },
-                    {
-                        xtype: 'actioncolumn',
-                        text: t('settings'),
-                        menuText: t('settings'),
-                        width: 60,
-                        items: [
-                            {
-                                tooltip: t('settings'),
-                                icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
-                                handler: function (grid, rowIndex) {
-                                    var record = grid.getStore().getAt(rowIndex);
-
-                                    var classStore = pimcore.globalmanager.get("object_types_store");
-                                    var classIdx = classStore.findExact("text", record.data.id);
-                                    if (classIdx >= 0) {
-                                        var classRecord = classStore.getAt(classIdx);
-                                        classId = classRecord.data.id;
-                                        var columnConfig = record.get("columnConfig");
-
-                                        var dialog = new pimcore.plugin.datahub.fieldConfigDialog({
-                                                className: classRecord.data.text,
-                                                classId: classId
-                                            },
-                                            columnConfig,
-                                            function (data, settings) {
-                                                record.set('columnConfig', data);
-                                            }, null);
-                                    }
-                                }.bind(this)
-                            }]
-                    },
-                    {
-                        xtype: 'actioncolumn',
-                        text: t('delete'),
-                        menuText: t('delete'),
-                        width: 60,
-                        items: [{
-                            tooltip: t('delete'),
-                            icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
-                            handler: function (grid, rowIndex) {
-                                grid.getStore().removeAt(rowIndex);
-                            }.bind(this)
-                        }
-                        ]
-                    }
-                ]
-            },
-            trackMouseOver: true,
-            selModel: Ext.create('Ext.selection.RowModel', {}),
-            tbar: schemaToolbar,
-            viewConfig: {
-                forceFit: true,
-                enableTextSelection: true,
-                plugins: {
-                    ptype: 'gridviewdragdrop',
-                    dragText: 'Drag and drop to reorganize'
-                }
-            }
-        });
+        this.createSchemaStoreAndGrid("query");
+        this.createSchemaStoreAndGrid("mutation");
+        this.createSpecialSettingsGrid();
 
         this.schemaForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
@@ -365,10 +273,16 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                 }, {
                     xtype: 'fieldset',
                     title: t('plugin_pimcore_datahub_graphql_mutation_schema'),
-                    items: [{
-                        xtype: 'panel',
-                        html: "coming soon..."
-                    }]
+                    items: [
+                        this.mutationSchemaGrid
+                    ]
+                },
+                {
+                    xtype: 'fieldset',
+                    title: t('plugin_pimcore_datahub_graphql_special_schema'),
+                    items: [
+                        this.specialSchemaGrid
+                    ]
                 }
             ]
         });
@@ -376,13 +290,191 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         return this.schemaForm;
     },
 
-    onAdd: function () {
-        this.showEntitySelectionDialog();
+    onAdd: function (type) {
+        this.showEntitySelectionDialog(type);
     },
 
 
     updateData: function (data, grid) {
     },
+
+    createSchemaStoreAndGrid: function (type) {
+        var schemaToolbar = Ext.create('Ext.Toolbar', {
+            cls: 'main-toolbar',
+            items: [
+                {
+                    text: t('add'),
+                    handler: this.onAdd.bind(this, type),
+                    iconCls: "pimcore_icon_add"
+                }
+            ]
+        });
+
+        var fields = ['id', 'columnConfig'];
+        if (type == "mutation") {
+            fields.push("create");
+            fields.push("update");
+            fields.push("delete");
+        }
+        this[type + "SchemaStore"] = Ext.create('Ext.data.Store', {
+            reader: {
+                type: 'memory'
+            },
+            fields: fields,
+            data: this.data.schema[type + "Entities"]
+        });
+
+        var columns = [
+            {
+                text: t("plugin_pimcore_datahub_configpanel_entity"),
+                sortable: true,
+                dataIndex: 'id',
+                editable: false,
+                filter: 'string',
+                flex: 1
+            }
+        ];
+
+        var additionalColumns = ["create", "update", "delete"];
+        if (type == "mutation") {
+            for (var i = 0; i < additionalColumns.length; i++) {
+                var checkColumn = Ext.create('Ext.grid.column.Check', {
+                    text: t(additionalColumns[i]),
+                    dataIndex: additionalColumns[i]
+                });
+                columns.push(checkColumn);
+            }
+        }
+
+        columns.push({
+            xtype: 'actioncolumn',
+            text: t('settings'),
+            menuText: t('settings'),
+            width: 60,
+            items: [
+                {
+                    tooltip: t('settings'),
+                    icon: "/bundles/pimcoreadmin/img/flat-color-icons/settings.svg",
+                    handler: function (grid, rowIndex) {
+                        var record = grid.getStore().getAt(rowIndex);
+
+                        var classStore = pimcore.globalmanager.get("object_types_store");
+                        var classIdx = classStore.findExact("text", record.data.id);
+                        if (classIdx >= 0) {
+                            var classRecord = classStore.getAt(classIdx);
+                            classId = classRecord.data.id;
+                            var columnConfig = record.get("columnConfig");
+
+                            var dialog = new pimcore.plugin.datahub.fieldConfigDialog(type, {
+                                    className: classRecord.data.text,
+                                    classId: classId
+                                },
+                                columnConfig,
+                                function (data, settings) {
+                                    record.set('columnConfig', data);
+                                }, null);
+                        }
+                    }.bind(this)
+                }]
+        });
+
+        columns.push({
+            xtype: 'actioncolumn',
+            text: t('delete'),
+            menuText: t('delete'),
+            width: 60,
+            items: [{
+                tooltip: t('delete'),
+                icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
+                handler: function (grid, rowIndex) {
+                    grid.getStore().removeAt(rowIndex);
+                }.bind(this)
+            }
+            ]
+        });
+
+        var prop = type + "SchemaGrid";
+        this[prop] = Ext.create('Ext.grid.Panel', {
+            frame: false,
+            bodyCls: "pimcore_editable_grid",
+            autoScroll: true,
+            store: this[type + "SchemaStore"],
+            columnLines: true,
+            stripeRows: true,
+            columns: {
+                items: columns
+            },
+            trackMouseOver: true,
+            selModel: Ext.create('Ext.selection.RowModel', {}),
+            tbar: schemaToolbar,
+            viewConfig: {
+                forceFit: true,
+                enableTextSelection: true
+            }
+        });
+
+    },
+
+    createSpecialSettingsGrid: function () {
+        var schemaToolbar = Ext.create('Ext.Toolbar', {
+            cls: 'main-toolbar'
+        });
+
+        var fields = ['id', 'create', 'read', 'update', 'delete'];
+
+        this.specialSchemaStore = Ext.create('Ext.data.Store', {
+            reader: {
+                type: 'memory'
+            },
+            fields: fields,
+            data: this.data.schema.specialEntities
+        });
+
+        var columns = [
+            {
+                // text: t("plugin_pimcore_datahub_configpanel_entity"),
+                sortable: true,
+                dataIndex: 'id',
+                editable: false,
+                filter: 'string',
+                renderer: function (v) {
+                    return t("plugin_pimcore_datahub_graphql_special_" + v);
+                },
+                flex: 1
+            }
+        ];
+
+        var additionalColumns = ["create", "read", "update", "delete"];
+
+        for (var i = 0; i < additionalColumns.length; i++) {
+            var checkColumn = Ext.create('Ext.grid.column.Check', {
+                text: t(additionalColumns[i]),
+                dataIndex: additionalColumns[i]
+            });
+            columns.push(checkColumn);
+        }
+
+
+        this.specialSchemaGrid = Ext.create('Ext.grid.Panel', {
+            frame: false,
+            bodyCls: "pimcore_editable_grid",
+            autoScroll: true,
+            store: this.specialSchemaStore,
+            columnLines: true,
+            stripeRows: true,
+            columns: {
+                items: columns
+            },
+            trackMouseOver: true,
+            selModel: Ext.create('Ext.selection.RowModel', {}),
+            tbar: schemaToolbar,
+            viewConfig: {
+                forceFit: true,
+                enableTextSelection: true
+            }
+        });
+    },
+
 
     getSaveData: function () {
 
@@ -390,7 +482,9 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         saveData["general"] = this.generalForm.getForm().getFieldValues();
         saveData["schema"] = this.schemaForm.getForm().getFieldValues();
         saveData["security"] = this.securityForm.getForm().getFieldValues();
-        saveData["schema"]["queryEntities"] = this.getSchemaData();
+        saveData["schema"]["queryEntities"] = this.getSchemaData("query");
+        saveData["schema"]["mutationEntities"] = this.getSchemaData("mutation");
+        saveData["schema"]["specialEntities"] = this.getSchemaData("special");
         saveData["workspaces"] = {};
         saveData["workspaces"]["asset"] = this.assetWorkspace.getValues();
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
@@ -398,10 +492,11 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
     },
 
 
-    getSchemaData: function () {
+    getSchemaData: function (type) {
         var tmData = [];
 
-        var data = this.schemaStore.queryBy(function (record, id) {
+        var store = this[type + "SchemaStore"];
+        var data = store.queryBy(function (record, id) {
             return true;
         });
 
@@ -433,8 +528,9 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         });
     },
 
-    showEntitySelectionDialog: function () {
+    showEntitySelectionDialog: function (type) {
 
+        var store = this[type + "SchemaStore"];
         this.entitySelectionDialog = new Ext.Window({
             autoHeight: true,
             title: t('plugin_pimcore_datahub_operator_select_entity'),
@@ -481,14 +577,18 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     handler: function () {
                         var entity = entityCombo.getValue();
                         if (entity) {
-                            var record = this.schemaStore.getById(entity);
+                            var record = store.getById(entity);
                             if (!record) {
-                                var addedRecord = this.schemaStore.addSorted({
+                                var newData = {
                                     id: entity,
                                     name: entity
-                                });
+                                };
+                                if (type == "mutation") {
+                                    newData["update"] = true;
+                                }
+                                var addedRecord = store.addSorted(newData);
                                 addedRecord = addedRecord[0];
-                                this.querySchemaGrid.getSelectionModel().select([addedRecord]);
+                                this[type + "SchemaGrid"].getSelectionModel().select([addedRecord]);
                             }
                         }
 

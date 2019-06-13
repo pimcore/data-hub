@@ -30,7 +30,11 @@ pimcore.plugin.datahub.Abstract = Class.create({
     },
 
     getDefaultText: function () {
-        return (t(this.type + "_" + this.defaultText.toLowerCase().replace(' ', '_')), t('operator' + "_" + this.defaultText.toLowerCase().replace(' ', '_')));
+        var prefix = 'operator';
+        if (this.mode == "mutation") {
+            prefix = "mutation" + prefix;
+        }
+        return (t(this.type + "_" + this.defaultText.toLowerCase().replace(' ', '_')), t(prefix + "_" + this.defaultText.toLowerCase().replace(' ', '_')));
     },
 
     getConfigTreeNode: function(configAttributes) {

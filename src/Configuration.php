@@ -207,6 +207,31 @@ class Configuration extends AbstractModel
     }
 
     /**
+     * @return array
+     */
+    public function getSpecialEntities()
+    {
+        $schema = $this->configuration['schema'];
+        $entities = $schema ? $schema['specialEntities'] : [];
+        $entities = $entities;
+
+        return $entities;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getMutationEntities()
+    {
+        $schema = $this->configuration['schema'];
+        $entities = $schema ? $schema['mutationEntities'] : [];
+        $entities = array_keys($entities);
+
+        return $entities;
+    }
+
+    /**
      * @param $name
      *
      * @return mixed
@@ -217,14 +242,35 @@ class Configuration extends AbstractModel
     }
 
     /**
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getMutationEntityConfig($entityName)
+    {
+        return $this->configuration['schema']['mutationEntities'][$entityName];
+    }
+
+    /**
      * @param $entityName
      *
      * @return mixed
      */
-    public function getColumnConfig($entityName)
+    public function getQueryColumnConfig($entityName)
     {
         return $this->getQueryEntityConfig($entityName)['columnConfig'];
     }
+
+    /**
+     * @param $entityName
+     *
+     * @return mixed
+     */
+    public function getMutationColumnConfig($entityName)
+    {
+        return $this->getMutationEntityConfig($entityName)['columnConfig'];
+    }
+
 
     /**
      * @return mixed
