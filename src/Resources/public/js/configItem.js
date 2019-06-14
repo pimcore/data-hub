@@ -432,7 +432,6 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
 
         var columns = [
             {
-                // text: t("plugin_pimcore_datahub_configpanel_entity"),
                 sortable: true,
                 dataIndex: 'id',
                 editable: false,

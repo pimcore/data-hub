@@ -159,7 +159,7 @@ class MutationType extends ObjectType
 
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
-                        if (!WorkspaceHelper::isAllowed($parent, $configuration, "write")) {
+                        if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
                             return [
                                 "success" => false,
                                 "message" => "not allowed to create object " . $entity
@@ -267,7 +267,7 @@ class MutationType extends ObjectType
                             $configuration = $context['configuration'];
                             $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                             $object = $className::getById($id);
-                            if (!WorkspaceHelper::isAllowed($object, $configuration, "write")) {
+                            if (!WorkspaceHelper::isAllowed($object, $configuration, "delete")) {
                                 return [
                                     "success" => false,
                                     "message" => "permission denied."
@@ -334,7 +334,7 @@ class MutationType extends ObjectType
                     $object = $className::getById($id);
                 }
 
-                if (!WorkspaceHelper::isAllowed($object, $configuration, "write")) {
+                if (!WorkspaceHelper::isAllowed($object, $configuration, "update")) {
                     return [
                         "success" => false,
                         "message" => "permission denied."
@@ -470,7 +470,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "write")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "update")) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -543,7 +543,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "write")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete")) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -699,7 +699,7 @@ class MutationType extends ObjectType
 
                     /** @var $configuration Configuration */
                     $configuration = $context['configuration'];
-                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "write")) {
+                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
                         return [
                             "success" => false,
                             "message" => "not allowed to create asset"
@@ -771,7 +771,7 @@ class MutationType extends ObjectType
 
                         $element = Asset::getById($id);
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "write")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete")) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -821,7 +821,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "write")) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -872,7 +872,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "write")) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "update")) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -926,9 +926,6 @@ class MutationType extends ObjectType
         $this->buildDeleteAssetMutation($config, $context);
         $this->buildDeleteFolderMutation("asset", $config, $context);
         $this->buildDeleteFolderMutation("object", $config, $context);
-
-        if (isset($config["fields"]) && count($config["fields"]) > 1) {
-            ksort($config["fields"]);
-        }
+        ksort($config["fields"]);
     }
 }
