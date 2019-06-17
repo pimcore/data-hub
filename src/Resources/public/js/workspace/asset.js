@@ -22,30 +22,24 @@ pimcore.plugin.datahub.workspace.asset = Class.create({
 
     getPanel: function () {
 
-        var availableRights = ["read","write"];
+        var availableRights = ["create","read","update","delete"];
         var gridPlugins = [];
         var storeFields = ["cpath"];
 
         var typesColumns = [
             {text: t("path"), flex: 1, sortable: false, dataIndex: 'cpath',
-                        editor: new Ext.form.TextField({}),
-                        tdCls: "pimcore_property_droptarget"
+                editor: new Ext.form.TextField({}),
+                tdCls: "pimcore_property_droptarget"
             }
         ];
 
         var check;
         for (var i=0; i<availableRights.length; i++) {
-
-            // var disabled = availableRights[i] == "write";
             var checkConfig = {
                 text: t("plugin_pimcore_datahub_workspace_permission_" + availableRights[i]),
                 dataIndex: availableRights[i],
-                // disabled: disabled,
                 width: 70
             };
-            // if (availableRights[i] == "write") {
-            //     checkConfig.tooltip = t("plugin_pimcore_datahub_type_locked");
-            // }
 
             check = new Ext.grid.column.Check(checkConfig);
 
@@ -198,7 +192,7 @@ pimcore.plugin.datahub.workspace.asset = Class.create({
         for (var i = 0; i < records.length; i++) {
             var currentData = records[i];
             if (currentData) {
-                    values.push(currentData.data);
+                values.push(currentData.data);
             }
         }
 

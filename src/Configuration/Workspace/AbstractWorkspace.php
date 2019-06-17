@@ -42,12 +42,23 @@ class AbstractWorkspace extends AbstractModel
     /**
      * @var bool
      */
+    public $create = false;
+
+    /**
+     * @var bool
+     */
     public $read = false;
 
     /**
      * @var bool
      */
-    public $write = false;
+    public $update = false;
+
+    /**
+     * @var bool
+     */
+    public $delete = false;
+
 
     /**
      * @return string
@@ -100,6 +111,24 @@ class AbstractWorkspace extends AbstractModel
     /**
      * @return bool
      */
+    public function isCreate(): bool
+    {
+        return $this->create;
+    }
+
+    /**
+     * @param bool $create
+     */
+    public function setCreate(bool $create): void
+    {
+        $this->create = $create;
+    }
+
+
+
+    /**
+     * @return bool
+     */
     public function getRead()
     {
         return $this->read;
@@ -116,16 +145,32 @@ class AbstractWorkspace extends AbstractModel
     /**
      * @return bool
      */
-    public function getWrite()
+    public function isUpdate(): bool
     {
-        return $this->write;
+        return $this->update;
     }
 
     /**
-     * @param bool $write
+     * @param bool $update
      */
-    public function setWrite(bool $write): void
+    public function setUpdate(bool $update): void
     {
-        $this->write = $write;
+        $this->update = $update;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDelete(): bool
+    {
+        return $this->delete;
+    }
+
+    /**
+     * @param bool $delete
+     */
+    public function setDelete(bool $delete): void
+    {
+        $this->delete = $delete;
     }
 }

@@ -148,7 +148,7 @@ class WorkspaceHelper
                 }
             }
         } catch (\Exception $e) {
-            Logger::warn('Unable to get permission ' . $type . ' for asset ' . $element->getId());
+            Logger::warn('Unable to get permission ' . $type . ' for ' . $elementType . ' '.  $element->getId());
         }
 
         return false;
