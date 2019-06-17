@@ -103,7 +103,7 @@ class MutationType extends ObjectType
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
                         'message' => ['type' => Type::string()],
-                        lcfirst($class->getName()) . "Data" => [
+                        'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
@@ -208,7 +208,7 @@ class MutationType extends ObjectType
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
                         'message' => ['type' => Type::string()],
-                        lcfirst($class->getName()) . "Data" => [
+                        'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {

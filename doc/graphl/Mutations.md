@@ -61,7 +61,7 @@ mutation {
   createNews(parentId: 66, key: "testcreate27", published: false) {
     success
     message
-    newsData(defaultLanguage: "de") {
+    output(defaultLanguage: "de") {
       id      
       creationDate
       fullpath
@@ -78,7 +78,7 @@ Response:
     "createNews": {
       "success": true,
       "message": "object created: 98",
-      "newsData": {
+      "output": {
         "id": "98",
         "creationDate": 1559642310,
         "fullpath": "/tests/testcreate2/testcreate27",
@@ -98,7 +98,7 @@ Request:
 mutation {
   updateNews(id: 8, defaultLanguage: "de", input: {title: "german TITLE", shortText: "new short text"}) {
     success
-    newsData {
+    output {
       modificationDate
     }
   }
@@ -111,7 +111,7 @@ Response:
   "data": {
     "updateNews": {
       "success": true,
-      "newsData": {
+      "output": {
         "modificationDate": 1559746654
       }
     }
