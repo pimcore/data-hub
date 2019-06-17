@@ -39,7 +39,7 @@ class IfEmptyOperator extends BaseOperator
      * @param $context
      * @param ResolveInfo $info
      * @return void|null
-     * @throws \Exception
+     * @throws \Exception|\UnexpectedValueException
      */
     public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
     {
@@ -47,19 +47,19 @@ class IfEmptyOperator extends BaseOperator
 
         $nodeDef = $this->nodeDef;
         $nodeDefAttributes = $nodeDef["attributes"];
-        $children = $nodeDefAttributes["childs"];
+        $children = $nodeDefAttributes['children'];
         if (!$children) {
             return null;
         }
 
-        if (count($children) != 1) {
-            throw new \Exception("only one child allowed");
+        if (count($children) !== 1) {
+            throw new \UnexpectedValueException("Only one child allowed");
         }
 
         $firstChild = $children[0];
 
-        if ($firstChild["isOperator"]) {
-            throw new \Exception("not allowed");
+        if ($firstChild['isOperator']) {
+            throw new \Exception("Not allowed");
         } else {
 
             $key = $firstChild["attributes"]["attribute"];

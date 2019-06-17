@@ -84,10 +84,10 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 if (configElement) {
                     var treenode = configElement.getConfigTreeNode(configuration[i].attributes);
 
-                    if (configuration[i].attributes && configuration[i].attributes.childs) {
-                        var childs = this.doBuildChannelConfigTree(configuration[i].attributes.childs);
-                        treenode.children = childs;
-                        if (childs.length > 0) {
+                    if (configuration[i].attributes && configuration[i].attributes.children) {
+                        var children = this.doBuildChannelConfigTree(configuration[i].attributes.children);
+                        treenode.children = children;
+                        if (children.length > 0) {
                             treenode.expandable = true;
                         }
                     }
@@ -134,19 +134,19 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
 
     doGetRecursiveData: function (node) {
-        var childs = [];
+        var children = [];
         node.eachChild(function (child) {
             var attributes = child.data.configAttributes;
-            attributes.childs = this.doGetRecursiveData(child);
+            attributes.children = this.doGetRecursiveData(child);
             var childConfig = {
-                "isOperator": child.data.isOperator ? true : false,
+                "isOperator": !!child.data.isOperator,
                 "attributes": attributes
             };
 
-            childs.push(childConfig);
+            children.push(childConfig);
         }.bind(this));
 
-        return childs;
+        return children;
     },
 
 
@@ -164,8 +164,8 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                 if (child.data.isOperator) {
                     var attributes = child.data.configAttributes;
-                    var operatorChilds = this.doGetRecursiveData(child);
-                    attributes.childs = operatorChilds;
+                    var operatorChildren = this.doGetRecursiveData(child);
+                    attributes.children = operatorChildren;
                     operatorFound = true;
 
                     obj.isOperator = true;
@@ -232,7 +232,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     getSelectionPanel: function () {
         if (!this.selectionPanel) {
 
-            var childs = [];
+            var children = [];
             for (var i = 0; i < this.columnConfig.columns.length; i++) {
                 var nodeConf = this.columnConfig.columns[i];
 
@@ -263,7 +263,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                         child.width = attributes.width;
                     }
                 }
-                childs.push(child);
+                children.push(child);
             }
 
             this.cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
@@ -282,7 +282,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                     leaf: false,
                     isTarget: true,
                     expanded: true,
-                    children: childs
+                    children: children
                 }
             });
 
@@ -647,8 +647,8 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
         for (i = 0; i < len; i++) {
             var k = groupKeys[i];
-            var childs = groups[k];
-            childs.sort(
+            var children = groups[k];
+            children.sort(
                 function (x, y) {
                     return x.text < y.text ? -1 : 1;
                 }
@@ -661,7 +661,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 allowDrop: false,
                 leaf: false,
                 expanded: true,
-                children: childs
+                children: children
             };
 
             groupNodes.push(groupNode);

@@ -135,15 +135,15 @@ class WorkspaceHelper
             }
 
             // exception for read permission
-            if (empty($permissionsParent) && $type == 'read') {
-                // check for childs with permissions
+            if (empty($permissionsParent) && $type === 'read') {
+                // check for children with permissions
                 $path = $element->getRealFullPath() . '/';
-                if ($element->getId() == 1) {
+                if ($element->getId() === 1) {
                     $path = '/';
                 }
 
-                $permissionsChilds = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()). ' AND ' . $type . ' = 1 LIMIT 1', $path . '%');
-                if ($permissionsChilds) {
+                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()). ' AND ' . $type . ' = 1 LIMIT 1', $path . '%');
+                if ($permissionsChildren) {
                     return true;
                 }
             }

@@ -41,12 +41,13 @@ class Substring extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        $childs = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
 
-        if (!$childs) {
+        if (!$children) {
             return $result;
         } else {
-            $c = $childs[0];
+            $c = $children[0];
 
             $valueArray = [];
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);

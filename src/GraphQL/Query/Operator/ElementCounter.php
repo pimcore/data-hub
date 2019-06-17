@@ -35,10 +35,11 @@ class ElementCounter extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        $childs = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
         $count = 0;
 
-        foreach ($childs as $c) {
+        foreach ($children as $c) {
 
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 

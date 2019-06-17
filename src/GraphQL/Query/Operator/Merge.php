@@ -37,10 +37,12 @@ class Merge extends AbstractOperator
         $result->label = $this->label;
         $result->isArrayType = true;
 
-        $childs = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+
         $resultItems = [];
 
-        foreach ($childs as $c) {
+        foreach ($children as $c) {
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);

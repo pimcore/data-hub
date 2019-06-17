@@ -43,10 +43,11 @@ class Concatenator extends AbstractOperator
             $hasValue = false;
         }
 
-        $childs = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
         $valueArray = [];
 
-        foreach ($childs as $c) {
+        foreach ($children as $c) {
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);

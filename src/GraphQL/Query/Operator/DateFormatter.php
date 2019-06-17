@@ -40,12 +40,13 @@ class DateFormatter extends AbstractOperator
         $result->label = $this->label;
         $result->value = null;
 
-        $childs = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
 
-        if (!$childs) {
+        if (!$children) {
             return $result;
         } else {
-            $c = $childs[0];
+            $c = $children[0];
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
