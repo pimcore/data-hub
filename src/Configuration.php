@@ -109,7 +109,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSqlObjectCondition()
     {
@@ -117,7 +117,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|bool
      */
     public function isActive()
     {
@@ -143,7 +143,7 @@ class Configuration extends AbstractModel
     /**
      * @throws \Exception
      */
-    public function save()
+    public function save(): void
     {
         if (empty($this->configuration)) {
             $this->configuration = [];
@@ -169,7 +169,10 @@ class Configuration extends AbstractModel
         WorkspaceHelper::saveWorkspaces($this, $this->configuration["workspaces"]);
     }
 
-    public function delete()
+    /**
+     * @return void
+     */
+    public function delete(): void
     {
         $this->getDao()->delete();
     }
@@ -189,7 +192,7 @@ class Configuration extends AbstractModel
      *
      * @return Configuration
      */
-    public static function getByName($name)
+    public static function getByName($name): Configuration
     {
         return Dao::getByName($name);
     }
@@ -197,11 +200,11 @@ class Configuration extends AbstractModel
     /**
      * @return array
      */
-    public function getQueryEntities()
+    public function getQueryEntities(): array
     {
         $schema = $this->configuration['schema'];
         $entities = $schema ? $schema['queryEntities'] : [];
-        $entities = array_keys($entities);
+        $entities = is_array($entities) ? array_keys($entities) : [];
 
         return $entities;
     }
@@ -209,11 +212,10 @@ class Configuration extends AbstractModel
     /**
      * @return array
      */
-    public function getSpecialEntities()
+    public function getSpecialEntities(): array
     {
         $schema = $this->configuration['schema'];
         $entities = $schema ? $schema['specialEntities'] : [];
-        $entities = $entities;
 
         return $entities;
     }
@@ -222,17 +224,17 @@ class Configuration extends AbstractModel
     /**
      * @return array
      */
-    public function getMutationEntities()
+    public function getMutationEntities(): array
     {
         $schema = $this->configuration['schema'];
         $entities = $schema ? $schema['mutationEntities'] : [];
-        $entities = array_keys($entities);
+        $entities = is_array($entities) ? array_keys($entities) : [];
 
         return $entities;
     }
 
     /**
-     * @param $name
+     * @param $entityName
      *
      * @return mixed
      */
@@ -242,7 +244,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $name
+     * @param $entityName
      *
      * @return mixed
      */
@@ -270,7 +272,6 @@ class Configuration extends AbstractModel
     {
         return $this->getMutationEntityConfig($entityName)['columnConfig'];
     }
-
 
     /**
      * @return mixed

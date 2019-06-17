@@ -69,7 +69,7 @@ class Base
      * @param string $type
      * @return string|null
      */
-    public function getResolverAttribute(string $type): string
+    public function getResolverAttribute(string $type): ?string
     {
         if (isset($this->attributes['children'][0]) && !empty($this->attributes['children'][0])) {
             return $this->attributes['children'][0]['attributes'][$type];
