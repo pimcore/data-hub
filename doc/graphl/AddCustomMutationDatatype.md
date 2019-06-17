@@ -1,8 +1,8 @@
 ## Add a Custom Mutation Datatype
 
 There are two things that need to be one:
-- add a type definition
-- provide a resolver implementation (optional)
+- add a input type definition
+- provide a processor implementation
 
 Add a section similar to this one to your `services.yml` file.
 
@@ -13,8 +13,11 @@ Add a section similar to this one to your `services.yml` file.
             - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_mycustomdatatype }                                    
 ```
 
-For reference, have a look at a look at the `Link datatype`:
-https://github.com/pimcore/data-hub/blob/7c62b888014a3df37928867b89b0dcd4489c3df4/src/GraphQL/QueryFieldConfigGenerator/Link.php
+For reference, have a look at a look at the `Geopoint datatype`:
+https://github.com/pimcore/data-hub/blob/master/src/GraphQL/MutationFieldConfigGenerator/Geopoint.php
 
-It also shows how specific attributes are resolved. If you don't provide a resolver function then the getter method is
-called instead. 
+You return a valid GraphQL input type (which is an `InputObjectType`) here and a `Processor` which processes the actual
+input data.
+
+For a rather simple example have a look at the `Date` implementation (which both accepts integer and string input values).
+https://github.com/pimcore/data-hub/blob/master/src/GraphQL/MutationFieldConfigGenerator/Date.php   

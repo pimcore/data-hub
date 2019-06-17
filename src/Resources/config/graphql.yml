@@ -161,7 +161,7 @@ services:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_wysiwyg }
 
   #
-  # type generators for operators
+  # type generators for query operators
   #
   pimcore.datahub.graphql.querytypegenerator_operator_alias:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Alias
