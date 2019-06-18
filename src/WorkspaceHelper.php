@@ -33,23 +33,25 @@ class WorkspaceHelper
      */
     public static function saveWorkspaces(Configuration $config, $workspaces)
     {
-        $db = Db::get();
-        $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
-        $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
+        if (isset($workspaces)) {
+            $db = Db::get();
+            $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
+            $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
 
-        foreach ($workspaces as $type => $spaces) {
-            foreach ($spaces as $space) {
-                $element = \Pimcore\Model\Element\Service::getElementByPath($type, $space['cpath']);
-                if ($element) {
-                    $className = '\\Pimcore\\Bundle\\DataHubBundle\\Configuration\\Workspace\\' . \Pimcore\Model\Element\Service::getBaseClassNameForElement($type);
-                    /** @var $workspace Configuration\Workspace\AbstractWorkspace */
-                    $workspace = new $className();
-                    $workspace->setValues($space);
+            foreach ($workspaces as $type => $spaces) {
+                foreach ($spaces as $space) {
+                    $element = \Pimcore\Model\Element\Service::getElementByPath($type, $space['cpath']);
+                    if ($element) {
+                        $className = '\\Pimcore\\Bundle\\DataHubBundle\\Configuration\\Workspace\\' . \Pimcore\Model\Element\Service::getBaseClassNameForElement($type);
+                        /** @var $workspace Configuration\Workspace\AbstractWorkspace */
+                        $workspace = new $className();
+                        $workspace->setValues($space);
 
-                    $workspace->setConfiguration($config->getName());
-                    $workspace->setCid($element->getId());
-                    $workspace->setCpath($element->getRealFullPath());
-                    $workspace->save();
+                        $workspace->setConfiguration($config->getName());
+                        $workspace->setCid($element->getId());
+                        $workspace->setCpath($element->getRealFullPath());
+                        $workspace->save();
+                    }
                 }
             }
         }
