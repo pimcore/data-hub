@@ -47,7 +47,7 @@ abstract class Base
     public function resolveInputTypeFromNodeDef($nodeDef, ClassDefinition $class)
     {
         $nodeDefAttributes = $nodeDef["attributes"];
-        $children = $nodeDefAttributes["childs"];
+        $children = $nodeDefAttributes['children'];
 
         $firstChild = $children[0];
         $firstChildAttributes = $firstChild["attributes"];

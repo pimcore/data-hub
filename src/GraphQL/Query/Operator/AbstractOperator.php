@@ -38,21 +38,21 @@ abstract class AbstractOperator implements OperatorInterface
     /**
      * @var ConfigElementInterface[]
      */
-    protected $childs;
+    protected $children;
 
     public function __construct(array $config = [], $context = null)
     {
         $this->label = $config['label'];
-        $this->childs = $config['childs'];
+        $this->children = $config['childs'];
         $this->context = $context;
     }
 
     /**
      * @return ConfigElementInterface[]
      */
-    public function getChilds()
+    public function getChildren()
     {
-        return $this->childs;
+        return $this->children;
     }
 
     /**
