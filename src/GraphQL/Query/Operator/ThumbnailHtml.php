@@ -57,7 +57,9 @@ class ThumbnailHtml extends AbstractOperator
         $result->label = $this->label;
         $result->value = null;
 
-        $children = $this->getChilds();
+        // Pimcore 5/6 compatibility
+        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+
         if ($children && $this->thumbnailHtmlConfig) {
             $c = $children[0];
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
