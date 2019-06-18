@@ -49,7 +49,7 @@ class Video
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
-     * @return array
+     * @return string|null
      * @throws \Exception
      */
     public function resolveTitle($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
@@ -83,7 +83,7 @@ class Video
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
-     * @return string|null
+     * @return ElementDescriptor|null
      */
     public function resolvePoster($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -116,7 +116,7 @@ class Video
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
-     * @return string|null
+     * @return ElementDescriptor|array|null
      */
     public function resolveData($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
