@@ -15,17 +15,36 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator;
 
-class Video extends AssetBase
+use Pimcore\Model\DataObject\ClassDefinition\Data;
+
+class Video extends Base
 {
-    /** Return the actual asset (AbstractElement)
-     * @param $asset
-     *
+
+    /**
+     * @param $attribute
+     * @param Data $fieldDefinition
+     * @param null $class
+     * @param null $container
      * @return mixed
      */
-    public function getAssetElement($asset)
+    public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        if ($asset instanceof \Pimcore\Model\DataObject\Data\Video) {
-            return $asset->getData();
-        }
+        return $this->enrichConfig($fieldDefinition, $class, $attribute, [
+            'name' => $fieldDefinition->getName(),
+            'type' => $this->getFieldType($fieldDefinition, $class, $container)
+        ], $container);
+    }
+
+    /**
+     * @param Data $fieldDefinition
+     * @param null $class
+     * @param null $container
+     *
+     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     */
+    public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
+    {
+        $graphQlService = $this->getGraphQlService();
+        return $graphQlService->getTypeDefinition("object_datatype_video");
     }
 }
