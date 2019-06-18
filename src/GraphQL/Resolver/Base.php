@@ -71,8 +71,8 @@ class Base
      */
     public function getResolverAttribute(string $type): string
     {
-        if (isset($this->attributes['children'][0]) && !empty($this->attributes['children'][0])) {
-            return $this->attributes['children'][0]['attributes'][$type];
+        if (isset($this->attributes['childs'][0]) && !empty($this->attributes['childs'][0])) {
+            return $this->attributes['childs'][0]['attributes'][$type];
         } else {
             return null;
         }
