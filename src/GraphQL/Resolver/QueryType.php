@@ -202,7 +202,7 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            throw new \Exception('element not found');
+            throw new \Exception('object with ID ' . $args["id"] . ' not found');
         }
         $object = $objectList[0];
 

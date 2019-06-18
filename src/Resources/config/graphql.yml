@@ -6,6 +6,8 @@ services:
     public: false
 
   pimcore.datahub.graphql.type.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType'
+  pimcore.datahub.graphql.type.object_datatype_video: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoType'
+  pimcore.datahub.graphql.type.object_datatype_video_data: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoTypeDataType'
   pimcore.datahub.graphql.type.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\ElementDescriptorInputType'
   pimcore.datahub.graphql.type.asset_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetInputType'
   pimcore.datahub.graphql.type.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\GeopointInputType'
@@ -326,6 +328,14 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType:
     tags:
       - { name: pimcore.datahub.graphql.type, id: manytoone }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoType:
+    tags:
+      - { name: pimcore.datahub.graphql.type, id: object_datatype_video }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoTypeDataType:
+    tags:
+      - { name: pimcore.datahub.graphql.type, id: object_datatype_video_data }
 
   #
   # built-in mutation datatypes type generator
