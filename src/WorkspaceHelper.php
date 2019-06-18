@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle;
@@ -33,11 +33,11 @@ class WorkspaceHelper
      */
     public static function saveWorkspaces(Configuration $config, $workspaces)
     {
-        if (isset($workspaces)) {
-            $db = Db::get();
-            $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
-            $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
+        $db = Db::get();
+        $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
+        $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
 
+        if (is_array($workspaces)) {
             foreach ($workspaces as $type => $spaces) {
                 foreach ($spaces as $space) {
                     $element = \Pimcore\Model\Element\Service::getElementByPath($type, $space['cpath']);
@@ -144,13 +144,13 @@ class WorkspaceHelper
                     $path = '/';
                 }
 
-                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()). ' AND ' . $type . ' = 1 LIMIT 1', $path . '%');
+                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()) . ' AND ' . $type . ' = 1 LIMIT 1', $path . '%');
                 if ($permissionsChildren) {
                     return true;
                 }
             }
         } catch (\Exception $e) {
-            Logger::warn('Unable to get permission ' . $type . ' for ' . $elementType . ' '.  $element->getId());
+            Logger::warn('Unable to get permission ' . $type . ' for ' . $elementType . ' ' . $element->getId());
         }
 
         return false;
