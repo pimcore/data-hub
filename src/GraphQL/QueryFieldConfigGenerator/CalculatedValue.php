@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator;
 
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use GraphQL\Type\Definition\Type;
 
 /**
  * Class CalculatedValue
@@ -34,21 +33,16 @@ class CalculatedValue extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig($fieldDefinition, $class, $attribute, [
-            'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $class, $container)
-        ], $container);
-    }
-
-    /**
-     * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
-     *
-     * @return \GraphQL\Type\Definition\Type
-     */
-    public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
-    {
-        return Type::string();
+        return $this->enrichConfig(
+            $fieldDefinition,
+            $class,
+            $attribute,
+            [
+                'name' => $fieldDefinition->getName(),
+                'type' => $this->getFieldType($fieldDefinition, $class, $container),
+                'description' => $fieldDefinition->getTooltip(),
+            ],
+            $container
+        );
     }
 }
