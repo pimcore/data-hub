@@ -95,6 +95,11 @@ services:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_input }
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_rgbaColor }
 
+  pimcore.datahub.graphql.querytypegenerator_datatype_calculatedvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\CalculatedValue
+    tags:
+      - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_calculatedValue }
+
   pimcore.datahub.graphql.querytypegenerator_datatype_lastname:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Input
     tags:
