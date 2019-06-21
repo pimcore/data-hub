@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
+
+use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+
+class QuantityValue
+{
+    use ServiceTrait;
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveUnit($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+            $unit = $value->getUnit();
+            return ($unit instanceof \Pimcore\Model\DataObject\QuantityValue\Unit) ? $unit->getObjectVars() : [];
+        }
+
+        return [];
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return string
+     * @throws \Exception
+     */
+    public function resolveValue($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+            return $value->getValue();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return string
+     * @throws \Exception
+     */
+    public function resolveToString($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $returnValue = null;
+
+        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+            if (isset($args['language'])) {
+                $localService = $this->getGraphQlService()->getLocaleService();
+                $currentLocale = $localService->getLocale();
+
+                $localService->setLocale($args['language']);
+            }
+
+            $returnValue =  (string)$value->__toString();
+
+            if (isset($args['language'])) {
+                $localService->setLocale($currentLocale);
+            }
+        }
+
+        return $returnValue;
+    }
+}
