@@ -134,6 +134,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_numeric }
 
+  pimcore.datahub.graphql.querytypegenerator_datatype_quantityvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\QuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_quantityValue }
+
   pimcore.datahub.graphql.querytypegenerator_datatype_select:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Select
     tags:
@@ -328,6 +333,10 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType:
     tags:
       - { name: pimcore.datahub.graphql.type, id: manytoone }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Type\QuantityValueType:
+    tags:
+      - { name: pimcore.datahub.graphql.type, id: quantity_value }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoType:
     tags:
