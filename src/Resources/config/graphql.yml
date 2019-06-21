@@ -143,6 +143,7 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\QuantityValue
     tags:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_quantityValue }
+      - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_inputQuantityValue }
 
   pimcore.datahub.graphql.querytypegenerator_datatype_select:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Select

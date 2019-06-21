@@ -26,6 +26,6 @@ class QuantityValue extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return new QuantityValueType($this->getGraphQlService(), $fieldDefinition, $class);
+        return new QuantityValueType($this->getGraphQlService(), $fieldDefinition, null, $class);
     }
 }
