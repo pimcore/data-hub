@@ -44,9 +44,6 @@ class AssetInputType extends InputObjectType
      */
     public function build(&$config)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetType();
-        $resolver->setGraphQLService($this->getGraphQlService());
-
         $config['fields'] = [
             'filename' => Type::string(),
             'parentId' => Type::int(),
