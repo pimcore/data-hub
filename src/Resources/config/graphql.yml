@@ -8,6 +8,7 @@ services:
   pimcore.datahub.graphql.type.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetType'
   pimcore.datahub.graphql.type.object_datatype_video: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoType'
   pimcore.datahub.graphql.type.object_datatype_video_data: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\VideoTypeDataType'
+  pimcore.datahub.graphql.type.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\InputType\ImageInputType'
   pimcore.datahub.graphql.type.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\ElementDescriptorInputType'
   pimcore.datahub.graphql.type.asset_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\AssetInputType'
   pimcore.datahub.graphql.type.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\Type\GeopointInputType'
@@ -352,6 +353,14 @@ services:
       - { name: pimcore.datahub.graphql.type, id: object_datatype_video_data }
 
   #
+  # input type definitions
+  #
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Type\InputType\ImageInputType:
+    tags:
+      - { name: pimcore.datahub.graphql.type, id: image_input }
+
+  #
   # built-in mutation datatypes type generator
   #
   pimcore.datahub.graphql.mutationtypegenerator_datatype_checkbox:
@@ -408,6 +417,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\Base
     tags:
       - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_input }
+
+  pimcore.datahub.graphql.mutationtypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_image }
 
   pimcore.datahub.graphql.mutationtypegenerator_datatype_language:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\Base
