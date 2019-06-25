@@ -31,6 +31,7 @@ use Pimcore\Logger;
 use Pimcore\Model\Factory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class WebserviceController extends FrontendController
 {
@@ -49,12 +50,8 @@ class WebserviceController extends FrontendController
         $clientname = $request->get('clientname');
 
         $configuration = Configuration::getByName($clientname);
-        if (!$configuration) {
-            throw new \Exception('No configuration found for ' . $clientname);
-        }
-
-        if (!$configuration->isActive()) {
-            throw new \Exception('Configuration not active');
+        if (!$configuration || !$configuration->isActive()) {
+            throw new NotFoundHttpException('No active configuration found for ' . $clientname);
         }
 
         $this->performSecurityCheck($request, $configuration);
