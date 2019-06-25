@@ -73,8 +73,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public
-    function resolveCrop($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveCrop($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['crop']) ? $value['crop'] : null;
     }
@@ -87,8 +86,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public
-    function resolveHotspots($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveHotspots($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['hotspots']) ? $value['hotspots'] : null;
     }
@@ -101,8 +99,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public
-    function resolveMarker($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveMarker($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['marker']) ? $value['marker'] : null;
     }
