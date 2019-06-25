@@ -34,7 +34,7 @@ class Image extends Base
         return [
             'arg' => $this->getGraphQlService()->getTypeDefinition("image_input"),
             'processor' => [$processor, 'process'],
-            'description' => "Either as Asset ID or Asset Path"
+            'description' => "Asset ID"
         ];
     }
 
