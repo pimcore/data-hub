@@ -16,7 +16,10 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
 /**
@@ -38,18 +41,28 @@ class HotspotType
      */
     public function resolveImage($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $asset = Asset::getById($value['id']);
-        $return = [];
-        foreach ($asset->getObjectVars() as $fieldName => $var) {
-            $return[$fieldName] = $var;
+        if ($value instanceof ElementDescriptor) {
+
+            $image = Asset::getById($value["id"]);
+            if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
+                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                    throw new \Exception('not allowed to view video');
+                } else {
+                    return null;
+                }
+            }
+
+
+            $data = new ElementDescriptor();
+            $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
+            $fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
+            $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
+            $data['__elementSubtype'] = $image->getType();
+            return $data;
+
         }
+        return null;
 
-        // enrich data
-        $return["fullpath"] = $asset->getFullPath();
-        $return["filesize"] = $asset->getFileSize();
-        $return["creationDate"] = 123;
-
-        return !empty($return) ? $return : null;
     }
 
     /**
@@ -60,7 +73,8 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveCrop($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public
+    function resolveCrop($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['crop']) ? $value['crop'] : null;
     }
@@ -73,7 +87,8 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveHotspots($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public
+    function resolveHotspots($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['hotspots']) ? $value['hotspots'] : null;
     }
@@ -86,7 +101,8 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveMarker($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public
+    function resolveMarker($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return !empty($value['marker']) ? $value['marker'] : null;
     }

@@ -73,6 +73,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_geopoint }
 
+  pimcore.datahub.graphql.querytypegenerator_datatype_hotspotimage:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Hotspotimage
+    tags:
+      - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_hotspotimage }
+
   pimcore.datahub.graphql.querytypegenerator_datatype_image:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Image
     tags:
@@ -333,7 +338,7 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\HotspotType:
     tags:
-      - { name: pimcore.datahub.graphql.type, id: hotspot }
+      - { name: pimcore.datahub.graphql.type, id: object_datatype_hotspotimage }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType:
     tags:
