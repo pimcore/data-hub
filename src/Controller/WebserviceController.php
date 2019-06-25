@@ -19,6 +19,9 @@ use GraphQL\Error\Debug;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryResultEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
@@ -29,11 +32,25 @@ use Pimcore\Controller\FrontendController;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\Factory;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class WebserviceController extends FrontendController
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @param Service $service
      * @param LocaleServiceInterface $localeService
@@ -114,6 +131,14 @@ class WebserviceController extends FrontendController
                 ];
             }
 
+            $this->eventDispatcher->dispatch(QueryEvents::PRE_EXECUTE,
+                new QueryEvent(
+                    $request,
+                    $query,
+                    $schema,
+                    $context)
+            );
+
             $result = GraphQL::executeQuery(
                 $schema,
                 $query,
@@ -125,6 +150,9 @@ class WebserviceController extends FrontendController
                 $validators
 
             );
+
+            $this->eventDispatcher->dispatch(QueryEvents::POST_EXECUTE,
+                new QueryResultEvent($request, $result));
 
             if (PIMCORE_DEBUG) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;

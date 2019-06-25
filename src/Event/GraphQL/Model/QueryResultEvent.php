@@ -1,0 +1,58 @@
+<?php
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
+namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
+
+use GraphQL\Executor\ExecutionResult;
+use Pimcore\Event\Traits\RequestAwareTrait;
+use Pimcore\Event\Traits\ResponseAwareTrait;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\HttpFoundation\Request;
+
+class QueryResultEvent extends Event
+{
+    use RequestAwareTrait;
+    use ResponseAwareTrait;
+
+    /**
+     * @var ExecutionResult
+     */
+    protected $result;
+
+    /**
+     * @return ExecutionResult
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
+
+    /**
+     * @param ExecutionResult $result
+     */
+    public function setResult(ExecutionResult $result)
+    {
+        $this->result = $result;
+    }
+
+    /**
+     * @param Request $request
+     * @param ExecutionResult $result
+     */
+    public function __construct(Request $request, ExecutionResult $result)
+    {
+        $this->request = $request;
+        $this->result = $result;
+    }
+}
