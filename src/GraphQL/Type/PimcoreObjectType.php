@@ -30,8 +30,15 @@ class PimcoreObjectType extends ObjectType
 {
     use ServiceTrait;
 
-    /** @var ClassDefinition */
-    protected $class;
+    /**
+     * @var string
+     */
+    protected $className;
+
+    /**
+     * @var int
+     */
+    protected $classId;
 
     protected static $skipOperators;
 
@@ -40,15 +47,16 @@ class PimcoreObjectType extends ObjectType
 
     /**
      * PimcoreObjectType constructor.
-     * @param Service $service
-     * @param $class
+     * @param Service $graphQlService
+     * @param string $className
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $class, $config = [], $context = [])
+    public function __construct(Service $graphQlService, string $className, int $classId, $config = [], $context = [])
     {
-        $this->class = $class;
-        $this->name = $config['name'] = 'object_' . $class->getName();
+        $this->className = $className;
+        $this->classId = $classId;
+        $this->name = $config['name'] = 'object_' . $className;
         $this->setGraphQLService($graphQlService);
         $config['interfaces'] = [Element::getInstance()];
         parent::__construct($config);
@@ -66,8 +74,6 @@ class PimcoreObjectType extends ObjectType
             ['name' => 'id',
                 'type' => Type::id(),
             ],
-//            "fullpath" => Type::string(),
-//            "key" => Type::string(),
             'classname' => [
                 'type' => Type::string(),
             ],
@@ -79,9 +85,10 @@ class PimcoreObjectType extends ObjectType
             /** @var $configurationItem Configuration */
             $configurationItem = $context['configuration'];
 
-            $columns = $configurationItem->getQueryColumnConfig($this->class->getName())['columns'];
+            $columns = $configurationItem->getQueryColumnConfig($this->className)['columns'];
 
             if ($columns) {
+                $class = ClassDefinition::getById($this->classId);
                 foreach ($columns as $column) {
                     if ($column['isOperator'] && self::$skipOperators) {
                         continue;
@@ -89,7 +96,7 @@ class PimcoreObjectType extends ObjectType
 
                     /** @var $fieldHelper DataObjectFieldHelper */
                     $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                    $result = $fieldHelper->getQueryFieldConfigFromConfig($column, $this->class);
+                    $result = $fieldHelper->getQueryFieldConfigFromConfig($column, $class);
                     if ($result) {
                         $fields[$result['key']] = $result['config'];
                     }
@@ -101,37 +108,6 @@ class PimcoreObjectType extends ObjectType
         $this->config['fields'] = $fields;
     }
 
-    /**
-     * @return ClassDefinition
-     */
-    public function getClass(): ClassDefinition
-    {
-        return $this->class;
-    }
-
-    /**
-     * @param ClassDefinition $class
-     */
-    public function setClass(ClassDefinition $class): void
-    {
-        $this->class = $class;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFieldname(): string
-    {
-        return $this->fieldname;
-    }
-
-    /**
-     * @param string $fieldname
-     */
-    public function setFieldname(string $fieldname): void
-    {
-        $this->fieldname = $fieldname;
-    }
 
     /**
      * @return mixed
@@ -163,4 +139,6 @@ class PimcoreObjectType extends ObjectType
 
         return $this->fields;
     }
+
+
 }
