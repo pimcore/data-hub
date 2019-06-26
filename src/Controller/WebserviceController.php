@@ -32,6 +32,7 @@ use Pimcore\Model\Factory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class WebserviceController extends FrontendController
 {
@@ -146,19 +147,20 @@ class WebserviceController extends FrontendController
      * @param Request $request
      * @param Configuration $configuration
      *
-     * @return bool
+     * @return void
      *
-     * @throws \Exception
+     * @throws AccessDeniedHttpException
      */
-    protected function performSecurityCheck(Request $request, Configuration $configuration)
+    protected function performSecurityCheck(Request $request, Configuration $configuration): void
     {
-        $securityConfig= $configuration->getSecurityConfig();
-        if ($securityConfig['method'] == 'datahub_apikey') {
+        $securityConfig = $configuration->getSecurityConfig();
+        if ($securityConfig['method'] === 'datahub_apikey') {
             $apiKey = $request->get('apikey');
-            if ($apiKey == $securityConfig['apikey']) {
-                return true;
+            if ($apiKey === $securityConfig['apikey']) {
+                return;
             }
         }
-        throw new \Exception('permission denied');
+
+        throw new AccessDeniedHttpException('Permission denied, apikey not valid');
     }
 }
