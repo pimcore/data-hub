@@ -76,4 +76,21 @@ class QuantityValueType extends ObjectType
                 ]
             ];
     }
+
+    /**
+     * @param $graphQlService
+     * @param $fieldDefinition
+     * @param $config
+     * @param $class
+     * @param $container
+     * @return QuantityValueType
+     */
+    public static function getInstance($graphQlService, $fieldDefinition, $config, $class, $container)
+    {
+        if (!self::$instance || ($fieldDefinition->getFieldType() != self::$instance->fieldDefinition->getFieldType())) {
+            self::$instance = new static($graphQlService, $fieldDefinition, $config, $class, $container);
+        }
+
+        return self::$instance;
+    }
 }
