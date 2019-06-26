@@ -28,6 +28,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Firstname
 * Gender
 * Geopoint
+* Image
 * Input
 * Language
 * Lastname
