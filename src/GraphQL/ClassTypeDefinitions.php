@@ -9,14 +9,14 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Type\PimcoreObjectType;
-use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Db;
 
 class ClassTypeDefinitions
 {
@@ -32,12 +32,14 @@ class ClassTypeDefinitions
      */
     public static function build(Service $graphQlService, $context = [])
     {
-        $listing = new ClassDefinition\Listing();
-        $listing = $listing->load();
+        $db = Db::get();
+        $listing = $db->fetchAll("select id, name from classes");
 
         foreach ($listing as $class) {
-            $objectType = new PimcoreObjectType($graphQlService, $class, [], $context);
-            self::$definitions[$class->getName()] = $objectType;
+            $id = $class["id"];
+            $name = $class["name"];
+            $objectType = new PimcoreObjectType($graphQlService, $name, $id, [], $context);
+            self::$definitions[$name] = $objectType;
         }
 
         foreach (self::$definitions as $name => $definition) {
