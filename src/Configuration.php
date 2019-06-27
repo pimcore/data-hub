@@ -190,9 +190,9 @@ class Configuration extends AbstractModel
     /**
      * @param $name
      *
-     * @return Configuration
+     * @return Configuration|null
      */
-    public static function getByName($name): Configuration
+    public static function getByName($name)
     {
         return Dao::getByName($name);
     }

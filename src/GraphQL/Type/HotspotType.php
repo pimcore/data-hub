@@ -49,6 +49,7 @@ class HotspotType extends ObjectType
     public function build(&$config)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
+        $resolver->setGraphQLService($this->getGraphQlService());
 
         $config['fields'] = [
             'image' => [

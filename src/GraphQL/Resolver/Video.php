@@ -132,7 +132,7 @@ class Video
 
                 $data = new ElementDescriptor();
                 $asset = $value->getData();
-                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+                $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
                 $fieldHelper->extractData($data, $asset, $args, $context, $resolveInfo);
                 $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
                 $data['__elementSubtype'] = $asset->getType();

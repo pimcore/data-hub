@@ -10,7 +10,7 @@
 
 * [Get News + Autor + Profile Image](graphl/querysamples/Sample1.md)
 * [Get News Listing](graphl/querysamples/Sample2.md)
-* [Filtered News Listing](graphl/querysamples/Filtering.md)
+* [Filtered News Listing](graphl/Filtering.md )
 * [Many-to-Many Object Relation](graphl/querysamples/Sample6.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)
 * [Get Asset Directly](graphl/querysamples/Sample3.md)
