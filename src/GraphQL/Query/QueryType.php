@@ -18,17 +18,27 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use  Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Factory;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class QueryType extends ObjectType
 {
 
     use ServiceTrait;
+    use PermissionInfoTrait;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var LocaleServiceInterface
@@ -50,7 +60,7 @@ class QueryType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, $config = [], $context = [])
+    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
     {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
@@ -58,6 +68,7 @@ class QueryType extends ObjectType
         $this->setGraphQLService($graphQlService);
         $this->localeService = $localeService;
         $this->modelFactory = $modelFactory;
+        $this->eventDispatcher = $eventDispatcher;
 
         $this->build($config, $context);
         parent::__construct($config);
@@ -125,7 +136,7 @@ class QueryType extends ObjectType
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
     protected function getResolver($class = null, $configuration = null) {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
     }
@@ -227,6 +238,13 @@ class QueryType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
+        $event =  new QueryTypeEvent(
+            $this,
+            $config,
+            $context
+        );
+        $this->eventDispatcher->dispatch(QueryEvents::PRE_BUILD, $event);
+
         $this->buildAssetQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);

@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use  Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -32,6 +33,7 @@ class QueryType
 {
 
     use ServiceTrait;
+    use PermissionInfoTrait;
 
     /**
      * @var null
@@ -47,11 +49,13 @@ class QueryType
      * QueryType constructor.
      * @param $class
      * @param $configuration
+     * @param $omitPermissionCheck
      */
-    public function __construct($class = null, $configuration = null)
+    public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
     {
         $this->class = $class;
         $this->configuration = $configuration;
+        $this->omitPermissionCheck = $omitPermissionCheck;
     }
 
     /**
@@ -78,7 +82,7 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read') && !$this->omitPermissionCheck) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
                 throw new \Exception('not allowed to view asset ' . $element->getFullPath());
             } else {
@@ -137,7 +141,7 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read')) {
+        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
                 throw new \Exception('not allowed to view asset ' . $assetElement->getFullPath());
             } else {
@@ -206,7 +210,7 @@ class QueryType
         }
         $object = $objectList[0];
 
-        if (!WorkspaceHelper::isAllowed($object, $configuration, 'read')) {
+        if (!WorkspaceHelper::isAllowed($object, $configuration, 'read') && !$this->omitPermissionCheck) {
             throw new \Exception('permission denied. check your workspace settings');
         }
 
@@ -233,7 +237,7 @@ class QueryType
         $object = AbstractObject::getById($objectId);
 
         $data = [];
-        if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read')) {
+        if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read') && !$this->omitPermissionCheck) {
             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         }

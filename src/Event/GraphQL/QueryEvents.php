@@ -17,16 +17,9 @@ namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL;
 final class QueryEvents
 {
     /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryEvent")
+     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent")
      *
      * @var string
      */
-    const PRE_EXECUTE = 'pimcore.datahub.graphql.query.preExecute';
-
-    /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryResultEvent")
-     *
-     * @var string
-     */
-    const POST_EXECUTE = 'pimcore.datahub.graphql.query.postExecute';
+    const PRE_BUILD = 'pimcore.datahub.graphql.query.preBuild';
 }
