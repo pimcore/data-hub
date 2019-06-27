@@ -36,19 +36,20 @@ class Image extends Base
     {
         $attribute = $this->getAttribute();
 
-        if(!array_key_exists('id',$newValue) && PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-            throw new \Exception("Field {$attribute}.id was not provided.");
+        if(!array_key_exists('id',$newValue)) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception("Field {$attribute}.id was not provided.");
+            }
+            return null;
         }
 
         Service::setValue($object, $attribute, function($container, $setter) use ($newValue, $attribute) {
             $image = null;
 
-            if (is_array($newValue)) {
+            if (isset($newValue["id"])) {
                 $asset = Asset::getById($newValue["id"]);
                 if ($asset instanceof Asset\Image) {
                     $image = $asset;
-                } else if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new \Exception("Invalid Asset(Image) ID provided for field " . $attribute);
                 }
             }
 
