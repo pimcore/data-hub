@@ -198,6 +198,7 @@ class QueryType
             $objectList->setCondition($condition);
         }
 
+        $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
         $objectList->setLimit(1);
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
@@ -327,6 +328,8 @@ class QueryType
             $condition = implode(' AND ', $conditionParts);
             $objectList->setCondition($condition);
         }
+
+        $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
         $totalCount = $objectList->getTotalCount();
         $objectList = $objectList->load();
