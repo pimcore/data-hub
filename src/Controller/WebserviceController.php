@@ -19,9 +19,9 @@ use GraphQL\Error\Debug;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryEvent;
-use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryResultEvent;
-use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ExecutorEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorResultEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
@@ -88,8 +88,8 @@ class WebserviceController extends FrontendController
 
         ClassTypeDefinitions::build($service, $context);
 
-        $queryType = new QueryType($service, $localeService, $modelFactory, [], $context);
-        $mutationType = new MutationType($service, $localeService, $modelFactory, [], $context);
+        $queryType = new QueryType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
+        $mutationType = new MutationType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
 
 
         try {
@@ -131,8 +131,8 @@ class WebserviceController extends FrontendController
                 ];
             }
 
-            $this->eventDispatcher->dispatch(QueryEvents::PRE_EXECUTE,
-                new QueryEvent(
+            $this->eventDispatcher->dispatch(ExecutorEvents::PRE_EXECUTE,
+                new ExecutorEvent(
                     $request,
                     $query,
                     $schema,
@@ -151,8 +151,8 @@ class WebserviceController extends FrontendController
 
             );
 
-            $this->eventDispatcher->dispatch(QueryEvents::POST_EXECUTE,
-                new QueryResultEvent($request, $result));
+            $this->eventDispatcher->dispatch(ExecutorEvents::POST_EXECUTE,
+                new ExecutorResultEvent($request, $result));
 
             if (PIMCORE_DEBUG) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;

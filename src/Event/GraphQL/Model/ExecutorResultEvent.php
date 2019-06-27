@@ -20,7 +20,7 @@ use Pimcore\Event\Traits\ResponseAwareTrait;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
-class QueryResultEvent extends Event
+class ExecutorResultEvent extends Event
 {
     use RequestAwareTrait;
     use ResponseAwareTrait;
