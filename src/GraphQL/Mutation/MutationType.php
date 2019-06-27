@@ -183,7 +183,7 @@ class MutationType extends ObjectType
 
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance);
 
-                        call_user_func_array($resolver, [ $newInstance, $value, $args, $context, $info]);
+                        call_user_func_array($resolver, [ $value, $args, $context, $info]);
 
                         $newInstance->save();
 
@@ -322,7 +322,7 @@ class MutationType extends ObjectType
     }
 
     public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null) {
-        return static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $object) {
+        return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object) {
             try {
 
                 /** @var $configuration Configuration */
