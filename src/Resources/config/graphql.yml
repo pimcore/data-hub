@@ -408,7 +408,7 @@ services:
       - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_email }
 
   pimcore.datahub.graphql.mutationtypegenerator_datatype_externalImage:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\Base
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\ExternalImage
     tags:
       - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_externalImage }
 
