@@ -49,14 +49,13 @@ class QuantityValueType extends ObjectType
      */
     public function build(&$config)
     {
+
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QuantityValue();
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $valueType = Type::float();
-
-        if ($this->fieldDefinition instanceof Data\InputQuantityValue) {
-            $valueType = Type::string();
-            $config['name'] = ucfirst($this->fieldDefinition->getFieldtype());
+        if (isset($config['fields']['value']['type'])) {
+            $valueType = $config['fields']['value']['type'];
         }
 
         $config['fields'] =
@@ -75,22 +74,5 @@ class QuantityValueType extends ObjectType
                     'args' => ['language' => ['type' => Type::string()]]
                 ]
             ];
-    }
-
-    /**
-     * @param $graphQlService
-     * @param $fieldDefinition
-     * @param $config
-     * @param $class
-     * @param $container
-     * @return QuantityValueType
-     */
-    public static function getInstance($graphQlService, $fieldDefinition, $config, $class, $container)
-    {
-        if (!self::$instance || ($fieldDefinition->getFieldType() != self::$instance->fieldDefinition->getFieldType())) {
-            self::$instance = new static($graphQlService, $fieldDefinition, $config, $class, $container);
-        }
-
-        return self::$instance;
     }
 }

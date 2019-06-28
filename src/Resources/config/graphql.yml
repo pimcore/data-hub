@@ -143,6 +143,10 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\QuantityValue
     tags:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_quantityValue }
+
+  pimcore.datahub.graphql.querytypegenerator_datatype_inputquantityvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\InputQuantityValue
+    tags:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_inputQuantityValue }
 
   pimcore.datahub.graphql.querytypegenerator_datatype_select:
@@ -339,6 +343,10 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\HrefType:
     tags:
       - { name: pimcore.datahub.graphql.type, id: manytoone }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Type\InputQuantityValueType:
+    tags:
+      - { name: pimcore.datahub.graphql.type, id: input_quantity_value }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\Type\QuantityValueType:
     tags:

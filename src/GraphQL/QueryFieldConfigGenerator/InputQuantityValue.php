@@ -15,10 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Type\QuantityValueType;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class QuantityValue extends Base
+class InputQuantityValue extends Base
 {
     /**
      * @inheritdoc
@@ -26,6 +25,6 @@ class QuantityValue extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->getGraphQlService()->getTypeDefinition("quantity_value");
+        return $this->getGraphQlService()->getTypeDefinition("input_quantity_value");
     }
 }
