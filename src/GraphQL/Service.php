@@ -133,12 +133,12 @@ class Service
      * @param $attribute
      * @param $typeName
      * @param Data|null $fieldDefinition
-     * @param ClassDefinition|null $class
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition|null $class
      * @param null $container
      *
      * @return mixed
      */
-    public function buildQueryDataConfig($attribute, $typeName, Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
+    public function buildQueryDataConfig($attribute, $typeName, $fieldDefinition = null, $class = null, $container = null)
     {
         /** @var QueryFieldConfigGeneratorInterface $factory */
         $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $typeName);
@@ -600,16 +600,15 @@ class Service
         return $result;
     }
 
-
     /**
      * @param $objectId
      * @param Data $fieldDefinition
      * @param $attribute
      * @param array $args
+     * @param null $descriptor
      * @return \stdclass|null
-     * @throws \Exception
      */
-    public static function resolveValue($objectId, Data $fieldDefinition, $attribute, $args = [])
+    public static function resolveValue($objectId, Data $fieldDefinition, $attribute, $args = [], $descriptor = null)
     {
         $getter = 'get' . ucfirst($fieldDefinition->getName());
         $object = Concrete::getById($objectId);
@@ -625,7 +624,22 @@ class Service
         $brickType = null;
         $brickKey = null;
 
-        if (substr($attribute, 0, 1) == '~') {
+        if ($descriptor instanceof FieldcollectionDecriptor) {
+
+            $descriptorData = $descriptor->getArrayCopy();
+            $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+            $fcData = $object->$fcFieldNameGetter();
+            if ($fcData) {
+                $items = $fcData->getItems();
+                $idx = $descriptorData["__itemIdx"];
+                $itemData = $items[$idx];
+                if (isset($args) && isset($args["language"])) {
+                    $result = $itemData->$getter($args["language"]);
+                } else {
+                    $result = $itemData->$getter();
+                }
+            }
+        } else if (substr($attribute, 0, 1) == '~') {
             // key value, ignore for now
         } elseif (count($attributeParts) > 1) {
             // TODO once the datahub gets integrated into the core we should try to share this code
