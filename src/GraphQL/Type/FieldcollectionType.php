@@ -64,9 +64,6 @@ class FieldcollectionType extends UnionType implements ContainerAwareInterface
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element instanceof FieldcollectionDecriptor) {
-
-            $eDump = $element->getArrayCopy();
-
             $fcName = $element["__fcType"];
             $fcKey = "graphql_fieldcollection_" . $fcName;
             $type = Runtime::get($fcKey);

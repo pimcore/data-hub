@@ -109,7 +109,7 @@ class PimcoreObjectType extends ObjectType
                         /** @var $fieldHelper DataObjectFieldHelper */
                         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                         $result = $fieldHelper->getQueryFieldConfigFromConfig($column, $class);
-                        if ($result) {
+                        if (is_array($result)) {
                             $fields[$result['key']] = $result['config'];
                         }
                     }
@@ -148,14 +148,14 @@ class PimcoreObjectType extends ObjectType
 
                 foreach ($fcFieldDefs as $key => $fieldDef) {
                     $attrName = $fieldDef->getName();
-                    $columnDesc = array(
+                    $columnDesc = [
                         "isOperator" => false,
-                        "attributes" => array(
+                        "attributes" => [
                             "attribute" => $attrName,
                             "label" => $fieldDef->getName(),
                             "dataType" => $fieldDef->getFieldtype()
-                        )
-                    );
+                        ]
+                    ];
                     $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
                     if ($fcResult) {
                         $fcFields[$fcResult['key']] = $fcResult['config'];
@@ -171,14 +171,14 @@ class PimcoreObjectType extends ObjectType
                     foreach ($fcLocalizedFieldDefs as $key => $fieldDef) {
                         $attrName = $fieldDef->getName();
 
-                        $columnDesc = array(
+                        $columnDesc = [
                             "isOperator" => false,
-                            "attributes" => array(
+                            "attributes" => [
                                 "attribute" => $attrName,
                                 "label" => $fieldDef->getName(),
                                 "dataType" => $fieldDef->getFieldtype()
-                            )
-                        );
+                            ]
+                        ];
                         $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
                         if ($fcResult) {
                             $fcFields[$fcResult['key']] = $fcResult['config'];
