@@ -19,6 +19,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Geopoint
 * Image
 * Input
+* InputQuantityValue
 * Language
 * Languages (Multiselect)
 * Lastname
