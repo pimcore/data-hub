@@ -20,8 +20,11 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use  Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Localization\LocaleServiceInterface;
@@ -32,11 +35,18 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Factory;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MutationType extends ObjectType
 {
 
     use ServiceTrait;
+    use PermissionInfoTrait;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var LocaleServiceInterface
@@ -55,11 +65,12 @@ class MutationType extends ObjectType
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
+     * @param EventDispatcherInterface $eventDispatcher
      * @param array $config
      * @param array $context
      * @throws \Exception
      */
-    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, $config = [], $context = [])
+    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
     {
         if (!isset($config['name'])) {
             $config['name'] = 'Mutations';
@@ -67,6 +78,7 @@ class MutationType extends ObjectType
         $this->setGraphQLService($graphQlService);
         $this->localeService = $localeService;
         $this->modelFactory = $modelFactory;
+        $this->eventDispatcher = $eventDispatcher;
 
         $this->build($config, $context);
         parent::__construct($config);
@@ -159,7 +171,7 @@ class MutationType extends ObjectType
 
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
-                        if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
+                        if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$me->omitPermissionCheck) {
                             return [
                                 "success" => false,
                                 "message" => "not allowed to create object " . $entity
@@ -181,7 +193,7 @@ class MutationType extends ObjectType
                         $newInstance->setParent($parent);
                         $newInstance->setKey($key);
 
-                        $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance);
+                        $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
                         call_user_func_array($resolver, [ $value, $args, $context, $info]);
 
@@ -237,7 +249,7 @@ class MutationType extends ObjectType
                             'id' => ['type' => Type::nonNull(Type::int())],
                             'defaultLanguage' => ['type' => Type::string()],
                             'input' => ['type' => $inputType],
-                        ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null)
+                        ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null, $this->omitPermissionCheck)
                     ];
 
                     $config['fields'][$opName] = $updateField;
@@ -267,7 +279,7 @@ class MutationType extends ObjectType
                             $configuration = $context['configuration'];
                             $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                             $object = $className::getById($id);
-                            if (!WorkspaceHelper::isAllowed($object, $configuration, "delete")) {
+                            if (!WorkspaceHelper::isAllowed($object, $configuration, "delete") && !$this->omitPermissionCheck) {
                                 return [
                                     "success" => false,
                                     "message" => "permission denied."
@@ -321,8 +333,8 @@ class MutationType extends ObjectType
         }
     }
 
-    public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null) {
-        return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object) {
+    public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false) {
+        return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
             try {
 
                 /** @var $configuration Configuration */
@@ -334,7 +346,7 @@ class MutationType extends ObjectType
                     $object = $className::getById($id);
                 }
 
-                if (!WorkspaceHelper::isAllowed($object, $configuration, "update")) {
+                if (!WorkspaceHelper::isAllowed($object, $configuration, "update") && !$omitPermissionCheck) {
                     return [
                         "success" => false,
                         "message" => "permission denied."
@@ -454,12 +466,14 @@ class MutationType extends ObjectType
                 ],
             ]);
 
+            $omitPermissionCheck = $this->omitPermissionCheck;
+
             $updateField = [
                 'type' => $updateResultType,
                 'args' => [
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'input' => ['type' => $inputType],
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type) {
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck) {
                     try {
                         $id = $args["id"];
                         /** @var $configuration Configuration */
@@ -470,7 +484,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "update")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "update") && !$omitPermissionCheck) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -527,11 +541,13 @@ class MutationType extends ObjectType
                 ],
             ]);
 
+            $omitPermissionCheck = $this->omitPermissionCheck;
+
             $deleteField = [
                 'type' => $deleteResultType,
                 'args' => [
                     'id' => ['type' => Type::nonNull(Type::int())],
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type) {
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck) {
                     try {
                         $id = $args["id"];
                         /** @var $configuration Configuration */
@@ -543,7 +559,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete") && !$omitPermissionCheck) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -671,6 +687,7 @@ class MutationType extends ObjectType
             ]);
 
             $opName = 'createAsset';
+            $omitPermissionCheck = $this->omitPermissionCheck;
 
             $createField = [
                 'type' => $createResultType,
@@ -680,7 +697,7 @@ class MutationType extends ObjectType
                     'parentId' => ['type' => Type::int()],
                     'type'=> ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
                     'input' => $this->getGraphQlService()->getTypeDefinition("asset_input"),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) {
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
                     $parent = null;
 
                     if (isset($args["parentId"])) {
@@ -699,7 +716,7 @@ class MutationType extends ObjectType
 
                     /** @var $configuration Configuration */
                     $configuration = $context['configuration'];
-                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
+                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$omitPermissionCheck) {
                         return [
                             "success" => false,
                             "message" => "not allowed to create asset"
@@ -771,7 +788,7 @@ class MutationType extends ObjectType
 
                         $element = Asset::getById($id);
 
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete")) {
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete") && !$this->omitPermissionCheck) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -821,7 +838,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create")) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$this->omitPermissionCheck) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -872,7 +889,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "update")) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "update") && !$this->omitPermissionCheck) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -916,6 +933,13 @@ class MutationType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
+        $event =  new MutationTypeEvent(
+            $this,
+            $config,
+            $context
+        );
+        $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
+
         $this->buildDataObjectMutations($config, $context);
         $this->buildCreateAssetMutation($config, $context);
         $this->buildUpdateAssetMutation($config, $context);

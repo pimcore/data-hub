@@ -87,3 +87,7 @@ datahub:graphql:rebuild-definitions --definitions=newsapp,otherendpoint
 ```
 
 for specific definitions.
+
+## Events
+
+See [Events Documentation](./graphl/Events.md)

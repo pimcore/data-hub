@@ -19,6 +19,9 @@ use GraphQL\Error\Debug;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ExecutorEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorResultEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
@@ -29,6 +32,7 @@ use Pimcore\Controller\FrontendController;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\Factory;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -36,6 +40,19 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class WebserviceController extends FrontendController
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @param Service $service
      * @param LocaleServiceInterface $localeService
@@ -69,8 +86,8 @@ class WebserviceController extends FrontendController
 
         ClassTypeDefinitions::build($service, $context);
 
-        $queryType = new QueryType($service, $localeService, $modelFactory, [], $context);
-        $mutationType = new MutationType($service, $localeService, $modelFactory, [], $context);
+        $queryType = new QueryType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
+        $mutationType = new MutationType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
 
 
         try {
@@ -112,17 +129,30 @@ class WebserviceController extends FrontendController
                 ];
             }
 
-            $result = GraphQL::executeQuery(
-                $schema,
+            $event = new ExecutorEvent(
+                $request,
                 $query,
+                $schema,
+                $context);
+
+            $this->eventDispatcher->dispatch(ExecutorEvents::PRE_EXECUTE, $event);
+
+            $result = GraphQL::executeQuery(
+                $event->getSchema(),
+                $event->getQuery(),
                 $rootValue,
-                $context,
+                $event->getContext(),
                 $variableValues,
                 null,
                 null,
                 $validators
 
             );
+
+            $exResult = new ExecutorResultEvent($request, $result);
+            $this->eventDispatcher->dispatch(ExecutorEvents::POST_EXECUTE,
+                $exResult);
+            $result = $exResult->getResult();
 
             if (PIMCORE_DEBUG) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;
