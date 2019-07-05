@@ -112,8 +112,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param $nodeDef
      * @param $class
-     *
-     * @return array|bool
+     * @return array|bool|null
+     * @throws \Exception
      */
     public function getQueryFieldConfigFromConfig($nodeDef, $class)
     {
@@ -140,7 +140,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $key = $attributes['attribute'];
 
             // system columns which are not part of the common set (see PimcoreObjectType)
-            if ($attributes['dataType'] == 'system') {
+            if ($attributes['dataType'] === 'system') {
                 switch ($key) {
                     case 'creationDate':
                     case 'modificationDate':
@@ -159,6 +159,14 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'config' => [
                                 'name' => $key,
                                 'type' => Type::string()
+                            ]
+                        ];
+                    case 'parent':
+                        return [
+                            'key' => $key,
+                            'config' => [
+                                'name' => $key,
+                                'type' => Type::id(),
                             ]
                         ];
                     case 'published':
@@ -198,13 +206,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         return $result;
     }
 
-
     /**
      * @param $nodeDef
      * @param $class
      * @param $inputFields
-     *
-     * @return Data
+     * @return array|bool|mixed|null
+     * @throws \Exception
      */
     public function getMutationFieldConfigFromConfig($nodeDef, $class, $inputFields)
     {
@@ -231,22 +238,21 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
 
             // system columns which are not part of the common set (see PimcoreObjectType)
-            if ($attributes['dataType'] == 'system') {
+            if ($attributes['dataType'] === 'system') {
                 switch ($key) {
                     case 'key':
                         return [
                             'key' => $key,
                             'arg' => ['type' => Type::string()],
-                            'processor' => function($object, $newValue, $args) {
+                            'processor' => static function($object, $newValue) {
                                 $object->setKey($newValue);
                             }
-
                         ];
                     case 'published':
                         return [
                             'key' => $key,
                             'arg' => ['type' => Type::boolean()],
-                            'processor' => function($object, $newValue, $args) {
+                            'processor' => static function($object, $newValue) {
                                 $object->setPublished($newValue);
                             }
                         ];

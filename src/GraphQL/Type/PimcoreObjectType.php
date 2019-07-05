@@ -26,6 +26,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Model\DataObject\ClassDefinition;
 
+/**
+ * Class PimcoreObjectType
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\Type
+ */
 class PimcoreObjectType extends ObjectType
 {
     use ServiceTrait;
@@ -42,8 +46,10 @@ class PimcoreObjectType extends ObjectType
 
     protected static $skipOperators;
 
+    /**
+     * @var array
+     */
     protected $fields;
-
 
     /**
      * PimcoreObjectType constructor.
@@ -64,25 +70,27 @@ class PimcoreObjectType extends ObjectType
     }
 
     /**
-     * @param $config
      * @param array $context
+     * @throws \Exception
      */
-    public function build($context = [])
+    public function build($context = []): void
     {
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
-        $fields = ['id' =>
-            ['name' => 'id',
+        $fields = [
+            'id' => [
+                'name' => 'id',
                 'type' => Type::id(),
             ],
             'classname' => [
                 'type' => Type::string(),
             ],
-
+            'parent' => [
+                'type' => Type::id(),
+            ],
         ];
 
         if ($context['clientname']) {
-
             /** @var $configurationItem Configuration */
             $configurationItem = $context['configuration'];
 
@@ -91,7 +99,7 @@ class PimcoreObjectType extends ObjectType
             if ($columns) {
                 $class = ClassDefinition::getById($this->classId);
                 foreach ($columns as $column) {
-                    if ($column['isOperator'] && self::$skipOperators) {
+                    if (self::$skipOperators && $column['isOperator']) {
                         continue;
                     }
 
@@ -108,7 +116,6 @@ class PimcoreObjectType extends ObjectType
         $this->fields = null;
         $this->config['fields'] = $fields;
     }
-
 
     /**
      * @return mixed
@@ -131,15 +138,13 @@ class PimcoreObjectType extends ObjectType
      *
      * @throws InvariantViolation
      */
-    public function getFields()
+    public function getFields(): array
     {
         if (null === $this->fields) {
-            $fields = isset($this->config['fields']) ? $this->config['fields'] : [];
+            $fields = $this->config['fields'] ?? [];
             $this->fields = FieldDefinition::defineFieldMap($this, $fields);
         }
 
         return $this->fields;
     }
-
-
 }

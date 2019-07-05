@@ -45,7 +45,8 @@ class ObjectFolderType extends FolderType
                 'type' => Type::string()
             ],
             'creationDate' => Type::int(),
-            'modificationDateDate' => Type::int()
+            'modificationDateDate' => Type::int(),
+            'parent' => Type::id(),
         ];
 
     }
