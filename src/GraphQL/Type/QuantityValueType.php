@@ -19,6 +19,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class QuantityValueType extends ObjectType
 {
@@ -26,14 +27,18 @@ class QuantityValueType extends ObjectType
 
     protected static $instance;
 
+    protected $fieldDefinition;
+
     /**
      * FolderType constructor.
      * @param Service $graphQlService
+     * @param Data|null $fieldDefinition
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = [], $context = [])
+    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $config = [], $context = [])
     {
+        $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
@@ -44,29 +49,30 @@ class QuantityValueType extends ObjectType
      */
     public function build(&$config)
     {
+
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QuantityValue();
         $resolver->setGraphQLService($this->getGraphQlService());
 
-        if (!self::$instance) {
-            $config =
-                [
-                    'fields' => [
-                        'unit' => [
-                            'type' => QuantityValueUnitType::getInstance(),
-                            'resolve' => [$resolver, "resolveUnit"]
-                        ],
-                        'value' => [
-                            'type' => Type::float(),
-                            'resolve' => [$resolver, "resolveValue"]
-                        ],
-                        'toString' => [
-                            'type' => Type::string(),
-                            'resolve' => [$resolver, "resolveToString"],
-                            'args' => ['language' => ['type' => Type::string()]]
-                        ]
-
-                    ],
-                ];
+        $valueType = Type::float();
+        if (isset($config['fields']['value']['type'])) {
+            $valueType = $config['fields']['value']['type'];
         }
+
+        $config['fields'] =
+            [
+                'unit' => [
+                    'type' => QuantityValueUnitType::getInstance(),
+                    'resolve' => [$resolver, "resolveUnit"]
+                ],
+                'value' => [
+                    'type' => $valueType,
+                    'resolve' => [$resolver, "resolveValue"]
+                ],
+                'toString' => [
+                    'type' => Type::string(),
+                    'resolve' => [$resolver, "resolveToString"],
+                    'args' => ['language' => ['type' => Type::string()]]
+                ]
+            ];
     }
 }

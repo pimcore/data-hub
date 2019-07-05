@@ -49,10 +49,11 @@ class PimcoreObjectType extends ObjectType
      * PimcoreObjectType constructor.
      * @param Service $graphQlService
      * @param string $className
+     * @param string $classId
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, string $className, int $classId, $config = [], $context = [])
+    public function __construct(Service $graphQlService, string $className, $classId, $config = [], $context = [])
     {
         $this->className = $className;
         $this->classId = $classId;

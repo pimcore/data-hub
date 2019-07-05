@@ -196,7 +196,7 @@ class QueryType extends ObjectType
                             'resolve' => [$resolver, "resolveEdges"]
                         ],
                         'totalCount' => [
-                            'description' => 'description for total count',
+                            'description' => 'The total count of all queryable objects for this schema listing',
                             'resolve' => [$resolver, "resolveListingTotalCount"],
                             'type' => Type::int()
                         ]

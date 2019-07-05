@@ -195,7 +195,7 @@ class MutationType extends ObjectType
 
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
-                        call_user_func_array($resolver, [ $newInstance, $value, $args, $context, $info]);
+                        call_user_func_array($resolver, [ $value, $args, $context, $info]);
 
                         $newInstance->save();
 
