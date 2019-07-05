@@ -20,7 +20,9 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -36,19 +38,25 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
      * @var Data
      */
     protected $fieldDefinition;
-
+    
     /**
      * AbstractRelationsType constructor.
-     *
-     * @param $class
+     * @param Service $graphQlService
+     * @param Data|null $fieldDefinition
+     * @param null $class
+     * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);
-        if ($class && $fieldDefinition) {
-            $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+        if ($fieldDefinition && $class) {
+            if ($class instanceof ClassDefinition) {
+                $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+            } else if ($class instanceof Definition) {
+                $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
+            }
         }
         if ($fieldDefinition instanceof Data\AdvancedManyToManyRelation || $fieldDefinition instanceof Data\AdvancedManyToManyObjectRelation) {
             $name .= '_element';
