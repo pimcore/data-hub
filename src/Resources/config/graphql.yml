@@ -64,6 +64,11 @@ services:
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_href }
       - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_manyToOneRelation }
 
+  pimcore.datahub.graphql.querytypegenerator_datatype_fieldcollections:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_fieldcollections }
+
   pimcore.datahub.graphql.querytypegenerator_datatype_firstname:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\Input
     tags:

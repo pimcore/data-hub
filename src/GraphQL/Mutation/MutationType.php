@@ -334,8 +334,7 @@ class MutationType extends ObjectType
     }
 
     public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false) {
-        return static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
-
+        return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
             try {
 
                 /** @var $configuration Configuration */

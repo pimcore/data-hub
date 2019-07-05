@@ -73,7 +73,8 @@ class Href
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args);
+
+        $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args, $value);
 
         if ($relation) {
             if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {

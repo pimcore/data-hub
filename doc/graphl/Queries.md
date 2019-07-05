@@ -41,7 +41,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 ## Query Operators
 
-Check out the [Operators](graphl/Operators.md) page for more info.
+Check out the [Operators](Operators.md) page for more info.
 
 * Alias
 * Asset Thumbnail
@@ -84,13 +84,13 @@ Also see the samples listed above.
 
 ## Localization
 
-See the [Localization Page](graphl/Localization.md) to learn more.
+See the [Localization Page](Localization.md) to learn more.
  
  
 ## Pagination
 
 Example:
-see [Get News Listing](graphl/Sample2.md)
+see [Get News Listing](querysamples/Sample2.md)
 
 ## Simple Sorting
 ```
@@ -104,5 +104,5 @@ see [Get News Listing](graphl/Sample2.md)
 You can use Pimcore's webservice filter logic
 as described [here](https://pimcore.com/docs/5.x/Development_Documentation/Web_Services/Query_Filters.html).
 
-See Example: [Filtered News Listing](graphl/Filtering.md)
+See Example: [Filtered News Listing](Filtering.md)
 
