@@ -129,19 +129,19 @@ class WebserviceController extends FrontendController
                 ];
             }
 
-            $this->eventDispatcher->dispatch(ExecutorEvents::PRE_EXECUTE,
-                new ExecutorEvent(
-                    $request,
-                    $query,
-                    $schema,
-                    $context)
-            );
+            $event = new ExecutorEvent(
+                $request,
+                $query,
+                $schema,
+                $context);
+
+            $this->eventDispatcher->dispatch(ExecutorEvents::PRE_EXECUTE, $event);
 
             $result = GraphQL::executeQuery(
-                $schema,
-                $query,
+                $event->getSchema(),
+                $event->getQuery(),
                 $rootValue,
-                $context,
+                $event->getContext(),
                 $variableValues,
                 null,
                 null,
