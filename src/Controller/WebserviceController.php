@@ -149,8 +149,10 @@ class WebserviceController extends FrontendController
 
             );
 
+            $exResult = new ExecutorResultEvent($request, $result);
             $this->eventDispatcher->dispatch(ExecutorEvents::POST_EXECUTE,
-                new ExecutorResultEvent($request, $result));
+                $exResult);
+            $result = $exResult->getResult();
 
             if (PIMCORE_DEBUG) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;
