@@ -24,6 +24,8 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  */
 class Hotspotimage extends Base
 {
+    public const TYPE = 'object_datatype_hotspotimage';
+
     /**
      * @param $attribute
      * @param Data $fieldDefinition
