@@ -55,7 +55,7 @@ class ImageGallery extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        $hotspotType = $this->getGraphQlService()->getTypeDefinition("hotspot");
+        $hotspotType = $this->getGraphQlService()->getTypeDefinition(Hotspotimage::TYPE);
         return Type::listOf($hotspotType);
     }
 
