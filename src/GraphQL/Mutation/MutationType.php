@@ -397,7 +397,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities[$type . "_folder"]["create"]) {
+        if (isset($entities[$type . "_folder"]["create"])) {
             $opName = 'create' . ucfirst($type) . "Folder";
             $createResultType = new ObjectType([
                 'name' => 'Create' . ucfirst($type) . "FolderResult",
@@ -413,7 +413,7 @@ class MutationType extends ObjectType
                 'parentId' => ['type' => Type::int()]
             ];
 
-            if ($type == "asset") {
+            if ($type === "asset") {
                 $args['filename'] = ['type' => Type::nonNull(Type::string())];
             } else {
                 $args['key'] = ['type' => Type::nonNull(Type::string())];
@@ -441,14 +441,14 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities[$type . "_folder"]["update"]) {
+        if (isset($entities[$type . "_folder"]["update"])) {
             // update
             $opName = 'update' . ucfirst($type) . "Folder";
 
             $inputFields = [
                 'parentId' => ['type' => Type::int()]
             ];
-            if ($type == "asset") {
+            if ($type === "asset") {
                 $inputFields['filename'] = ['type' => Type::string()];
             } else {
                 $inputFields['key'] = ['type' => Type::string()];
@@ -478,7 +478,7 @@ class MutationType extends ObjectType
                         $id = $args["id"];
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
-                        if ($type == "asset") {
+                        if ($type === "asset") {
                             $element = Folder::getById($id);
                         } else {
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
@@ -530,7 +530,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities[$type . "_folder"]["delete"]) {
+        if (isset($entities[$type . "_folder"]["delete"])) {
             $opName = 'delete' . ucfirst($type) . "Folder";
 
             $deleteResultType = new ObjectType([
@@ -553,7 +553,7 @@ class MutationType extends ObjectType
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
 
-                        if ($type == "asset") {
+                        if ($type === "asset") {
                             $element = Folder::getById($id);
                         } else {
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
@@ -595,7 +595,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities["asset"]["update"]) {
+        if (isset($entities["asset"]["update"])) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
@@ -631,7 +631,7 @@ class MutationType extends ObjectType
                     if (isset($args["input"])) {
                         $inputValues = $args["input"];
                         foreach ($inputValues as $key => $value) {
-                            if ($key == "data") {
+                            if ($key === "data") {
                                 $value = base64_decode($value);
                             }
                             $setter = "set" . ucfirst($key);
@@ -663,7 +663,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities["asset"]["create"]) {
+        if (isset($entities["asset"]["create"])) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
@@ -733,7 +733,7 @@ class MutationType extends ObjectType
                     if (isset($args["input"])) {
                         $inputValues = $args["input"];
                         foreach ($inputValues as $key => $value) {
-                            if ($key == "data") {
+                            if ($key === "data") {
                                 $value = base64_decode($value);
                             }
                             $setter = "set" . ucfirst($key);
@@ -765,7 +765,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities["asset"]["delete"]) {
+        if (isset($entities["asset"]["delete"])) {
             $opName = 'deleteAsset';
 
             $deleteResultType = new ObjectType([
@@ -845,7 +845,7 @@ class MutationType extends ObjectType
                 ];
             }
 
-            if ($elementType == "asset") {
+            if ($elementType === "asset") {
                 $newInstance = new Folder();
                 $newInstance->setFilename($args["filename"]);
             } else {
@@ -896,7 +896,7 @@ class MutationType extends ObjectType
                 ];
             }
 
-            if ($elementType == "asset") {
+            if ($elementType === "asset") {
                 $newInstance = new Folder();
                 $newInstance->setFilename($args["filename"]);
             } else {
