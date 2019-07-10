@@ -397,7 +397,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["create"])) {
+        if (isset($entities[$type . "_folder"]["create"]) && $entities[$type . "_folder"]["create"]) {
             $opName = 'create' . ucfirst($type) . "Folder";
             $createResultType = new ObjectType([
                 'name' => 'Create' . ucfirst($type) . "FolderResult",
@@ -441,7 +441,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["update"])) {
+        if (isset($entities[$type . "_folder"]["update"]) && $entities[$type . "_folder"]["update"]) {
             // update
             $opName = 'update' . ucfirst($type) . "Folder";
 
@@ -530,7 +530,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["delete"])) {
+        if (isset($entities[$type . "_folder"]["delete"]) && $entities[$type . "_folder"]["delete"]) {
             $opName = 'delete' . ucfirst($type) . "Folder";
 
             $deleteResultType = new ObjectType([
@@ -595,7 +595,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["asset"]["update"])) {
+        if (isset($entities["asset"]["update"]) && $entities["asset"]["update"]) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
@@ -663,7 +663,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["asset"]["create"])) {
+        if (isset($entities["asset"]["create"]) && $entities["asset"]["create"]) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
@@ -765,7 +765,7 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["asset"]["delete"])) {
+        if (isset($entities["asset"]["delete"]) && $entities["asset"]["delete"]) {
             $opName = 'deleteAsset';
 
             $deleteResultType = new ObjectType([
