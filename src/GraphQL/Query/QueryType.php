@@ -215,7 +215,10 @@ class QueryType extends ObjectType
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
                     'sortBy' => ['type' => Type::listOf(Type::string())],
-                    'sortOrder' => ['type' => Type::listOf(Type::string())],
+                    'sortOrder' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                    ],
                     'filter' => ['type' => Type::string()],
                     'published' => ['type' => Type::boolean()],
                 ],
