@@ -30,10 +30,10 @@ class ManyToOneRelation extends Base
      * @param ResolveInfo $info
      * @throws \Exception
      */
-    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
+    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info): void
     {
-        $attribute = $this->attributes["attribute"];
-        Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
+        $attribute = $this->getAttribute();
+        Service::setValue($object, $attribute, static function($container, $setter) use ($newValue) {
             $element = null;
             if (is_array($newValue)) {
                 $element = \Pimcore\Model\Element\Service::getElementById($newValue["type"], $newValue["id"]);
@@ -43,4 +43,3 @@ class ManyToOneRelation extends Base
         });
     }
 }
-
