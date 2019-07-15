@@ -44,7 +44,7 @@ then your endpoint would be
 
 Here is a configuration example showing how to override the standard endpoint:
 
-```
+```yml
 # app/config/routing.yml
 
 admin_pimcoredatahub_config:
@@ -76,13 +76,13 @@ to rebuild the index.
 
 Either call 
 
-```
+```bash
 datahub:graphql:rebuild-definitions
 ``` 
 
 to do that for all definitions, or
 
-```
+```bash
 datahub:graphql:rebuild-definitions --definitions=newsapp,otherendpoint
 ```
 
