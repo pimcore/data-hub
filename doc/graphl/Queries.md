@@ -62,7 +62,7 @@ Check out the [Operators](Operators.md) page for more info.
 
 Also see the samples listed above.
 
-```
+```graphql
 {
   getNews(id: 4) {
   ...
@@ -75,7 +75,7 @@ Also see the samples listed above.
 
 * Restrict to object IDs
 
-```
+```graphql
 {
   getNewsListing(ids: "4,5") {
     edges {
@@ -93,8 +93,8 @@ Example:
 see [Get News Listing](querysamples/Sample2.md)
 
 ## Simple Sorting
-```
-{  getNewsListing(sortBy:"title", sortOrder:"ASC") {
+```graphql
+{  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
     edges {
       node {
 ```
