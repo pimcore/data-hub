@@ -20,14 +20,16 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use  Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Factory;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 
 class QueryType extends ObjectType
 {
@@ -142,11 +144,11 @@ class QueryType extends ObjectType
     }
 
     /**
-     * @param array $config
+     * @param array &$config
      * @param array $context
      * @throws \Exception
      */
-    public function buildDataObjectQueries(&$config = [], $context = [])
+    public function buildDataObjectQueries(&$config = [], $context = []): void
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -160,26 +162,27 @@ class QueryType extends ObjectType
             }
 
             $resolver = $this->getResolver($class, $configuration);
+            $ucFirstClassName = ucfirst($class->getName());
 
             // GETTER DEFINITION
             $defGet = [
-                'name' => 'get' . ucfirst($class->getName()),
+                'name' => 'get' . $ucFirstClassName,
                 'args' => [
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
-                'resolve' => [$resolver, "resolveObjectGetter"]
+                'type' => ClassTypeDefinitions::get($class),
+                'resolve' => [$resolver, "resolveObjectGetter"],
             ];
 
             // LISTING DEFINITION
             $edgeType = new ObjectType(
                 [
-                    'name' => ucfirst($class->getName()) . 'Edge',
+                    'name' => $ucFirstClassName . 'Edge',
                     'fields' => [
                         'cursor' => Type::string(),
                         'node' => [
-                            'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
+                            'type' => ClassTypeDefinitions::get($class),
                             'resolve' => [$resolver, "resolveEdge"]
                         ],
                     ],
@@ -188,7 +191,7 @@ class QueryType extends ObjectType
 
             $listingType = new ObjectType(
                 [
-                    'name' => ucfirst($class->getName()) . 'Connection',
+                    'name' => $ucFirstClassName . 'Connection',
                     'fields' => [
 
                         'edges' => [
@@ -205,28 +208,30 @@ class QueryType extends ObjectType
             );
 
             $defListing = [
-                'name' => 'get' . ucfirst($class->getName()) . 'Listing',
+                'name' => 'get' . $ucFirstClassName . 'Listing',
                 'args' => [
                     'ids' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
-                    'sortBy' => ['type' => Type::string()],
-                    'sortOrder' => ['type' => Type::string()],
+                    'sortBy' => ['type' => Type::listOf(Type::string())],
+                    'sortOrder' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                    ],
                     'filter' => ['type' => Type::string()],
                     'published' => ['type' => Type::boolean()],
                 ],
                 'type' => $listingType,
-                'resolve' => [$resolver, "resolveListing"]
+                'resolve' => [$resolver, "resolveListing"],
             ];
 
             if (!$config['fields']) {
                 $config['fields'] = [];
             }
 
-
-            $config['fields']['get' . ucfirst($class->getName()) . 'Listing'] = $defListing;
-            $config['fields']['get' . ucfirst($class->getName())] = $defGet;
+            $config['fields']['get' . $ucFirstClassName . 'Listing'] = $defListing;
+            $config['fields']['get' . $ucFirstClassName] = $defGet;
         }
     }
 
