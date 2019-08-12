@@ -292,10 +292,11 @@ class QueryType
         }
 
         // sorting
-        if (isset($args['sortBy'])) {
-            $order = $args['sortOrder'] ? $args['sortOrder'] : 'ASC';
+        if (!empty($args['sortBy'])) {
             $objectList->setOrderKey($args['sortBy']);
-            $objectList->setOrder($order);
+            if (!empty($args['sortOrder'])) {
+                $objectList->setOrder($args['sortOrder']);
+            }
         }
 
         // Include unpublished
