@@ -95,9 +95,11 @@ see [Get News Listing](querysamples/Sample2.md)
 
 ## Simple Sorting
 ```graphql
-{  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
+{
+  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
     edges {
       node {
+      ...
 ```
 
 ## Filtering
