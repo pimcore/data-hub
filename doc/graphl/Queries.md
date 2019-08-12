@@ -15,6 +15,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Email
 * External Image
 * Gender
+* [Field-Collections](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
 * Firstname
 * Geopoint
 * Image
@@ -94,9 +95,11 @@ see [Get News Listing](querysamples/Sample2.md)
 
 ## Simple Sorting
 ```graphql
-{  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
+{
+  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
     edges {
       node {
+      ...
 ```
 
 ## Filtering
