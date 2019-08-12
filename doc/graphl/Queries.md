@@ -15,6 +15,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Email
 * External Image
 * Gender
+* Field-Collections
 * Firstname
 * Geopoint
 * Image
