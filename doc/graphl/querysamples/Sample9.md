@@ -1,12 +1,10 @@
 ## Field-Collections on Data Objects
 
-Data Model:
+Data Models:
 
-![Data](../../img/graphql/)
+![Data Object Structure](../../img/graphql/dataobject_structure.png)
 
-Data:
-
-![Data](../../img/graphql/)
+![Field Collection Structure](../../img/graphql/fieldcollections_structure.png)
 
 ### Request
 
