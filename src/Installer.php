@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
+use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
 use Pimcore\Logger;
@@ -24,18 +25,15 @@ class Installer extends AbstractInstaller
     /**
      * {@inheritdoc}
      */
-    public function isInstalled()
+    public function isInstalled(): bool
     {
         $db = Db::get();
-        $check = $db->fetchRow("SELECT * FROM users_permission_definitions where `key`='plugin_datahub_config'");
-        if (!$check) {
-            return false;
-        }
+        $check = $db->fetchOne("SELECT `key` FROM users_permission_definitions where `key` = ?", [ConfigController::CONFIG_NAME]);
 
-        return true;
+        return (bool) $check;
     }
 
-    public function needsReloadAfterInstall()
+    public function needsReloadAfterInstall(): bool
     {
         return true;
     }
@@ -43,7 +41,7 @@ class Installer extends AbstractInstaller
     /**
      * {@inheritdoc}
      */
-    public function canBeInstalled()
+    public function canBeInstalled(): bool
     {
         return !$this->isInstalled();
     }
@@ -54,7 +52,7 @@ class Installer extends AbstractInstaller
     public function install()
     {
         // create backend permission
-        \Pimcore\Model\User\Permission\Definition::create('plugin_datahub_config');
+        \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
 
         try {
             $db = Db::get();
