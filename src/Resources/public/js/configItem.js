@@ -141,7 +141,8 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     name: "name",
                     value: this.data.general.name,
                     readOnly: true
-                }, {
+                },
+                {
                     name: "description",
                     fieldLabel: t("description"),
                     xtype: "textarea",
@@ -150,9 +151,10 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                 },
                 {
                     xtype: "displayfield",
+                    hideLabel: true,
                     value: t("plugin_pimcore_datahub_configpanel_condition_hint"),
-                    name: "sql_list_hint",
-                    readOnly: true
+                    readOnly: true,
+                    disabled: true
                 },
                 {
                     name: "sqlObjectCondition",
@@ -231,7 +233,9 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     xtype: 'displayfield',
                     hideLabel: true,
                     value: t("plugin_pimcore_datahub_security_apikey_description"),
-                    cls: "pimcore_extra_label_bottom"
+                    cls: "pimcore_extra_label_bottom",
+                    readOnly: true,
+                    disabled: true
                 },
                 {
                     xtype: 'fieldset',
@@ -474,13 +478,11 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         });
     },
 
-
     getSaveData: function () {
-
         var saveData = {};
-        saveData["general"] = this.generalForm.getForm().getFieldValues();
+        saveData["general"] = this.generalForm.getForm().getFieldValues(false, false);
         saveData["schema"] = this.schemaForm.getForm().getFieldValues();
-        saveData["security"] = this.securityForm.getForm().getFieldValues();
+        saveData["security"] = this.securityForm.getForm().getFieldValues(false, false);
         saveData["schema"]["queryEntities"] = this.getSchemaData("query");
         saveData["schema"]["mutationEntities"] = this.getSchemaData("mutation");
         saveData["schema"]["specialEntities"] = this.getSchemaData("special");
@@ -489,7 +491,6 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
         return Ext.encode(saveData);
     },
-
 
     getSchemaData: function (type) {
         var tmData = [];
