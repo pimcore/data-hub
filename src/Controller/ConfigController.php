@@ -139,7 +139,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $request->get('name');
 
             $config = Dao::getByName($name);
-            if ($config instanceof Configuration) {
+            if (!$config instanceof Configuration) {
                 throw new \Exception('Name does not exist.');
             }
 
