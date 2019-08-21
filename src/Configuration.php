@@ -182,7 +182,7 @@ class Configuration extends AbstractModel
      */
     public static function getList()
     {
-        $config = new self(null);
+        $config = new self(null, null);
 
         return $config->getDao()->getList();
     }
