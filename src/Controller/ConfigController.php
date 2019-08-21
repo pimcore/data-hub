@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,7 +29,16 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
-    private function buildFolder($path, $name)
+    public const CONFIG_NAME = 'plugin_datahub_config';
+
+    /**
+     * @param $path
+     *
+     * @param $name
+     *
+     * @return array
+     */
+    private function buildFolder($path, $name): array
     {
         return [
             'id' => $path,
@@ -47,10 +55,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return array
      */
-    private function buildItem($configuration)
-
+    private function buildItem($configuration): array
     {
-        $type = $configuration->getType() ? $configuration->getType() : 'graphql';
+        $type = $configuration->getType() ?: 'graphql';
 
         return [
             'id' => $configuration->getName(),
@@ -69,11 +76,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function listAction(Request $request)
+    public function listAction(Request $request): JsonResponse
     {
-
         // check permissions
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $folders = Dao::getFolders();
         $list = Dao::getList();
@@ -88,7 +94,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             // root folders, keep a pointer to 1 dimensional array
             // to minimize memory and actually make the nesting work
             if (empty($folder['parent'])) {
-                $tree[] = & $folderStructure[$folder['path']];
+                $tree[] = &$folderStructure[$folder['path']];
             }
         }
 
@@ -108,10 +114,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             if (!$configuration->getPath()) {
                 $tree[] = $config;
-            } else {
-                if (!empty($folderStructure[$configuration->getPath()])) {
-                    $folderStructure[$configuration->getPath()]['children'][] = $config;
-                }
+            } elseif (!empty($folderStructure[$configuration->getPath()])) {
+                $folderStructure[$configuration->getPath()]['children'][] = $config;
             }
         }
 
@@ -124,17 +128,19 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param Request $request
      *
      * @return JsonResponse
+     *
+     * @throws \Exception
      */
-    public function deleteAction(Request $request)
+    public function deleteAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         try {
             $name = $request->get('name');
 
             $config = Dao::getByName($name);
-            if (empty($config)) {
-                throw new Exception('Name does not exist.');
+            if (!$config instanceof Configuration) {
+                throw new \Exception('Name does not exist.');
             }
 
             WorkspaceHelper::deleteConfiguration($config);
@@ -142,7 +148,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config->delete();
 
             return $this->json(['success' => true]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -151,14 +157,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @Route("/add-folder")
      *
      * @param Request $request
-     * 
+     *
      * @throws \Exception
      *
      * @return JsonResponse
      */
-    public function addFolderAction(Request $request)
+    public function addFolderAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $parent = $request->get('parent');
         $name = $request->get('name');
@@ -171,8 +177,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             Dao::addFolder($parent, $name);
 
             return $this->json(['success' => true]);
-        } catch (Exception $exception) {
-            return $this->json(['success' => false, 'message' => $exception->getMessage()]);
+        } catch (\Exception $e) {
+            return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -183,9 +189,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function deleteFolderAction(Request $request)
+    public function deleteFolderAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $path = $request->get('path');
 
@@ -205,9 +211,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function moveAction(Request $request)
+    public function moveAction(Request $request): JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $who = $request->get('who');
         $to = $request->get('to');
@@ -224,9 +230,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function moveFolderAction(Request $request)
+    public function moveFolderAction(Request $request): JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $who = $request->get('who');
         $to = $request->get('to');
@@ -245,9 +251,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function addAction(Request $request)
+    public function addAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         try {
             $path = $request->get('path');
@@ -256,15 +262,15 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             $config = Dao::getByName($name);
 
-            if (!empty($config)) {
-                throw new Exception('Name already exists.');
+            if ($config instanceof Configuration) {
+                throw new \Exception('Name already exists.');
             }
 
             $config = new Configuration($type, $path, $name);
             $config->save();
 
             return $this->json(['success' => true, 'name' => $name]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -278,29 +284,29 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function cloneAction(Request $request)
+    public function cloneAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         try {
             $name = $request->get('name');
 
             $config = Dao::getByName($name);
-            if (!empty($config)) {
-                throw new Exception('Name already exists.');
+            if ($config instanceof Configuration) {
+                throw new \Exception('Name already exists.');
             }
 
             $originalName = $request->get('originalName');
             $originalConfig = Dao::getByName($originalName);
             if (!$originalConfig) {
-                throw new Exception('Configuration not found');
+                throw new \Exception('Configuration not found');
             }
 
             $originalConfig->setName($name);
             $originalConfig->save();
 
             return $this->json(['success' => true, 'name' => $name]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -315,22 +321,21 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function getAction(Request $request, Service $graphQlService)
+    public function getAction(Request $request, Service $graphQlService): JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         $name = $request->get('name');
 
         $configuration = Dao::getByName($name);
-        if (empty($configuration)) {
-            throw new Exception('Datahub configuration ' . $name . ' does not exist.');
+        if (!$configuration) {
+            throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
         }
 
         $config = $configuration->getConfiguration();
-        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ? $config['schema']['queryEntities'] : []);
-        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ? $config['schema']['mutationEntities'] : []);
-        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ? $config['schema']['specialEntities'] : [];
-
+        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?: []);
+        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ?: []);
+        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ?: [];
 
         if (!$config['schema']['specialEntities']) {
             $config['schema']['specialEntities'] = [];
@@ -368,9 +373,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function saveAction(Request $request)
+    public function saveAction(Request $request): ?JsonResponse
     {
-        $this->checkPermission('plugin_datahub_config');
+        $this->checkPermission(self::CONFIG_NAME);
 
         try {
             $data = $request->get('data');
@@ -394,7 +399,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config->save();
 
             return $this->json(['success' => true]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -409,7 +414,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function getExplorerUrlAction(RouterInterface $routingService, Request $request)
+    public function getExplorerUrlAction(RouterInterface $routingService, Request $request): ?JsonResponse
     {
         $name = $request->get('name');
 

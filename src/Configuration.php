@@ -18,6 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Model\AbstractModel;
 
+/**
+ * Class Configuration
+ * @package Pimcore\Bundle\DataHubBundle
+ */
 class Configuration extends AbstractModel
 {
     /**
@@ -50,11 +54,11 @@ class Configuration extends AbstractModel
      */
     public function __construct($type, $path, $name = null, $configuration = null)
     {
-        $type = $type ? $type : 'graphql';
+        $type = $type ?: 'graphql';
         $this->type = $type;
         $this->path = $path;
         $this->name = $name;
-        $this->configuration = $configuration ? $configuration : [];
+        $this->configuration = $configuration ?: [];
     }
 
     /**
@@ -76,7 +80,7 @@ class Configuration extends AbstractModel
     /**
      * @param mixed $configuration
      */
-    public function setConfiguration($configuration)
+    public function setConfiguration($configuration): void
     {
         if (is_array($configuration)) {
             $configuration = json_decode(json_encode($configuration), true);
@@ -93,17 +97,17 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -111,7 +115,7 @@ class Configuration extends AbstractModel
     /**
      * @return string|null
      */
-    public function getSqlObjectCondition()
+    public function getSqlObjectCondition(): ?string
     {
         return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectListCondition'] : null;
     }
@@ -125,17 +129,17 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $path
+     * @param string $path
      */
-    public function setPath($path)
+    public function setPath($path): void
     {
         $this->path = $path;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -182,7 +186,7 @@ class Configuration extends AbstractModel
      */
     public static function getList()
     {
-        $config = new self(null);
+        $config = new self(null, null);
 
         return $config->getDao()->getList();
     }
@@ -192,7 +196,7 @@ class Configuration extends AbstractModel
      *
      * @return Configuration|null
      */
-    public static function getByName($name)
+    public static function getByName($name): ?Configuration
     {
         return Dao::getByName($name);
     }
@@ -219,7 +223,6 @@ class Configuration extends AbstractModel
 
         return $entities;
     }
-
 
     /**
      * @return array
