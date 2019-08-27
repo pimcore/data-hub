@@ -117,7 +117,7 @@ class Configuration extends AbstractModel
      */
     public function getSqlObjectCondition(): ?string
     {
-        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectListCondition'] : null;
+        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] : null;
     }
 
     /**
