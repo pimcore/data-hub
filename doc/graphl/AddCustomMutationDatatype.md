@@ -10,7 +10,7 @@ Add a section similar to this one to your `services.yml` file.
     pimcore.datahub.graphql.mutationtypegenerator_datatype_mycustomdatatype:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationFieldConfigGenerator\MyCustomDatatype
         tags:
-            - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationdatatype_mycustomdatatype }                                    
+            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_mutationdatatype_mycustomdatatype }                                    
 ```
 
 For reference, have a look at a look at the `Geopoint datatype`:

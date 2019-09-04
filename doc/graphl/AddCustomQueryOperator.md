@@ -41,7 +41,7 @@ In most cases we use the `DefaultOperatorFactory` for that:
         arguments:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\MyCustomOperator
         tags:
-            - { name: pimcore.datahub.graphql.queryoperator_factory, id: mycustomoperator }
+            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: mycustomoperator }
 ```
 
 

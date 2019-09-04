@@ -59,7 +59,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql query operator',
-            'pimcore.datahub.graphql.queryoperator_factory',
+            'pimcore.datahub.graphql.dataobjectqueryoperator_factory',
             '$queryOperatorFactories'
         );
 
@@ -85,7 +85,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql mutation_typegenerator',
-            'pimcore.datahub.graphql.mutationtypegenerator',
+            'pimcore.datahub.graphql.dataobjectmutationtypegenerator',
             '$mutationTypeGeneratorFactories'
         );
 
@@ -102,7 +102,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql mutation_typegenerator',
-            'pimcore.datahub.graphql.mutationtypegenerator'
+            'pimcore.datahub.graphql.dataobjectmutationtypegenerator'
         );
     }
 
@@ -199,7 +199,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
     ) {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
 
-        $resolvers = $container->findTaggedServiceIds("pimcore.datahub.graphql.type");
+        $resolvers = $container->findTaggedServiceIds("pimcore.datahub.graphql.dataobjecttype");
 
         $dataTypes = [];
 

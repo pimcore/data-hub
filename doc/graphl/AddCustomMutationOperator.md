@@ -12,7 +12,7 @@ Add a section similar to this one to your `services.yml` file.
   pimcore.datahub.graphql.mutationtypegenerator_operator_mycustommutationoperator:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationOperatorConfigGenerator\MyCustomMutationOperator
     tags:
-      - { name: pimcore.datahub.graphql.mutationtypegenerator, id: typegenerator_mutationoperator_mycustommutationoperator }                        
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_mutationoperator_mycustommutationoperator }                        
 ```
 
 For reference have a look at:
