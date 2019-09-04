@@ -130,6 +130,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/mutationoperator/IfEmpty.js',
             '/bundles/pimcoredatahub/js/mutationoperator/LocaleSwitcher.js',
             '/bundles/pimcoredatahub/js/workspace/abstract.js',
+            '/bundles/pimcoredatahub/js/workspace/document.js',
             '/bundles/pimcoredatahub/js/workspace/asset.js',
             '/bundles/pimcoredatahub/js/workspace/object.js'
         ];
