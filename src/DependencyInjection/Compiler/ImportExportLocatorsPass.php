@@ -93,7 +93,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $container,
             $graphQLServiceDefinition,
             'graphql mutation operator',
-            'pimcore.datahub.graphql.mutationoperator_factory',
+            'pimcore.datahub.graphql.dataobjectmutationoperator_factory',
             '$mutationOperatorFactories'
         );
 
