@@ -69,6 +69,9 @@ pimcore.plugin.datahub.config = Class.create({
             var addConfigButton = new Ext.SplitButton({
                 text: t("plugin_pimcore_datahub_configpanel_add"),
                 iconCls: "pimcore_icon_add",
+                handler: function () {
+                    this.maybeShowMenu();
+                },
                 menu: [
                     {
                         text: t('plugin_pimcore_datahub_type_graphql'),
