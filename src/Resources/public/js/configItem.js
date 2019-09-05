@@ -181,6 +181,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         });
 
 
+        this.documentWorkspace = new pimcore.plugin.datahub.workspace.document(this);
         this.assetWorkspace = new pimcore.plugin.datahub.workspace.asset(this);
         this.objectWorkspace = new pimcore.plugin.datahub.workspace.object(this);
 
@@ -242,6 +243,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     width: 800,
                     title: t("workspaces"),
                     items: [
+                        this.documentWorkspace.getPanel(),
                         this.assetWorkspace.getPanel(),
                         this.objectWorkspace.getPanel()
                     ]
@@ -487,6 +489,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         saveData["schema"]["mutationEntities"] = this.getSchemaData("mutation");
         saveData["schema"]["specialEntities"] = this.getSchemaData("special");
         saveData["workspaces"] = {};
+        saveData["workspaces"]["document"] = this.documentWorkspace.getValues();
         saveData["workspaces"]["asset"] = this.assetWorkspace.getValues();
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
         return Ext.encode(saveData);
