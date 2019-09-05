@@ -36,7 +36,7 @@ Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:
 
 ```
-    pimcore.datahub.graphql.queryoperator.factory.mycustomoperator:
+    pimcore.datahub.graphql.dataobjectqueryoperator.factory.mycustomoperator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:
             $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\MyCustomOperator

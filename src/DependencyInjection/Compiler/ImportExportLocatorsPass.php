@@ -50,8 +50,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->createLocatorForTaggedServices(
             $container,
             $graphQLServiceDefinition,
-            'graphql query_typegenerator',
-            'pimcore.datahub.graphql.querytypegenerator',
+            'graphql query_dataobjecttypegenerator',
+            'pimcore.datahub.graphql.dataobjectquerytypegenerator',
             '$queryTypeGeneratorFactories'
         );
 
@@ -67,8 +67,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             'query',
             $container,
             $graphQLServiceDefinition,
-            'graphql query_typegenerator',
-            'pimcore.datahub.graphql.querytypegenerator'
+            'graphql query_dataobjecttypegenerator',
+            'pimcore.datahub.graphql.dataobjectquerytypegenerator'
         );
     }
 

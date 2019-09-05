@@ -32,7 +32,7 @@ class IfEmpty extends Base
         $factories = $this->getGraphQlService()->getMutationTypeGeneratorFactories();
 
         $typeName = strtolower($nodeDef["attributes"]["class"]);
-        $factory = $factories->get('typegenerator_' . "mutation" . 'operator_' . $typeName);
+        $factory = $factories->get('typegenerator_' . "dataobjectmutation" . 'operator_' . $typeName);
         $determinedType = $factory->resolveInputTypeFromNodeDef($nodeDef, $class, $container);
 
         return [

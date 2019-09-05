@@ -47,7 +47,7 @@ abstract class Base
     public function resolveInputTypeFromNodeDef($nodeDef, ClassDefinition $class)
     {
         $nodeDefAttributes = $nodeDef["attributes"];
-        $children = $nodeDefAttributes['children'];
+        $children = $nodeDefAttributes['childs'];
 
         $firstChild = $children[0];
         $firstChildAttributes = $firstChild["attributes"];
@@ -59,12 +59,12 @@ abstract class Base
             //  we only support the simple case with one child
             $operatorClass = $firstChildAttributes["class"];
             $typeName = strtolower($operatorClass);
-            $mutationConfigGenerator = $factories->get('typegenerator_mutationoperator_' . $typeName);
+            $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationoperator_' . $typeName);
             $result = $mutationConfigGenerator->resolveInputTypeFromNodeDef($firstChild, $class);
 
         } else {
             $typeName = $firstChildAttributes["dataType"];
-            $mutationConfigGenerator = $factories->get('typegenerator_mutationdatatype_' . $typeName);
+            $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
             $config = $mutationConfigGenerator->getGraphQlMutationFieldConfig($firstChild, $class);
             $result = $config["arg"];
         }

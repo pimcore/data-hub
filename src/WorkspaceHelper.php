@@ -34,6 +34,7 @@ class WorkspaceHelper
     public static function saveWorkspaces(Configuration $config, $workspaces)
     {
         $db = Db::get();
+        $db->delete(Dao::TABLE_NAME_DOCUMENT, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
 
