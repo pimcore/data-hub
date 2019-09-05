@@ -728,7 +728,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 element = new pimcore.plugin.datahub[this.type + attributes.type][jsClass](this.generalConfig.classId);
             }
         } else {
-            var dataType = attributes.dataType.toLowerCase();
+            var dataType = configAttributes.dataType ? configAttributes.dataType.toLowerCase() : null;
             if (pimcore.plugin.datahub[this.type + "value"] && pimcore.plugin.datahub[this.type + "value"][dataType]) {
                 element = new pimcore.plugin.datahub[this.type + "value"][dataType](this.generalConfig.classId);
             } else {
