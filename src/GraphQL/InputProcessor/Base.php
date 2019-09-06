@@ -91,7 +91,7 @@ class Base
             $config = $mutationConfigGenerator->getGraphQlMutationOperatorConfig($firstChild, $class);
         } else {
             $typeName = $firstChildAttributes["dataType"];
-            $mutationConfigGenerator = $factories->get('typegenerator_mutationdatatype_' . $typeName);
+            $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
             $config = $mutationConfigGenerator->getGraphQlMutationFieldConfig($firstChild, $class);
 
         }

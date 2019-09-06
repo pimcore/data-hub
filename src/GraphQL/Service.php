@@ -141,7 +141,7 @@ class Service
     public function buildQueryDataConfig($attribute, $typeName, $fieldDefinition = null, $class = null, $container = null)
     {
         /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $typeName);
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $typeName);
         $result = $factory->getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container);
         return $result;
     }
@@ -158,7 +158,7 @@ class Service
     {
         /** @var MutationFieldConfigGeneratorInterface $factory */
         $typeName = $nodeDef["attributes"]["dataType"];
-        $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationdatatype_' . $typeName);
+        $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
         $result = $factory->getGraphQlMutationFieldConfig($nodeDef, $class, $container);
         return $result;
     }
@@ -176,7 +176,7 @@ class Service
     {
         $name = $fieldDefinition->getFieldtype();
         /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $name);
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
         $resolver = $factory->getResolver($attribute, $fieldDefinition, $class);
 
         return $resolver;
@@ -194,7 +194,7 @@ class Service
     {
         $name = $fieldDefinition->getFieldtype();
         /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_querydatatype_' . $name);
+        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
         $result = $factory->getFieldType($fieldDefinition, $class, $container);
 
         return $result;
@@ -207,7 +207,7 @@ class Service
      */
     public function supportsQueryDataType($typeName)
     {
-        return $this->queryTypeGeneratorFactories->has('typegenerator_querydatatype_' . $typeName);
+        return $this->queryTypeGeneratorFactories->has('typegenerator_dataobjectquerydatatype_' . $typeName);
     }
 
     /**
@@ -217,7 +217,7 @@ class Service
      */
     public function supportsMutationDataType($typeName)
     {
-        return $this->mutationTypeGeneratorFactories->has('typegenerator_mutationdatatype_' . $typeName);
+        return $this->mutationTypeGeneratorFactories->has('typegenerator_dataobjectmutationdatatype_' . $typeName);
     }
 
 

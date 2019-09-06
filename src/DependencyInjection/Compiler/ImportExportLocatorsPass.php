@@ -164,7 +164,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         $mapping = [];
 
-        $needle = 'typegenerator_' . $operationType . 'datatype_';
+        $needle = 'typegenerator_dataobject' . $operationType . 'datatype_';
         $lengthOfNeedle = strlen($needle);
 
         foreach ($resolvers as $id => $tagEntries) {

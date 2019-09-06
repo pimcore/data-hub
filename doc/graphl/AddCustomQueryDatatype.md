@@ -10,7 +10,7 @@ Add a section similar to this one to your `services.yml` file.
     pimcore.datahub.graphql.querytypegenerator_datatype_mycustomdatatype:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGenerator\MyCustomDatatype
         tags:
-            - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_querydatatype_mycustomdatatype }                        
+            - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_dataobjectquerydatatype_mycustomdatatype }                        
 ```
 
 For reference, have a look at a look at the `Link datatype`:
