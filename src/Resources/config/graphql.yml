@@ -221,6 +221,12 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_substring }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_text:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Substring
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_text }
+
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnail:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Thumbnail
     tags:
@@ -315,6 +321,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: trimmer }
 
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.text:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Text
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: text }
+      -
 
   #
   # type definitions
