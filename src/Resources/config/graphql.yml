@@ -327,7 +327,6 @@ services:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Text
     tags:
       - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: text }
-      -
 
   #
   # type definitions
