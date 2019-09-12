@@ -86,7 +86,7 @@ class Merge extends StringBase
         $fieldname = $this->getFieldname($attributes);
         $typename = 'operator_'.$fieldname;
 
-        $mergeType = new MergeType($this->getGraphQlType(), $nodeDef, $class, $container, ['name' => $typename]);
+        $mergeType = new MergeType($this->graphQlService, $nodeDef, $class, $container, ['name' => $typename]);
 
         $result = ListOfType::listOf($mergeType);
 
