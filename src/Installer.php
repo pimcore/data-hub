@@ -27,7 +27,7 @@ class Installer extends MigrationInstaller
 
     public function getMigrationVersion(): string
     {
-        return '20190614135736';
+        return '20190904131554';
     }
 
     public function needsReloadAfterInstall(): bool
@@ -63,7 +63,7 @@ class Installer extends MigrationInstaller
         \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
 
         try {
-            $types = ["asset", "object"];
+            $types = ["document", "asset", "object"];
 
             $db = Db::get();
             foreach ($types as $type) {
