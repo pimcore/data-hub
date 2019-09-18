@@ -341,7 +341,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config['schema']['specialEntities'] = [];
         }
 
-        $specialSettings = ["document", "asset", "asset_folder", "object_folder"];
+        $specialSettings = ["document", "document_folder", "asset", "asset_folder", "object_folder"];
         foreach ($specialSettings as $key) {
             if (!$config['schema']['specialEntities'][$key]) {
                 $config['schema']['specialEntities'][$key] = ["id" => $key];
@@ -351,8 +351,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $config['schema']['specialEntities'] = array_values($config['schema']['specialEntities']);
 
         //TODO we probably need this stuff only for graphql stuff
-        $supportedQueryDataTypes = $graphQlService->getSupportedQueryDataTypes();
-        $supportedMutationDataTypes = $graphQlService->getSupportedMutationDataTypes();
+        $supportedQueryDataTypes = $graphQlService->getSupportedDataObjectQueryDataTypes();
+        $supportedMutationDataTypes = $graphQlService->getSupportedDataObjectMutationDataTypes();
 
         return new JsonResponse(
             [

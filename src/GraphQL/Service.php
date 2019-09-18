@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -37,12 +38,12 @@ class Service
     /***
      * @var ContainerInterface
      */
-    protected $queryTypeGeneratorFactories;
+    protected $dataObjectQueryTypeGeneratorFactories;
 
     /***
      * @var ContainerInterface
      */
-    protected $mutationTypeGeneratorFactories;
+    protected $dataObjectMutationTypeGeneratorFactories;
 
     /**
      * @var ContainerInterface
@@ -52,17 +53,32 @@ class Service
     /**
      * @var ContainerInterface
      */
-    protected $mutationOperatorFactories;
+    protected $documentElementTypeGeneratorFactories;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $dataObjectMutationOperatorFactories;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $generalTypeGeneratorFactories;
 
     /**
      * @var array
      */
-    protected $supportedQueryDataTypes;
+    protected $supportedDataObjectQueryDataTypes;
 
     /**
      * @var array
      */
-    protected $supportedMutationDataTypes;
+    protected $supportedDocumentElementQueryDataTypes;
+
+    /**
+     * @var array
+     */
+    protected $supportedDataObjectMutationDataTypes;
 
     /**
      * @var DataObjectFieldHelper
@@ -73,6 +89,11 @@ class Service
      * @var AssetFieldHelper
      */
     protected $assetFieldHelper;
+
+    /**
+     * @var documentFieldHelper
+     */
+    protected $documentFieldHelper;
 
     /**
      * @var LocaleServiceInterface
@@ -92,41 +113,56 @@ class Service
     /**
      * @var array
      */
-    protected $dataTypes = [];
+    protected $dataObjectDataTypes = [];
+
+    /**
+     * @var array
+     */
+    protected $documentDataTypes = [];
+
 
     /**
      * Service constructor.
      * @param AssetFieldHelper $assetFieldHelper
+     * @param DocumentFieldHelper $documentFieldHelper
      * @param DataObjectFieldHelper $objectFieldHelper
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
      * @param Translator $translator
-     * @param ContainerInterface $queryTypeGeneratorFactories
-     * @param ContainerInterface $queryOperatorFactories
-     * @param ContainerInterface $mutationTypeGeneratorFactories
-     * @param ContainerInterface $mutationOperatorFactories
+     * @param ContainerInterface $dataObjectQueryTypeGeneratorFactories
+     * @param ContainerInterface $dataObjectQueryOperatorFactories
+     * @param ContainerInterface $dataObjectMutationTypeGeneratorFactories
+     * @param ContainerInterface $dataObjectMutationOperatorFactories
+     * @param ContainerInterface $documentElementTypeGeneratorFactories
+     * @param ContainerInterface $generalTypeGeneratorFactories
      */
     public function __construct(
         AssetFieldHelper $assetFieldHelper,
+        DocumentFieldHelper $documentFieldHelper,
         DataObjectFieldHelper $objectFieldHelper,
         LocaleServiceInterface $localeService,
         Factory $modelFactory,
         Translator $translator,
-        ContainerInterface $queryTypeGeneratorFactories,
-        ContainerInterface $queryOperatorFactories,
-        ContainerInterface $mutationTypeGeneratorFactories,
-        ContainerInterface $mutationOperatorFactories
+        ContainerInterface $dataObjectQueryTypeGeneratorFactories,
+        ContainerInterface $dataObjectQueryOperatorFactories,
+        ContainerInterface $dataObjectMutationTypeGeneratorFactories,
+        ContainerInterface $dataObjectMutationOperatorFactories,
+        ContainerInterface $documentElementTypeGeneratorFactories,
+        ContainerInterface $generalTypeGeneratorFactories
     )
     {
         $this->assetFieldHelper = $assetFieldHelper;
+        $this->documentFieldHelper = $documentFieldHelper;
         $this->objectFieldHelper = $objectFieldHelper;
         $this->localeService = $localeService;
         $this->modelFactory = $modelFactory;
         $this->translator = $translator;
-        $this->queryTypeGeneratorFactories = $queryTypeGeneratorFactories;
-        $this->queryOperatorFactories = $queryOperatorFactories;
-        $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
-        $this->mutationOperatorFactories = $mutationOperatorFactories;
+        $this->dataObjectQueryTypeGeneratorFactories = $dataObjectQueryTypeGeneratorFactories;
+        $this->dataObjectQueryOperatorFactories = $dataObjectQueryOperatorFactories;
+        $this->dataObjectMutationTypeGeneratorFactories = $dataObjectMutationTypeGeneratorFactories;
+        $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
+        $this->documentElementTypeGeneratorFactories = $documentElementTypeGeneratorFactories;
+        $this->generalTypeGeneratorFactories = $generalTypeGeneratorFactories;
     }
 
     /**
@@ -138,10 +174,10 @@ class Service
      *
      * @return mixed
      */
-    public function buildQueryDataConfig($attribute, $typeName, $fieldDefinition = null, $class = null, $container = null)
+    public function buildDataObjectQueryDataConfig($attribute, $typeName, $fieldDefinition = null, $class = null, $container = null)
     {
-        /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $typeName);
+        /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $typeName);
         $result = $factory->getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container);
         return $result;
     }
@@ -154,11 +190,11 @@ class Service
      * @param null $container
      * @return mixed
      */
-    public function buildMutationDataConfig($nodeDef, ClassDefinition $class = null, $container = null)
+    public function buildDataObjectMutationDataConfig($nodeDef, ClassDefinition $class = null, $container = null)
     {
-        /** @var MutationFieldConfigGeneratorInterface $factory */
+        /** @var DataObjectMutationFieldConfigGeneratorInterface $factory */
         $typeName = $nodeDef["attributes"]["dataType"];
-        $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
+        $factory = $this->dataObjectMutationTypeGeneratorFactories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
         $result = $factory->getGraphQlMutationFieldConfig($nodeDef, $class, $container);
         return $result;
     }
@@ -172,11 +208,11 @@ class Service
      *
      * @return mixed
      */
-    public function buildDataQueryResolver($attribute, Data $fieldDefinition = null, ClassDefinition $class = null)
+    public function buildDataObjectDataQueryResolver($attribute, Data $fieldDefinition = null, ClassDefinition $class = null)
     {
         $name = $fieldDefinition->getFieldtype();
-        /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
+        /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
         $resolver = $factory->getResolver($attribute, $fieldDefinition, $class);
 
         return $resolver;
@@ -190,24 +226,33 @@ class Service
      *
      * @return mixed
      */
-    public function buildDataQueryType(Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
+    public function buildDataObjectDataQueryType(Data $fieldDefinition = null, ClassDefinition $class = null, $container = null)
     {
         $name = $fieldDefinition->getFieldtype();
-        /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
+        /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $name);
         $result = $factory->getFieldType($fieldDefinition, $class, $container);
 
         return $result;
     }
 
+    public function buildDocumentElementDataQueryType($elementName)
+    {
+        $factory = $this->documentElementTypeGeneratorFactories->get('typegenerator_documentelementquerydatatype_' . $elementName);
+        $result = $factory->getFieldType();
+
+        return $result;
+    }
+
+
     /**
      * @param $typeName
      *
      * @return bool
      */
-    public function supportsQueryDataType($typeName)
+    public function supportsDataObjectQueryDataType($typeName)
     {
-        return $this->queryTypeGeneratorFactories->has('typegenerator_dataobjectquerydatatype_' . $typeName);
+        return $this->dataObjectQueryTypeGeneratorFactories->has('typegenerator_dataobjectquerydatatype_' . $typeName);
     }
 
     /**
@@ -215,9 +260,9 @@ class Service
      *
      * @return bool
      */
-    public function supportsMutationDataType($typeName)
+    public function supportsDataObjectMutationDataType($typeName)
     {
-        return $this->mutationTypeGeneratorFactories->has('typegenerator_dataobjectmutationdatatype_' . $typeName);
+        return $this->dataObjectMutationTypeGeneratorFactories->has('typegenerator_dataobjectmutationdatatype_' . $typeName);
     }
 
 
@@ -230,11 +275,11 @@ class Service
      *
      * @return mixed
      */
-    public function buildQueryOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    public function buildDataObjectQueryOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
     {
         $typeName = strtolower($typeName);
-        /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_queryoperator_' . $typeName);
+        /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_queryoperator_' . $typeName);
         $result = $factory->getGraphQlQueryOperatorConfig($typeName, $nodeDef, $class, $container, $params);
         return $result;
     }
@@ -248,12 +293,12 @@ class Service
      * @return mixed
      * @throws \Exception
      */
-    public function buildMutationOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    public function buildDataObjectMutationOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
     {
         $typeName = strtolower($typeName);
 
         // $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationoperator_' . $typeName);
-        $factory = $this->mutationOperatorFactories->get($typeName);
+        $factory = $this->dataObjectMutationOperatorFactories->get($typeName);
         $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         $configGenerator = $factory->build($nodeDef["attributes"], $context);
         $result = $configGenerator->getGraphQlMutationOperatorConfig($nodeDef, $class, $container, $params);
@@ -269,15 +314,31 @@ class Service
      * @param array $params
      * @return mixed
      */
-    public function buildOperatorQueryType($mode, $typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
+    public function buildDataObjectOperatorQueryType($mode, $typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
     {
         $typeName = strtolower($typeName);
-        /** @var QueryFieldConfigGeneratorInterface $factory */
-        $factory = $this->queryTypeGeneratorFactories->get('typegenerator_operator_' . $typeName);
+        /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+        $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_operator_' . $typeName);
         $result = $factory->getGraphQlOperatorConfig($mode, $typeName, $nodeDef, $class, $container, $params);
 
         return $result;
     }
+
+
+    /**
+     * @param $typeName
+     * @return mixed
+     * @throws \Exception
+     */
+    public function buildGeneralType($typeName)
+    {
+        $factory = $this->generalTypeGeneratorFactories->get($typeName);
+
+        $result = $factory->build();
+
+        return $result;
+    }
+
 
     /**
      * @param $typeName
@@ -292,7 +353,7 @@ class Service
     {
         $typeName = strtolower($typeName);
         /** @var OperatorFactoryInterface $factory */
-        $factory = $this->queryOperatorFactories->get($typeName);
+        $factory = $this->dataObjectQueryOperatorFactories->get($typeName);
 
         $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         $result = $factory->build($attributes, $context);
@@ -325,33 +386,59 @@ class Service
     /**
      * @return array
      */
-    public function getSupportedQueryDataTypes()
+    public function getSupportedDataObjectQueryDataTypes()
     {
-        return $this->supportedQueryDataTypes;
+        return $this->supportedDataObjectQueryDataTypes;
     }
 
     /**
-     * @param $supportedQueryDataTypes
+     * @param $supportedDocumentElementQueryDataTypes
      */
-    public function setSupportedQueryDataTypes($supportedQueryDataTypes)
+    public function setSupportedDocumentElementQueryDataTypes($supportedDocumentElementQueryDataTypes)
     {
-        $this->supportedQueryDataTypes = $supportedQueryDataTypes;
+        $this->supportedDocumentElementQueryDataTypes = $supportedDocumentElementQueryDataTypes;
+    }
+
+
+    /**
+     * @param $generalTypes
+     */
+    public function setSupportedGeneralTypes($generalTypes)
+    {
+        $this->generalTypes = $generalTypes;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getSupportedDocumentElementQueryDataTypes()
+    {
+        return $this->supportedDocumentElementQueryDataTypes;
+    }
+
+    /**
+     * @param $supportedDataObjectQueryDataTypes
+     */
+    public function setSupportedDataObjectQueryDataTypes($supportedDataObjectQueryDataTypes)
+    {
+        $this->supportedDataObjectQueryDataTypes = $supportedDataObjectQueryDataTypes;
     }
 
     /**
      * @return array
      */
-    public function getSupportedMutationDataTypes(): array
+    public function getSupportedDataObjectMutationDataTypes(): array
     {
-        return $this->supportedMutationDataTypes;
+        return $this->supportedDataObjectMutationDataTypes;
     }
 
     /**
-     * @param array $supportedMutationDataTypes
+     * @param array $supportedDataObjectMutationDataTypes
      */
-    public function setSupportedMutationDataTypes(array $supportedMutationDataTypes): void
+    public function setSupportedDataObjectMutationDataTypes(array $supportedDataObjectMutationDataTypes): void
     {
-        $this->supportedMutationDataTypes = $supportedMutationDataTypes;
+        $this->supportedDataObjectMutationDataTypes = $supportedDataObjectMutationDataTypes;
     }
 
 
@@ -381,6 +468,14 @@ class Service
     }
 
     /**
+     * @return DocumentFieldHelper
+     */
+    public function getDocumentFieldHelper()
+    {
+        return $this->documentFieldHelper;
+    }
+
+    /**
      * @return DataObjectFieldHelper
      */
     public function getObjectFieldHelper()
@@ -393,7 +488,7 @@ class Service
      */
     public function getQueryTypeGeneratorFactories(): ContainerInterface
     {
-        return $this->queryTypeGeneratorFactories;
+        return $this->dataObjectQueryTypeGeneratorFactories;
     }
 
     /**
@@ -401,7 +496,7 @@ class Service
      */
     public function getQueryOperatorFactories(): ContainerInterface
     {
-        return $this->queryOperatorFactories;
+        return $this->dataObjectQueryOperatorFactories;
     }
 
     /**
@@ -431,9 +526,17 @@ class Service
     /**
      * @param $dataTypes
      */
-    public function registerDataTypes($dataTypes)
+    public function registerDataObjectDataTypes($dataTypes)
     {
-        $this->dataTypes = $dataTypes;
+        $this->dataObjectDataTypes = $dataTypes;
+    }
+
+    /**
+     * @param $dataTypes
+     */
+    public function registerDocumentDataTypes($dataTypes)
+    {
+        $this->documentDataTypes = $dataTypes;
     }
 
     /**
@@ -441,13 +544,28 @@ class Service
      * @return mixed
      * @throws \Exception
      */
-    public function getTypeDefinition($typename)
+    public function getDataObjectTypeDefinition($typename)
     {
-        if (isset($this->dataTypes[$typename])) {
-            return $this->dataTypes[$typename];
+        if (isset($this->dataObjectDataTypes[$typename])) {
+            return $this->dataObjectDataTypes[$typename];
         }
         throw new \Exception("unknown type: " . $typename);
     }
+
+
+    /**
+     * @param $typename
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getDocumentTypeDefinition($typename)
+    {
+        if (isset($this->documentDataTypes[$typename])) {
+            return $this->documentDataTypes[$typename];
+        }
+        throw new \Exception("unknown type: " . $typename);
+    }
+
 
     /**
      * gets value for given object and getter, including inherited values
@@ -689,15 +807,15 @@ class Service
     /**
      * @return ContainerInterface
      */
-    public function getMutationTypeGeneratorFactories(): ContainerInterface
+    public function getDataObjectMutationTypeGeneratorFactories(): ContainerInterface
     {
-        return $this->mutationTypeGeneratorFactories;
+        return $this->dataObjectMutationTypeGeneratorFactories;
     }
 
     /**
      * @param ContainerInterface $mutationTypeGeneratorFactories
      */
-    public function setMutationTypeGeneratorFactories(ContainerInterface $mutationTypeGeneratorFactories): void
+    public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $mutationTypeGeneratorFactories): void
     {
         $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
     }
@@ -705,34 +823,44 @@ class Service
     /**
      * @return ContainerInterface
      */
-    public function getMutationOperatorFactories(): ContainerInterface
+    public function getDataObjectMutationOperatorFactories(): ContainerInterface
     {
-        return $this->mutationOperatorFactories;
+        return $this->dataObjectMutationOperatorFactories;
     }
 
     /**
-     * @param ContainerInterface $mutationOperatorFactories
+     * @param ContainerInterface $dataObjectMutationOperatorFactories
      */
-    public function setMutationOperatorFactories(ContainerInterface $mutationOperatorFactories): void
+    public function setDataObjectMutationOperatorFactories(ContainerInterface $dataObjectMutationOperatorFactories): void
     {
-        $this->mutationOperatorFactories = $mutationOperatorFactories;
+        $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
     }
 
     /**
      * @return array
      */
-    public function getDataTypes(): array
+    public function getDataObjectDataTypes(): array
     {
-        return $this->dataTypes;
+        return $this->dataObjectDataTypes;
     }
 
     /**
-     * @param array $dataTypes
+     * @param array $dataObjectDataTypes
      */
-    public function setDataTypes(array $dataTypes): void
+    public function setDataObjectDataTypes(array $dataObjectDataTypes): void
     {
-        $this->dataTypes = $dataTypes;
+        $this->dataObjectDataTypes = $dataObjectDataTypes;
     }
+
+
+    /**
+     * @param array $documentDataTypes
+     */
+    public function setDocumentDataTypes(array $documentDataTypes): void
+    {
+        $this->documentDataTypes = $documentDataTypes;
+    }
+
 
 
 

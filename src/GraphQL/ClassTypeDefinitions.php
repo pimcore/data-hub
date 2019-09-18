@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Type\PimcoreObjectType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType;
 use Pimcore\Db;
 
 class ClassTypeDefinitions

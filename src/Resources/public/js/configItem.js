@@ -454,11 +454,24 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         for (var i = 0; i < additionalColumns.length; i++) {
             var checkColumn = Ext.create('Ext.grid.column.Check', {
                 text: t(additionalColumns[i]),
-                dataIndex: additionalColumns[i]
+                dataIndex: additionalColumns[i],
+                listeners: {
+                    //TODO remove this handler as soon as documents are feature complete
+                    beforecheckchange: function (checkCol, rowIndex, checked, eOpts ) {
+                        if (checked && in_array(checkCol.dataIndex, ["create", "update", "delete"])) {
+                            var store = this.specialSchemaGrid.getStore();
+                            var record = store.getAt(rowIndex);
+                            var id = record.get("id");
+                            if (id == "document_folder" || id == "document") {
+                                pimcore.helpers.showNotification(t("info"), "Experimental feature / WIP. Only certain read operations are supported. Please check the doc for more information.");
+                                return false;
+                            }
+                        }
+                        return true;
+                    }.bind(this)}
             });
             columns.push(checkColumn);
         }
-
 
         this.specialSchemaGrid = Ext.create('Ext.grid.Panel', {
             frame: false,
@@ -471,7 +484,6 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                 items: columns
             },
             trackMouseOver: true,
-            selModel: Ext.create('Ext.selection.RowModel', {}),
             tbar: schemaToolbar,
             viewConfig: {
                 forceFit: true,
@@ -489,8 +501,8 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         saveData["schema"]["mutationEntities"] = this.getSchemaData("mutation");
         saveData["schema"]["specialEntities"] = this.getSchemaData("special");
         saveData["workspaces"] = {};
-        saveData["workspaces"]["document"] = this.documentWorkspace.getValues();
         saveData["workspaces"]["asset"] = this.assetWorkspace.getValues();
+        saveData["workspaces"]["document"] = this.documentWorkspace.getValues();
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
         return Ext.encode(saveData);
     },

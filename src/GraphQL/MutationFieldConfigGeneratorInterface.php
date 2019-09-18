@@ -15,6 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-interface MutationFieldConfigGeneratorInterface
+interface DataObjectMutationFieldConfigGeneratorInterface
 {
 }

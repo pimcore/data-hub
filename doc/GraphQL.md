@@ -58,7 +58,8 @@ admin_pimcoredatahub_webservice:
 ```
 ## Queries
 
-See [Query Documentation](./graphl/Queries.md)
+* Documents: see [DataObject Query Documentation](./graphl/DocumentQueries.md)
+* DataObjects: see [DataObject Query Documentation](./graphl/DataObjectQueries.md)
 
 ## Mutations
 
