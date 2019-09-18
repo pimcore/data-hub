@@ -110,11 +110,6 @@ class WorkspaceHelper
             return false;
         }
 
-        if ($element instanceof Document) {
-            // no support for documents right now
-            return false;
-        }
-
         $elementType = Service::getElementType($element);
         // collect properties via parent - ids
         $parentIds = [1];

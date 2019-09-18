@@ -8,17 +8,19 @@
 
 ## Workspace Settings
 
+* Create
 * Read
 
 Similar to [Workspace Permissions](https://pimcore.com/docs/5.x/Development_Documentation/Administration_of_Pimcore/Users_and_Roles.html) 
 
 ![Settings](../img/graphql/security1.png)
 
-* Write (to be implemented)
+* Update
+* Delete
 
 ## Error Handling  - Configuration Values
 
-The default behavior for associated/related objects or assets you are not allowed to view is to simply null it out.
+The default behavior for associated/related objects, documents or assets you are not allowed to view is to simply null it out.
 You can change that via a configuration setting.
 
 * 1 = the entire query will fail

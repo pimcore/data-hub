@@ -16,7 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\QueryFieldConfigGeneratorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInterface;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
@@ -55,7 +55,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     public function getGraphQlQueryFieldConfig($attribute, $fieldDefinition, $class, $container)
     {
         $typeName = $fieldDefinition->getFieldtype();
-        $typeDef = $this->getGraphQlService()->buildQueryDataConfig($attribute, $typeName, $fieldDefinition, $class, $container);
+        $typeDef = $this->getGraphQlService()->buildDataObjectQueryDataConfig($attribute, $typeName, $fieldDefinition, $class, $container);
         return $typeDef;
     }
 
@@ -68,7 +68,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container)
     {
-        $typeDef = $this->getGraphQlService()->buildMutationDataConfig($nodeDef, $class, $container);
+        $typeDef = $this->getGraphQlService()->buildDataObjectMutationDataConfig($nodeDef, $class, $container);
         return $typeDef;
     }
     /**
@@ -83,7 +83,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $attributes = $nodeDef['attributes'];
         $operatorTypeName = $attributes['class'];
 
-        $builder = "build" . ucfirst($mode) . "OperatorConfig";
+        $builder = "buildDataObject" . ucfirst($mode) . "OperatorConfig";
         $typeDef = $this->getGraphQlService()->$builder($operatorTypeName, $nodeDef, $class, $container, $params);
 
         return $typeDef;
@@ -101,9 +101,9 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         switch ($operationType) {
             case 'query':
-                return $this->getGraphQlService()->supportsQueryDataType($typeName);
+                return $this->getGraphQlService()->supportsDataObjectQueryDataType($typeName);
             case 'mutation':
-                return $this->getGraphQlService()->supportsMutationDataType($typeName);
+                return $this->getGraphQlService()->supportsDataObjectMutationDataType($typeName);
             default:
                 throw new \Exception("unknown operation type");
         }
@@ -344,12 +344,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         if ($nodeConf['isOperator']) {
             $operatorTypeName = $attributes['class'];
-            $type = $this->getGraphQlService()->buildOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
+            $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
             $fieldDefinition = $this->getQueryFieldDefinitionFromKey($class, $key);
-            /** @var QueryFieldConfigGeneratorInterface $factory */
-            $type = $this->getGraphQlService()->buildDataQueryType($fieldDefinition, $class, $container);
+            /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
+            $type = $this->getGraphQlService()->buildDataObjectDataQueryType($fieldDefinition, $class, $container);
         }
 
         return $type;

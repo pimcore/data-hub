@@ -10,13 +10,13 @@ Add a section similar to this one to your `services.yml` file.
 
 ```
   pimcore.datahub.graphql.mutationtypegenerator_operator_mycustommutationoperator:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\MutationOperatorConfigGenerator\MyCustomMutationOperator
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\MyCustomMutationOperator
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_mutationoperator_mycustommutationoperator }                        
 ```
 
 For reference have a look at:
-https://github.com/pimcore/data-hub/blob/master/src/GraphQL/MutationOperatorConfigGenerator/IfEmpty.php
+https://github.com/pimcore/data-hub/blob/master/src/GraphQL/DataObjectMutationOperatorConfigGenerator/IfEmpty.php
 
 This will again define a processor (see the next subsection) and try to automatically determine the input type
 depending on its child element.
@@ -36,7 +36,7 @@ docs page for further details.
 
 Next thing is to provide the input processor on the server side.
 A sample can be found here:
-https://github.com/pimcore/data-hub/blob/master/src/GraphQL/InputProcessor/IfEmptyOperator.php
+https://github.com/pimcore/data-hub/blob/master/src/GraphQL/DataObjectInputProcessor/IfEmptyOperator.php
 It will get the child value and only overwrite the current value if it is empty.
 
 

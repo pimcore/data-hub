@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-interface QueryFieldConfigGeneratorInterface
+interface DataObjectQueryFieldConfigGeneratorInterface
 {
     /**
      * @param array $columnConfig

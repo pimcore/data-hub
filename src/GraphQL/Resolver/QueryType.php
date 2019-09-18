@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
-use  Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -27,6 +27,8 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
+use Pimcore\Model\Document;
+use Pimcore\Model\Element\Service;
 
 
 class QueryType
@@ -74,6 +76,8 @@ class QueryType
 
         if ($elementType == "asset") {
             $element = Asset\Folder::getById($args['id']);
+        } else if ($elementType == "document") {
+            $element = Document\Folder::getById($args['id']);
         } else if ($elementType == "object") {
             $element = Folder::getById($args['id']);
         }
@@ -84,7 +88,7 @@ class QueryType
 
         if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read') && !$this->omitPermissionCheck) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset ' . $element->getFullPath());
+                throw new \Exception('not allowed to view element ' . Service::getElementType($element));
             } else {
                 return null;
             }
@@ -110,6 +114,19 @@ class QueryType
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
     }
 
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
+    }
+
     /**
      * @param null $value
      * @param array $args
@@ -121,6 +138,47 @@ class QueryType
     public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        if ($args && $args['defaultLanguage']) {
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
+        }
+
+        if (isset($args['id'])) {
+            $documentElement = Document::getById($args['id']);
+        } else if (isset($args['path'])) {
+            $documentElement = Document::getByPath($args['path']);
+        }
+
+        if (!$documentElement) {
+            return null;
+        }
+
+        if (!WorkspaceHelper::isAllowed($documentElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view document ' . $documentElement->getFullPath());
+            } else {
+                return null;
+            }
+        }
+
+        $data = new ElementDescriptor();
+        $fieldHelper = $this->getGraphQlService()->getDocumentFieldHelper();
+        $fieldHelper->extractData($data, $documentElement, $args, $context, $resolveInfo);
+        $data = $data->getArrayCopy();
+
+        return $data;
+    }
+
 
     /**
      * @param null $value

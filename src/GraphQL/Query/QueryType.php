@@ -96,7 +96,7 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getTypeDefinition("_" . $type . "_folder"),
+                'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder"),
                 'resolve' => [$resolver, "resolve" . ucfirst($type) . "FolderGetter"]
             ];
 
@@ -124,13 +124,45 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getTypeDefinition("asset"),
+                'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset"),
                 'resolve' => [$resolver, "resolveAssetGetter"]
             ];
 
             $config['fields']['getAsset'] = $defGet;
         }
     }
+
+
+
+    /**
+     * @param array $config
+     * @param array $context
+     */
+    public function buildDocumentQueries(&$config = [], $context = [])
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if ($entities["document"]["read"]) {
+            $resolver = $this->getResolver();
+
+            // GETTER DEFINITION
+            $defGet = [
+                'name' => 'getDocument',
+                'args' => [
+                    'id' => ['type' => Type::int()],
+                    'path' => ['type' => Type::string()],
+                    'defaultLanguage' => ['type' => Type::string()],
+                ],
+                'type' => $this->getGraphQlService()->getDocumentTypeDefinition("document"),
+                'resolve' => [$resolver, "resolveDocumentGetter"]
+            ];
+
+            $config['fields']['getDocument'] = $defGet;
+        }
+    }
+
 
     /**
      * @param null $class
@@ -251,8 +283,10 @@ class QueryType extends ObjectType
         $this->eventDispatcher->dispatch(QueryEvents::PRE_BUILD, $event);
 
         $this->buildAssetQueries($config, $context);
+        $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);
+        $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
     }
 }
