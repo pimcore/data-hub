@@ -48,8 +48,8 @@ class GeopointInputType extends InputObjectType
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $config['fields'] = [
-            'longitude' => Type::int(),
-            'latitude' => Type::int(),
+            'longitude' => Type::float(),
+            'latitude' => Type::float(),
         ];
     }
 }
