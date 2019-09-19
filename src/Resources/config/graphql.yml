@@ -635,7 +635,7 @@ services:
   # dataobject mutation operator factory definitions
   #
 
-  pimcore.datahub.graphql.mutationoperator.factory.ifempty:
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.ifempty:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
     arguments:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
@@ -643,7 +643,7 @@ services:
       - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: ifempty }
 
 
-  pimcore.datahub.graphql.mutationoperator.factory.localeswitcher:
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.localeswitcher:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
     arguments:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
