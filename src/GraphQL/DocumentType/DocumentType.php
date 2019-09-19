@@ -31,25 +31,50 @@ class DocumentType extends UnionType implements ContainerAwareInterface
 
     protected $types;
 
+    /**
+     * @var EmailType
+     */
     protected $emailType;
 
+    /**
+     * @var LinkType
+     */
     protected $linkType;
 
     /**
-     * @var
+     * @var SnippetType
+     */
+    protected $snippetType;
+
+    /**
+     * @var HardlinkType
      */
     protected $hardlinkType;
 
+    /**
+     * @var PageType
+     */
     protected $pageType;
 
-    public function __construct(Service $graphQlService, PageType $pageType, LinkType $linkType, EmailType $emailType, HardlinkType $hardlinkType, $config = [])
+    /**
+     * DocumentType constructor.
+     * @param Service $graphQlService
+     * @param PageType $pageType
+     * @param LinkType $linkType
+     * @param EmailType $emailType
+     * @param HardlinkType $hardlinkType
+     * @param SnippetType $snippetType
+     * @param array $config
+     */
+    public function __construct(Service $graphQlService, PageType $pageType, LinkType $linkType, EmailType $emailType, HardlinkType $hardlinkType, SnippetType $snippetType, $config = [])
     {
         $this->pageType = $pageType;
         $this->hardlinkType = $hardlinkType;
         $this->linkType = $linkType;
         $this->emailType = $emailType;
+        $this->snippetType = $snippetType;
 
-        $this->types = [$emailType, $linkType, $pageType, $hardlinkType];
+        $this->types = [$emailType, $hardlinkType, $linkType, $pageType, $snippetType];
         $this->setGraphQLService($graphQlService);
 
         parent::__construct($config);
@@ -80,6 +105,8 @@ class DocumentType extends UnionType implements ContainerAwareInterface
             return $this->emailType;
         } else if ($element instanceof Document\Hardlink) {
             return $this->hardlinkType;
+        } else if ($element instanceof Document\Snippet) {
+            return $this->snippetType;
         }
 
         return null;
