@@ -15,16 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\DateType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\NumericType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\CheckboxType;
 
-class Date extends Base
+class Checkbox extends Base
 {
+
     /**
-     * @return DateType
+     * @return CheckboxType
      */
     public function getFieldType()
     {
-        return DateType::getInstance();
+        return CheckboxType::getInstance();
     }
 }
