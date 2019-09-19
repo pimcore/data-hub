@@ -37,6 +37,10 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->processDataObjectMutationTypes($container);
         $this->processDocumentElementQueryTypes($container);
 
+        $this->registerAssetDataTypes(
+            $container
+        );
+
         $this->registerDataObjectDataTypes(
             $container
         );
@@ -357,6 +361,17 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         }
 
         $graphQLServiceDefinition->addMethodCall($methodCall, [$dataTypes]);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param Definition $definition
+
+     */
+    private function registerAssetDataTypes(
+        ContainerBuilder $container
+    ) {
+        $this->registerElementTypes($container, "pimcore.datahub.graphql.assettype", 'registerAssetDataTypes');
     }
 
     /**

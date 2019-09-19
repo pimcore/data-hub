@@ -16,7 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\AnyDocumentTargetType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -27,8 +27,9 @@ class HardlinkType extends AbstractDocumentType
     protected $anyDocumentTargetType;
 
     /**
-     * LinkType constructor.
+     * HardlinkType constructor.
      * @param Service $graphQlService
+     * @param AnyDocumentTargetType $anyDocumentTargetType
      * @param array $config
      * @param array $context
      */

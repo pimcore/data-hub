@@ -105,7 +105,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
                 return $type;
             } else {
                 if ($element['__elementType'] == 'asset') {
-                    return $this->getGraphQlService()->getDataObjectTypeDefinition("asset");
+                    return $this->getGraphQlService()->getAssetTypeDefinition("asset");
                 }
             }
         }

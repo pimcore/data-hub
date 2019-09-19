@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\RelationHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
 use Pimcore\Model\Document\Tag\Video;
 
 class VideoType extends ObjectType

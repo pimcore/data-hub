@@ -13,10 +13,11 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\General;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -52,7 +53,7 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
         $types = [];
 
         $service = $this->getGraphQlService();
-        $documentFolderType = $service->getDataObjectTypeDefinition("_document_folder");
+        $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
 
         $types[] = $documentFolderType;
         $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");

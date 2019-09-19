@@ -607,7 +607,7 @@ class MutationType extends ObjectType
                     'message' => ['type' => Type::string()],
                     "assetData" => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset"),
+                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"];
                             $value = $queryResolver($value, $args, $context, $info);
@@ -623,7 +623,7 @@ class MutationType extends ObjectType
                 'type' => $updateResultType,
                 'args' => [
                     'id' => ['type' => Type::nonNull(Type::int())],
-                    'input' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset_input"),
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) {
                     $element = Asset::getById($args["id"]);
 
@@ -675,7 +675,7 @@ class MutationType extends ObjectType
                     'message' => ['type' => Type::string()],
                     "assetData" => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset"),
+                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"];
                             $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
@@ -696,7 +696,7 @@ class MutationType extends ObjectType
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
                     'type'=> ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
-                    'input' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset_input"),
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
                     $parent = null;
 

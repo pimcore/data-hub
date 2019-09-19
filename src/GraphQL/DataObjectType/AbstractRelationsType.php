@@ -114,7 +114,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
         if (!$fd instanceof Data\ManyToManyObjectRelation) {
             if ($fd->getAssetsAllowed()) {
-                $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition("asset");
+                $types[] = $this->getGraphQlService()->getAssetTypeDefinition("asset");
             }
 
             if ($fd->getDocumentsAllowed()) {
@@ -139,7 +139,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
                 return $type;
             } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->getDataObjectTypeDefinition("asset");
+                return  $this->getGraphQlService()->getAssetTypeDefinition("asset");
             } else if ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {

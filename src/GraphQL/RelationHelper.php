@@ -13,11 +13,9 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;

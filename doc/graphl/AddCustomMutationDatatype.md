@@ -7,7 +7,7 @@ There are two things that need to be one:
 Add a section similar to this one to your `services.yml` file.
 
 ```
-    pimcore.datahub.graphql.mutationtypegenerator_datatype_mycustomdatatype:
+    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_mycustomdatatype:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\MyCustomDatatype
         tags:
             - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_mycustomdatatype }                                    

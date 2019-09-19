@@ -9,7 +9,7 @@ There are two things that need to be one:
 Add a section similar to this one to your `services.yml` file.
 
 ```
-  pimcore.datahub.graphql.mutationtypegenerator_operator_mycustommutationoperator:
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_mycustommutationoperator:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\MyCustomMutationOperator
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_mutationoperator_mycustommutationoperator }                        
