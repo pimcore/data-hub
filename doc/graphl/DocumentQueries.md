@@ -9,6 +9,7 @@
 * Hardlink
 * Link
 * Page
+* Snippet
 
 ## Supported Page Element types
 
