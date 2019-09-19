@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\General\FolderType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class ObjectFolderType extends FolderType

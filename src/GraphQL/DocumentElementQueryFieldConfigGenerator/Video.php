@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\VideoType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Video extends Base
@@ -23,15 +23,20 @@ class Video extends Base
 
     protected $assetType;
 
+    /**
+     * Video constructor.
+     * @param Service $graphQlService
+     * @throws \Exception
+     */
     public function __construct(Service $graphQlService)
     {
-        $assetType = $graphQlService->getDataObjectTypeDefinition("asset");
+        $assetType = $graphQlService->getAssetTypeDefinition("asset");
         $this->assetType = $assetType;
         parent::__construct($graphQlService);
     }
 
     /**
-     * @return LinkType
+     * @return VideoType
      */
     public function getFieldType()
     {

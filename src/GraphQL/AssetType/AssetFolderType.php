@@ -13,13 +13,13 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
-
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\General\FolderType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class DocumentFolderType extends FolderType
+class AssetFolderType extends FolderType
 {
 
     /**
@@ -29,7 +29,7 @@ class DocumentFolderType extends FolderType
      * @param array $context
      */
     public function __construct(Service $graphQlService, $config = [], $context = []) {
-        parent::__construct($graphQlService, ["name" => "document_folder"], $context);
+        parent::__construct($graphQlService, ["name" => "asset_folder"], $context);
     }
 
     /**
@@ -44,11 +44,16 @@ class DocumentFolderType extends FolderType
                 ],
                 'filename' => Type::string(),
                 'fullpath' => [
-                    'type' => Type::string()
+                    'type' => Type::string(),
+                    'args' => [
+                        'thumbnail' => ['type' => Type::string()]
+
+                    ]
                 ],
                 'creationDate' => Type::int(),
                 'modificationDateDate' => Type::int()
             ];
         }
     }
+
 }

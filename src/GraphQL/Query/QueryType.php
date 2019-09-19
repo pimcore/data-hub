@@ -89,6 +89,14 @@ class QueryType extends ObjectType
         if ($entities[$type . "_folder"]["read"]) {
             $resolver = $this->getResolver();
 
+            if ($type == "asset") {
+                $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition("_" . $type . "_folder");
+            } else if ($type == "document") {
+                $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
+            } else {
+                $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+            }
+
             // GETTER DEFINITION
             $defGet = [
                 'name' => 'get' . ucfirst($type) . "Folder",
@@ -96,7 +104,7 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder"),
+                'type' => $graphQlType,
                 'resolve' => [$resolver, "resolve" . ucfirst($type) . "FolderGetter"]
             ];
 
@@ -124,7 +132,7 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getDataObjectTypeDefinition("asset"),
+                'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
                 'resolve' => [$resolver, "resolveAssetGetter"]
             ];
 

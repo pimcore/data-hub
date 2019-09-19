@@ -13,10 +13,12 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\General;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -28,6 +30,11 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
 
     use ServiceTrait;
 
+    /**
+     * AnyTargetType constructor.
+     * @param Service $graphQlService
+     * @param array $config
+     */
     public function __construct(Service $graphQlService, $config = ['name' => 'AnyTarget'])
     {
 
@@ -44,13 +51,13 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
     {
 
         $service = $this->getGraphQlService();
-        $assetFolderType = $service->getDataObjectTypeDefinition("_asset_folder");
-        $documentFolderType = $service->getDataObjectTypeDefinition("_document_folder");
+        $assetFolderType = $service->getAssetTypeDefinition("_asset_folder");
+        $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
         $objectFolderType = $service->getDataObjectTypeDefinition("_object_folder");
 
 
         $types = array_values(ClassTypeDefinitions::getAll());
-        $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition("asset");
+        $types[] = $this->getGraphQlService()->getAssetTypeDefinition("asset");
 
         $types[] = $assetFolderType;
         $types[] = $documentFolderType;
@@ -72,7 +79,7 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
 
                 return $type;
             } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->getDataObjectTypeDefinition("asset");
+                return  $this->getGraphQlService()->getAssetTypeDefinition("asset");
             } else if ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {

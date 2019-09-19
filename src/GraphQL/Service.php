@@ -113,12 +113,17 @@ class Service
     /**
      * @var array
      */
-    protected $dataObjectDataTypes = [];
+    protected $assetDataTypes = [];
 
     /**
      * @var array
      */
     protected $documentDataTypes = [];
+
+    /**
+     * @var array
+     */
+    protected $dataObjectDataTypes = [];
 
 
     /**
@@ -534,9 +539,30 @@ class Service
     /**
      * @param $dataTypes
      */
+    public function registerAssetDataTypes($dataTypes)
+    {
+        $this->assetDataTypes = $dataTypes;
+    }
+
+    /**
+     * @param $dataTypes
+     */
     public function registerDocumentDataTypes($dataTypes)
     {
         $this->documentDataTypes = $dataTypes;
+    }
+
+    /**
+     * @param $typename
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getAssetTypeDefinition($typename)
+    {
+        if (isset($this->assetDataTypes[$typename])) {
+            return $this->assetDataTypes[$typename];
+        }
+        throw new \Exception("unknown asset type: " . $typename);
     }
 
     /**
@@ -549,7 +575,7 @@ class Service
         if (isset($this->dataObjectDataTypes[$typename])) {
             return $this->dataObjectDataTypes[$typename];
         }
-        throw new \Exception("unknown type: " . $typename);
+        throw new \Exception("unknown dataobject type: " . $typename);
     }
 
 
@@ -844,22 +870,22 @@ class Service
         return $this->dataObjectDataTypes;
     }
 
-    /**
-     * @param array $dataObjectDataTypes
-     */
-    public function setDataObjectDataTypes(array $dataObjectDataTypes): void
-    {
-        $this->dataObjectDataTypes = $dataObjectDataTypes;
-    }
-
-
-    /**
-     * @param array $documentDataTypes
-     */
-    public function setDocumentDataTypes(array $documentDataTypes): void
-    {
-        $this->documentDataTypes = $documentDataTypes;
-    }
+//    /**
+//     * @param array $dataObjectDataTypes
+//     */
+//    public function setDataObjectDataTypes(array $dataObjectDataTypes): void
+//    {
+//        $this->dataObjectDataTypes = $dataObjectDataTypes;
+//    }
+//
+//
+//    /**
+//     * @param array $documentDataTypes
+//     */
+//    public function setDocumentDataTypes(array $documentDataTypes): void
+//    {
+//        $this->documentDataTypes = $documentDataTypes;
+//    }
 
 
 
