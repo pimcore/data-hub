@@ -19,7 +19,9 @@
 * Link
 * Numeric
 * Select
+* Table
 * Textarea
+* Video
 * Wysiwyg
 * ...
 
