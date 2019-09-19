@@ -31,7 +31,7 @@ class DateType extends ObjectType
                 [
                     'name' => "document_tagDate",
                     'fields' => [
-                        'name' => [
+                        '__tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -39,7 +39,7 @@ class DateType extends ObjectType
                                 }
                             }
                         ],
-                        'type' => [
+                        '__tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
