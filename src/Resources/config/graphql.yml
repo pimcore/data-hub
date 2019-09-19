@@ -110,6 +110,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_wysiwyg }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Video
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_video }
+
   #
   # built-in dataobject query datatypes type generator
   #
@@ -407,11 +412,20 @@ services:
 
 
   #
-  # dataobject type definitions
+  # asset type definitions
   #
-  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\AssetType:
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: asset }
+
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: asset_metadata_item }
+
+  #
+  # dataobject type definitions
+  #
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType:
     tags:
@@ -464,10 +478,6 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: _object_folder }
-
-  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\AssetMetadataItem:
-    tags:
-      - { name: pimcore.datahub.graphql.dataobjecttype, id: asset_metadata_item }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotType:
     tags:

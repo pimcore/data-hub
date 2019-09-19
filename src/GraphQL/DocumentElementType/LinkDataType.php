@@ -40,7 +40,7 @@ class LinkDataType extends ObjectType
             [
                 'name' => "document_tagLink_data",
                 'fields' => [
-                    'type' => [
+                    '__tagType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
@@ -73,7 +73,7 @@ class LinkDataType extends ObjectType
                             }
                         }
                     ],
-                    'type' => [
+                    '__tagType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {

@@ -13,7 +13,7 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
