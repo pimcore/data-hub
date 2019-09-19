@@ -28,19 +28,19 @@ class SimpleTextType extends ObjectType
         return [
             'name' => $name,
             'fields' => [
-                'type' => [
-                    'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                        if ($value) {
-                            return $value->getType();
-                        }
-                    }
-                ],
                 'name' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                         if ($value) {
                             return $value->getName();
+                        }
+                    }
+                ],
+                'type' => [
+                    'type' => Type::string(),
+                    'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        if ($value) {
+                            return $value->getType();
                         }
                     }
                 ],
