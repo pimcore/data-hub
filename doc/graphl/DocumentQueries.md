@@ -13,6 +13,7 @@
 
 ## Supported Page Element types
 
+* Checkbox
 * Date
 * Input
 * Link

@@ -69,6 +69,11 @@ services:
   # built-in document-elements query datatypes type generator
   #
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_checkbox }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_date:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Date
     tags:
