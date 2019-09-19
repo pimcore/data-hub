@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\Document\Tag\Checkbox;
 
 class CheckboxType extends ObjectType
 {
@@ -33,7 +34,7 @@ class CheckboxType extends ObjectType
                         '__tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                                if ($value) {
+                                if ($value instanceof Checkbox) {
                                     return $value->getName();
                                 }
                             }
@@ -41,7 +42,7 @@ class CheckboxType extends ObjectType
                         '__tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Checkbox) {
+                                if ($value instanceof Checkbox) {
                                     return $value->getType();
                                 }
                             }
@@ -49,7 +50,7 @@ class CheckboxType extends ObjectType
                         'value' => [
                             'type' => Type::boolean(),
                             'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Checkbox) {
+                                if ($value instanceof Checkbox) {
                                     return $value->getData();
                                 }
                             }

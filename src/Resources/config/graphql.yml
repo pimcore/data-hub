@@ -100,6 +100,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_select }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_table:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Table
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_table }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_textarea:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Textarea
     tags:

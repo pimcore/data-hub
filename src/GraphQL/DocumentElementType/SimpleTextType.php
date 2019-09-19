@@ -18,11 +18,16 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\Document\Tag\Table;
 
 class SimpleTextType extends ObjectType
 {
     protected static $instance;
 
+    /**
+     * @param $name
+     * @return array
+     */
     public static function getStandardConfig($name)
     {
         return [
@@ -48,7 +53,13 @@ class SimpleTextType extends ObjectType
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                         if ($value) {
-                            return $value->getData();
+                            if ($value instanceof Table) {
+                                if ($value->getData()) {
+                                    return json_encode($value->getData());
+                                }
+                            } else {
+                                return $value->getData();
+                            }
                         }
                     }
                 ],
