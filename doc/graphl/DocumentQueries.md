@@ -12,6 +12,7 @@
 
 ## Supported Page Element types
 
+* Date
 * Input
 * Link
 * Numeric
@@ -87,3 +88,23 @@ Get Link Document and resolve the target news text.
 }
 ```
 
+## Sample 3 (Date Element Tag)
+
+```graphql
+{
+  getDocument(id: 25) {
+    ... on document_page {
+      fullpath
+      elements {
+        ...on document_tagDate {
+          name
+          # unix timestamp
+          timestamp
+          # as formatted string
+          formatted(format:"Y-m-d")
+        }
+      }      
+    }
+  }
+}
+```
