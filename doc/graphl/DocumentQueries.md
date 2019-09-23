@@ -62,8 +62,8 @@ Get Link Document and resolve the target news text.
         fullpath
         elements {
           ... on document_tagLink {
-            type
-            name
+            __tagType
+            __tagName
             data {
               internal
               path
@@ -101,7 +101,7 @@ Get Link Document and resolve the target news text.
       fullpath
       elements {
         ...on document_tagDate {
-          name
+          __tagName
           # unix timestamp
           timestamp
           # as formatted string
