@@ -31,9 +31,11 @@ use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Asset\Folder;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Document;
 use Pimcore\Model\Factory;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -44,21 +46,18 @@ class MutationType extends ObjectType
     use PermissionInfoTrait;
 
     /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
      * @var LocaleServiceInterface
      */
     protected $localeService;
-
     /**
      * @var Factory
      */
     protected $modelFactory;
-
     protected $typeCache = [];
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * MutationType constructor.
@@ -84,6 +83,37 @@ class MutationType extends ObjectType
         parent::__construct($config);
     }
 
+    /**
+     * @param array $config
+     * @param array $context
+     *
+     * @throws \Exception
+     */
+    public function build(&$config = [], $context = [])
+    {
+        $event = new MutationTypeEvent(
+            $this,
+            $config,
+            $context
+        );
+        $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
+
+        $this->buildDataObjectMutations($config, $context);
+        $this->buildCreateAssetMutation($config, $context);
+        $this->buildUpdateAssetMutation($config, $context);
+        $this->buildCreateFolderMutation("asset", $config, $context);
+        $this->buildCreateFolderMutation("object", $config, $context);
+        $this->buildUpdateFolderMutation("asset", $config, $context);
+        $this->buildUpdateFolderMutation("object", $config, $context);
+        $this->buildDeleteAssetMutation($config, $context);
+        $this->buildDeleteDocumentMutation($config, $context);
+        $this->buildDeleteFolderMutation("asset", $config, $context);
+        $this->buildDeleteFolderMutation("document", $config, $context);
+        $this->buildDeleteFolderMutation("object", $config, $context);
+        if (isset($config["fields"]) && count($config["fields"]) > 1) {
+            ksort($config["fields"]);
+        }
+    }
 
     /**
      * @param array $config
@@ -195,7 +225,7 @@ class MutationType extends ObjectType
 
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
-                        call_user_func_array($resolver, [ $value, $args, $context, $info]);
+                        call_user_func_array($resolver, [$value, $args, $context, $info]);
 
                         $newInstance->save();
 
@@ -307,7 +337,8 @@ class MutationType extends ObjectType
         }
     }
 
-    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class) {
+    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
+    {
         $inputFields = [];
         $processors = [];
 
@@ -333,7 +364,8 @@ class MutationType extends ObjectType
         }
     }
 
-    public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false) {
+    public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false)
+    {
         return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
             try {
 
@@ -385,6 +417,176 @@ class MutationType extends ObjectType
         };
     }
 
+    /**
+     * @param $config
+     * @param $context
+     */
+    public function buildCreateAssetMutation(&$config, $context)
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (isset($entities["asset"]["create"]) && $entities["asset"]["create"]) {
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
+            $queryResolver->setGraphQlService($this->getGraphQlService());
+            $queryResolver = [$queryResolver, "resolveAssetGetter"];
+
+            $createResultType = new ObjectType([
+                'name' => 'CreateAssetResult',
+                'fields' => [
+                    'success' => ['type' => Type::boolean()],
+                    'message' => ['type' => Type::string()],
+                    "assetData" => [
+                        'args' => ['defaultLanguage' => ['type' => Type::string()]],
+                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
+                        'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
+                            $args["id"] = $value["id"];
+                            $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+
+                            return $value;
+                        }
+                    ]
+                ],
+            ]);
+
+            $opName = 'createAsset';
+            $omitPermissionCheck = $this->omitPermissionCheck;
+
+            $createField = [
+                'type' => $createResultType,
+                'args' => [
+                    'filename' => ['type' => Type::nonNull(Type::string())],
+                    'path' => ['type' => Type::string()],
+                    'parentId' => ['type' => Type::int()],
+                    'type' => ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
+                    $parent = null;
+
+                    if (isset($args["parentId"])) {
+                        $parent = AbstractObject::getById($args["parentId"]);
+                    } else if (isset($args["path"])) {
+                        $parent = AbstractObject::getByPath($args["path"]);
+                    }
+
+                    //TODO maybe add error code?
+                    if (!$parent) {
+                        return [
+                            "success" => false,
+                            "message" => "unable to resolve parent"
+                        ];
+                    }
+
+                    /** @var $configuration Configuration */
+                    $configuration = $context['configuration'];
+                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$omitPermissionCheck) {
+                        return [
+                            "success" => false,
+                            "message" => "not allowed to create asset"
+                        ];
+                    }
+
+                    $type = $args["type"];
+
+                    /** @var  $newInstance Concrete */
+                    $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
+                    $newInstance = new $className();
+                    $newInstance->setParentId($parent->getId());
+
+                    if (isset($args["input"])) {
+                        $inputValues = $args["input"];
+                        foreach ($inputValues as $key => $value) {
+                            if ($key === "data") {
+                                $value = base64_decode($value);
+                            }
+                            $setter = "set" . ucfirst($key);
+                            $newInstance->$setter($value);
+                        }
+                    }
+                    $newInstance->save();
+
+                    return [
+                        "success" => true,
+                        "message" => "asset created: " . $newInstance->getId(),
+                        "id" => $newInstance->getId()
+                    ];
+                }
+            ];
+
+            $config['fields'][$opName] = $createField;
+
+        }
+    }
+
+    /**
+     * @param $config
+     * @param $context
+     * @throws \Exception
+     */
+    public function buildUpdateAssetMutation(&$config, $context)
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (isset($entities["asset"]["update"]) && $entities["asset"]["update"]) {
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
+            $queryResolver->setGraphQlService($this->getGraphQlService());
+            $queryResolver = [$queryResolver, "resolveAssetGetter"];
+
+            $updateResultType = new ObjectType([
+                'name' => 'UpdateAssetResult',
+                'fields' => [
+                    'success' => ['type' => Type::boolean()],
+                    'message' => ['type' => Type::string()],
+                    "assetData" => [
+                        'args' => ['defaultLanguage' => ['type' => Type::string()]],
+                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
+                        'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
+                            $args["id"] = $value["id"];
+                            $value = $queryResolver($value, $args, $context, $info);
+                            return $value;
+                        }
+                    ]
+                ],
+            ]);
+
+            $opName = 'updateAsset';
+
+            $updateField = [
+                'type' => $updateResultType,
+                'args' => [
+                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) {
+                    $element = Asset::getById($args["id"]);
+
+
+                    if (isset($args["input"])) {
+                        $inputValues = $args["input"];
+                        foreach ($inputValues as $key => $value) {
+                            if ($key === "data") {
+                                $value = base64_decode($value);
+                            }
+                            $setter = "set" . ucfirst($key);
+                            $element->$setter($value);
+                        }
+                    }
+                    $element->save();
+
+                    return [
+                        "success" => true,
+                        "message" => "asset updated: " . $element->getId(),
+                        "id" => $element->getId()
+                    ];
+                }
+            ];
+
+            $config['fields'][$opName] = $updateField;
+
+        }
+    }
 
     /**
      * @param $type
@@ -428,6 +630,57 @@ class MutationType extends ObjectType
 
             $config['fields'][$opName] = $createField;
         }
+    }
+
+    /**
+     * @param $elementType
+     * @return \Closure
+     */
+    public function getCreateFolderResolver($elementType)
+    {
+        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType) {
+            $parent = null;
+
+            if (isset($args["parentId"])) {
+                $parent = AbstractObject::getById($args["parentId"]);
+            } else if (isset($args["path"])) {
+                $parent = AbstractObject::getByPath($args["path"]);
+            }
+
+            if (!$parent) {
+                return [
+                    "success" => false,
+                    "message" => "unable to resolve parent"
+                ];
+            }
+
+            /** @var $configuration Configuration */
+            $configuration = $context['configuration'];
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$this->omitPermissionCheck) {
+                return [
+                    "success" => false,
+                    "message" => "not allowed to create " . $elementType . "folder "
+                ];
+            }
+
+            if ($elementType === "asset") {
+                $newInstance = new Folder();
+                $newInstance->setFilename($args["filename"]);
+            } else {
+                $newInstance = new \Pimcore\Model\DataObject\Folder();
+                $newInstance->setKey($args["key"]);
+            }
+            $newInstance->setParentId($parent->getId());
+
+            $newInstance->save();
+
+            return [
+                "success" => true,
+                "message" => "folder created: " . $newInstance->getId(),
+                "id" => $newInstance->getId()
+            ];
+        };
+
     }
 
     /**
@@ -520,6 +773,91 @@ class MutationType extends ObjectType
     }
 
     /**
+     * @param $config
+     * @param $context
+     */
+    public function buildDeleteAssetMutation(&$config, $context)
+    {
+        $this->buildDeleteElementMutation($config, $context, "asset");
+    }
+
+    /**
+     * @param $config
+     * @param $context
+     * @param $type
+     */
+    public function buildDeleteElementMutation(&$config, $context, $type)
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (isset($entities[$type]["delete"]) && $entities[$type]["delete"]) {
+            $opName = 'delete' . ucfirst($type);
+
+            $deleteResultType = new ObjectType([
+                'name' => 'Delete' . ucfirst($type) . 'Result',
+                'fields' => [
+                    'success' => ['type' => Type::boolean()],
+                    'message' => ['type' => Type::string()]
+                ],
+            ]);
+
+            $omitPermissionCheck = $this->omitPermissionCheck;
+
+            $deleteField = [
+                'type' => $deleteResultType,
+                'args' => [
+                    'id' => ['type' => Type::nonNull(Type::int())],
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck) {
+                    try {
+                        $id = $args["id"];
+                        /** @var $configuration Configuration */
+                        $configuration = $context['configuration'];
+
+                        if ($type == "asset") {
+                            $element = Asset::getById($id);
+                        } else if ($type == "document") {
+                            $element = Document::getById($id);
+                        } else if ($type == "object") {
+                            $element = DataObject::getById($id);
+                        }
+
+                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete") && !$omitPermissionCheck) {
+                            return [
+                                "success" => false,
+                                "message" => "delete " . $type . " permission denied."
+                            ];
+                        }
+                        $element->delete();
+
+                        return [
+                            "success" => true,
+                            "message" => $type . " " . $id . " deleted"
+                        ];
+                    } catch (\Exception $e) {
+                        return [
+                            "success" => false,
+                            "message" => $e->getMessage()
+                        ];
+                    }
+                }
+            ];
+
+            $config['fields'][$opName] = $deleteField;
+        }
+    }
+
+    /**
+     * @param $config
+     * @param $context
+     */
+    public function buildDeleteDocumentMutation(&$config, $context)
+    {
+        $this->buildDeleteElementMutation($config, $context, "document");
+    }
+
+    /**
      * @param $type
      * @param $config
      * @param $context
@@ -555,6 +893,8 @@ class MutationType extends ObjectType
 
                         if ($type === "asset") {
                             $element = Folder::getById($id);
+                        } else if ($type == "document") {
+                            $element = Document\Folder::getById($id);
                         } else {
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
@@ -562,7 +902,7 @@ class MutationType extends ObjectType
                         if (!WorkspaceHelper::isAllowed($element, $configuration, "delete") && !$omitPermissionCheck) {
                             return [
                                 "success" => false,
-                                "message" => "permission denied."
+                                "message" => "delete " . $type . " permission denied."
                             ];
                         }
                         $element->delete();
@@ -582,287 +922,6 @@ class MutationType extends ObjectType
 
             $config['fields'][$opName] = $deleteField;
         }
-    }
-
-    /**
-     * @param $config
-     * @param $context
-     * @throws \Exception
-     */
-    public function buildUpdateAssetMutation(&$config, $context)
-    {
-        /** @var $configuration Configuration */
-        $configuration = $context['configuration'];
-        $entities = $configuration->getSpecialEntities();
-
-        if (isset($entities["asset"]["update"]) && $entities["asset"]["update"]) {
-            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
-            $queryResolver->setGraphQlService($this->getGraphQlService());
-            $queryResolver = [$queryResolver, "resolveAssetGetter"];
-
-            $updateResultType = new ObjectType([
-                'name' => 'UpdateAssetResult',
-                'fields' => [
-                    'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()],
-                    "assetData" => [
-                        'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
-                        'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args["id"] = $value["id"];
-                            $value = $queryResolver($value, $args, $context, $info);
-                            return $value;
-                        }
-                    ]
-                ],
-            ]);
-
-            $opName = 'updateAsset';
-
-            $updateField = [
-                'type' => $updateResultType,
-                'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) {
-                    $element = Asset::getById($args["id"]);
-
-
-                    if (isset($args["input"])) {
-                        $inputValues = $args["input"];
-                        foreach ($inputValues as $key => $value) {
-                            if ($key === "data") {
-                                $value = base64_decode($value);
-                            }
-                            $setter = "set" . ucfirst($key);
-                            $element->$setter($value);
-                        }
-                    }
-                    $element->save();
-
-                    return [
-                        "success" => true,
-                        "message" => "asset updated: " . $element->getId(),
-                        "id" => $element->getId()
-                    ];
-                }
-            ];
-
-            $config['fields'][$opName] = $updateField;
-
-        }
-    }
-
-    /**
-     * @param $config
-     * @param $context
-     */
-    public function buildCreateAssetMutation(&$config, $context)
-    {
-        /** @var $configuration Configuration */
-        $configuration = $context['configuration'];
-        $entities = $configuration->getSpecialEntities();
-
-        if (isset($entities["asset"]["create"]) && $entities["asset"]["create"]) {
-            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
-            $queryResolver->setGraphQlService($this->getGraphQlService());
-            $queryResolver = [$queryResolver, "resolveAssetGetter"];
-
-            $createResultType = new ObjectType([
-                'name' => 'CreateAssetResult',
-                'fields' => [
-                    'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()],
-                    "assetData" => [
-                        'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
-                        'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args["id"] = $value["id"];
-                            $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
-
-                            return $value;
-                        }
-                    ]
-                ],
-            ]);
-
-            $opName = 'createAsset';
-            $omitPermissionCheck = $this->omitPermissionCheck;
-
-            $createField = [
-                'type' => $createResultType,
-                'args' => [
-                    'filename' => ['type' => Type::nonNull(Type::string())],
-                    'path' => ['type' => Type::string()],
-                    'parentId' => ['type' => Type::int()],
-                    'type'=> ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
-                    $parent = null;
-
-                    if (isset($args["parentId"])) {
-                        $parent = AbstractObject::getById($args["parentId"]);
-                    } else if (isset($args["path"])) {
-                        $parent = AbstractObject::getByPath($args["path"]);
-                    }
-
-                    //TODO maybe add error code?
-                    if (!$parent) {
-                        return [
-                            "success" => false,
-                            "message" => "unable to resolve parent"
-                        ];
-                    }
-
-                    /** @var $configuration Configuration */
-                    $configuration = $context['configuration'];
-                    if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$omitPermissionCheck) {
-                        return [
-                            "success" => false,
-                            "message" => "not allowed to create asset"
-                        ];
-                    }
-
-                    $type = $args["type"];
-
-                    /** @var  $newInstance Concrete */
-                    $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
-                    $newInstance = new $className();
-                    $newInstance->setParentId($parent->getId());
-
-                    if (isset($args["input"])) {
-                        $inputValues = $args["input"];
-                        foreach ($inputValues as $key => $value) {
-                            if ($key === "data") {
-                                $value = base64_decode($value);
-                            }
-                            $setter = "set" . ucfirst($key);
-                            $newInstance->$setter($value);
-                        }
-                    }
-                    $newInstance->save();
-
-                    return [
-                        "success" => true,
-                        "message" => "asset created: " . $newInstance->getId(),
-                        "id" => $newInstance->getId()
-                    ];
-                }
-            ];
-
-            $config['fields'][$opName] = $createField;
-
-        }
-    }
-
-    /**
-     * @param $config
-     * @param $context
-     */
-    public function buildDeleteAssetMutation(&$config, $context)
-    {
-        /** @var $configuration Configuration */
-        $configuration = $context['configuration'];
-        $entities = $configuration->getSpecialEntities();
-
-        if (isset($entities["asset"]["delete"]) && $entities["asset"]["delete"]) {
-            $opName = 'deleteAsset';
-
-            $deleteResultType = new ObjectType([
-                'name' => 'DeleteAssetResult',
-                'fields' => [
-                    'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()]
-                ],
-            ]);
-
-            $deleteField = [
-                'type' => $deleteResultType,
-                'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) {
-                    try {
-                        $id = $args["id"];
-                        /** @var $configuration Configuration */
-                        $configuration = $context['configuration'];
-
-                        $element = Asset::getById($id);
-
-                        if (!WorkspaceHelper::isAllowed($element, $configuration, "delete") && !$this->omitPermissionCheck) {
-                            return [
-                                "success" => false,
-                                "message" => "permission denied."
-                            ];
-                        }
-                        $element->delete();
-
-                        return [
-                            "success" => true,
-                            "message" => ""
-                        ];
-                    } catch (\Exception $e) {
-                        return [
-                            "success" => false,
-                            "message" => $e->getMessage()
-                        ];
-                    }
-                }
-            ];
-
-            $config['fields'][$opName] = $deleteField;
-        }
-    }
-
-
-    /**
-     * @param $elementType
-     * @return \Closure
-     */
-    public function getCreateFolderResolver($elementType)
-    {
-        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType) {
-            $parent = null;
-
-            if (isset($args["parentId"])) {
-                $parent = AbstractObject::getById($args["parentId"]);
-            } else if (isset($args["path"])) {
-                $parent = AbstractObject::getByPath($args["path"]);
-            }
-
-            if (!$parent) {
-                return [
-                    "success" => false,
-                    "message" => "unable to resolve parent"
-                ];
-            }
-
-            /** @var $configuration Configuration */
-            $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$this->omitPermissionCheck) {
-                return [
-                    "success" => false,
-                    "message" => "not allowed to create " . $elementType . "folder "
-                ];
-            }
-
-            if ($elementType === "asset") {
-                $newInstance = new Folder();
-                $newInstance->setFilename($args["filename"]);
-            } else {
-                $newInstance = new \Pimcore\Model\DataObject\Folder();
-                $newInstance->setKey($args["key"]);
-            }
-            $newInstance->setParentId($parent->getId());
-
-            $newInstance->save();
-
-            return [
-                "success" => true,
-                "message" => "folder created: " . $newInstance->getId(),
-                "id" => $newInstance->getId()
-            ];
-        };
-
     }
 
     /**
@@ -922,36 +981,5 @@ class MutationType extends ObjectType
     public function isEmpty()
     {
         return !$this->config["fields"];
-    }
-
-
-    /**
-     * @param array $config
-     * @param array $context
-     *
-     * @throws \Exception
-     */
-    public function build(&$config = [], $context = [])
-    {
-        $event =  new MutationTypeEvent(
-            $this,
-            $config,
-            $context
-        );
-        $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
-
-        $this->buildDataObjectMutations($config, $context);
-        $this->buildCreateAssetMutation($config, $context);
-        $this->buildUpdateAssetMutation($config, $context);
-        $this->buildCreateFolderMutation("asset", $config, $context);
-        $this->buildCreateFolderMutation("object", $config, $context);
-        $this->buildUpdateFolderMutation("asset", $config, $context);
-        $this->buildUpdateFolderMutation("object", $config, $context);
-        $this->buildDeleteAssetMutation($config, $context);
-        $this->buildDeleteFolderMutation("asset", $config, $context);
-        $this->buildDeleteFolderMutation("object", $config, $context);
-        if (isset($config["fields"]) && count($config["fields"]) > 1) {
-            ksort($config["fields"]);
-        }
     }
 }
