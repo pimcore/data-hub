@@ -458,7 +458,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                 listeners: {
                     //TODO remove this handler as soon as documents are feature complete
                     beforecheckchange: function (checkCol, rowIndex, checked, eOpts ) {
-                        if (checked && in_array(checkCol.dataIndex, ["create", "update", "delete"])) {
+                        if (checked && in_array(checkCol.dataIndex, ["create", "update"])) {
                             var store = this.specialSchemaGrid.getStore();
                             var record = store.getAt(rowIndex);
                             var id = record.get("id");
