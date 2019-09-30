@@ -1,0 +1,29 @@
+services:
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\HubExtractor: ~
+
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\HubResourceNameCollectionFactory:
+        decorates: 'api_platform.metadata.resource.name_collection_factory'
+        arguments:
+            - '@Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\HubResourceNameCollectionFactory.inner'
+
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\HubResourceMetadataFactory:
+        decorates: 'api_platform.metadata.resource.metadata_factory'
+        arguments:
+            - '@Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\HubResourceMetadataFactory.inner'
+
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\Property\HubPropertyInfoNameCollectionFactory:
+        decorates: 'api_platform.metadata.property.name_collection_factory'
+        arguments:
+            - '@Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\Property\HubPropertyInfoNameCollectionFactory.inner'
+
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\Property\HubPropertyMetadataFactory:
+        decorates: 'api_platform.metadata.property.metadata_factory'
+        arguments:
+            - '@Pimcore\Bundle\DataHubBundle\ApiPlatform\Metadata\Property\HubPropertyMetadataFactory.inner'
+
+    Pimcore\Bundle\DataHubBundle\ApiPlatform\HubCollectionDataProvider:
+        arguments:
+            - '@Pimcore\Bundle\DataHubBundle\ApiPlatform\HubExtractor'
+        tags:
+            - { name: 'api_platform.collection_data_provider', priority: 1 }
+

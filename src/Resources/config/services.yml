@@ -1,5 +1,6 @@
 imports:
     - { resource: graphql.yml }
+    - { resource: services/api_platform.yml }
 
 services:
 

@@ -1,3 +1,8 @@
+api_platform:
+    resource: api
+    type: api_platform
+    prefix: /api-platform-webservices
+
 app:
     resource: "@PimcoreDataHubBundle/Controller/"
     type:     annotation

@@ -9,20 +9,23 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle;
 
+use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
+use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class PimcoreDataHubBundle extends AbstractPimcoreBundle
+class PimcoreDataHubBundle extends AbstractPimcoreBundle implements DependentBundleInterface
 {
     const RUNTIME_CONTEXT_KEY = 'datahub_context';
 
@@ -33,54 +36,80 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     //TODO decide whether we want to return null here or throw an exception (maybe make this configurable?)
     public static $notAllowedPolicy = self::NOT_ALLOWED_POLICY_NULL;
 
+    public static function registerDependentBundles(BundleCollection $collection)
+    {
+        $collection->addBundle(new ApiPlatformBundle());
+        //$collection->addBundle(new NelmioCorsBundle());
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getNotAllowedPolicy()
+    {
+        return self::$notAllowedPolicy;
+    }
+
+    /**
+     * @param mixed $notAllowedPolicy
+     */
+    public static function setNotAllowedPolicy($notAllowedPolicy): void
+    {
+        self::$notAllowedPolicy = $notAllowedPolicy;
+    }
+
     public function boot()
     {
         parent::boot();
 
-        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\DataObjectEvents::POST_DELETE, function (\Pimcore\Event\Model\DataObjectEvent $e) {
-            $object = $e->getObject();
-            $db = Db::get();
-            $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['cid' => $object->getId()]);
-        });
-
-        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\AssetEvents::POST_DELETE, function (\Pimcore\Event\Model\AssetEvent $e) {
-            $asset = $e->getAsset();
-            $db = Db::get();
-            $db->delete(Dao::TABLE_NAME_ASSET, ['cid' => $asset->getId()]);
-        });
-
-        // update workspace permission in case the fullpath changes
-        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\DataObjectEvents::POST_UPDATE, function (\Pimcore\Event\Model\DataObjectEvent $e) {
-            if ($e->hasArgument('oldPath')) {
+        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\DataObjectEvents::POST_DELETE,
+            function (\Pimcore\Event\Model\DataObjectEvent $e) {
                 $object = $e->getObject();
-                $oldPath = $e->getArgument('oldPath');
                 $db = Db::get();
+                $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['cid' => $object->getId()]);
+            });
 
-                $db->update(Dao::TABLE_NAME_DATAOBJECT, [
-                    'cpath' => $object->getRealFullPath()
-                ], [
-                    'cid' => $object->getId()
-                ]);
-
-                $db->query('update ' . Dao::TABLE_NAME_DATAOBJECT . ' set cpath = replace(cpath,' . $db->quote($oldPath . '/') . ',' . $db->quote($object->getRealFullPath() . '/') . ') where cpath like ' . $db->quote($oldPath . '/%') . ';');
-            }
-        });
-
-        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\AssetEvents::POST_UPDATE, function (\Pimcore\Event\Model\AssetEvent $e) {
-            if ($e->hasArgument('oldPath')) {
-                $oldPath = $e->getArgument('oldPath');
+        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\AssetEvents::POST_DELETE,
+            function (\Pimcore\Event\Model\AssetEvent $e) {
                 $asset = $e->getAsset();
                 $db = Db::get();
+                $db->delete(Dao::TABLE_NAME_ASSET, ['cid' => $asset->getId()]);
+            });
 
-                $db->update(Dao::TABLE_NAME_ASSET, [
-                    'cpath' => $asset->getRealFullPath()
-                ], [
-                    'cid' => $asset->getId()
-                ]);
+        // update workspace permission in case the fullpath changes
+        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\DataObjectEvents::POST_UPDATE,
+            function (\Pimcore\Event\Model\DataObjectEvent $e) {
+                if ($e->hasArgument('oldPath')) {
+                    $object = $e->getObject();
+                    $oldPath = $e->getArgument('oldPath');
+                    $db = Db::get();
 
-                $db->query('update ' . Dao::TABLE_NAME_ASSET . ' set cpath = replace(cpath,' . $db->quote($oldPath . '/') . ',' . $db->quote($asset->getRealFullPath() . '/') . ') where cpath like ' . $db->quote($oldPath . '/%') . ';');
-            }
-        });
+                    $db->update(Dao::TABLE_NAME_DATAOBJECT, [
+                        'cpath' => $object->getRealFullPath(),
+                    ], [
+                        'cid' => $object->getId(),
+                    ]);
+
+                    $db->query('update '.Dao::TABLE_NAME_DATAOBJECT.' set cpath = replace(cpath,'.$db->quote($oldPath.'/').','.$db->quote($object->getRealFullPath().'/').') where cpath like '.$db->quote($oldPath.'/%').';');
+                }
+            });
+
+        \Pimcore::getEventDispatcher()->addListener(\Pimcore\Event\AssetEvents::POST_UPDATE,
+            function (\Pimcore\Event\Model\AssetEvent $e) {
+                if ($e->hasArgument('oldPath')) {
+                    $oldPath = $e->getArgument('oldPath');
+                    $asset = $e->getAsset();
+                    $db = Db::get();
+
+                    $db->update(Dao::TABLE_NAME_ASSET, [
+                        'cpath' => $asset->getRealFullPath(),
+                    ], [
+                        'cid' => $asset->getId(),
+                    ]);
+
+                    $db->query('update '.Dao::TABLE_NAME_ASSET.' set cpath = replace(cpath,'.$db->quote($oldPath.'/').','.$db->quote($asset->getRealFullPath().'/').') where cpath like '.$db->quote($oldPath.'/%').';');
+                }
+            });
     }
 
     /**
@@ -98,7 +127,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     {
         return [
             '/bundles/pimcoredatahub/css/icons.css',
-            '/bundles/pimcoredatahub/css/style.css'
+            '/bundles/pimcoredatahub/css/style.css',
         ];
     }
 
@@ -132,7 +161,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/workspace/abstract.js',
             '/bundles/pimcoredatahub/js/workspace/document.js',
             '/bundles/pimcoredatahub/js/workspace/asset.js',
-            '/bundles/pimcoredatahub/js/workspace/object.js'
+            '/bundles/pimcoredatahub/js/workspace/object.js',
         ];
     }
 
@@ -144,21 +173,5 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     public function getInstaller()
     {
         return $this->container->get(Installer::class);
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getNotAllowedPolicy()
-    {
-        return self::$notAllowedPolicy;
-    }
-
-    /**
-     * @param mixed $notAllowedPolicy
-     */
-    public static function setNotAllowedPolicy($notAllowedPolicy): void
-    {
-        self::$notAllowedPolicy = $notAllowedPolicy;
     }
 }
