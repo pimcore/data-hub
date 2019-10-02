@@ -19,11 +19,14 @@ use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class PimcoreDataHubBundle extends AbstractPimcoreBundle
 {
+    use PackageVersionTrait;
+
     const RUNTIME_CONTEXT_KEY = 'datahub_context';
 
     const NOT_ALLOWED_POLICY_EXCEPTION = 1;
@@ -89,6 +92,14 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new ImportExportLocatorsPass());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getComposerPackageName()
+    {
+        return 'pimcore/data-hub';
     }
 
     /**
