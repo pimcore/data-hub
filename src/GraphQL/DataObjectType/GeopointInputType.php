@@ -50,6 +50,7 @@ class GeopointInputType extends InputObjectType
         $config['fields'] = [
             'longitude' => Type::float(),
             'latitude' => Type::float(),
+
         ];
     }
 }
