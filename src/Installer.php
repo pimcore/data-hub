@@ -15,13 +15,21 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
+use Doctrine\DBAL\Migrations\Version;
+use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Db;
-use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
+use Pimcore\Extension\Bundle\Installer\MigrationInstaller;
 use Pimcore\Logger;
 
-class Installer extends AbstractInstaller
+class Installer extends MigrationInstaller
 {
+
+    public function getMigrationVersion(): string
+    {
+        return '20190904131554';
+    }
+
     public function needsReloadAfterInstall(): bool
     {
         return true;
@@ -49,7 +57,7 @@ class Installer extends AbstractInstaller
     /**
      * {@inheritdoc}
      */
-    public function install()
+    public function migrateInstall(Schema $schema, Version $version)
     {
         // create backend permission
         \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
@@ -80,5 +88,9 @@ class Installer extends AbstractInstaller
         }
 
         return true;
+    }
+
+    public function migrateUninstall(Schema $schema, Version $version)
+    {
     }
 }

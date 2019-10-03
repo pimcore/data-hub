@@ -82,6 +82,8 @@ class ImageGallery
             foreach ($relations as $relation) {
                 if ($relation instanceof Hotspotimage) {
                     $image = $relation->getImage();
+                } else {
+                    continue;
                 }
 
                 if ($image instanceof Asset) {
