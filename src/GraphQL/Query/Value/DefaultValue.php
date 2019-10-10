@@ -45,7 +45,7 @@ class DefaultValue extends AbstractValue
                 'id' => $element->getId(),
             ];
 
-            $resolveFn = $this->getGraphQlService()->buildDataQueryResolver($this->attribute, $fieldDefinition, $class);
+            $resolveFn = $this->getGraphQlService()->buildDataObjectDataQueryResolver($this->attribute, $fieldDefinition, $class);
             $args = null;
             $context = null;
 
