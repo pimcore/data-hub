@@ -164,6 +164,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_firstname }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geobounds:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geobounds
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geobounds }
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopoint:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopoint
     tags:

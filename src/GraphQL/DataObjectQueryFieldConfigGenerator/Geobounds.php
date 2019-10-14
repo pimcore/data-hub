@@ -15,10 +15,11 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeoboundsType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointType;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Geopoint extends Base
+class Geobounds extends Base
 {
 
     /**
@@ -41,10 +42,10 @@ class Geopoint extends Base
      * @param null $class
      * @param null $container
      *
-     * @return GeopointType
+     * @return GeoboundsType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return GeopointType::getInstance();
+        return GeoboundsType::getInstance();
     }
 }

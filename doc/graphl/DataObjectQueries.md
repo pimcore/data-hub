@@ -17,6 +17,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Gender
 * [Field-Collections](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
 * Firstname
+* Geobounds
 * Geopoint
 * Image
 * Input
