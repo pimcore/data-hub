@@ -19,6 +19,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Firstname
 * Geobounds
 * Geopoint
+* Geopolygon
 * Image
 * Input
 * InputQuantityValue

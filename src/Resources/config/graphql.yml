@@ -169,6 +169,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geobounds }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopolygon:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopolygon
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopolygon }
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopoint:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopoint
     tags:
