@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Pimcore\Bundle\DataHubBundle\EventListener\DataChangeListener:
+        tags:
+            - { name: kernel.event_subscriber }
