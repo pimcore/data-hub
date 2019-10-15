@@ -19,9 +19,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
+use Pimcore\Event\DocumentEvents;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
+use Pimcore\Event\Model\DocumentEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataChangeListener implements EventSubscriberInterface
@@ -47,6 +49,8 @@ class DataChangeListener implements EventSubscriberInterface
         return [
             DataObjectEvents::POST_UPDATE => 'onObjectUpdate',
             DataObjectEvents::POST_DELETE => 'onObjectDelete',
+            DocumentEvents::POST_UPDATE   => 'onDocumentUpdate',
+            DocumentEvents::POST_DELETE   => 'onDocumentDelete',
             AssetEvents::POST_UPDATE      => 'onAssetUpdate',
             AssetEvents::POST_DELETE      => 'onAssetDelete',
         ];
@@ -93,6 +97,50 @@ class DataChangeListener implements EventSubscriberInterface
     {
         $object = $e->getObject();
         $this->db->delete(Dao::TABLE_NAME_DATAOBJECT, ['cid' => $object->getId()]);
+    }
+
+
+    /**
+     * @param DocumentEvent $e
+     *
+     * @throws DBALException
+     */
+    public function onDocumentUpdate(DocumentEvent $e)
+    {
+        if (!$e->hasArgument('oldPath')) {
+            return;
+        }
+
+        $object = $e->getDocument();
+        $oldPath = $e->getArgument('oldPath');
+
+        $this->db->update(Dao::TABLE_NAME_DOCUMENT, [
+            'cpath' => $object->getRealFullPath()
+        ], [
+            'cid' => $object->getId()
+        ]);
+
+        $command = sprintf(
+            'UPDATE %s SET cpath = replace(cpath,%s,%s) WHERE cpath LIKE %s;',
+            Dao::TABLE_NAME_DOCUMENT,
+            $this->db->quote($oldPath . '/'),
+            $this->db->quote($object->getRealFullPath() . '/'),
+            $this->db->quote($oldPath . '/%')
+        );
+
+        $this->db->query($command);
+
+    }
+
+    /**
+     * @param DocumentEvent $e
+     *
+     * @throws DBALException
+     */
+    public function onDocumentDelete(DocumentEvent $e)
+    {
+        $object = $e->getDocument();
+        $this->db->delete(Dao::TABLE_NAME_DOCUMENT, ['cid' => $object->getId()]);
     }
 
     /**
