@@ -16,6 +16,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
+        this.modificationDate = data.modificationDate;
 
         this.tab = new Ext.TabPanel({
             activeTab: 0,
@@ -528,13 +529,15 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         Ext.Ajax.request({
             url: "/admin/pimcoredatahub/config/save",
             params: {
-                data: saveData
+                data: saveData,
+                modificationDate: this.modificationDate
             },
             method: "post",
             success: function (response) {
                 var rdata = Ext.decode(response.responseText);
                 if (rdata && rdata.success) {
                     pimcore.helpers.showNotification(t("success"), t("plugin_pimcore_datahub_configpanel_item_save_success"), "success");
+                    this.modificationDate = rdata.modificationDate;
                     this.resetChanges();
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));

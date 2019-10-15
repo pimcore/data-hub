@@ -360,6 +360,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 'configuration' => $config,
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
+                'modificationDate' => Dao::getConfigModificationDate()
             ]
         );
     }
@@ -379,6 +380,12 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         try {
             $data = $request->get('data');
+            $modificationDate = $request->get('modificationDate', 0);
+
+            if ($modificationDate < Dao::getConfigModificationDate()) {
+                throw new \Exception('The configuration was modified during editing, please reload the configuration and make your changes again');
+            }
+
             $dataDecoded = json_decode($data, true);
 
             $name = $dataDecoded['general']['name'];
@@ -398,7 +405,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config->setConfiguration($dataDecoded);
             $config->save();
 
-            return $this->json(['success' => true]);
+            return $this->json(['success' => true, 'modificationDate' => Dao::getConfigModificationDate()]);
         } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
