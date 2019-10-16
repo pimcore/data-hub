@@ -210,6 +210,7 @@ services:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_externalImage }
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_input }
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_rgbaColor }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_time }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_calculatedvalue:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\CalculatedValue

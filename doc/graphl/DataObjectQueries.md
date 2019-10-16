@@ -40,6 +40,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Select
 * Slider
 * Textarea
+* Time
 * Video
 * Wysisyg
 
