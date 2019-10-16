@@ -133,6 +133,11 @@ services:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterActive }
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterConfirmed }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_classificationstore:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Classificationstore
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_classificationstore }
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_date:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
     tags:
@@ -451,6 +456,18 @@ services:
       - { name: pimcore.datahub.graphql.assettype, id: _asset_folder }
 
   #
+  # classification store type definitions
+  #
+  Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group:
+    tags:
+      - { name: pimcore.datahub.graphql.cstype, id: cs_group }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature:
+    tags:
+      - { name: pimcore.datahub.graphql.cstype, id: cs_feature }
+
+
+  #
   # dataobject type definitions
   #
 
@@ -682,10 +699,113 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: ifempty }
 
-
   pimcore.datahub.graphql.dataobjectmutationoperator.factory.localeswitcher:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
     arguments:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localeswitcher }
+
+
+  # classification store
+  #
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_booleanSelect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\BooleanSelect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_booleanSelect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_calculatedValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\CalculatedValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_calculatedValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_checkbox }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_country:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Country
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_country }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_countrymultiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Countrymultiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_countrymultiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_date:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Date
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_date }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_datetime:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Datetime
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_datetime }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_input }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_inputQuantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\InputQuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_inputQuantityValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_language:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Language
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_language }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_languagemultiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Languagemultiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_languagemultiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_multiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_multiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_numeric:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_numeric }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_rgbaColor:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\RgbaColor
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_rgbaColor }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_select:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Select
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_select }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_slider:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Slider
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_slider }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_textarea:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Textarea
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_textarea }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_time:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Time
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_time }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_quantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\QuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_quantityValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_wysiwyg:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Wysiwyg
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_wysiwyg }

@@ -8,6 +8,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Advanced Many-to-Many Object Relation
 * [Calculated Value](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Calculated_Value_Type.html)
 * Checkbox
+* [Classification Store](ClassificationStore.md) page for more info.
 * Country
 * Countries (Multiselect)
 * Date
@@ -35,7 +36,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Newsletter Confirmed
 * Numeric
 * Quantity Value
-* Rgba color
+* RgbaColor
 * Select
 * Slider
 * Textarea

@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\AnyTargetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 

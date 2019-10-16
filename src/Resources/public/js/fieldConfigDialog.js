@@ -339,12 +339,15 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                                         var ownerTree = this.selectionPanel;
 
-                                        if (record.data.dataType == "classificationstore") {
-                                            setTimeout(function () {
-                                                var ccd = new pimcore.object.classificationstore.columnConfigDialog();
-                                                ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
-                                            }.bind(this), 100);
-                                        }
+
+                                        //TODO in case this ever get's reintegrated in to the core,
+                                        // we don't support this on key level !
+                                        // if (record.data.dataType == "classificationstore") {
+                                        //     setTimeout(function () {
+                                        //         var ccd = new pimcore.object.classificationstore.columnConfigDialog();
+                                        //         ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
+                                        //     }.bind(this), 100);
+                                        // }
                                         data.records = [copy]; // assign the copy as the new dropNode
                                     }
                                 }
@@ -574,10 +577,12 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                     var ownerTree = this.selectionPanel;
 
-                    if (record.data.dataType == "classificationstore") {
-                        var ccd = new pimcore.object.classificationstore.columnConfigDialog();
-                        ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
-                    }
+                    // TODO same as above regarding the core
+                    // classificaton is stored on field level but on key level
+                    // if (record.data.dataType == "classificationstore") {
+                    //     var ccd = new pimcore.object.classificationstore.columnConfigDialog();
+                    //     ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
+                    // }
                 }
             }
         }.bind(this));
