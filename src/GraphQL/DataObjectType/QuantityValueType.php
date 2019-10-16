@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -49,30 +49,35 @@ class QuantityValueType extends ObjectType
      */
     public function build(&$config)
     {
-
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QuantityValue();
-        $resolver->setGraphQLService($this->getGraphQlService());
-
         $valueType = Type::float();
         if (isset($config['fields']['value']['type'])) {
             $valueType = $config['fields']['value']['type'];
         }
 
-        $config['fields'] =
-            [
-                'unit' => [
-                    'type' => QuantityValueUnitType::getInstance(),
-                    'resolve' => [$resolver, "resolveUnit"]
-                ],
-                'value' => [
-                    'type' => $valueType,
-                    'resolve' => [$resolver, "resolveValue"]
-                ],
-                'toString' => [
-                    'type' => Type::string(),
-                    'resolve' => [$resolver, "resolveToString"],
-                    'args' => ['language' => ['type' => Type::string()]]
-                ]
-            ];
+        $config['fields'] = self::getFieldConfig($this->getGraphQlService(), $valueType);
+
+    }
+
+
+    public static function getFieldConfig(Service $graphQlService, $valueType)
+    {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QuantityValue();
+        $resolver->setGraphQLService($graphQlService);
+        $fields = [
+            'unit' => [
+                'type' => QuantityValueUnitType::getInstance(),
+                'resolve' => [$resolver, "resolveUnit"]
+            ],
+            'value' => [
+                'type' => $valueType,
+                'resolve' => [$resolver, "resolveValue"]
+            ],
+            'toString' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, "resolveToString"],
+                'args' => ['language' => ['type' => Type::string()]]
+            ]
+        ];
+        return $fields;
     }
 }

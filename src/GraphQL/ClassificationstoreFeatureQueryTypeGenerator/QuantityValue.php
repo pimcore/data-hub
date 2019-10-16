@@ -13,10 +13,15 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator;
 
-class ElementDescriptor extends BaseDescriptor
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\QuantityValueType;
+
+class QuantityValue extends Base
 {
 
-
+    public function getFieldType()
+    {
+        return QuantityValueType::getInstance($this->getGraphQlService(), 'csFeatureQuantityValue', 'quantity_value', 'quantityvalue');
+    }
 }
