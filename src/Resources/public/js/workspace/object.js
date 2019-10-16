@@ -11,9 +11,7 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.workspace.object");
-pimcore.plugin.datahub.workspace.object = Class.create(pimcore.plugin.datahub.workspace.abstract, {
-
+pimcore.registerNS("pimcore.bundle.datahub.workspace.object");
+pimcore.bundle.datahub.workspace.object = Class.create(pimcore.bundle.datahub.workspace.abstract, {
     type: "object"
 });

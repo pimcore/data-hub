@@ -11,10 +11,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.workspace.abstract");
-pimcore.plugin.datahub.workspace.abstract = Class.create({
-
+pimcore.registerNS("pimcore.bundle.datahub.workspace.abstract");
+pimcore.bundle.datahub.workspace.abstract = Class.create({
     initialize: function (parent) {
         this.parent = parent;
         this.workspaces = this.parent.data.workspaces;

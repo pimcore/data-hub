@@ -24,7 +24,7 @@ You have to provide both JavaScript code dealing with the UI configuration aspec
 and the server-side PHP implementation doing the actual calculations. 
 
 A JS sample can be found here: https://github.com/pimcore/data-hub/blob/7c62b888014a3df37928867b89b0dcd4489c3df4/src/Resources/public/js/operator/Trimmer
-Note that the namespace would be `pimcore.plugin.datahub.operator.mycustomoperator`
+Note that the namespace would be `pimcore.bundle.datahub.operator.mycustomoperator`
 
 Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/5.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
 docs page for further details.

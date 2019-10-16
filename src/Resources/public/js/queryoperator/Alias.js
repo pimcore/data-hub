@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.alias");
-
-pimcore.plugin.datahub.queryoperator.alias = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.alias");
+pimcore.bundle.datahub.queryoperator.alias = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "other",
     type: "operator",
     class: "Alias",

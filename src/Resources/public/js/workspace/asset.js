@@ -11,11 +11,7 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.workspace.asset");
-pimcore.plugin.datahub.workspace.asset = Class.create(pimcore.plugin.datahub.workspace.abstract, {
-
-
+pimcore.registerNS("pimcore.bundle.datahub.workspace.asset");
+pimcore.bundle.datahub.workspace.asset = Class.create(pimcore.bundle.datahub.workspace.abstract, {
     type: "asset"
-
 });

@@ -14,11 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.mutationvalue.defaultvalue");
-
-pimcore.plugin.datahub.mutationvalue.defaultvalue = Class.create(pimcore.plugin.datahub.Abstract, {
-
+pimcore.registerNS("pimcore.bundle.datahub.mutationvalue.defaultvalue");
+pimcore.bundle.datahub.mutationvalue.defaultvalue = Class.create(pimcore.bundle.datahub.Abstract, {
     type: "value",
     class: "DefaultValue",
 

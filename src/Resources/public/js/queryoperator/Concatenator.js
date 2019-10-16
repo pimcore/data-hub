@@ -15,9 +15,8 @@
  */
 
 
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.concatenator");
-
-pimcore.plugin.datahub.queryoperator.concatenator = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.concatenator");
+pimcore.bundle.datahub.queryoperator.concatenator = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "transformer",
     type: "operator",
     class: "Concatenator",

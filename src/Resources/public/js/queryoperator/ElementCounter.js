@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.elementcounter");
-
-pimcore.plugin.datahub.queryoperator.elementcounter = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.elementcounter");
+pimcore.bundle.datahub.queryoperator.elementcounter = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "transformer",
     type: "operator",
     class: "ElementCounter",

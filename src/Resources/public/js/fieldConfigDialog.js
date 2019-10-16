@@ -11,9 +11,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.fieldConfigDialog");
-pimcore.plugin.datahub.fieldConfigDialog = Class.create({
-
+pimcore.registerNS("pimcore.bundle.datahub.fieldConfigDialog");
+pimcore.bundle.datahub.fieldConfigDialog = Class.create({
     showFieldname: true,
     data: {},
     brickKeys: [],
@@ -586,7 +585,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     },
 
     getOperatorTrees: function () {
-        var operators = pimcore.plugin.datahub[this.type + "operator"] ? Object.keys(pimcore.plugin.datahub[this.type + "operator"]) : [];
+        var operators = pimcore.bundle.datahub[this.type + "operator"] ? Object.keys(pimcore.bundle.datahub[this.type + "operator"]) : [];
         var operatorGroups = [];
 
         for (var i = 0; i < operators.length; i++) {
@@ -596,7 +595,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 continue;
             }
             if (!this.availableOperators || this.availableOperators.indexOf(operator) >= 0) {
-                var nodeConfig = pimcore.plugin.datahub[this.type + "operator"][operator].prototype;
+                var nodeConfig = pimcore.bundle.datahub[this.type + "operator"][operator].prototype;
                 var configTreeNode = nodeConfig.getConfigTreeNode();
 
                 var operatorGroup = nodeConfig.operatorGroup ? nodeConfig.operatorGroup : "other";
@@ -724,15 +723,15 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         var attributes = configAttributes.attributes;
         if (attributes && attributes.class && attributes.type) {
             var jsClass = attributes.class.toLowerCase();
-            if (pimcore.plugin.datahub[this.type + attributes.type] && pimcore.plugin.datahub[this.type + attributes.type][jsClass]) {
-                element = new pimcore.plugin.datahub[this.type + attributes.type][jsClass](this.generalConfig.classId);
+            if (pimcore.bundle.datahub[this.type + attributes.type] && pimcore.bundle.datahub[this.type + attributes.type][jsClass]) {
+                element = new pimcore.bundle.datahub[this.type + attributes.type][jsClass](this.generalConfig.classId);
             }
         } else {
             var dataType = configAttributes.dataType ? configAttributes.dataType.toLowerCase() : null;
-            if (pimcore.plugin.datahub[this.type + "value"] && pimcore.plugin.datahub[this.type + "value"][dataType]) {
-                element = new pimcore.plugin.datahub[this.type + "value"][dataType](this.generalConfig.classId);
+            if (pimcore.bundle.datahub[this.type + "value"] && pimcore.bundle.datahub[this.type + "value"][dataType]) {
+                element = new pimcore.bundle.datahub[this.type + "value"][dataType](this.generalConfig.classId);
             } else {
-                element = new pimcore.plugin.datahub[this.type + "value"]["defaultvalue"](this.generalConfig.classId);
+                element = new pimcore.bundle.datahub[this.type + "value"]["defaultvalue"](this.generalConfig.classId);
             }
         }
         return element;
@@ -741,7 +740,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     checkSupported: function (record) {
         if (record.data.type == "data") {
             var dataType = record.data.dataType;
-            if (dataType != "system" && !in_array(dataType, pimcore.plugin.datahub.graphql["supported" + ucfirst(this.type) + "DataTypes"])) {
+            if (dataType != "system" && !in_array(dataType, pimcore.bundle.datahub.graphql["supported" + ucfirst(this.type) + "DataTypes"])) {
                 Ext.MessageBox.alert(t("error"), sprintf(t("plugin_pimcore_datahub_" + this.type) + " " + t('plugin_pimcore_datahub_datatype_not_supported_yet'), dataType));
                 return false;
             }

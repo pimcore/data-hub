@@ -11,9 +11,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.config");
-pimcore.plugin.datahub.config = Class.create({
-
+pimcore.registerNS("pimcore.bundle.datahub.config");
+pimcore.bundle.datahub.config = Class.create({
     initialize: function () {
 
         this.getTabPanel();
@@ -155,11 +154,11 @@ pimcore.plugin.datahub.config = Class.create({
             success: function (response) {
                 var data = Ext.decode(response.responseText);
 
-                pimcore.plugin.datahub.graphql = pimcore.plugin.datahub.graphql || {};
-                pimcore.plugin.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLQueryDataTypes;
-                pimcore.plugin.datahub.graphql.supportedMutationDataTypes = data.supportedGraphQLMutationDataTypes;
+                pimcore.bundle.datahub.graphql = pimcore.bundle.datahub.graphql || {};
+                pimcore.bundle.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLQueryDataTypes;
+                pimcore.bundle.datahub.graphql.supportedMutationDataTypes = data.supportedGraphQLMutationDataTypes;
 
-                var fieldPanel = new pimcore.plugin.datahub.configItem(data, this);
+                var fieldPanel = new pimcore.bundle.datahub.configItem(data, this);
                 pimcore.layout.refresh();
             }.bind(this)
         });

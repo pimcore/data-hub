@@ -14,9 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.text");
-
-pimcore.plugin.datahub.queryoperator.text = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.text");
+pimcore.bundle.datahub.queryoperator.text = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "formatter",
     type: "operator",
     class: "Text",

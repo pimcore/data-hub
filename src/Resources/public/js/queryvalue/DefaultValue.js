@@ -14,11 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.queryvalue.defaultvalue");
-
-pimcore.plugin.datahub.queryvalue.defaultvalue = Class.create(pimcore.plugin.datahub.Abstract, {
-
+pimcore.registerNS("pimcore.bundle.datahub.queryvalue.defaultvalue");
+pimcore.bundle.datahub.queryvalue.defaultvalue = Class.create(pimcore.bundle.datahub.Abstract, {
     type: "value",
     class: "DefaultValue",
 

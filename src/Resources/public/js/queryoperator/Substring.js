@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.substring");
-
-pimcore.plugin.datahub.queryoperator.substring = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.substring");
+pimcore.bundle.datahub.queryoperator.substring = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "transformer",
     type: "operator",
     class: "Substring",

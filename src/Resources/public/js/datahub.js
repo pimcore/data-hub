@@ -11,11 +11,10 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub");
-
-pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
+pimcore.registerNS("pimcore.bundle.datahub");
+pimcore.bundle.datahub = Class.create(pimcore.bundle.admin, {
     getClassName: function () {
-        return "pimcore.plugin.datahub";
+        return "pimcore.bundle.datahub";
     },
 
     initialize: function () {
@@ -37,7 +36,7 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
                         pimcore.globalmanager.get("plugin_pimcore_datahub_config").activate();
                     }
                     catch (e) {
-                        pimcore.globalmanager.add("plugin_pimcore_datahub_config", new pimcore.plugin.datahub.config());
+                        pimcore.globalmanager.add("plugin_pimcore_datahub_config", new pimcore.bundle.datahub.config());
                     }
                 }
             });
@@ -45,5 +44,5 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
     }
 });
 
-var dtaPlugin = new pimcore.plugin.datahub();
+var dtaPlugin = new pimcore.bundle.datahub();
 

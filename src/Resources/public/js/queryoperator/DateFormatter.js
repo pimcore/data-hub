@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.dateformatter");
-
-pimcore.plugin.datahub.queryoperator.dateformatter = Class.create(pimcore.plugin.datahub.Abstract, {
-
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.dateformatter");
+pimcore.bundle.datahub.queryoperator.dateformatter = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "formatter",
     type: "operator",
     class: "DateFormatter",

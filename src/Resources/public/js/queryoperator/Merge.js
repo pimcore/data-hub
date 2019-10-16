@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.merge");
-
-pimcore.plugin.datahub.queryoperator.merge = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.merge");
+pimcore.bundle.datahub.queryoperator.merge = Class.create(pimcore.bundle.datahub.Abstract, {
     type: "operator",
     class: "Merge",
     iconCls: "pimcore_icon_operator_merge",

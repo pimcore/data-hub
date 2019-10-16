@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.Abstract");
-
-pimcore.plugin.datahub.Abstract = Class.create({
+pimcore.registerNS("pimcore.bundle.datahub.Abstract");
+pimcore.bundle.datahub.Abstract = Class.create({
     type: null,
     class: null,
     objectClassId: null,

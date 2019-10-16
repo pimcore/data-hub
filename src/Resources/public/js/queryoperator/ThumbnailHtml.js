@@ -14,9 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.queryoperator.thumbnailhtml");
-
-pimcore.plugin.datahub.queryoperator.thumbnailhtml = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.queryoperator.thumbnailhtml");
+pimcore.bundle.datahub.queryoperator.thumbnailhtml = Class.create(pimcore.bundle.datahub.Abstract, {
     operatorGroup: "transformer",
     type: "operator",
     class: "ThumbnailHtml",

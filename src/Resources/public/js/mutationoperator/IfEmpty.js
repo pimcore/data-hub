@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.mutationoperator.ifempty");
-
-pimcore.plugin.datahub.mutationoperator.ifempty = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.mutationoperator.ifempty");
+pimcore.bundle.datahub.mutationoperator.ifempty = Class.create(pimcore.bundle.datahub.Abstract, {
     type: "operator",
     class: "IfEmpty",
     iconCls: "plugin_pimcore_datahub_icon_ifempty",

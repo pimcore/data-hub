@@ -14,10 +14,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-
-pimcore.registerNS("pimcore.plugin.datahub.mutationoperator.localeswitcher");
-
-pimcore.plugin.datahub.mutationoperator.localeswitcher = Class.create(pimcore.plugin.datahub.Abstract, {
+pimcore.registerNS("pimcore.bundle.datahub.mutationoperator.localeswitcher");
+pimcore.bundle.datahub.mutationoperator.localeswitcher = Class.create(pimcore.bundle.datahub.Abstract, {
     type: "operator",
     class: "LocaleSwitcher",
     iconCls: "pimcore_icon_operator_localeswitcher",
