@@ -13,10 +13,18 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator;
 
-class ElementDescriptor extends BaseDescriptor
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
+
+class Datetime extends Base
 {
 
-
+    /**
+     * @return \GraphQL\Type\Definition\StringType|StringType
+     */
+    public function getFieldType()
+    {
+        return StringType::getInstance("csFeatureDatetime", "datetime");
+    }
 }

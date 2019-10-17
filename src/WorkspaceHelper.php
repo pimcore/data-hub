@@ -184,6 +184,8 @@ class WorkspaceHelper
     {
         $workspaces = [];
         $types = ['asset', 'object', 'document'];
+
+        $types = ['document', 'asset', 'object'];
         $db = Db::get();
 
         foreach ($types as $type) {
@@ -209,9 +211,10 @@ class WorkspaceHelper
     public static function deleteConfiguration(Configuration $config)
     {
         $db = Db::get();
-        $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
+
         $db->delete(Dao::TABLE_NAME_DOCUMENT, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
+        $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
     }
 
     /**

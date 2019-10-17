@@ -36,6 +36,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->processDataObjectQueryTypes($container);
         $this->processDataObjectMutationTypes($container);
         $this->processDocumentElementQueryTypes($container);
+        $this->processCsFeatureQueryTypes($container);
 
         $this->registerAssetDataTypes(
             $container
@@ -46,6 +47,10 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
 
         $this->registerDocumentDataTypes(
+            $container
+        );
+
+        $this->registerClassificationStoreDataTypes(
             $container
         );
 
@@ -107,6 +112,30 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $graphQLServiceDefinition,
             'graphql general type generator',
             'pimcore.datahub.graphql.generaltypegenerator'
+        );
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    protected function processCsFeatureQueryTypes(ContainerBuilder $container)
+    {
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
+
+        $this->createLocatorForTaggedServices(
+            $container,
+            $graphQLServiceDefinition,
+            'graphql query_csfeaturetypegenerator',
+            'pimcore.datahub.graphql.csfeaturequerytypegenerator',
+            '$csFeatureTypeGeneratorFactories'
+        );
+
+        $this->buildSupportedCsFeatureDataTypes(
+            'query',
+            $container,
+            $graphQLServiceDefinition,
+            'graphql query_csfeaturetypegenerator',
+            'pimcore.datahub.graphql.csfeaturequerytypegenerator'
         );
     }
 
@@ -257,6 +286,49 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      * @param string $type
      * @param string $tag
      */
+    private function buildSupportedCsFeatureDataTypes(
+        $operationType,
+        ContainerBuilder $container,
+        Definition $definition,
+        string $type,
+        string $tag
+    ) {
+        $resolvers = $container->findTaggedServiceIds($tag);
+
+        $mapping = [];
+
+        $needle = 'typegenerator_csfeature' . $operationType . 'datatype_';
+        $lengthOfNeedle = strlen($needle);
+
+        foreach ($resolvers as $id => $tagEntries) {
+            foreach ($tagEntries as $tagEntry) {
+                if (!isset($tagEntry['id'])) {
+                    throw new InvalidDefinitionException(sprintf(
+                        'The %s "%s" does not define an ID on the "%s" tag.',
+                        $type,
+                        $id,
+                        $tag
+                    ));
+                }
+
+                $idx = strpos($tagEntry['id'], $needle);
+                if ($idx === 0) {
+                    $typename = substr($tagEntry['id'], $lengthOfNeedle);
+                }
+                $mapping[$typename] = 1;
+            }
+        }
+
+        $definition->addMethodCall('setSupportedCsFeature' . ucfirst($operationType) . 'DataTypes', [array_keys($mapping)]);
+    }
+
+    /**
+     * @param string $operationType
+     * @param ContainerBuilder $container
+     * @param Definition $definition
+     * @param string $type
+     * @param string $tag
+     */
     private function buildSupportedDocumentElementDataTypes(
         $operationType,
         ContainerBuilder $container,
@@ -384,6 +456,18 @@ class ImportExportLocatorsPass implements CompilerPassInterface
     ) {
 
         $this->registerElementTypes($container, "pimcore.datahub.graphql.documenttype", 'registerDocumentDataTypes');
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param Definition $definition
+
+     */
+    private function registerClassificationStoreDataTypes(
+        ContainerBuilder $container
+    ) {
+
+        $this->registerElementTypes($container, "pimcore.datahub.graphql.cstype", 'registerClassificationStoreDataTypes');
     }
 
     /**

@@ -40,7 +40,7 @@ class CalculatedValue extends Base
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
-                'description' => $fieldDefinition->getTooltip(),
+                'description' => $fieldDefinition->getTooltip()
             ],
             $container
         );

@@ -15,8 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-class ElementDescriptor extends BaseDescriptor
+class BaseDescriptor extends \ArrayObject
 {
-
+    /**
+     *
+     * ElementDescriptor constructor - an ElementDescriptor describes something that implements
+     * the Pimcore\Model\Element\ElementInterface
+     */
+    public function __construct()
+    {
+        parent::__construct([], self::STD_PROP_LIST| self::ARRAY_AS_PROPS);
+    }
 
 }

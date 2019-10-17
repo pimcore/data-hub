@@ -66,6 +66,11 @@ class Service
     protected $generalTypeGeneratorFactories;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $csFeatureTypeGeneratorFactories;
+
+    /**
      * @var array
      */
     protected $supportedDataObjectQueryDataTypes;
@@ -74,6 +79,11 @@ class Service
      * @var array
      */
     protected $supportedDocumentElementQueryDataTypes;
+
+    /**
+     * @var array
+     */
+    protected $supportedCsFeatureQueryDataTypes;
 
     /**
      * @var array
@@ -123,6 +133,11 @@ class Service
     /**
      * @var array
      */
+    protected $classificationStoreDataTypes = [];
+
+    /**
+     * @var array
+     */
     protected $dataObjectDataTypes = [];
 
 
@@ -140,6 +155,7 @@ class Service
      * @param ContainerInterface $dataObjectMutationOperatorFactories
      * @param ContainerInterface $documentElementTypeGeneratorFactories
      * @param ContainerInterface $generalTypeGeneratorFactories
+     * @param ContainerInterface $csFeatureTypeGeneratorFactories
      */
     public function __construct(
         AssetFieldHelper $assetFieldHelper,
@@ -153,7 +169,8 @@ class Service
         ContainerInterface $dataObjectMutationTypeGeneratorFactories,
         ContainerInterface $dataObjectMutationOperatorFactories,
         ContainerInterface $documentElementTypeGeneratorFactories,
-        ContainerInterface $generalTypeGeneratorFactories
+        ContainerInterface $generalTypeGeneratorFactories,
+        ContainerInterface $csFeatureTypeGeneratorFactories
     )
     {
         $this->assetFieldHelper = $assetFieldHelper;
@@ -168,6 +185,7 @@ class Service
         $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
         $this->documentElementTypeGeneratorFactories = $documentElementTypeGeneratorFactories;
         $this->generalTypeGeneratorFactories = $generalTypeGeneratorFactories;
+        $this->csFeatureTypeGeneratorFactories = $csFeatureTypeGeneratorFactories;
     }
 
     /**
@@ -241,9 +259,25 @@ class Service
         return $result;
     }
 
+    /**
+     * @param $elementName
+     * @return mixed
+     */
     public function buildDocumentElementDataQueryType($elementName)
     {
         $factory = $this->documentElementTypeGeneratorFactories->get('typegenerator_documentelementquerydatatype_' . $elementName);
+        $result = $factory->getFieldType();
+
+        return $result;
+    }
+
+    /**
+     * @param $elementName
+     * @return mixed
+     */
+    public function buildCsFeatureDataQueryType($elementName)
+    {
+        $factory = $this->csFeatureTypeGeneratorFactories->get('typegenerator_csfeaturequerydatatype_' . $elementName);
         $result = $factory->getFieldType();
 
         return $result;
@@ -404,6 +438,14 @@ class Service
         $this->supportedDocumentElementQueryDataTypes = $supportedDocumentElementQueryDataTypes;
     }
 
+    /**
+     * @param $supportedCsFeatureQueryDataTypes
+     */
+    public function setSupportedCsFeatureQueryDataTypes($supportedCsFeatureQueryDataTypes)
+    {
+        $this->supportedCsFeatureQueryDataTypes = $supportedCsFeatureQueryDataTypes;
+    }
+
 
     /**
      * @param $generalTypes
@@ -420,6 +462,14 @@ class Service
     public function getSupportedDocumentElementQueryDataTypes()
     {
         return $this->supportedDocumentElementQueryDataTypes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedCsFeatureQueryDataTypes()
+    {
+        return $this->supportedCsFeatureQueryDataTypes;
     }
 
     /**
@@ -552,6 +602,15 @@ class Service
         $this->documentDataTypes = $dataTypes;
     }
 
+
+    /**
+     * @param $dataTypes
+     */
+    public function registerClassificationStoreDataTypes($dataTypes)
+    {
+        $this->classificationStoreDataTypes = $dataTypes;
+    }
+
     /**
      * @param $typename
      * @return mixed
@@ -564,6 +623,21 @@ class Service
         }
         throw new \Exception("unknown asset type: " . $typename);
     }
+
+
+    /**
+     * @param $typename
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getClassificationStoreTypeDefinition($typename)
+    {
+        if (isset($this->classificationStoreDataTypes[$typename])) {
+            return $this->classificationStoreDataTypes[$typename];
+        }
+        throw new \Exception("unknown classificationstore type: " . $typename);
+    }
+
 
     /**
      * @param $typename
