@@ -176,13 +176,14 @@ class WorkspaceHelper
     /**
      * @param Configuration $configuration
      *
-     * @return mixed
+     * @return array
      *
      * @throws \Exception
      */
     public static function loadWorkspaces(Configuration $configuration)
     {
-        $types = ['asset', 'object'];
+        $workspaces = [];
+        $types = ['asset', 'object', 'document'];
         $db = Db::get();
 
         foreach ($types as $type) {
@@ -209,6 +210,7 @@ class WorkspaceHelper
     {
         $db = Db::get();
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
+        $db->delete(Dao::TABLE_NAME_DOCUMENT, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
     }
 
