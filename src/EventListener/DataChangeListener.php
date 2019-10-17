@@ -15,43 +15,19 @@
 
 namespace Pimcore\Bundle\DataHubBundle\EventListener;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
 use Pimcore\Event\DocumentEvents;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Event\Model\DocumentEvent;
-use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
-use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Model\Element\ValidationException;
+use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataChangeListener implements EventSubscriberInterface
 {
-    const TYPE_OBJECT = 'object';
-
-    const TYPE_ASSET = 'asset';
-
-    const TYPE_DOCUMENT = 'document';
-
-    const DATA_MODIFY = 'modify';
-
-    const DATA_DELETE = 'delete';
-
-    /**
-     * @var Connection
-     */
-    protected $db;
-
-    /**
-     * @param Connection $db
-     */
-    public function __construct(Connection $db)
-    {
-        $this->db = $db;
-    }
 
     /**
      * {@inheritdoc}
@@ -71,7 +47,6 @@ class DataChangeListener implements EventSubscriberInterface
     /**
      * @param DataObjectEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onObjectUpdate(DataObjectEvent $e)
@@ -83,43 +58,24 @@ class DataChangeListener implements EventSubscriberInterface
         $object = $e->getObject();
         $oldPath = $e->getArgument('oldPath');
 
-        $this->db->update(Dao::TABLE_NAME_DATAOBJECT, [
-            'cpath' => $object->getRealFullPath()
-        ], [
-            'cid' => $object->getId()
-        ]);
-
-        $command = sprintf(
-            'UPDATE %s SET cpath = replace(cpath,%s,%s) WHERE cpath LIKE %s;',
-            Dao::TABLE_NAME_DATAOBJECT,
-            $this->db->quote($oldPath . '/'),
-            $this->db->quote($object->getRealFullPath() . '/'),
-            $this->db->quote($oldPath . '/%')
-        );
-
-        $this->db->query($command);
-
-        $this->checkConfiguration(self::TYPE_OBJECT, self::DATA_MODIFY, $oldPath, $object->getRealFullPath());
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_OBJECT, WorkspaceHelper::MODIFY_TYPE_REPLACE, $oldPath, $object->getRealFullPath());
     }
 
     /**
      * @param DataObjectEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onObjectDelete(DataObjectEvent $e)
     {
         $object = $e->getObject();
-        $this->db->delete(Dao::TABLE_NAME_DATAOBJECT, ['cid' => $object->getId()]);
 
-        $this->checkConfiguration(self::TYPE_OBJECT, self::DATA_DELETE, $object->getRealFullPath(), null);
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_OBJECT, WorkspaceHelper::MODIFY_TYPE_DELETE, $object->getRealFullPath(), null);
     }
 
     /**
      * @param DocumentEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onDocumentUpdate(DocumentEvent $e)
@@ -131,43 +87,24 @@ class DataChangeListener implements EventSubscriberInterface
         $document = $e->getDocument();
         $oldPath = $e->getArgument('oldPath');
 
-        $this->db->update(Dao::TABLE_NAME_DOCUMENT, [
-            'cpath' => $document->getRealFullPath()
-        ], [
-            'cid' => $document->getId()
-        ]);
-
-        $command = sprintf(
-            'UPDATE %s SET cpath = replace(cpath,%s,%s) WHERE cpath LIKE %s;',
-            Dao::TABLE_NAME_DOCUMENT,
-            $this->db->quote($oldPath . '/'),
-            $this->db->quote($document->getRealFullPath() . '/'),
-            $this->db->quote($oldPath . '/%')
-        );
-
-        $this->db->query($command);
-
-        $this->checkConfiguration(self::TYPE_DOCUMENT, self::DATA_MODIFY, $oldPath, $document->getRealFullPath());
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_DOCUMENT, WorkspaceHelper::MODIFY_TYPE_REPLACE, $oldPath, $document->getRealFullPath());
     }
 
     /**
      * @param DocumentEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onDocumentDelete(DocumentEvent $e)
     {
         $object = $e->getDocument();
-        $this->db->delete(Dao::TABLE_NAME_DOCUMENT, ['cid' => $object->getId()]);
 
-        $this->checkConfiguration(self::TYPE_DOCUMENT, self::DATA_DELETE, $object->getRealFullPath(), null);
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_DOCUMENT, WorkspaceHelper::MODIFY_TYPE_DELETE, $object->getRealFullPath(), null);
     }
 
     /**
      * @param AssetEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onAssetUpdate(AssetEvent $e)
@@ -176,47 +113,29 @@ class DataChangeListener implements EventSubscriberInterface
             return;
         }
 
-        $oldPath = $e->getArgument('oldPath');
         $asset = $e->getAsset();
+        $oldPath = $e->getArgument('oldPath');
 
-        $this->db->update(Dao::TABLE_NAME_ASSET, [
-            'cpath' => $asset->getRealFullPath()
-        ], [
-            'cid' => $asset->getId()
-        ]);
-
-        $command = sprintf(
-            'UPDATE %s SET cpath = replace(cpath,%s,%s) WHERE cpath LIKE %s;',
-            Dao::TABLE_NAME_ASSET,
-            $this->db->quote($oldPath . '/'),
-            $this->db->quote($asset->getRealFullPath() . '/'),
-            $this->db->quote($oldPath . '/%')
-        );
-
-        $this->db->query($command);
-
-        $this->checkConfiguration(self::TYPE_ASSET, self::DATA_MODIFY, $oldPath, $asset->getRealFullPath());
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_ASSET, WorkspaceHelper::MODIFY_TYPE_REPLACE, $oldPath, $asset->getRealFullPath());
     }
 
     /**
      * @param AssetEvent $e
      *
-     * @throws DBALException
      * @throws ValidationException
      */
     public function onAssetDelete(AssetEvent $e)
     {
         $asset = $e->getAsset();
-        $this->db->delete(Dao::TABLE_NAME_ASSET, ['cid' => $asset->getId()]);
 
-        $this->checkConfiguration(self::TYPE_ASSET, self::DATA_DELETE, $asset->getRealFullPath(), null);
+        $this->checkConfiguration(WorkspaceHelper::MODIFY_SPACE_ASSET, WorkspaceHelper::MODIFY_TYPE_DELETE, $asset->getRealFullPath(), null);
     }
 
     /**
-     * @param $dataType
-     * @param $modificationType
-     * @param $searchValue
-     * @param $replaceValue
+     * @param string      $dataType
+     * @param string      $modificationType
+     * @param string      $searchValue
+     * @param string|null $replaceValue
      *
      * @throws ValidationException
      */
@@ -231,73 +150,20 @@ class DataChangeListener implements EventSubscriberInterface
         /** @var Configuration $configurationEntity */
         foreach ($configList as $configurationEntity) {
 
-            $changed = false;
+            try {
+                $entity = WorkspaceHelper::modifyWorkspaceRowByType($configurationEntity, $dataType, $modificationType, $searchValue, $replaceValue);
+            } catch (\Throwable $e) {
+                throw new ValidationException(sprintf('Could not modify workspace row: %s', $e->getMessage()), 0, $e);
+            }
 
-            $configuration = $configurationEntity->getConfiguration();
-            if (!isset($configuration['workspaces']) || !is_array($configuration['workspaces'])) {
+            if (!$entity instanceof Configuration) {
                 continue;
             }
-
-            $workspaceConfig = $configuration['workspaces'];
-            if (!isset($workspaceConfig[$dataType])) {
-                continue;
-            }
-
-            $workspaceConfigBlocks = $workspaceConfig[$dataType];
-            if (!is_array($workspaceConfigBlocks)) {
-                continue;
-            }
-
-            foreach ($workspaceConfigBlocks as $blockIndex => &$workspaceConfigBlock) {
-
-                if (!isset($workspaceConfigBlock['cpath'])) {
-                    continue;
-                }
-
-                $cPath = $workspaceConfigBlock['cpath'];
-                $cTrailingPath = sprintf('%s/', $workspaceConfigBlock['cpath']);
-                $cTrailingSearchValue = sprintf('%s/', $searchValue);
-                $cTrailingReplaceValue = sprintf('%s/', $replaceValue);
-
-                if ($cPath === $searchValue) {
-
-                    // it's the element itself
-                    $changed = true;
-
-                    if ($modificationType === self::DATA_MODIFY) {
-                        $workspaceConfigBlock['cpath'] = $replaceValue;
-                    } elseif ($modificationType === self::DATA_DELETE) {
-                        unset($workspaceConfigBlocks[$blockIndex]);
-                        $workspaceConfigBlocks = array_values($workspaceConfigBlocks); // remove array keys
-                    }
-
-                } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
-
-                    // it's a sub element
-                    $changed = true;
-
-                    if ($modificationType === self::DATA_MODIFY) {
-                        $workspaceConfigBlock['cpath'] = str_replace($cTrailingSearchValue, $cTrailingReplaceValue, $workspaceConfigBlock['cpath']);
-                    } elseif ($modificationType === self::DATA_DELETE) {
-                        unset($workspaceConfigBlocks[$blockIndex]);
-                        $workspaceConfigBlocks = array_values($workspaceConfigBlocks); // remove array keys
-                    }
-                }
-            }
-
-            if ($changed === false) {
-                continue;
-            }
-
-            $workspaceConfig[$dataType] = $workspaceConfigBlocks;
-            $configuration['workspaces'] = $workspaceConfig;
-
-            $configurationEntity->setConfiguration($configuration);
 
             try {
-                $configurationEntity->save();
+                $entity->save();
             } catch (\Throwable $e) {
-                throw new ValidationException($e->getMessage(), 0, $e);
+                throw new ValidationException(sprintf('Could not save configuration: %s', $e->getMessage()), 0, $e);
             }
         }
     }

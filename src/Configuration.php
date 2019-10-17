@@ -154,6 +154,10 @@ class Configuration extends AbstractModel
             $this->configuration['general'] = [];
         }
 
+        if (!is_array($this->configuration['workspaces'])) {
+            $this->configuration['workspaces'] = [];
+        }
+
         if (empty($this->getPath())) {
             $this->setPath(null);
         }
@@ -169,8 +173,13 @@ class Configuration extends AbstractModel
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
             }
         }
+
+        $this->configuration['workspaces'] = WorkspaceHelper::cleanupWorkspaces($this->configuration['workspaces']);
+
+        // we need to recheck
         $this->getDao()->save();
-        WorkspaceHelper::saveWorkspaces($this, $this->configuration["workspaces"]);
+
+        WorkspaceHelper::saveWorkspaces($this, $this->configuration['workspaces']);
     }
 
     /**

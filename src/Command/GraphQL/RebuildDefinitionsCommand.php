@@ -14,7 +14,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Command\GraphQL;
 
-use Elements\Bundle\ProcessManagerBundle\ExecutionTrait;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,10 +22,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RebuildDefinitionsCommand extends AbstractCommand
 {
-
-
     /**
-     *
+     * {@inheritDoc}
      */
     protected function configure()
     {
@@ -38,8 +35,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
                 null,
                 InputOption::VALUE_REQUIRED,
             'Comma separated list of endpoints'
-            )
-        ;
+            );
     }
 
     /**
@@ -50,10 +46,9 @@ class RebuildDefinitionsCommand extends AbstractCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-
         $included = [];
-        if ($input->getOption("definitions")) {
-            $included = $input->getOption("definitions");
+        if ($input->getOption('definitions')) {
+            $included = $input->getOption('definitions');
             $included = explode(',', $included);
         } else {
             $list = Configuration\Dao::getList();
@@ -70,9 +65,10 @@ class RebuildDefinitionsCommand extends AbstractCommand
                 $this->output->writeln('<error>Could not find config: ' . $endpoint . '</error>');
                 continue;
             }
+
             $this->output->writeln('Save config: ' . $endpoint);
 
-             $config->save();
+            $config->save();
         }
 
         $this->output->writeln('done');
