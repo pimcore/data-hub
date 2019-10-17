@@ -12,7 +12,7 @@
  */
 
 pimcore.registerNS("pimcore.bundle.datahub");
-pimcore.bundle.datahub = Class.create(pimcore.bundle.admin, {
+pimcore.bundle.datahub = Class.create(pimcore.plugin.admin, {
     getClassName: function () {
         return "pimcore.bundle.datahub";
     },
