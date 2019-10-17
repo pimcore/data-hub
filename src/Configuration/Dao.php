@@ -33,8 +33,8 @@ class Dao extends AbstractDao
      */
     public const CONFIG_FILE = 'datahub-configurations.php';
 
-    /** 
-     * @var null|array 
+    /**
+     * @var null|array
      */
     private static $_config = null;
 
@@ -281,6 +281,22 @@ class Dao extends AbstractDao
         }
 
         return $configurations;
+    }
+
+    /**
+     * get latest modification date of configuration file.
+     *
+     * @return bool|int
+     */
+    public static function getConfigModificationDate()
+    {
+        $config = Config::locateConfigFile(self::CONFIG_FILE);
+
+        if (!file_exists($config)) {
+            return false;
+        }
+
+        return filemtime($config);
     }
 
     /**

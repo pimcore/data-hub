@@ -1,5 +1,6 @@
 imports:
     - { resource: graphql.yml }
+    - { resource: eventlistener.yml }
 
 services:
 

@@ -15,19 +15,134 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
-use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Document;
 use Pimcore\Db;
 use Pimcore\Logger;
+use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 
 class WorkspaceHelper
 {
+    const MODIFY_SPACE_OBJECT = 'object';
+
+    const MODIFY_SPACE_ASSET = 'asset';
+
+    const MODIFY_SPACE_DOCUMENT = 'document';
+
+    const MODIFY_TYPE_REPLACE = 'replace';
+
+    const MODIFY_TYPE_DELETE = 'delete';
+
+    /**
+     * @param array $workspaces
+     *
+     * @return array
+     */
+    public static function cleanupWorkspaces(array $workspaces)
+    {
+        foreach ($workspaces as $type => &$spaces) {
+
+            if (!is_array($spaces)) {
+                continue;
+            }
+
+            foreach ($spaces as $spaceIndex => $space) {
+
+                $element = Service::getElementByPath($type, $space['cpath']);
+                if ($element instanceof ElementInterface) {
+                    continue;
+                }
+
+                unset($spaces[$spaceIndex]);
+            }
+
+            $spaces = array_values($spaces); // reset array keys
+        }
+
+        return $workspaces;
+    }
+
+    /**
+     * @param Configuration $configurationEntity
+     * @param string        $spaceType
+     * @param string        $modificationType
+     * @param string        $searchValue
+     * @param string|null   $replaceValue
+     *
+     * @return Configuration|void
+     */
+    public static function modifyWorkspaceRowByType(Configuration $configurationEntity, $spaceType, $modificationType, $searchValue, $replaceValue)
+    {
+        $changed = false;
+
+        $configuration = $configurationEntity->getConfiguration();
+        if (!isset($configuration['workspaces']) || !is_array($configuration['workspaces'])) {
+            return;
+        }
+
+        $workspaces = $configuration['workspaces'];
+        if (!isset($workspaces[$spaceType])) {
+            return;
+        }
+
+        $spaces = $workspaces[$spaceType];
+        if (!is_array($spaces)) {
+            return;
+        }
+
+        foreach ($spaces as $spaceIndex => &$space) {
+
+            if (!isset($space['cpath'])) {
+                continue;
+            }
+
+            $cPath = $space['cpath'];
+            $cTrailingPath = sprintf('%s/', $space['cpath']);
+            $cTrailingSearchValue = sprintf('%s/', $searchValue);
+            $cTrailingReplaceValue = sprintf('%s/', $replaceValue);
+
+            if ($cPath === $searchValue) {
+
+                // it's the element itself
+                $changed = true;
+
+                if ($modificationType === self::MODIFY_TYPE_REPLACE) {
+                    $space['cpath'] = $replaceValue;
+                } elseif ($modificationType === self::MODIFY_TYPE_DELETE) {
+                    unset($spaces[$spaceIndex]);
+                    $spaces = array_values($spaces); // reset array keys
+                }
+
+            } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
+
+                // it's a sub element
+                $changed = true;
+
+                if ($modificationType === self::MODIFY_TYPE_REPLACE) {
+                    $space['cpath'] = str_replace($cTrailingSearchValue, $cTrailingReplaceValue, $space['cpath']);
+                } elseif ($modificationType === self::MODIFY_TYPE_DELETE) {
+                    unset($spaces[$spaceIndex]);
+                    $spaces = array_values($spaces); // reset array keys
+                }
+            }
+        }
+
+        if ($changed === false) {
+            return;
+        }
+
+        $workspaces[$spaceType] = $spaces;
+        $configuration['workspaces'] = $workspaces;
+
+        $configurationEntity->setConfiguration($configuration);
+
+        return $configurationEntity;
+    }
+
     /**
      * @param Configuration $config
-     * @param $workspaces
+     * @param array         $workspaces
      *
      * @throws \Exception
      */
@@ -61,12 +176,15 @@ class WorkspaceHelper
     /**
      * @param Configuration $configuration
      *
-     * @return mixed
+     * @return array
      *
      * @throws \Exception
      */
     public static function loadWorkspaces(Configuration $configuration)
     {
+        $workspaces = [];
+        $types = ['asset', 'object', 'document'];
+
         $types = ['document', 'asset', 'object'];
         $db = Db::get();
 
@@ -93,6 +211,7 @@ class WorkspaceHelper
     public static function deleteConfiguration(Configuration $config)
     {
         $db = Db::get();
+
         $db->delete(Dao::TABLE_NAME_DOCUMENT, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
