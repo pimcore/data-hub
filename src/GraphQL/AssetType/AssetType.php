@@ -112,7 +112,39 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
 
-                ]
+                ],
+                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                    if ($value instanceof ElementDescriptor) {
+                        $image = Asset::getById($value["id"]);
+                        if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
+                            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                                throw new \Exception('not allowed to view asset');
+                            } else {
+                                return null;
+                            }
+                        }
+                        if ($image instanceof Asset\Image || $image instanceof Asset\Video) {
+                            if (isset($args["thumbnail"])) {
+                                $thumb = $image->getThumbnail($args['thumbnail'], false);                                
+                                return base64_encode(file_get_contents($thumb->getFileSystemPath()));
+                            } else {
+                                return base64_encode(file_get_contents($image->getFileSystemPath()));
+                            }
+                        }
+                        if ($image instanceof Asset\Document)
+                        {
+                            if (isset($args["thumbnail"])) {
+                                $thumb = $image->getImageThumbnail($args['thumbnail']);
+                                return base64_encode(file_get_contents($thumb->getFileSystemPath()));
+                            } else {
+                                return base64_encode(file_get_contents($image->getFileSystemPath()));
+                            }
+                        }
+                    }
+                    return null;
+                }
+            ],
+
             ],
             'metadata' => [
                 'type' => Type::listOf($this->assetMetadataItemType),
