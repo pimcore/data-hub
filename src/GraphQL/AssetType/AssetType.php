@@ -91,6 +91,14 @@ class AssetType extends ObjectType
                                 return $image->getFullPath();
                             }
                         }
+                        if ($image instanceof Asset\Document)
+                        {
+                            if (isset($args["thumbnail"])) {
+                                return $image->getImageThumbnail($args["thumbnail"]);
+                            } else {
+                                return $image->getFullPath();
+                            }
+                        }
                     }
                 }
             ],
