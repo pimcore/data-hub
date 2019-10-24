@@ -16,9 +16,15 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Logger;
+use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
 {
@@ -66,7 +72,27 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
 
-                ]
+                ],
+                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                    if ($value instanceof ElementDescriptor) {
+                        $image = Asset::getById($value["id"]);
+                        if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
+                            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                                throw new \Exception('not allowed to view asset');
+                            } else {
+                                return null;
+                            }
+                        }
+
+                        if ($image instanceof Asset\Image || $image instanceof Asset\Video) {
+                            if (isset($args["thumbnail"])) {
+                                return $image->getThumbnail($args["thumbnail"], false);
+                            } else {
+                                return $image->getFullPath();
+                            }
+                        }
+                    }
+                }
             ],
             'mimetype' => Type::string(),
 
