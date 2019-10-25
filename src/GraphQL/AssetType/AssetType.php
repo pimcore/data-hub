@@ -144,8 +144,6 @@ class AssetType extends ObjectType
                     return null;
                 }
             ],
-
-            ],
             'metadata' => [
                 'type' => Type::listOf($this->assetMetadataItemType),
                 'resolve' => [$resolver, "resolveMetadata"]
