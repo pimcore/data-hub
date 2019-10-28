@@ -138,6 +138,9 @@ class MutationType extends ObjectType
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
 
+            $modelFactory = $this->modelFactory;
+            $localeService = $this->localeService;
+
             if ($entityConfig["create"]) {
                 // create
                 $createResultType = new ObjectType([
@@ -158,9 +161,6 @@ class MutationType extends ObjectType
                 ]);
 
                 $opName = 'create' . ucfirst($entity);
-
-                $modelFactory = $this->modelFactory;
-                $localeService = $this->localeService;
 
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
@@ -288,7 +288,6 @@ class MutationType extends ObjectType
 
             if ($entityConfig["delete"]) {
                 $opName = 'delete' . ucfirst($entity);
-                $modelFactory = $this->modelFactory;
 
                 $deleteResultType = new ObjectType([
                     'name' => 'Delete' . ucfirst($entity) . "Result",
