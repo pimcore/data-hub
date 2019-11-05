@@ -57,6 +57,9 @@ class AssetType extends ObjectType
         $service = $this->getGraphQlService();
         $assetMetadataItemType = $service->buildAssetType("asset_metadataitem");
 
+        $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
+        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset');
+
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => ['name' => 'id',
@@ -143,6 +146,16 @@ class AssetType extends ObjectType
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
                 'resolve' => [$resolver, "resolveMetadata"]
+            ],
+            'properties' => [
+                'type' => Type::listOf($propertyType),
+                'args' => [
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'comma seperated list of key names'
+                    ]
+                ],
+                'resolve' => [$elementResolver, "resolveProperties"]
             ]
         ];
     }

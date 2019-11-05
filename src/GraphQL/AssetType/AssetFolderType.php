@@ -28,7 +28,8 @@ class AssetFolderType extends FolderType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = [], $context = []) {
+    public function __construct(Service $graphQlService, $config = [], $context = [])
+    {
         parent::__construct($graphQlService, ["name" => "asset_folder"], $context);
     }
 
@@ -37,23 +38,35 @@ class AssetFolderType extends FolderType
      */
     public function build(&$config)
     {
-        {
-            $config['fields'] = [
-                'id' => ['name' => 'id',
-                    'type' => Type::id(),
-                ],
-                'filename' => Type::string(),
-                'fullpath' => [
-                    'type' => Type::string(),
-                    'args' => [
-                        'thumbnail' => ['type' => Type::string()]
+        $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
+        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset');
 
+        $config['fields'] = [
+            'id' => ['name' => 'id',
+                'type' => Type::id(),
+            ],
+            'filename' => Type::string(),
+            'fullpath' => [
+                'type' => Type::string(),
+                'args' => [
+                    'thumbnail' => ['type' => Type::string()]
+
+                ]
+            ],
+            'creationDate' => Type::int(),
+            'modificationDateDate' => Type::int(),
+            'properties' => [
+                'type' => Type::listOf($propertyType),
+                'args' => [
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'comma seperated list of key names'
                     ]
                 ],
-                'creationDate' => Type::int(),
-                'modificationDateDate' => Type::int()
-            ];
-        }
+                'resolve' => [$elementResolver, "resolveProperties"]
+            ]
+        ];
+
     }
 
 }

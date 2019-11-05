@@ -75,16 +75,28 @@ class PimcoreObjectType extends ObjectType
      */
     public function build($context = [])
     {
+        $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object');
+
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
         $fields = ['id' =>
-            ['name' => 'id',
+            [
                 'type' => Type::id(),
             ],
             'classname' => [
                 'type' => Type::string(),
             ],
-
+            'properties' => [
+                'type' => Type::listOf($propertyType),
+                'args' => [
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'comma seperated list of key names'
+                    ]
+                ],
+                'resolve' => [$resolver, "resolveProperties"]
+            ]
         ];
 
         if ($context['clientname']) {
@@ -100,7 +112,6 @@ class PimcoreObjectType extends ObjectType
                     if ($column['isOperator'] && self::$skipOperators) {
                         continue;
                     }
-
 
                     if (!$column["isOperator"] && is_array($column["attributes"]) && $column["attributes"]["dataType"] == "fieldcollections") {
                         $this->addFieldCollectionDefs($column, $class, $fields);

@@ -21,6 +21,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
+use Pimcore\Model\Property;
 
 class CheckboxType extends ObjectType
 {
@@ -41,7 +42,7 @@ class CheckboxType extends ObjectType
                 'name' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
                     }
@@ -49,7 +50,7 @@ class CheckboxType extends ObjectType
                 'type' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
                     }
@@ -59,6 +60,8 @@ class CheckboxType extends ObjectType
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem) {
                             return $value->getValue();
+                        } else if ($value instanceof Property) {
+                            return $value->getData();
                         }
                     }
                 ]

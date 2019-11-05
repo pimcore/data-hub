@@ -124,9 +124,6 @@ class HotspotType
             }
         }
         return $metadata;
-
-
-
     }
 
 }

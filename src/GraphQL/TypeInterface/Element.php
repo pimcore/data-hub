@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface;
@@ -30,17 +30,15 @@ class Element
     public static function getInstance()
     {
         if (!self::$instance) {
-            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element();
             self::$instance =
                 new InterfaceType(
                     [
-                        'name'        => 'element',
-                        'fields'      => [
+                        'name' => 'element',
+                        'fields' => [
                             'id' => [
                                 'type' => Type::id(),
                             ]
-                            ],
-                        'resolveType' => [$resolver, "resolveType"]
+                        ]
                     ]
                 );
         }

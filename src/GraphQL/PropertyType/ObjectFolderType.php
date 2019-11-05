@@ -18,26 +18,34 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
-class TextType extends ObjectType
+class ObjectFolderType extends ObjectType
 {
-
     use ServiceTrait;
 
+
     /**
-     * TextType constructor.
+     * AssetFolderType constructor.
      * @param Service $graphQlService
+     * @throws \Exception
      */
     public function __construct(Service $graphQlService)
     {
+
         $this->graphQlService = $graphQlService;
+        $objectFolderType = $this->getGraphQlService()->getDataObjectTypeDefinition("_object_folder");
+
 
         $config = [
-            'name' => "property_text",
+            'name' => "property_objectfolder",
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
@@ -55,19 +63,34 @@ class TextType extends ObjectType
                         }
                     }
                 ],
-                'text' => [
-                    'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'object' => [
+                    'type' => $objectFolderType,
+                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                         if ($value instanceof MarkerHotspotItem) {
-                            return $value->getValue();
+                            $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
                         } else if ($value instanceof Property) {
-                            return $value->getData();
+                            $element = $value->getData();
                         }
+                        if ($element) {
+                            if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+                                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                                    throw new \Exception('not allowed to view document');
+                                } else {
+                                    return null;
+                                }
+                            }
+                            /** @var  $element Document */
+                            $data = new ElementDescriptor($element);
 
+                            $fieldHelper = $graphQlService->getDocumentFieldHelper();
+                            $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+
+                            return $data;
+                        }
+                        return null;
                     }
-                ]
-            ]
-        ];
+
+                ]]];
 
         parent::__construct($config);
     }

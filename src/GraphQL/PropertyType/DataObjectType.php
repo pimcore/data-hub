@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
+use Pimcore\Model\Property;
 
 class DataObjectType extends ObjectType
 {
@@ -47,7 +48,7 @@ class DataObjectType extends ObjectType
                 'name' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
                     }
@@ -55,7 +56,7 @@ class DataObjectType extends ObjectType
                 'type' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
                     }
@@ -63,8 +64,13 @@ class DataObjectType extends ObjectType
                 'object' => [
                     'type' => $objectUnionType,
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
-                        if ($value instanceof MarkerHotspotItem) {
-                            $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
+                            if ($value instanceof MarkerHotspotItem) {
+                                $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
+                            } else if ($value instanceof Property) {
+                                $element = $value->getData();
+                            }
+
                             if ($element) {
                                 if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
                                     if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {

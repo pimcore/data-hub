@@ -121,6 +121,8 @@ class QueryType extends ObjectType
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
+        $service = $this->getGraphQlService();
+        $assetType = $service->buildAssetType("asset");
 
         if ($entities["asset"]["read"]) {
             $resolver = $this->getResolver();
@@ -132,7 +134,7 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::nonNull(Type::int())],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
+                'type' => $assetType,
                 'resolve' => [$resolver, "resolveAssetGetter"]
             ];
 

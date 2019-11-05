@@ -18,6 +18,7 @@
 * [Advanced Many-to-Many Object Relation + Metadata](graphl/querysamples/Sample7.md)
 * [Website Translator](graphl/querysamples/Sample8.md)
 * [Field-Collections](graphl/querysamples/Sample9.md)
+* [Get Element Properties](graphl/querysamples/Sample10.md)
 
 ## Mutation Samples
 * see [Mutation main page](graphl/Mutations.md)

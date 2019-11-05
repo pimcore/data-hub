@@ -1,0 +1,145 @@
+<?php
+
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ */
+
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
+
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
+use Pimcore\Model\Asset\Folder;
+use Pimcore\Model\Document;
+
+class ElementPropertyType extends UnionType
+{
+    use ServiceTrait;
+
+    /** @var AssetType */
+    protected $assetType;
+
+    /** @var CheckboxType */
+    protected $checkboxType;
+
+    /** @var DocumentType */
+    protected $documentType;
+
+    /** @var AssetFolderType */
+    protected $assetFolderType;
+
+    /** @var DocumentFolderType */
+    protected $documentFolderType;
+
+    /** @var ObjectFolderType */
+    protected $objectFolderType;
+
+    /** @var ObjectsType */
+    protected $objectType;
+
+    /** @var TextType */
+    protected $textType;
+
+    /**
+     * PropertyType constructor.
+     * @param Service $graphQlService
+     * @param array $config
+     */
+    public function __construct(Service $graphQlService, $config = [])
+    {
+        $this->setGraphQLService($graphQlService);
+        $config['interfaces'] = [Property::getInstance()];
+        parent::__construct($config);
+    }
+
+
+    /**
+     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @throws \Exception
+     */
+    public function getTypes()
+    {
+        $service = $this->getGraphQlService();
+
+        $this->assetType = $service->getPropertyTypeDefinition("property_asset");
+        $this->documentType = $service->getPropertyTypeDefinition("property_document");
+        $this->assetFolderType = $service->getPropertyTypeDefinition("property_assetfolder");
+        $this->documentFolderType = $service->getPropertyTypeDefinition("property_documentfolder");
+        $this->objectFolderType = $service->getPropertyTypeDefinition("property_objectfolder");
+        $this->objectType = $service->getPropertyTypeDefinition("property_object");
+        $this->checkboxType = $service->getPropertyTypeDefinition("property_checkbox");
+        $this->textType = $service->getPropertyTypeDefinition("property_text");
+
+        $supportedTypes = [
+            $this->checkboxType,
+            $this->textType,
+            $this->assetType,
+            $this->documentType,
+            $this->objectType,
+            $this->assetFolderType,
+            $this->documentFolderType,
+            $this->objectFolderType
+        ];
+
+        return $supportedTypes;
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function resolveType($element, $context, ResolveInfo $info)
+    {
+        if ($element instanceof \Pimcore\Model\Property) {
+            $type = $element->getType();
+            switch ($type) {
+                case "checkbox": {
+                    return $this->checkboxType;
+                }
+                case "text": {
+                    return $this->textType;
+                }
+                case "asset": {
+                    $asset = $element->getData();
+                    if ($asset instanceof Folder) {
+                        return $this->assetFolderType;
+                    } else {
+                        return $this->assetType;
+                    }
+                }
+                case "document": {
+                    $doc = $element->getData();
+                    if ($doc instanceof Document\Folder) {
+                        return $this->documentFolderType;
+                    } else {
+                        return $this->documentType;
+                    }
+                }
+                case "object": {
+                    $object = $element->getData();
+                    if ($object instanceof \Pimcore\Model\DataObject\Folder) {
+                        return $this->objectFolderType;
+                    } else {
+                        return $this->objectType;
+                    }
+                }
+                default:
+                    throw new \Exception("unkown property type: " . $type);
+            }
+        }
+        return null;
+    }
+
+}

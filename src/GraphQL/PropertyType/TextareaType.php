@@ -41,7 +41,7 @@ class TextareaType extends ObjectType
                 'name' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
                     }
@@ -49,7 +49,7 @@ class TextareaType extends ObjectType
                 'type' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
                     }
@@ -59,6 +59,8 @@ class TextareaType extends ObjectType
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem) {
                             return $value->getValue();
+                        } else if ($value instanceof Property) {
+                            return $value->getData();
                         }
                     }
                 ]

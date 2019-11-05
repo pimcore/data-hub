@@ -76,12 +76,19 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspothotspot }
 
-  pimcore.datahub.graphql.generaltype.factory.property:
+  pimcore.datahub.graphql.generaltype.factory.hotspot_metadata:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspot_metadata }
+
+  pimcore.datahub.graphql.generaltype.factory.element_property_property:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: element_property }
 
   pimcore.datahub.graphql.generaltype.factory.asset:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
@@ -851,6 +858,10 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectsType: ~
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: elementproperty }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType:
     tags:
       - { name: pimcore.datahub.graphql.propertytype, id: hotspotmetadata }
@@ -862,6 +873,18 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentType:
     tags:
       - { name: pimcore.datahub.graphql.propertytype, id: property_document }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_assetfolder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_documentfolder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_objectfolder }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DataObjectType:
     tags:

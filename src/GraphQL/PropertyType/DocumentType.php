@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
+use Pimcore\Model\Property;
 
 class DocumentType extends ObjectType
 {
@@ -48,7 +49,7 @@ class DocumentType extends ObjectType
                 'name' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
                     }
@@ -56,7 +57,7 @@ class DocumentType extends ObjectType
                 'type' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                        if ($value instanceof MarkerHotspotItem) {
+                        if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
                     }
@@ -66,28 +67,29 @@ class DocumentType extends ObjectType
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                         if ($value instanceof MarkerHotspotItem) {
                             $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
-                            if ($element) {
-                                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                        throw new \Exception('not allowed to view document');
-                                    } else {
-                                        return null;
-                                    }
+                        } else if ($value instanceof Property) {
+                            $element = $value->getData();
+                        }
+                        if ($element) {
+                            if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+                                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                                    throw new \Exception('not allowed to view document');
+                                } else {
+                                    return null;
                                 }
-                                /** @var  $element Document */
-                                $data = new ElementDescriptor($element);
-
-                                $fieldHelper = $graphQlService->getDocumentFieldHelper();
-                                $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
-
-                                return $data;
                             }
+                            /** @var  $element Document */
+                            $data = new ElementDescriptor($element);
+
+                            $fieldHelper = $graphQlService->getDocumentFieldHelper();
+                            $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+
+                            return $data;
                         }
                         return null;
                     }
-                ]
-            ]
-        ];
+
+                ]]];
 
         parent::__construct($config);
     }

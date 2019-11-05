@@ -32,24 +32,6 @@ class AssetType
     {
     }
 
-
-    /**
-     * @param string field
-     * @param null $value
-     * @param array $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
-     * @return array
-     * @throws \Exception
-     */
-    public function resolveField($field, $value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
-        $assetId = $value['id'];
-        $asset = Asset::getById($assetId);
-        if ($asset) {
-
-        }
-    }
     /**
      * @param null $value
      * @param array $args

@@ -44,6 +44,9 @@ class AbstractDocumentType extends ObjectType
     public function buildBaseFields(&$config)
     {
 
+        $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document');
+
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => ['name' => 'id',
@@ -55,7 +58,17 @@ class AbstractDocumentType extends ObjectType
             'type' => Type::string(),
             'controller' => Type::string(),
             'action' => Type::string(),
-            'template' => Type::string()
+            'template' => Type::string(),
+            'properties' => [
+                'type' => Type::listOf($propertyType),
+                'args' => [
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'comma seperated list of key names'
+                    ]
+                ],
+                'resolve' => [$resolver, "resolveProperties"]
+            ],
         ];
     }
 
