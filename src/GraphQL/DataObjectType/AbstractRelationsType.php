@@ -36,9 +36,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
     protected $class;
 
-    /**
-     * @var Data
-     */
+    /** @var Data */
     protected $fieldDefinition;
     
     /**
@@ -114,7 +112,10 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
         if (!$fd instanceof Data\ManyToManyObjectRelation) {
             if ($fd->getAssetsAllowed()) {
-                $types[] = $this->getGraphQlService()->getAssetTypeDefinition("asset");
+                $service = $this->getGraphQlService();
+                $assetType = $service->buildAssetType("asset");
+
+                $types[] = $assetType;
             }
 
             if ($fd->getDocumentsAllowed()) {

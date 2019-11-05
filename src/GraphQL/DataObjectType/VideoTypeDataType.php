@@ -21,6 +21,7 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class VideoTypeDataType extends UnionType
@@ -28,20 +29,14 @@ class VideoTypeDataType extends UnionType
 
     use ServiceTrait;
 
-    /**
-     * @var AssetType
-     */
+    /** @var AssetType */
     protected $assetType;
 
 
-    /**
-     * VideoTypeDataType constructor.
-     * @param AssetType $assetType
-     */
-    public function __construct(AssetType $assetType)
+    public function __construct(Service $graphQlService)
     {
         $config['name'] = "VideoData";
-        $this->assetType = $assetType;
+        $this->setGraphQLService($graphQlService);
         parent::__construct($config);
     }
 
@@ -54,6 +49,8 @@ class VideoTypeDataType extends UnionType
     {
         // why not just use scalars ?
         // https://kamranicus.com/posts/2018-07-02-handling-multiple-scalar-types-in-graphql
+        $service = $this->getGraphQlService();
+        $this->assetType = $service->buildAssetType("asset");
 
         return [
             new ObjectType([

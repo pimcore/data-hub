@@ -22,6 +22,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Geopoint
 * Geopolygon
 * Image
+* Image Advanced
 * Input
 * InputQuantityValue
 * Language

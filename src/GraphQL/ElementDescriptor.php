@@ -15,8 +15,23 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Element\ElementInterface;
+
 class ElementDescriptor extends BaseDescriptor
 {
 
-
+    /**
+     * ElementDescriptor constructor.
+     * @param ElementInterface|null $element
+     */
+    public function __construct(ElementInterface $element = null)
+    {
+        parent::__construct();
+        if ($element) {
+            $this->id = $element->getId();
+            $this->__elementType = \Pimcore\Model\Element\Service::getElementType($element);
+            $this->__elementSubtype = $element instanceof Concrete ? $element->getClass()->getName() : $element->getType();
+        }
+    }
 }

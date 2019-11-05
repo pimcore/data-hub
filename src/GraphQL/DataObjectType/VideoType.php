@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -25,11 +24,6 @@ class VideoType extends ObjectType
 {
 
     use ServiceTrait;
-
-    /**
-     * @var AssetType
-     */
-    protected $assetType;
 
     /**
      * @var VideoTypeDataType
@@ -40,13 +34,11 @@ class VideoType extends ObjectType
     /**
      * VideoType constructor.
      * @param Service $graphQlService
-     * @param AssetType $assetType
      * @param VideoTypeDataType $videoDataType
      */
-    public function __construct(Service $graphQlService, AssetType $assetType, VideoTypeDataType $videoDataType)
+    public function __construct(Service $graphQlService , VideoTypeDataType $videoDataType )
     {
         $this->setGraphQLService($graphQlService);
-        $this->assetType = $assetType;
         $this->videoDataType = $videoDataType;
         $this->build($config);
         parent::__construct($config);
@@ -59,6 +51,8 @@ class VideoType extends ObjectType
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Video();
         $resolver->setGraphQLService($this->getGraphQlService());
+        $service = $this->getGraphQlService();
+        $assetType = $service->buildAssetType("asset");
 
         $config['fields'] =
             [
@@ -71,7 +65,7 @@ class VideoType extends ObjectType
                     'resolve' => [$resolver, "resolveData"]
                 ],
                 'poster' => [
-                    'type' => $this->assetType,
+                    'type' => $assetType,
                     'resolve' => [$resolver, "resolvePoster"]
                 ],
                 'title' => [

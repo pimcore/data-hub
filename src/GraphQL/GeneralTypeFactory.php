@@ -15,10 +15,8 @@ declare(strict_types=1);
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\OperatorInterface;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class GeneralTypeFactory
@@ -27,7 +25,6 @@ class GeneralTypeFactory
     use ServiceTrait;
 
     static $registry = [];
-
 
     /**
      * @var string

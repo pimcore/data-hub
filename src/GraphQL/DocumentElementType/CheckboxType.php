@@ -33,7 +33,7 @@ class CheckboxType extends ObjectType
                     'fields' => [
                         '__tagName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
                                     return $value->getName();
                                 }
@@ -41,15 +41,15 @@ class CheckboxType extends ObjectType
                         ],
                         '__tagType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
                                     return $value->getType();
                                 }
                             }
                         ],
-                        'value' => [
+                        'checked' => [
                             'type' => Type::boolean(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
                                     return $value->getData();
                                 }

@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
 
-use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;

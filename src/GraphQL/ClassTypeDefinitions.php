@@ -15,8 +15,11 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType;
+use Pimcore\Cache\Runtime;
 use Pimcore\Db;
+use Pimcore\Model\DataObject\ClassDefinition;
 
 class ClassTypeDefinitions
 {
@@ -48,7 +51,7 @@ class ClassTypeDefinitions
     }
 
     /**
-     * @param $class
+     * @param string|ClassDefinition $class
      *
      * @return PimcoreObjectType
      *
@@ -65,11 +68,27 @@ class ClassTypeDefinitions
         return $result;
     }
 
+
     /**
+     * @param bool $onlyQueryTypes
      * @return array
+     * @throws \Exception
      */
-    public static function getAll()
+    public static function getAll($onlyQueryTypes = false)
     {
+        if ($onlyQueryTypes) {
+            $context = Runtime::get('datahub_context');
+            /** @var  $configuration Configuration */
+            $configuration = $context["configuration"];
+            $types = array_keys($configuration->getConfiguration()["schema"]["queryEntities"]);
+            $result =  [];
+            foreach ($types as $type) {
+                if (isset(self::$definitions[$type])) {
+                    $result[] = self::$definitions[$type];
+                }
+            }
+            return $result;
+        }
         return self::$definitions;
     }
 }

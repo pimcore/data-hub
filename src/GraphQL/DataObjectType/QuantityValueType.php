@@ -25,12 +25,11 @@ class QuantityValueType extends ObjectType
 {
     use ServiceTrait;
 
-    protected static $instance;
-
+    /** @var Data */
     protected $fieldDefinition;
 
     /**
-     * FolderType constructor.
+     * QuantityValueType constructor.
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config

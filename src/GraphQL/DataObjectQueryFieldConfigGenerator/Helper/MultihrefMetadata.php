@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
 
 class MultihrefMetadata

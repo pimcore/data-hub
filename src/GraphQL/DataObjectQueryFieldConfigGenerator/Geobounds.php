@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeoboundsType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointType;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Geobounds extends Base

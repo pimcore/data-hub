@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -30,16 +29,9 @@ class HotspotType extends ObjectType
 
     use ServiceTrait;
 
-    /**
-     * @var string
-     */
-    protected $fieldname;
-
-
-    public function __construct(Service $graphQlService, AssetType $assetType, $config = ['name' => 'hotspotimage'], $context = [])
+    public function __construct(Service $graphQlService,  $config = ['name' => 'hotspotimage'], $context = [])
     {
         $this->setGraphQLService($graphQlService);
-        $this->assetType = $assetType;
         $this->build($config);
         parent::__construct($config);
     }
@@ -51,10 +43,14 @@ class HotspotType extends ObjectType
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
         $resolver->setGraphQLService($this->getGraphQlService());
+        $service = $this->getGraphQlService();
+        $assetType = $service->buildAssetType("asset");
+        $hotspotMarkerType = $service->buildGeneralType("hotspotmarker");
+        $hotspotHotspotType = $service->buildGeneralType("hotspothotspot");
 
         $config['fields'] = [
             'image' => [
-                'type' => $this->assetType,
+                'type' => $assetType,
                 'resolve' => [$resolver, "resolveImage"],
             ],
             'crop' => [
@@ -62,29 +58,14 @@ class HotspotType extends ObjectType
                 'resolve' => [$resolver, "resolveCrop"],
             ],
             'hotspots' => [
-                'type' => Type::listOf(HotspotHotspotType::getInstance()),
+                'type' => Type::listOf($hotspotHotspotType),
                 'resolve' => [$resolver, "resolveHotspots"],
             ],
             'marker' => [
-                'type' => Type::listOf(HotspotMarkerType::getInstance()),
+                'type' => Type::listOf($hotspotMarkerType),
                 'resolve' => [$resolver, "resolveMarker"],
             ],
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function getFieldname(): string
-    {
-        return $this->fieldname;
-    }
-
-    /**
-     * @param string $fieldname
-     */
-    public function setFieldname(string $fieldname): void
-    {
-        $this->fieldname = $fieldname;
-    }
 }

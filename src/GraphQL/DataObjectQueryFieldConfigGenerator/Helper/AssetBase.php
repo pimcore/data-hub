@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 
 class AssetBase
@@ -29,7 +30,7 @@ class AssetBase
     use ServiceTrait;
 
     /**
-     * @var
+     * @var Data
      */
     public $fieldDefinition;
 

@@ -17,16 +17,21 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class AssetMetadataItem extends ObjectType
 {
+    use ServiceTrait;
+
     /**
      * AssetMetadataItem constructor.
      *
      * @param $class
      */
-    public function __construct($config = [])
+    public function __construct(Service $graphQlService, $config = [])
     {
+        $this->graphQlService = $graphQlService;
         $config['name'] = 'asset_metadata_item';
         $this->build($config);
         parent::__construct($config);

@@ -33,7 +33,7 @@ class DateType extends ObjectType
                     'fields' => [
                         '__tagName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -41,7 +41,7 @@ class DateType extends ObjectType
                         ],
                         '__tagType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
                                     return $value->getType();
                                 }
@@ -49,7 +49,7 @@ class DateType extends ObjectType
                         ],
                         'timestamp' => [
                             'type' => Type::int(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
                                     $data = $value->getData();
                                     if ($data instanceof Carbon) {
@@ -61,7 +61,7 @@ class DateType extends ObjectType
                         'formatted' => [
                             'type' => Type::string(),
                             'args' => ['format' => ['type' => Type::nonNull(Type::string()), 'description' => 'see Carbon::format']],
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
                                     $data = $value->getData();
                                     if ($data instanceof Carbon) {

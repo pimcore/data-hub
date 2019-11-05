@@ -17,6 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 /**
  * Class HotspotMarkerType
@@ -24,29 +26,44 @@ use GraphQL\Type\Definition\Type;
  */
 class HotspotMarkerType extends ObjectType
 {
-    /**
-     * @var self
-     */
-    protected static $instance;
+
+    use ServiceTrait;
 
     /**
-     * @return HotspotMarkerType
+     * HotspotMarkerType constructor.
+     * @param Service $graphQlService
+     * @param array $config
      */
-    public static function getInstance()
+    public function __construct(Service $graphQlService, $config = [])
     {
-        if (!self::$instance) {
-            $metadataConfig['fields']['type'] = Type::string();
-            $config = [
-                'fields' => [
-                    'top' => Type::float(),
-                    'left' => Type::float(),
-                    'data' => Type::listOf(new ElementMetadataKeyValuePairType($metadataConfig)),
-                    'name' => Type::string(),
-                ],
-            ];
-            self::$instance = new static($config);
-        }
+        $this->graphQlService = $graphQlService;
+        $this->build($config);
+        parent::__construct($config);
+    }
 
-        return self::$instance;
+    /**
+     * @param array $config
+     */
+    public function build(&$config)
+    {
+        $service = $this->getGraphQlService();
+        $propertyType = $service->buildGeneralType("hotspot_metadata");
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
+
+        $config['fields'] = [
+            'top' => Type::float(),
+            'left' => Type::float(),
+            'data' => [
+                'type' => Type::listOf($propertyType),
+                'args' => [
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'comma seperated list of key names'
+                    ]
+                ],
+                'resolve' => [$resolver, "resolveMetadata"]
+            ],
+            'name' => Type::string(),
+        ];
     }
 }

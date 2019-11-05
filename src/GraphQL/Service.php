@@ -68,6 +68,11 @@ class Service
     /**
      * @var ContainerInterface
      */
+    protected $assetTypeGeneratorFactories;
+
+    /**
+     * @var ContainerInterface
+     */
     protected $csFeatureTypeGeneratorFactories;
 
     /**
@@ -133,6 +138,11 @@ class Service
     /**
      * @var array
      */
+    protected $propertyDataTypes = [];
+
+    /**
+     * @var array
+     */
     protected $classificationStoreDataTypes = [];
 
     /**
@@ -155,6 +165,7 @@ class Service
      * @param ContainerInterface $dataObjectMutationOperatorFactories
      * @param ContainerInterface $documentElementTypeGeneratorFactories
      * @param ContainerInterface $generalTypeGeneratorFactories
+     * @param ContainerInterface $assetTypeGeneratorFactories
      * @param ContainerInterface $csFeatureTypeGeneratorFactories
      */
     public function __construct(
@@ -170,6 +181,7 @@ class Service
         ContainerInterface $dataObjectMutationOperatorFactories,
         ContainerInterface $documentElementTypeGeneratorFactories,
         ContainerInterface $generalTypeGeneratorFactories,
+        ContainerInterface $assetTypeGeneratorFactories,
         ContainerInterface $csFeatureTypeGeneratorFactories
     )
     {
@@ -185,6 +197,7 @@ class Service
         $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
         $this->documentElementTypeGeneratorFactories = $documentElementTypeGeneratorFactories;
         $this->generalTypeGeneratorFactories = $generalTypeGeneratorFactories;
+        $this->assetTypeGeneratorFactories = $assetTypeGeneratorFactories;
         $this->csFeatureTypeGeneratorFactories = $csFeatureTypeGeneratorFactories;
     }
 
@@ -372,9 +385,19 @@ class Service
     public function buildGeneralType($typeName)
     {
         $factory = $this->generalTypeGeneratorFactories->get($typeName);
-
         $result = $factory->build();
+        return $result;
+    }
 
+    /**
+     * @param $typeName
+     * @return mixed
+     * @throws \Exception
+     */
+    public function buildAssetType($typeName)
+    {
+        $factory = $this->assetTypeGeneratorFactories->get($typeName);
+        $result = $factory->build();
         return $result;
     }
 
@@ -602,6 +625,14 @@ class Service
         $this->documentDataTypes = $dataTypes;
     }
 
+    /**
+     * @param $dataTypes
+     */
+    public function registerPropertyDataTypes($dataTypes)
+    {
+        $this->propertyDataTypes = $dataTypes;
+    }
+
 
     /**
      * @param $dataTypes
@@ -663,7 +694,20 @@ class Service
         if (isset($this->documentDataTypes[$typename])) {
             return $this->documentDataTypes[$typename];
         }
-        throw new \Exception("unknown type: " . $typename);
+        throw new \Exception("unknown document type: " . $typename);
+    }
+
+    /**
+     * @param $typename
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getPropertyTypeDefinition($typename)
+    {
+        if (isset($this->propertyDataTypes[$typename])) {
+            return $this->propertyDataTypes[$typename];
+        }
+        throw new \Exception("unknown property type: " . $typename);
     }
 
 

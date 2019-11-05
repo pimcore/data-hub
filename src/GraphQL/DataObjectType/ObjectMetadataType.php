@@ -30,6 +30,7 @@ class ObjectMetadataType extends ObjectType
 
     protected $class;
 
+    /** @var Data */
     protected $fieldDefinition;
 
     /**

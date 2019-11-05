@@ -5,11 +5,11 @@ services:
     autoconfigure: true
     public: false
 
-  pimcore.datahub.graphql.assettype.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType'
-  pimcore.datahub.graphql.assettype.asset_metadata_item: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem'
+  # asset
   pimcore.datahub.graphql.assettype._asset_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetFolderType'
   pimcore.datahub.graphql.assettype.asset_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType'
 
+ # document
   pimcore.datahub.graphql.documenttype.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType'
   pimcore.datahub.graphql.documenttype.document_element: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType'
   pimcore.datahub.graphql.documenttype.document_email: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType'
@@ -20,16 +20,15 @@ services:
   pimcore.datahub.graphql.documenttype.document_snippet: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType'
   pimcore.datahub.graphql.documenttype._document_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType'
 
-  pimcore.datahub.graphql.dataobjecttype.object_datatype_video: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType'
-  pimcore.datahub.graphql.dataobjecttype.object_datatype_video_data: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoTypeDataType'
+ # data object
   pimcore.datahub.graphql.dataobjecttype.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType'
   pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
   pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
 
   pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
-  pimcore.datahub.graphql.dataobjecttype.asset_metadata_hotspot: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotType'
   pimcore.datahub.graphql.dataobjecttype.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType'
 
+ # helpers
   pimcore.datahub.graphql.fieldhelper.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper'
   pimcore.datahub.graphql.fieldhelper.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper'
   pimcore.datahub.graphql.fieldhelper.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper'
@@ -57,12 +56,53 @@ services:
   # other stuff
   #
   pimcore.datahub.graphql.generaltype.factory.anytargettype:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\GeneralTypeFactory
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyTargetType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: anytarget }
 
+  pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotMarkerType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspotmarker }
+
+  pimcore.datahub.graphql.generaltype.factory.hotspothotspottype:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotHotspotType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspothotspot }
+
+  pimcore.datahub.graphql.generaltype.factory.property:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspot_metadata }
+
+  pimcore.datahub.graphql.generaltype.factory.asset:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: asset }
+
+  pimcore.datahub.graphql.generaltype.factory.asset_metadataitem:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: asset_metadataitem }
+
+  pimcore.datahub.graphql.generaltype.factory.video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: video }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType: ~
 
@@ -438,11 +478,6 @@ services:
   #
   # asset type definitions
   #
-  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType:
-    tags:
-      - { name: pimcore.datahub.graphql.assettype, id: asset }
-
-
   Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem:
     tags:
       - { name: pimcore.datahub.graphql.assettype, id: asset_metadata_item }
@@ -810,3 +845,36 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Wysiwyg
     tags:
       - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_wysiwyg }
+
+
+  # properties
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectsType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: hotspotmetadata }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_asset }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_document }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DataObjectType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_object }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\CheckboxType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_checkbox }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextareaType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_textarea }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_text }

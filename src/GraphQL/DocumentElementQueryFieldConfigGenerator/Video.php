@@ -21,8 +21,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class Video extends Base
 {
 
-    protected $assetType;
-
     /**
      * Video constructor.
      * @param Service $graphQlService
@@ -30,8 +28,8 @@ class Video extends Base
      */
     public function __construct(Service $graphQlService)
     {
-        $assetType = $graphQlService->getAssetTypeDefinition("asset");
-        $this->assetType = $assetType;
+
+//        $this->assetType = $assetType;
         parent::__construct($graphQlService);
     }
 
@@ -40,6 +38,8 @@ class Video extends Base
      */
     public function getFieldType()
     {
-        return \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\VideoType::getInstance($this->getGraphQlService(), $this->assetType);
+        $service = $this->getGraphQlService();
+        $assetType = $service->buildAssetType("asset");
+        return \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\VideoType::getInstance($this->getGraphQlService(), $assetType);
     }
 }

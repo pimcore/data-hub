@@ -163,9 +163,7 @@ class PimcoreObjectType extends ObjectType
                 }
 
                 $fcLocalizedFields = $fcDef->getFieldDefinition("localizedfields");
-                if ($fcLocalizedFields) {
-
-
+                if ($fcLocalizedFields instanceof ClassDefinition\Data\Localizedfields) {
                     $fcLocalizedFieldDefs = $fcLocalizedFields->getFieldDefinitions();
 
                     foreach ($fcLocalizedFieldDefs as $key => $fieldDef) {

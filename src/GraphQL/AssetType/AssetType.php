@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Logger;
 use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
@@ -33,21 +32,15 @@ class AssetType extends ObjectType
     protected $fieldname;
 
     /**
-     * @var AssetMetadataItem
-     */
-    protected $assetMetadataItemType;
-
-    /**
      * AssetType constructor.
      * @param Service $graphQlService
      * @param AssetMetadataItem $assetMetadataItemType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, AssetMetadataItem $assetMetadataItemType, $config = ["name" => "asset"], $context = [])
+    public function __construct(Service $graphQlService, $config = ["name" => "asset"], $context = [])
     {
         $this->setGraphQLService($graphQlService);
-        $this->assetMetadataItemType = $assetMetadataItemType;
         $this->build($config);
         parent::__construct($config);
     }
@@ -61,6 +54,9 @@ class AssetType extends ObjectType
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetType();
         $resolver->setGraphQLService($this->getGraphQlService());
 
+        $service = $this->getGraphQlService();
+        $assetMetadataItemType = $service->buildAssetType("asset_metadataitem");
+
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => ['name' => 'id',
@@ -73,7 +69,7 @@ class AssetType extends ObjectType
                     'thumbnail' => ['type' => Type::string()]
 
                 ],
-                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof ElementDescriptor) {
                         $image = Asset::getById($value["id"]);
                         if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
@@ -113,7 +109,7 @@ class AssetType extends ObjectType
                     'thumbnail' => ['type' => Type::string()]
 
                 ],
-                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof ElementDescriptor) {
                         $image = Asset::getById($value["id"]);
                         if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
@@ -145,7 +141,7 @@ class AssetType extends ObjectType
                 }
             ],
             'metadata' => [
-                'type' => Type::listOf($this->assetMetadataItemType),
+                'type' => Type::listOf($assetMetadataItemType),
                 'resolve' => [$resolver, "resolveMetadata"]
             ]
         ];

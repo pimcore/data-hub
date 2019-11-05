@@ -31,9 +31,7 @@ class MultihrefMetadataType extends ObjectType
      */
     protected $class;
 
-    /**
-     * @var Data
-     */
+    /** @var Data */
     protected $fieldDefinition;
 
     /**

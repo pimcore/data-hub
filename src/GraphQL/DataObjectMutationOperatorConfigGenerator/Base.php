@@ -25,11 +25,6 @@ abstract class Base
     use ServiceTrait;
 
     /**
-     * @var Service
-     */
-    protected $graphQlService;
-
-    /**
      * Base constructor.
      * @param Service $graphQlService
      */

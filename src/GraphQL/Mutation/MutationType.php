@@ -363,6 +363,15 @@ class MutationType extends ObjectType
         }
     }
 
+    /**
+     * @param $entity
+     * @param $modelFactory
+     * @param $processors
+     * @param LocaleServiceInterface $localeService
+     * @param null $object
+     * @param bool $omitPermissionCheck
+     * @return \Closure
+     */
     public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false)
     {
         return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
@@ -430,6 +439,8 @@ class MutationType extends ObjectType
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
+            $service = $this->getGraphQlService();
+            $assetType = $service->buildAssetType("asset");
 
             $createResultType = new ObjectType([
                 'name' => 'CreateAssetResult',
@@ -438,7 +449,7 @@ class MutationType extends ObjectType
                     'message' => ['type' => Type::string()],
                     "assetData" => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
+                        'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"];
                             $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
@@ -533,6 +544,8 @@ class MutationType extends ObjectType
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
+            $service = $this->getGraphQlService();
+            $assetType = $service->buildAssetType("asset");
 
             $updateResultType = new ObjectType([
                 'name' => 'UpdateAssetResult',
@@ -541,7 +554,7 @@ class MutationType extends ObjectType
                     'message' => ['type' => Type::string()],
                     "assetData" => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                        'type' => $this->getGraphQlService()->getAssetTypeDefinition("asset"),
+                        'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"];
                             $value = $queryResolver($value, $args, $context, $info);

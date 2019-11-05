@@ -28,11 +28,6 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     use ServiceTrait;
 
     /**
-     * @var Service
-     */
-    protected $graphQlService;
-
-    /**
      * Base constructor.
      * @param Service $graphQlService
      */

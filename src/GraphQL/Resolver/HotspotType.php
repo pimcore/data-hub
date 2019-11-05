@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Element\Data\MarkerHotspotItem;
 
 /**
  * Class HotspotType
@@ -103,4 +104,29 @@ class HotspotType
     {
         return !empty($value['marker']) ? $value['marker'] : null;
     }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     */
+    public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $metadata = is_array($value) ? $value['data'] : [];
+        if (isset($args['keys'])) {
+            /** @var MarkerHotspotItem $item */
+            foreach ($metadata as $idx => $item) {
+                $name = $item->getName();
+                if (!in_array($name, $args['keys'])) {
+                    unset($metadata[$idx]);
+                }
+            }
+        }
+        return $metadata;
+
+
+
+    }
+
 }
