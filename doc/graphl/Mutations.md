@@ -18,6 +18,7 @@ Keep in mind that for all kinds of mutations you need the `Write` permission.
 
 Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
+* Boolean Select
 * Checkbox
 * Country
 * Countries (Multiselect)
