@@ -68,7 +68,7 @@ class Objects extends Base implements TypeDefinitionInterface
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

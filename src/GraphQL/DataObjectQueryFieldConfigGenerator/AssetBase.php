@@ -21,11 +21,12 @@ class AssetBase extends Base
 {
 
     /**
-     * @param $attribute
+     * @param array $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
      * @return mixed
+     * @throws \Exception
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -58,7 +59,7 @@ class AssetBase extends Base
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\AssetBase($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\AssetBase($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 

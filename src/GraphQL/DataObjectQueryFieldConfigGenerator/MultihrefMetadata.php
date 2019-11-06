@@ -62,7 +62,7 @@ class MultihrefMetadata extends Base
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\MultihrefMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\MultihrefMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
     }

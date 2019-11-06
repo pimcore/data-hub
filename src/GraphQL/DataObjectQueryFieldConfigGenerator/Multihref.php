@@ -68,7 +68,7 @@ class Multihref extends Base implements TypeDefinitionInterface
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Multihref($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\Multihref($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

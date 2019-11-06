@@ -63,7 +63,7 @@ class ObjectsMetadata extends Base
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\ObjectsMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\ObjectsMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
     }

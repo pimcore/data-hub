@@ -68,7 +68,7 @@ class Hotspotimage extends Base
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Hotspotimage($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\Hotspotimage($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }

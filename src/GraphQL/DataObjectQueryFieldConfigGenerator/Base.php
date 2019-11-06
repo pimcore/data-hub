@@ -72,7 +72,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
 
         // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
         if (strpos($attribute, "~") !== FALSE && !$grapQLConfig['resolve']) {
-            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+            $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
             $grapQLConfig['resolve'] = [$resolver, "resolve"];
         }
 
@@ -100,7 +100,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 

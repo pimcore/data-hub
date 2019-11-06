@@ -58,7 +58,7 @@ class Href extends Base
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\Href($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        $resolver = new Helper\Href($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
         return [$resolver, "resolve"];
     }
 }
