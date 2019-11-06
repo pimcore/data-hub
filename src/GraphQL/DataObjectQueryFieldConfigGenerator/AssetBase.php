@@ -46,7 +46,7 @@ class AssetBase extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->getGraphQlService()->getAssetTypeDefinition("asset");
+        return $this->getGraphQlService()->buildAssetType("asset");
     }
 
     /**
