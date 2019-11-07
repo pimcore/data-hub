@@ -21,6 +21,7 @@
 * Multiselect
 * Numeric
 * Pdf
+* Relation
 * Select
 * Table
 * Textarea
