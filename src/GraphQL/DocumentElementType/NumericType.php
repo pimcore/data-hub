@@ -32,7 +32,7 @@ class NumericType extends ObjectType
                     'fields' => [
                         '__tagName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -40,7 +40,7 @@ class NumericType extends ObjectType
                         ],
                         '__tagType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
                                     return $value->getType();
                                 }
@@ -48,7 +48,7 @@ class NumericType extends ObjectType
                         ],
                         'number' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
                                     return $value->getData();
                                 }

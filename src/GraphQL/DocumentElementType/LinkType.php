@@ -36,7 +36,7 @@ class LinkType extends ObjectType
                     'fields' => [
                         '__tagType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getType();
                                 }
@@ -44,7 +44,7 @@ class LinkType extends ObjectType
                         ],
                         '__tagName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -53,7 +53,7 @@ class LinkType extends ObjectType
                         ,
                         'data' => [
                             'type' => $linkDataType,
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getData();
                                 }

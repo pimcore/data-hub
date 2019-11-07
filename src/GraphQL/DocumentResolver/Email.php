@@ -26,13 +26,6 @@ class Email
     use ServiceTrait;
 
     /**
-     * Link constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @param null $value
      * @param array $args
      * @param $context
@@ -40,7 +33,7 @@ class Email
      * @return array
      * @throws \Exception
      */
-    public function resolveObject($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveObject($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);
@@ -48,8 +41,7 @@ class Email
         if ($document instanceof Document\Link) {
             $relation = $document->getObject();
             if ($relation) {
-                $data = RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
-                return $data;
+                return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
             }
         }
 

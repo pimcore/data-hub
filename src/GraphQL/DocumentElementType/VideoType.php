@@ -19,8 +19,8 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Tag\Video;
 
 class VideoType extends ObjectType
@@ -40,7 +40,7 @@ class VideoType extends ObjectType
                     'fields' => [
                         '__tagType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getType();
                                 }
@@ -48,7 +48,7 @@ class VideoType extends ObjectType
                         ],
                         '__tagName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -60,7 +60,7 @@ class VideoType extends ObjectType
                         ],
                         'type' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getVideoType();
                                 }
@@ -68,7 +68,7 @@ class VideoType extends ObjectType
                         ],
                         'title' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Video) {
                                     return $value->getTitle();
                                 }
@@ -76,7 +76,7 @@ class VideoType extends ObjectType
                         ],
                         'description' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Video) {
                                     return $value->getDescription();
                                 }
@@ -84,7 +84,7 @@ class VideoType extends ObjectType
                         ],
                         'posterAsset' => [
                             'type' => $assetType,
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Video) {
                                     $relation = $value->getPosterAsset();
                                     if ($relation) {
@@ -97,7 +97,7 @@ class VideoType extends ObjectType
                         ],
                         'videoAsset' => [
                             'type' => $assetType,
-                            'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Video) {
                                     $relation = $value->getVideoAsset();
                                     if ($relation) {

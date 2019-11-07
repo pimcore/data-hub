@@ -13,7 +13,7 @@ declare(strict_types=1);
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\SharedType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
@@ -22,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 /**
  * Class HotspotMarkerType
- * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType
+ * @package Pimcore\Bundle\DataHubBundle\GraphQL\SharedType
  */
 class HotspotMarkerType extends ObjectType
 {

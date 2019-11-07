@@ -51,8 +51,7 @@ class Link
         if ($document instanceof Document\Link) {
             $relation = $document->getObject();
             if ($relation) {
-                $data = RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
-                return $data;
+                return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
             }
         }
 
@@ -68,7 +67,7 @@ class Link
      * @return array
      * @throws \Exception
      */
-    public function resolveTarget($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
 
         if (is_array($value)) {

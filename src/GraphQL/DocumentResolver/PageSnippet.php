@@ -25,15 +25,6 @@ class PageSnippet
 
     use ServiceTrait;
 
-
-    /**
-     * DocumentType constructor.
-     */
-    public function __construct()
-    {
-    }
-
-
     /**
      * @param null $value
      * @param array $args
@@ -42,7 +33,7 @@ class PageSnippet
      * @return array
      * @throws \Exception
      */
-    public function resolveElements($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveElements($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);

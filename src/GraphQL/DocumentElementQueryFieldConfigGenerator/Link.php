@@ -24,6 +24,11 @@ class Link extends Base
 
     protected $linkDataType;
 
+    /**
+     * Link constructor.
+     * @param Service $graphQlService
+     * @param LinkDataType $linkDataType
+     */
     public function __construct(Service $graphQlService, LinkDataType $linkDataType)
     {
         $this->linkDataType = $linkDataType;

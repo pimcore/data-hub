@@ -45,16 +45,23 @@ class LinkDataType extends ObjectType
                 'fields' => [
                     '__tagType' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getType();
                             }
                         }
                     ],
-
+                    '__tagName' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value) {
+                                return $value->getName();
+                            }
+                        }
+                    ],
                     'internal' => [
                         'type' => Type::boolean(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getData() ? $value->getData()["internal"] : null;
                             }
@@ -62,7 +69,7 @@ class LinkDataType extends ObjectType
                     ],
                     'internalType' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getData() ? $value->getData()["internalType"] : null;
                             }
@@ -70,24 +77,15 @@ class LinkDataType extends ObjectType
                     ],
                     'internalId' => [
                         'type' => Type::int(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getData() ? $value->getData()["internalId"] : null;
                             }
                         }
                     ],
-                    '__tagType' => [
-                        'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
-                                return $value->getData() ? $value->getData()["type"] : null;
-                            }
-                        }
-                    ],
-
                     'path' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getData() ? $value->getData()["path"] : null;
                             }

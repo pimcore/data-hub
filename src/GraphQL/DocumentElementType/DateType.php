@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\Document\Tag\Date;
 
 class DateType extends ObjectType
 {
@@ -34,7 +35,7 @@ class DateType extends ObjectType
                         '__tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value) {
+                                if ($value instanceof Date) {
                                     return $value->getName();
                                 }
                             }

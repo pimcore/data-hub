@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotCropType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 /**
@@ -29,7 +30,13 @@ class HotspotType extends ObjectType
 
     use ServiceTrait;
 
-    public function __construct(Service $graphQlService,  $config = ['name' => 'hotspotimage'], $context = [])
+    /**
+     * HotspotType constructor.
+     * @param Service $graphQlService
+     * @param array $config
+     * @param array $context
+     */
+    public function __construct(Service $graphQlService, $config = ['name' => 'hotspotimage'], $context = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);

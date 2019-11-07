@@ -40,7 +40,7 @@ class Hardlink
      * @return array
      * @throws \Exception
      */
-    public function resolveTarget($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);
@@ -49,8 +49,7 @@ class Hardlink
             $sourceId = $document->getSourceId();
             $relation = Document::getById($sourceId);
             if ($relation) {
-                $data = RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
-                return $data;
+                return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
             }
         }
 

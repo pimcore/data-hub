@@ -65,14 +65,14 @@ services:
   pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
-      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotMarkerType
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotMarkerType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspotmarker }
 
   pimcore.datahub.graphql.generaltype.factory.hotspothotspottype:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
-      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotHotspotType
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotHotspotType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspothotspot }
 
@@ -113,6 +113,8 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType: ~
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageDataType: ~
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType: ~
 
   #
@@ -133,6 +135,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Input
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_input }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_image }
 
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_link:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Link

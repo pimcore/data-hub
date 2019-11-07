@@ -15,6 +15,7 @@
 
 * Checkbox
 * Date
+* Image
 * Input
 * Link
 * Numeric
