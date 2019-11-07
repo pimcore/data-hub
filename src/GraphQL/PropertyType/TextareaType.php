@@ -21,6 +21,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
+use Pimcore\Model\Property;
 
 class TextareaType extends ObjectType
 {

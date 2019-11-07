@@ -105,6 +105,7 @@ class ElementPropertyType extends UnionType
         if ($element instanceof \Pimcore\Model\Property) {
             $type = $element->getType();
             switch ($type) {
+                case "bool":
                 case "checkbox": {
                     return $this->checkboxType;
                 }

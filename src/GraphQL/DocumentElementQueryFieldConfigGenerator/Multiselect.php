@@ -21,7 +21,7 @@ class Multiselect extends Base
 {
 
     /**
-     * @return \GraphQL\Type\Definition\MultiselectType
+     * @return MultiselectType
      */
     public function getFieldType()
     {
