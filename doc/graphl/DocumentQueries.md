@@ -22,6 +22,7 @@
 * Numeric
 * Pdf
 * Relation
+* Relations
 * Select
 * Table
 * Textarea

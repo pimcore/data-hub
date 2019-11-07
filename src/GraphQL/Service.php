@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
@@ -24,11 +25,14 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Localization\LocaleServiceInterface;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
+use Pimcore\Model\Document;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
@@ -988,25 +992,24 @@ class Service
         return $this->dataObjectDataTypes;
     }
 
-//    /**
-//     * @param array $dataObjectDataTypes
-//     */
-//    public function setDataObjectDataTypes(array $dataObjectDataTypes): void
-//    {
-//        $this->dataObjectDataTypes = $dataObjectDataTypes;
-//    }
-//
-//
-//    /**
-//     * @param array $documentDataTypes
-//     */
-//    public function setDocumentDataTypes(array $documentDataTypes): void
-//    {
-//        $this->documentDataTypes = $documentDataTypes;
-//    }
+    /**
+     * @param $data
+     * @param $target
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     */
+    public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+        if ($target instanceof Document) {
+            $fieldHelper = $this->getDocumentFieldHelper();
+        } else if ($target instanceof Asset) {
+            $fieldHelper = $this->getAssetFieldHelper();
+        } else if ($target instanceof AbstractObject) {
+            $fieldHelper = $this->getObjectFieldHelper();
+        }
 
-
-
-
-
+        if ($fieldHelper) {
+            $fieldHelper->extractData($data, $target, $args, $context, $resolveInfo);
+        }
+    }
 }

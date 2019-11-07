@@ -20,9 +20,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotCropType;
-use Pimcore\Model\Asset;
-use Pimcore\Model\Document\Tag\Image;
 use Pimcore\Model\Document\Tag\Relation;
 
 class RelationType extends ObjectType
@@ -63,7 +60,7 @@ class RelationType extends ObjectType
                         ],
                         'id' => [
                             'type' => Type::int(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getId();
                                 }
@@ -71,7 +68,7 @@ class RelationType extends ObjectType
                         ],
                         'type' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
@@ -79,7 +76,7 @@ class RelationType extends ObjectType
                         ],
                         'subtype' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getSubtype();
                                 }
@@ -87,7 +84,7 @@ class RelationType extends ObjectType
                         ],
                         'relation' => [
                             'type' => $anyTargetType,
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     $target = $value->getElement();
                                     if ($target) {

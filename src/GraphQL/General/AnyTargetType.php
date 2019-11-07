@@ -56,7 +56,7 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
         $objectFolderType = $service->getDataObjectTypeDefinition("_object_folder");
 
 
-        $types = array_values(ClassTypeDefinitions::getAll());
+        $types = array_values(ClassTypeDefinitions::getAll(false));
 
         $service = $this->getGraphQlService();
         $assetType = $service->buildAssetType("asset");

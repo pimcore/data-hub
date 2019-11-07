@@ -166,6 +166,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relation }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_relations:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relations
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relations }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_select:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Select
     tags:
