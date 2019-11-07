@@ -23,14 +23,15 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotCropType;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\Tag\Image;
+use Pimcore\Model\Document\Tag\Relation;
 
-class ImageType extends ObjectType
+class RelationType extends ObjectType
 {
     protected static $instance;
 
     /**
      * @param Service $graphQlService
-     * @return ImageType
+     * @return RelationType
      * @throws \Exception
      */
     public static function getInstance(Service $graphQlService)
@@ -38,21 +39,16 @@ class ImageType extends ObjectType
 
         if (!self::$instance) {
 
-            $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
-            $resolver->setGraphQLService($graphQlService);
-
-            $assetType = $graphQlService->buildAssetType("asset");
-            $hotspotMarkerType = $graphQlService->buildGeneralType("hotspotmarker");
-            $hotspotHotspotType = $graphQlService->buildGeneralType("hotspothotspot");
+            $anyTargetType = $graphQlService->buildGeneralType("anytarget");
 
             $config =
                 [
-                    'name' => 'document_tagImage',
+                    'name' => 'document_tagRelation',
                     'fields' => [
                         '__tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Image) {
+                                if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
                             }
@@ -60,63 +56,47 @@ class ImageType extends ObjectType
                         '__tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Image) {
+                                if ($value instanceof Relation) {
                                     return $value->getName();
                                 }
                             }
-                        ]
-                        ,
-                        'image' => [
-                            'type' => $assetType,
+                        ],
+                        'id' => [
+                            'type' => Type::int(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    $data = $value->getData();
-                                    if (isset($data['id'])) {
-                                        $data = new ElementDescriptor(Asset::getById($data['id']));
-                                        $result = $resolver->resolveImage($data, $args, $context, $resolveInfo);
-                                        return $result;
+                                if ($value instanceof Relation) {
+                                    return $value->getId();
+                                }
+                            }
+                        ],
+                        'type' => [
+                            'type' => Type::string(),
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                                if ($value instanceof Relation) {
+                                    return $value->getType();
+                                }
+                            }
+                        ],
+                        'subtype' => [
+                            'type' => Type::string(),
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                                if ($value instanceof Relation) {
+                                    return $value->getSubtype();
+                                }
+                            }
+                        ],
+                        'relation' => [
+                            'type' => $anyTargetType,
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                                if ($value instanceof Relation) {
+                                    $target = $value->getElement();
+                                    if ($target) {
+                                        $desc = new ElementDescriptor($target);
+                                        return $desc;
                                     }
                                 }
                             }
-                        ],
-                        'alt' => [
-                            'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    return $value->getAlt();
-                                }
-                            }
-                        ],
-                        'crop' => [
-                            'type' => HotspotCropType::getInstance(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    return [
-                                        'cropTop' => $value->getCropTop(),
-                                        'cropLeft' => $value->getCropLeft(),
-                                        'cropHeight' => $value->getCropHeight(),
-                                        'cropWidth' => $value->getCropWidth(),
-                                        'cropPercent' => $value->getCropPercent()
-                                    ];
-                                }
-                            }
-                        ],
-                        'hotspots' => [
-                            'type' => Type::listOf($hotspotHotspotType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    return $value->getHotspots();
-                                }
-                            }
-                        ],
-                        'marker' => [
-                            'type' => Type::listOf($hotspotMarkerType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    return $value->getMarker();
-                                }
-                            }
-                        ],
+                        ]
                     ]
                 ];
             self::$instance = new static($config);

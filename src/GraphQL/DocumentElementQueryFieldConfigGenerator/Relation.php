@@ -16,15 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageDataType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\RelationType;
 
-class Image extends Base
+class Relation extends Base
 {
-   /**
-     * @return ImageType
+
+    /**
+     * @return \GraphQL\Type\Definition\StringType|RelationType
+     * @throws \Exception
      */
     public function getFieldType()
     {
-        return ImageType::getInstance($this->getGraphQlService());
+        return RelationType::getInstance($this->getGraphQlService());
     }
 }
