@@ -50,7 +50,7 @@ class ImageType extends ObjectType
                         '__tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value) {
+                                if ($value instanceof Image) {
                                     return $value->getType();
                                 }
                             }
@@ -58,7 +58,7 @@ class ImageType extends ObjectType
                         '__tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value) {
+                                if ($value instanceof Image) {
                                     return $value->getName();
                                 }
                             }
@@ -67,7 +67,7 @@ class ImageType extends ObjectType
                         'image' => [
                             'type' => $assetType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value) {
+                                if ($value instanceof Image) {
                                     $data = $value->getData();
                                     if (isset($data['id'])) {
                                         $data = new ElementDescriptor(Asset::getById($data['id']));

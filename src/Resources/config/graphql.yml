@@ -151,6 +151,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_numeric }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_pdf:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Pdf
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_pdf }
 
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_select:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Select

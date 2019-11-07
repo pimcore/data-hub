@@ -15,16 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\NumericType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\PdfType;
 
-class Numeric extends Base
+class Pdf extends Base
 {
 
     /**
-     * @return NumericType
+     * @return PdfType
      */
     public function getFieldType()
     {
-        return NumericType::getInstance();
+        return PdfType::getInstance($this->getGraphQlService());
     }
 }

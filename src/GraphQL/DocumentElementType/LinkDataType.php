@@ -54,7 +54,7 @@ class LinkDataType extends ObjectType
                     '__tagName' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
                                 return $value->getName();
                             }
                         }

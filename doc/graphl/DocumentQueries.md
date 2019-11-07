@@ -19,6 +19,7 @@
 * Input
 * Link
 * Numeric
+* Pdf
 * Select
 * Table
 * Textarea
