@@ -18,6 +18,7 @@
 * Image
 * Input
 * Link
+* Multiselect
 * Numeric
 * Pdf
 * Select
