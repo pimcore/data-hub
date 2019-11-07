@@ -146,7 +146,7 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_link }
 
-  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_multislect:
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_multiselect:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Multiselect
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_multiselect }
