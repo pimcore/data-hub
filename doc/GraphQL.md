@@ -8,8 +8,8 @@
 
 ## Query Samples
 
-* [Get News + Autor + Profile Image](graphl/querysamples/Sample1.md)
-* [Get News Listing](graphl/querysamples/Sample2.md)
+* [Get Car + Manufacturer + Manufacturer Logo](graphl/querysamples/Sample_Dependencies.md)
+* [Get Manufacturer Listing](graphl/querysamples/Sample_ManufacturerListing.md)
 * [Filtered News Listing](graphl/Filtering.md )
 * [Many-to-Many Object Relation](graphl/querysamples/Sample6.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)

@@ -97,15 +97,23 @@ See the [Localization Page](Localization.md) to learn more.
 ## Pagination
 
 Example:
-see [Get News Listing](querysamples/Sample2.md)
+see [Get Manufacturer Listing](querysamples/Sample_ManufacturerListing.md)
 
 ## Simple Sorting
+
+Sort by name, descending.
+
 ```graphql
 {
-  getNewsListing(sortBy: ["title"], sortOrder: ["ASC"]) {
+  getManufacturerListing(sortBy: "name", sortOrder: "DESC") {
     edges {
       node {
-      ...
+        id
+        name
+      }
+    }
+  }
+}
 ```
 
 ## Filtering
