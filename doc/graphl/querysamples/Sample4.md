@@ -2,13 +2,15 @@
 
 ![Metadata](../../img/graphql/many2many.png)
 
+>TODO: Align this with the new demo as soon as reasonable content is available. 
+
 ### Request
 
 News listing with limit 3 and offset 1
 ```
 {
   getUser(id: 50) {
-    # advaned many-to-many relation
+    # advanced many-to-many relation
     multimeta {
       element {
         ... on asset {

@@ -8,7 +8,7 @@
 
 ## Query Samples
 
-All samples can be tested using this [Endpoint](https://demo.pimcore.fun/pimcore-datahub-webservices/explorer/products?apikey=6332aa5e6d3d6c0be31da2a8b3442113){:target="_blank"}.
+If not otherwise noted then all samples can be tested using this [Endpoint](https://demo.pimcore.fun/pimcore-datahub-webservices/explorer/products?apikey=6332aa5e6d3d6c0be31da2a8b3442113).
 
 * [Get Car + Manufacturer + Manufacturer Logo](graphl/querysamples/Sample_Dependencies.md)
 * [Get Manufacturer Listing](graphl/querysamples/Sample_ManufacturerListing.md)

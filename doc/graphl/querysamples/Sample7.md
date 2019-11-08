@@ -1,5 +1,7 @@
 ## Advanced Many-to-Many Object Relation + Metadata
 
+>TODO: Align this with the new demo as soon as reasonable content is available. 
+
 Data Model:
 
 ![Data](../../img/graphql/advanced_many_to_many_object_relation.png)
