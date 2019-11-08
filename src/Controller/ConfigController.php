@@ -433,6 +433,34 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             return $this->json(['explorerUrl' => $url]);
         } else {
             throw new \Exception('unable to resolve');
+
         }
     }
+
+    /**
+     * @Route("/thumbnail-tree")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function thumbnailTreeAction(Request $request)
+    {
+        $this->checkPermission('thumbnails');
+
+        $thumbnails = [];
+
+        $list = new \Pimcore\Model\Asset\Image\Thumbnail\Config\Listing();
+        $items = $list->load();
+
+        foreach ($items as $item) {
+            $thumbnails[] = [
+                'id' => $item->getName(),
+                'text' => $item->getName()
+            ];
+        }
+
+        return $this->adminJson($thumbnails);
+    }
+
 }
