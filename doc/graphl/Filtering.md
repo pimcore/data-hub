@@ -3,18 +3,21 @@
 You can use __Pimcore's webservice filter logic__
 as described [here](https://pimcore.com/docs/5.x/Development_Documentation/Web_Services/Query_Filters.html).
 
+Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_3_folder
+
+![Filtered Grid](../img/graphql/filtering.png)
+
 ### Request
 
-Get all news objects which have 'Lorem ipsum' in their title field. 
+Get all `Manufacturer` objects which have 'Lorem ipsum' in their title field. 
 
-```
+```graphql
 {
-  getNewsListing(filter: "{\"title\": {\"$like\" :\"%Lorem ipsum%\"}}") {
+  getManufacturerListing(filter: "{\"name\": {\"$like\" :\"%ca%\"}}") {
     edges {
       node {
         id
-        fullpath
-        title
+        name
       }
     },
     totalCount    
@@ -27,17 +30,28 @@ Get all news objects which have 'Lorem ipsum' in their title field.
 ```
 {
   "data": {
-    "getNewsListing": {
+    "getManufacturerListing": {
       "edges": [
         {
           "node": {
-            "id": "3",
-            "fullpath": "/news4/lorem-ipsum",
-            "title": "Lorem ipsum dolor sit amet"
+            "id": "45",
+            "name": "Cadillac"
+          }
+        },
+        {
+          "node": {
+            "id": "80",
+            "name": "AC Cars"
+          }
+        },
+        {
+          "node": {
+            "id": "153",
+            "name": "MG Cars"
           }
         }
       ],
-      "totalCount": 1
+      "totalCount": 3
     }
   }
 }

@@ -2,7 +2,7 @@
 
 ### Configuration
 
-Deeplink: http://pimcore-demo-basic.pim.zone/admin/login/deeplink?object_277_object
+Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_277_object
 
 Note that you have to adapt your schema definition as depicted below. The thumbnail
 will generated using the [Thumbnail Operator](../Operators.md)

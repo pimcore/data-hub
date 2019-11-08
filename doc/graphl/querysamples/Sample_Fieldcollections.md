@@ -9,7 +9,7 @@ create the following configuration
 
 ### Sample Data
 
-Deeplink: http://pimcore-demo-basic.pim.zone/admin/login/deeplink?object_767_object
+Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_767_object
 
 ![Sample Data](../../img/graphql/news_sample_data.png)
 
