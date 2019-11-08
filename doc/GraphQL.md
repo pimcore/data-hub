@@ -13,7 +13,7 @@
 * [Filtered Manufacturer Listing](graphl/Filtering.md )
 * [Many-to-Many Object Relation](graphl/querysamples/Sample6.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)
-* [Get Asset Directly](graphl/querysamples/Sample3.md)
+* [Get Asset Directly](graphl/querysamples/Sample_GetAsset.md)
 * [Get Asset Metadata](graphl/querysamples/Sample5.md)
 * [Advanced Many-to-Many Object Relation + Metadata](graphl/querysamples/Sample7.md)
 * [Website Translator](graphl/querysamples/Sample8.md)
