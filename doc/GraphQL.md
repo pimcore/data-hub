@@ -8,10 +8,12 @@
 
 ## Query Samples
 
+All samples can be tested using this [Endpoint](https://demo.pimcore.fun/pimcore-datahub-webservices/explorer/products?apikey=6332aa5e6d3d6c0be31da2a8b3442113){:target="_blank"}.
+
 * [Get Car + Manufacturer + Manufacturer Logo](graphl/querysamples/Sample_Dependencies.md)
 * [Get Manufacturer Listing](graphl/querysamples/Sample_ManufacturerListing.md)
 * [Filtered Manufacturer Listing](graphl/Filtering.md )
-* [Many-to-Many Object Relation](graphl/querysamples/Sample6.md)
+* [Many-to-Many Object Relation](graphl/querysamples/Sample_ManyToManyObject.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)
 * [Get Asset Directly](graphl/querysamples/Sample_GetAsset.md)
 * [Get Asset Metadata](graphl/querysamples/Sample_AssetMetadata.md)
