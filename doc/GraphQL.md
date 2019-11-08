@@ -16,7 +16,7 @@
 * [Get Asset Directly](graphl/querysamples/Sample_GetAsset.md)
 * [Get Asset Metadata](graphl/querysamples/Sample_AssetMetadata.md)
 * [Advanced Many-to-Many Object Relation + Metadata](graphl/querysamples/Sample7.md)
-* [Website Translator](graphl/querysamples/Sample8.md)
+* [Website Translator](graphl/querysamples/Sample_WebsiteTranslation.md)
 * [Field-Collections](graphl/querysamples/Sample_Fieldcollections.md)
 * [Get Element Properties](graphl/querysamples/Sample_ElementProperties.md)
 
