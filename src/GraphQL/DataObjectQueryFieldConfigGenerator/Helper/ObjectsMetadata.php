@@ -20,10 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
-use Pimcore\Model\Element\Service;
 
 class ObjectsMetadata
 {
@@ -79,33 +76,16 @@ class ObjectsMetadata
                 $element = $relation->getElement();
                 if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
                     if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view ' . $relation->getFullPath());
+                        throw new \Exception('not allowed to view ' . $element->getFullPath());
                     } else {
                         continue;
                     }
                 }
 
-                $data = new ElementDescriptor();
-                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
+                $data = [];
+                $elementData = new ElementDescriptor($element);
+                $this->getGraphQlService()->extractData($elementData, $element, $args, $context, $resolveInfo);
 
-                $element = $relation->getElement();
-                $elementData = new ElementDescriptor();
-
-                $type = Service::getType($element);
-                if ($element instanceof Concrete) {
-                    $subtype = $element->getClass()->getName();
-                    $elementData['__elementType'] = $type;
-                    $elementData['__elementSubtype'] = $subtype;
-                } else {
-                    if ($element instanceof Asset) {
-                        $elementData['data'] = $elementData['data'] ? base64_encode(
-                            $elementData['data']
-                        ) : null;
-                        $elementData['__elementType'] = 'asset';
-                        $elementData['__elementSubtype'] = $element->getType();
-                    }
-                }
                 $elementData['__relation'] = $relation;
                 $elementData['__destId'] = $relation->getObject()->getId();
                 $data['element'] = $elementData;

@@ -78,11 +78,9 @@ class DocumentFolderType extends ObjectType
                                     return null;
                                 }
                             }
-                            /** @var  $element Document */
+                            /** @var  $element Document\Folder */
                             $data = new ElementDescriptor($element);
-
-                            $fieldHelper = $graphQlService->getDocumentFieldHelper();
-                            $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+                            $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                             return $data;
                         }

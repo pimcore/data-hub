@@ -84,10 +84,8 @@ class Hotspotimage
                     throw new \Exception('permission denied. check your workspace settings');
                 }
 
-                $data = new ElementDescriptor();
-
-                $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
-                $fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
+                $data = new ElementDescriptor($image);
+                $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
 
                 $data['crop'] = $container->getCrop();
                 $data['hotspots'] = $container->getHotspots();

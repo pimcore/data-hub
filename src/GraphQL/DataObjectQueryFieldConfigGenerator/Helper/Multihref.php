@@ -20,11 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Document;
 use Pimcore\Model\Element\AbstractElement;
-use Pimcore\Model\Element\Service;
 
 class Multihref
 {
@@ -86,23 +82,8 @@ class Multihref
                     }
                 }
 
-                $data = new ElementDescriptor();
-                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
-
-                $type = Service::getType($relation);
-                if ($relation instanceof Concrete) {
-                    $subtype = $relation->getClass()->getName();
-                    $data['__elementType'] = $type;
-                    $data['__elementSubtype'] = $subtype;
-                } elseif ($relation instanceof Asset) {
-                    $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
-                    $data['__elementType'] = 'asset';
-                    $data['__elementSubtype'] = $relation->getType();
-                } else if ($relation instanceof Document) {
-                    $data['id'] = $relation->getId();
-                    $data['__elementType'] = $type;
-                }
+                $data = new ElementDescriptor($relation);
+                $this->getGraphQlService()->extractData($data, $relation, $args, $context, $resolveInfo);
 
                 $result[] = $data;
             }

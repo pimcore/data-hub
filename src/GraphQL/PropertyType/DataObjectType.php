@@ -82,9 +82,7 @@ class DataObjectType extends ObjectType
 
                                 /** @var  $element AbstractObject */
                                 $data = new ElementDescriptor($element);
-
-                                $fieldHelper = $graphQlService->getObjectFieldHelper();
-                                $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+                                $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                                 return $data;
                             }

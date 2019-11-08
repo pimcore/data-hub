@@ -91,8 +91,8 @@ class ImageGallery
                         throw new \Exception('permission denied. check your workspace settings');
                     }
 
-                    $data = new ElementDescriptor();
-                    $this->getGraphQlService()->getAssetFieldHelper()->extractData($data, $image, $args, $context, $resolveInfo);
+                    $data = new ElementDescriptor($image);
+                    $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
 
                     $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
                     $data['crop'] = $relation->getCrop();

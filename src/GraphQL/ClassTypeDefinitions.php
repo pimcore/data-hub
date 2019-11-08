@@ -45,6 +45,10 @@ class ClassTypeDefinitions
             self::$definitions[$name] = $objectType;
         }
 
+        /**
+         * @var string $name
+         * @var PimcoreObjectType $definition
+         */
         foreach (self::$definitions as $name => $definition) {
             $definition->build($context);
         }

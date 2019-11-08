@@ -15,9 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
+use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Db;
 use Pimcore\Logger;
-use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;

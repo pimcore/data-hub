@@ -20,11 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
-use Pimcore\Model\Document;
-use Pimcore\Model\Element\Service;
 
 class MultihrefMetadata
 {
@@ -74,6 +70,7 @@ class MultihrefMetadata
     {
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args, $value);
         if ($relations) {
+            $result = [];
             /** @var $relation ElementMetadata */
             foreach ($relations as $relation) {
                 $element = $relation->getElement();
@@ -85,33 +82,14 @@ class MultihrefMetadata
                     }
                 }
 
-                $data = new ElementDescriptor();
-                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                $fieldHelper->extractData($data, $relation, $args, $context, $resolveInfo);
+                $data = [];
 
                 $element = $relation->getElement();
-                $elementData = [];
-
-                $type = Service::getType($element);
-                if ($element instanceof Concrete) {
-                    $subtype = $element->getClass()->getName();
-                    $elementData['__elementType'] = $type;
-                    $elementData['__elementSubtype'] = $subtype;
-                } else if ($element instanceof Asset) {
-                    $elementData['data'] = $elementData['data'] ? base64_encode(
-                        $elementData['data']
-                    ) : null;
-                    $elementData['__elementType'] = 'asset';
-                    $elementData['__elementSubtype'] = $element->getType();
-                } else if ($relation instanceof Document) {
-                    $data['id'] = $relation->getId();
-                    $data['__elementType'] = $type;
-                }
+                $elementData = new ElementDescriptor($element);
 
                 $elementData['__relation'] = $relation;
                 $elementData['__destId'] = $relation->getElementId();
                 $data['element'] = $elementData;
-                $data['metadata'] = microtime();
 
                 $result[] = $data;
             }

@@ -34,6 +34,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
     use ServiceTrait;
 
+    /** @var ClassDefinition */
     protected $class;
 
     /** @var Data */
@@ -140,7 +141,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
                 return $type;
             } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->getAssetTypeDefinition("asset");
+                return  $this->getGraphQlService()->buildAssetType("asset");
             } else if ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {

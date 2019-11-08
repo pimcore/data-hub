@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\Document;
 
 
 class MultihrefMetadata
@@ -65,12 +66,14 @@ class MultihrefMetadata
             return null;
         }
 
+        $destId = $value['element']['__destId'];
+
         if ($value['element']['__elementType'] == 'object') {
-            $element = AbstractObject::getById($value['element']['__destId']);
-        } else {
-            if ($value['element']['__elementType'] == 'asset') {
-                $element = Asset::getById($value['element']['__destId']);
-            }
+            $element = AbstractObject::getById($destId);
+        } else  if ($value['element']['__elementType'] == 'asset') {
+            $element = Asset::getById($destId);
+        } else if ($value['element']['__elementType'] == 'document') {
+            $element = Document::getById($destId);
         }
 
         if (!$element) {

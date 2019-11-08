@@ -171,9 +171,8 @@ class QueryType
             }
         }
 
-        $data = new ElementDescriptor();
-        $fieldHelper = $this->getGraphQlService()->getDocumentFieldHelper();
-        $fieldHelper->extractData($data, $documentElement, $args, $context, $resolveInfo);
+        $data = new ElementDescriptor($documentElement);
+        $this->getGraphQlService()->extractData($data, $documentElement, $args, $context, $resolveInfo);
         $data = $data->getArrayCopy();
 
         return $data;
@@ -207,9 +206,8 @@ class QueryType
             }
         }
 
-        $data = new ElementDescriptor();
-        $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
-        $fieldHelper->extractData($data, $assetElement, $args, $context, $resolveInfo);
+        $data = new ElementDescriptor($assetElement);
+        $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
         $data = $data->getArrayCopy();
 
         if ($data['data']) {
@@ -275,8 +273,7 @@ class QueryType
 
         $data = [];
         $data['id'] = $object->getId();
-        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-        $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
+        $this->getGraphQlService()->extractData($data, $object, $args, $context, $resolveInfo);
 
         return $data;
     }

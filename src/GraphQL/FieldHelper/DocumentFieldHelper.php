@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Logger;
 use Pimcore\Model\Asset;
 
 
@@ -59,7 +60,11 @@ class DocumentFieldHelper extends AbstractFieldHelper
                     $data[$realName] = $container->$getter($languageArgument);
                 }
             } else {
-                $data[$realName] = $container->$getter();
+                try {
+                    $data[$realName] = $container->$getter();
+                } catch (\Error $e) {
+                    Logger::error($e);
+                }
             }
         }
     }

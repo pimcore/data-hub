@@ -91,14 +91,8 @@ class AssetBase
                 }
             }
 
-            $data = new ElementDescriptor();
-
-            /** @var $fieldHelper \Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper */
-            $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
-            $fieldHelper->extractData($data, $assetElement, $args, $context, $resolveInfo);
-
-            $data['id'] = $assetElement->getId();
-            $data['__elementType'] = "asset";
+            $data = new ElementDescriptor($assetElement);
+            $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
             if ($data['data']) {
                 $data['data'] = base64_encode($data['data']);
             }

@@ -80,9 +80,7 @@ class DocumentType extends ObjectType
                             }
                             /** @var  $element Document */
                             $data = new ElementDescriptor($element);
-
-                            $fieldHelper = $graphQlService->getDocumentFieldHelper();
-                            $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+                            $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                             return $data;
                         }

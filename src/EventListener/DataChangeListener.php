@@ -15,6 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\EventListener;
 
+use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
 use Pimcore\Event\DocumentEvents;
@@ -22,8 +24,6 @@ use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Event\Model\DocumentEvent;
 use Pimcore\Model\Element\ValidationException;
-use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataChangeListener implements EventSubscriberInterface

@@ -82,9 +82,7 @@ class AssetType extends ObjectType
                                 }
 
                                 $data = new ElementDescriptor($element);
-
-                                $fieldHelper = $graphQlService->getAssetFieldHelper();
-                                $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+                                $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                                 return $data;
                             }

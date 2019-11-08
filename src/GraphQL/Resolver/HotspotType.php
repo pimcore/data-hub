@@ -53,12 +53,9 @@ class HotspotType
                 }
             }
 
-
-            $data = new ElementDescriptor();
-            $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
-            $fieldHelper->extractData($data, $image, $args, $context, $resolveInfo);
+            $data = new ElementDescriptor($image);
+            $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
             $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
-            $data['__elementSubtype'] = $image->getType();
             return $data;
 
         }

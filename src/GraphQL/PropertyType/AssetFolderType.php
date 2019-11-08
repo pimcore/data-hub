@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Document;
+use Pimcore\Model\Asset\Folder;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
@@ -79,11 +79,9 @@ class AssetFolderType extends ObjectType
                                     return null;
                                 }
                             }
-                            /** @var  $element Document */
+                            /** @var  $element Folder */
                             $data = new ElementDescriptor($element);
-
-                            $fieldHelper = $graphQlService->getDocumentFieldHelper();
-                            $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
+                            $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                             return $data;
                         }
