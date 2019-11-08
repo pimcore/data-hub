@@ -206,14 +206,9 @@ class QueryType
             }
         }
 
-        $data = new ElementDescriptor($assetElement);
-        $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
-        $data = $data->getArrayCopy();
-
-        if ($data['data']) {
-            $data['data'] = base64_encode($data['data']);
-        }
-
+        $data = new ElementDescriptor();
+        $fieldHelper = $this->getGraphQlService()->getAssetFieldHelper();
+        $fieldHelper->extractData($data, $assetElement, $args, $context, $resolveInfo);
         return $data;
     }
 
