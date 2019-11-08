@@ -129,6 +129,7 @@ class PimcoreObjectType extends ObjectType
         }
 
         $this->fields = null;
+        ksort($fields);
         $this->config['fields'] = $fields;
     }
 
