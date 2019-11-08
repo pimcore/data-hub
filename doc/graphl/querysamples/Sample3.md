@@ -1,7 +1,9 @@
 ## Get Asset By Id
 
-If you want to access a asset directy.
+If you want to access a asset directly.
 Note that the data will be base64 encoded and quite time-consuming to deliver.
+
+Deeplink: http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image
 
 ### Request
 
@@ -34,17 +36,20 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
 {
   "data": {
     "getAsset": {
-      "id": "4",
-      "fullpath": "/portal-sujets/slide-01.jpg",
-      "assetThumb": "/portal-sujets/image-thumb__4__exampleCover/slide-01.jpeg",
-      "assetThumb2": "/portal-sujets/image-thumb__4__content/slide-01.jpeg",
-      "type": "image",
-      "mimetype": "image/jpeg",
-      "filesize": 169341,
-      "data": "/9j/4AAQSkZJRgABAQA.....
-      }
-  }
-}
+        {
+          "data": {
+            "getAsset": {
+              "id": "4",
+              "fullpath": "/Car%20Images/jaguar/auto-automobile-automotive-192499.jpg",
+              "assetThumb": "/Car%20Images/jaguar/image-thumb__4__exampleCover/auto-automobile-automotive-192499.webp",
+              "assetThumb2": "/Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499.webp",
+              "type": "image",
+              "mimetype": "image/jpeg",
+              "filesize": 113895,
+              "data": "UklGRjh............."
+            }
+          }
+        }
 ```
 
 
