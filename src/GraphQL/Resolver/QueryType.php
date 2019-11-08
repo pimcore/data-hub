@@ -271,7 +271,7 @@ class QueryType
             throw new \Exception('permission denied. check your workspace settings');
         }
 
-        $data = [];
+        $data = new ElementDescriptor($object);
         $data['id'] = $object->getId();
         $this->getGraphQlService()->extractData($data, $object, $args, $context, $resolveInfo);
 
