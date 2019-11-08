@@ -866,17 +866,18 @@ class Service
         return $result;
     }
 
+
     /**
-     * @param $objectId
+     * @param BaseDescriptor $descriptor
      * @param Data $fieldDefinition
      * @param $attribute
      * @param array $args
-     * @param null $descriptor
      * @return \stdclass|null
      */
-    public static function resolveValue($objectId, Data $fieldDefinition, $attribute, $args = [], $descriptor = null)
+    public static function resolveValue(BaseDescriptor $descriptor, Data $fieldDefinition, $attribute, $args = [])
     {
         $getter = 'get' . ucfirst($fieldDefinition->getName());
+        $objectId = $descriptor["id"];
         $object = Concrete::getById($objectId);
         if (!$object) {
             return null;
@@ -890,7 +891,7 @@ class Service
         $brickType = null;
         $brickKey = null;
 
-        if ($descriptor instanceof FieldcollectionDecriptor) {
+        if ($descriptor instanceof FieldcollectionDescriptor) {
 
             $descriptorData = $descriptor->getArrayCopy();
             $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);

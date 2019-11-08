@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDecriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Cache\Runtime;
@@ -63,7 +63,7 @@ class FieldcollectionType  extends UnionType implements ContainerAwareInterface
      */
     public function resolveType($element, $context, ResolveInfo $info)
     {
-        if ($element instanceof FieldcollectionDecriptor) {
+        if ($element instanceof FieldcollectionDescriptor) {
             $fcName = $element["__fcType"];
             $fcKey = "graphql_fieldcollection_" . $fcName;
             $type = Runtime::get($fcKey);

@@ -76,7 +76,7 @@ class ImageGallery
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $result = [];
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args);
+        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
             /** @var $relation AbstractElement */
             foreach ($relations as $relation) {

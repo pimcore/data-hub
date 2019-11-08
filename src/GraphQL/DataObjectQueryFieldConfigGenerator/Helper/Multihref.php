@@ -70,7 +70,7 @@ class Multihref
     {
 
         $result = [];
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args, $value);
+        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args, $value);
         if ($relations) {
             /** @var $relation AbstractElement */
             foreach ($relations as $relation) {

@@ -15,7 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-class BaseDescriptor extends \ArrayObject
+use Symfony\Component\Console\Descriptor\DescriptorInterface;
+
+abstract class BaseDescriptor extends \ArrayObject
 {
     /**
      *

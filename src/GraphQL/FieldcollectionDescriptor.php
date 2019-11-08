@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-class FieldcollectionDecriptor extends \ArrayObject
+class FieldcollectionDescriptor extends BaseDescriptor
 {
 
     /**

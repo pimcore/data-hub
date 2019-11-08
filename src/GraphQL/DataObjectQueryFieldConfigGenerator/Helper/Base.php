@@ -68,7 +68,7 @@ class Base
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $result = Service::resolveValue($value["id"], $this->fieldDefinition, $this->attribute, $args);
+        $result = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         return $result;
     }
 }

@@ -76,7 +76,7 @@ class Hotspotimage
     {
         $result = [];
         /** @var  $container Hotspotimage */
-        $container = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args);
+        $container = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($container instanceof \Pimcore\Model\DataObject\Data\Hotspotimage) {
             $image = $container->getImage();
             if ($image instanceof Asset) {

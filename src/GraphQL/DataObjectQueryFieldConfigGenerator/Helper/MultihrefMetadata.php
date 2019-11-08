@@ -68,7 +68,7 @@ class MultihrefMetadata
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value['id'], $this->fieldDefinition, $this->attribute, $args, $value);
+        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args, $value);
         if ($relations) {
             $result = [];
             /** @var $relation ElementMetadata */

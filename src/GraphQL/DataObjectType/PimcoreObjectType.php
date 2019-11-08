@@ -21,7 +21,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDecriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -235,10 +235,12 @@ class PimcoreObjectType extends ObjectType
 
                         foreach ($items as $item) {
                             $idx++;
-                            $data = new FieldcollectionDecriptor();
+                            $data = new FieldcollectionDescriptor();
                             $data["__fcType"] = $item->getType();
                             $data["__fcFieldname"] = $fieldname;
                             $data["__itemIdx"] = $idx;
+
+
                             $data["id"] = $value["id"];
                             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                             $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
