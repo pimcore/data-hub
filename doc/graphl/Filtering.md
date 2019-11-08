@@ -9,7 +9,7 @@ Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_3_folder
 
 ### Request
 
-Get all `Manufacturer` objects which have 'Lorem ipsum' in their title field. 
+Get all `Manufacturer` objects which have 'ca' in their title field. 
 
 ```graphql
 {
