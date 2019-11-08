@@ -118,6 +118,6 @@ Get Link Document and resolve the target news text.
 }
 ```
 
-## Sample 4 (Properties)
+## Sample 4 (Document Properties)
 
-see [Element Properties](./querysamples/Sample10.md)
+see [Element Properties](./querysamples/Sample_ElementProperties.md)

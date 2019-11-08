@@ -10,10 +10,10 @@ be returned by default.
 
 ```graphql
 {
-  getDocument(id: 50) {
+  getDocument(id: 38) {
     ... on document_page {
       fullpath
-      properties(keys: ["leftNavStartNode", "blog", "mytext", "myobject", "mylogo"]) {
+      properties(keys: ["newsletter_confirm_mail", "myobject", "mylogo"]) {
         __typename
         ... on property_text {
           name
@@ -24,9 +24,11 @@ be returned by default.
           type
           document {
             __typename
-            ... on document_page {
+            ... on document_email {
               id
               fullpath
+              controller
+              action              
             }
           }
         }
@@ -35,15 +37,16 @@ be returned by default.
           asset {
             fullpath
             logothumb: fullpath(thumbnail: "content")
+            filesize
           }
         }
         ... on property_object {
           name
           object {
-            ... on object_news {
+            ... on object_Car {
               id
-              title(language: "en_GB")
-              date
+              name
+              color
             }
           }
         }
@@ -59,48 +62,38 @@ be returned by default.
 {
   "data": {
     "getDocument": {
-      "fullpath": "/de/einfuehrung",
+      "fullpath": "/en/More-Stuff/Developers-Corner/Editable-Roundup",
       "properties": [
         {
           "__typename": "property_document",
-          "name": "blog",
+          "name": "newsletter_confirm_mail",
           "type": "document",
           "document": {
-            "__typename": "document_page",
-            "id": "60",
-            "fullpath": "/en/advanced-examples/blog"
-          }
-        },
-        {
-          "__typename": "property_document",
-          "name": "leftNavStartNode",
-          "type": "document",
-          "document": {
-            "__typename": "document_page",
-            "id": "41",
-            "fullpath": "/de"
-          }
-        },
-        {
-          "__typename": "property_text",
-          "name": "mytext",
-          "text": "some text"
-        },
-        {
-          "__typename": "property_object",
-          "name": "myobject",
-          "object": {
-            "id": "3",
-            "title": "Lorem Ipsum",
-            "date": "2013-07-18 13:45:00"
+            "__typename": "document_email",
+            "id": "105",
+            "fullpath": "/en/mails/newsletter_confirm",
+            "controller": "@AppBundle\\Controller\\DefaultController",
+            "action": "genericMail"
           }
         },
         {
           "__typename": "property_asset",
           "name": "mylogo",
           "asset": {
-            "fullpath": "/examples/italy/dsc04344.jpg",
-            "logothumb": "/examples/italy/image-thumb__39__content/dsc04344.webp"
+            "fullpath": "/Brand%20Logos/Alfa_Romeo_logo.png",
+            "logothumb": "/Brand%20Logos/image-thumb__290__content/Alfa_Romeo_logo.webp",
+            "filesize": 101613
+          }
+        },
+        {
+          "__typename": "property_object",
+          "name": "myobject",
+          "object": {
+            "id": "273",
+            "name": "Gulietta Sprint Speciale",
+            "color": [
+              "green"
+            ]
           }
         }
       ]

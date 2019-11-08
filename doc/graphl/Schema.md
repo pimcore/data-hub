@@ -1,6 +1,6 @@
 # Schema Settings
 
-![Add](../img/graphql/schema1.png)
+![Add](../img/graphql/schema_add.png)
 
 ### Field Configuration
 
@@ -10,7 +10,3 @@ Define all the fields that you want to make available. In addition, you can empl
 
 Please note that not all data types are supported yet!
 You will get a notice if you try to add an unsupported data type.
-
-Example:
-
-![Add](../img/graphql/not_supported.png)
