@@ -9,14 +9,15 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -72,35 +73,31 @@ class AssetBase
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $containerObjectId = $value['id'];
-        $o = Concrete::getById($containerObjectId);
-        if ($o) {
-            $getter = 'get' . ucfirst($this->fieldDefinition->getName());
-            $asset = $o->$getter();
-            if (!$asset) {
-                return null;
-            }
+        $asset = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args = []);
 
-            $assetElement = $this->getAssetElement($asset);
-
-            if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read')) {
-                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new \Exception('not allowed to view ' . $asset->getFullPath());
-                } else {
-                    return null;
-                }
-            }
-
-            $data = new ElementDescriptor($assetElement);
-            $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
-            if ($data['data']) {
-                $data['data'] = base64_encode($data['data']);
-            }
-
-            return $data;
+        if (!$asset) {
+            return null;
         }
 
-        return null;
+        $assetElement = $this->getAssetElement($asset);
+
+        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view ' . $asset->getFullPath());
+            } else {
+                return null;
+            }
+        }
+
+        $data = new ElementDescriptor($assetElement);
+        $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
+        if ($data['data']) {
+            $data['data'] = base64_encode($data['data']);
+        }
+
+        return $data;
+
+
     }
 
     /** Return the actual asset (AbstractElement)
