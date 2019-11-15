@@ -1,8 +1,8 @@
-# Data Hub Bundle (Early Preview)
+# Data Hub Bundle
 
 ## General
 
-This is an early, kind of experimental, preview of pimcore’s new data delivery & consumption platform.
+Welcome at pimcore’s new data delivery & consumption platform.
 It aims to integrate different input & output channel technologies into a simple & easy-to-configure system on top of pimcore.
 Contributions of any kind are warmly appreciated.
 A short introduction video of an output channel based on the GraphQL query language can be found [here](./doc/img/graphql/intro.mp4).
