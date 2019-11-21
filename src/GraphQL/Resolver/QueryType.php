@@ -286,7 +286,7 @@ class QueryType
 
         $object = AbstractObject::getById($objectId);
 
-        $data = [];
+        $data = new ElementDescriptor();
         if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read') && !$this->omitPermissionCheck) {
             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
