@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -268,11 +269,54 @@ class QueryType extends ObjectType
                 'resolve' => [$resolver, "resolveListing"],
             ];
 
+            $filterType = new ObjectType(
+                [
+                    'name' => $ucFirstClassName . 'Filter',
+                    'fields' => [
+                        'edges' => [
+                            'type' => Type::listOf($edgeType),
+                            'resolve' => [$resolver, "resolveEdges"]
+                        ],
+                        'totalCount' => [
+                            'description' => 'The total count of all queryable objects for this schema listing',
+                            'resolve' => [$resolver, "resolveFilterTotalCount"],
+                            'type' => Type::int()
+                        ]
+                    ]
+                ]
+            );
+
+            // @TODO Create response format to provide facets.
+            $defFilter = [
+                'name' => 'get' . $ucFirstClassName . 'Filter',
+                'args' => [
+                    'tenant' => ['type' => Type::string()],
+                    'variantMode' => ['type' => Type::string()],
+                    'defaultLanguage' => ['type' => Type::string()],
+                    'fulltext' => ['type' => Type::string()],
+                    'first' => ['type' => Type::int()],
+                    'after' => ['type' => Type::int()],
+                    'sortBy' => ['type' => Type::listOf(Type::string())],
+                    'sortOrder' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                    ],
+                    'filter' => ['type' => Type::string()],
+                    'published' => ['type' => Type::boolean()],
+                ],
+                'type' => $filterType,
+                'resolve' => [$resolver, "resolveFilter"],
+            ];
+
             if (!$config['fields']) {
                 $config['fields'] = [];
             }
 
             $config['fields']['get' . $ucFirstClassName . 'Listing'] = $defListing;
+            // Add filter support if this is an indexable class.
+            if (is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), IndexableInterface::class)) {
+                $config['fields']['get' . $ucFirstClassName . 'Filter'] = $defFilter;
+            }
             $config['fields']['get' . $ucFirstClassName] = $defGet;
         }
     }

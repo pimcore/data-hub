@@ -22,11 +22,19 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
+use Pimcore\Bundle\EcommerceFrameworkBundle\FilterService\Helper;
+use Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\DefaultMysql;
+use Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch;
+use Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\DefaultElasticSearch6;
+use Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\FilterDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
+use Pimcore\Model\DataObject\Product;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
 
@@ -416,5 +424,130 @@ class QueryType
         return $value['totalCount'];
     }
 
+    /**
+     * Build a filter query.
+     *
+     * @TODO Create response format to provide facets.
+     *
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveFilter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        if ($args && $args['defaultLanguage']) {
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
+        }
+        $factory = Factory::getInstance();
+
+        // Set tenant config.
+        if (!empty($args['tenant'])) {
+            $factory->getEnvironment()->setCurrentAssortmentTenant($args['tenant']);
+        }
+
+        /** @var ProductListInterface $resultList */
+        $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+        if (!empty($args['variantMode'])) {
+            $resultList->setVariantMode($args['variantMode']);
+        }
+        if (!empty($args['fulltext'])) {
+            if ($resultList instanceof DefaultMysql) {
+                $resultList->buildFulltextSearchWhere(
+                    $resultList->getCurrentTenantConfig()->getSearchAttributes(),
+                    $args['fulltext']
+                );
+                return $resultList->addCondition($args['fulltext'], 'relevance');
+            } elseif ($resultList instanceof AbstractElasticSearch) {
+                /** @var DefaultElasticSearch6 $resultList */
+                $resultList->addQueryCondition($args['fulltext']);
+            }
+        }
+
+        // @TODO Add support for filterDefinitions.
+        // $factory->getFilterService()->initFilterService($filterDefinition, $resultList, $args);
+
+        // paging
+        if (isset($args['first'])) {
+            $resultList->setLimit($args['first']);
+        }
+
+        if (isset($args['after'])) {
+            $resultList->setOffset($args['after']);
+        }
+
+        // sorting
+        if (!empty($args['sortBy'])) {
+            $resultList->setOrderKey($args['sortBy']);
+            if (!empty($args['sortOrder'])) {
+                $resultList->setOrder($args['sortOrder']);
+            }
+        }
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        // @TODO Implement SQL Conditions in a generic way - we need to support
+        // ElasticSearch.
+//        $sqlListCondition = $configuration->getSqlObjectCondition();
+//
+//        if ($sqlListCondition) {
+//            $conditionParts[] = '(' . $sqlListCondition . ')';
+//        }
+
+        //@TODO Implement workspace limitation in a generic way.
+//        // check permissions
+//        $db = Db::get();
+//        $conditionParts[] = ' (
+//                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
+//                                                    OR
+//                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
+//                                                 )';
+//
+//        if (isset($args['filter'])) {
+//            $filter = json_decode($args['filter'], false);
+//            if (!$filter) {
+//                throw new \Exception('unable to decode filter');
+//            }
+//            $filterCondition = \Pimcore\Bundle\AdminBundle\Controller\Rest\Helper::buildSqlCondition($filter);
+//            $conditionParts[] = $filterCondition;
+//        }
+//
+//        if ($conditionParts) {
+//            $condition = implode(' AND ', $conditionParts);
+//            $resultList->setCondition($condition);
+//        }
+
+        $totalCount = $resultList->count();
+        $objectList = $resultList->load();
+
+        foreach ($objectList as $object) {
+            $data = [];
+            $data['id'] = $object->getId();
+            $nodes[] = [
+                'cursor' => 'object-' . $object->getId(),
+                'node' => $data,
+            ];
+        }
+
+        $connection = [];
+        $connection['edges'] = $nodes;
+        $connection['totalCount'] = $totalCount;
+
+        return $connection;
+    }
+
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
+    public function resolveFilterTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        return $value['totalCount'];
+    }
 }
 
