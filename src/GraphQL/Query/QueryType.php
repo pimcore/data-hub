@@ -24,7 +24,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -269,6 +268,33 @@ class QueryType extends ObjectType
                 'resolve' => [$resolver, "resolveListing"],
             ];
 
+            $filterFacetType = new ObjectType(
+                [
+                    'name' => 'filterFacets',
+                    'fields' => [
+                        'facet' => [
+                            'type' => new ObjectType([
+                                'name' => 'filterFacet',
+                                'fields' => [
+                                    'field' => ['type' => Type::string()],
+                                    'label' => ['type' => Type::string()],
+                                    'options' => [
+                                        'type' => Type::listOf(new ObjectType([
+                                            'name' => 'filterFacetOption',
+                                            'fields' => [
+                                                'value' => ['type' => Type::string()],
+                                                'label' => ['type' => Type::string()],
+                                                'count' => ['type' => Type::int()],
+                                            ],
+                                        ]),),
+                                    ],
+                                ],
+                            ]),
+                            'resolve' => [$resolver, "resolveFacet"]
+                        ],
+                    ],
+                ]
+            );
             $filterType = new ObjectType(
                 [
                     'name' => $ucFirstClassName . 'Filter',
@@ -276,6 +302,10 @@ class QueryType extends ObjectType
                         'edges' => [
                             'type' => Type::listOf($edgeType),
                             'resolve' => [$resolver, "resolveEdges"]
+                        ],
+                        'facets' => [
+                            'type' => Type::listOf($filterFacetType),
+                            'resolve' => [$resolver, "resolveFacets"]
                         ],
                         'totalCount' => [
                             'description' => 'The total count of all queryable objects for this schema listing',
@@ -291,9 +321,19 @@ class QueryType extends ObjectType
                 'name' => 'get' . $ucFirstClassName . 'Filter',
                 'args' => [
                     'tenant' => ['type' => Type::string()],
-                    'variantMode' => ['type' => Type::string()],
+                    'variantMode' => [
+                        'type' => Type::string(),
+                        'description' => 'Define how item variants in the results are handled.. Valid values: ' .
+                            \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface::VARIANT_MODE_HIDE . ',' .
+                            \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface::VARIANT_MODE_INCLUDE . ',' .
+                            \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface::VARIANT_MODE_INCLUDE_PARENT_OBJECT . ',' .
+                            \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface::VARIANT_MODE_VARIANTS_ONLY,
+                    ],
                     'defaultLanguage' => ['type' => Type::string()],
-                    'fulltext' => ['type' => Type::string()],
+                    'fulltext' => [
+                        'type' => Type::string(),
+                        'description' => 'The keys to use for the fulltext search.'
+                    ],
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
                     'sortBy' => ['type' => Type::listOf(Type::string())],
@@ -302,7 +342,17 @@ class QueryType extends ObjectType
                         'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
                     ],
                     'filter' => ['type' => Type::string()],
+                    'filterDefinition' => [
+                        'type' => Type::int(),
+                        'description' => "Define the id of a filterDefinition to use to configure the filter.",
+                    ],
                     'published' => ['type' => Type::boolean()],
+                    'category' => [
+                        'type' => Type::id(),
+                        'description' => "ID of the category to filter by.",
+                    ],
+                    'priceFrom' => ['type' => Type::float()],
+                    'priceTo' => ['type' => Type::float()],
                 ],
                 'type' => $filterType,
                 'resolve' => [$resolver, "resolveFilter"],
@@ -314,7 +364,7 @@ class QueryType extends ObjectType
 
             $config['fields']['get' . $ucFirstClassName . 'Listing'] = $defListing;
             // Add filter support if this is an indexable class.
-            if (is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), IndexableInterface::class)) {
+            if (is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
                 $config['fields']['get' . $ucFirstClassName . 'Filter'] = $defFilter;
             }
             $config['fields']['get' . $ucFirstClassName] = $defGet;
