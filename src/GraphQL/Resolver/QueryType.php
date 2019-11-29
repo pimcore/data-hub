@@ -446,6 +446,7 @@ class QueryType
 
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition*/
         $currentFilters = [];
+        $facets = [];
         $filterDefinition = false;
         // Set default settings using a FilterDefinition if id is provided.
         if (!empty($args['filterDefinition']) && ($filterDefinition = AbstractObject::getById($args['filterDefinition']))) {
@@ -468,7 +469,31 @@ class QueryType
             }
             $resultList->setOrderKey($orderByList);
             $resultList->setOrder('ASC');
-            $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $args);
+            $filterValues = [];
+            if (!empty($args['facets'])) {
+                foreach ($args['facets'] as  $facet) {
+                    $filterValues[$facet['field']] = $facet['values'];
+                }
+            }
+            if ($filters = $filterDefinition->getFilters()) {
+                foreach ($filters as $k => $filter) {
+                    // Check if this filter can handle multiple values and if
+                    // not use the first values entry.
+                    $filterType = $filterService->getFilterType($filter->getType());
+                    $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
+                    if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
+                        $filterValues[$field] = current($filterValues[$field]);
+                    }
+
+                    $facets[$k] = [
+                        'filter' => $filter,
+                        'filterService' => $filterService,
+                        'resultList' => $resultList,
+                    ];
+                }
+            }
+
+            $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
         }
         // paging
         if (isset($args['first'])) {
@@ -562,20 +587,6 @@ class QueryType
                 'cursor' => 'object-' . $object->getId(),
                 'node' => $data,
             ];
-        }
-
-        // Add filters.
-        $facets = [];
-        if ($filterDefinition) {
-            if ($filters = $filterDefinition->getFilters()) {
-                foreach ($filters as $k => $filter) {
-                    $facets[$k] = [
-                        'filter' => $filter,
-                        'filterService' => $filterService,
-                        'resultList' => $resultList,
-                    ];
-                }
-            }
         }
 
         $connection = [];

@@ -44,4 +44,23 @@ class HijackAbstractFilterType extends AbstractFilterType {
     public static function getFieldFromFilter(AbstractFilterType $filter, AbstractFilterDefinitionType $filterDefinition) {
         return $filter->getField($filterDefinition);
     }
+
+    /**
+     * Returns if the filter accepts multiple values.
+     *
+     * @FIXME There's currently no sane way to determine if a Filter accepts
+     * multiple values. Needs to be changed in the Filter-API.
+     *
+     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\FilterService\FilterType\AbstractFilterType $filter
+     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinitionType $filterDefinition
+     */
+    public static function isMultiValueFilter(AbstractFilterType $filter, AbstractFilterDefinitionType $filterDefinition) {
+        // Speculate that there will be an API for this.
+        if (method_exists($filter, 'acceptsMultipleValues')) {
+            return $filter->acceptsMultipleValues();
+        }
+        // For now the core filters seem to have the string "Multi" in the class
+        // name whenever multiple values are accepted.
+        return strpos(get_class($filter), 'Multi') !== FALSE;
+    }
 }

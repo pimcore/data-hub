@@ -15,8 +15,11 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
 
+use GraphQL\Type\Definition\InputObjectField;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
@@ -186,6 +189,37 @@ class QueryType extends ObjectType
     }
 
     /**
+     * @param ClassDefinition $class
+     * @param array $context
+     *
+     * @return \GraphQL\Type\Definition\ObjectType
+     * @throws \Exception
+     */
+    protected function getEdgeTypeDefinition(ClassDefinition $class, array $context): ObjectType
+    {
+        static $instances = [];
+        $configuration = $context['configuration'];
+        $resolver = $this->getResolver($class, $configuration);
+        $ucFirstClassName = ucfirst($class->getName());
+
+        if (!isset($instances[$ucFirstClassName])) {
+            $instances[$ucFirstClassName] = new ObjectType(
+                [
+                    'name' => $ucFirstClassName . 'Edge',
+                    'fields' => [
+                        'cursor' => Type::string(),
+                        'node' => [
+                            'type' => ClassTypeDefinitions::get($class),
+                            'resolve' => [$resolver, "resolveEdge"]
+                        ],
+                    ],
+                ]
+            );
+        }
+        return $instances[$ucFirstClassName];
+    }
+
+    /**
      * @param array &$config
      * @param array $context
      * @throws \Exception
@@ -218,18 +252,7 @@ class QueryType extends ObjectType
             ];
 
             // LISTING DEFINITION
-            $edgeType = new ObjectType(
-                [
-                    'name' => $ucFirstClassName . 'Edge',
-                    'fields' => [
-                        'cursor' => Type::string(),
-                        'node' => [
-                            'type' => ClassTypeDefinitions::get($class),
-                            'resolve' => [$resolver, "resolveEdge"]
-                        ],
-                    ],
-                ]
-            );
+            $edgeType = $this->getEdgeTypeDefinition($class, $context);
 
             $listingType = new ObjectType(
                 [
@@ -267,6 +290,42 @@ class QueryType extends ObjectType
                 'type' => $listingType,
                 'resolve' => [$resolver, "resolveListing"],
             ];
+
+            if (!$config['fields']) {
+                $config['fields'] = [];
+            }
+
+            $config['fields']['get' . $ucFirstClassName . 'Listing'] = $defListing;
+            $config['fields']['get' . $ucFirstClassName] = $defGet;
+        }
+    }
+
+    /**
+     * @param array &$config
+     * @param array $context
+     * @throws \Exception
+     */
+    public function buildFilterQueries(&$config = [], $context = []): void
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getQueryEntities();
+
+        foreach ($entities as $entity) {
+            $class = ClassDefinition::getByName($entity);
+            if (!$class) {
+                Logger::error("class " . $entity . " not found");
+                continue;
+            }
+            if (!is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
+                Logger::info("class " . $entity . " is not filterable.");
+                continue;
+            }
+
+            $resolver = $this->getResolver($class, $configuration);
+            $ucFirstClassName = ucfirst($class->getName());
+
+            $edgeType = $this->getEdgeTypeDefinition($class, $context);
 
             $filterFacetType = new ObjectType(
                 [
@@ -316,7 +375,6 @@ class QueryType extends ObjectType
                 ]
             );
 
-            // @TODO Create response format to provide facets.
             $defFilter = [
                 'name' => 'get' . $ucFirstClassName . 'Filter',
                 'args' => [
@@ -353,6 +411,22 @@ class QueryType extends ObjectType
                     ],
                     'priceFrom' => ['type' => Type::float()],
                     'priceTo' => ['type' => Type::float()],
+                    'facets' => [
+                        'type' => Type::listOf(new InputObjectType([
+                            'name' => 'filterFacetArg',
+                            'fields' => [
+                                'field' => ['type' => Type::string()],
+                                'values' => ['type' => Type::listOf(Type::string())],
+                                // @TODO Figure out if there's a way to use UnionType as InputObjectType.
+//                                'values' => [
+//                                    'type' => new UnionType([
+//                                        'name' => 'filterFacetArgValues',
+//                                        'types' => [Type::listOf(Type::string()), Type::string()]
+//                                    ])
+//                                ],
+                            ],
+                        ])),
+                    ],
                 ],
                 'type' => $filterType,
                 'resolve' => [$resolver, "resolveFilter"],
@@ -361,13 +435,7 @@ class QueryType extends ObjectType
             if (!$config['fields']) {
                 $config['fields'] = [];
             }
-
-            $config['fields']['get' . $ucFirstClassName . 'Listing'] = $defListing;
-            // Add filter support if this is an indexable class.
-            if (is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
-                $config['fields']['get' . $ucFirstClassName . 'Filter'] = $defFilter;
-            }
-            $config['fields']['get' . $ucFirstClassName] = $defGet;
+            $config['fields']['get' . $ucFirstClassName . 'Filter'] = $defFilter;
         }
     }
 
@@ -389,6 +457,9 @@ class QueryType extends ObjectType
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
+        if (interface_exists('\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface')) {
+            $this->buildFilterQueries($config, $context);
+        }
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
