@@ -43,7 +43,7 @@ class RelationsType extends ObjectType
                 [
                     'name' => 'document_tagRelations',
                     'fields' => [
-                        '__tagType' => [
+                        '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
@@ -51,7 +51,7 @@ class RelationsType extends ObjectType
                                 }
                             }
                         ],
-                        '__tagName' => [
+                        '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {

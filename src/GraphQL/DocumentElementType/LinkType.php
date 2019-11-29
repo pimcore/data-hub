@@ -34,7 +34,7 @@ class LinkType extends ObjectType
                 [
                     'name' => 'document_tagLink',
                     'fields' => [
-                        '__tagType' => [
+                        '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -42,7 +42,7 @@ class LinkType extends ObjectType
                                 }
                             }
                         ],
-                        '__tagName' => [
+                        '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {

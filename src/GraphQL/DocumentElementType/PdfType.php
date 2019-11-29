@@ -42,7 +42,7 @@ class PdfType extends ObjectType
                 [
                     'name' => "document_tagPdf",
                     'fields' => [
-                        '__tagName' => [
+                        '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -50,7 +50,7 @@ class PdfType extends ObjectType
                                 }
                             }
                         ],
-                        '__tagType' => [
+                        '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {

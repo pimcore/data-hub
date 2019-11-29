@@ -33,7 +33,7 @@ class SimpleTextType extends ObjectType
         return [
             'name' => $name,
             'fields' => [
-                '__tagName' => [
+                '_tagName' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value) {
@@ -41,7 +41,7 @@ class SimpleTextType extends ObjectType
                         }
                     }
                 ],
-                '__tagType' => [
+                '_tagType' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value) {

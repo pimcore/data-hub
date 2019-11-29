@@ -31,7 +31,7 @@ class CheckboxType extends ObjectType
                 [
                     'name' => "document_tagCheckbox",
                     'fields' => [
-                        '__tagName' => [
+                        '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
@@ -39,7 +39,7 @@ class CheckboxType extends ObjectType
                                 }
                             }
                         ],
-                        '__tagType' => [
+                        '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
