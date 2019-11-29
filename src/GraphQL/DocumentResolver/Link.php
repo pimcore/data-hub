@@ -70,6 +70,10 @@ class Link
     public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
 
+        if ($value instanceof Document\Tag\Link) {
+            $value = $value->getData();
+        }
+
         if (is_array($value)) {
             $internal = $value["internal"];
             if ($internal) {
