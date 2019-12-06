@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\ObjectMetadata;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
 class ObjectMetadataType extends ObjectType
 {
@@ -45,7 +46,13 @@ class ObjectMetadataType extends ObjectType
         $this->setGraphQLService($graphQlService);
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
-        $config['name'] = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+        if ($class instanceof Definition) {
+            $config['name'] = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
+        } else if ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
+            $config['name'] = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
+        } else {
+            $config['name'] = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+        }
         $this->build($config);
         parent::__construct($config);
     }
