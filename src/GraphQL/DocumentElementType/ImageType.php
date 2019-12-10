@@ -49,7 +49,7 @@ class ImageType extends ObjectType
                 [
                     'name' => 'document_tagImage',
                     'fields' => [
-                        '__tagType' => [
+                        '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
@@ -57,7 +57,7 @@ class ImageType extends ObjectType
                                 }
                             }
                         ],
-                        '__tagName' => [
+                        '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
