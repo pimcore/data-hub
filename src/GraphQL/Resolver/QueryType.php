@@ -532,34 +532,43 @@ class QueryType
         $configuration = $context['configuration'];
         // @TODO Implement SQL Conditions in a generic way - we need to support
         // ElasticSearch.
-//        $sqlListCondition = $configuration->getSqlObjectCondition();
-//
-//        if ($sqlListCondition) {
-//            $conditionParts[] = '(' . $sqlListCondition . ')';
-//        }
-
         //@TODO Implement workspace limitation in a generic way.
-//        // check permissions
-//        $db = Db::get();
-//        $conditionParts[] = ' (
-//                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-//                                                    OR
-//                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-//                                                 )';
-//
-//        if (isset($args['filter'])) {
-//            $filter = json_decode($args['filter'], false);
-//            if (!$filter) {
-//                throw new \Exception('unable to decode filter');
-//            }
-//            $filterCondition = \Pimcore\Bundle\AdminBundle\Controller\Rest\Helper::buildSqlCondition($filter);
-//            $conditionParts[] = $filterCondition;
-//        }
-//
-//        if ($conditionParts) {
-//            $condition = implode(' AND ', $conditionParts);
-//            $resultList->setCondition($condition);
-//        }
+
+        $db = Db::get();
+        if ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\DefaultMysql) {
+            // Add SQL-Conditions.
+            if ($sqlListCondition = $configuration->getSqlObjectCondition()) {
+                $conditionParts[] = '(' . $sqlListCondition . ')';
+            }
+            // check permissions
+            $conditionParts[] = ' (
+                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)
+                                    UNION
+                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)
+                                 )';
+            if ($conditionParts) {
+                $condition = implode(' AND ', $conditionParts);
+                $resultList->addCondition($condition);
+            }
+        } elseif ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch) {
+            /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch $resultList */
+
+            // @FIXME How can we convert that to DSL?
+            // We might can use something like this:
+            // https://www.elastic.co/guide/en/elasticsearch/reference/6.8/sql-spec.html
+            // https://github.com/elastic/elasticsearch/tree/master/x-pack/plugin/sql
+            // https://github.com/opendistro-for-elasticsearch/sql
+            // $sqlListCondition = $configuration->getSqlObjectCondition();
+
+            // Fetch readablePaths to implement a access filter.
+            $readablePaths = $db->fetchCol('select `cpath` from plugin_datahub_workspaces_object where configuration = ? AND `read`=1 ORDER BY LENGTH(cpath)', [$configuration->getName()]);
+            // @FIXME path is not part of the system parameters indexed - see
+            // \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\Worker\ElasticSearch\AbstractElasticSearch::getSystemAttributes()
+            // We could hook into the indexing and add it automagically but that
+            // seems intrusive.
+            // $resultList->addCondition(['terms' => ['system.path' => $readablePaths]]);
+        }
+
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractCategory $category */
         if (!empty($args['category']) && ($category = AbstractObject::getById($args['category']))) {
             $resultList->setCategory($category);
