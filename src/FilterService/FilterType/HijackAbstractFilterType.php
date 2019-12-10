@@ -35,7 +35,7 @@ class HijackAbstractFilterType extends AbstractFilterType {
     }
 
     /**
-     * Allows to access the procteded getField method of a filter.
+     * Allows to access the protected getField method of a filter.
      *
      * @param \Pimcore\Bundle\EcommerceFrameworkBundle\FilterService\FilterType\AbstractFilterType $filter
      * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinitionType $filterDefinition
@@ -53,6 +53,7 @@ class HijackAbstractFilterType extends AbstractFilterType {
      *
      * @param \Pimcore\Bundle\EcommerceFrameworkBundle\FilterService\FilterType\AbstractFilterType $filter
      * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinitionType $filterDefinition
+     * @return bool
      */
     public static function isMultiValueFilter(AbstractFilterType $filter, AbstractFilterDefinitionType $filterDefinition) {
         // Speculate that there will be an API for this.
