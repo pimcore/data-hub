@@ -96,7 +96,24 @@ class PimcoreObjectType extends ObjectType
                     ]
                 ],
                 'resolve' => [$resolver, "resolveProperties"]
-            ]
+            ],
+            'parentId' => [
+                'type' => Type::int(),
+            ],
+            'childrenIds' => [
+                'type' => Type::listOf(Type::int()),
+                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                    $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
+
+                    if ($obj instanceof \Pimcore\Model\DataObject\AbstractObject) {
+                        return array_map(function($child) {
+                            return $child->getId();
+                        }, $obj->getChildren());
+                    }
+
+                    return null;
+                }
+            ],
         ];
 
         if ($context['clientname']) {
