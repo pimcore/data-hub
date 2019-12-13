@@ -100,7 +100,7 @@ class PimcoreObjectType extends ObjectType
             'parentId' => [
                 'type' => Type::int(),
             ],
-            'childrenIds' => [
+            'childIds' => [
                 'type' => Type::listOf(Type::int()),
                 'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
                     $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
