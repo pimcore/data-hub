@@ -31,6 +31,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 
 class PimcoreObjectType extends ObjectType
 {
@@ -78,6 +79,7 @@ class PimcoreObjectType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object');
 
+        $fieldHelper = $this->getGraphQLService()->getObjectFieldHelper();
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
         $fields = ['id' =>
@@ -97,21 +99,56 @@ class PimcoreObjectType extends ObjectType
                 ],
                 'resolve' => [$resolver, "resolveProperties"]
             ],
-            'parentId' => [
-                'type' => Type::int(),
-            ],
-            'childIds' => [
-                'type' => Type::listOf(Type::int()),
-                'resolve' => function($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
-                    $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
-
-                    if ($obj instanceof \Pimcore\Model\DataObject\AbstractObject) {
-                        return array_map(function($child) {
-                            return $child->getId();
-                        }, $obj->getChildren());
+            'parent' => [
+                'type' => $this,
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldHelper) {
+                    if ($value instanceof ElementDescriptor) {
+                        $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
+                        $parent = $obj->getParent();
+                        if($parent) {
+                            $data = new ElementDescriptor($parent);
+                            $fieldHelper->extractData($data, $parent, $args, $context, $resolveInfo);
+                            return $data;
+                        }
                     }
+                }
+            ],
+            'children' => [
+                'type' => Type::listOf($this),
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldHelper) {
+                    if ($value instanceof ElementDescriptor) {
+                        $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
+                        $children = $obj->getChildren();
+                        if ($children) {
+                            $result = [];
+                            foreach ($children as $child) {
+                                $data = new ElementDescriptor($child);
+                                $fieldHelper->extractData($data, $child, $args, $context, $resolveInfo);
+                                $result[] = $data;
 
-                    return null;
+                            }
+                            return $result;
+                        }
+                    }
+                }
+            ],
+            'siblings' => [
+                'type' => Type::listOf($this),
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldHelper) {
+                    if ($value instanceof ElementDescriptor) {
+                        $obj = \Pimcore\Model\DataObject\AbstractObject::getById($value['id']);
+                        $siblings = $obj->getSiblings();
+                        if ($siblings) {
+                            $result = [];
+                            foreach ($siblings as $sibling) {
+                                $data = new ElementDescriptor($sibling);
+                                $fieldHelper->extractData($data, $sibling, $args, $context, $resolveInfo);
+                                $result[] = $data;
+
+                            }
+                            return $result;
+                        }
+                    }
                 }
             ],
         ];
