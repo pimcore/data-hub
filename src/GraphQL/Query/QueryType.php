@@ -329,17 +329,17 @@ class QueryType extends ObjectType
 
             $filterFacetType = new ObjectType(
                 [
-                    'name' => 'filterFacets',
+                    'name' => $ucFirstClassName . 'FilterFacets',
                     'fields' => [
                         'facet' => [
                             'type' => new ObjectType([
-                                'name' => 'filterFacet',
+                                'name' => $ucFirstClassName . 'FilterFacet',
                                 'fields' => [
                                     'field' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
                                     'options' => [
                                         'type' => Type::listOf(new ObjectType([
-                                            'name' => 'filterFacetOption',
+                                            'name' => $ucFirstClassName . 'FilterFacetOption',
                                             'fields' => [
                                                 'value' => ['type' => Type::string()],
                                                 'label' => ['type' => Type::string()],
@@ -413,14 +413,14 @@ class QueryType extends ObjectType
                     'priceTo' => ['type' => Type::float()],
                     'facets' => [
                         'type' => Type::listOf(new InputObjectType([
-                            'name' => 'filterFacetArg',
+                            'name' => $ucFirstClassName . 'FilterFacetArg',
                             'fields' => [
                                 'field' => ['type' => Type::string()],
                                 'values' => ['type' => Type::listOf(Type::string())],
                                 // @TODO Figure out if there's a way to use UnionType as InputObjectType.
 //                                'values' => [
 //                                    'type' => new UnionType([
-//                                        'name' => 'filterFacetArgValues',
+//                                        'name' => $ucFirstClassName . 'filterFacetArgValues',
 //                                        'types' => [Type::listOf(Type::string()), Type::string()]
 //                                    ])
 //                                ],
