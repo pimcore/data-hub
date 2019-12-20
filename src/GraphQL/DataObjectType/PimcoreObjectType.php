@@ -77,7 +77,7 @@ class PimcoreObjectType extends ObjectType
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object');
-        $pimcoreObjectResovler = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\PimcoreObject($this->getGraphQLService()->getObjectFieldHelper());
+        $pimcoreObjectResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\PimcoreObject($this->getGraphQLService()->getObjectFieldHelper());
 
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
@@ -93,22 +93,34 @@ class PimcoreObjectType extends ObjectType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
+                        'description' => 'comma separated list of key names'
                     ]
                 ],
                 'resolve' => [$resolver, "resolveProperties"]
             ],
             'parent' => [
                 'type' => $this,
-                'resolve' => [$pimcoreObjectResovler, "resolveParent"],
+                'resolve' => [$pimcoreObjectResolver, "resolveParent"],
             ],
             'children' => [
                 'type' => Type::listOf($this),
-                'resolve' => [$pimcoreObjectResovler, "resolveChildren"],
+                'args' => [
+                    'objectTypes' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'list of object types (object, variant, folder)'
+                    ],
+                ],
+                'resolve' => [$pimcoreObjectResolver, "resolveChildren"],
             ],
             'siblings' => [
                 'type' => Type::listOf($this),
-                'resolve' => [$pimcoreObjectResovler, "resolveSiblings"],
+                'args' => [
+                    'objectTypes' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'list of object types (object, variant, folder)'
+                    ],
+                ],
+                'resolve' => [$pimcoreObjectResolver, "resolveSiblings"],
             ],
         ];
 

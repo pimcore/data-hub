@@ -67,7 +67,11 @@ class PimcoreObject
     {
         $obj = $this->getObjectFromValue($value);
         if ($obj) {
-            return $this->extractMultipleObjects($obj->getChildren(), $args, $context, $resolveInfo);
+            $objectTypes = [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
+            if (isset($args['objectTypes'])) {
+                $objectTypes = $args['objectTypes'];
+            }
+            return $this->extractMultipleObjects($obj->getChildren($objectTypes), $args, $context, $resolveInfo);
         }
         return [];
     }
@@ -83,7 +87,11 @@ class PimcoreObject
     {
         $obj = $this->getObjectFromValue($value);
         if ($obj) {
-            return $this->extractMultipleObjects($obj->getSiblings(), $args, $context, $resolveInfo);
+            $objectTypes = [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
+            if (isset($args['objectTypes'])) {
+                $objectTypes = $args['objectTypes'];
+            }
+            return $this->extractMultipleObjects($obj->getSiblings($objectTypes), $args, $context, $resolveInfo);
         }
         return [];
     }
@@ -92,7 +100,8 @@ class PimcoreObject
      * @param $value
      * @return AbstractObject|null
      */
-    protected function getObjectFromValue($value) {
+    protected function getObjectFromValue($value)
+    {
         if ($value instanceof ElementDescriptor) {
             $obj = AbstractObject::getById($value['id']);
             return $obj;
