@@ -20,6 +20,8 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 
 
 class PimcoreObject
@@ -124,7 +126,7 @@ class PimcoreObject
                 $result[] = $this->extractSingleObject($object, $args, $context, $resolveInfo);
             }
         }
-        return $result;
+        return in_array(null, $result) ? [] : $result;
     }
 
     /**
@@ -136,6 +138,13 @@ class PimcoreObject
      */
     protected function extractSingleObject($object, $args, $context, $resolveInfo)
     {
+        if (!WorkspaceHelper::isAllowed($object, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view ' . $object->getFullPath());
+            } else {
+                return null;
+            }
+        }
         $data = new ElementDescriptor($object);
         $this->fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         return $data;
