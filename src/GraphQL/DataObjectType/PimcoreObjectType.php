@@ -76,8 +76,7 @@ class PimcoreObjectType extends ObjectType
     public function build($context = [])
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object');
-        $pimcoreObjectResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\PimcoreObject($this->getGraphQLService()->getObjectFieldHelper());
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object', $this->getGraphQLService());
 
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
@@ -100,7 +99,7 @@ class PimcoreObjectType extends ObjectType
             ],
             'parent' => [
                 'type' => $this,
-                'resolve' => [$pimcoreObjectResolver, "resolveParent"],
+                'resolve' => [$resolver, "resolveParent"],
             ],
             'children' => [
                 'type' => Type::listOf($this),
@@ -110,7 +109,7 @@ class PimcoreObjectType extends ObjectType
                         'description' => 'list of object types (object, variant, folder)'
                     ],
                 ],
-                'resolve' => [$pimcoreObjectResolver, "resolveChildren"],
+                'resolve' => [$resolver, "resolveChildren"],
             ],
             'siblings' => [
                 'type' => Type::listOf($this),
@@ -120,7 +119,7 @@ class PimcoreObjectType extends ObjectType
                         'description' => 'list of object types (object, variant, folder)'
                     ],
                 ],
-                'resolve' => [$pimcoreObjectResolver, "resolveSiblings"],
+                'resolve' => [$resolver, "resolveSiblings"],
             ],
         ];
 

@@ -58,7 +58,7 @@ class AssetType extends ObjectType
         $assetMetadataItemType = $service->buildAssetType("asset_metadataitem");
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset');
+        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService());
 
         $config['fields'] = [
             'creationDate' => Type::int(),
@@ -124,7 +124,7 @@ class AssetType extends ObjectType
                         }
                         if ($image instanceof Asset\Image || $image instanceof Asset\Video) {
                             if (isset($args["thumbnail"])) {
-                                $thumb = $image->getThumbnail($args['thumbnail'], false);                                
+                                $thumb = $image->getThumbnail($args['thumbnail'], false);
                                 return base64_encode(file_get_contents($thumb->getFileSystemPath()));
                             } else {
                                 return base64_encode(file_get_contents($image->getFileSystemPath()));
@@ -156,7 +156,19 @@ class AssetType extends ObjectType
                     ]
                 ],
                 'resolve' => [$elementResolver, "resolveProperties"]
-            ]
+            ],
+            'parent' => [
+                'type' => $this,
+                'resolve' => [$elementResolver, "resolveParent"],
+            ],
+            'children' => [
+                'type' => Type::listOf($this),
+                'resolve' => [$elementResolver, "resolveChildren"],
+            ],
+            'siblings' => [
+                'type' => Type::listOf($this),
+                'resolve' => [$elementResolver, "resolveSiblings"],
+            ],
         ];
     }
 
