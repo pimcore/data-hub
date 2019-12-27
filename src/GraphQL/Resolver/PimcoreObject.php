@@ -45,6 +45,7 @@ class PimcoreObject
      * @param $context
      * @param ResolveInfo|null $resolveInfo
      * @return ElementDescriptor
+     * @throws \Exception
      */
     public function resolveParent($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -64,6 +65,7 @@ class PimcoreObject
      * @param $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
+     * @throws \Exception
      */
     public function resolveChildren($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -84,6 +86,7 @@ class PimcoreObject
      * @param $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
+     * @throws \Exception
      */
     public function resolveSiblings($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -101,6 +104,7 @@ class PimcoreObject
     /**
      * @param $value
      * @return AbstractObject|null
+     * @throws \Exception
      */
     protected function getObjectFromValue($value)
     {
@@ -117,6 +121,7 @@ class PimcoreObject
      * @param $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
+     * @throws \Exception
      */
     protected function extractMultipleObjects($objects, $args, $context, $resolveInfo)
     {
@@ -126,7 +131,7 @@ class PimcoreObject
                 $result[] = $this->extractSingleObject($object, $args, $context, $resolveInfo);
             }
         }
-        return in_array(null, $result) ? [] : $result;
+        return array_filter($result);
     }
 
     /**
@@ -135,6 +140,7 @@ class PimcoreObject
      * @param $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
+     * @throws \Exception
      */
     protected function extractSingleObject($object, $args, $context, $resolveInfo)
     {
