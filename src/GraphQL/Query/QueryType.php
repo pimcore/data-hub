@@ -86,7 +86,7 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities[$type . "_folder"]["read"]) {
+        if (isset($entities[$type . "_folder"]["read"]) && $entities[$type . "_folder"]["read"]) {
             $resolver = $this->getResolver();
 
             if ($type == "asset") {
@@ -154,7 +154,7 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities["document"]["read"]) {
+        if (isset($entities["document"]["read"]) && $entities["document"]["read"]) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION

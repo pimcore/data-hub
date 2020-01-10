@@ -15,7 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 
 class ElementDescriptor extends BaseDescriptor
@@ -29,22 +31,22 @@ class ElementDescriptor extends BaseDescriptor
     {
         parent::__construct();
         if ($element) {
-            $this->id = $element->getId();
-            $this->__elementType = \Pimcore\Model\Element\Service::getElementType($element);
-            $this->__elementSubtype = $element instanceof Concrete ? $element->getClass()->getName() : $element->getType();
+            $this->offsetSet("id", $element->getId());
+            $this->offsetSet("__elementType", \Pimcore\Model\Element\Service::getElementType($element));
+            $this->offsetSet("__elementSubtype",  $element instanceof Concrete ? $element->getClass()->getName() : $element->getType());
 
 
             if ($element instanceof Concrete) {
                 $subtype = $element->getClass()->getName();
 
-                $this->__elementType = "object";
-                $this->__elementSubtype = $subtype;
+                $this->offsetSet("__elementType", "object");
+                $this->offsetSet("__elementSubtype", $subtype);
             } elseif ($element instanceof Asset) {
-                $this->__elementType = "asset";
-                $this->__elementSubtype = $element->getType();
+                $this->offsetSet("__elementType", "asset");
+                $this->offsetSet("__elementSubtype", $element->getType());
             } else if ($element instanceof Document) {
-                $this->__elementType = "document";
-                $this->__elementSubtype = $element->getType();
+                $this->offsetSet("__elementType","document");
+                $this->offsetSet("__elementSubtype", $element->getType());
             }
         }
     }

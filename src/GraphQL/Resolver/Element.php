@@ -45,6 +45,8 @@ class Element
     public function resolveProperties($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
+        $element = null;
+
         switch ($this->elementType) {
             case 'asset':
                 $element = Asset::getById($elementId);

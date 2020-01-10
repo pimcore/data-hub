@@ -252,7 +252,7 @@ class Configuration extends AbstractModel
      */
     public function getQueryEntityConfig($entityName)
     {
-        return $this->configuration['schema']['queryEntities'][$entityName];
+        return isset($this->configuration['schema']['queryEntities'][$entityName]) ? $this->configuration['schema']['queryEntities'][$entityName] : null;
     }
 
     /**
@@ -272,7 +272,8 @@ class Configuration extends AbstractModel
      */
     public function getQueryColumnConfig($entityName)
     {
-        return $this->getQueryEntityConfig($entityName)['columnConfig'];
+        $config = $this->getQueryEntityConfig($entityName);
+        return $config['columnConfig'] ?? null;
     }
 
     /**

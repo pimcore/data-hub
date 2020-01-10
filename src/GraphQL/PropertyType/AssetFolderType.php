@@ -66,6 +66,7 @@ class AssetFolderType extends ObjectType
                 'asset' => [
                     'type' => $assetFolderType,
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                        $element = null;
                         if ($value instanceof MarkerHotspotItem) {
                             $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
                         } else if ($value instanceof Property) {

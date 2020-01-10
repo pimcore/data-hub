@@ -70,9 +70,11 @@ class QueryType
      */
     public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
+
+        $element = null;
 
         if ($elementType == "asset") {
             $element = Asset\Folder::getById($args['id']);
@@ -149,9 +151,11 @@ class QueryType
      */
     public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
+
+        $documentElement = null;
 
         if (isset($args['id'])) {
             $documentElement = Document::getById($args['id']);
@@ -189,7 +193,7 @@ class QueryType
      */
     public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -227,7 +231,7 @@ class QueryType
             return null;
         }
 
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -318,7 +322,7 @@ class QueryType
      */
     public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -387,6 +391,8 @@ class QueryType
 
         $totalCount = $objectList->getTotalCount();
         $objectList = $objectList->load();
+
+        $nodes = [];
 
         foreach ($objectList as $object) {
             $data = [];

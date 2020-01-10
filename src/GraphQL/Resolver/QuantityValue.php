@@ -70,6 +70,8 @@ class QuantityValue
         $returnValue = null;
 
         if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+            $currentLocale = null;
+            $localService = null;
             if (isset($args['language'])) {
                 $localService = $this->getGraphQlService()->getLocaleService();
                 $currentLocale = $localService->getLocale();

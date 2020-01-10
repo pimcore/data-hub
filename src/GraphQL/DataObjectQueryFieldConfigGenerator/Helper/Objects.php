@@ -71,6 +71,7 @@ class Objects
 
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
+            $result = [];
             /** @var $relation AbstractElement */
             foreach ($relations as $relation) {
                 if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {

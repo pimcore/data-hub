@@ -23,7 +23,7 @@ class FieldcollectionDescriptor extends BaseDescriptor
      */
     public function __construct()
     {
-        parent::__construct([], self::STD_PROP_LIST| self::ARRAY_AS_PROPS);
+        parent::__construct();
     }
 
 }

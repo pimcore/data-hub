@@ -110,6 +110,7 @@ class HotspotType
      */
     public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        /** @var array $metadata */
         $metadata = is_array($value) ? $value['data'] : [];
         if (isset($args['keys'])) {
             /** @var MarkerHotspotItem $item */
