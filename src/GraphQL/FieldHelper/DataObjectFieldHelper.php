@@ -153,6 +153,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             // classification store ...
         } elseif (count($parts) > 1) {
             $brickType = $parts[0];
+            $brickDescriptor = null;
 
             if (strpos($brickType, '?') !== false) {
                 $brickDescriptor = substr($brickType, 1);
@@ -331,7 +332,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
-            $fieldDefinition = $this->getQueryFieldDefinitionFromKey($class, $key);
+            $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);
             /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
             $type = $this->getGraphQlService()->buildDataObjectDataQueryType($fieldDefinition, $class, $container);
         }
@@ -384,7 +385,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                     $container,
                     $getter
                 ) {
-                    return $container->$getter($args['language']);
+                    return $container->$getter($args['language'] ?? null);
                 };
             } else {
                 $data[$astName] = $container->$getter();

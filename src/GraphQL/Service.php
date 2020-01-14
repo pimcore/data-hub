@@ -52,7 +52,7 @@ class Service
     /**
      * @var ContainerInterface
      */
-    protected $queryOperatorFactories;
+    protected $dataObjectQueryOperatorFactories;
 
     /**
      * @var ContainerInterface
@@ -128,6 +128,11 @@ class Service
      * @var Factory
      */
     protected $modelFactory;
+
+    /**
+     * @var array
+     */
+    protected $generalTypes = [];
 
     /**
      * @var array
@@ -475,7 +480,7 @@ class Service
 
 
     /**
-     * @param $generalTypes
+     * @param array $generalTypes
      */
     public function setSupportedGeneralTypes($generalTypes)
     {
@@ -783,6 +788,7 @@ class Service
     public static function setValue($object, /* Data $fieldDefinition, */ $attribute, $callback)
     {
 
+        $result = null;
         $setter = $attribute ? 'set' . ucfirst($attribute) : $attribute;
 
         if (!$object) {
@@ -802,6 +808,7 @@ class Service
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
             $context = ["object" => $object];
+            $brickDescriptor = null;
 
             // brick
             $brickType = $attributeParts[0];
@@ -900,7 +907,7 @@ class Service
                 $items = $fcData->getItems();
                 $idx = $descriptorData["__itemIdx"];
                 $itemData = $items[$idx];
-                if (isset($args) && isset($args["language"])) {
+                if (is_array($args) && isset($args["language"])) {
                     $result = $itemData->$getter($args["language"]);
                 } else {
                     $result = $itemData->$getter();
@@ -912,6 +919,7 @@ class Service
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
             $context = ["object" => $object];
+            $brickDescriptor = null;
 
             // brick
             $brickType = $attributeParts[0];
@@ -964,9 +972,9 @@ class Service
     /**
      * @param ContainerInterface $mutationTypeGeneratorFactories
      */
-    public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $mutationTypeGeneratorFactories): void
+    public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $dataObjectMutationTypeGeneratorFactories): void
     {
-        $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
+        $this->dataObjectMutationTypeGeneratorFactories = $dataObjectMutationTypeGeneratorFactories;
     }
 
     /**
@@ -1001,6 +1009,7 @@ class Service
      * @param ResolveInfo|null $resolveInfo
      */
     public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+        $fieldHelper = null;
         if ($target instanceof Document) {
             $fieldHelper = $this->getDocumentFieldHelper();
         } else if ($target instanceof Asset) {

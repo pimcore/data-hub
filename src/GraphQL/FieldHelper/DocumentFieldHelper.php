@@ -54,7 +54,7 @@ class DocumentFieldHelper extends AbstractFieldHelper
                         $container,
                         $getter
                     ) {
-                        return $container->$getter($args['language']);
+                        return $container->$getter($args['language'] ?? null);
                     };
                 } else {
                     $data[$realName] = $container->$getter($languageArgument);

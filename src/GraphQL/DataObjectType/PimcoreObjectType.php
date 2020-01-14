@@ -104,7 +104,8 @@ class PimcoreObjectType extends ObjectType
             /** @var $configurationItem Configuration */
             $configurationItem = $context['configuration'];
 
-            $columns = $configurationItem->getQueryColumnConfig($this->className)['columns'];
+            $queryColumnConfig = $configurationItem->getQueryColumnConfig($this->className);
+            $columns = isset($queryColumnConfig['columns']) ? $queryColumnConfig['columns'] : [];
 
             if ($columns) {
                 $class = ClassDefinition::getById($this->classId);
@@ -225,29 +226,31 @@ class PimcoreObjectType extends ObjectType
                 "type" => Type::listOf($union),
                 "resolve" => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldname) {
                     if ($value[$fieldname] instanceof Fieldcollection) {
-                        $fcData = $value[$fieldname];
                         $lofItems = [];
+                        $fcData = $value[$fieldname];
 
                         $items = $fcData->getItems();
-                        if ($items)
+                        if ($items) {
                             /** @var  $item AbstractData */
                             $idx = -1;
 
-                        foreach ($items as $item) {
-                            $idx++;
-                            $data = new FieldcollectionDescriptor();
-                            $data["__fcType"] = $item->getType();
-                            $data["__fcFieldname"] = $fieldname;
-                            $data["__itemIdx"] = $idx;
+                            foreach ($items as $item) {
+                                $idx++;
+                                $data = new FieldcollectionDescriptor();
+                                $data["__fcType"] = $item->getType();
+                                $data["__fcFieldname"] = $fieldname;
+                                $data["__itemIdx"] = $idx;
 
 
-                            $data["id"] = $value["id"];
-                            $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                            $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
-                            $lofItems[] = $data;
+                                $data["id"] = $value["id"];
+                                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+                                $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
+                                $lofItems[] = $data;
+                            }
                         }
+                        return $lofItems;
                     }
-                    return $lofItems;
+                    return null;
                 }
 
             ];

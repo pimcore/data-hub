@@ -15,13 +15,14 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 interface TypeDefinitionInterface
 {
     /**
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      * @param $container
      *
      * @return mixed

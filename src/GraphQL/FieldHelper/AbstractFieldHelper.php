@@ -78,7 +78,7 @@ abstract class AbstractFieldHelper
                         $container,
                         $getter
                     ) {
-                        return $container->$getter($args['language']);
+                        return $container->$getter($args['language'] ?? null);
                     };
                 } else {
                     $data[$astName] = $container->$getter($languageArgument);
