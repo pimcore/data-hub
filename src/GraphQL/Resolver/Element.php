@@ -25,6 +25,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Document;
 use Pimcore\Model\Property;
 use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 
 
 class Element
