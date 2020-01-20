@@ -64,15 +64,14 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     public function enrichConfig($fieldDefinition, $class, $attribute, $grapQLConfig, $container = null)
     {
         if ($container instanceof Data\Localizedfields) {
-            $grapQLConfig['args'] = $grapQLConfig['args'] ?? [];
+            $grapQLConfig['args'] = isset($grapQLConfig['args']) ? $grapQLConfig['args'] : [];
             $grapQLConfig['args'] = array_merge($grapQLConfig['args'],
                 ['language' => ['type' => Type::string()]
             ]);
         }
 
         // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
-        $resolve = $grapQLConfig['resolve'] ?? null;
-        if (strpos($attribute, "~") !== FALSE && !$resolve) {
+        if (strpos($attribute, "~") !== FALSE && !isset($grapQLConfig['resolve'])) {
             $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
             $grapQLConfig['resolve'] = [$resolver, "resolve"];
         }
