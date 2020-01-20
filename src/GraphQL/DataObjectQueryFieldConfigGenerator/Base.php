@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInte
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefinitionInterface
@@ -81,7 +82,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
+     * @param null|ClassDefinition  $class
      * @param null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
@@ -92,9 +93,9 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      *
      * @return \Closure
      */

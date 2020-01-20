@@ -21,14 +21,15 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\AbstractElement;
 
-class Objects
+class ReverseManyToManyObjects
 {
     use ServiceTrait;
 
     /**
-     * @var
+     * @var Data\ReverseManyToManyObjectRelation
      */
     public $fieldDefinition;
 
@@ -69,29 +70,35 @@ class Objects
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
+        $objectId = $value["id"];
+        $object = Concrete::getById($objectId);
 
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
+        $relations = $object->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
         if ($relations) {
             $result = [];
             /** @var $relation AbstractElement */
-            foreach ($relations as $relation) {
-                if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {
-                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view ' . $relation->getFullPath());
-                    } else {
-                        continue;
+            foreach ($relations as $relationRaw) {
+                $relation = Concrete::getById($relationRaw['id']);
+                if ($relation) {
+                    if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {
+                        if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                            throw new \Exception('not allowed to view ' . $relation->getFullPath());
+                        } else {
+                            continue;
+                        }
                     }
-                }
 
-                $data = new ElementDescriptor($relation);
-                $this->getGraphQlService()->extractData($data, $relation, $args, $context, $resolveInfo);
-                $result[] = $data;
+                    $data = new ElementDescriptor($relation);
+                    $this->getGraphQlService()->extractData($data, $relation, $args, $context, $resolveInfo);
+                    $result[] = $data;
+                }
             }
 
             return $result;
         }
 
 
-        return null;
+
+        return $relations;
     }
 }
