@@ -90,8 +90,15 @@ class LinkDataType extends ObjectType
                                 return $value->getData() ? $value->getData()["path"] : null;
                             }
                         }
-                    ]
-                    ,
+                    ],
+                    'text' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["text"] : null;
+                            }
+                        }
+                    ],
                     'target' => [
                         'type' => $anyTargetType,
                         'resolve' => [new Link($this->getGraphQlService()), "resolveTarget"]
