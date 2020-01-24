@@ -38,6 +38,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Newsletter Confirmed
 * Numeric
 * Quantity Value
+* Reverse Many-to-Many Object Relation
 * RgbaColor
 * Select
 * Slider

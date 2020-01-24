@@ -76,11 +76,4 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         return null;
     }
 
-    /**
-     * @return Data
-     */
-    public function getFieldDefinition(): Data
-    {
-        return $this->fieldDefinition;
-    }
 }

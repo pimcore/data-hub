@@ -52,6 +52,8 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);
+        $name = null;
+
         if ($fieldDefinition && $class) {
             if ($class instanceof ClassDefinition) {
                 $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();

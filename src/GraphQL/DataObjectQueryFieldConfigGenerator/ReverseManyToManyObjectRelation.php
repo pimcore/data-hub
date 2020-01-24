@@ -16,16 +16,11 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-/**
- * Class Objects
- *
- * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
- */
-class Objects extends Base implements TypeDefinitionInterface
+class ReverseManyToManyObjectRelation extends Base
 {
     /**
      * @param $attribute
@@ -39,8 +34,8 @@ class Objects extends Base implements TypeDefinitionInterface
     {
         return $this->enrichConfig($fieldDefinition, $class, $attribute,
             [
-                'name'    => $fieldDefinition->getName(),
-                'type'    => $this->getFieldType($fieldDefinition, $class, $container),
+                'name' => $fieldDefinition->getName(),
+                'type' => $this->getFieldType($fieldDefinition, $class, $container),
                 'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
             ],
             $container
@@ -48,7 +43,7 @@ class Objects extends Base implements TypeDefinitionInterface
     }
 
     /**
-     * @param Data $fieldDefinition
+     * @param Data\ReverseManyToManyObjectRelation $fieldDefinition
      * @param null $class
      * @param null $container
      *
@@ -56,19 +51,21 @@ class Objects extends Base implements TypeDefinitionInterface
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(new HrefType($this->getGraphQlService(), $fieldDefinition, $class));
+        $className = $fieldDefinition->getOwnerClassName();
+        $type = Type::listOf(ClassTypeDefinitions::get($className));
+        return $type;
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      *
      * @return \Closure
      */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
-        $resolver = new Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\ReverseManyToManyObjects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+        return [$resolver, 'resolve'];
     }
 }

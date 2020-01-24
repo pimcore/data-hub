@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AbstractDocumentType extends ObjectType
+abstract class AbstractDocumentType extends ObjectType
 {
     use ServiceTrait;
 
@@ -37,6 +37,12 @@ class AbstractDocumentType extends ObjectType
         $this->build($config);
         parent::__construct($config);
     }
+
+    /**
+     * @param array $config
+     */
+    public abstract function build(&$config);
+
 
     /**
      * @param array $config
