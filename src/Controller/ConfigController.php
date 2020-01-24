@@ -343,7 +343,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $specialSettings = ["document", "document_folder", "asset", "asset_folder", "object_folder"];
         foreach ($specialSettings as $key) {
-            if (!$config['schema']['specialEntities'][$key]) {
+            if (!isset($config['schema']['specialEntities'][$key])) {
                 $config['schema']['specialEntities'][$key] = ["id" => $key];
             }
         }

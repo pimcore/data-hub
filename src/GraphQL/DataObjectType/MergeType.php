@@ -114,14 +114,6 @@ class MergeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return Data
-     */
-    public function getFieldDefinition(): Data
-    {
-        return $this->fieldDefinition;
-    }
-
-    /**
      * @param $childTypes
      * @param $result
      */

@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInte
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefinitionInterface
@@ -64,14 +65,14 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     public function enrichConfig($fieldDefinition, $class, $attribute, $grapQLConfig, $container = null)
     {
         if ($container instanceof Data\Localizedfields) {
-            $grapQLConfig['args'] = $grapQLConfig['args'] ? $grapQLConfig['args'] : [];
+            $grapQLConfig['args'] = isset($grapQLConfig['args']) ? $grapQLConfig['args'] : [];
             $grapQLConfig['args'] = array_merge($grapQLConfig['args'],
                 ['language' => ['type' => Type::string()]
             ]);
         }
 
         // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
-        if (strpos($attribute, "~") !== FALSE && !$grapQLConfig['resolve']) {
+        if (strpos($attribute, "~") !== FALSE && !isset($grapQLConfig['resolve'])) {
             $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
             $grapQLConfig['resolve'] = [$resolver, "resolve"];
         }
@@ -81,7 +82,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
+     * @param null|ClassDefinition  $class
      * @param null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
@@ -92,9 +93,9 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      *
      * @return \Closure
      */

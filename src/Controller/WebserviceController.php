@@ -169,7 +169,16 @@ class WebserviceController extends FrontendController
                 ],
             ];
         }
-
+        
+        $origin = '*';
+        if (!empty($_SERVER['HTTP_ORIGIN'])) {
+            $origin = $_SERVER['HTTP_ORIGIN'];
+        }
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
+        
         return new JsonResponse($output);
     }
 

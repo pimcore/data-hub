@@ -168,8 +168,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
                 $idx = strpos($tagEntry['id'], $needle);
                 if ($idx === 0) {
                     $typename = substr($tagEntry['id'], $lengthOfNeedle);
+                    $mapping[$typename] = 1;
                 }
-                $mapping[$typename] = 1;
             }
         }
 
@@ -244,8 +244,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
                 $idx = strpos($tagEntry['id'], $needle);
                 if ($idx === 0) {
                     $typename = substr($tagEntry['id'], $lengthOfNeedle);
+                    $mapping[$typename] = 1;
                 }
-                $mapping[$typename] = 1;
             }
         }
 
@@ -344,8 +344,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
                 $idx = strpos($tagEntry['id'], $needle);
                 if ($idx === 0) {
                     $typename = substr($tagEntry['id'], $lengthOfNeedle);
+                    $mapping[$typename] = 1;
                 }
-                $mapping[$typename] = 1;
             }
         }
 
@@ -412,8 +412,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
                 $idx = strpos($tagEntry['id'], $needle);
                 if ($idx === 0) {
                     $typename = substr($tagEntry['id'], $lengthOfNeedle);
+                    $mapping[$typename] = 1;
                 }
-                $mapping[$typename] = 1;
             }
         }
 
