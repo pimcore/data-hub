@@ -83,7 +83,7 @@ abstract class AbstractDocumentType extends ObjectType
                 'type' => Type::listOf($this),
                 'resolve' => [$resolver, "resolveChildren"],
             ],
-            'siblings' => [
+            '_siblings' => [
                 'type' => Type::listOf($this),
                 'resolve' => [$resolver, "resolveSiblings"],
             ],
