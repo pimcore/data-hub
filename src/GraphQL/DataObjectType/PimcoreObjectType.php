@@ -76,6 +76,8 @@ class PimcoreObjectType extends ObjectType
     public function build($context = [])
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
+        $objectTreeType = $this->getGraphQlService()->getDataObjectTypeDefinition('object_tree');
+
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object', $this->getGraphQLService());
 
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
@@ -98,11 +100,11 @@ class PimcoreObjectType extends ObjectType
                 'resolve' => [$resolver, "resolveProperties"]
             ],
             'parent' => [
-                'type' => $this,
+                'type' => $objectTreeType,
                 'resolve' => [$resolver, "resolveParent"],
             ],
             'children' => [
-                'type' => Type::listOf($this),
+                'type' => Type::listOf($objectTreeType),
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
@@ -111,8 +113,8 @@ class PimcoreObjectType extends ObjectType
                 ],
                 'resolve' => [$resolver, "resolveChildren"],
             ],
-            'siblings' => [
-                'type' => Type::listOf($this),
+            '_siblings' => [
+                'type' => Type::listOf($objectTreeType),
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
