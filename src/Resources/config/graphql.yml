@@ -13,6 +13,7 @@ services:
 
  # document
   pimcore.datahub.graphql.documenttype.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType'
+  pimcore.datahub.graphql.documenttype.tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType'
   pimcore.datahub.graphql.documenttype.document_element: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType'
   pimcore.datahub.graphql.documenttype.document_email: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType'
   pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
@@ -27,9 +28,9 @@ services:
   pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
   pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
 
+  pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
   pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
   pimcore.datahub.graphql.dataobjecttype.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType'
-  pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
 
  # helpers
   pimcore.datahub.graphql.fieldhelper.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper'
@@ -64,6 +65,20 @@ services:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyTargetType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: anytarget }
+
+  pimcore.datahub.graphql.generaltype.factory.document_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: document_tree }
+
+  pimcore.datahub.graphql.generaltype.factory.object_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: object_tree }
 
   pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
@@ -564,6 +579,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documenttype, id: document }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_tree }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType:
     tags:
       - { name: pimcore.datahub.graphql.documenttype, id: document_element }
@@ -600,13 +619,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: geopoint_input }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_tree }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: _object_folder }
-
-  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType:
-      tags:
-      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_tree }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotType:
     tags:

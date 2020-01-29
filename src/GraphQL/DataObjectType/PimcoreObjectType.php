@@ -76,7 +76,7 @@ class PimcoreObjectType extends ObjectType
     public function build($context = [])
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $objectTreeType = $this->getGraphQlService()->getDataObjectTypeDefinition('object_tree');
+        $objectTreeType = $this->getGraphQlService()->buildGeneralType('object_tree');
 
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object', $this->getGraphQLService());
 
@@ -111,7 +111,7 @@ class PimcoreObjectType extends ObjectType
                         'description' => 'list of object types (object, variant, folder)'
                     ],
                 ],
-                'resolve' => [$resolver, "resolveChildren"],
+                'resolve' => [$resolver, 'resolveChildren'],
             ],
             '_siblings' => [
                 'type' => Type::listOf($objectTreeType),
@@ -121,7 +121,7 @@ class PimcoreObjectType extends ObjectType
                         'description' => 'list of object types (object, variant, folder)'
                     ],
                 ],
-                'resolve' => [$resolver, "resolveSiblings"],
+                'resolve' => [$resolver, 'resolveSiblings'],
             ],
         ];
 

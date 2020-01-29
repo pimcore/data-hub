@@ -52,6 +52,7 @@ abstract class AbstractDocumentType extends ObjectType
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document', $this->getGraphQLService());
+        $documentTree = $this->getGraphQlService()->buildGeneralType('document_tree');
 
         $config['fields'] = [
             'creationDate' => Type::int(),
@@ -73,19 +74,19 @@ abstract class AbstractDocumentType extends ObjectType
                         'description' => 'comma seperated list of key names'
                     ]
                 ],
-                'resolve' => [$resolver, "resolveProperties"]
+                'resolve' => [$resolver, 'resolveProperties']
             ],
             'parent' => [
-                'type' => $this,
-                'resolve' => [$resolver, "resolveParent"],
+                'type' => $documentTree,
+                'resolve' => [$resolver, 'resolveParent'],
             ],
             'children' => [
-                'type' => Type::listOf($this),
-                'resolve' => [$resolver, "resolveChildren"],
+                'type' => Type::listOf($documentTree),
+                'resolve' => [$resolver, 'resolveChildren'],
             ],
             '_siblings' => [
-                'type' => Type::listOf($this),
-                'resolve' => [$resolver, "resolveSiblings"],
+                'type' => Type::listOf($documentTree),
+                'resolve' => [$resolver, 'resolveSiblings'],
             ],
         ];
     }
