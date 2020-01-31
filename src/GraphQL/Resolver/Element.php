@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
@@ -198,7 +199,8 @@ class Element
                 return null;
             }
         }
-        $data = [];
+        $data = new ElementDescriptor($element);
+        $data['id'] = $element->getId();
         $this->getFieldHelper()->extractData($data, $element, $args, $context, $resolveInfo);
         return $data;
     }
