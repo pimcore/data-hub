@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
@@ -49,9 +50,9 @@ class QueryType
 
     /**
      * QueryType constructor.
-     * @param $class
+     * @param ClassDefinition $class
      * @param $configuration
-     * @param $omitPermissionCheck
+     * @param bool $omitPermissionCheck
      */
     public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
     {
@@ -237,7 +238,7 @@ class QueryType
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 

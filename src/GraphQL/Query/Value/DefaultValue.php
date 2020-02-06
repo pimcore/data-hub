@@ -25,7 +25,7 @@ use Pimcore\Model\Element\ElementInterface;
 class DefaultValue extends AbstractValue
 {
     /**
-     * @param ElementInterface|Concrete $element
+     * @param Concrete|null $element
      *
      * {@inheritdoc}
      */
@@ -59,5 +59,6 @@ class DefaultValue extends AbstractValue
                 return $result;
             }
         }
+        return null;
     }
 }

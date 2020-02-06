@@ -82,7 +82,7 @@ class QueryType extends ObjectType
      */
     public function buildFolderQueries($type, &$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -118,7 +118,7 @@ class QueryType extends ObjectType
      */
     public function buildAssetQueries(&$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
         $service = $this->getGraphQlService();
@@ -150,7 +150,7 @@ class QueryType extends ObjectType
      */
     public function buildDocumentQueries(&$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -186,13 +186,13 @@ class QueryType extends ObjectType
     }
 
     /**
-     * @param array &$config
+     * @param array $config
      * @param array $context
      * @throws \Exception
      */
     public function buildDataObjectQueries(&$config = [], $context = []): void
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getQueryEntities();
 

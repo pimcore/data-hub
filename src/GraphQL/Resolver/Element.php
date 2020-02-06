@@ -68,7 +68,7 @@ class Element
         if (isset($args['keys'])) {
             $result = [];
             $properties = $element->getProperties();
-            /** @var $property Property */
+            /** @var Property $property */
             foreach ($properties as $property) {
                 if (in_array($property->getName(), $args['keys'])) {
                     $result[] = $property;

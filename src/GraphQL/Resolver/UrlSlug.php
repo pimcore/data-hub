@@ -27,7 +27,7 @@ class UrlSlug
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
-     * @return string|nul
+     * @return string|null
      * @throws \Exception
      */
     public function resolveSlug($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)

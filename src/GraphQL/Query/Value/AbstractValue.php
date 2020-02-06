@@ -43,7 +43,7 @@ abstract class AbstractValue implements ValueInterface
 
     /**
      * AbstractValue constructor.
-     * @param $config
+     * @param array $config
      * @param null $context
      */
     public function __construct($config, $context = null)

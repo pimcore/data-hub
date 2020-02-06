@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 
 
 class Merge
@@ -32,9 +33,9 @@ class Merge
 
     /**
      * Merge constructor.
-     * @param $typeName
-     * @param $attributes
-     * @param $class
+     * @param string $typeName
+     * @param array $attributes
+     * @param ClassDefinition $class
      * @param $container
      */
     public function __construct($typeName = null, $attributes = null, $class = null, $container = null)

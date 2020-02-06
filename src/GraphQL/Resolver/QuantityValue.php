@@ -23,7 +23,7 @@ class QuantityValue
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -41,7 +41,7 @@ class QuantityValue
     }
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -58,7 +58,7 @@ class QuantityValue
     }
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo

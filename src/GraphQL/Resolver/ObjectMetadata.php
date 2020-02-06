@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 
@@ -37,8 +38,8 @@ class ObjectMetadata
 
     /**
      * ObjectMetadata constructor.
-     * @param $fieldDefinition
-     * @param $class
+     * @param ClassDefinition\Data $fieldDefinition
+     * @param ClassDefinition $class
      * @param $fieldHelper
      */
     public function __construct($fieldDefinition = null, $class = null, $fieldHelper = null)
@@ -95,7 +96,7 @@ class ObjectMetadata
     {
         if ($value && $value['element']) {
 
-            /** @var $relation ElementMetadata */
+            /** @var ElementMetadata $relation */
             $relation = $value['element']['__relation'];
             $meta = $relation->getData();
             $result = [];
