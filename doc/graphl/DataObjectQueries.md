@@ -44,6 +44,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Slider
 * Textarea
 * Time
+* [URL Slug](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Others.html)
 * Video
 * Wysiwyg
 

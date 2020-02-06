@@ -363,6 +363,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_textarea }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_urlSlug:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\UrlSlug
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_urlSlug }
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_video:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Video
     tags:
@@ -606,6 +611,10 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\UrlSlugType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: url_slug }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType:
     tags:
