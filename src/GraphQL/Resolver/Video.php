@@ -31,7 +31,7 @@ class Video
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return string|null
      */
@@ -47,7 +47,7 @@ class Video
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return string|null
      * @throws \Exception
@@ -64,7 +64,7 @@ class Video
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return string|null
      */
@@ -81,7 +81,7 @@ class Video
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return ElementDescriptor|null
      */
@@ -114,7 +114,7 @@ class Video
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return ElementDescriptor|array|null
      */

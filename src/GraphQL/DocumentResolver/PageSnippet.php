@@ -29,9 +29,9 @@ class PageSnippet
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception

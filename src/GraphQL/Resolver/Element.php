@@ -37,9 +37,9 @@ class Element
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
     public function resolveProperties($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)

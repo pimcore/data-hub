@@ -92,7 +92,7 @@ class MutationTypeEvent extends Event
      * MutationEvent constructor.
      * @param MutationType $mutationType
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function __construct(MutationType $mutationType, $config, $context)
     {

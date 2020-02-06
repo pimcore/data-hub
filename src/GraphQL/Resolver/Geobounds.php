@@ -26,7 +26,7 @@ class Geobounds
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return \Pimcore\Model\DataObject\Data\Geopoint
      * @throws \Exception
@@ -43,7 +43,7 @@ class Geobounds
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return \Pimcore\Model\DataObject\Data\Geopoint
      * @throws \Exception

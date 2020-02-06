@@ -115,7 +115,7 @@ abstract class AbstractFieldHelper
      * @param array $data
      * @param $container
      * @param $args
-     * @param $context array
+     * @param array $context array
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
