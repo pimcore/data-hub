@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 
 
-class ManyToManyRelation extends Base
+class ManyToManyObjectRelation extends Base
 {
 
     /**
@@ -38,15 +38,11 @@ class ManyToManyRelation extends Base
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
-                    if (!isset($newValueItemValue["type"])) {
-                        throw new \Exception("type expected");
+                    if (isset($newValueItemValue["type"]) && $newValueItemValue["type"] !== 'object') {
+                        throw new \Exception("expected object type");
                     }
 
-                    if (!isset($newValueItemValue["id"])) {
-                        throw new \Exception("ID expected");
-                    }
-
-                    $element = \Pimcore\Model\Element\Service::getElementById($newValueItemValue["type"], $newValueItemValue["id"]);
+                    $element = \Pimcore\Model\Element\Service::getElementById('object', $newValueItemValue["id"]);
                     if ($element) {
                         $result[] = $element;
                     }
