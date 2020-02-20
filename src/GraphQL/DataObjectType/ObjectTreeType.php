@@ -35,8 +35,8 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
-        $types = array_values(ClassTypeDefinitions::getAll(false));
-        $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition("_object_folder");
+        $types = array_values(ClassTypeDefinitions::getAll(true));
+        $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
 
         return $types;
     }
@@ -46,10 +46,10 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
         if (!$element) {
             return null;
         }
-        $object = DataObject\Concrete::getById($element['id']);
+        $object = DataObject\AbstractObject::getById($element['id']);
 
         if ($object instanceof DataObject\Folder) {
-            return $this->getGraphQlService()->getDataObjectTypeDefinition("_object_folder");
+            return $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
         }
 
         return ClassTypeDefinitions::get($object->getClass());
