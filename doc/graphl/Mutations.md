@@ -37,6 +37,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Lastname
 * Many-to-One Relation
 * Many-to-Many Relation
+* Many-to-Many Object Relation
 * Multiselect
 * Newsletter Active
 * Newsletter Confirmed

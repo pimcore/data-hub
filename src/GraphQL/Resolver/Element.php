@@ -45,9 +45,9 @@ class Element
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
     public function resolveProperties($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
@@ -62,7 +62,7 @@ class Element
         if (isset($args['keys'])) {
             $result = [];
             $properties = $element->getProperties();
-            /** @var $property Property */
+            /** @var Property $property */
             foreach ($properties as $property) {
                 if (in_array($property->getName(), $args['keys'])) {
                     $result[] = $property;

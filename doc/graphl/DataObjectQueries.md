@@ -17,7 +17,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Email
 * External Image
 * Gender
-* [Field-Collections](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
+* [Field-Collections](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
 * Firstname
 * Geobounds
 * Geopoint
@@ -44,6 +44,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Slider
 * Textarea
 * Time
+* [URL Slug](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Others.html)
 * Video
 * Wysiwyg
 

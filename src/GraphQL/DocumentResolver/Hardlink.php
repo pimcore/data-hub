@@ -33,7 +33,7 @@ class Hardlink
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo

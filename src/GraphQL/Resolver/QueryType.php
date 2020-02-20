@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
@@ -49,9 +50,9 @@ class QueryType
 
     /**
      * QueryType constructor.
-     * @param $class
+     * @param ClassDefinition $class
      * @param $configuration
-     * @param $omitPermissionCheck
+     * @param bool $omitPermissionCheck
      */
     public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
     {
@@ -63,7 +64,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -107,7 +108,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -120,7 +121,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -132,7 +133,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -144,7 +145,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -186,7 +187,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -219,7 +220,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -237,7 +238,7 @@ class QueryType
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
@@ -279,7 +280,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -303,7 +304,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -315,7 +316,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -413,7 +414,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */

@@ -35,7 +35,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -66,7 +66,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -79,7 +79,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -92,7 +92,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -105,7 +105,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
     public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)

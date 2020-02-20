@@ -18,44 +18,40 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-
-class Geobounds
+class UrlSlug
 {
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\UrlSlug|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
-     * @return \Pimcore\Model\DataObject\Data\Geopoint
+     * @return string|null
      * @throws \Exception
      */
-    public function resolveNorthEast($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSlug($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\Geobounds) {
-            return $value->getNorthEast();
+        if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
+            return $value->getSlug();
         }
-
         return null;
     }
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\UrlSlug|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
-     * @return \Pimcore\Model\DataObject\Data\Geopoint
+     * @return int|null
      * @throws \Exception
      */
-    public function resolveSouthWest($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSiteId($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\Geobounds) {
-            return $value->getSouthWest();
+        if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
+            return $value->getSiteId();
         }
 
         return null;
     }
-
 }
-

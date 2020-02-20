@@ -27,7 +27,7 @@ class ManyToManyRelation extends Base
      * @param Concrete $object
      * @param $newValue
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
@@ -38,6 +38,14 @@ class ManyToManyRelation extends Base
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
+                    if (!isset($newValueItemValue["type"])) {
+                        throw new \Exception("type expected");
+                    }
+
+                    if (!isset($newValueItemValue["id"])) {
+                        throw new \Exception("ID expected");
+                    }
+
                     $element = \Pimcore\Model\Element\Service::getElementById($newValueItemValue["type"], $newValueItemValue["id"]);
                     if ($element) {
                         $result[] = $element;

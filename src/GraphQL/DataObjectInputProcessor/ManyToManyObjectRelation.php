@@ -17,11 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 
-class Image extends Base
+
+class ManyToManyObjectRelation extends Base
 {
 
     /**
@@ -35,25 +34,22 @@ class Image extends Base
     public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
+        Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
+            $result = [];
+            if (is_array($newValue)) {
+                foreach ($newValue as $newValueItemKey => $newValueItemValue) {
+                    if (isset($newValueItemValue["type"]) && $newValueItemValue["type"] !== 'object') {
+                        throw new \Exception("expected object type");
+                    }
 
-        if(!array_key_exists('id',$newValue)) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception("Field {$attribute}.id was not provided.");
-            }
-            return null;
-        }
-
-        Service::setValue($object, $attribute, function($container, $setter) use ($newValue, $attribute) {
-            $image = null;
-
-            if (isset($newValue["id"])) {
-                $asset = Asset::getById($newValue["id"]);
-                if ($asset instanceof Asset\Image) {
-                    $image = $asset;
+                    $element = \Pimcore\Model\Element\Service::getElementById('object', $newValueItemValue["id"]);
+                    if ($element) {
+                        $result[] = $element;
+                    }
                 }
             }
 
-            return $container->$setter($image);
+            return $container->$setter($result);
         });
     }
 }

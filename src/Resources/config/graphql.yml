@@ -388,6 +388,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_textarea }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_urlSlug:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\UrlSlug
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_urlSlug }
+
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_video:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Video
     tags:
@@ -643,6 +648,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\UrlSlugType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: url_slug }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video }
@@ -752,6 +761,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyRelation
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToManyObjectRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyObjectRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyObjectRelation }
 
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_multiselect:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect

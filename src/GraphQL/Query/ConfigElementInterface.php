@@ -18,6 +18,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 
 interface ConfigElementInterface
@@ -28,7 +29,7 @@ interface ConfigElementInterface
     public function getLabel();
 
     /**
-     * @param ElementInterface $element
+     * @param Concrete $element
      *
      * @return \stdClass|null
      */

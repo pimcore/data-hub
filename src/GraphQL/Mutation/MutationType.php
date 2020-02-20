@@ -429,7 +429,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildCreateAssetMutation(&$config, $context)
     {
@@ -533,7 +533,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      * @throws \Exception
      */
     public function buildUpdateAssetMutation(&$config, $context)
@@ -605,7 +605,7 @@ class MutationType extends ObjectType
     /**
      * @param $type
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildCreateFolderMutation($type, &$config, $context)
     {
@@ -701,7 +701,7 @@ class MutationType extends ObjectType
     /**
      * @param $type
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildUpdateFolderMutation($type, &$config, $context)
     {
@@ -789,7 +789,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildDeleteAssetMutation(&$config, $context)
     {
@@ -798,7 +798,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      * @param $type
      */
     public function buildDeleteElementMutation(&$config, $context, $type)
@@ -866,7 +866,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildDeleteDocumentMutation(&$config, $context)
     {
@@ -874,9 +874,9 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $type
-     * @param $config
-     * @param $context
+     * @param string $type
+     * @param array $config
+     * @param array $context
      */
     public function buildDeleteFolderMutation($type, &$config, $context)
     {

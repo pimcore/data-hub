@@ -44,7 +44,7 @@ class ReverseManyToManyObjectRelation extends Base
 
     /**
      * @param Data\ReverseManyToManyObjectRelation $fieldDefinition
-     * @param null $class
+     * @param ClassDefinition $class
      * @param null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed

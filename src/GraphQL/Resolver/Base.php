@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 
 
 class Base
@@ -35,9 +36,9 @@ class Base
 
     /**
      * Base constructor.
-     * @param $typeName
-     * @param $attributes
-     * @param $class
+     * @param string $typeName
+     * @param array $attributes
+     * @param ClassDefinition $class
      * @param $container
      */
     public function __construct($typeName, $attributes, $class, $container)
@@ -51,7 +52,7 @@ class Base
 
     public function resolve($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
+        /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator $operatorImpl */
         $operatorImpl = $this->getGraphQlService()->buildQueryOperator($this->typeName, $this->attributes);
 
         $element = AbstractObject::getById($value['id']);

@@ -25,7 +25,7 @@ class RelationHelper
      * @param ElementInterface $relation
      * @param Service $graphQlService
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $resolveInfo
      * @return ElementDescriptor
      */
