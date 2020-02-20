@@ -26,6 +26,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Document;
 use Pimcore\Model\Property;
 use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 
 
@@ -52,7 +53,7 @@ class Element
     public function resolveProperties($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
-        $element = $this->getElementById($elementId);
+        $element = ElementService::getElementById($this->elementType, $elementId);
 
         if (!$element) {
             throw new \Exception("element " . $this->elementType . " " . $elementId . " not found");
@@ -84,7 +85,7 @@ class Element
      */
     public function resolveParent($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $element = $this->getElementById($value['id']);
+        $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
             $parent = $element->getParent();
             if ($parent) {
@@ -104,7 +105,7 @@ class Element
      */
     public function resolveChildren($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $element = $this->getElementById($value['id']);
+        $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
             $arguments = $this->composeArguments($args);
             return $this->extractMultipleElements($element->getChildren(...$arguments), $args, $context, $resolveInfo);
@@ -122,7 +123,7 @@ class Element
      */
     public function resolveSiblings($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $element = $this->getElementById($value['id']);
+        $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
             $arguments = $this->composeArguments($args);
             return $this->extractMultipleElements($element->getSiblings(...$arguments), $args, $context, $resolveInfo);
@@ -141,26 +142,6 @@ class Element
             $arguments[] = isset($args['objectTypes']) ? $args['objectTypes'] : [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
         }
         return $arguments;
-    }
-
-    /**
-     * @param $value
-     * @return AbstractElement|null
-     * @throws \Exception
-     */
-    protected function getElementById($id)
-    {
-        switch ($this->elementType) {
-            case 'asset':
-                return Asset::getById($id);
-            case 'document':
-                return Document::getById($id);
-            case 'object':
-                return AbstractObject::getById($id);
-            default:
-                trigger_error("unknown element type");
-        }
-        return null;
     }
 
     /**
