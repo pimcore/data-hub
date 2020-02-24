@@ -76,7 +76,7 @@ class Element
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
@@ -96,7 +96,7 @@ class Element
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
@@ -114,7 +114,7 @@ class Element
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
