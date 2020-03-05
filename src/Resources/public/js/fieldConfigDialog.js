@@ -559,7 +559,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
     getClassTree: function (url, classId, objectId) {
 
-        var classTreeHelper = new pimcore.object.helpers.classTree(this.showFieldname);
+        var classTreeHelper = new pimcore.object.helpers.classTree(this.showFieldname, {
+            showInvisible: true
+        });
         var tree = classTreeHelper.getClassTree(url, classId, objectId);
 
         tree.addListener("itemdblclick", function (tree, record, item, index, e, eOpts) {
