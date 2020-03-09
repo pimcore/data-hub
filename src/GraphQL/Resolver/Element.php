@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -182,8 +183,31 @@ class Element
         }
         $data = new ElementDescriptor($element);
         $data['id'] = $element->getId();
-        $this->getFieldHelper()->extractData($data, $element, $args, $context, $resolveInfo);
-        return $data;
+        $treeType = $this->getTreeType();
+        $elementType = $treeType->resolveType($data, $context, $resolveInfo);
+        if (in_array($elementType, $treeType->getTypes(), true)) {
+            $this->getFieldHelper()->extractData($data, $element, $args, $context, $resolveInfo);
+            return $data;
+        }
+        return null;
+    }
+
+    /**
+     * @return UnionType|null
+     */
+    protected function getTreeType()
+    {
+        switch ($this->elementType) {
+            case 'asset':
+                return $this->getGraphQlService()->buildGeneralType('asset_tree');
+            case 'document':
+                return $this->getGraphQlService()->buildGeneralType('document_tree');
+            case 'object':
+                return $this->getGraphQlService()->buildGeneralType('object_tree');
+            default:
+                trigger_error("unknown element type");
+        }
+        return null;
     }
 
     /**
