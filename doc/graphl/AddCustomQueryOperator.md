@@ -30,7 +30,7 @@ Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore
 docs page for further details.
 
 Next thing is to provide the server-side implementation.
-A sample can be found here: https://github.com/pimcore/data-hub/blob/master/src/GraphQL//Query/Operator/Trimmer.php
+A sample can be found here: https://github.com/pimcore/data-hub/blob/master/src/GraphQL/Query/Operator/Trimmer.php
 
 Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:
