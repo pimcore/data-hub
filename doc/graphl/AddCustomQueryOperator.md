@@ -23,14 +23,14 @@ https://github.com/pimcore/data-hub/blob/master/src/GraphQL/QueryOperatorConfigG
 You have to provide both JavaScript code dealing with the UI configuration aspects specific to  your operator
 and the server-side PHP implementation doing the actual calculations. 
 
-A JS sample can be found here: https://github.com/pimcore/data-hub/blob/7c62b888014a3df37928867b89b0dcd4489c3df4/src/Resources/public/js/operator/Trimmer
+A JS sample can be found here: https://github.com/pimcore/data-hub/blob/master/src/Resources/public/js/queryoperator/Trimmer.js
 Note that the namespace would be `pimcore.plugin.datahub.operator.mycustomoperator`
 
 Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/5.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
 docs page for further details.
 
 Next thing is to provide the server-side implementation.
-A sample can be found here: https://github.com/pimcore/data-hub/blob/9ed3056864a5e93455c3325a35af73fdf7e4b2dc/src/GraphQL/Query/Operator/Trimmer.php
+A sample can be found here: https://github.com/pimcore/data-hub/blob/master/src/GraphQL//Query/Operator/Trimmer.php
 
 Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:
