@@ -60,7 +60,7 @@ class AssetType extends ObjectType
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $service = $this->getGraphQlService();
-        $assetTree = $service->buildAssetType('asset_tree');
+        $assetTree = $service->buildGeneralType('asset_tree');
         $assetMetadataItemType = $service->buildAssetType('asset_metadataitem');
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');

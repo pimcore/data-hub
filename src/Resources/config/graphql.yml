@@ -13,7 +13,7 @@ services:
 
  # document
   pimcore.datahub.graphql.documenttype.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType'
-  pimcore.datahub.graphql.documenttype.tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType'
+  pimcore.datahub.graphql.documenttype.document_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType'
   pimcore.datahub.graphql.documenttype.document_element: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType'
   pimcore.datahub.graphql.documenttype.document_email: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType'
   pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
@@ -80,6 +80,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: object_tree }
 
+  pimcore.datahub.graphql.generaltype.factory.asset_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+     $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: asset_tree }
+
   pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
@@ -114,13 +121,6 @@ services:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType
     tags:
       - { name: pimcore.datahub.graphql.assettype_factory, id: asset }
-
-  pimcore.datahub.graphql.generaltype.factory.asset_tree:
-      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-      arguments:
-          $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType
-      tags:
-          - { name: pimcore.datahub.graphql.assettype_factory, id: asset_tree }
 
   pimcore.datahub.graphql.generaltype.factory.asset_metadataitem:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
