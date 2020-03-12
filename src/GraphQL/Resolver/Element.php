@@ -174,6 +174,7 @@ class Element
      */
     protected function extractSingleElement($element, $args, $context, $resolveInfo)
     {
+        // Check Workspace permissions
         if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
                 throw new \Exception('not allowed to view ' . $element->getFullPath());
@@ -181,8 +182,11 @@ class Element
                 return null;
             }
         }
+
         $data = new ElementDescriptor($element);
         $data['id'] = $element->getId();
+
+        // Check element type
         $treeType = $this->getTreeType();
         $elementType = $treeType->resolveType($data, $context, $resolveInfo);
         if (in_array($elementType, $treeType->getTypes(), true)) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use Pimcore\Model\Asset;
+use Pimcore\Cache\Runtime;
 use GraphQL\Type\Definition\UnionType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -34,9 +35,17 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
+        $context = Runtime::get('datahub_context');
+        /** @var  $configuration Configuration */
+        $configuration = $context["configuration"];
+
         $types = [];
-        $types[] = $this->getGraphQlService()->buildAssetType('asset');
-        $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
+        if ($configuration->getSpecialEntities()["asset"]["read"]) {
+            $types[] = $this->getGraphQlService()->buildAssetType('asset');
+        }
+        if ($configuration->getSpecialEntities()["asset_folder"]["read"]) {
+            $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
+        }
         return $types;
     }
 

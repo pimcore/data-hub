@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
 use Pimcore\Model\Document;
+use Pimcore\Cache\Runtime;
 use GraphQL\Type\Definition\UnionType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -38,18 +39,27 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
-        $supportedTypes = [
-            'document_email',
-            'document_hardlink',
-            'document_link',
-            'document_page',
-            'document_snippet',
-            '_document_folder'
-        ];
+        $context = Runtime::get('datahub_context');
+        /** @var  $configuration Configuration */
+        $configuration = $context["configuration"];
 
-        foreach ($supportedTypes as $supportedType) {
-            $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
-            $types[] = $this->types[$supportedType];
+        $types = [];
+        if ($configuration->getSpecialEntities()["document_folder"]["read"]) {
+            $types[] = $this->getGraphQlService()->getDocumentTypeDefinition("_document_folder");
+        }
+        if ($configuration->getSpecialEntities()["document"]["read"]) {
+            $supportedTypes = [
+                'document_email',
+                'document_hardlink',
+                'document_link',
+                'document_page',
+                'document_snippet',
+                '_document_folder'
+            ];
+            foreach ($supportedTypes as $supportedType) {
+                $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
+                $types[] = $this->types[$supportedType];
+            }
         }
         return $types;
     }

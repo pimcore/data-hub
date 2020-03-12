@@ -9,6 +9,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject;
+use Pimcore\Cache\Runtime;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -35,9 +36,14 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
-        $types = array_values(ClassTypeDefinitions::getAll(true));
-        $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+        $context = Runtime::get('datahub_context');
+        /** @var  $configuration Configuration */
+        $configuration = $context["configuration"];
 
+        $types = array_values(ClassTypeDefinitions::getAll(true));
+        if ($configuration->getSpecialEntities()["object_folder"]["read"]) {
+            $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+        }
         return $types;
     }
 
