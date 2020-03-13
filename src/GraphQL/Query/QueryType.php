@@ -292,6 +292,9 @@ class QueryType extends ObjectType
         );
         $this->eventDispatcher->dispatch(QueryEvents::PRE_BUILD, $event);
 
+        $config = $event->getConfig();
+        $context = $event->getContext();
+
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
