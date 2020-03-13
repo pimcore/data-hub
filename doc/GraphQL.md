@@ -25,6 +25,7 @@ If not otherwise noted then all samples can be tested using this [Endpoint](http
 
 ## Mutation Samples
 * see [Mutation main page](graphl/Mutations.md)
+* [Adding custom mutations](graphl/AddCustomMutations.md)
 
 ## Configuration
 
