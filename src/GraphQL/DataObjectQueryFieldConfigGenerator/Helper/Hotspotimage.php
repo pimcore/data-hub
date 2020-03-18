@@ -17,10 +17,12 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
-use Pimcore\Model\Element\Service;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\Fieldcollection;
 
 
 /**
@@ -32,12 +34,12 @@ class Hotspotimage
     use ServiceTrait;
 
     /**
-     * @var
+     * @var ClassDefinition\Data\Hotspotimage
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition|Fieldcollection\Definition
      */
     public $class;
 
@@ -48,13 +50,18 @@ class Hotspotimage
 
 
     /**
-     * ImageGallery constructor.
-     * @param Service $graphQlService
-     * @param $fieldDefinition
-     * @param $class
+     * Hotspotimage constructor.
+     * @param Service                                    $graphQlService
+     * @param                                            $attribute
+     * @param ClassDefinition\Data\Hotspotimage          $fieldDefinition
+     * @param ClassDefinition|Fieldcollection\Definition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition,  $class)
-    {
+    public function __construct(
+        Service $graphQlService,
+        $attribute,
+        ClassDefinition\Data\Hotspotimage $fieldDefinition,
+        $class
+    ) {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
         $this->attribute = $attribute;
@@ -75,7 +82,7 @@ class Hotspotimage
     {
         $result = [];
         /** @var  $container Hotspotimage */
-        $container = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
+        $container = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($container instanceof \Pimcore\Model\DataObject\Data\Hotspotimage) {
             $image = $container->getImage();
             if ($image instanceof Asset) {

@@ -17,10 +17,13 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service as GraphQlService;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Data\Hotspotimage;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\Service;
 
@@ -33,12 +36,12 @@ class ImageGallery
     use ServiceTrait;
 
     /**
-     * @var
+     * @var ClassDefinition\Data\ImageGallery
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition|Fieldcollection\Definition
      */
     public $class;
 
@@ -50,12 +53,17 @@ class ImageGallery
 
     /**
      * ImageGallery constructor.
-     * @param Service $graphQlService
-     * @param $fieldDefinition
-     * @param $class
+     * @param GraphQlService                              $graphQlService
+     * @param                                             $attribute
+     * @param ClassDefinition\Data\ImageGallery           $fieldDefinition
+     * @param ClassDefinition|Fieldcollection\Definition  $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
-    {
+    public function __construct(
+        GraphQlService $graphQlService,
+        $attribute,
+        ClassDefinition\Data\ImageGallery $fieldDefinition,
+        $class
+    ) {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
         $this->attribute = $attribute;
@@ -75,7 +83,7 @@ class ImageGallery
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $result = [];
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
+        $relations = GraphQlService::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
             /** @var $relation AbstractElement */
             foreach ($relations as $relation) {
