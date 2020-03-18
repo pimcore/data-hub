@@ -21,9 +21,11 @@ If not otherwise noted then all samples can be tested using this [Endpoint](http
 * [Website Translator](graphl/querysamples/Sample_WebsiteTranslation.md)
 * [Field-Collections](graphl/querysamples/Sample_Fieldcollections.md)
 * [Get Element Properties](graphl/querysamples/Sample_ElementProperties.md)
+* [Get object parent/children/siblings](graphl/querysamples/Sample_ParentChildrenSiblings.md)
 
 ## Mutation Samples
 * see [Mutation main page](graphl/Mutations.md)
+* [Adding custom mutations](graphl/AddCustomMutations.md)
 
 ## Configuration
 
@@ -63,6 +65,7 @@ admin_pimcoredatahub_webservice:
 
 * Documents: see [Document Query Documentation](./graphl/DocumentQueries.md)
 * DataObjects: see [DataObject Query Documentation](./graphl/DataObjectQueries.md)
+* [Adding custom queries](graphl/AddCustomQuery.md)
 
 ## Mutations
 

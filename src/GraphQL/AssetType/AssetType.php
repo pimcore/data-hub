@@ -60,10 +60,11 @@ class AssetType extends ObjectType
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $service = $this->getGraphQlService();
+        $assetTree = $service->buildGeneralType('asset_tree');
         $assetMetadataItemType = $service->buildAssetType('asset_metadataitem');
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $elementResolver = new Resolver\Element('asset');
+        $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
 
         $config['fields'] = [
             'creationDate' => Type::int(),
@@ -106,8 +107,20 @@ class AssetType extends ObjectType
                         'description' => 'comma separated list of key names'
                     ]
                 ],
-                'resolve' => [$elementResolver, 'resolveProperties']
-            ]
+                'resolve' => [$elementResolver, "resolveProperties"]
+            ],
+            'parent' => [
+                'type' => $assetTree,
+                'resolve' => [$elementResolver, "resolveParent"],
+            ],
+            'children' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveChildren"],
+            ],
+            '_siblings' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveSiblings"],
+            ],
         ];
     }
 

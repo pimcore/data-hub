@@ -39,7 +39,8 @@ class AssetFolderType extends FolderType
     public function build(&$config)
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset');
+        $assetTree = $this->getGraphQlService()->buildGeneralType("asset_tree");
+        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService());
 
         $config['fields'] = [
             'id' => ['name' => 'id',
@@ -64,7 +65,19 @@ class AssetFolderType extends FolderType
                     ]
                 ],
                 'resolve' => [$elementResolver, "resolveProperties"]
-            ]
+            ],
+            'parent' => [
+                'type' => $this,
+                'resolve' => [$elementResolver, "resolveParent"],
+            ],
+            'children' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveChildren"],
+            ],
+            '_siblings' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveSiblings"],
+            ],
         ];
 
     }

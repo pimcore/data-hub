@@ -28,8 +28,9 @@ class DocumentFolderType extends FolderType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = [], $context = []) {
-        parent::__construct($graphQlService, ["name" => "document_folder"], $context);
+    public function __construct(Service $graphQlService, $config = [], $context = [])
+    {
+        parent::__construct($graphQlService, ['name' => 'document_folder'], $context);
     }
 
     /**
@@ -37,9 +38,13 @@ class DocumentFolderType extends FolderType
      */
     public function build(&$config)
     {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document', $this->getGraphQLService());
+        $documentTree = $this->getGraphQlService()->buildGeneralType('document_tree');
+
         {
             $config['fields'] = [
-                'id' => ['name' => 'id',
+                'id' => [
+                    'name' => 'id',
                     'type' => Type::id(),
                 ],
                 'filename' => Type::string(),
@@ -47,7 +52,19 @@ class DocumentFolderType extends FolderType
                     'type' => Type::string()
                 ],
                 'creationDate' => Type::int(),
-                'modificationDateDate' => Type::int()
+                'modificationDateDate' => Type::int(),
+                'parent' => [
+                    'type' => $documentTree,
+                    'resolve' => [$resolver, 'resolveParent'],
+                ],
+                'children' => [
+                    'type' => Type::listOf($documentTree),
+                    'resolve' => [$resolver, 'resolveChildren'],
+                ],
+                '_siblings' => [
+                    'type' => Type::listOf($documentTree),
+                    'resolve' => [$resolver, 'resolveSiblings'],
+                ],
             ];
         }
     }

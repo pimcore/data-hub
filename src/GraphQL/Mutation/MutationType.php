@@ -91,13 +91,17 @@ class MutationType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
+        $config["fields"] = [];
         $event = new MutationTypeEvent(
             $this,
             $config,
             $context
         );
         $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
-        $config["fields"] = [];
+
+        $config = $event->getConfig();
+        $context = $event->getContext();
+
         $this->buildDataObjectMutations($config, $context);
         $this->buildCreateAssetMutation($config, $context);
         $this->buildUpdateAssetMutation($config, $context);
