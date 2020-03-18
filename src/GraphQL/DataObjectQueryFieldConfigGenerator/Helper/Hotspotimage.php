@@ -20,7 +20,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Element\Service;
 
 
@@ -33,12 +32,12 @@ class Hotspotimage
     use ServiceTrait;
 
     /**
-     * @var ClassDefinition\Data\Hotspotimage
+     * @var
      */
     public $fieldDefinition;
 
     /**
-     * @var ClassDefinition
+     * @var
      */
     public $class;
 
@@ -51,10 +50,10 @@ class Hotspotimage
     /**
      * ImageGallery constructor.
      * @param Service $graphQlService
-     * @param ClassDefinition\Data $fieldDefinition
-     * @param ClassDefinition $class
+     * @param $fieldDefinition
+     * @param $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, ClassDefinition\Data $fieldDefinition, ClassDefinition $class)
+    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition,  $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
