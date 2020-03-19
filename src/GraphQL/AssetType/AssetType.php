@@ -82,6 +82,40 @@ class AssetType extends ObjectType
                     return $this->resolveAssetPath($value, $args, $context, $resolveInfo, false);
                 }
             ],
+            'srcset' => [
+                'type' => Type::listOf(new \GraphQL\Type\Definition\ObjectType([
+                    'name'  => 'srcset',
+                    'fields' => [
+                        'descriptor' => Type::string(),
+                        'url' => Type::string(),
+                    ]
+                ])),
+                'args' => [
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())]
+
+                ],
+                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    $asset = $this->getAssetFromValue($value, $context);
+
+                    if ($asset instanceof Asset\Image) {
+                        $mediaQueries = [];
+                        $thumbnail = $asset->getThumbnail($args['thumbnail'], false);
+                        $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
+                        if (
+                            $thumbnailConfig
+                        ) {
+                            foreach ($thumbnailConfig->getMedias() as $key => $val) {
+                                $mediaQueries[] = [
+                                    'descriptor' => $key,
+                                    'url' => $thumbnail->getMedia($key),
+                                ];
+                            }
+                        }
+                        return $mediaQueries;
+                    }
+                    return null;
+                }
+            ],
             'mimetype' => Type::string(),
             'modificationDate' => Type::int(),
             'type' => Type::string(),
@@ -126,15 +160,12 @@ class AssetType extends ObjectType
 
     /**
      * @param mixed       $value
-     * @param array       $args
      * @param array       $context
-     * @param ResolveInfo $resolveInfo
-     * @param bool        $resolveForData
      *
-     * @return string|null
+     * @return Asset|null
      * @throws \Exception
      */
-    protected function resolveAssetPath($value, $args, $context, ResolveInfo $resolveInfo, bool $resolveForData = false)
+    protected function getAssetFromValue($value, $context)
     {
         if (!$value instanceof ElementDescriptor) {
             return null;
@@ -149,6 +180,23 @@ class AssetType extends ObjectType
                 return null;
             }
         }
+
+        return $asset;
+    }
+
+    /**
+     * @param mixed       $value
+     * @param array       $args
+     * @param array       $context
+     * @param ResolveInfo $resolveInfo
+     * @param bool        $resolveForData
+     *
+     * @return string|null
+     * @throws \Exception
+     */
+    protected function resolveAssetPath($value, $args, $context, ResolveInfo $resolveInfo, bool $resolveForData = false)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
             if ($resolveForData === false) {
