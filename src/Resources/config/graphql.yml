@@ -407,57 +407,57 @@ services:
   # type generators for dataobject query operators
   #
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_alias:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Alias
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Alias
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_alias }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_concatenator:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Concatenator
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Concatenator
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_concatenator }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_dateformatter:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\DateFormatter
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\DateFormatter
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_dateformatter }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_elementcounter:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\ElementCounter
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ElementCounter
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_elementcounter }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_merge:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Merge
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Merge
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_merge }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_substring:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Substring
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Substring
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_substring }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_text:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\StringBase
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\StringBase
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_text }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnail:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Thumbnail
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Thumbnail
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnail }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnailhtml:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\ThumbnailHtml
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ThumbnailHtml
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnailhtml }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_translatevalue:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\TranslateValue
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\TranslateValue
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_translatevalue }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_trimmer:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\Trimmer
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Trimmer
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_trimmer }
 
