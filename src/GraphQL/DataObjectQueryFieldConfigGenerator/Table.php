@@ -20,21 +20,26 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class Table extends AbstractTable
 {
     /**
-     * @param Data $fieldDefinition
+     * @param Data|Data\Table $fieldDefinition
      * @return array
      */
     function getTableColumnKeys(Data $fieldDefinition): array
     {
+        $numCols = (int) $fieldDefinition->getCols();
+        if ($numCols === 0) {
+            return [];
+        }
+
         $columns = [];
-        /** @var Data\Table $fieldDefinition */
         if ($fieldDefinition->isColumnConfigActivated()) {
             foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
                 $columns[] = $columnConfig['key'];
             }
-        } else {
-            foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
-                $columns[] = 'col' . $i;
-            }
+            return $columns;
+        }
+
+        foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
+            $columns[] = 'col' . $i;
         }
         return $columns;
     }

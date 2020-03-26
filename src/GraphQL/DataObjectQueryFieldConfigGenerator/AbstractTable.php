@@ -7,6 +7,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\StringType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
@@ -28,6 +29,13 @@ abstract class AbstractTable extends Base
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) use ($fieldDefinition, $attribute) {
                 $result = Service::resolveValue($value, $fieldDefinition, $attribute, $args);
+
+                // The table has no specific definition of columns, so we cannot have a ObjectType in schema for it.
+                // Just return the data JSON encoded
+                if ($resolveInfo->returnType instanceof StringType) {
+                    return json_encode($result);
+                }
+
                 if ($result === null) {
                     return [];
                 }
@@ -55,7 +63,7 @@ abstract class AbstractTable extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
-     * @return ListOfType
+     * @return ListOfType|StringType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
@@ -67,7 +75,13 @@ abstract class AbstractTable extends Base
             $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
         }
 
-        foreach ($this->getTableColumnKeys($fieldDefinition) as $key) {
+        $columnKeys = $this->getTableColumnKeys($fieldDefinition);
+        if (empty($columnKeys)) {
+            return Type::string();
+        }
+
+        $fields = [];
+        foreach ($columnKeys as $key) {
             $fields[$key] = Type::string();
         }
 
