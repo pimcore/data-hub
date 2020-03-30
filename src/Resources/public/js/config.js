@@ -208,7 +208,7 @@ pimcore.plugin.datahub.config = Class.create({
                     });
 
                     if (!data || !data.success) {
-                        pimcore.helpers.showNotification(t("error"), t("'plugin_pimcore_datahub_configpanel_error_adding_config"), "error", data.message);
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_adding_config"), "error", data.message);
                     } else {
                         this.openConfig(data.name);
                     }
