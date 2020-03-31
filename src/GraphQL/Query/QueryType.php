@@ -124,7 +124,7 @@ class QueryType extends ObjectType
         $service = $this->getGraphQlService();
         $assetType = $service->buildAssetType("asset");
 
-        if ($entities["asset"]["read"]) {
+        if ($entities["asset"]["read"] ?? false) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION
