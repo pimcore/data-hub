@@ -333,9 +333,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         $config = $configuration->getConfiguration();
-        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?: []);
-        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ?: []);
-        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ?: [];
+        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?? []);
+        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ?? []);
+        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ?? [];
 
         if (!$config['schema']['specialEntities']) {
             $config['schema']['specialEntities'] = [];
