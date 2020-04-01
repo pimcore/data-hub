@@ -35,17 +35,9 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
-        $context = Runtime::get('datahub_context');
-        /** @var  $configuration Configuration */
-        $configuration = $context["configuration"];
-
         $types = [];
-        if ($configuration->getSpecialEntities()["asset"]["read"]) {
-            $types[] = $this->getGraphQlService()->buildAssetType('asset');
-        }
-        if ($configuration->getSpecialEntities()["asset_folder"]["read"]) {
-            $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
-        }
+        $types[] = $this->getGraphQlService()->buildAssetType('asset');
+        $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
         return $types;
     }
 

@@ -44,23 +44,20 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
         $configuration = $context["configuration"];
 
         $types = [];
-        if ($configuration->getSpecialEntities()["document_folder"]["read"]) {
-            $types[] = $this->getGraphQlService()->getDocumentTypeDefinition("_document_folder");
+        $types[] = $this->getGraphQlService()->getDocumentTypeDefinition("_document_folder");
+        $supportedTypes = [
+            'document_email',
+            'document_hardlink',
+            'document_link',
+            'document_page',
+            'document_snippet',
+            '_document_folder'
+        ];
+        foreach ($supportedTypes as $supportedType) {
+            $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
+            $types[] = $this->types[$supportedType];
         }
-        if ($configuration->getSpecialEntities()["document"]["read"]) {
-            $supportedTypes = [
-                'document_email',
-                'document_hardlink',
-                'document_link',
-                'document_page',
-                'document_snippet',
-                '_document_folder'
-            ];
-            foreach ($supportedTypes as $supportedType) {
-                $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
-                $types[] = $this->types[$supportedType];
-            }
-        }
+
         return $types;
     }
 

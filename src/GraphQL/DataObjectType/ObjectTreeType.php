@@ -41,7 +41,7 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
         $configuration = $context["configuration"];
 
         $types = array_values(ClassTypeDefinitions::getAll(true));
-        if ($configuration->getSpecialEntities()["object_folder"]["read"]) {
+        if ($configuration->getSpecialEntities()["object_folder"]["read"] ?? false) {
             $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
         }
         return $types;
