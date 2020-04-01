@@ -61,7 +61,8 @@ class PageSnippetType extends AbstractDocumentType
 
         $config['fields']['description'] = [
             'type' => Type::string()
-          
+        ];
+
         $keyValue = new ListOfType(KeyValueType::getInstance());
 
         $config['fields']['rendered'] = [
