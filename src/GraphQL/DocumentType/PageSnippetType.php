@@ -50,5 +50,13 @@ class PageSnippetType extends AbstractDocumentType
             'type' => Type::listOf($this->documentElementType),
             'resolve' => [$resolver, "resolveElements"]
         ];
+
+        $config['fields']['title'] = [
+            'type' => Type::string()
+        ];
+
+        $config['fields']['description'] = [
+            'type' => Type::string()
+        ];
     }
 }

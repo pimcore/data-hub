@@ -66,12 +66,6 @@ abstract class AbstractDocumentType extends ObjectType
             'controller' => Type::string(),
             'action' => Type::string(),
             'template' => Type::string(),
-            'title' => [
-                'type' => Type::string()
-            ],
-            'description' => [
-                'type' => Type::string()
-            ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
