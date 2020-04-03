@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
+use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Table extends AbstractTable
@@ -23,7 +24,7 @@ class Table extends AbstractTable
      * @param Data|Data\Table $fieldDefinition
      * @return array
      */
-    function getTableColumnKeys(Data $fieldDefinition): array
+    protected function getTableColumns(Data $fieldDefinition): array
     {
         $numCols = (int) $fieldDefinition->getCols();
         if ($numCols === 0) {
@@ -33,13 +34,13 @@ class Table extends AbstractTable
         $columns = [];
         if ($fieldDefinition->isColumnConfigActivated()) {
             foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
-                $columns[] = $columnConfig['key'];
+                $columns[$columnConfig['key']] = Type::string();
             }
             return $columns;
         }
 
         foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
-            $columns[] = 'col' . $i;
+            $columns['col' . $i] = Type::string();
         }
         return $columns;
     }

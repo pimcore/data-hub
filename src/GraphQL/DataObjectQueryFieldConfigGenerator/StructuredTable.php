@@ -30,11 +30,25 @@ class StructuredTable extends AbstractTable
      * @param Data|Data\StructuredTable $fieldDefinition
      * @return array
      */
-    function getTableColumnKeys(Data $fieldDefinition): array
+    protected function getTableColumns(Data $fieldDefinition): array
     {
         $cols = [];
         foreach ($fieldDefinition->getCols() as $i => $columnConfig) {
-            $cols[] = $columnConfig['key'] ?? 'col' . $i;
+            $key = $columnConfig['key'] ?? 'col' . $i;
+
+            switch ($columnConfig['type']) {
+                case 'number':
+                    $type = Type::float();
+                    break;
+                case 'bool':
+                    $type = Type::boolean();
+                    break;
+                case 'text':
+                default:
+                    $type = Type::string();
+            }
+
+            $cols[$key] = $type;
         }
         return $cols;
     }

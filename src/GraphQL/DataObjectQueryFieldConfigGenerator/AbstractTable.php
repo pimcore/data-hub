@@ -46,7 +46,7 @@ abstract class AbstractTable extends Base
                 foreach ($rows as &$row) {
                     $row = array_combine(
                         array_map(
-                            function ($k){
+                            function ($k) {
                                 return is_numeric($k) ? 'col'. $k : $k;
                             },
                             array_keys($row)
@@ -75,20 +75,15 @@ abstract class AbstractTable extends Base
             $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
         }
 
-        $columnKeys = $this->getTableColumnKeys($fieldDefinition);
-        if (empty($columnKeys)) {
+        $columns = $this->getTableColumns($fieldDefinition);
+        if (empty($columns)) {
             return Type::string();
-        }
-
-        $fields = [];
-        foreach ($columnKeys as $key) {
-            $fields[$key] = Type::string();
         }
 
         $type = new ObjectType(
             [
                 'name' => $name,
-                'fields' => $fields
+                'fields' => $columns
             ]
         );
         return Type::listOf($type);
@@ -98,5 +93,5 @@ abstract class AbstractTable extends Base
      * @param Data $fieldDefinition
      * @return array
      */
-    abstract function getTableColumnKeys(Data $fieldDefinition): array;
+    abstract protected function getTableColumns(Data $fieldDefinition): array;
 }
