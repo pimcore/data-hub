@@ -403,6 +403,16 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_wysiwyg }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_table:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Table
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_table }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_structuredTable:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\StructuredTable
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_structuredTable }
+
   #
   # type generators for dataobject query operators
   #
