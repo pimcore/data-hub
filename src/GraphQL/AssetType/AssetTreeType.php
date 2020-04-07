@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
-use Pimcore\Model\Asset;
-use Pimcore\Cache\Runtime;
-use GraphQL\Type\Definition\UnionType;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Pimcore\Model\Asset;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class AssetTreeType extends UnionType implements ContainerAwareInterface
 {

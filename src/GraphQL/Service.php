@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
@@ -1021,5 +1022,23 @@ class Service
         if ($fieldHelper) {
             $fieldHelper->extractData($data, $target, $args, $context, $resolveInfo);
         }
+    }
+
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function querySchemaEnabled(string $type) {
+        $context = Runtime::get('datahub_context');
+        /** @var  $configuration Configuration */
+        $configuration = $context["configuration"];
+        if ($type === "object") {
+            $types = $configuration->getConfiguration()["schema"]["queryEntities"];
+            $enabled = count($types) > 0;
+        } else {
+            $enabled = $configuration->getSpecialEntities()[$type]["read"] ?? false;
+        }
+        return $enabled;
     }
 }
