@@ -73,25 +73,43 @@ class ElementPropertyType extends UnionType
     {
         $service = $this->getGraphQlService();
 
-        $this->assetType = $service->getPropertyTypeDefinition("property_asset");
-        $this->documentType = $service->getPropertyTypeDefinition("property_document");
-        $this->assetFolderType = $service->getPropertyTypeDefinition("property_assetfolder");
-        $this->documentFolderType = $service->getPropertyTypeDefinition("property_documentfolder");
-        $this->objectFolderType = $service->getPropertyTypeDefinition("property_objectfolder");
-        $this->objectType = $service->getPropertyTypeDefinition("property_object");
         $this->checkboxType = $service->getPropertyTypeDefinition("property_checkbox");
         $this->textType = $service->getPropertyTypeDefinition("property_text");
 
         $supportedTypes = [
             $this->checkboxType,
             $this->textType,
-            $this->assetType,
-            $this->documentType,
-            $this->objectType,
-            $this->assetFolderType,
-            $this->documentFolderType,
-            $this->objectFolderType
         ];
+
+        if ($this->getGraphQlService()->querySchemaEnabled("asset")) {
+            $this->assetType = $service->getPropertyTypeDefinition("property_asset");
+            $supportedTypes[] = $this->assetType;
+        }
+
+        if ($this->getGraphQlService()->querySchemaEnabled("asset_folder")) {
+            $this->assetFolderType = $service->getPropertyTypeDefinition("property_assetfolder");
+            $supportedTypes[] = $this->assetFolderType;
+        }
+
+        if ($this->getGraphQlService()->querySchemaEnabled("object")) {
+            $this->objectType = $service->getPropertyTypeDefinition("property_object");
+            $supportedTypes[] = $this->objectType;
+        }
+
+        if ($this->getGraphQlService()->querySchemaEnabled("object_folder")) {
+            $this->objectFolderType = $service->getPropertyTypeDefinition("property_objectfolder");
+            $supportedTypes[] = $this->objectFolderType;
+        }
+
+        if ($this->getGraphQlService()->querySchemaEnabled("document")) {
+            $this->documentType = $service->getPropertyTypeDefinition("property_document");
+            $supportedTypes[] = $this->documentType;
+        }
+
+        if ($this->getGraphQlService()->querySchemaEnabled("document_folder")) {
+            $this->documentFolderType = $service->getPropertyTypeDefinition("property_documentfolder");
+            $supportedTypes[] = $this->documentFolderType;
+        }
 
         return $supportedTypes;
 
