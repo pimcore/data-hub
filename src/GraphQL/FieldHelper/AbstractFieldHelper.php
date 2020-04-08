@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 
 use GraphQL\Language\AST\ArgumentNode;
 use GraphQL\Language\AST\FieldNode;
+use GraphQL\Language\AST\FragmentSpreadNode;
 use GraphQL\Language\AST\InlineFragmentNode;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Language\AST\SelectionSetNode;
@@ -115,7 +116,7 @@ abstract class AbstractFieldHelper
      * @param array $data
      * @param $container
      * @param $args
-     * @param array $context array
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
@@ -128,36 +129,61 @@ abstract class AbstractFieldHelper
             $data['id'] = $container->getId();
         }
 
-        $resolveInfo = (array)$resolveInfo;
-        $fieldAstList = (array)$resolveInfo['fieldNodes'];
+        $resolveInfoArray = (array)$resolveInfo;
+        $fieldAstList = (array) $resolveInfoArray['fieldNodes'];
 
         foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
                 /** @var $selectionSet SelectionSetNode */
                 $selectionSet = $astNode->selectionSet;
                 $selections = $selectionSet->selections;
-                if ($selections) {
-                    foreach ($selections as $selectionNode) {
-                        if ($selectionNode instanceof FieldNode) {
-                            $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
-                        } elseif ($selectionNode instanceof InlineFragmentNode) {
-                            /** @var $selectionSetNode SelectionSetNode */
-                            $inlineSelectionSetNode = $selectionNode->selectionSet;
-                            /** @var $inlineSelections NodeList[] */
-                            $inlineSelections = $inlineSelectionSetNode->selections;
-                            $count = $inlineSelections->count();
-                            for ($i = 0; $i < $count; $i++) {
-                                $inlineNode = $inlineSelections[$i];
-                                if ($inlineNode instanceof FieldNode) {
-                                    $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
-                                }
-                            }
-                        }
-                    }
-                }
+                $this->processSelections($data, $selections, $container, $args, $context, $resolveInfo);
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @param array $data
+     * @param NodeList $selections
+     * @param $container
+     * @param $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     */
+    public function processSelections(&$data, $selections, $container, $args, $context, ResolveInfo $resolveInfo)
+    {
+        if (!$selections) {
+            return;
+        }
+
+        foreach ($selections as $selectionNode) {
+
+            if ($selectionNode instanceof FieldNode) {
+                $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
+            } elseif ($selectionNode instanceof InlineFragmentNode) {
+                /** @var $selectionSetNode SelectionSetNode */
+                $inlineSelectionSetNode = $selectionNode->selectionSet;
+                /** @var $inlineSelections NodeList[] */
+                $inlineSelections = $inlineSelectionSetNode->selections;
+                $count = $inlineSelections->count();
+                for ($i = 0; $i < $count; $i++) {
+                    $inlineNode = $inlineSelections[$i];
+                    if ($inlineNode instanceof FieldNode) {
+                        $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
+                    }
+                }
+            } elseif ($selectionNode instanceof FragmentSpreadNode) {
+                $fragmentName = $selectionNode->name->value;
+                $knownFragments = $resolveInfo->fragments;
+                $resolvedFragment = $knownFragments[$fragmentName];
+                if ($resolvedFragment) {
+                    $fragmentSelectionSet = $resolvedFragment->selectionSet;
+                    $fragmentSelections = $fragmentSelectionSet->selections;
+                    $this->processSelections($data, $fragmentSelections, $container, $args, $context, $resolveInfo);
+                }
+            }
+        }
     }
 }
