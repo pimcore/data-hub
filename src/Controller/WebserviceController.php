@@ -89,7 +89,6 @@ class WebserviceController extends FrontendController
         $queryType = new QueryType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
         $mutationType = new MutationType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
 
-
         try {
             $schemaConfig = [
                 'query' => $queryType
@@ -113,8 +112,8 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $rawInput = file_get_contents('php://input');
-        $input = json_decode($rawInput, true);
+        $input = json_decode($request->getContent(), true);
+
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
 
@@ -169,17 +168,18 @@ class WebserviceController extends FrontendController
                 ],
             ];
         }
-        
+
         $origin = '*';
         if (!empty($_SERVER['HTTP_ORIGIN'])) {
             $origin = $_SERVER['HTTP_ORIGIN'];
         }
-        header('Access-Control-Allow-Origin: ' . $origin);
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
-        
-        return new JsonResponse($output);
+
+        $response = new JsonResponse($output);
+        $response->headers->set('Access-Control-Allow-Origin', $origin);
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+        return $response;
     }
 
     /**
