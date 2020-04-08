@@ -33,6 +33,7 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
+use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
@@ -780,7 +781,7 @@ class Service
     /**
      * @param $object
      * @param Data $fieldDefinition
-     * @param $attribute
+     * @param string $attribute
      * @param array $args
      * @return \stdclass|null
      * @throws \Exception
@@ -877,7 +878,7 @@ class Service
     /**
      * @param BaseDescriptor $descriptor
      * @param Data $fieldDefinition
-     * @param $attribute
+     * @param string $attribute
      * @param array $args
      * @return \stdclass|null
      */
@@ -956,7 +957,25 @@ class Service
             }
 
         } else if (method_exists($container, $getter)) {
-            $result = $container->$getter();
+            $isLocalizedField = false;
+            $containerDefinition = null;
+
+            if ($container instanceof Concrete) {
+                $containerDefinition = $container->getClass();
+            } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+                $containerDefinition = $container->getDefinition();
+            }
+
+            if ($containerDefinition) {
+                if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
+                    if ($lfDefs->getFieldDefinition($fieldDefinition->getName())) {
+                        $isLocalizedField = true;
+                    }
+                }
+            }
+
+            $result = $container->$getter($isLocalizedField && isset($args['language']) ?  $args['language'] : null);
+
         }
         return $result;
     }
@@ -1002,8 +1021,8 @@ class Service
     }
 
     /**
-     * @param $data
-     * @param $target
+     * @param array $data
+     * @param AbstractElement $target
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
