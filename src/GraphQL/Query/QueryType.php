@@ -339,17 +339,17 @@ class QueryType extends ObjectType
 
             $filterFacetType = new ObjectType(
                 [
-                    'name' => 'filterFacets',
+                    'name' => $ucFirstClassName . 'FilterFacets',
                     'fields' => [
                         'facet' => [
                             'type' => new ObjectType([
-                                'name' => 'filterFacet',
+                                'name' => $ucFirstClassName . 'FilterFacet',
                                 'fields' => [
                                     'field' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
                                     'options' => [
                                         'type' => Type::listOf(new ObjectType([
-                                            'name' => 'filterFacetOption',
+                                            'name' => $ucFirstClassName . 'FilterFacetOption',
                                             'fields' => [
                                                 'value' => ['type' => Type::string()],
                                                 'label' => ['type' => Type::string()],
@@ -423,7 +423,7 @@ class QueryType extends ObjectType
                     'priceTo' => ['type' => Type::float()],
                     'facets' => [
                         'type' => Type::listOf(new InputObjectType([
-                            'name' => 'filter' . ucfirst($entity) . 'FacetArg',
+                            'name' => $ucFirstClassName . 'FilterFacetArg',
                             'fields' => [
                                 'field' => ['type' => Type::string()],
                                 'values' => ['type' => Type::listOf(Type::string())],
