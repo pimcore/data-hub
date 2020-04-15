@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -424,5 +425,257 @@ class QueryType
         return $value['totalCount'];
     }
 
+    /**
+     * Build a filter query.
+     *
+     * @TODO Create response format to provide facets.
+     *
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveFilter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        if ($args && $args['defaultLanguage']) {
+            $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
+        }
+        $factory = Factory::getInstance();
+
+        // Set tenant config.
+        if (!empty($args['tenant'])) {
+            $factory->getEnvironment()->setCurrentAssortmentTenant($args['tenant']);
+        }
+
+        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface $resultList */
+        $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+
+        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition*/
+        $currentFilters = [];
+        $facets = [];
+        $filterDefinition = false;
+        // Set default settings using a FilterDefinition if id is provided.
+        if (!empty($args['filterDefinition']) && ($filterDefinition = AbstractObject::getById($args['filterDefinition']))) {
+            $filterService = $factory->getFilterService();
+
+            if ($pageLimit = $filterDefinition->getPageLimit()) {
+                $resultList->setLimit($pageLimit);
+            }
+
+            $orderByField = null;
+            $orderByDirection = null;
+
+            $orderByList = [];
+            if ($orderByCollection = $filterDefinition->getDefaultOrderBy()) {
+                foreach ($orderByCollection as $orderBy) {
+                    if ($orderBy->getField()) {
+                        $orderByList[] = [$orderBy->getField(), $orderBy->getDirection()];
+                    }
+                }
+            }
+            $resultList->setOrderKey($orderByList);
+            $resultList->setOrder('ASC');
+            $filterValues = [];
+            if (!empty($args['facets'])) {
+                foreach ($args['facets'] as  $facet) {
+                    $filterValues[$facet['field']] = $facet['values'];
+                }
+            }
+            if ($filters = $filterDefinition->getFilters()) {
+                foreach ($filters as $k => $filter) {
+                    // Check if this filter can handle multiple values and if
+                    // not use the first values entry.
+                    $filterType = $filterService->getFilterType($filter->getType());
+                    $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
+                    if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
+                        $filterValues[$field] = current($filterValues[$field]);
+                    }
+
+                    $facets[$k] = [
+                        'filter' => $filter,
+                        'filterService' => $filterService,
+                        'resultList' => $resultList,
+                    ];
+                }
+            }
+
+            $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
+        }
+        // paging
+        if (isset($args['first'])) {
+            $resultList->setLimit($args['first']);
+        }
+        if (isset($args['after'])) {
+            $resultList->setOffset($args['after']);
+        }
+
+        // sorting
+        if (!empty($args['sortBy'])) {
+            $resultList->setOrderKey($args['sortBy']);
+            if (!empty($args['sortOrder'])) {
+                $resultList->setOrder($args['sortOrder']);
+            }
+        }
+
+        if (!empty($args['variantMode'])) {
+            $resultList->setVariantMode($args['variantMode']);
+        }
+
+        if (!empty($args['fulltext'])) {
+            if ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\DefaultMysql) {
+                $resultList->buildFulltextSearchWhere(
+                    $resultList->getCurrentTenantConfig()->getSearchAttributes(),
+                    $args['fulltext']
+                );
+                return $resultList->addCondition($args['fulltext'], 'relevance');
+            } elseif ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch) {
+                /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch $resultList */
+                $resultList->addQueryCondition($args['fulltext']);
+            }
+        }
+
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        // @TODO Implement SQL Conditions in a generic way - we need to support
+        // ElasticSearch.
+        //@TODO Implement workspace limitation in a generic way.
+
+        $db = Db::get();
+        if ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\DefaultMysql) {
+            // Add SQL-Conditions.
+            if ($sqlListCondition = $configuration->getSqlObjectCondition()) {
+                $conditionParts[] = '(' . $sqlListCondition . ')';
+            }
+            // check permissions
+            $conditionParts[] = ' (
+                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)
+                                    UNION
+                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)
+                                 )';
+            if ($conditionParts) {
+                $condition = implode(' AND ', $conditionParts);
+                $resultList->addCondition($condition);
+            }
+        } elseif ($resultList instanceof \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch) {
+            /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ElasticSearch\AbstractElasticSearch $resultList */
+
+            // @FIXME How can we convert that to DSL?
+            // We might can use something like this:
+            // https://www.elastic.co/guide/en/elasticsearch/reference/6.8/sql-spec.html
+            // https://github.com/elastic/elasticsearch/tree/master/x-pack/plugin/sql
+            // https://github.com/opendistro-for-elasticsearch/sql
+            // $sqlListCondition = $configuration->getSqlObjectCondition();
+
+            // Fetch readablePaths to implement a access filter.
+            $readablePaths = $db->fetchCol('select `cpath` from plugin_datahub_workspaces_object where configuration = ? AND `read`=1 ORDER BY LENGTH(cpath)', [$configuration->getName()]);
+            // @FIXME path is not part of the system parameters indexed - see
+            // \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\Worker\ElasticSearch\AbstractElasticSearch::getSystemAttributes()
+            // We could hook into the indexing and add it automagically but that
+            // seems intrusive.
+            // $resultList->addCondition(['terms' => ['system.path' => $readablePaths]]);
+        }
+
+        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractCategory $category */
+        if (!empty($args['category']) && ($category = AbstractObject::getById($args['category']))) {
+            $resultList->setCategory($category);
+        }
+        // Price filter.
+        if (isset($args['priceFrom']) && !isset($args['priceTo'])) {
+            $resultList->addPriceCondition($args['priceFrom']);
+        }
+        elseif (isset($args['priceFrom']) && !isset($args['priceTo'])) {
+            $resultList->addPriceCondition(null, $args['priceTo']);
+        }
+        elseif(isset($args['priceFrom']) && isset($args['priceTo'])) {
+            $resultList->addPriceCondition($args['priceFrom'], $args['priceTo']);
+        }
+        $resultList->getInProductList(!isset($args['published']) || !empty($args['published']));
+
+        $totalCount = $resultList->count();
+        $objectList = $resultList->load();
+
+        // Process result objects.
+        foreach ($objectList as $object) {
+            $data = [];
+            $data['id'] = $object->getId();
+            $nodes[] = [
+                'cursor' => 'object-' . $object->getId(),
+                'node' => $data,
+            ];
+        }
+
+        $connection = [];
+        $connection['edges'] = $nodes;
+        $connection['facets'] = $facets;
+        $connection['totalCount'] = $totalCount;
+
+        return $connection;
+    }
+
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
+    public function resolveFilterTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        return $value['totalCount'];
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
+    public function resolveFacets($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        return $value['facets'];
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
+    public function resolveFacet($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $translator = $this->getGraphQlService()->getTranslator();
+
+        $filter = $value['filter'];
+        $filterService = $value['filterService'];
+        $resultList = $value['resultList'];
+
+        // Extract the facet information.
+        /* @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinitionType $filter */
+        $filterType = $filterService->getFilterType($filter->getType());
+        $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
+        $options = $resultList->getGroupByValues($field, true, !method_exists($filter, 'getUseAndCondition') || !$filter->getUseAndCondition());
+
+        foreach ($options as &$option) {
+            $prefix = (is_numeric($option['value'])) ? $field  . ':' : '';
+            if(!empty($option['value'])) {
+                $option['label'] = $prefix . $translator->trans($option['value']);
+            } else {
+                $option['label'] = $prefix . $translator->trans('No Value');
+            }
+        }
+
+        $value = [
+            'field' => $field,
+            'label' => $filter->getLabel(),
+            'options' => $options,
+        ];
+
+        return $value;
+    }
 }
 
