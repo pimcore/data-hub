@@ -1,7 +1,7 @@
 ## Filter Listings
 
 You can use __Pimcore's webservice filter logic__
-as described [here](https://pimcore.com/docs/5.x/Development_Documentation/Web_Services/Query_Filters.html).
+as described [here](https://pimcore.com/docs/6.x/Development_Documentation/Web_Services/Query_Filters.html).
 
 Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_3_folder
 
