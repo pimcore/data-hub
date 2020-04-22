@@ -287,6 +287,7 @@ class MutationType extends ObjectType
                         'args' => [
                             'id' => ['type' => Type::nonNull(Type::int())],
                             'defaultLanguage' => ['type' => Type::string()],
+                            'omitMandatoryCheck' => ['type' => Type::boolean()],
                             'input' => ['type' => $inputType],
                         ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null, $this->omitPermissionCheck)
                     ];
@@ -406,6 +407,10 @@ class MutationType extends ObjectType
 
                 if (isset($args['defaultLanguage'])) {
                     $localeService->setLocale($args['defaultLanguage']);
+                }
+
+                if (isset($args["omitMandatoryCheck"])) {
+                    $object->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
                 }
 
                 $dataIn = $args["input"];
