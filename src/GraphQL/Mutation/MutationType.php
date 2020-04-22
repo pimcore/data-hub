@@ -185,6 +185,7 @@ class MutationType extends ObjectType
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => "Default is true!"],
+                        'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'input' => $inputType
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
                         $parent = null;
@@ -230,6 +231,10 @@ class MutationType extends ObjectType
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
                         call_user_func_array($resolver, [$value, $args, $context, $info]);
+
+                        if (isset($args["omitMandatoryCheck"])) {
+                            $newInstance->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                        }
 
                         $newInstance->save();
 
@@ -282,6 +287,7 @@ class MutationType extends ObjectType
                         'args' => [
                             'id' => ['type' => Type::nonNull(Type::int())],
                             'defaultLanguage' => ['type' => Type::string()],
+                            'omitMandatoryCheck' => ['type' => Type::boolean()],
                             'input' => ['type' => $inputType],
                         ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null, $this->omitPermissionCheck)
                     ];
@@ -401,6 +407,10 @@ class MutationType extends ObjectType
 
                 if (isset($args['defaultLanguage'])) {
                     $localeService->setLocale($args['defaultLanguage']);
+                }
+
+                if (isset($args["omitMandatoryCheck"])) {
+                    $object->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
                 }
 
                 $dataIn = $args["input"];
