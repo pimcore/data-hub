@@ -42,7 +42,8 @@ class ObjectFolderType extends FolderType
         $objectTreeType = $this->getGraphQlService()->buildGeneralType('object_tree');
 
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object', $this->getGraphQLService());
-
+        $dataObjectResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\DataObject($this->getGraphQLService());
+        
         $config['fields'] = [
             'id' => [
                 'name' => 'id',
@@ -57,6 +58,14 @@ class ObjectFolderType extends FolderType
             'parent' => [
                 'type' => $objectTreeType,
                 'resolve' => [$resolver, 'resolveParent'],
+            ],
+            'index' => [
+                'type' => Type::int(),
+                'resolve' => [$dataObjectResolver, 'resolveIndex']
+            ],
+            'childrenSortBy' => [
+                'type' => Type::string(),
+                'resolve' => [$dataObjectResolver, 'resolveChildrenSortBy']
             ],
             'children' => [
                 'type' => Type::listOf($objectTreeType),
