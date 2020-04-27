@@ -425,11 +425,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $name = $request->get('name');
 
-        $route = $routingService->getRouteCollection()->get('admin_pimcoredatahub_config');
-        if ($route) {
-            $url = $route->getPath();
-            $url = str_replace('{clientname}', $name, $url);
-
+        $url = $routingService->generate('admin_pimcoredatahub_config', ['clientname' => $name]);
+        if ($url) {
             return $this->json(['explorerUrl' => $url]);
         } else {
             throw new \Exception('unable to resolve');
