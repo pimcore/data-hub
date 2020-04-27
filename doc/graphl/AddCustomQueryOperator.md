@@ -12,7 +12,7 @@ Add a section similar to this one to your `services.yml` file.
     pimcore.datahub.graphql.querytypegenerator_operator_mycustomoperator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\MyCustomOperator
         tags:
-            - { name: pimcore.datahub.graphql.querytypegenerator, id: typegenerator_queryoperator_mycustomoperator }                        
+            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_mycustomoperator }                        
 ```
 
 For reference, have a look at a look at the `Trimmer operator`:
