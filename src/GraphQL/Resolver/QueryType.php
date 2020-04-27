@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -26,6 +27,7 @@ use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
@@ -50,9 +52,9 @@ class QueryType
 
     /**
      * QueryType constructor.
-     * @param $class
+     * @param ClassDefinition $class
      * @param $configuration
-     * @param $omitPermissionCheck
+     * @param bool $omitPermissionCheck
      */
     public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
     {
@@ -64,16 +66,18 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
      */
     public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
+
+        $element = null;
 
         if ($elementType == "asset") {
             $element = Asset\Folder::getById($args['id']);
@@ -106,7 +110,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -119,7 +123,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -131,7 +135,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -143,16 +147,18 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
      */
     public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
+
+        $documentElement = null;
 
         if (isset($args['id'])) {
             $documentElement = Document::getById($args['id']);
@@ -183,14 +189,14 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
      */
     public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -216,7 +222,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -228,13 +234,13 @@ class QueryType
             return null;
         }
 
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
@@ -276,7 +282,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -300,7 +306,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -312,14 +318,14 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
      */
     public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if ($args && $args['defaultLanguage']) {
+        if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -375,7 +381,7 @@ class QueryType
             if (!$filter) {
                 throw new \Exception('unable to decode filter');
             }
-            $filterCondition = \Pimcore\Bundle\AdminBundle\Controller\Rest\Helper::buildSqlCondition($filter);
+            $filterCondition = Helper::buildSqlCondition($filter);
             $conditionParts[] = $filterCondition;
         }
 
@@ -388,6 +394,8 @@ class QueryType
 
         $totalCount = $objectList->getTotalCount();
         $objectList = $objectList->load();
+
+        $nodes = [];
 
         foreach ($objectList as $object) {
             $data = [];
@@ -408,7 +416,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */

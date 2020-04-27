@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Cache\Runtime;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -76,13 +77,23 @@ class PimcoreObjectType extends ObjectType
     public function build($context = [])
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('object');
+        $objectTreeType = $this->getGraphQlService()->buildGeneralType('object_tree');
+
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\DataObject($this->getGraphQLService());
 
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
         $fields = ['id' =>
             [
                 'type' => Type::id(),
+            ],
+            'index' => [
+                'type' => Type::int(),
+                'resolve' => [$resolver, 'resolveIndex']
+            ],
+            'childrenSortBy' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveChildrenSortBy']
             ],
             'classname' => [
                 'type' => Type::string(),
@@ -92,11 +103,35 @@ class PimcoreObjectType extends ObjectType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
+                        'description' => 'comma separated list of key names'
                     ]
                 ],
                 'resolve' => [$resolver, "resolveProperties"]
-            ]
+            ],
+            'parent' => [
+                'type' => $objectTreeType,
+                'resolve' => [$resolver, "resolveParent"],
+            ],
+            'children' => [
+                'type' => Type::listOf($objectTreeType),
+                'args' => [
+                    'objectTypes' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'list of object types (object, variant, folder)'
+                    ],
+                ],
+                'resolve' => [$resolver, 'resolveChildren'],
+            ],
+            '_siblings' => [
+                'type' => Type::listOf($objectTreeType),
+                'args' => [
+                    'objectTypes' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'list of object types (object, variant, folder)'
+                    ],
+                ],
+                'resolve' => [$resolver, 'resolveSiblings'],
+            ],
         ];
 
         if ($context['clientname']) {
@@ -104,7 +139,8 @@ class PimcoreObjectType extends ObjectType
             /** @var $configurationItem Configuration */
             $configurationItem = $context['configuration'];
 
-            $columns = $configurationItem->getQueryColumnConfig($this->className)['columns'];
+            $queryColumnConfig = $configurationItem->getQueryColumnConfig($this->className);
+            $columns = isset($queryColumnConfig['columns']) ? $queryColumnConfig['columns'] : [];
 
             if ($columns) {
                 $class = ClassDefinition::getById($this->classId);
@@ -225,29 +261,31 @@ class PimcoreObjectType extends ObjectType
                 "type" => Type::listOf($union),
                 "resolve" => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldname) {
                     if ($value[$fieldname] instanceof Fieldcollection) {
-                        $fcData = $value[$fieldname];
                         $lofItems = [];
+                        $fcData = $value[$fieldname];
 
                         $items = $fcData->getItems();
-                        if ($items)
+                        if ($items) {
                             /** @var  $item AbstractData */
                             $idx = -1;
 
-                        foreach ($items as $item) {
-                            $idx++;
-                            $data = new FieldcollectionDescriptor();
-                            $data["__fcType"] = $item->getType();
-                            $data["__fcFieldname"] = $fieldname;
-                            $data["__itemIdx"] = $idx;
+                            foreach ($items as $item) {
+                                $idx++;
+                                $data = new FieldcollectionDescriptor();
+                                $data["__fcType"] = $item->getType();
+                                $data["__fcFieldname"] = $fieldname;
+                                $data["__itemIdx"] = $idx;
 
 
-                            $data["id"] = $value["id"];
-                            $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-                            $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
-                            $lofItems[] = $data;
+                                $data["id"] = $value["id"];
+                                $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+                                $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
+                                $lofItems[] = $data;
+                            }
                         }
+                        return $lofItems;
                     }
-                    return $lofItems;
+                    return null;
                 }
 
             ];

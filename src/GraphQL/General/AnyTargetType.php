@@ -51,24 +51,39 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
     {
 
         $service = $this->getGraphQlService();
-        $assetFolderType = $service->getAssetTypeDefinition("_asset_folder");
-        $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
-        $objectFolderType = $service->getDataObjectTypeDefinition("_object_folder");
 
+        $types = [];
 
-        $types = array_values(ClassTypeDefinitions::getAll(false));
+        if ($service->querySchemaEnabled("object")) {
+            $objectTypes = array_values(ClassTypeDefinitions::getAll(false));
+            $types = $objectTypes;
+        }
 
-        $service = $this->getGraphQlService();
-        $assetType = $service->buildAssetType("asset");
+        if ($service->querySchemaEnabled("asset")) {
+            $assetType = $service->buildAssetType("asset");
+            $types[] = $assetType;
+        }
 
-        $types[] = $assetType;
+        if ($service->querySchemaEnabled("asset_folder")) {
+            $assetFolderType = $service->getAssetTypeDefinition("_asset_folder");
+            $types[] = $assetFolderType;
+        }
 
-        $types[] = $assetFolderType;
-        $types[] = $documentFolderType;
-        $types[] = $objectFolderType;
-        $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
-        $supportedDocumentTypes = $documentUnionType->getTypes();
-        $types = array_merge($types, $supportedDocumentTypes);
+        if ($service->querySchemaEnabled("document_folder")) {
+            $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
+            $types[] = $documentFolderType;
+        }
+
+        if ($service->querySchemaEnabled("object_folder")) {
+            $objectFolderType = $service->getDataObjectTypeDefinition("_object_folder");
+            $types[] = $objectFolderType;
+        }
+
+        if ($service->querySchemaEnabled("document")) {
+            $documentUnionType = $service->getDocumentTypeDefinition("document");
+            $supportedDocumentTypes = $documentUnionType->getTypes();
+            $types = array_merge($types, $supportedDocumentTypes);
+        }
         return $types;
     }
 

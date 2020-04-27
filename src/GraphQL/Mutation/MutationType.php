@@ -91,12 +91,16 @@ class MutationType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
+        $config["fields"] = [];
         $event = new MutationTypeEvent(
             $this,
             $config,
             $context
         );
         $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
+
+        $config = $event->getConfig();
+        $context = $event->getContext();
 
         $this->buildDataObjectMutations($config, $context);
         $this->buildCreateAssetMutation($config, $context);
@@ -141,7 +145,7 @@ class MutationType extends ObjectType
             $modelFactory = $this->modelFactory;
             $localeService = $this->localeService;
 
-            if ($entityConfig["create"]) {
+            if (isset($entityConfig["create"]) && $entityConfig["create"]) {
                 // create
                 $createResultType = new ObjectType([
                     'name' => 'Create' . ucfirst($entity) . "Result",
@@ -181,6 +185,7 @@ class MutationType extends ObjectType
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => "Default is true!"],
+                        'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'input' => $inputType
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
                         $parent = null;
@@ -227,6 +232,10 @@ class MutationType extends ObjectType
 
                         call_user_func_array($resolver, [$value, $args, $context, $info]);
 
+                        if (isset($args["omitMandatoryCheck"])) {
+                            $newInstance->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                        }
+
                         $newInstance->save();
 
                         return [
@@ -240,7 +249,7 @@ class MutationType extends ObjectType
                 $config['fields'][$opName] = $createField;
             }
 
-            if ($entityConfig["update"]) {
+            if (isset($entityConfig["update"]) && $entityConfig["update"]) {
 
                 // update
                 $opName = 'update' . ucfirst($entity);
@@ -266,7 +275,7 @@ class MutationType extends ObjectType
 
                 if ($inputFields) {
                     $inputTypeName = 'Update' . ucfirst($entity) . "Input";
-                    $inputType = $this->typeCache[$inputTypeName] ? $this->typeCache[$inputTypeName] : new InputObjectType([
+                    $inputType = isset($this->typeCache[$inputTypeName]) ? $this->typeCache[$inputTypeName] : new InputObjectType([
                         'name' => $inputTypeName,
                         'fields' => $inputFields
                     ]);
@@ -278,6 +287,7 @@ class MutationType extends ObjectType
                         'args' => [
                             'id' => ['type' => Type::nonNull(Type::int())],
                             'defaultLanguage' => ['type' => Type::string()],
+                            'omitMandatoryCheck' => ['type' => Type::boolean()],
                             'input' => ['type' => $inputType],
                         ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null, $this->omitPermissionCheck)
                     ];
@@ -286,7 +296,7 @@ class MutationType extends ObjectType
                 }
             }
 
-            if ($entityConfig["delete"]) {
+            if (isset($entityConfig["delete"]) && $entityConfig["delete"]) {
                 $opName = 'delete' . ucfirst($entity);
 
                 $deleteResultType = new ObjectType([
@@ -297,18 +307,20 @@ class MutationType extends ObjectType
                     ],
                 ]);
 
+                $me = $this;
                 $deleteField = [
                     'type' => $deleteResultType,
                     'args' => [
                         'id' => ['type' => Type::nonNull(Type::int())],
-                    ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory) {
+                    ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $me) {
                         try {
                             $id = $args["id"];
                             /** @var $configuration Configuration */
                             $configuration = $context['configuration'];
                             $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                             $object = $className::getById($id);
-                            if (!WorkspaceHelper::isAllowed($object, $configuration, "delete") && !$this->omitPermissionCheck) {
+
+                            if (!WorkspaceHelper::isAllowed($object, $configuration, "delete") && !$me->omitPermissionCheck) {
                                 return [
                                     "success" => false,
                                     "message" => "permission denied."
@@ -397,6 +409,10 @@ class MutationType extends ObjectType
                     $localeService->setLocale($args['defaultLanguage']);
                 }
 
+                if (isset($args["omitMandatoryCheck"])) {
+                    $object->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                }
+
                 $dataIn = $args["input"];
                 if (is_array($dataIn)) {
                     foreach ($dataIn as $key => $value) {
@@ -427,7 +443,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildCreateAssetMutation(&$config, $context)
     {
@@ -531,7 +547,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      * @throws \Exception
      */
     public function buildUpdateAssetMutation(&$config, $context)
@@ -603,7 +619,7 @@ class MutationType extends ObjectType
     /**
      * @param $type
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildCreateFolderMutation($type, &$config, $context)
     {
@@ -650,7 +666,8 @@ class MutationType extends ObjectType
      */
     public function getCreateFolderResolver($elementType)
     {
-        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType) {
+        $me = $this;
+        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
             if (isset($args["parentId"])) {
@@ -668,7 +685,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "create") && !$me->omitPermissionCheck) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -698,7 +715,7 @@ class MutationType extends ObjectType
     /**
      * @param $type
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildUpdateFolderMutation($type, &$config, $context)
     {
@@ -786,7 +803,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildDeleteAssetMutation(&$config, $context)
     {
@@ -795,7 +812,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      * @param $type
      */
     public function buildDeleteElementMutation(&$config, $context, $type)
@@ -826,6 +843,7 @@ class MutationType extends ObjectType
                         $id = $args["id"];
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
+                        $element = null;
 
                         if ($type == "asset") {
                             $element = Asset::getById($id);
@@ -862,7 +880,7 @@ class MutationType extends ObjectType
 
     /**
      * @param $config
-     * @param $context
+     * @param array $context
      */
     public function buildDeleteDocumentMutation(&$config, $context)
     {
@@ -870,9 +888,9 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $type
-     * @param $config
-     * @param $context
+     * @param string $type
+     * @param array $config
+     * @param array $context
      */
     public function buildDeleteFolderMutation($type, &$config, $context)
     {
@@ -942,7 +960,8 @@ class MutationType extends ObjectType
      */
     public function getUpdateFolderResolver($elementType)
     {
-        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType) {
+        $me = $this;
+        return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
             if (isset($args["parentId"])) {
@@ -960,7 +979,7 @@ class MutationType extends ObjectType
 
             /** @var $configuration Configuration */
             $configuration = $context['configuration'];
-            if (!WorkspaceHelper::isAllowed($parent, $configuration, "update") && !$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::isAllowed($parent, $configuration, "update") && !$me->omitPermissionCheck) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "

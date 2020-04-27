@@ -59,7 +59,7 @@ class Trimmer extends AbstractOperator
             }
 
             if ($childValues) {
-                /** @var $childValue string */
+                /** @var string $childValue */
                 foreach ($childValues as $childValue) {
                     if ($this->trim == self::LEFT) {
                         $childValue = ltrim($childValue);

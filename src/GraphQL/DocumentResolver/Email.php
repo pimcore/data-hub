@@ -26,9 +26,9 @@ class Email
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param array null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception

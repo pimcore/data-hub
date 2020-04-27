@@ -154,7 +154,7 @@ class Configuration extends AbstractModel
             $this->configuration['general'] = [];
         }
 
-        if (!is_array($this->configuration['workspaces'])) {
+        if (!isset($this->configuration['workspaces'])) {
             $this->configuration['workspaces'] = [];
         }
 
@@ -167,8 +167,8 @@ class Configuration extends AbstractModel
         $this->configuration['general']['name'] = $this->name;
 
         $securityConfig = $this->getSecurityConfig();
-        if ($this->configuration['general']['active'] && isset($securityConfig['method']) && $securityConfig['method'] === 'datahub_apikey') {
-            $apikey = $securityConfig['apikey'];
+        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === 'datahub_apikey') {
+            $apikey = $securityConfig['apikey'] ?? "";
             if (strlen($apikey) < 16) {
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
             }
@@ -252,7 +252,7 @@ class Configuration extends AbstractModel
      */
     public function getQueryEntityConfig($entityName)
     {
-        return $this->configuration['schema']['queryEntities'][$entityName];
+        return isset($this->configuration['schema']['queryEntities'][$entityName]) ? $this->configuration['schema']['queryEntities'][$entityName] : null;
     }
 
     /**
@@ -272,7 +272,8 @@ class Configuration extends AbstractModel
      */
     public function getQueryColumnConfig($entityName)
     {
-        return $this->getQueryEntityConfig($entityName)['columnConfig'];
+        $config = $this->getQueryEntityConfig($entityName);
+        return $config['columnConfig'] ?? null;
     }
 
     /**
@@ -290,6 +291,6 @@ class Configuration extends AbstractModel
      */
     public function getSecurityConfig()
     {
-        return $this->configuration['security'];
+        return $this->configuration['security'] ?? [];
     }
 }

@@ -85,11 +85,11 @@ class QueryType extends ObjectType
      */
     public function buildFolderQueries($type, &$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities[$type . "_folder"]["read"]) {
+        if (isset($entities[$type . "_folder"]["read"]) && $entities[$type . "_folder"]["read"]) {
             $resolver = $this->getResolver();
 
             if ($type == "asset") {
@@ -121,13 +121,13 @@ class QueryType extends ObjectType
      */
     public function buildAssetQueries(&$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
         $service = $this->getGraphQlService();
         $assetType = $service->buildAssetType("asset");
 
-        if ($entities["asset"]["read"]) {
+        if ($entities["asset"]["read"] ?? false) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION
@@ -153,11 +153,11 @@ class QueryType extends ObjectType
      */
     public function buildDocumentQueries(&$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if ($entities["document"]["read"]) {
+        if (isset($entities["document"]["read"]) && $entities["document"]["read"]) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION
@@ -226,7 +226,7 @@ class QueryType extends ObjectType
      */
     public function buildDataObjectQueries(&$config = [], $context = []): void
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getQueryEntities();
 
@@ -453,6 +453,9 @@ class QueryType extends ObjectType
             $context
         );
         $this->eventDispatcher->dispatch(QueryEvents::PRE_BUILD, $event);
+
+        $config = $event->getConfig();
+        $context = $event->getContext();
 
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);

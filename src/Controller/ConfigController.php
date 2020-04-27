@@ -333,9 +333,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         $config = $configuration->getConfiguration();
-        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?: []);
-        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ?: []);
-        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ?: [];
+        $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?? []);
+        $config['schema']['mutationEntities'] = array_values($config['schema']['mutationEntities'] ?? []);
+        $config['schema']['specialEntities'] = $config['schema']['specialEntities'] ?? [];
 
         if (!$config['schema']['specialEntities']) {
             $config['schema']['specialEntities'] = [];
@@ -343,7 +343,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $specialSettings = ["document", "document_folder", "asset", "asset_folder", "object_folder"];
         foreach ($specialSettings as $key) {
-            if (!$config['schema']['specialEntities'][$key]) {
+            if (!isset($config['schema']['specialEntities'][$key])) {
                 $config['schema']['specialEntities'][$key] = ["id" => $key];
             }
         }
@@ -425,11 +425,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $name = $request->get('name');
 
-        $route = $routingService->getRouteCollection()->get('admin_pimcoredatahub_config');
-        if ($route) {
-            $url = $route->getPath();
-            $url = str_replace('{clientname}', $name, $url);
-
+        $url = $routingService->generate('admin_pimcoredatahub_config', ['clientname' => $name]);
+        if ($url) {
             return $this->json(['explorerUrl' => $url]);
         } else {
             throw new \Exception('unable to resolve');

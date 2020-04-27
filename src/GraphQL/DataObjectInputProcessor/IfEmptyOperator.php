@@ -36,7 +36,7 @@ class IfEmptyOperator extends BaseOperator
      * @param Concrete $object
      * @param $newValue
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $info
      * @return void|null
      * @throws \Exception|\UnexpectedValueException

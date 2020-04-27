@@ -16,6 +16,22 @@ A short introduction video of an output channel based on the GraphQL query langu
 composer require pimcore/data-hub:dev-master
 ```
 
+Check if the bundle has been installed
+```bash
+php bin/console pimcore:bundle:list
+bin/console pimcore:bundle:list
++---------------------------------+---------+-----------+----+-----+-----+
+| Bundle                          | Enabled | Installed | I? | UI? | UP? |
++---------------------------------+---------+-----------+----+-----+-----+
+| PimcoreDataHubBundle            | ✔       | ✔         | ❌  | ✔   | ❌  |
++---------------------------------+---------+-----------+----+-----+-----+
+```
+
+In case the bundle has not been installed correctly install it via console
+```bash
+php bin/console pimcore:bundle:install PimcoreDataHubBundle
+```
+
 ## Supported Channels
 
 * ![](./doc/img/graphql/logo_mini.png) **[GraphQL](doc/GraphQL.md)**

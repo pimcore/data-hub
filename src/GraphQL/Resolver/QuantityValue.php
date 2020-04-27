@@ -23,9 +23,9 @@ class QuantityValue
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -41,9 +41,9 @@ class QuantityValue
     }
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return string
      * @throws \Exception
@@ -58,9 +58,9 @@ class QuantityValue
     }
 
     /**
-     * @param null $value
+     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return string
      * @throws \Exception
@@ -70,6 +70,8 @@ class QuantityValue
         $returnValue = null;
 
         if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+            $currentLocale = null;
+            $localService = null;
             if (isset($args['language'])) {
                 $localService = $this->getGraphQlService()->getLocaleService();
                 $currentLocale = $localService->getLocale();

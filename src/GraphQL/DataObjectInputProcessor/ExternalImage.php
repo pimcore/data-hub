@@ -27,7 +27,7 @@ class ExternalImage extends Base
      * @param Concrete $object
      * @param $newValue
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
