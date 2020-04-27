@@ -19,13 +19,13 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class DataObject
+class DataObject extends Element
 {
     use ServiceTrait;
 
     public function __construct(Service $graphQlService)
     {
-        $this->setGraphQLService($graphQlService);
+        parent::__construct('object', $graphQlService);
     }
 
     /**
@@ -42,7 +42,7 @@ class DataObject
             return null;
         }
 
-        $object = \Pimcore\Model\DataObject::getById($value);
+        $object = \Pimcore\Model\DataObject::getById($value['id']);
 
         if (!$object instanceof DataObject) {
             return null;
@@ -65,7 +65,7 @@ class DataObject
             return null;
         }
 
-        $object = \Pimcore\Model\DataObject::getById($value);
+        $object = \Pimcore\Model\DataObject::getById($value['id']);
 
         if (!$object instanceof DataObject) {
             return null;
