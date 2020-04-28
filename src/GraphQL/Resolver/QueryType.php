@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
@@ -68,7 +69,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
     {
@@ -92,7 +93,7 @@ class QueryType
 
         if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read') && !$this->omitPermissionCheck) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view element ' . Service::getElementType($element));
+                throw new ClientSafeException('not allowed to view element ' . Service::getElementType($element));
             } else {
                 return null;
             }
@@ -112,7 +113,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
@@ -125,7 +126,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
@@ -137,7 +138,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
@@ -149,7 +150,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -171,7 +172,7 @@ class QueryType
 
         if (!WorkspaceHelper::isAllowed($documentElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view document ' . $documentElement->getFullPath());
+                throw new ClientSafeException('not allowed to view document ' . $documentElement->getFullPath());
             } else {
                 return null;
             }
@@ -191,7 +192,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -206,7 +207,7 @@ class QueryType
 
         if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset ' . $assetElement->getFullPath());
+                throw new ClientSafeException('not allowed to view asset ' . $assetElement->getFullPath());
             } else {
                 return null;
             }
@@ -224,7 +225,7 @@ class QueryType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -263,12 +264,12 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            throw new \Exception('object with ID ' . $args["id"] . ' not found');
+            throw new ClientSafeException('object with ID ' . $args["id"] . ' not found');
         }
         $object = $objectList[0];
 
         if (!WorkspaceHelper::isAllowed($object, $configuration, 'read') && !$this->omitPermissionCheck) {
-            throw new \Exception('permission denied. check your workspace settings');
+            throw new ClientSafeException('permission denied. check your workspace settings');
         }
 
         $data = new ElementDescriptor($object);
@@ -378,7 +379,7 @@ class QueryType
         if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);
             if (!$filter) {
-                throw new \Exception('unable to decode filter');
+                throw new ClientSafeException('unable to decode filter');
             }
             $filterCondition = Helper::buildSqlCondition($filter);
             $conditionParts[] = $filterCondition;
