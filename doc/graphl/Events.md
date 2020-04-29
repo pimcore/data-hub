@@ -7,6 +7,7 @@ All DataHub events are defined as a constant on component classes:
 - [Query](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL\QueryEvents.php)
 - [Mutation](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL\MutationEvents.php)
 - [Executor](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL\ExecutorEvents.php)
+- [Listing](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ListingEvents.php)
 
 ## Event Listener examples
 
@@ -104,6 +105,45 @@ class GraphqlListener implements EventSubscriberInterface
     {
         $queryType = $event->getQueryType();
         $queryType->setOmitPermissionCheck(true); //omit permission check for queries
+    }
+}
+
+```
+
+#### Example 3: Add custom query conditions to object listing
+```php
+<?php
+
+namespace AppBundle\EventListener;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class GraphqlListener implements EventSubscriberInterface
+{
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            ListingEvents::PRE_LOAD => 'onListingPreLoad',
+        ];
+    }
+
+    /**
+     * @param ListingEvent $event
+     */
+    public function onListingPreLoad(ListingEvent $event)
+    {
+        $listing = $event->getListing();
+        $args = $event->getArgs();
+
+        if ($args['onlyShowFirstLevelVariants']) {
+          $listing->setCondition('(o_parentId IN (SELECT o_id FROM objects WHERE o_type=\'object\') AND o_type = \'variant\')');
+        }
+
+        $event->setListing($listing);
     }
 }
 

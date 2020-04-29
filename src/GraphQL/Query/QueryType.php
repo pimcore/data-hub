@@ -180,7 +180,7 @@ class QueryType extends ObjectType
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
     protected function getResolver($class = null, $configuration = null) {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration, $this->omitPermissionCheck);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
     }
