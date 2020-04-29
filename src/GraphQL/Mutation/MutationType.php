@@ -672,10 +672,25 @@ class MutationType extends ObjectType
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
-            if (isset($args["parentId"])) {
-                $parent = AbstractObject::getById($args["parentId"]);
-            } else if (isset($args["path"])) {
-                $parent = AbstractObject::getByPath($args["path"]);
+
+            if ($elementType == "asset") {
+                if (isset($args["parentId"])) {
+                    $parent = Asset::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = Asset::getByPath($args["path"]);
+                }
+            } else if ($elementType == "document") {
+                if (isset($args["parentId"])) {
+                    $parent = Document::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = Document::getByPath($args["path"]);
+                }
+            } else {
+                if (isset($args["parentId"])) {
+                    $parent = AbstractObject::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = AbstractObject::getByPath($args["path"]);
+                }
             }
 
             if (!$parent) {
