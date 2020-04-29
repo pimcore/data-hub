@@ -107,8 +107,10 @@ class MutationType extends ObjectType
         $this->buildUpdateAssetMutation($config, $context);
         $this->buildCreateFolderMutation("asset", $config, $context);
         $this->buildCreateFolderMutation("object", $config, $context);
+        $this->buildCreateFolderMutation("document", $config, $context);
         $this->buildUpdateFolderMutation("asset", $config, $context);
         $this->buildUpdateFolderMutation("object", $config, $context);
+        $this->buildUpdateFolderMutation("document", $config, $context);
         $this->buildDeleteAssetMutation($config, $context);
         $this->buildDeleteDocumentMutation($config, $context);
         $this->buildDeleteFolderMutation("asset", $config, $context);
@@ -695,10 +697,14 @@ class MutationType extends ObjectType
             if ($elementType === "asset") {
                 $newInstance = new Folder();
                 $newInstance->setFilename($args["filename"]);
-            } else {
-                $newInstance = new \Pimcore\Model\DataObject\Folder();
+            } else if ($elementType === "object") {
+                $newInstance = new DataObject\Folder();
+                $newInstance->setFilename($args["filename"]);
+            } else if ($elementType === "document"){
+                $newInstance = new Document\Folder();
                 $newInstance->setKey($args["key"]);
             }
+
             $newInstance->setParentId($parent->getId());
 
             $newInstance->save();
@@ -762,6 +768,8 @@ class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         if ($type === "asset") {
                             $element = Folder::getById($id);
+                        } else if ($type == "document") {
+                            $element = Document\Folder::getById($id);
                         } else {
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
