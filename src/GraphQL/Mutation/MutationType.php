@@ -116,6 +116,12 @@ class MutationType extends ObjectType
         $this->buildDeleteFolderMutation("asset", $config, $context);
         $this->buildDeleteFolderMutation("document", $config, $context);
         $this->buildDeleteFolderMutation("object", $config, $context);
+
+        $event->setConfig($config);
+        $event->setContext($context);
+        $this->eventDispatcher->dispatch(MutationEvents::POST_BUILD, $event);
+        $config = $event->getConfig();
+
         if (isset($config["fields"]) && count($config["fields"]) > 1) {
             ksort($config["fields"]);
         }

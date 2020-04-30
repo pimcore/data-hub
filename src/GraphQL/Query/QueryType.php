@@ -301,5 +301,10 @@ class QueryType extends ObjectType
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
+
+        $event->setConfig($config);
+        $event->setContext($context);
+        $this->eventDispatcher->dispatch(QueryEvents::POST_BUILD, $event);
+        $config = $event->getConfig();
     }
 }
