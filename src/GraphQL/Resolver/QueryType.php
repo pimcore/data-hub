@@ -21,6 +21,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
@@ -31,6 +33,7 @@ use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 class QueryType
@@ -38,6 +41,11 @@ class QueryType
 
     use ServiceTrait;
     use PermissionInfoTrait;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var null
@@ -51,12 +59,14 @@ class QueryType
 
     /**
      * QueryType constructor.
+     * @param EventDispatcherInterface $eventDispatcher
      * @param ClassDefinition $class
      * @param $configuration
      * @param bool $omitPermissionCheck
      */
-    public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
+    public function __construct(EventDispatcherInterface $eventDispatcher, $class = null, $configuration = null, $omitPermissionCheck = false)
     {
+        $this->eventDispatcher = $eventDispatcher;
         $this->class = $class;
         $this->configuration = $configuration;
         $this->omitPermissionCheck = $omitPermissionCheck;
@@ -369,18 +379,31 @@ class QueryType
 
         // check permissions
         $db = Db::get();
+        $workspacesTableName = 'plugin_datahub_workspaces_object';
         $conditionParts[] = ' (
-                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-                                                    OR
-                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-                                                 )';
+            (
+                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
+                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
+                AND LOCATE(CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
+                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
+                LIMIT 1
+            )=1
+            OR
+            (
+                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
+                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
+                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key))=1
+                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
+                LIMIT 1
+            )=1
+        )';
 
         if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);
             if (!$filter) {
                 throw new \Exception('unable to decode filter');
             }
-            $filterCondition = Helper::buildSqlCondition($filter);
+            $filterCondition = Helper::buildSqlCondition($objectList->getTableName(), $filter);
             $conditionParts[] = $filterCondition;
         }
 
@@ -390,6 +413,15 @@ class QueryType
         }
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
+
+        $event =  new ListingEvent(
+            $objectList,
+            $args,
+            $context,
+            $resolveInfo
+        );
+        $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
+        $objectList = $event->getListing();
 
         $totalCount = $objectList->getTotalCount();
         $objectList = $objectList->load();
@@ -425,4 +457,3 @@ class QueryType
     }
 
 }
-
