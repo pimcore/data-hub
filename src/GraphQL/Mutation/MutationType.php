@@ -107,8 +107,10 @@ class MutationType extends ObjectType
         $this->buildUpdateAssetMutation($config, $context);
         $this->buildCreateFolderMutation("asset", $config, $context);
         $this->buildCreateFolderMutation("object", $config, $context);
+        $this->buildCreateFolderMutation("document", $config, $context);
         $this->buildUpdateFolderMutation("asset", $config, $context);
         $this->buildUpdateFolderMutation("object", $config, $context);
+        $this->buildUpdateFolderMutation("document", $config, $context);
         $this->buildDeleteAssetMutation($config, $context);
         $this->buildDeleteDocumentMutation($config, $context);
         $this->buildDeleteFolderMutation("asset", $config, $context);
@@ -185,6 +187,7 @@ class MutationType extends ObjectType
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => "Default is true!"],
+                        'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'input' => $inputType
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
                         $parent = null;
@@ -230,6 +233,10 @@ class MutationType extends ObjectType
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
                         call_user_func_array($resolver, [$value, $args, $context, $info]);
+
+                        if (isset($args["omitMandatoryCheck"])) {
+                            $newInstance->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                        }
 
                         $newInstance->save();
 
@@ -282,6 +289,7 @@ class MutationType extends ObjectType
                         'args' => [
                             'id' => ['type' => Type::nonNull(Type::int())],
                             'defaultLanguage' => ['type' => Type::string()],
+                            'omitMandatoryCheck' => ['type' => Type::boolean()],
                             'input' => ['type' => $inputType],
                         ], 'resolve' => $this->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, null, $this->omitPermissionCheck)
                     ];
@@ -401,6 +409,10 @@ class MutationType extends ObjectType
 
                 if (isset($args['defaultLanguage'])) {
                     $localeService->setLocale($args['defaultLanguage']);
+                }
+
+                if (isset($args["omitMandatoryCheck"])) {
+                    $object->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
                 }
 
                 $dataIn = $args["input"];
@@ -660,10 +672,25 @@ class MutationType extends ObjectType
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
-            if (isset($args["parentId"])) {
-                $parent = AbstractObject::getById($args["parentId"]);
-            } else if (isset($args["path"])) {
-                $parent = AbstractObject::getByPath($args["path"]);
+
+            if ($elementType == "asset") {
+                if (isset($args["parentId"])) {
+                    $parent = Asset::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = Asset::getByPath($args["path"]);
+                }
+            } else if ($elementType == "document") {
+                if (isset($args["parentId"])) {
+                    $parent = Document::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = Document::getByPath($args["path"]);
+                }
+            } else {
+                if (isset($args["parentId"])) {
+                    $parent = AbstractObject::getById($args["parentId"]);
+                } else if (isset($args["path"])) {
+                    $parent = AbstractObject::getByPath($args["path"]);
+                }
             }
 
             if (!$parent) {
@@ -685,10 +712,14 @@ class MutationType extends ObjectType
             if ($elementType === "asset") {
                 $newInstance = new Folder();
                 $newInstance->setFilename($args["filename"]);
-            } else {
-                $newInstance = new \Pimcore\Model\DataObject\Folder();
+            } else if ($elementType === "object") {
+                $newInstance = new DataObject\Folder();
+                $newInstance->setFilename($args["filename"]);
+            } else if ($elementType === "document"){
+                $newInstance = new Document\Folder();
                 $newInstance->setKey($args["key"]);
             }
+
             $newInstance->setParentId($parent->getId());
 
             $newInstance->save();
@@ -752,6 +783,8 @@ class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         if ($type === "asset") {
                             $element = Folder::getById($id);
+                        } else if ($type == "document") {
+                            $element = Document\Folder::getById($id);
                         } else {
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
