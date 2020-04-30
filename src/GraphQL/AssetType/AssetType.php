@@ -37,8 +37,8 @@ class AssetType extends ObjectType
 
     /**
      * @param Service $graphQlService
-     * @param array   $config
-     * @param array   $context
+     * @param array $config
+     * @param array $context
      *
      * @throws \Exception
      */
@@ -68,7 +68,8 @@ class AssetType extends ObjectType
 
         $config['fields'] = [
             'creationDate' => Type::int(),
-            'id' => ['name' => 'id',
+            'id' => [
+                'name' => 'id',
                 'type' => Type::id(),
             ],
             'filename' => Type::string(),
@@ -76,34 +77,67 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
-
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     return $this->resolveAssetPath($value, $args, $context, $resolveInfo, false);
                 }
             ],
             'srcset' => [
                 'type' => Type::listOf(new \GraphQL\Type\Definition\ObjectType([
-                    'name'  => 'srcset',
+                    'name' => 'srcset',
                     'fields' => [
                         'descriptor' => Type::string(),
                         'url' => Type::string(),
+                        'resolutions' => [
+                            'type' => Type::listOf(new \GraphQL\Type\Definition\ObjectType([
+                                'name' => 'resolutions',
+                                'fields' => [
+                                    'url' => Type::string(),
+                                    'resolution' => Type::int(),
+                                ],
+                            ])),
+                            'args' => [
+                                'types' => Type::listOf(Type::int()),
+                            ],
+                            'resolve' => function (
+                                $value = null,
+                                $args = [],
+                                $context = [],
+                                ResolveInfo $resolveInfo = null
+                            ) {
+                                $types = isset($args['types']) ? $args['types'] : [2];
+                                $thumbnail = $value['url'];
+                                if ($thumbnail instanceof Asset\Image\Thumbnail) {
+                                    $thumbnailConfigName = $thumbnail->getConfig()->getName();
+                                    // asset to get thumbnail with loaded medias
+                                    $asset = $thumbnail->getAsset();
+                                    $thumbnail = $asset->getThumbnail($thumbnailConfigName, false);
+                                    $resolutions = [];
+                                    foreach ($types as $type) {
+                                        $key = $value['descriptor'];
+                                        $resolutions[] = [
+                                            'url' => $thumbnail->getMedia($key, $type),
+                                            'resolution' => $type,
+                                        ];
+                                    }
+                                    return $resolutions;
+                                }
+                                return null;
+                            },
+                        ],
                     ]
                 ])),
                 'args' => [
-                    'thumbnail' => ['type' => Type::nonNull(Type::string())]
-
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     $asset = $this->getAssetFromValue($value, $context);
 
                     if ($asset instanceof Asset\Image) {
                         $mediaQueries = [];
                         $thumbnail = $asset->getThumbnail($args['thumbnail'], false);
                         $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
-                        if (
-                            $thumbnailConfig
-                        ) {
+                        if ($thumbnailConfig) {
                             foreach ($thumbnailConfig->getMedias() as $key => $val) {
                                 $mediaQueries[] = [
                                     'descriptor' => $key,
@@ -125,7 +159,7 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     return $this->resolveAssetPath($value, $args, $context, $resolveInfo, true);
                 }
             ],
@@ -159,8 +193,8 @@ class AssetType extends ObjectType
     }
 
     /**
-     * @param mixed       $value
-     * @param array       $context
+     * @param mixed $value
+     * @param array $context
      *
      * @return Asset|null
      * @throws \Exception
@@ -185,11 +219,11 @@ class AssetType extends ObjectType
     }
 
     /**
-     * @param mixed       $value
-     * @param array       $args
-     * @param array       $context
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
      * @param ResolveInfo $resolveInfo
-     * @param bool        $resolveForData
+     * @param bool $resolveForData
      *
      * @return string|null
      * @throws \Exception
@@ -200,10 +234,12 @@ class AssetType extends ObjectType
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
             if ($resolveForData === false) {
-                return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
+                return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'],
+                    false) : $asset->getFullPath();
             } else {
                 return isset($args['thumbnail'])
-                    ? base64_encode(file_get_contents($asset->getThumbnail($args['thumbnail'], false)->getFileSystemPath()))
+                    ? base64_encode(file_get_contents($asset->getThumbnail($args['thumbnail'],
+                        false)->getFileSystemPath()))
                     : base64_encode(file_get_contents($asset->getFileSystemPath()));
             }
         } elseif ($asset instanceof Asset\Document) {

@@ -19,7 +19,15 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
     assetThumb: fullpath(thumbnail: "exampleCover")
     # thumbnail URL for content config
     assetThumb2: fullpath(thumbnail: "content")
-    srcset(thumbnail: "content")
+    srcset(thumbnail: "content") {
+        url
+        descriptor
+        # if types is not defined, then default resolutions @2x will be returned
+        resolutions(types: [2,5]) {
+            url
+            resolution
+        }
+    }
     type
     mimetype
     # original file size
@@ -48,6 +56,16 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
                 {
                   "descriptor": "768w",
                   "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w.webp"
+                  "resolutions": [
+                    {
+                      "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@2x.webp",
+                      "resolution": 2
+                    },
+                    {
+                      "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@5x.webp",
+                      "resolution": 5
+                    }
+                  ]
                 }
               ],
               "type": "image",
