@@ -59,6 +59,7 @@ class QueryType
 
     /**
      * QueryType constructor.
+     * @param EventDispatcherInterface $eventDispatcher
      * @param ClassDefinition $class
      * @param $configuration
      * @param bool $omitPermissionCheck
@@ -417,7 +418,7 @@ class QueryType
             $objectList,
             $args,
             $context,
-            $resolveInfo,
+            $resolveInfo
         );
         $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
         $objectList = $event->getListing();
