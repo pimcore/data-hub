@@ -90,7 +90,7 @@ class GraphqlListener implements EventSubscriberInterface
     }
 
     /**
-     * @param ExecutorEvent $event
+     * @param MutationTypeEvent $event
      */
     public function onMutationPreBuild(MutationTypeEvent $event)
     {
@@ -99,7 +99,7 @@ class GraphqlListener implements EventSubscriberInterface
     }
 
     /**
-     * @param ExecutorResultEvent $event
+     * @param QueryTypeEvent $event
      */
     public function onQueryPreBuild(QueryTypeEvent $event)
     {
@@ -110,7 +110,58 @@ class GraphqlListener implements EventSubscriberInterface
 
 ```
 
-#### Example 3: Add custom query conditions to object listing
+#### Example 3: Add custom arguments to existing types
+```php
+<?php
+
+namespace AppBundle\EventListener;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use GraphQL\Type\Definition\Type;
+
+class GraphqlListener implements EventSubscriberInterface
+{
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            MutationEvents::POST_BUILD => 'onMutationPostBuild',
+            QueryEvents::POST_BUILD => 'onQueryPostBuild'
+        ];
+    }
+
+    /**
+     * @param MutationTypeEvent $event
+     */
+    public function onMutationPostBuild(MutationTypeEvent $event)
+    {
+        $config = $event->getConfig();
+        $config['fields']['getProductListing']['args']['foo'] = [
+            'type'  => Type::boolean()
+        ];
+        $event->setConfig($config);
+    }
+
+    /**
+     * @param QueryTypeEvent $event
+     */
+    public function onQueryPostBuild(QueryTypeEvent $event)
+    {
+        $config = $event->getConfig();
+        $config['fields']['getProductListing']['args']['foo'] = [
+            'type'  => Type::boolean()
+        ];
+        $event->setConfig($config);
+    }
+}
+
+```
+
+#### Example 4: Add custom query conditions to object listing
 
 - For global SQL conditions also [General Settings](https://github.com/pimcore/data-hub/blob/master/doc/graphl/General.md#general-settings)
 - For simple filter conditions also see [Filtering](https://github.com/pimcore/data-hub/blob/master/doc/graphl/Filtering.md#request)
