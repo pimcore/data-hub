@@ -111,6 +111,10 @@ class GraphqlListener implements EventSubscriberInterface
 ```
 
 #### Example 3: Add custom query conditions to object listing
+
+- For global SQL conditions also [General Settings](https://github.com/pimcore/data-hub/blob/master/doc/graphl/General.md#general-settings)
+- For simple filter conditions also see [Filtering](https://github.com/pimcore/data-hub/blob/master/doc/graphl/Filtering.md#request)
+
 ```php
 <?php
 
@@ -137,9 +141,8 @@ class GraphqlListener implements EventSubscriberInterface
     public function onListingPreLoad(ListingEvent $event)
     {
         $listing = $event->getListing();
-        $args = $event->getArgs();
 
-        if ($args['onlyShowFirstLevelVariants']) {
+        if ($listing->getClassName() === 'Product') {
           $listing->setCondition('(o_parentId IN (SELECT o_id FROM objects WHERE o_type=\'object\') AND o_type = \'variant\')');
         }
 
