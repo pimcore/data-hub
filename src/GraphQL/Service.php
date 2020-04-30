@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
@@ -663,7 +664,7 @@ class Service
         if (isset($this->assetDataTypes[$typename])) {
             return $this->assetDataTypes[$typename];
         }
-        throw new \Exception("unknown asset type: " . $typename);
+        throw new ClientSafeException("unknown asset type: " . $typename);
     }
 
 
@@ -677,7 +678,7 @@ class Service
         if (isset($this->classificationStoreDataTypes[$typename])) {
             return $this->classificationStoreDataTypes[$typename];
         }
-        throw new \Exception("unknown classificationstore type: " . $typename);
+        throw new ClientSafeException("unknown classificationstore type: " . $typename);
     }
 
 
@@ -691,7 +692,7 @@ class Service
         if (isset($this->dataObjectDataTypes[$typename])) {
             return $this->dataObjectDataTypes[$typename];
         }
-        throw new \Exception("unknown dataobject type: " . $typename);
+        throw new ClientSafeException("unknown dataobject type: " . $typename);
     }
 
 
@@ -705,7 +706,7 @@ class Service
         if (isset($this->documentDataTypes[$typename])) {
             return $this->documentDataTypes[$typename];
         }
-        throw new \Exception("unknown document type: " . $typename);
+        throw new ClientSafeException("unknown document type: " . $typename);
     }
 
     /**
@@ -718,7 +719,7 @@ class Service
         if (isset($this->propertyDataTypes[$typename])) {
             return $this->propertyDataTypes[$typename];
         }
-        throw new \Exception("unknown property type: " . $typename);
+        throw new ClientSafeException("unknown property type: " . $typename);
     }
 
 

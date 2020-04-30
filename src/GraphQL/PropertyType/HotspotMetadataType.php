@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
@@ -105,7 +106,7 @@ class HotspotMetadataType extends UnionType
                     return $this->objectType;
                 }
                 default:
-                    throw new \Exception("unkown metadata type: " . $type);
+                    throw new ClientSafeException("unkown metadata type: " . $type);
             }
         }
         return null;
