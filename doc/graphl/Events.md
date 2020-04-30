@@ -1,4 +1,4 @@
-#Events
+# Events
 
 DataHub GraphQL events are based on symfony event dispatcher, which are triggered during execution of Query and Mutation requests.
 [Read more](https://github.com/pimcore/pimcore/blob/master/doc/Development_Documentation/20_Extending_Pimcore/11_Event_API_and_Event_Manager.md) about events on Pimcore documentation.
