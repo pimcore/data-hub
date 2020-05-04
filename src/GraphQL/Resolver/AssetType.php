@@ -232,6 +232,8 @@ class AssetType
         $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
             $resolutions = [];
+            $asset = $thumbnail->getAsset();
+            $thumbnail = $asset->getThumbnail($this->thumbnail, false);
             if ($thumbnail->getConfig()->hasMedias()) {
                 foreach ($types as $type) {
                     $key = $value['descriptor'];
