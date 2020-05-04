@@ -250,7 +250,7 @@ class AssetType
             $path = $thumbnail->getPath();
             $resolutions = [];
             foreach ($types as $type) {
-                $url = preg_replace('/(.*)\.(.*)/i', '${1}@' . $type . 'x${2}', $path);
+                $url = preg_replace('/(.*)\.(.*)/i', '${1}@' . $type . 'x.${2}', $path);
                 $resolutions[] = [
                     'url' => $url,
                     'resolution' => $type,
