@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
@@ -155,7 +156,7 @@ class ElementPropertyType extends UnionType
                     }
                 }
                 default:
-                    throw new \Exception("unkown property type: " . $type);
+                    throw new ClientSafeException("unkown property type: " . $type);
             }
         }
         return null;

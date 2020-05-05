@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -92,7 +93,7 @@ class Video
             if ($asset instanceof Image) {
                 if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
                     if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view video');
+                        throw new NotAllowedException('not allowed to view video');
                     } else {
                         return null;
                     }
@@ -124,7 +125,7 @@ class Video
             if ($value->getType() == "asset" && $value->getData() instanceof \Pimcore\Model\Asset\Video) {
                 if (!WorkspaceHelper::isAllowed($value->getData(), $context['configuration'], 'read')) {
                     if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view video');
+                        throw new NotAllowedException('not allowed to view video');
                     } else {
                         return null;
                     }

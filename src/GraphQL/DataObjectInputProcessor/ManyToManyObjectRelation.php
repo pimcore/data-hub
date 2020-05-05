@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 
@@ -39,7 +40,7 @@ class ManyToManyObjectRelation extends Base
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
                     if (isset($newValueItemValue["type"]) && $newValueItemValue["type"] !== 'object') {
-                        throw new \Exception("expected object type");
+                        throw new ClientSafeException("expected object type");
                     }
 
                     $element = \Pimcore\Model\Element\Service::getElementById('object', $newValueItemValue["id"]);
