@@ -47,14 +47,14 @@ class AssetType
         if ($asset) {
             $metadata = $asset->getObjectVar('metadata');
             if ($metadata) {
+                if (isset($args['ignore_language']) && $args['ignore_language']) {
+                    return $metadata;
+                }
+
                 $map = [];
                 $keys = [];
                 $language = $args['language'] ?: $this->getGraphQlService()->getLocaleService()->findLocale();
 
-                if (isset($args['ignore_language']) && $args['ignore_language']) {
-                    return $metadata;
-                }
-                
                 foreach ($metadata as $item) {
                     $keys[$item['name']] = 1;
                     $l = $item['language'] ? $item['language'] : 'default';
