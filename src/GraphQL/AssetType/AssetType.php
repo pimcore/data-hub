@@ -77,7 +77,6 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
-
                 ],
                 'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     return $this->resolveAssetPath($value, $args, $context, $resolveInfo, false);
@@ -132,6 +131,10 @@ class AssetType extends ObjectType
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
+                'args' => [
+                    'language' => ['type' => Type::string()],
+                    'ignore_language' => ['type' => Type::boolean()]
+                ],
                 'resolve' => [$resolver, 'resolveMetadata']
             ],
             'properties' => [
