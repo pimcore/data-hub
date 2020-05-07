@@ -43,16 +43,10 @@ class GraphQLExplorerController extends Controller
 
         $clientName = $request->get('clientname');
 
-        $route = $routingService->getRouteCollection()->get('admin_pimcoredatahub_webservice');
-        if ($route) {
-            $url = $route->getPath();
-            $url = str_replace('/{clientname}', '', $url);
-        } else {
-            throw new \Exception('unable to resolve');
-        }
+        $url = $routingService->generate('admin_pimcoredatahub_webservice', ['clientname' => $clientName]);
 
-        if ($clientName) {
-            $url .= '/' . $clientName;
+        if (!$url) {
+            throw new \Exception('unable to resolve');
         }
 
         if ($urlParams) {
