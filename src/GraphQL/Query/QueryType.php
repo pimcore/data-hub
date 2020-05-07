@@ -280,6 +280,74 @@ class QueryType extends ObjectType
     /**
      * @param array $config
      * @param array $context
+     * @throws \Exception
+     */
+    public function buildAssetListingQueries(&$config = [], $context = []): void
+    {
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (!isset($entities["asset_listing"]["read"]) || !$entities["asset_listing"]["read"]) {
+            return;
+        }
+
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService(), $configuration);
+        $assetTree = $this->getGraphQlService()->buildGeneralType("asset_tree");
+
+        $edgeType = new ObjectType(
+            [
+                'name' => 'AssetEdge',
+                'fields' => [
+                    'cursor' => Type::string(),
+                    'node' => [
+                        'type' => $assetTree,
+                        'resolve' => [$resolver, "resolveEdge"]
+                    ],
+                ],
+            ]
+        );
+
+        $listingType = new ObjectType(
+            [
+                'name' => 'AssetConnection',
+                'fields' => [
+                    'edges' => [
+                        'type' => Type::listOf($edgeType),
+                        'resolve' => [$resolver, "resolveEdges"]
+                    ],
+                    'totalCount' => [
+                        'description' => 'The total count of all queryable assets for this schema listing',
+                        'resolve' => [$resolver, "resolveListingTotalCount"],
+                        'type' => Type::int()
+                    ]
+                ]
+            ]
+        );
+
+        $defListing = [
+            'name' => 'getAssetListing',
+            'args' => [
+                'ids' => ['type' => Type::string()],
+                'defaultLanguage' => ['type' => Type::string()],
+                'first' => ['type' => Type::int()],
+                'after' => ['type' => Type::int()],
+                'sortBy' => ['type' => Type::listOf(Type::string())],
+                'sortOrder' => [
+                    'type' => Type::listOf(Type::string()),
+                    'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                ],
+                'filter' => ['type' => Type::string()],
+            ],
+            'type' => $listingType,
+            'resolve' => [$resolver, "resolveListing"],
+        ];
+
+        $config['fields']['getAssetListing'] = $defListing;
+    }
+
+    /**
+     * @param array $config
+     * @param array $context
      *
      * @throws \Exception
      */
@@ -298,6 +366,7 @@ class QueryType extends ObjectType
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
+        $this->buildAssetListingQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
