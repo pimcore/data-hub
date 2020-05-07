@@ -28,8 +28,6 @@ class AssetType
 
     use ServiceTrait;
 
-    private $thumbnail = null;
-
     /**
      * AssetType constructor.
      */
@@ -47,8 +45,8 @@ class AssetType
      */
     public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $assetId = $value['id'];
-        $asset = Asset::getById($assetId);
+        $asset = $this->getAssetFromValue($value, $context);
+
         if ($asset) {
             $metadata = $asset->getObjectVar('metadata');
             if ($metadata) {
@@ -93,23 +91,7 @@ class AssetType
      */
     public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if (!$value instanceof ElementDescriptor) {
-            return null;
-        }
-
-        $asset = Asset::getById($value['id']);
-
-        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset');
-            } else {
-                return null;
-            }
-        }
-
-        if (isset($args['thumbnail'])) {
-            $this->thumbnail = $args['thumbnail'];
-        }
+        $asset = $this->getAssetFromValue($value, $context);
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
             return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
@@ -132,23 +114,7 @@ class AssetType
      */
     public function resolveData($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if (!$value instanceof ElementDescriptor) {
-            return null;
-        }
-
-        $asset = Asset::getById($value['id']);
-
-        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset');
-            } else {
-                return null;
-            }
-        }
-
-        if (isset($args['thumbnail'])) {
-            $this->thumbnail = $args['thumbnail'];
-        }
+        $asset = $this->getAssetFromValue($value, $context);
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
             return isset($args['thumbnail'])
@@ -176,23 +142,7 @@ class AssetType
      */
     public function resolveSrcSet($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        if (!$value instanceof ElementDescriptor) {
-            return null;
-        }
-
-        $asset = Asset::getById($value['id']);
-
-        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset');
-            } else {
-                return null;
-            }
-        }
-
-        if (isset($args['thumbnail'])) {
-            $this->thumbnail = $args['thumbnail'];
-        }
+        $asset = $this->getAssetFromValue($value, $context);
 
         if ($asset instanceof Asset\Image) {
             $mediaQueries = [];
@@ -225,15 +175,20 @@ class AssetType
         $types = $args['types'];
         $thumbnail = $value['url'];
 
-        if (empty($this->thumbnail)) {
-            return [];
-        }
-
         $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
             $resolutions = [];
+            $thumbnailName = $thumbnail->getConfig()->getName();
             $asset = $thumbnail->getAsset();
-            $thumbnail = $asset->getThumbnail($this->thumbnail, false);
+            if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
+                if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                    throw new \Exception('not allowed to view asset');
+                } else {
+                    return null;
+                }
+            }
+
+            $thumbnail = $asset->getThumbnail($thumbnailName, false);
             if ($thumbnail->getConfig()->hasMedias()) {
                 foreach ($types as $type) {
                     $key = $value['descriptor'];
@@ -247,14 +202,17 @@ class AssetType
         }
 
         if ($value instanceof ElementDescriptor) {
-            $asset = Asset::getById($value['id']);
-            $thumbnail = $asset->getThumbnail($this->thumbnail, false);
-            $path = $thumbnail->getPath();
+            $thumbnailName = $args['thumbnail'];
+            $asset = $this->getAssetFromValue($value, $context);
+            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            $thumbnailConfig = $thumbnail->getConfig();
+            $thumbConfigRes = clone $thumbnailConfig;
             $resolutions = [];
             foreach ($types as $type) {
-                $url = preg_replace('/(.*)\.(.*)/i', '${1}@' . $type . 'x.${2}', $path);
+                $thumbConfigRes->setHighResolution($type);
+                $thumbConfigRes->setMedias([]);
                 $resolutions[] = [
-                    'url' => $url,
+                    'url' => $asset->getThumbnail($thumbConfigRes, false),
                     'resolution' => $type,
                 ];
             }
@@ -264,5 +222,30 @@ class AssetType
         return [];
     }
 
-}
+    /**
+     * @param mixed       $value
+     * @param array       $context
+     *
+     * @return Asset|null
+     * @throws \Exception
+     */
+    protected function getAssetFromValue($value, $context)
+    {
+        if (!$value instanceof ElementDescriptor) {
+            return null;
+        }
 
+        $asset = Asset::getById($value['id']);
+
+        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view asset');
+            } else {
+                return null;
+            }
+        }
+
+        return $asset;
+    }
+
+}

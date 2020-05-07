@@ -66,6 +66,20 @@ class AssetType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
 
+        $resolutionsType = Type::listOf(new ObjectType([
+            'name' => 'resolutions',
+            'fields' => [
+                'url' => Type::string(),
+                'resolution' => Type::int(),
+            ],
+        ]));
+        $resolutionsArgumentsType = [
+            'type' => Type::listOf(Type::int()),
+            'description' => 'List of resolution types [2, 5, ...]',
+            'defaultValue' => [2]
+        ];
+
+
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => [
@@ -81,19 +95,10 @@ class AssetType extends ObjectType
                 'resolve' => [$resolver, 'resolvePath'],
             ],
             'resolutions' => [
-                'type' => Type::listOf(new ObjectType([
-                    'name' => 'resolutions',
-                    'fields' => [
-                        'url' => Type::string(),
-                        'resolution' => Type::int(),
-                    ],
-                ])),
+                'type' => $resolutionsType,
                 'args' => [
-                    'types' => [
-                        'type' => Type::listOf(Type::int()),
-                        'description' => 'List of resolution types [2, 5, ...]',
-                        'defaultValue' => [2]
-                    ]
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                    'types' => $resolutionsArgumentsType
                 ],
                 'resolve' => [$resolver, 'resolveResolutions'],
             ],
@@ -104,19 +109,9 @@ class AssetType extends ObjectType
                         'descriptor' => Type::string(),
                         'url' => Type::string(),
                         'resolutions' => [
-                            'type' => Type::listOf(new ObjectType([
-                                'name' => 'srcsetresolutions',
-                                'fields' => [
-                                    'url' => Type::string(),
-                                    'resolution' => Type::int(),
-                                ],
-                            ])),
+                            'type' => $resolutionsType,
                             'args' => [
-                                'types' => [
-                                    'type' => Type::listOf(Type::int()),
-                                    'description' => 'List of resolution types [2, 5, ...]',
-                                    'defaultValue' => [2]
-                                ]
+                                'types' => $resolutionsArgumentsType,
                             ],
                             'resolve' => [$resolver, 'resolveResolutions'],
                         ],
