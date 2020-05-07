@@ -16,7 +16,10 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
 
@@ -42,8 +45,8 @@ class AssetType
      */
     public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $assetId = $value['id'];
-        $asset = Asset::getById($assetId);
+        $asset = $this->getAssetFromValue($value, $context);
+
         if ($asset) {
             $metadata = $asset->getObjectVar('metadata');
             if ($metadata) {
@@ -77,5 +80,172 @@ class AssetType
 
     }
 
-}
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     *
+     * @return string|null
+     * @throws \Exception
+     */
+    public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
 
+        if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
+            return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
+        } elseif ($asset instanceof Asset\Document) {
+            return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
+        } elseif ($asset instanceof Asset) {
+            return $asset->getFullPath();
+        }
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     *
+     * @return string|null
+     * @throws \Exception
+     */
+    public function resolveData($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
+            return isset($args['thumbnail'])
+                ? base64_encode(file_get_contents($asset->getThumbnail($args['thumbnail'],
+                    false)->getFileSystemPath()))
+                : base64_encode(file_get_contents($asset->getFileSystemPath()));
+        } elseif ($asset instanceof Asset\Document) {
+            return isset($args['thumbnail'])
+                ? base64_encode(file_get_contents($asset->getImageThumbnail($args['thumbnail'])->getFileSystemPath()))
+                : base64_encode(file_get_contents($asset->getFileSystemPath()));
+        } elseif ($asset instanceof Asset) {
+            return base64_encode(file_get_contents($asset->getFileSystemPath()));
+        }
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveSrcSet($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if ($asset instanceof Asset\Image) {
+            $mediaQueries = [];
+            $thumbnail = $asset->getThumbnail($args['thumbnail'], false);
+            $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
+            if ($thumbnailConfig) {
+                foreach ($thumbnailConfig->getMedias() as $key => $val) {
+                    $mediaQueries[] = [
+                        'descriptor' => $key,
+                        'url' => $thumbnail->getMedia($key),
+                    ];
+                }
+            }
+            return $mediaQueries;
+        }
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveResolutions($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        $types = $args['types'];
+        $thumbnail = $value['url'];
+
+        $asset = null;
+        if ($thumbnail instanceof Asset\Image\Thumbnail) {
+            $resolutions = [];
+            $thumbnailName = $thumbnail->getConfig()->getName();
+            $asset = $thumbnail->getAsset();
+            if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
+                if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                    throw new \Exception('not allowed to view asset');
+                } else {
+                    return null;
+                }
+            }
+
+            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            if ($thumbnail->getConfig()->hasMedias()) {
+                foreach ($types as $type) {
+                    $key = $value['descriptor'];
+                    $resolutions[] = [
+                        'url' => $thumbnail->getMedia($key, $type),
+                        'resolution' => $type,
+                    ];
+                }
+            }
+            return $resolutions;
+        }
+
+        if ($value instanceof ElementDescriptor) {
+            $thumbnailName = $args['thumbnail'];
+            $asset = $this->getAssetFromValue($value, $context);
+            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            $thumbnailConfig = $thumbnail->getConfig();
+            $thumbConfigRes = clone $thumbnailConfig;
+            $resolutions = [];
+            foreach ($types as $type) {
+                $thumbConfigRes->setHighResolution($type);
+                $thumbConfigRes->setMedias([]);
+                $resolutions[] = [
+                    'url' => $asset->getThumbnail($thumbConfigRes, false),
+                    'resolution' => $type,
+                ];
+            }
+            return $resolutions;
+        }
+
+        return [];
+    }
+
+    /**
+     * @param mixed       $value
+     * @param array       $context
+     *
+     * @return Asset|null
+     * @throws \Exception
+     */
+    protected function getAssetFromValue($value, $context)
+    {
+        if (!$value instanceof ElementDescriptor) {
+            return null;
+        }
+
+        $asset = Asset::getById($value['id']);
+
+        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new \Exception('not allowed to view asset');
+            } else {
+                return null;
+            }
+        }
+
+        return $asset;
+    }
+
+}
