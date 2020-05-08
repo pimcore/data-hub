@@ -65,7 +65,7 @@ class AssetType extends ObjectType
             'name' => 'resolutions',
             'fields' => [
                 'url' => Type::string(),
-                'resolution' => Type::int(),
+                'resolution' => Type::float(),
             ],
         ]));
         $resolutionsArgumentsType = [
