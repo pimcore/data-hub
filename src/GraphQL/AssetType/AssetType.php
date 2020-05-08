@@ -70,7 +70,7 @@ class AssetType extends ObjectType
             ],
         ]));
         $resolutionsArgumentsType = [
-            'type' => Type::listOf(Type::int()),
+            'type' => Type::listOf(Type::float()),
             'description' => 'List of resolution types [2, 5, ...]',
             'defaultValue' => [2]
         ];
