@@ -189,10 +189,8 @@ class QueryType extends ObjectType
      * @param null $configuration
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
-    protected function getResolver($class = null, $configuration = null)
-    {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration,
-            $this->omitPermissionCheck);
+    protected function getResolver($class = null, $configuration = null) {
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
     }
@@ -476,5 +474,10 @@ class QueryType extends ObjectType
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
+
+        $event->setConfig($config);
+        $event->setContext($context);
+        $this->eventDispatcher->dispatch(QueryEvents::POST_BUILD, $event);
+        $config = $event->getConfig();
     }
 }

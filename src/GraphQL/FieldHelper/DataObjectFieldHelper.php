@@ -19,6 +19,7 @@ use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
@@ -206,7 +207,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             case 'mutation':
                 return $this->getGraphQlService()->supportsDataObjectMutationDataType($typeName);
             default:
-                throw new \Exception("unknown operation type");
+                throw new ClientSafeException("unknown operation type " . $typeName);
         }
     }
 

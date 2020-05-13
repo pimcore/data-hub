@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -76,7 +77,7 @@ class ObjectsMetadata
                 $element = $relation->getElement();
                 if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
                     if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view ' . $element->getFullPath());
+                        throw new NotAllowedException('not allowed to view ' . $element->getFullPath());
                     } else {
                         continue;
                     }

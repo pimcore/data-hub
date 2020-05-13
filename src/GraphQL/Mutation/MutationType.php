@@ -116,6 +116,12 @@ class MutationType extends ObjectType
         $this->buildDeleteFolderMutation("asset", $config, $context);
         $this->buildDeleteFolderMutation("document", $config, $context);
         $this->buildDeleteFolderMutation("object", $config, $context);
+
+        $event->setConfig($config);
+        $event->setContext($context);
+        $this->eventDispatcher->dispatch(MutationEvents::POST_BUILD, $event);
+        $config = $event->getConfig();
+
         if (isset($config["fields"]) && count($config["fields"]) > 1) {
             ksort($config["fields"]);
         }
@@ -141,7 +147,7 @@ class MutationType extends ObjectType
             }
             $entityConfig = $configuration->getMutationEntityConfig($entity);
 
-            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration);
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
 
             $modelFactory = $this->modelFactory;
@@ -454,7 +460,7 @@ class MutationType extends ObjectType
         $entities = $configuration->getSpecialEntities();
 
         if (isset($entities["asset"]["create"]) && $entities["asset"]["create"]) {
-            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
             $service = $this->getGraphQlService();
@@ -559,7 +565,7 @@ class MutationType extends ObjectType
         $entities = $configuration->getSpecialEntities();
 
         if (isset($entities["asset"]["update"]) && $entities["asset"]["update"]) {
-            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType(null, $configuration);
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
             $queryResolver = [$queryResolver, "resolveAssetGetter"];
             $service = $this->getGraphQlService();

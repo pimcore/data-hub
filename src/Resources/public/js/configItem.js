@@ -45,13 +45,13 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
 
     openExplorer: function (callbackFn) {
         Ext.Ajax.request({
-            url: '/admin/pimcoredatahub/config/get-explorer-url?' + this.data.general.name,
+            url: '/admin/pimcoredatahub/config/get-explorer-url?name=' + this.data.general.name,
 
             success: function (callbackFn, response, opts) {
 
                 var data = Ext.decode(response.responseText);
                 var securityValues = this.securityForm.getForm().getFieldValues();
-                var explorerUrl = window.location.origin + data.explorerUrl + this.data.general.name;
+                var explorerUrl = window.location.origin + data.explorerUrl;
                 if (securityValues && securityValues["method"] == "datahub_apikey") {
                     explorerUrl = explorerUrl + "?apikey=" + securityValues["apikey"];
                 }

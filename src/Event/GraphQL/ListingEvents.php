@@ -14,19 +14,12 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL;
 
-final class MutationEvents
+final class ListingEvents
 {
     /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent")
+     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent")
      *
      * @var string
      */
-    const PRE_BUILD = 'pimcore.datahub.graphql.mutation.preBuild';
-
-    /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent")
-     *
-     * @var string
-     */
-    const POST_BUILD = 'pimcore.datahub.graphql.mutation.postBuild';
+    const PRE_LOAD = 'pimcore.datahub.graphql.listing.preLoad';
 }

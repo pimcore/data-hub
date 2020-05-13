@@ -22,4 +22,11 @@ final class QueryEvents
      * @var string
      */
     const PRE_BUILD = 'pimcore.datahub.graphql.query.preBuild';
+
+    /**
+     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent")
+     *
+     * @var string
+     */
+    const POST_BUILD = 'pimcore.datahub.graphql.query.postBuild';
 }

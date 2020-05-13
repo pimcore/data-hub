@@ -16,15 +16,10 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
 {
@@ -66,15 +61,16 @@ class AssetType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
 
+        // see https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images#Resolution_switching_Same_size_different_resolutions
         $resolutionsType = Type::listOf(new ObjectType([
             'name' => 'resolutions',
             'fields' => [
                 'url' => Type::string(),
-                'resolution' => Type::int(),
+                'resolution' => Type::float(),
             ],
         ]));
         $resolutionsArgumentsType = [
-            'type' => Type::listOf(Type::int()),
+            'type' => Type::listOf(Type::float()),
             'description' => 'List of resolution types [2, 5, ...]',
             'defaultValue' => [2]
         ];
@@ -135,6 +131,10 @@ class AssetType extends ObjectType
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
+                'args' => [
+                    'language' => ['type' => Type::string()],
+                    'ignore_language' => ['type' => Type::boolean()]
+                ],
                 'resolve' => [$resolver, 'resolveMetadata']
             ],
             'properties' => [

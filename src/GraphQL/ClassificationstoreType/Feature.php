@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -67,7 +68,7 @@ class Feature extends UnionType implements ContainerAwareInterface
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if (!$element instanceof FeatureDescriptor) {
-            throw new \Exception("expected feature descriptor");
+            throw new ClientSafeException("expected feature descriptor");
         }
 
         $type = $element->getType();
