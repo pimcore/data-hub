@@ -720,7 +720,7 @@ class MutationType extends ObjectType
                 $newInstance->setFilename($args["filename"]);
             } else if ($elementType === "object") {
                 $newInstance = new DataObject\Folder();
-                $newInstance->setFilename($args["filename"]);
+                $newInstance->setKey($args["key"]);
             } else if ($elementType === "document"){
                 $newInstance = new Document\Folder();
                 $newInstance->setKey($args["key"]);
