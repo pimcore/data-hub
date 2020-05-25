@@ -55,7 +55,7 @@ class Element
      * @return array|Property[]|null
      * @throws ClientSafeException
      */
-    public function resolveProperties(array $value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
+    public function resolveProperties($value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
         $element = ElementService::getElementById($this->elementType, $elementId);
