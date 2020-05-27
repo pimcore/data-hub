@@ -129,7 +129,39 @@ class Element
         }
         return [];
     }
-    
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
+    public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        return $value['totalCount'];
+    }
+
+
+    /**
+     * @param array $elements
+     * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    protected function extractMultipleElements($elements, $args, $context, $resolveInfo)
+    {
+        $result = [];
+        if ($elements) {
+            foreach ($elements as $element) {
+                $result[] = $this->extractSingleElement($element, $args, $context, $resolveInfo);
+            }
+        }
+        return array_filter($result);
+    }
+
     /**
      * @param array $args
      * @return array
