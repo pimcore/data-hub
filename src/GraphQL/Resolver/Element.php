@@ -31,20 +31,13 @@ class Element
 {
 
     use ServiceTrait;
-    use PermissionInfoTrait;
 
     /** @var string */
     protected $elementType;
-    /**
-     * @var null
-     */
-    protected $configuration;
 
-    public function __construct(string $elementType, Service $graphQlService, $configuration = null, $omitPermissionCheck = false)
+    public function __construct(string $elementType, Service $graphQlService)
     {
         $this->elementType = $elementType;
-        $this->configuration = $configuration;
-        $this->omitPermissionCheck = $omitPermissionCheck;
         $this->setGraphQLService($graphQlService);
     }
 
@@ -136,19 +129,7 @@ class Element
         }
         return [];
     }
-
-    /**
-     * @param null $value
-     * @param array $args
-     * @param array $context
-     * @param ResolveInfo|null $resolveInfo
-     * @return mixed
-     */
-    public function resolveEdges($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
-        return $value['edges'];
-    }
-
+    
     /**
      * @param array $args
      * @return array
