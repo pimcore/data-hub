@@ -17,14 +17,20 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\Document;
 use Pimcore\Model\Property;
+use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\Service as ElementService;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 
 
 class Element
@@ -49,7 +55,7 @@ class Element
      * @return array|Property[]|null
      * @throws ClientSafeException
      */
-    public function resolveProperties(array $value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
+    public function resolveProperties($value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
         $element = ElementService::getElementById($this->elementType, $elementId);
@@ -131,17 +137,17 @@ class Element
     }
 
     /**
-     * @param null $value
      * @param array $args
-     * @param array $context
-     * @param ResolveInfo|null $resolveInfo
-     * @return mixed
+     * @return array
      */
-    public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    protected function composeArguments($args = [])
     {
-        return $value['totalCount'];
+        $arguments = [];
+        if ($this->elementType === 'object') {
+            $arguments[] = isset($args['objectTypes']) ? $args['objectTypes'] : [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
+        }
+        return $arguments;
     }
-
 
     /**
      * @param array $elements
@@ -163,16 +169,35 @@ class Element
     }
 
     /**
+     * @param Element $element
      * @param array $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
      * @return array
+     * @throws \Exception
      */
-    protected function composeArguments($args = [])
+    protected function extractSingleElement($element, $args, $context, $resolveInfo)
     {
-        $arguments = [];
-        if ($this->elementType === 'object') {
-            $arguments[] = isset($args['objectTypes']) ? $args['objectTypes'] : [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
+        // Check Workspace permissions
+        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                throw new NotAllowedException('not allowed to view ' . $element->getFullPath());
+            } else {
+                return null;
+            }
         }
-        return $arguments;
+
+        $data = new ElementDescriptor($element);
+        $data['id'] = $element->getId();
+
+        // Check element type
+        $treeType = $this->getTreeType();
+        $elementType = $treeType->resolveType($data, $context, $resolveInfo);
+        if (in_array($elementType, $treeType->getTypes(), true)) {
+            $this->getFieldHelper()->extractData($data, $element, $args, $context, $resolveInfo);
+            return $data;
+        }
+        return null;
     }
 
     /**
