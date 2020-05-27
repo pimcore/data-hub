@@ -93,7 +93,7 @@ class ListingEvent extends Event
      */
     public function getResolveInfo(): ResolveInfo
     {
-        return $this->$resolveInfo;
+        return $this->resolveInfo;
     }
 
     /**
@@ -101,7 +101,7 @@ class ListingEvent extends Event
      */
     public function setResolveInfo(ResolveInfo $resolveInfo): void
     {
-        $this->$resolveInfo = $resolveInfo;
+        $this->resolveInfo = $resolveInfo;
     }
 
     /**
