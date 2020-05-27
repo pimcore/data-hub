@@ -19,18 +19,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 
-
 class AssetType
 {
-
     use ServiceTrait;
-
-    /**
-     * AssetType constructor.
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * @param array $value
@@ -76,6 +67,5 @@ class AssetType
         return null;
 
     }
-
 }
 

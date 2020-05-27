@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -291,6 +292,7 @@ class QueryType extends ObjectType
             return;
         }
 
+        $listResolver = new AssetListing($this->getGraphQlService(), $this->eventDispatcher);
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService(), $configuration);
         $assetTree = $this->getGraphQlService()->buildGeneralType("asset_tree");
 
@@ -301,7 +303,7 @@ class QueryType extends ObjectType
                     'cursor' => Type::string(),
                     'node' => [
                         'type' => $assetTree,
-                        'resolve' => [$resolver, "resolveEdge"]
+                        'resolve' => [$listResolver, "resolveEdge"]
                     ],
                 ],
             ]
@@ -317,7 +319,7 @@ class QueryType extends ObjectType
                     ],
                     'totalCount' => [
                         'description' => 'The total count of all queryable assets for this schema listing',
-                        'resolve' => [$resolver, "resolveListingTotalCount"],
+                        'resolve' => [$listResolver, "resolveListingTotalCount"],
                         'type' => Type::int()
                     ]
                 ]
@@ -339,7 +341,7 @@ class QueryType extends ObjectType
                 'filter' => ['type' => Type::string()],
             ],
             'type' => $listingType,
-            'resolve' => [$resolver, "resolveListing"],
+            'resolve' => [$listResolver, "resolveListing"],
         ];
 
         $config['fields']['getAssetListing'] = $defListing;
