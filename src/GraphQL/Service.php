@@ -32,6 +32,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
@@ -914,6 +915,19 @@ class Service
                     $result = $itemData->$getter($args["language"]);
                 } else {
                     $result = $itemData->$getter();
+                }
+            }
+        } if ($descriptor instanceof BlockDescriptor) {
+            $descriptorData = $descriptor->getArrayCopy();
+            $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
+            $blockData = $object->$blockGetter();
+            if ($blockData) {
+                $index = $descriptorData["__blockIndex"];
+                $itemData = $blockData[$index];
+                $result = $itemData[$descriptorData['__blockFieldName']]->getData();
+
+                if ($result instanceof Localizedfield && $descriptorData['__localized']) {
+                    $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }
         } else if (substr($attribute, 0, 1) == '~') {
