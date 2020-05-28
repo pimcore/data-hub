@@ -57,6 +57,18 @@ class AssetListing
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
+    public function resolveEdges($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
+        return $value['edges'];
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return mixed
+     */
     public function resolveEdge($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         $element = $value['node'];

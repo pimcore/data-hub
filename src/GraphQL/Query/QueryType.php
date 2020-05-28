@@ -315,7 +315,7 @@ class QueryType extends ObjectType
                 'fields' => [
                     'edges' => [
                         'type' => Type::listOf($edgeType),
-                        'resolve' => [$resolver, "resolveEdges"]
+                        'resolve' => [$listResolver, "resolveEdges"]
                     ],
                     'totalCount' => [
                         'description' => 'The total count of all queryable assets for this schema listing',
