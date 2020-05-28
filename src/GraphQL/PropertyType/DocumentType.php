@@ -73,12 +73,8 @@ class DocumentType extends ObjectType
                             $element = $value->getData();
                         }
                         if ($element) {
-                            if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                    throw new NotAllowedException('not allowed to view document');
-                                } else {
-                                    return null;
-                                }
+                            if (!WorkspaceHelper::checkPermission($element, 'read')) {
+                                return null;
                             }
                             /** @var  $element Document */
                             $data = new ElementDescriptor($element);
