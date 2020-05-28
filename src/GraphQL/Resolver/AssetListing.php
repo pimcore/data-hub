@@ -109,18 +109,8 @@ class AssetListing
             }
         }
 
-        // Include unpublished
-//        if (isset($args['published']) && $args['published'] === false) {
-//            $objectList->setUnpublished(true);
-//        }
-
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
-//        $sqlListCondition = $configuration->getSql();
-//
-//        if ($sqlListCondition) {
-//            $conditionParts[] = '(' . $sqlListCondition . ')';
-//        }
 
         // check permissions
         $db = Db::get();
