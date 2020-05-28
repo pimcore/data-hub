@@ -22,18 +22,9 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
-
 class AssetType
 {
-
     use ServiceTrait;
-
-    /**
-     * AssetType constructor.
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * @param array $value
@@ -105,6 +96,7 @@ class AssetType
         }
         return null;
     }
+
 
     /**
      * @param mixed $value
