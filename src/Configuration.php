@@ -133,7 +133,9 @@ class Configuration extends AbstractModel
      */
     public function skipPermisssionCheck()
     {
-        return $this->configuration && $this->configuration['security'] ? $this->configuration['security']['skipPermissionCheck'] : false;
+        return $this->configuration && isset($this->configuration['security'])
+            && isset($this->configuration['security']['skipPermissionCheck'])
+            && $this->configuration['security']['skipPermissionCheck'];
     }
 
     /**
