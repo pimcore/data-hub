@@ -917,7 +917,9 @@ class Service
                     $result = $itemData->$getter();
                 }
             }
-        } if ($descriptor instanceof BlockDescriptor) {
+        }
+
+        if ($descriptor instanceof BlockDescriptor) {
             $descriptorData = $descriptor->getArrayCopy();
             $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
             $blockData = $object->$blockGetter();
@@ -926,7 +928,7 @@ class Service
                 $itemData = $blockData[$index];
                 $result = $itemData[$descriptorData['__blockFieldName']]->getData();
 
-                if ($result instanceof Localizedfield && $descriptorData['__localized']) {
+                if ($descriptorData['__localized']) {
                     $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }

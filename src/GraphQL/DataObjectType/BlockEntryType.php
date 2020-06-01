@@ -83,8 +83,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         $config['name'] = 'block_'.$this->class->getName().'_'.$this->fieldDefinition->getName() . '_entry';
         $fields = [];
 
-        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-        $localizedFields = [];
+        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();$localizedFields = [];
 
         foreach ($this->fieldDefinition->getChildren() as $fieldDef) {
             if ($fieldDef instanceof ClassDefinition\Data\Localizedfields) {
@@ -92,20 +91,13 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
 
                 foreach ($fcLocalizedFieldDefs as $key => $localizedFieldDef) {
                     if ($fieldHelper->supportsGraphQL($localizedFieldDef, 'query')) {
-                        $localizedFields[$localizedFieldDef->getName()] = $this->prepareField($localizedFieldDef, true);
+                        $fields[$localizedFieldDef->getName()] = $this->prepareField($localizedFieldDef, true);
                     }
                 }
             }
             elseif ($fieldHelper->supportsGraphQL($fieldDef, 'query')) {
                 $fields[$fieldDef->getName()] = $this->prepareField($fieldDef);
             }
-        }
-
-        if (count($localizedFields) > 0) {
-            $fields['localizedfields'] = new ObjectType([
-                'name' => $config['name'] . '_localizedfields',
-                'fields' => $localizedFields
-            ]);
         }
 
         $config['fields'] = $fields;
@@ -128,13 +120,11 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
                 return null;
             }
 
-            if (!$localized && !is_array($value)) {
+            if (!is_array($value)) {
                 return null;
             }
 
-            if (!$localized) {
-                $value = $value[$resolveInfo->fieldName];
-            }
+            $value = $value[$resolveInfo->fieldName];
 
             if (!$value instanceof BlockDescriptor) {
                 return null;

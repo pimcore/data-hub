@@ -79,17 +79,26 @@ class Block extends Base
                         continue;
                     }
 
+                    if ($subDef instanceof Data\Localizedfields) {
+                        foreach ($subDef->getChildren() as $localizedDef) {
+                            $blockDescriptor = new BlockDescriptor();
+                            $blockDescriptor['id'] = $value['id'];
+                            $blockDescriptor['__blockName'] = $fieldDefinition->getName();
+                            $blockDescriptor['__blockIndex'] = $blockIndex;
+                            $blockDescriptor['__blockFieldName'] = $key;
+                            $blockDescriptor['__localized'] = $localizedDef->getName();
+
+                            $result[$blockIndex][$localizedDef->getName()] = $blockDescriptor;
+                        }
+
+                        continue;
+                    }
+
                     $blockDescriptor = new BlockDescriptor();
                     $blockDescriptor['id'] = $value['id'];
                     $blockDescriptor['__blockName'] = $fieldDefinition->getName();
                     $blockDescriptor['__blockIndex'] = $blockIndex;
                     $blockDescriptor['__blockFieldName'] = $key;
-
-                    if ($subDef instanceof Data\Localizedfields) {
-                        foreach ($subDef->getChildren() as $localizedDef) {
-                            $blockDescriptor['__localized'] = $localizedDef->getName();
-                        }
-                    }
 
                     $result[$blockIndex][$key] = $blockDescriptor;
                 }
