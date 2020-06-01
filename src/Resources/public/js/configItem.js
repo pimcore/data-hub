@@ -440,7 +440,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         var columns = [
             {
                 sortable: true,
-                dataIndex: 'id',
+                dataIndex: 'name',
                 editable: false,
                 filter: 'string',
                 renderer: function (v) {
@@ -455,19 +455,19 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         for (var i = 0; i < additionalColumns.length; i++) {
             var checkColumn = Ext.create('Ext.grid.column.Check', {
                 text: t(additionalColumns[i]),
-                dataIndex: additionalColumns[i],
+                dataIndex: additionalColumns[i] + 'Allowed',
+                operationIndex: additionalColumns[i],
                 listeners: {
-                    //TODO remove this handler as soon as documents are feature complete
-                    beforecheckchange: function (checkCol, rowIndex, checked, eOpts ) {
-                        if (checked && in_array(checkCol.dataIndex, ["create", "update"])) {
-                            var store = this.specialSchemaGrid.getStore();
-                            var record = store.getAt(rowIndex);
-                            var id = record.get("id");
-                            if (id == "document_folder" || id == "document") {
-                                pimcore.helpers.showNotification(t("info"), "Experimental feature / WIP. Only certain read operations are supported. Please check the doc for more information.");
-                                return false;
-                            }
+                    beforecheckchange: function (checkCol, rowIndex, checked) {
+                        var store = this.specialSchemaGrid.getStore();
+                        var record = store.getAt(rowIndex);
+                        var possibleValue = checkCol.operationIndex + 'Possible';
+
+                        if (!record.get(possibleValue)) {
+                            pimcore.helpers.showNotification(t("info"), "Operation is not implemented.");
+                            return false;
                         }
+
                         return true;
                     }.bind(this)}
             });

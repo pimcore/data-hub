@@ -15,10 +15,14 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
+use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
+use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -321,7 +325,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function getAction(Request $request, Service $graphQlService): JsonResponse
+    public function getAction(Request $request, Service $graphQlService, EventDispatcherInterface $eventDispatcher): JsonResponse
     {
         $this->checkPermission(self::CONFIG_NAME);
 
@@ -341,14 +345,79 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config['schema']['specialEntities'] = [];
         }
 
-        $specialSettings = ["document", "document_folder", "asset", "asset_folder", "asset_listing", "object_folder"];
-        foreach ($specialSettings as $key) {
-            if (!isset($config['schema']['specialEntities'][$key])) {
-                $config['schema']['specialEntities'][$key] = ["id" => $key];
-            }
-        }
+        $coreSettings = [
+            new SpecialEntitySetting(
+                'document',
+                true,
+                false,
+                false,
+                false,
+                $config['schema']['specialEntities']['document']['read'] ?? false,
+                $config['schema']['specialEntities']['document']['create'] ?? false,
+                $config['schema']['specialEntities']['document']['update'] ?? false,
+                $config['schema']['specialEntities']['document']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'document_folder',
+                true,
+                false,
+                false,
+                false,
+                $config['schema']['specialEntities']['document_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset']['read'] ?? false,
+                $config['schema']['specialEntities']['asset']['create'] ?? false,
+                $config['schema']['specialEntities']['asset']['update'] ?? false,
+                $config['schema']['specialEntities']['asset']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset_folder',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset_folder',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset_listing']['read'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['create'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['update'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset_listing',
+                true,
+                false,
+                false,
+                false,
+                $config['schema']['specialEntities']['object_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['delete'] ?? false
+            )
+        ];
 
-        $config['schema']['specialEntities'] = array_values($config['schema']['specialEntities']);
+        $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
+        $eventDispatcher->dispatch(ConfigEvents::SPECIAL_ENTITIES, $specialSettingsEvent);
+
+        $config['schema']['specialEntities'] = $specialSettingsEvent->getSpecialSettings();
 
         //TODO we probably need this stuff only for graphql stuff
         $supportedQueryDataTypes = $graphQlService->getSupportedDataObjectQueryDataTypes();
