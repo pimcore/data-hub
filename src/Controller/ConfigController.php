@@ -391,7 +391,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 $config['schema']['specialEntities']['asset_folder']['delete'] ?? false
             ),
             new SpecialEntitySetting(
-                'asset_folder',
+                'asset_listing',
                 true,
                 true,
                 true,
@@ -402,7 +402,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 $config['schema']['specialEntities']['asset_listing']['delete'] ?? false
             ),
             new SpecialEntitySetting(
-                'asset_listing',
+                'object_folder',
                 true,
                 false,
                 false,
