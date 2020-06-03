@@ -74,12 +74,8 @@ class AssetType extends ObjectType
                             }
 
                             if ($element) {
-                                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                        throw new NotAllowedException('not allowed to view object');
-                                    } else {
-                                        return null;
-                                    }
+                                if (!WorkspaceHelper::checkPermission($element,  'read')) {
+                                    return null;
                                 }
 
                                 $data = new ElementDescriptor($element);

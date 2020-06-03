@@ -32,4 +32,5 @@ pimcore_data_hub:
         not_allowed_policy: 2
 ```
 
-
+It is also possible to disable the permission checks entirely by setting the configuration option
+in the security definition tab.

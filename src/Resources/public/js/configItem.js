@@ -196,6 +196,13 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
             minLength: 16
         });
 
+        var skipPermissionCheck = new Ext.form.Checkbox({
+            fieldLabel: t('plugin_pimcore_datahub_skip_permission_check'),
+            labelWidth: 200,
+            name: "skipPermissionCheck",
+            value: this.data.security ? this.data.security.skipPermissionCheck : ""
+        });
+
         this.securityForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
             autoScroll: true,
@@ -219,7 +226,8 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     xtype: "fieldcontainer",
                     layout: 'hbox',
 
-                    items: [apikeyField,
+                    items: [
+                        apikeyField,
                         {
                             xtype: "button",
                             width: 32,
@@ -231,6 +239,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                         }
                     ]
                 },
+                skipPermissionCheck,
                 {
                     xtype: 'displayfield',
                     hideLabel: true,
