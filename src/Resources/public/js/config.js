@@ -15,17 +15,15 @@ pimcore.registerNS("pimcore.plugin.datahub.config");
 pimcore.plugin.datahub.config = Class.create({
 
     initialize: function () {
-
         this.getTabPanel();
     },
 
     activate: function () {
-        var tabPanel = Ext.getCmp("pimcore_panel_tabs");
+        let tabPanel = Ext.getCmp("pimcore_panel_tabs");
         tabPanel.setActiveItem(this.getTabPanel());
     },
 
     getTabPanel: function () {
-
         if (!this.panel) {
             this.panel = new Ext.Panel({
                 id: "pimcore_plugin_datahub_config_tab",
@@ -66,22 +64,40 @@ pimcore.plugin.datahub.config = Class.create({
                 }
             });
 
+            let menuItems = [];
+
+            let firstHandler;
+
+            for (var key in pimcore.plugin.datahub.adapter) {
+                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) ) {
+
+                    let adapter = new pimcore.plugin.datahub.adapter[key](this);
+
+                    if (!firstHandler) {
+                        firstHandler = adapter.addConfiguration.bind(adapter, key);
+                    }
+                    menuItems.push(
+                    {
+                        text: t('plugin_pimcore_datahub_type_' + key),
+                        iconCls: "plugin_pimcore_datahub_icon_" + key,
+                        handler: adapter.addConfiguration.bind(adapter, key)
+                    });
+                }
+            }
+
+            menuItems.push({
+                text: t('plugin_pimcore_datahub_type_locked'),
+                iconCls: "plugin_pimcore_datahub_icon_locked",
+                disabled: true
+            });
+
             var addConfigButton = new Ext.SplitButton({
                 text: t("plugin_pimcore_datahub_configpanel_add"),
                 iconCls: "pimcore_icon_add",
-                handler: this.addField.bind(this, "graphql"),
-                menu: [
-                    {
-                        text: t('plugin_pimcore_datahub_type_graphql'),
-                        iconCls: "plugin_pimcore_datahub_icon_graphql",
-                        handler: this.addField.bind(this, "graphql")
-                    },{
-                        text: t('plugin_pimcore_datahub_type_locked'),
-                        iconCls: "plugin_pimcore_datahub_icon_locked",
-                        disabled: true
-                    }
-                ]
+                handler: firstHandler,
+                menu: menuItems
             });
+
 
             this.tree = new Ext.tree.TreePanel({
                 store: store,
@@ -127,43 +143,13 @@ pimcore.plugin.datahub.config = Class.create({
         return this.editPanel;
     },
 
-    getTreeNodeListeners: function () {
-        var treeNodeListeners = {
-            'click': this.onTreeNodeClick.bind(this),
-            "contextmenu": this.onTreeNodeContextmenu
-        };
-
-        return treeNodeListeners;
-    },
 
     onTreeNodeClick: function (tree, record, item, index, e, eOpts) {
-        this.openConfig(record.id);
+        let adapterType = record.data.adapter;
+        let adapterImpl = new pimcore.plugin.datahub.adapter[adapterType](this);
+        adapterImpl.openConfiguration(record.id);
     },
 
-    openConfig: function (id) {
-        var existingPanel = Ext.getCmp("plugin_pimcore_datahub_configpanel_panel_" + id);
-        if(existingPanel) {
-            this.editPanel.setActiveTab(existingPanel);
-            return;
-        }
-
-        Ext.Ajax.request({
-            url: "/admin/pimcoredatahub/config/get",
-            params: {
-                name: id
-            },
-            success: function (response) {
-                var data = Ext.decode(response.responseText);
-
-                pimcore.plugin.datahub.graphql = pimcore.plugin.datahub.graphql || {};
-                pimcore.plugin.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLQueryDataTypes;
-                pimcore.plugin.datahub.graphql.supportedMutationDataTypes = data.supportedGraphQLMutationDataTypes;
-
-                var fieldPanel = new pimcore.plugin.datahub.configItem(data, this);
-                pimcore.layout.refresh();
-            }.bind(this)
-        });
-    },
 
     onTreeNodeContextmenu: function (tree, record, item, index, e, eOpts) {
         e.stopEvent();
@@ -174,109 +160,34 @@ pimcore.plugin.datahub.config = Class.create({
         menu.add(new Ext.menu.Item({
             text: t('delete'),
             iconCls: "pimcore_icon_delete",
-            handler: this.deleteField.bind(this, tree, record)
+            handler: this.deleteConfiguration.bind(this, tree, record)
         }));
 
         menu.add(new Ext.menu.Item({
             text: t('clone'),
             iconCls: "pimcore_icon_clone",
-            handler: this.cloneField.bind(this, tree, record)
+            handler: this.cloneConfiguration.bind(this, tree, record)
         }));
 
         menu.showAt(e.pageX, e.pageY);
     },
 
-    addField: function (type) {
-        Ext.MessageBox.prompt(t('plugin_pimcore_datahub_configpanel_enterkey_title'), t('plugin_pimcore_datahub_configpanel_enterkey_prompt'), this.addFieldComplete.bind(this, type), null, null, "");
+    cloneConfiguration: function (tree, record) {
+        let adapterType = record.data.adapter;
+        let adapterImpl = new pimcore.plugin.datahub.adapter[adapterType](this);
+        adapterImpl.cloneConfiguration(tree, record);
     },
 
-    addFieldComplete: function (type, button, value, object) {
-
-        var regresult = value.match(/[a-zA-Z0-9_\-]+/);
-        if (button == "ok" && value.length > 2 && regresult == value) {
-            Ext.Ajax.request({
-                url: "/admin/pimcoredatahub/config/add",
-                params: {
-                    name: value,
-                    type: type
-                },
-                success: function (response) {
-                    var data = Ext.decode(response.responseText);
-
-                    this.tree.getStore().load({
-                        node: this.tree.getRootNode()
-                    });
-
-                    if (!data || !data.success) {
-                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_adding_config"), "error", data.message);
-                    } else {
-                        this.openConfig(data.name);
-                    }
-
-                }.bind(this)
-            });
-        }
-        else if (button == "cancel") {
-            return;
-        }
-        else {
-            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), t("plugin_pimcore_datahub_configpanel_invalid_name"));
-        }
+    deleteConfiguration: function (tree, record) {
+        let adapterType = record.data.adapter;
+        let adapterImpl = new pimcore.plugin.datahub.adapter[adapterType](this);
+        adapterImpl.deleteConfiguration(tree, record);
     },
 
-    cloneFieldComplete: function (tree, record, button, value, object) {
-
-        var regresult = value.match(/[a-zA-Z0-9_\-]+/);
-        if (button == "ok" && value.length > 2 && regresult == value) {
-            Ext.Ajax.request({
-                url: "/admin/pimcoredatahub/config/clone",
-                params: {
-                    name: value,
-                    originalName: record.data.id
-                },
-                success: function (response) {
-                    var data = Ext.decode(response.responseText);
-
-                    this.tree.getStore().load({
-                        node: this.tree.getRootNode()
-                    });
-
-                    if (!data || !data.success) {
-                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_cloning_config"), "error", data.message);
-                    } else {
-                        this.openConfig(data.name, tree, record);
-                    }
-
-                }.bind(this)
-            });
-        }
-        else if (button == "cancel") {
-            return;
-        }
-        else {
-            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), t("plugin_pimcore_datahub_configpanel_invalid_name"));
-        }
-    },
-
-    cloneField: function (tree, record) {
-        Ext.MessageBox.prompt(t('plugin_pimcore_datahub_configpanel_enterclonekey_title'), t('plugin_pimcore_datahub_configpanel_enterclonekey_enterclonekey_prompt'),
-            this.cloneFieldComplete.bind(this, tree, record), null, null, "");
-    },
-
-    deleteField: function (tree, record) {
-        Ext.Msg.confirm(t('delete'), t('delete_message'), function (btn) {
-            if (btn == 'yes') {
-                Ext.Ajax.request({
-                    url: "/admin/pimcoredatahub/config/delete",
-                    params: {
-                        name: record.data.id
-                    }
-                });
-
-                this.getEditPanel().removeAll();
-                record.remove();
-            }
-        }.bind(this));
+    refreshTree: function() {
+        this.tree.getStore().load({
+            node: this.tree.getRootNode()
+        });
     }
 
 });
