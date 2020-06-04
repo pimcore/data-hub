@@ -19,8 +19,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\BlockDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\BlockEntryType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Data\BlockElement;
+use Pimcore\Model\DataObject\Fieldcollection;
 
 class Block extends Base
 {
@@ -88,6 +90,12 @@ class Block extends Base
                             $blockDescriptor['__blockFieldName'] = $key;
                             $blockDescriptor['__localized'] = $localizedDef->getName();
 
+                            if ($value instanceof FieldcollectionDescriptor) {
+                                $blockDescriptor['__fcFieldname'] = $value['__fcFieldname'];
+                                $blockDescriptor['__fcType'] = $value['__fcType'];
+                                $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
+                            }
+
                             $result[$blockIndex][$localizedDef->getName()] = $blockDescriptor;
                         }
 
@@ -99,6 +107,12 @@ class Block extends Base
                     $blockDescriptor['__blockName'] = $fieldDefinition->getName();
                     $blockDescriptor['__blockIndex'] = $blockIndex;
                     $blockDescriptor['__blockFieldName'] = $key;
+
+                    if ($value instanceof FieldcollectionDescriptor) {
+                        $blockDescriptor['__fcFieldname'] = $value['__fcFieldname'];
+                        $blockDescriptor['__fcType'] = $value['__fcType'];
+                        $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
+                    }
 
                     $result[$blockIndex][$key] = $blockDescriptor;
                 }

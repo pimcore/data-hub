@@ -921,8 +921,27 @@ class Service
 
         if ($descriptor instanceof BlockDescriptor) {
             $descriptorData = $descriptor->getArrayCopy();
-            $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
-            $blockData = $object->$blockGetter();
+            $blockData = null;
+
+            if ($descriptorData['__fcFieldname']) {
+                $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+                $fcData = $object->$fcFieldNameGetter();
+
+                if ($fcData) {
+                    $items = $fcData->getItems();
+                    $idx = $descriptorData["__itemIdx"];
+                    $itemData = $items[$idx];
+                    $result = [];
+
+                    $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
+                    $blockData = $itemData->$blockGetter();
+                }
+            }
+            else {
+                $blockGetter = "get".ucfirst($descriptorData['__blockName']);
+                $blockData = $object->$blockGetter();
+            }
+
             if ($blockData) {
                 $index = $descriptorData["__blockIndex"];
                 $itemData = $blockData[$index];

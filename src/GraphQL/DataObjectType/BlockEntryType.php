@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Data\BlockElement;
+use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Pimcore\Model\DataObject\Localizedfield;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -80,7 +81,17 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
      */
     public function build(&$config)
     {
-        $config['name'] = 'block_'.$this->class->getName().'_'.$this->fieldDefinition->getName() . '_entry';
+        if ($this->class instanceof Definition) {
+            $name = $this->class->getKey();
+        }
+        else if ($this->class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
+            $name = $this->class->getKey();
+        }
+        else {
+            $name = $this->class->getName();
+        }
+
+        $config['name'] = 'block_'.$name.'_'.$this->fieldDefinition->getName() . '_entry';
         $fields = [];
 
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();$localizedFields = [];
