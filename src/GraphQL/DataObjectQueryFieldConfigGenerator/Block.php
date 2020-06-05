@@ -21,8 +21,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\BlockDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\BlockEntryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\BlockElement;
 use Pimcore\Model\DataObject\Fieldcollection;
+use Pimcore\Model\DataObject\Objectbrick\Definition;
+use Pimcore\Model\DataObject\Service;
 
 class Block extends Base
 {
@@ -56,7 +59,7 @@ class Block extends Base
     }
 
     /**
-     * @param array $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
      * @param      $class
      *
@@ -65,11 +68,56 @@ class Block extends Base
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         return function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use (
-            $fieldDefinition
+            $fieldDefinition, $attribute, $class
         ) {
-            $fieldname = $fieldDefinition->getName();
             $result = [];
-            foreach ($value[$fieldname] as $blockIndex => $blockEntries) {
+            $isBrick = false;
+            $attributeParts = explode('~', $attribute);
+            $fieldname = $fieldDefinition->getName();
+
+            if (count($attributeParts) > 1) {
+                $id = $value["id"];
+                $object = Concrete::getById($id);
+
+                if (!$object) {
+                    return null;
+                }
+
+                $context = ["object" => $object];
+                $brickDescriptor = null;
+
+                $brickType = $attributeParts[0];
+                $brickKey = $attributeParts[1];
+
+                $key = Service::getFieldForBrickType($object->getclass(), $brickType);
+
+                $brickClass = Definition::getByKey($brickType);
+
+                if (!$brickClass) {
+                    return null;
+                }
+
+                $context['outerFieldname'] = $key;
+
+                $def = $brickClass->getFieldDefinition($brickKey, $context);
+
+                if (!$def) {
+                    return null;
+                }
+
+                $isBrick = true;
+
+                if (!empty($key)) {
+                    $value = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                    $fieldDefinition = $def;
+                }
+            }
+            else {
+                $id = $value['id'];
+                $value = $value[$fieldname];
+            }
+
+            foreach ($value as $blockIndex => $blockEntries) {
                 foreach ($blockEntries as $key => $blockValue) {
                     if (!$blockValue instanceof BlockElement) {
                         continue;
@@ -84,7 +132,7 @@ class Block extends Base
                     if ($subDef instanceof Data\Localizedfields) {
                         foreach ($subDef->getChildren() as $localizedDef) {
                             $blockDescriptor = new BlockDescriptor();
-                            $blockDescriptor['id'] = $value['id'];
+                            $blockDescriptor['id'] = $id;
                             $blockDescriptor['__blockName'] = $fieldDefinition->getName();
                             $blockDescriptor['__blockIndex'] = $blockIndex;
                             $blockDescriptor['__blockFieldName'] = $key;
@@ -95,6 +143,10 @@ class Block extends Base
                                 $blockDescriptor['__fcType'] = $value['__fcType'];
                                 $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
                             }
+                            elseif ($isBrick) {
+                                $blockDescriptor['__brickType'] = $attributeParts[0];
+                                $blockDescriptor['__brickKey'] = $attributeParts[1];
+                            }
 
                             $result[$blockIndex][$localizedDef->getName()] = $blockDescriptor;
                         }
@@ -103,7 +155,7 @@ class Block extends Base
                     }
 
                     $blockDescriptor = new BlockDescriptor();
-                    $blockDescriptor['id'] = $value['id'];
+                    $blockDescriptor['id'] = $id;
                     $blockDescriptor['__blockName'] = $fieldDefinition->getName();
                     $blockDescriptor['__blockIndex'] = $blockIndex;
                     $blockDescriptor['__blockFieldName'] = $key;
@@ -112,6 +164,10 @@ class Block extends Base
                         $blockDescriptor['__fcFieldname'] = $value['__fcFieldname'];
                         $blockDescriptor['__fcType'] = $value['__fcType'];
                         $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
+                    }
+                    elseif ($isBrick) {
+                        $blockDescriptor['__brickType'] = $attributeParts[0];
+                        $blockDescriptor['__brickKey'] = $attributeParts[1];
                     }
 
                     $result[$blockIndex][$key] = $blockDescriptor;

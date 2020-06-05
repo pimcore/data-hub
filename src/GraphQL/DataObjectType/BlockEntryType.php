@@ -94,7 +94,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         $config['name'] = 'block_'.$name.'_'.$this->fieldDefinition->getName() . '_entry';
         $fields = [];
 
-        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();$localizedFields = [];
+        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
         foreach ($this->fieldDefinition->getChildren() as $fieldDef) {
             if ($fieldDef instanceof ClassDefinition\Data\Localizedfields) {

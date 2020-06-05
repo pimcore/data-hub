@@ -937,6 +937,33 @@ class Service
                     $blockData = $itemData->$blockGetter();
                 }
             }
+            elseif ($descriptorData['__brickType']) {
+                $context = ["object" => $object];
+                $brickDescriptor = null;
+
+                $brickType = $descriptorData['__brickType'];
+                $brickKey = $descriptorData['__brickKey'];
+
+                $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+
+                $brickClass = Definition::getByKey($brickType);
+
+                if (!$brickClass) {
+                    return null;
+                }
+
+                $context['outerFieldname'] = $key;
+
+                $def = $brickClass->getFieldDefinition($brickKey, $context);
+
+                if (!$def) {
+                    return null;
+                }
+
+                if (!empty($key)) {
+                    $blockData = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                }
+            }
             else {
                 $blockGetter = "get".ucfirst($descriptorData['__blockName']);
                 $blockData = $object->$blockGetter();
