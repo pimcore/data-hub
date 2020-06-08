@@ -16,6 +16,7 @@ If not otherwise noted then all samples can be tested using this [Endpoint](http
 * [Many-to-Many Object Relation](graphl/querysamples/Sample_ManyToManyObject.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)
 * [Get Asset Directly](graphl/querysamples/Sample_GetAsset.md)
+* [Get Asset Listing](graphl/querysamples/Sample_GetAssetListing.md)
 * [Get Asset Metadata](graphl/querysamples/Sample_AssetMetadata.md)
 * [Advanced Many-to-Many Object Relation + Metadata](graphl/querysamples/Sample7.md)
 * [Website Translator](graphl/querysamples/Sample_WebsiteTranslation.md)

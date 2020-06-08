@@ -26,7 +26,7 @@ and the server-side PHP implementation doing the actual calculations.
 A JS sample can be found here: https://github.com/pimcore/data-hub/blob/master/src/Resources/public/js/queryoperator/Trimmer.js
 Note that the namespace would be `pimcore.plugin.datahub.operator.mycustomoperator`
 
-Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/5.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
+Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/6.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
 docs page for further details.
 
 Next thing is to provide the server-side implementation.
