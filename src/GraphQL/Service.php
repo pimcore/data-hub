@@ -934,7 +934,7 @@ class Service
                     $result = [];
 
                     $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
-                    $blockData = $itemData->$blockGetter();
+                    $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);;
                 }
             }
             elseif ($descriptorData['__brickType']) {

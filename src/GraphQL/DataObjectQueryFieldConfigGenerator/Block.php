@@ -118,6 +118,10 @@ class Block extends Base
                 $value = $value[$fieldname];
             }
 
+            if (is_callable($value)) {
+                $value = $value($value, $args, $context, $resolveInfo);
+            }
+
             foreach ($value as $blockIndex => $blockEntries) {
                 foreach ($blockEntries as $key => $blockValue) {
                     if (!$blockValue instanceof BlockElement) {
@@ -138,6 +142,7 @@ class Block extends Base
                             $blockDescriptor['__blockIndex'] = $blockIndex;
                             $blockDescriptor['__blockFieldName'] = $key;
                             $blockDescriptor['__localized'] = $localizedDef->getName();
+                            $blockDescriptor['args'] = $args;
 
                             if ($originalValue instanceof FieldcollectionDescriptor) {
                                 $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
@@ -160,6 +165,7 @@ class Block extends Base
                     $blockDescriptor['__blockName'] = $fieldDefinition->getName();
                     $blockDescriptor['__blockIndex'] = $blockIndex;
                     $blockDescriptor['__blockFieldName'] = $key;
+                    $blockDescriptor['args'] = $args;
 
                     if ($originalValue instanceof FieldcollectionDescriptor) {
                         $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
