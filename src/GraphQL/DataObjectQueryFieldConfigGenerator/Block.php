@@ -70,6 +70,7 @@ class Block extends Base
         return function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use (
             $fieldDefinition, $attribute, $class
         ) {
+            $originalValue = $value;
             $result = [];
             $isBrick = false;
             $attributeParts = explode('~', $attribute);
@@ -138,10 +139,10 @@ class Block extends Base
                             $blockDescriptor['__blockFieldName'] = $key;
                             $blockDescriptor['__localized'] = $localizedDef->getName();
 
-                            if ($value instanceof FieldcollectionDescriptor) {
-                                $blockDescriptor['__fcFieldname'] = $value['__fcFieldname'];
-                                $blockDescriptor['__fcType'] = $value['__fcType'];
-                                $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
+                            if ($originalValue instanceof FieldcollectionDescriptor) {
+                                $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
+                                $blockDescriptor['__fcType'] = $originalValue['__fcType'];
+                                $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                             }
                             elseif ($isBrick) {
                                 $blockDescriptor['__brickType'] = $attributeParts[0];
@@ -160,10 +161,10 @@ class Block extends Base
                     $blockDescriptor['__blockIndex'] = $blockIndex;
                     $blockDescriptor['__blockFieldName'] = $key;
 
-                    if ($value instanceof FieldcollectionDescriptor) {
-                        $blockDescriptor['__fcFieldname'] = $value['__fcFieldname'];
-                        $blockDescriptor['__fcType'] = $value['__fcType'];
-                        $blockDescriptor['__itemIdx'] = $value['__itemIdx'];
+                    if ($originalValue instanceof FieldcollectionDescriptor) {
+                        $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
+                        $blockDescriptor['__fcType'] = $originalValue['__fcType'];
+                        $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                     }
                     elseif ($isBrick) {
                         $blockDescriptor['__brickType'] = $attributeParts[0];
