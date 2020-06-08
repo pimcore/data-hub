@@ -49,6 +49,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * [URL Slug](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Others.html)
 * Video
 * Wysiwyg
+* Block
 
 ## Query Operators
 
