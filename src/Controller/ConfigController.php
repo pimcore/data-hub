@@ -417,6 +417,12 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
         $eventDispatcher->dispatch(ConfigEvents::SPECIAL_ENTITIES, $specialSettingsEvent);
 
+        $finalSettings = [];
+
+        foreach ($specialSettingsEvent->getSpecialSettings() as $item) {
+            $finalSettings[$item->getName()] = $item;
+        }
+
         $config['schema']['specialEntities'] = $specialSettingsEvent->getSpecialSettings();
 
         //TODO we probably need this stuff only for graphql stuff
@@ -460,7 +466,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $dataDecoded['general']['name'];
             $config = Dao::getByName($name);
 
-            $keys = ['queryEntities', 'mutationEntities','specialEntities'];
+            $keys = ['queryEntities', 'mutationEntities'];
             foreach ($keys as $key) {
                 $transformedEntities = [];
                 if ($dataDecoded['schema'][$key]) {
@@ -469,6 +475,21 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                     }
                 }
                 $dataDecoded['schema'][$key] = $transformedEntities;
+            }
+
+            if ($dataDecoded['schema']['specialEntities']) {
+                $transformedEntities = [];
+
+                foreach ($dataDecoded['schema']['specialEntities'] as $entity) {
+                    $transformedEntities[$entity['name']] = [
+                        'read' => $entity['readAllowed'],
+                        'create' => $entity['createAllowed'],
+                        'update' => $entity['updateAllowed'],
+                        'delete' => $entity['deleteAllowed'],
+                    ];
+
+                    $dataDecoded['schema']['specialEntities'] = $transformedEntities;
+                }
             }
 
             $config->setConfiguration($dataDecoded);
