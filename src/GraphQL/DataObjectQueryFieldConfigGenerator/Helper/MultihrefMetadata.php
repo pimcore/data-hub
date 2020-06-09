@@ -75,12 +75,8 @@ class MultihrefMetadata
             /** @var $relation ElementMetadata */
             foreach ($relations as $relation) {
                 $element = $relation->getElement();
-                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new NotAllowedException('not allowed to view ' . $relation->getFullPath());
-                    } else {
-                        continue;
-                    }
+                if (!WorkspaceHelper::checkPermission($element, 'read')) {
+                    continue;
                 }
 
                 $data = [];

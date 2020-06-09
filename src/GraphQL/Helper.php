@@ -66,16 +66,16 @@ class Helper
                 if (is_array($value)) {
                     $childParts = [];
                     foreach ($value as $arrItem) {
-                        $childParts[] = self::buildSqlCondition($arrItem, $childOp);
+                        $childParts[] = self::buildSqlCondition($defaultTable, $arrItem, $childOp);
                     }
                     $parts[] = implode(' ' . $childOp . ' ', $childParts);
                 } else {
-                    $parts[] = self::buildSqlCondition($value, $childOp);
+                    $parts[] = self::buildSqlCondition($defaultTable, $value, $childOp);
                 }
             } else {
                 if (is_array($value)) {
                     foreach ($value as $subValue) {
-                        $parts[] = self::buildSqlCondition($subValue);
+                        $parts[] = self::buildSqlCondition($defaultTable, $subValue);
                     }
                 } elseif ($value instanceof \stdClass) {
                     $objectVars = get_object_vars($value);
@@ -89,7 +89,7 @@ class Helper
                             }
                         } else {
                             if ($objectValue instanceof \stdClass) {
-                                $parts[] = self::buildSqlCondition($objectValue, null, $objectVar);
+                                $parts[] = self::buildSqlCondition($defaultTable, $objectValue, null, $objectVar);
                             } else {
                                 $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $objectVar) . ' = ' . $db->quote($objectValue) . ')';
                             }

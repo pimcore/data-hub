@@ -129,6 +129,14 @@ class Configuration extends AbstractModel
     }
 
     /**
+     * @return string|bool
+     */
+    public function skipPermisssionCheck()
+    {
+        return $this->configuration['security']['skipPermissionCheck'] ?? false;
+    }
+
+    /**
      * @param string $path
      */
     public function setPath($path): void

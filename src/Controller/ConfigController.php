@@ -19,10 +19,12 @@ use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
+use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,6 +72,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             'iconCls' => 'plugin_pimcore_datahub_icon_' . $type,
             'expandable' => false,
             'leaf' => true,
+            'adapter' => $type
         ];
     }
 
@@ -85,42 +88,17 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         // check permissions
         $this->checkPermission(self::CONFIG_NAME);
 
-        $folders = Dao::getFolders();
         $list = Dao::getList();
 
-        $tree = [];
-        $folderStructure = [];
-
-        // build a temporary 1 dimensional folder structure
-        foreach ($folders as $folder) {
-            $folderStructure[$folder['path']] = $this->buildFolder($folder['path'], $folder['name']);
-
-            // root folders, keep a pointer to 1 dimensional array
-            // to minimize memory and actually make the nesting work
-            if (empty($folder['parent'])) {
-                $tree[] = &$folderStructure[$folder['path']];
-            }
-        }
-
-        // start nesting folders
-        foreach ($folders as $folder) {
-            $parent = $folder['parent'];
-            $path = $folder['path'];
-
-            if (!empty($parent) && !empty($folderStructure[$parent])) {
-                $folderStructure[$parent]['children'][] = & $folderStructure[$path];
-            }
-        }
+        $event = new GenericEvent($this);
+        $event->setArgument("list", $list);
+        \Pimcore::getEventDispatcher()->dispatch(AdminEvents::CONFIGURATION_LIST, $event);
+        $list = $event->getArgument("list");
 
         // add configurations to their corresponding folder
         foreach ($list as $configuration) {
             $config = $this->buildItem($configuration);
-
-            if (!$configuration->getPath()) {
-                $tree[] = $config;
-            } elseif (!empty($folderStructure[$configuration->getPath()])) {
-                $folderStructure[$configuration->getPath()]['children'][] = $config;
-            }
+            $tree[] = $config;
         }
 
         return $this->json($tree);

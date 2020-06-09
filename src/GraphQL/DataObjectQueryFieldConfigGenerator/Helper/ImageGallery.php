@@ -95,8 +95,8 @@ class ImageGallery
                 }
 
                 if ($image instanceof Asset) {
-                    if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                        throw new NotAllowedException('permission denied. check your workspace settings');
+                    if (!WorkspaceHelper::checkPermission($image, 'read')) {
+                        continue;
                     }
 
                     $data = new ElementDescriptor($image);
