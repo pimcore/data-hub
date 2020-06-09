@@ -11,8 +11,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.configItem");
-pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
+pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
+pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
@@ -36,9 +36,9 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         this.tab.on("activate", this.tabactivated.bind(this));
         this.tab.on("destroy", this.tabdestroy.bind(this));
 
-        this.parent.editPanel.add(this.tab);
-        this.parent.editPanel.setActiveTab(this.tab);
-        this.parent.editPanel.updateLayout();
+        this.parent.configPanel.editPanel.add(this.tab);
+        this.parent.configPanel.editPanel.setActiveTab(this.tab);
+        this.parent.configPanel.editPanel.updateLayout();
 
         this.showInfo();
     },
