@@ -269,7 +269,7 @@ class QueryType extends ObjectType
                 'resolve' => [$resolver, "resolveListing"],
             ];
 
-            if (!$config['fields']) {
+            if (!isset($config['fields'])) {
                 $config['fields'] = [];
             }
 
