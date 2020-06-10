@@ -923,7 +923,7 @@ class Service
             $descriptorData = $descriptor->getArrayCopy();
             $blockData = null;
 
-            if ($descriptorData['__fcFieldname']) {
+            if (isset($descriptorData['__fcFieldname']) && $descriptorData['__fcFieldname']) {
                 $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
                 $fcData = $object->$fcFieldNameGetter();
 
@@ -937,7 +937,7 @@ class Service
                     $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);;
                 }
             }
-            elseif ($descriptorData['__brickType']) {
+            elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
                 $context = ["object" => $object];
                 $brickDescriptor = null;
 
