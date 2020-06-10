@@ -974,7 +974,7 @@ class Service
                 $itemData = $blockData[$index];
                 $result = $itemData[$descriptorData['__blockFieldName']]->getData();
 
-                if ($descriptorData['__localized']) {
+                if (isset($descriptorData['__localized']) && $descriptorData['__localized']) {
                     $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }
