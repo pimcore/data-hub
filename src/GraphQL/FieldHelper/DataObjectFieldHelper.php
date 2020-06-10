@@ -34,12 +34,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param $nodeDef
      * @param ClassDefinition $class
+     * @param $container
      *
      * @return array|bool
      */
-    public function getQueryFieldConfigFromConfig($nodeDef, $class)
+    public function getQueryFieldConfigFromConfig($nodeDef, $class, $container = null)
     {
-        $container = null;
         $result = false;
 
         $attributes = $nodeDef['attributes'];

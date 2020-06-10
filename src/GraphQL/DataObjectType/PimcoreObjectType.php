@@ -225,7 +225,7 @@ class PimcoreObjectType extends ObjectType
                                 "dataType" => $fieldDef->getFieldtype()
                             ]
                         ];
-                        $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
+                        $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef, $fcLocalizedFields);
                         if ($fcResult) {
                             $fcFields[$fcResult['key']] = $fcResult['config'];
                         }

@@ -6,6 +6,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 * Advanced Many-to-Many Relation
 * Advanced Many-to-Many Object Relation
+* Block
 * Boolean Select
 * [Calculated Value](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Calculated_Value_Type.html)
 * Checkbox
