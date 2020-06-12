@@ -20,7 +20,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Model\Document\Tag\Relation;
 use Pimcore\Model\Document\Tag\Relations;
 
 class RelationsType extends ObjectType
@@ -46,7 +45,7 @@ class RelationsType extends ObjectType
                         '_tagType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Relation) {
+                                if ($value instanceof Relations) {
                                     return $value->getType();
                                 }
                             }
@@ -54,7 +53,7 @@ class RelationsType extends ObjectType
                         '_tagName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Relation) {
+                                if ($value instanceof Relations) {
                                     return $value->getName();
                                 }
                             }
