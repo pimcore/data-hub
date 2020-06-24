@@ -199,7 +199,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return Configuration[]
      */
     public static function getList()
     {
