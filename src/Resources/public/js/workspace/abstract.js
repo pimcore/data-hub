@@ -15,6 +15,8 @@
 pimcore.registerNS("pimcore.plugin.datahub.workspace.abstract");
 pimcore.plugin.datahub.workspace.abstract = Class.create({
 
+    availableRights : ["create", "read","update", "delete"],
+
     initialize: function (parent) {
         this.parent = parent;
         this.workspaces = this.parent.data.workspaces;
@@ -22,7 +24,6 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
 
     getPanel: function () {
 
-        var availableRights = ["create", "read","update", "delete"];
         var gridPlugins = [];
         var storeFields = ["cpath"];
 
@@ -34,12 +35,14 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
         ];
 
         var check;
-        for (var i=0; i<availableRights.length; i++) {
+        for (var i=0; i<this.availableRights.length; i++) {
 
             var checkConfig = {
-                text: t("plugin_pimcore_datahub_workspace_permission_" + availableRights[i]),
-                dataIndex: availableRights[i],
-                width: 70
+                text: t("plugin_pimcore_datahub_workspace_permission_" + this.availableRights[i]),
+                dataIndex: this.availableRights[i],
+                width: 70,
+                hidden: this.rightCheckboxHidden || false,
+                disabled: this. rightCheckboxDisabled || false
             };
 
             check = new Ext.grid.column.Check(checkConfig);
@@ -48,7 +51,7 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
             gridPlugins.push(check);
 
             // store fields
-            storeFields.push({name:availableRights[i], type: 'bool'});
+            storeFields.push({name:this.availableRights[i], type: 'bool'});
         }
 
         typesColumns.push({
