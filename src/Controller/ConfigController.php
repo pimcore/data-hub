@@ -91,10 +91,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         \Pimcore::getEventDispatcher()->dispatch(AdminEvents::CONFIGURATION_LIST, $event);
         $list = $event->getArgument("list");
 
+        $tree = [];
+
         // add configurations to their corresponding folder
-        foreach ($list as $configuration) {
-            $config = $this->buildItem($configuration);
-            $tree[] = $config;
+        if (is_array($list)) {
+            foreach ($list as $configuration) {
+                $config = $this->buildItem($configuration);
+                $tree[] = $config;
+            }
         }
 
         return $this->json($tree);
