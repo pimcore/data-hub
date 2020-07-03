@@ -12,21 +12,19 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL;
+namespace Pimcore\Bundle\DataHubBundle\Event;
 
-final class MutationEvents
+final class AdminEvents
 {
     /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent")
+     * Allows you to modify/append the the configuration list.
+     *
+     * Arguments:
+     *  - list | the configuration list
+     *
+     * @Event("Pimcore\Event\Model\GenericEvent")
      *
      * @var string
      */
-    const PRE_BUILD = 'pimcore.datahub.graphql.mutation.preBuild';
-
-    /**
-     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent")
-     *
-     * @var string
-     */
-    const POST_BUILD = 'pimcore.datahub.graphql.mutation.postBuild';
+    const CONFIGURATION_LIST = 'pimcore.datahub.admin.configuration.list';
 }

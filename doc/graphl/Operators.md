@@ -92,7 +92,7 @@ Adds some static text.
 
 #### Translate Value
 
-Similar to Pimcore's [Translate Value](https://pimcore.com/docs/5.x/User_Documentation/DataObjects/Grid_Configuration_Operators/Operators/TranslateValue.html)
+Similar to Pimcore's [Translate Value](https://pimcore.com/docs/6.x/User_Documentation/DataObjects/Grid_Configuration_Operators/Operators/TranslateValue.html)
 
 Example: [Website Translations](querysamples/Sample_WebsiteTranslation.md)
 

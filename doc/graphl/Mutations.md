@@ -18,7 +18,7 @@ Keep in mind that for all kinds of mutations you need the `Write` permission.
 
 ![Mutation grid](../img/graphql/mutation_grid.png)
 
-Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
+Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
 * Boolean Select
 * Checkbox

@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -183,7 +184,7 @@ class QueryType extends ObjectType
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
     protected function getResolver($class = null, $configuration = null) {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($class, $configuration, $this->omitPermissionCheck);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
     }
@@ -291,7 +292,7 @@ class QueryType extends ObjectType
                 'resolve' => [$resolver, "resolveListing"],
             ];
 
-            if (!$config['fields']) {
+            if (!isset($config['fields'])) {
                 $config['fields'] = [];
             }
 
@@ -442,6 +443,75 @@ class QueryType extends ObjectType
     /**
      * @param array $config
      * @param array $context
+     * @throws \Exception
+     */
+    public function buildAssetListingQueries(&$config = [], $context = []): void
+    {
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (!isset($entities["asset_listing"]["read"]) || !$entities["asset_listing"]["read"]) {
+            return;
+        }
+
+        $listResolver = new AssetListing($this->getGraphQlService(), $this->eventDispatcher);
+        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService(), $configuration);
+        $assetTree = $this->getGraphQlService()->buildGeneralType("asset_tree");
+
+        $edgeType = new ObjectType(
+            [
+                'name' => 'AssetEdge',
+                'fields' => [
+                    'cursor' => Type::string(),
+                    'node' => [
+                        'type' => $assetTree,
+                        'resolve' => [$listResolver, "resolveEdge"]
+                    ],
+                ],
+            ]
+        );
+
+        $listingType = new ObjectType(
+            [
+                'name' => 'AssetConnection',
+                'fields' => [
+                    'edges' => [
+                        'type' => Type::listOf($edgeType),
+                        'resolve' => [$listResolver, "resolveEdges"]
+                    ],
+                    'totalCount' => [
+                        'description' => 'The total count of all queryable assets for this schema listing',
+                        'resolve' => [$listResolver, "resolveListingTotalCount"],
+                        'type' => Type::int()
+                    ]
+                ]
+            ]
+        );
+
+        $defListing = [
+            'name' => 'getAssetListing',
+            'args' => [
+                'ids' => ['type' => Type::string()],
+                'defaultLanguage' => ['type' => Type::string()],
+                'first' => ['type' => Type::int()],
+                'after' => ['type' => Type::int()],
+                'sortBy' => ['type' => Type::listOf(Type::string())],
+                'sortOrder' => [
+                    'type' => Type::listOf(Type::string()),
+                    'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                ],
+                'filter' => ['type' => Type::string()],
+            ],
+            'type' => $listingType,
+            'resolve' => [$listResolver, "resolveListing"],
+        ];
+
+        $config['fields']['getAssetListing'] = $defListing;
+    }
+
+    /**
+     * @param array $config
+     * @param array $context
      *
      * @throws \Exception
      */
@@ -460,11 +530,19 @@ class QueryType extends ObjectType
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
+
         if (interface_exists('\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface')) {
             $this->buildFilterQueries($config, $context);
         }
+
+        $this->buildAssetListingQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
         $this->buildFolderQueries("object", $config, $context);
+
+        $event->setConfig($config);
+        $event->setContext($context);
+        $this->eventDispatcher->dispatch(QueryEvents::POST_BUILD, $event);
+        $config = $event->getConfig();
     }
 }

@@ -11,8 +11,8 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.configItem");
-pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
+pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
+pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
@@ -36,22 +36,22 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
         this.tab.on("activate", this.tabactivated.bind(this));
         this.tab.on("destroy", this.tabdestroy.bind(this));
 
-        this.parent.editPanel.add(this.tab);
-        this.parent.editPanel.setActiveTab(this.tab);
-        this.parent.editPanel.updateLayout();
+        this.parent.configPanel.editPanel.add(this.tab);
+        this.parent.configPanel.editPanel.setActiveTab(this.tab);
+        this.parent.configPanel.editPanel.updateLayout();
 
         this.showInfo();
     },
 
     openExplorer: function (callbackFn) {
         Ext.Ajax.request({
-            url: '/admin/pimcoredatahub/config/get-explorer-url?' + this.data.general.name,
+            url: '/admin/pimcoredatahub/config/get-explorer-url?name=' + this.data.general.name,
 
             success: function (callbackFn, response, opts) {
 
                 var data = Ext.decode(response.responseText);
                 var securityValues = this.securityForm.getForm().getFieldValues();
-                var explorerUrl = window.location.origin + data.explorerUrl + this.data.general.name;
+                var explorerUrl = window.location.origin + data.explorerUrl;
                 if (securityValues && securityValues["method"] == "datahub_apikey") {
                     explorerUrl = explorerUrl + "?apikey=" + securityValues["apikey"];
                 }
@@ -196,6 +196,13 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
             minLength: 16
         });
 
+        var skipPermissionCheck = new Ext.form.Checkbox({
+            fieldLabel: t('plugin_pimcore_datahub_skip_permission_check'),
+            labelWidth: 200,
+            name: "skipPermissionCheck",
+            value: this.data.security ? this.data.security.skipPermissionCheck : ""
+        });
+
         this.securityForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
             autoScroll: true,
@@ -219,7 +226,8 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                     xtype: "fieldcontainer",
                     layout: 'hbox',
 
-                    items: [apikeyField,
+                    items: [
+                        apikeyField,
                         {
                             xtype: "button",
                             width: 32,
@@ -231,6 +239,7 @@ pimcore.plugin.datahub.configItem = Class.create(pimcore.element.abstract, {
                         }
                     ]
                 },
+                skipPermissionCheck,
                 {
                     xtype: 'displayfield',
                     hideLabel: true,

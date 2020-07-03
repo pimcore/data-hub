@@ -15,7 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
+use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Model\Asset;
@@ -38,7 +40,7 @@ class Image extends Base
 
         if(!array_key_exists('id',$newValue)) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception("Field {$attribute}.id was not provided.");
+                throw new UserError("Field {$attribute}.id was not provided.");
             }
             return null;
         }

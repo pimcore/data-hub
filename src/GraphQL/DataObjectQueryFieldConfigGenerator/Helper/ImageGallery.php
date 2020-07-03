@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service as GraphQlService;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -94,8 +95,8 @@ class ImageGallery
                 }
 
                 if ($image instanceof Asset) {
-                    if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                        throw new \Exception('permission denied. check your workspace settings');
+                    if (!WorkspaceHelper::checkPermission($image, 'read')) {
+                        continue;
                     }
 
                     $data = new ElementDescriptor($image);

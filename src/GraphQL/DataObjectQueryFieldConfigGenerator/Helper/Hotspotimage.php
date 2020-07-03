@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -86,17 +87,16 @@ class Hotspotimage
         if ($container instanceof \Pimcore\Model\DataObject\Data\Hotspotimage) {
             $image = $container->getImage();
             if ($image instanceof Asset) {
-                if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                    throw new \Exception('permission denied. check your workspace settings');
+                if (WorkspaceHelper::checkPermission($image, 'read')) {
+
+                    $data = new ElementDescriptor($image);
+                    $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
+
+                    $data['crop'] = $container->getCrop();
+                    $data['hotspots'] = $container->getHotspots();
+                    $data['marker'] = $container->getMarker();
+                    return $data;
                 }
-
-                $data = new ElementDescriptor($image);
-                $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
-
-                $data['crop'] = $container->getCrop();
-                $data['hotspots'] = $container->getHotspots();
-                $data['marker'] = $container->getMarker();
-                return $data;
             }
         }
 

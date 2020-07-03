@@ -18,6 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
@@ -46,18 +48,20 @@ class Element
     }
 
     /**
-     * @param array $value
-     * @param array $args
-     * @param array $context
+     * @param array            $value
+     * @param array            $args
+     * @param array            $context
      * @param ResolveInfo|null $resolveInfo
+     * @return array|Property[]|null
+     * @throws ClientSafeException
      */
-    public function resolveProperties($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveProperties($value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
         $element = ElementService::getElementById($this->elementType, $elementId);
 
         if (!$element) {
-            throw new \Exception("element " . $this->elementType . " " . $elementId . " not found");
+            throw new ClientSafeException("element " . $this->elementType . " " . $elementId . " not found");
         }
 
         if (isset($args['keys'])) {
@@ -175,12 +179,8 @@ class Element
     protected function extractSingleElement($element, $args, $context, $resolveInfo)
     {
         // Check Workspace permissions
-        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view ' . $element->getFullPath());
-            } else {
-                return null;
-            }
+        if (!WorkspaceHelper::checkPermission($element, 'read')) {
+            return null;
         }
 
         $data = new ElementDescriptor($element);

@@ -19,7 +19,19 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
     assetThumb: fullpath(thumbnail: "exampleCover")
     # thumbnail URL for content config
     assetThumb2: fullpath(thumbnail: "content")
-    srcset(thumbnail: "content")
+    resolutions(thumbnail: "content", types: [2,5]) {
+        resolution
+        url
+    }
+    srcset(thumbnail: "content") {
+        url
+        descriptor
+        # if types is not defined, then default resolutions @2x will be returned
+        resolutions(types: [2,5]) {
+            url
+            resolution
+        }
+    }
     type
     mimetype
     # original file size
@@ -44,10 +56,30 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
               "fullpath": "/Car%20Images/jaguar/auto-automobile-automotive-192499.jpg",
               "assetThumb": "/Car%20Images/jaguar/image-thumb__4__exampleCover/auto-automobile-automotive-192499.webp",
               "assetThumb2": "/Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499.webp",
+              "resolutions": [
+                {
+                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@2x.webp",
+                  "resolution": 2
+                },
+                {
+                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@5x.webp",
+                  "resolution": 5
+                }
+              ]
               "srcset": [
                 {
                   "descriptor": "768w",
                   "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w.webp"
+                  "resolutions": [
+                    {
+                      "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@2x.webp",
+                      "resolution": 2
+                    },
+                    {
+                      "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@5x.webp",
+                      "resolution": 5
+                    }
+                  ]
                 }
               ],
               "type": "image",

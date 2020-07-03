@@ -16,15 +16,10 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
 
 class AssetType extends ObjectType
 {
@@ -37,8 +32,8 @@ class AssetType extends ObjectType
 
     /**
      * @param Service $graphQlService
-     * @param array   $config
-     * @param array   $context
+     * @param array $config
+     * @param array $context
      *
      * @throws \Exception
      */
@@ -66,9 +61,25 @@ class AssetType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
 
+        // see https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images#Resolution_switching_Same_size_different_resolutions
+        $resolutionsType = Type::listOf(new ObjectType([
+            'name' => 'resolutions',
+            'fields' => [
+                'url' => Type::string(),
+                'resolution' => Type::float(),
+            ],
+        ]));
+        $resolutionsArgumentsType = [
+            'type' => Type::listOf(Type::float()),
+            'description' => 'List of resolution types [2, 5, ...]',
+            'defaultValue' => [2]
+        ];
+
+
         $config['fields'] = [
             'creationDate' => Type::int(),
-            'id' => ['name' => 'id',
+            'id' => [
+                'name' => 'id',
                 'type' => Type::id(),
             ],
             'filename' => Type::string(),
@@ -76,45 +87,36 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
-
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                    return $this->resolveAssetPath($value, $args, $context, $resolveInfo, false);
-                }
+                'resolve' => [$resolver, 'resolvePath'],
+            ],
+            'resolutions' => [
+                'type' => $resolutionsType,
+                'args' => [
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                    'types' => $resolutionsArgumentsType
+                ],
+                'resolve' => [$resolver, 'resolveResolutions'],
             ],
             'srcset' => [
-                'type' => Type::listOf(new \GraphQL\Type\Definition\ObjectType([
-                    'name'  => 'srcset',
+                'type' => Type::listOf(new ObjectType([
+                    'name' => 'srcset',
                     'fields' => [
                         'descriptor' => Type::string(),
                         'url' => Type::string(),
+                        'resolutions' => [
+                            'type' => $resolutionsType,
+                            'args' => [
+                                'types' => $resolutionsArgumentsType,
+                            ],
+                            'resolve' => [$resolver, 'resolveResolutions'],
+                        ],
                     ]
                 ])),
                 'args' => [
-                    'thumbnail' => ['type' => Type::nonNull(Type::string())]
-
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                    $asset = $this->getAssetFromValue($value, $context);
-
-                    if ($asset instanceof Asset\Image) {
-                        $mediaQueries = [];
-                        $thumbnail = $asset->getThumbnail($args['thumbnail'], false);
-                        $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
-                        if (
-                            $thumbnailConfig
-                        ) {
-                            foreach ($thumbnailConfig->getMedias() as $key => $val) {
-                                $mediaQueries[] = [
-                                    'descriptor' => $key,
-                                    'url' => $thumbnail->getMedia($key),
-                                ];
-                            }
-                        }
-                        return $mediaQueries;
-                    }
-                    return null;
-                }
+                'resolve' => [$resolver, 'resolveSrcSet'],
             ],
             'mimetype' => Type::string(),
             'modificationDate' => Type::int(),
@@ -125,12 +127,14 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                    return $this->resolveAssetPath($value, $args, $context, $resolveInfo, true);
-                }
+                'resolve' => [$resolver, 'resolveData'],
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
+                'args' => [
+                    'language' => ['type' => Type::string()],
+                    'ignore_language' => ['type' => Type::boolean()]
+                ],
                 'resolve' => [$resolver, 'resolveMetadata']
             ],
             'properties' => [
@@ -156,69 +160,6 @@ class AssetType extends ObjectType
                 'resolve' => [$elementResolver, "resolveSiblings"],
             ],
         ];
-    }
-
-    /**
-     * @param mixed       $value
-     * @param array       $context
-     *
-     * @return Asset|null
-     * @throws \Exception
-     */
-    protected function getAssetFromValue($value, $context)
-    {
-        if (!$value instanceof ElementDescriptor) {
-            return null;
-        }
-
-        $asset = Asset::getById($value['id']);
-
-        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset');
-            } else {
-                return null;
-            }
-        }
-
-        return $asset;
-    }
-
-    /**
-     * @param mixed       $value
-     * @param array       $args
-     * @param array       $context
-     * @param ResolveInfo $resolveInfo
-     * @param bool        $resolveForData
-     *
-     * @return string|null
-     * @throws \Exception
-     */
-    protected function resolveAssetPath($value, $args, $context, ResolveInfo $resolveInfo, bool $resolveForData = false)
-    {
-        $asset = $this->getAssetFromValue($value, $context);
-
-        if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
-            if ($resolveForData === false) {
-                return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
-            } else {
-                return isset($args['thumbnail'])
-                    ? base64_encode(file_get_contents($asset->getThumbnail($args['thumbnail'], false)->getFileSystemPath()))
-                    : base64_encode(file_get_contents($asset->getFileSystemPath()));
-            }
-        } elseif ($asset instanceof Asset\Document) {
-            if ($resolveForData === false) {
-                return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
-            } else {
-                return isset($args['thumbnail'])
-                    ? base64_encode(file_get_contents($asset->getImageThumbnail($args['thumbnail'])->getFileSystemPath()))
-                    : base64_encode(file_get_contents($asset->getFileSystemPath()));
-            }
-        } elseif ($asset instanceof Asset) {
-            return $resolveForData === false ? $asset->getFullPath() : base64_encode(file_get_contents($asset->getFileSystemPath()));
-        }
-
-        return null;
     }
 
     /**

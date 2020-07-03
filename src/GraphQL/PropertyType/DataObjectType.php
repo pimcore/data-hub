@@ -19,6 +19,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -72,12 +73,8 @@ class DataObjectType extends ObjectType
                             }
 
                             if ($element) {
-                                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                        throw new \Exception('not allowed to view object');
-                                    } else {
-                                        return null;
-                                    }
+                                if (!WorkspaceHelper::checkPermission($element, 'read')) {
+                                    return null;
                                 }
 
                                 /** @var  $element AbstractObject */

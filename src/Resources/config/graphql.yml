@@ -413,6 +413,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_structuredTable }
 
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_block:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Block
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_block }
+
   #
   # type generators for dataobject query operators
   #

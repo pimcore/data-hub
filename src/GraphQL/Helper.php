@@ -21,7 +21,7 @@ use Pimcore\Db;
  */
 class Helper
 {
-    public static function buildSqlCondition($q, $op = null, $subject = null)
+    public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null)
     {
 
         // Examples:
@@ -66,16 +66,16 @@ class Helper
                 if (is_array($value)) {
                     $childParts = [];
                     foreach ($value as $arrItem) {
-                        $childParts[] = self::buildSqlCondition($arrItem, $childOp);
+                        $childParts[] = self::buildSqlCondition($defaultTable, $arrItem, $childOp);
                     }
                     $parts[] = implode(' ' . $childOp . ' ', $childParts);
                 } else {
-                    $parts[] = self::buildSqlCondition($value, $childOp);
+                    $parts[] = self::buildSqlCondition($defaultTable, $value, $childOp);
                 }
             } else {
                 if (is_array($value)) {
                     foreach ($value as $subValue) {
-                        $parts[] = self::buildSqlCondition($subValue);
+                        $parts[] = self::buildSqlCondition($defaultTable, $subValue);
                     }
                 } elseif ($value instanceof \stdClass) {
                     $objectVars = get_object_vars($value);
@@ -83,15 +83,15 @@ class Helper
                         if (array_search(strtolower($objectVar), $ops) !== false) {
                             $innerOp = $mappingTable[strtolower($objectVar)];
                             if ($innerOp == 'NOT') {
-                                $parts[] = '( NOT ' . $db->quoteIdentifier($key) . ' =' . $db->quote($objectValue) . ')';
+                                $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' =' . $db->quote($objectValue) . ')';
                             } else {
-                                $parts[] = '(' . $db->quoteIdentifier($key) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
+                                $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
                             }
                         } else {
                             if ($objectValue instanceof \stdClass) {
-                                $parts[] = self::buildSqlCondition($objectValue, null, $objectVar);
+                                $parts[] = self::buildSqlCondition($defaultTable, $objectValue, null, $objectVar);
                             } else {
-                                $parts[] = '(' . $db->quoteIdentifier($objectVar) . ' = ' . $db->quote($objectValue) . ')';
+                                $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $objectVar) . ' = ' . $db->quote($objectValue) . ')';
                             }
                         }
                     }
@@ -101,12 +101,12 @@ class Helper
                     if (array_search(strtolower($key), $ops) !== false) {
                         $innerOp = $mappingTable[strtolower($key)];
                         if ($innerOp == 'NOT') {
-                            $parts[] = '(NOT' . $db->quoteIdentifier($subject) . ' = ' . $db->quote($value) . ')';
+                            $parts[] = '(NOT' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' = ' . $db->quote($value) . ')';
                         } else {
-                            $parts[] = '(' . $db->quoteIdentifier($subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
+                            $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
-                        $parts[] = '(' . $db->quoteIdentifier($key) . ' = ' . $db->quote($value) . ')';
+                        $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' = ' . $db->quote($value) . ')';
                     }
                 }
             }
@@ -115,5 +115,12 @@ class Helper
         $subCondition = ' (' . implode(' ' . $op . ' ', $parts) . ' ) ';
 
         return $subCondition;
+    }
+
+    protected static function quoteAbsoluteColumnName($defaultTable, $columnName)
+    {
+        $db = Db::get();
+        $absoluteColumnName = (strpos($columnName, '.') !== false) ? $columnName : $defaultTable . '.' . $columnName;
+        return $db->quoteIdentifier($absoluteColumnName);
     }
 }
