@@ -194,7 +194,8 @@ class MutationType extends ObjectType
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => "Default is true!"],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
-                        'input' => $inputType
+                        'type' => ['type' => Type::string()],
+                        'input' => $inputType,
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
                         $parent = null;
 
@@ -235,6 +236,10 @@ class MutationType extends ObjectType
                         $newInstance->setPublished($published);
                         $newInstance->setParent($parent);
                         $newInstance->setKey($key);
+
+                        if (isset($args["type"]) && $args["type"] == "object" || $args["type"] == "variant") {
+                            $newInstance->setType($args["type"]);
+                        }
 
                         $resolver = $me->getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
