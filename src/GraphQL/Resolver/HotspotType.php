@@ -46,12 +46,8 @@ class HotspotType
         if ($value instanceof ElementDescriptor) {
 
             $image = Asset::getById($value["id"]);
-            if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new NotAllowedException('not allowed to view asset');
-                } else {
-                    return null;
-                }
+            if (!WorkspaceHelper::checkPermission($image, 'read')) {
+                return null;
             }
 
             $data = new ElementDescriptor($image);

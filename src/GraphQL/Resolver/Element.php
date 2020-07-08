@@ -55,7 +55,7 @@ class Element
      * @return array|Property[]|null
      * @throws ClientSafeException
      */
-    public function resolveProperties(array $value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
+    public function resolveProperties($value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
         $element = ElementService::getElementById($this->elementType, $elementId);
@@ -179,12 +179,8 @@ class Element
     protected function extractSingleElement($element, $args, $context, $resolveInfo)
     {
         // Check Workspace permissions
-        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new NotAllowedException('not allowed to view ' . $element->getFullPath());
-            } else {
-                return null;
-            }
+        if (!WorkspaceHelper::checkPermission($element, 'read')) {
+            return null;
         }
 
         $data = new ElementDescriptor($element);

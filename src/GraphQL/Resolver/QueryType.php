@@ -102,12 +102,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read') && !$this->omitPermissionCheck) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new ClientSafeException('not allowed to view element ' . Service::getElementType($element));
-            } else {
-                return null;
-            }
+        if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'read')) {
+            return null;
         }
 
         $data = new ElementDescriptor();
@@ -181,10 +177,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($documentElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new ClientSafeException('not allowed to view document ' . $documentElement->getFullPath());
-            } else {
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
                 return null;
             }
         }
@@ -216,10 +210,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new ClientSafeException('not allowed to view asset ' . $assetElement->getFullPath());
-            } else {
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($assetElement, 'read')) {
                 return null;
             }
         }
@@ -279,8 +271,10 @@ class QueryType
         }
         $object = $objectList[0];
 
-        if (!WorkspaceHelper::isAllowed($object, $configuration, 'read') && !$this->omitPermissionCheck) {
-            throw new ClientSafeException('permission denied. check your workspace settings');
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($object, 'read')) {
+                throw new ClientSafeException('permission denied. check your workspace settings');
+            }
         }
 
         $data = new ElementDescriptor($object);
@@ -305,7 +299,7 @@ class QueryType
         $object = AbstractObject::getById($objectId);
 
         $data = new ElementDescriptor();
-        if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read') && !$this->omitPermissionCheck) {
+        if ($this->omitPermissionCheck || WorkspaceHelper::checkPermission($object, 'read')) {
             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         }

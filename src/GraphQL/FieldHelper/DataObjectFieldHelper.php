@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInte
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\File;
 use Pimcore\Logger;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -32,13 +33,13 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 {
     /**
      * @param $nodeDef
-     * @param $class
+     * @param ClassDefinition $class
+     * @param $container
      *
      * @return array|bool
      */
-    public function getQueryFieldConfigFromConfig($nodeDef, $class)
+    public function getQueryFieldConfigFromConfig($nodeDef, $class, $container = null)
     {
-        $container = null;
         $result = false;
 
         $attributes = $nodeDef['attributes'];
@@ -97,8 +98,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field ' . $key);
-
+                    Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
                     return false;
                 }
 
@@ -138,7 +138,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $class
+     * @param ClassDefinition $class
      * @param $key
      * @param null $container
      *

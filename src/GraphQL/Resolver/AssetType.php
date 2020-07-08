@@ -22,18 +22,9 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
-
 class AssetType
 {
-
     use ServiceTrait;
-
-    /**
-     * AssetType constructor.
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * @param array $value
@@ -105,6 +96,7 @@ class AssetType
         }
         return null;
     }
+
 
     /**
      * @param mixed $value
@@ -183,12 +175,8 @@ class AssetType
             $resolutions = [];
             $thumbnailName = $thumbnail->getConfig()->getName();
             $asset = $thumbnail->getAsset();
-            if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-                if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new \Exception('not allowed to view asset');
-                } else {
-                    return null;
-                }
+            if (!WorkspaceHelper::checkPermission($asset, 'read')) {
+                return null;
             }
 
             $thumbnail = $asset->getThumbnail($thumbnailName, false);
@@ -240,12 +228,8 @@ class AssetType
 
         $asset = Asset::getById($value['id']);
 
-        if (!WorkspaceHelper::isAllowed($asset, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset');
-            } else {
-                return null;
-            }
+        if (!WorkspaceHelper::checkPermission($asset, 'read')) {
+            return null;
         }
 
         return $asset;

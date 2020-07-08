@@ -32,6 +32,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
@@ -914,6 +915,67 @@ class Service
                     $result = $itemData->$getter($args["language"]);
                 } else {
                     $result = $itemData->$getter();
+                }
+            }
+        }
+
+        if ($descriptor instanceof BlockDescriptor) {
+            $descriptorData = $descriptor->getArrayCopy();
+            $blockData = null;
+
+            if (isset($descriptorData['__fcFieldname']) && $descriptorData['__fcFieldname']) {
+                $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+                $fcData = $object->$fcFieldNameGetter();
+
+                if ($fcData) {
+                    $items = $fcData->getItems();
+                    $idx = $descriptorData["__itemIdx"];
+                    $itemData = $items[$idx];
+                    $result = [];
+
+                    $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
+                    $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);;
+                }
+            }
+            elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
+                $context = ["object" => $object];
+                $brickDescriptor = null;
+
+                $brickType = $descriptorData['__brickType'];
+                $brickKey = $descriptorData['__brickKey'];
+
+                $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+
+                $brickClass = Definition::getByKey($brickType);
+
+                if (!$brickClass) {
+                    return null;
+                }
+
+                $context['outerFieldname'] = $key;
+
+                $def = $brickClass->getFieldDefinition($brickKey, $context);
+
+                if (!$def) {
+                    return null;
+                }
+
+                if (!empty($key)) {
+                    $blockData = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                }
+            }
+            else {
+                $blockGetter = "get".ucfirst($descriptorData['__blockName']);
+                $blockData = $object->$blockGetter();
+            }
+
+            if ($blockData) {
+                $index = $descriptorData["__blockIndex"];
+                $itemData = $blockData[$index];
+                $result = $itemData[$descriptorData['__blockFieldName']]->getData();
+
+                if (isset($descriptorData['__localized']) && $descriptorData['__localized']) {
+                    $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }
         } else if (substr($attribute, 0, 1) == '~') {
