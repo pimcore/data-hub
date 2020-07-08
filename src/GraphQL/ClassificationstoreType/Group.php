@@ -65,7 +65,7 @@ class Group extends ObjectType
                     $csValue = $value["_csValue"];
                     $groupId = $value["id"];
                     $language = $value["_language"];
-                    if ($language) {
+                    if (!$language) {
                         //TODO maybe add the "global" defaultLanguage if specified ?
                         $language = "default";
                     }
