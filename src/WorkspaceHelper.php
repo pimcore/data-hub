@@ -288,6 +288,7 @@ class WorkspaceHelper
             if (empty($permissionsParent) && $type === 'read') {
                 // check for children with permissions
                 $path = $element->getRealFullPath() . '/';
+                $path = str_replace("_", '\\_', $path);
                 if ($element->getId() === 1) {
                     $path = '/';
                 }
