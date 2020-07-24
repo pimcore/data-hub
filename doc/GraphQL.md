@@ -33,6 +33,7 @@ If not otherwise noted then all samples can be tested using this [Endpoint](http
 * [General Settings](./graphl/General.md)
 * [Schema Definition](./graphl/Schema.md)
 * [Security Settings](./graphl/Security.md)
+* [Custom Permissions](./graphl/Permissions.md)
 
 
 ## Customizing the endpoint
