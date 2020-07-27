@@ -26,6 +26,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
@@ -46,11 +47,17 @@ class WebserviceController extends FrontendController
     private $eventDispatcher;
 
     /**
+     * @var CheckConsumerPermissionsService
+     */
+    private $permissionsService;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->permissionsService = $permissionsService;
     }
 
     /**
@@ -72,7 +79,9 @@ class WebserviceController extends FrontendController
             throw new NotFoundHttpException('No active configuration found for ' . $clientname);
         }
 
-        $this->performSecurityCheck($request, $configuration);
+        if (!$permissionsService->performSecurityCheck($request, $configuration)) {
+            throw new AccessDeniedHttpException('Permission denied, apikey not valid');
+        }
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
@@ -180,26 +189,5 @@ class WebserviceController extends FrontendController
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
         return $response;
-    }
-
-    /**
-     * @param Request $request
-     * @param Configuration $configuration
-     *
-     * @return void
-     *
-     * @throws AccessDeniedHttpException
-     */
-    protected function performSecurityCheck(Request $request, Configuration $configuration): void
-    {
-        $securityConfig = $configuration->getSecurityConfig();
-        if ($securityConfig['method'] === 'datahub_apikey') {
-            $apiKey = $request->get('apikey');
-            if ($apiKey === $securityConfig['apikey']) {
-                return;
-            }
-        }
-
-        throw new AccessDeniedHttpException('Permission denied, apikey not valid');
     }
 }

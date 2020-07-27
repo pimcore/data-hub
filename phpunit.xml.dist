@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.4/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+    
+    <testsuite name="Project Test Suite">
+        <directory>tests/</directory>
+    </testsuite>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/*</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="SYMFONY_PHPUNIT_VERSION" value="7.4" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=10"/>
+    </php>
+</phpunit>
