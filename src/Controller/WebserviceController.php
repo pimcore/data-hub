@@ -79,7 +79,7 @@ class WebserviceController extends FrontendController
             throw new NotFoundHttpException('No active configuration found for ' . $clientname);
         }
 
-        if (!$permissionsService->performSecurityCheck($request, $configuration)) {
+        if (!$this->permissionsService->performSecurityCheck($request, $configuration)) {
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
 

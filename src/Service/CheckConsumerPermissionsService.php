@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class CheckConsumerPermissionsService
 {
@@ -26,8 +25,6 @@ class CheckConsumerPermissionsService
      * @param Configuration $configuration
      *
      * @return void
-     *
-     * @throws AccessDeniedHttpException
      */
     public function performSecurityCheck(Request $request, Configuration $configuration): bool
     {
