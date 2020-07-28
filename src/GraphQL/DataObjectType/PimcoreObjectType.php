@@ -87,6 +87,10 @@ class PimcoreObjectType extends ObjectType
             [
                 'type' => Type::id(),
             ],
+            'fullpath' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolvePath']
+            ],
             'index' => [
                 'type' => Type::int(),
                 'resolve' => [$resolver, 'resolveIndex']

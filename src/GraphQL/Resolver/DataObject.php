@@ -44,11 +44,34 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof DataObject) {
+        if (!$object instanceof \Pimcore\Model\DataObject) {
             return null;
         }
 
         return $object->getIndex();
+    }
+
+    /**
+     * @param array            $value
+     * @param array            $args
+     * @param array            $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return string
+     */
+    public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) 
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $object = \Pimcore\Model\DataObject::getById($value['id']);
+
+        if (!$object instanceof \Pimcore\Model\DataObject) {
+            return null;
+        }
+
+        return $object->getFullPath();
     }
 
     /**
@@ -67,7 +90,7 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof DataObject) {
+        if (!$object instanceof \Pimcore\Model\DataObject) {
             return null;
         }
 
