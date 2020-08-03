@@ -9,7 +9,10 @@
   "autoload": {
     "psr-4": {
       "Pimcore\\Bundle\\DataHubBundle\\": "src/"
-    }
+    },
+    "exclude-from-classmap": [
+      "vendor/phpunit"
+    ]
   },
   "require": {
     "pimcore/pimcore": "^5.7 || ^6.0",
@@ -21,5 +24,8 @@
         "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
       ]
     }
+  },
+  "require-dev": {
+    "symfony/phpunit-bridge": "*"
   }
 }

@@ -20,6 +20,12 @@ services:
         autowire: true
         autoconfigure: true
         tags: ['controller.service_arguments']
+    
+    Pimcore\Bundle\DataHubBundle\Service\:
+        resource: '../../Service'
+        public: true
+        autowire: true
+        autoconfigure: true
 
     # The migration installer needs the bundle it is operating on upon construction to be able to build its migration configuration.
     # As bundles can't be directly used as service argument, we need to make use of the expression language to fetch the bundle

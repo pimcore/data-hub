@@ -24,6 +24,8 @@ use Pimcore\Model\AbstractModel;
  */
 class Configuration extends AbstractModel
 {
+    public const SECURITYCONFIG_AUTH_APIKEY = "datahub_apikey"; 
+    
     /**
      * @var string
      */
@@ -175,7 +177,7 @@ class Configuration extends AbstractModel
         $this->configuration['general']['name'] = $this->name;
 
         $securityConfig = $this->getSecurityConfig();
-        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === 'datahub_apikey') {
+        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
             $apikey = $securityConfig['apikey'] ?? "";
             if (strlen($apikey) < 16) {
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
