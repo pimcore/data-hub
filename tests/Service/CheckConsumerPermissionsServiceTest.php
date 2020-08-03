@@ -28,7 +28,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                 "method" => Configuration::CONFIG_NAME_APIKEY,
+                 "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                  "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -48,7 +48,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => Configuration::CONFIG_NAME_APIKEY,
+                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey" => "wrong_key"));
@@ -68,7 +68,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => Configuration::CONFIG_NAME_APIKEY,
+                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey" => self::CORRECT_API_KEY));
@@ -88,7 +88,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => Configuration::CONFIG_NAME_APIKEY,
+                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -108,7 +108,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => Configuration::CONFIG_NAME_APIKEY,
+                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -127,7 +127,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => Configuration::CONFIG_NAME_APIKEY,
+                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey", "wrong_key"));

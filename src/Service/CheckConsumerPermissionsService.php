@@ -29,7 +29,7 @@ class CheckConsumerPermissionsService
     public function performSecurityCheck(Request $request, Configuration $configuration): bool
     {
         $securityConfig = $configuration->getSecurityConfig();
-        if ($securityConfig['method'] === Configuration::CONFIG_NAME_APIKEY) {
+        if ($securityConfig['method'] === Configuration::SECURITYCONFIG_AUTH_APIKEY) {
             $apiKey = $request->headers->get('apikey');
             if(empty($apiKey)) {
                 $apiKey = $request->headers->get('X-API-Key');
