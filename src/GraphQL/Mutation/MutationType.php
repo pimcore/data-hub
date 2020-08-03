@@ -504,9 +504,9 @@ class MutationType extends ObjectType
                     $parent = null;
 
                     if (isset($args["parentId"])) {
-                        $parent = AbstractObject::getById($args["parentId"]);
+                        $parent = Asset::getById($args["parentId"]);
                     } else if (isset($args["path"])) {
-                        $parent = AbstractObject::getByPath($args["path"]);
+                        $parent = Asset::getByPath($args["path"]);
                     }
 
                     //TODO maybe add error code?
