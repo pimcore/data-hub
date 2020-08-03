@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CheckConsumerPermissionsServiceTest extends TestCase
 {    
-    const DATAHUB_METHOD_NAME = "datahub_apikey";
     const CORRECT_API_KEY = "correct_key";
 
     public function testSecurityCheckFailsWhenNoApiKeyinRequest()
@@ -29,7 +28,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                 "method" => self::DATAHUB_METHOD_NAME,
+                 "method" => Configuration::CONFIG_NAME_APIKEY,
                  "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -49,7 +48,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => self::DATAHUB_METHOD_NAME,
+                "method" => Configuration::CONFIG_NAME_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey" => "wrong_key"));
@@ -69,7 +68,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => self::DATAHUB_METHOD_NAME,
+                "method" => Configuration::CONFIG_NAME_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey" => self::CORRECT_API_KEY));
@@ -89,7 +88,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => self::DATAHUB_METHOD_NAME,
+                "method" => Configuration::CONFIG_NAME_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -109,7 +108,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => self::DATAHUB_METHOD_NAME,
+                "method" => Configuration::CONFIG_NAME_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request();
@@ -128,7 +127,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
         $configuration = $this->createMock(Configuration::class);  
         $configuration->method('getSecurityConfig')
             ->willReturn(array(
-                "method" => self::DATAHUB_METHOD_NAME,
+                "method" => Configuration::CONFIG_NAME_APIKEY,
                 "apikey" => self::CORRECT_API_KEY
             ));
         $request = new Request(array("apikey", "wrong_key"));

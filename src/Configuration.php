@@ -175,7 +175,7 @@ class Configuration extends AbstractModel
         $this->configuration['general']['name'] = $this->name;
 
         $securityConfig = $this->getSecurityConfig();
-        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === 'datahub_apikey') {
+        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::CONFIG_NAME_APIKEY) {
             $apikey = $securityConfig['apikey'] ?? "";
             if (strlen($apikey) < 16) {
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
@@ -301,4 +301,6 @@ class Configuration extends AbstractModel
     {
         return $this->configuration['security'] ?? [];
     }
+
+    public const CONFIG_NAME_APIKEY = "datahub_apikey"; 
 }
