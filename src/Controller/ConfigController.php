@@ -439,14 +439,25 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $data = $request->get('data');
             $modificationDate = $request->get('modificationDate', 0);
 
-            if ($modificationDate < Dao::getConfigModificationDate()) {
-                throw new \Exception('The configuration was modified during editing, please reload the configuration and make your changes again');
-            }
-
             $dataDecoded = json_decode($data, true);
 
             $name = $dataDecoded['general']['name'];
             $config = Dao::getByName($name);
+
+            $configuration = $config->getConfiguration();
+
+            if ($configuration && isset($configuration["general"]["modificationDate"])) {
+                $savedModificationDate = $configuration["general"]["modificationDate"];
+            } else {
+                Dao::getConfigModificationDate();
+            }
+
+            if ($modificationDate < $savedModificationDate) {
+                throw new \Exception('The configuration was modified during editing, please reload the configuration and make your changes again');
+            }
+
+            $dataDecoded['general']['modificationDate'] = time();
+
 
             $keys = ['queryEntities', 'mutationEntities'];
             foreach ($keys as $key) {
