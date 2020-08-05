@@ -446,6 +446,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             $configuration = $config->getConfiguration();
 
+            $savedModificationDate = 0;
+
             if ($configuration && isset($configuration["general"]["modificationDate"])) {
                 $savedModificationDate = $configuration["general"]["modificationDate"];
             } else {
