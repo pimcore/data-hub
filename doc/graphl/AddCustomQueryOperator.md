@@ -16,7 +16,7 @@ Add a section similar to this one to your `services.yml` file.
 ```
 
 For reference, have a look at a look at the `Trimmer operator`:
-https://github.com/pimcore/data-hub/blob/master/src/GraphQL/QueryOperatorConfigGenerator/Trimmer.php
+https://github.com/pimcore/data-hub/blob/master/src/GraphQL/Query/Operator/Trimmer.php
 
 ### Operator Implementation
 
