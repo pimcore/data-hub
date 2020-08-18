@@ -124,6 +124,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         );
 
         $hasResolve = isset($field['resolve']);
+        /** @var callable $resolve */
         $resolve = $hasResolve ? $field['resolve'] : null;
 
         $field['resolve'] = function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($hasResolve, $resolve, $localized) {
