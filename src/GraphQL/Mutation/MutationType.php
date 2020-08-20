@@ -401,10 +401,6 @@ class MutationType extends ObjectType
     {
         return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
             try {
-
-                /** @var $configuration Configuration */
-                $configuration = $context['configuration'];
-
                 if (!$object) {
                     $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                     $id = $args["id"];
