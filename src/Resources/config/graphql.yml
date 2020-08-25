@@ -19,6 +19,7 @@ services:
   pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
   pimcore.datahub.graphql.documenttype.document_link: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType'
   pimcore.datahub.graphql.documenttype.document_link_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType'
+  pimcore.datahub.graphql.documenttype.document_areablock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType'
   pimcore.datahub.graphql.documenttype.document_page: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType'
   pimcore.datahub.graphql.documenttype.document_snippet: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType'
   pimcore.datahub.graphql.documenttype._document_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType'
@@ -142,9 +143,16 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType: ~
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType: ~
+
   #
   # built-in document-elements query datatypes type generator
   #
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_areablock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Areablock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_areablock }
 
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox

@@ -13,6 +13,7 @@
 
 ## Supported Page Element types
 
+* Areablock
 * Checkbox
 * Date
 * Image
