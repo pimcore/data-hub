@@ -154,6 +154,11 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_areablock }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_block:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Block
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_block }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox
     tags:
