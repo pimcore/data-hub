@@ -177,7 +177,7 @@ class MutationType extends ObjectType
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
                 $inputTypeName = 'Update' . ucfirst($entity) . "Input";
-                $inputType = $this->typeCache[$inputTypeName] ? $this->typeCache[$inputTypeName] : new InputObjectType([
+                $inputType = $this->typeCache[$inputTypeName] ?? new InputObjectType([
                     'name' => $inputTypeName,
                     'fields' => $inputFields
                 ]);
