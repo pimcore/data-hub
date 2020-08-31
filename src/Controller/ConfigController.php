@@ -331,8 +331,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             new SpecialEntitySetting(
                 'document',
                 true,
-                false,
-                false,
+                true,
+                true,
                 true,
                 $config['schema']['specialEntities']['document']['read'] ?? false,
                 $config['schema']['specialEntities']['document']['create'] ?? false,

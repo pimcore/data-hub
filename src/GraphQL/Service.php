@@ -61,7 +61,13 @@ class Service
     /**
      * @var ContainerInterface
      */
-    protected $documentElementTypeGeneratorFactories;
+    protected $documentElementQueryTypeGeneratorFactories;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $documentElementMutationTypeGeneratorFactories;
+
 
     /**
      * @var ContainerInterface
@@ -92,6 +98,11 @@ class Service
      * @var array
      */
     protected $supportedDocumentElementQueryDataTypes;
+
+    /**
+     * @var array
+     */
+    protected $supportedDocumentElementMutationDataTypes;
 
     /**
      * @var array
@@ -176,7 +187,8 @@ class Service
      * @param ContainerInterface $dataObjectQueryOperatorFactories
      * @param ContainerInterface $dataObjectMutationTypeGeneratorFactories
      * @param ContainerInterface $dataObjectMutationOperatorFactories
-     * @param ContainerInterface $documentElementTypeGeneratorFactories
+     * @param ContainerInterface $documentElementQueryTypeGeneratorFactories
+     * @param ContainerInterface $documentElementMutationTypeGeneratorFactories
      * @param ContainerInterface $generalTypeGeneratorFactories
      * @param ContainerInterface $assetTypeGeneratorFactories
      * @param ContainerInterface $csFeatureTypeGeneratorFactories
@@ -192,7 +204,8 @@ class Service
         ContainerInterface $dataObjectQueryOperatorFactories,
         ContainerInterface $dataObjectMutationTypeGeneratorFactories,
         ContainerInterface $dataObjectMutationOperatorFactories,
-        ContainerInterface $documentElementTypeGeneratorFactories,
+        ContainerInterface $documentElementQueryTypeGeneratorFactories,
+        ContainerInterface $documentElementMutationTypeGeneratorFactories,
         ContainerInterface $generalTypeGeneratorFactories,
         ContainerInterface $assetTypeGeneratorFactories,
         ContainerInterface $csFeatureTypeGeneratorFactories
@@ -208,7 +221,8 @@ class Service
         $this->dataObjectQueryOperatorFactories = $dataObjectQueryOperatorFactories;
         $this->dataObjectMutationTypeGeneratorFactories = $dataObjectMutationTypeGeneratorFactories;
         $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
-        $this->documentElementTypeGeneratorFactories = $documentElementTypeGeneratorFactories;
+        $this->documentElementQueryTypeGeneratorFactories = $documentElementQueryTypeGeneratorFactories; //TODO rename this to query
+        $this->documentElementMutationGeneratorFactories = $documentElementMutationTypeGeneratorFactories;
         $this->generalTypeGeneratorFactories = $generalTypeGeneratorFactories;
         $this->assetTypeGeneratorFactories = $assetTypeGeneratorFactories;
         $this->csFeatureTypeGeneratorFactories = $csFeatureTypeGeneratorFactories;
@@ -291,8 +305,20 @@ class Service
      */
     public function buildDocumentElementDataQueryType($elementName)
     {
-        $factory = $this->documentElementTypeGeneratorFactories->get('typegenerator_documentelementquerydatatype_' . $elementName);
+        $factory = $this->documentElementQueryTypeGeneratorFactories->get('typegenerator_documentelementquerydatatype_' . $elementName);
         $result = $factory->getFieldType();
+
+        return $result;
+    }
+
+    /**
+     * @param $elementName
+     * @return mixed
+     */
+    public function buildDocumentElementDataMutationType($elementName)
+    {
+        $factory = $this->documentElementMutationGeneratorFactories->get('typegenerator_documentelementmutationdatatype_' . $elementName);
+        $result = $factory->getDocumentElementMutationFieldConfig();
 
         return $result;
     }
@@ -475,6 +501,15 @@ class Service
     }
 
     /**
+     * @param $supportedDocumentElementMutationDataTypes
+     */
+    public function setSupportedDocumentElementMutationDataTypes($supportedDocumentElementMutationDataTypes)
+    {
+        $this->supportedDocumentElementMutationDataTypes = $supportedDocumentElementMutationDataTypes;
+    }
+
+
+    /**
      * @param $supportedCsFeatureQueryDataTypes
      */
     public function setSupportedCsFeatureQueryDataTypes($supportedCsFeatureQueryDataTypes)
@@ -498,6 +533,14 @@ class Service
     public function getSupportedDocumentElementQueryDataTypes()
     {
         return $this->supportedDocumentElementQueryDataTypes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedDocumentElementMutationDataTypes()
+    {
+        return $this->supportedDocumentElementMutationDataTypes;
     }
 
     /**

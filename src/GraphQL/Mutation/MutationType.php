@@ -105,6 +105,14 @@ class MutationType extends ObjectType
         $this->buildDataObjectMutations($config, $context);
         $this->buildCreateAssetMutation($config, $context);
         $this->buildUpdateAssetMutation($config, $context);
+
+        $this->buildUpdateDocumentMutation($config, $context, 'create', 'email');
+        $this->buildUpdateDocumentMutation($config, $context, 'update', 'email');
+        $this->buildUpdateDocumentMutation($config, $context, 'create', 'page');
+        $this->buildUpdateDocumentMutation($config, $context, 'update', 'page');
+        $this->buildUpdateDocumentMutation($config, $context, 'create', 'link');
+        $this->buildUpdateDocumentMutation($config, $context, 'update', 'link');
+
         $this->buildCreateFolderMutation("asset", $config, $context);
         $this->buildCreateFolderMutation("object", $config, $context);
         $this->buildCreateFolderMutation("document", $config, $context);
@@ -117,6 +125,8 @@ class MutationType extends ObjectType
         $this->buildDeleteFolderMutation("document", $config, $context);
         $this->buildDeleteFolderMutation("object", $config, $context);
 
+
+
         $event->setConfig($config);
         $event->setContext($context);
         $this->eventDispatcher->dispatch(MutationEvents::POST_BUILD, $event);
@@ -126,6 +136,285 @@ class MutationType extends ObjectType
             ksort($config["fields"]);
         }
     }
+
+    /**
+     * //TODO this is currently for document_pages
+     *
+     * @param $config
+     * @param array $context
+     * @throws \Exception
+     */
+    public function buildUpdateDocumentMutation(&$config, $context, $mutationType, $documentType)
+    {
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (isset($entities["document"]["update"]) && $entities["document"]["update"]) {
+            $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
+            $queryResolver->setGraphQlService($this->getGraphQlService());
+
+            $queryResolver = [$queryResolver, "resolveDocumentGetter"];
+
+            $opName = $mutationType. 'Document' . ucfirst($documentType);
+
+            $service = $this->getGraphQlService();
+            $graphQlDocumentType = $service->getDocumentTypeDefinition("document_" . $documentType);    // this is for the return stuff
+
+            $updateResultType = new ObjectType([
+                'name' => ucfirst($opName) . 'Result',
+                'fields' => [
+                    'success' => ['type' => Type::boolean()],
+                    'message' => ['type' => Type::string()],
+                    "document" => [
+                        'args' => ['defaultLanguage' => ['type' => Type::string()]],
+                        'type' => $graphQlDocumentType,
+                        'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
+                            $args["id"] = $value["id"];
+                            $value = $queryResolver($value, $args, $context, $info);
+                            return $value;
+                        }
+                    ]
+                ],
+            ]);
+
+            if ($mutationType == 'create') {
+                $args = [
+                    'key' => ['type' => Type::nonNull(Type::string())],
+                    'path' => ['type' => Type::string()],
+                    'parentId' => ['type' => Type::int()],
+                    'published' => ['type' => Type::boolean(), 'description' => "Default is true!"]
+                ];
+            } else {
+                $args = [
+                    'id' => ['type' => Type::nonNull(Type::int())]
+                ];
+            }
+
+            $inputTypeGetter = "getDocument". ucfirst($documentType) . "MutationInputType";
+            $inputProcessorFn = "processDocument". ucfirst($documentType) . "MutationInput";
+
+            $processors = [];
+            $inputType = $this->{$inputTypeGetter}($processors);
+
+            $inputTypeName = 'document_' . $documentType . '_input';
+            $this->typeCache[$inputTypeName] = $inputType;
+
+            $args = array_merge($args, [
+                'input' =>  $inputType
+            ]);
+
+            $updateField = [
+                'type' => $updateResultType,
+                'args' => $args, 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($documentType, $inputProcessorFn, $processors, $mutationType) {
+                    if ($mutationType == 'update') {
+                        $element = Document::getById($args["id"]);
+
+                        if (!WorkspaceHelper::checkPermission($element, "update")) {
+                            return [
+                                "success" => false,
+                                "message" => "not allowed to create asset"
+                            ];
+                        }
+                    } else {
+                        $parent = null;
+
+                        if (isset($args["parentId"])) {
+                            $parent = Document::getById($args["parentId"]);
+                        } else if (isset($args["path"])) {
+                            $parent = Document::getByPath($args["path"]);
+                        }
+
+                        if (!$parent) {
+                            return [
+                                "success" => false,
+                                "message" => "unable to resolve parent"
+                            ];
+                        }
+
+                        if (!WorkspaceHelper::checkPermission($parent, "create")) {
+                            return [
+                                "success" => false,
+                                "message" => "not allowed to create document"
+                            ];
+                        }
+
+                        $className = 'Pimcore\\Model\\Document\\' . ucfirst($documentType);
+                        $factory = \Pimcore::getContainer()->get('pimcore.model.factory');
+                        /** @var Document $element */
+                        $element = $factory->build($className);
+
+                        $element->setParentId($parent->getId());
+                        $element->setKey($args["key"]);
+                        $element->setPublished($args['published'] ?? true);
+                    }
+
+
+                    if (isset($args["input"])) {
+                        MutationType::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
+                    }
+                    $element->save();
+
+                    return [
+                        "success" => true,
+                        "message" => "document updated: " . $element->getId(),
+                        "id" => $element->getId()
+                    ];
+                }
+            ];
+
+            $config['fields'][$opName] = $updateField;
+        }
+    }
+
+    public function getDocumentEmailMutationInputType(&$processors = []) {
+        $service = $this->getGraphQlService();
+
+        $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
+        $elementFields = [];
+        $processors = [];
+        foreach ($elementTypes as $elementType) {
+            $typedef = $this->typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
+            $this->typeCache[$elementType] = $typedef;
+            $elementFields[$elementType] = Type::listOf($typedef['arg']);
+            $processors[$elementType] = $typedef['processor'];
+        }
+
+        $elementInputTypeList = new InputObjectType([
+            'name' => 'document_emailmutationelements',
+            'fields' => $elementFields
+        ]);
+
+        $inputTypeName = 'document_email_input';
+        $inputType = $this->typeCache[$inputTypeName] ??
+            new InputObjectType([
+                'name' => $inputTypeName,
+                'fields' => [
+                    'key' => Type::string(),
+                    'published' => Type::boolean(),
+                    'module' => Type::string(),
+                    'controller' => Type::string(),
+                    'action' => Type::string(),
+                    'template' => Type::string(),
+                    'elements' => $elementInputTypeList,
+                    'subject' => Type::string(),
+                    'from' => Type::string(),
+                    'replyTo' => Type::string(),
+                    'to' => Type::string(),
+                    'cc' => Type::string(),
+                    'bcc' => Type::string()
+                ]
+            ]);
+        return $inputType;
+    }
+
+    public function getDocumentLinkMutationInputType(&$processors = []) {
+        $inputType = $this->getGraphQlService()->getDocumentTypeDefinition("document_link_input");
+        return $inputType;
+    }
+
+
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param mixed $context
+     * @param ResolveInfo $info
+     * @param Document\Link $element
+     * @param array $processors
+     */
+    public function processDocumentLinkMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
+        $inputValues = $args["input"];
+        foreach ($inputValues as $key => $value) {
+            if ($key == 'object') {
+                Logger::debug("test");
+                $type = $value["type"];
+                $id = $value["id"];
+                $target = \Pimcore\Model\Element\Service::getElementById($type, $id);
+                $element->setObject($target);
+            } else {
+                $setter = "set" . ucfirst($key);
+
+                $element->$setter($value);
+            }
+        }
+    }
+
+
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param mixed $context
+     * @param ResolveInfo $info
+     * @param Document\Page|Document\Email $element
+     * @param array $processors
+     */
+    public function processDocumentPageMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
+        $inputValues = $args["input"];
+        foreach ($inputValues as $key => $value) {
+            if ($key == 'elements') {
+                if (method_exists($element, 'getEditables')) {
+                    $element->getEditables();
+                } else {
+                    // this one is deprecated and will be removed with pimcore 7
+                    $element->getElements();
+                }
+
+                foreach ($value as $elementType => $elementTypeValues) {
+                    if ($processor = $processors[$elementType] ?? null) {
+                        foreach ($elementTypeValues as $elementTypeValue) {
+                            $elementTypeValue['_tagType'] = $elementType;
+                            call_user_func_array($processor, [$element, $elementTypeValue,  $args, $context, $info]);
+                        }
+                    }
+                }
+            } else {
+                $setter = "set" . ucfirst($key);
+
+                $element->$setter($value);
+            }
+        }
+    }
+
+    public function processDocumentEmailMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
+        self::processDocumentPageMutationInput($value, $args, $context, $info, $element, $processors);
+    }
+
+    public function getDocumentPageMutationInputType(&$processors = []) {
+
+        $service = $this->getGraphQlService();
+
+        $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
+        $elementFields = [];
+        $processors = [];
+        foreach ($elementTypes as $elementType) {
+            $typedef = $this->typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
+            $this->typeCache[$elementType] = $typedef;
+            $elementFields[$elementType] = Type::listOf($typedef['arg']);
+            $processors[$elementType] = $typedef['processor'];
+        }
+
+        $elementInputTypeList = new InputObjectType([
+            'name' => 'document_pagemutationelements',
+            'fields' => $elementFields
+        ]);
+
+        $inputTypeName = 'document_page_input';
+        $inputType = $this->typeCache[$inputTypeName] ??
+            new InputObjectType([
+                'name' => $inputTypeName,
+                'fields' => [
+                    'key' => Type::string(),
+                    'published' => Type::boolean(),
+                    'module' => Type::string(),
+                    'controller' => Type::string(),
+                    'action' => Type::string(),
+                    'template' => Type::string(),
+                    'elements' => $elementInputTypeList
+                ]
+            ]);
+        return $inputType;
+    }
+
 
     /**
      * @param array $config
