@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -484,51 +485,67 @@ class QueryType
         $facets = [];
         $filterDefinition = false;
         // Set default settings using a FilterDefinition if id is provided.
-        if (!empty($args['filterDefinition']) && ($filterDefinition = AbstractObject::getById($args['filterDefinition']))) {
-            $filterService = $factory->getFilterService();
-
-            if ($pageLimit = $filterDefinition->getPageLimit()) {
-                $resultList->setLimit($pageLimit);
-            }
-
-            $orderByField = null;
-            $orderByDirection = null;
-
-            $orderByList = [];
-            if ($orderByCollection = $filterDefinition->getDefaultOrderBy()) {
-                foreach ($orderByCollection as $orderBy) {
-                    if ($orderBy->getField()) {
-                        $orderByList[] = [$orderBy->getField(), $orderBy->getDirection()];
+        if (!empty($args['filterDefinition'])) {
+            if (isset($args['filterDefinition']['id'])) {
+                $object = AbstractObject::getById($args['filterDefinition']['id']);
+                if ($object instanceof AbstractFilterDefinition) {
+                    $filterDefinition = $object;
+                } else if ($object && isset($args['filterDefinition']['relationField'])) {
+                    $getter = 'get' . ucfirst($args['filterDefinition']['relationField']);
+                    if (method_exists($object, $getter)) {
+                        $filterDefinition = $object->$getter();
                     }
                 }
-            }
-            $resultList->setOrderKey($orderByList);
-            $resultList->setOrder('ASC');
-            $filterValues = [];
-            if (!empty($args['facets'])) {
-                foreach ($args['facets'] as  $facet) {
-                    $filterValues[$facet['field']] = $facet['values'];
+                if (!$filterDefinition && isset($args['filterDefinition']['fallbackFilterDefinitionId'])) {
+                    $filterDefinition = AbstractFilterDefinition::getById($args['filterDefinition']['fallbackFilterDefinitionId']);
                 }
             }
-            if ($filters = $filterDefinition->getFilters()) {
-                foreach ($filters as $k => $filter) {
-                    // Check if this filter can handle multiple values and if
-                    // not use the first values entry.
-                    $filterType = $filterService->getFilterType($filter->getType());
-                    $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
-                    if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
-                        $filterValues[$field] = current($filterValues[$field]);
+            if ($filterDefinition) {
+                $filterService = $factory->getFilterService();
+
+                if ($pageLimit = $filterDefinition->getPageLimit()) {
+                    $resultList->setLimit($pageLimit);
+                }
+
+                $orderByField = null;
+                $orderByDirection = null;
+
+                $orderByList = [];
+                if ($orderByCollection = $filterDefinition->getDefaultOrderBy()) {
+                    foreach ($orderByCollection as $orderBy) {
+                        if ($orderBy->getField()) {
+                            $orderByList[] = [$orderBy->getField(), $orderBy->getDirection()];
+                        }
                     }
-
-                    $facets[$k] = [
-                        'filter' => $filter,
-                        'filterService' => $filterService,
-                        'resultList' => $resultList,
-                    ];
                 }
-            }
+                $resultList->setOrderKey($orderByList);
+                $resultList->setOrder('ASC');
+                $filterValues = [];
+                if (!empty($args['facets'])) {
+                    foreach ($args['facets'] as  $facet) {
+                        $filterValues[$facet['field']] = $facet['values'];
+                    }
+                }
+                if ($filters = $filterDefinition->getFilters()) {
+                    foreach ($filters as $k => $filter) {
+                        // Check if this filter can handle multiple values and if
+                        // not use the first values entry.
+                        $filterType = $filterService->getFilterType($filter->getType());
+                        $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
+                        if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
+                            $filterValues[$field] = current($filterValues[$field]);
+                        }
 
-            $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
+                        $facets[$k] = [
+                            'filter' => $filter,
+                            'filterService' => $filterService,
+                            'resultList' => $resultList,
+                        ];
+                    }
+                }
+
+                $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
+            }
         }
         // paging
         if (isset($args['first'])) {
