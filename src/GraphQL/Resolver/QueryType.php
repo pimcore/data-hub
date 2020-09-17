@@ -27,7 +27,6 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
-use Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -123,8 +122,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
     }
 
@@ -137,8 +135,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
     }
 
@@ -150,8 +147,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
 
@@ -182,7 +178,7 @@ class QueryType
         }
 
         if (!$this->omitPermissionCheck) {
-            if (!WorkspaceHelper::checkPermission($documentElement, 'read')) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
                 return null;
             }
         }
@@ -414,7 +410,7 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
-        $event = new ListingEvent(
+        $event =  new ListingEvent(
             $objectList,
             $args,
             $context,
@@ -429,10 +425,6 @@ class QueryType
         $nodes = [];
 
         foreach ($objectList as $object) {
-            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
-                continue;
-            }
-
             $data = [];
             $data['id'] = $object->getId();
             $nodes[] = [
@@ -487,74 +479,56 @@ class QueryType
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface $resultList */
         $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
 
-        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition */
+        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition*/
         $currentFilters = [];
         $facets = [];
         $filterDefinition = false;
         // Set default settings using a FilterDefinition if id is provided.
-        if (!empty($args['filterDefinition'])) {
-            if (isset($args['filterDefinition']['id'])) {
-                $object = AbstractObject::getById($args['filterDefinition']['id']);
-                if ($object instanceof AbstractFilterDefinition) {
-                    $filterDefinition = $object;
-                } else if ($object && isset($args['filterDefinition']['relationField'])) {
-                    $getter = 'get' . ucfirst($args['filterDefinition']['relationField']);
-                    if (method_exists($object, $getter)) {
-                        $filterDefinition = $object->$getter();
+        if (!empty($args['filterDefinition']) && ($filterDefinition = AbstractObject::getById($args['filterDefinition']))) {
+            $filterService = $factory->getFilterService();
+
+            if ($pageLimit = $filterDefinition->getPageLimit()) {
+                $resultList->setLimit($pageLimit);
+            }
+
+            $orderByField = null;
+            $orderByDirection = null;
+
+            $orderByList = [];
+            if ($orderByCollection = $filterDefinition->getDefaultOrderBy()) {
+                foreach ($orderByCollection as $orderBy) {
+                    if ($orderBy->getField()) {
+                        $orderByList[] = [$orderBy->getField(), $orderBy->getDirection()];
                     }
                 }
             }
-            if (!($filterDefinition && $filterDefinition instanceof AbstractFilterDefinition)
-                && isset($args['filterDefinition']['fallbackFilterDefinitionId'])
-            ) {
-                $filterDefinition = AbstractFilterDefinition::getById($args['filterDefinition']['fallbackFilterDefinitionId']);
+            $resultList->setOrderKey($orderByList);
+            $resultList->setOrder('ASC');
+            $filterValues = [];
+            if (!empty($args['facets'])) {
+                foreach ($args['facets'] as  $facet) {
+                    $filterValues[$facet['field']] = $facet['values'];
+                }
             }
-            if ($filterDefinition) {
-                $filterService = $factory->getFilterService();
-
-                if ($pageLimit = $filterDefinition->getPageLimit()) {
-                    $resultList->setLimit($pageLimit);
-                }
-
-                $orderByField = null;
-                $orderByDirection = null;
-
-                $orderByList = [];
-                if ($orderByCollection = $filterDefinition->getDefaultOrderBy()) {
-                    foreach ($orderByCollection as $orderBy) {
-                        if ($orderBy->getField()) {
-                            $orderByList[] = [$orderBy->getField(), $orderBy->getDirection()];
-                        }
+            if ($filters = $filterDefinition->getFilters()) {
+                foreach ($filters as $k => $filter) {
+                    // Check if this filter can handle multiple values and if
+                    // not use the first values entry.
+                    $filterType = $filterService->getFilterType($filter->getType());
+                    $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
+                    if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
+                        $filterValues[$field] = current($filterValues[$field]);
                     }
-                }
-                $resultList->setOrderKey($orderByList);
-                $resultList->setOrder('ASC');
-                $filterValues = [];
-                if (!empty($args['facets'])) {
-                    foreach ($args['facets'] as $facet) {
-                        $filterValues[$facet['field']] = $facet['values'];
-                    }
-                }
-                if ($filters = $filterDefinition->getFilters()) {
-                    foreach ($filters as $k => $filter) {
-                        // Check if this filter can handle multiple values and if
-                        // not use the first values entry.
-                        $filterType = $filterService->getFilterType($filter->getType());
-                        $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
-                        if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
-                            $filterValues[$field] = current($filterValues[$field]);
-                        }
 
-                        $facets[$k] = [
-                            'filter' => $filter,
-                            'filterService' => $filterService,
-                            'resultList' => $resultList,
-                        ];
-                    }
+                    $facets[$k] = [
+                        'filter' => $filter,
+                        'filterService' => $filterService,
+                        'resultList' => $resultList,
+                    ];
                 }
-
-                $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
             }
+
+            $currentFilters = $filterService->initFilterService($filterDefinition, $resultList, $filterValues);
         }
         // paging
         if (isset($args['first'])) {
@@ -566,12 +540,9 @@ class QueryType
 
         // sorting
         if (!empty($args['sortBy'])) {
+            $resultList->setOrderKey($args['sortBy']);
             if (!empty($args['sortOrder'])) {
-                $resultList->setOrderKey(array_map(function($a, $b) {
-                    return [$a, $b];
-                }, $args['sortBy'], $args['sortOrder']));
-            } else {
-                $resultList->setOrderKey($args['sortBy']);
+                $resultList->setOrder($args['sortOrder']);
             }
         }
 
@@ -640,9 +611,11 @@ class QueryType
         // Price filter.
         if (isset($args['priceFrom']) && !isset($args['priceTo'])) {
             $resultList->addPriceCondition($args['priceFrom']);
-        } elseif (isset($args['priceFrom']) && !isset($args['priceTo'])) {
+        }
+        elseif (isset($args['priceFrom']) && !isset($args['priceTo'])) {
             $resultList->addPriceCondition(null, $args['priceTo']);
-        } elseif (isset($args['priceFrom']) && isset($args['priceTo'])) {
+        }
+        elseif(isset($args['priceFrom']) && isset($args['priceTo'])) {
             $resultList->addPriceCondition($args['priceFrom'], $args['priceTo']);
         }
         $resultList->getInProductList(!isset($args['published']) || !empty($args['published']));
@@ -715,8 +688,8 @@ class QueryType
         $options = $resultList->getGroupByValues($field, true, !method_exists($filter, 'getUseAndCondition') || !$filter->getUseAndCondition());
 
         foreach ($options as &$option) {
-            $prefix = (is_numeric($option['value'])) ? $field . ':' : '';
-            if (!empty($option['value'])) {
+            $prefix = (is_numeric($option['value'])) ? $field  . ':' : '';
+            if(!empty($option['value'])) {
                 $option['label'] = $translator->trans($prefix . $option['value']);
             } else {
                 $option['label'] = $translator->trans('No Value');
