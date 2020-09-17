@@ -66,8 +66,14 @@ class QueryType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
-    {
+    public function __construct(
+        Service $graphQlService,
+        LocaleServiceInterface $localeService,
+        Factory $modelFactory,
+        EventDispatcherInterface $eventDispatcher,
+        $config = [],
+        $context = []
+    ) {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
         }
@@ -95,10 +101,12 @@ class QueryType extends ObjectType
 
             if ($type == "asset") {
                 $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition("_" . $type . "_folder");
-            } else if ($type == "document") {
-                $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
             } else {
-                $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+                if ($type == "document") {
+                    $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
+                } else {
+                    $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+                }
             }
 
             // GETTER DEFINITION
@@ -145,7 +153,6 @@ class QueryType extends ObjectType
             $config['fields']['getAsset'] = $defGet;
         }
     }
-
 
 
     /**
@@ -221,7 +228,7 @@ class QueryType extends ObjectType
     }
 
     /**
-     * @param array &$config
+     * @param array $config
      * @param array $context
      * @throws \Exception
      */
@@ -318,7 +325,8 @@ class QueryType extends ObjectType
                 Logger::error("class " . $entity . " not found");
                 continue;
             }
-            if (!is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
+            if (!is_subclass_of('\\Pimcore\Model\\DataObject\\' . $class->getName(),
+                \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
                 Logger::info("class " . $entity . " is not filterable.");
                 continue;
             }
@@ -517,7 +525,7 @@ class QueryType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
-        $event =  new QueryTypeEvent(
+        $event = new QueryTypeEvent(
             $this,
             $config,
             $context
@@ -530,11 +538,9 @@ class QueryType extends ObjectType
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
-
         if (interface_exists('\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface')) {
             $this->buildFilterQueries($config, $context);
         }
-
         $this->buildAssetListingQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
