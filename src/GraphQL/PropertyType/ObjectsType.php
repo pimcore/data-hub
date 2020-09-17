@@ -20,6 +20,7 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -45,7 +46,29 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes()
     {
-        $types = array_values(ClassTypeDefinitions::getAll(true));
+        $types = [];
+
+        $service = $this->getGraphQlService();
+
+        if ($service->querySchemaEnabled("object")) {
+            $objectTypes = array_values(ClassTypeDefinitions::getAll(true));
+            $types = array_merge($types, $objectTypes);
+        }
+
+        if ($service->querySchemaEnabled("document")) {
+            $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
+            $supportedDocumentTypes = $documentUnionType->getTypes();
+            $types = array_merge($types, $supportedDocumentTypes);
+        }
+
+        if ($service->querySchemaEnabled("asset")) {
+            $types[] = $this->getGraphQlService()->buildAssetType("asset");
+        }
+
+        if ($service->querySchemaEnabled("asset_folder")) {
+            $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
+        }
+
         return $types;
     }
 
@@ -59,6 +82,16 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
                 $type = ClassTypeDefinitions::get($element['__elementSubtype']);
 
                 return $type;
+            } else if ($element['__elementType'] == 'asset') {
+                return  $this->getGraphQlService()->buildAssetType("asset");
+            } else if ($element['__elementType'] == 'document') {
+                $document = Document::getById($element['id']);
+                if ($document) {
+                    $documentType = $document->getType();
+                    $service = $this->getGraphQlService();
+                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    return $typeDefinition;
+                }
             }
         }
 

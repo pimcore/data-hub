@@ -13,7 +13,7 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
 class Trimmer extends StringBase
 {

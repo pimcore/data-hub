@@ -17,9 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\AbstractElement;
 
 class Objects
@@ -44,8 +46,8 @@ class Objects
     /**
      * Objects constructor.
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
+     * @param string $attribute
+     * @param Data $fieldDefinition
      * @param $class
      */
     public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
@@ -71,14 +73,11 @@ class Objects
 
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
+            $result = [];
             /** @var $relation AbstractElement */
             foreach ($relations as $relation) {
-                if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {
-                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view ' . $relation->getFullPath());
-                    } else {
-                        continue;
-                    }
+                if (!WorkspaceHelper::checkPermission($relation, 'read')) {
+                    continue;
                 }
 
                 $data = new ElementDescriptor($relation);

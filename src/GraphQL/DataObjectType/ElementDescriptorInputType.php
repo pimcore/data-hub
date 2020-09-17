@@ -48,5 +48,6 @@ class ElementDescriptorInputType extends InputObjectType
             'type' => Type::string(),
             'id' => Type::int(),
         ];
+        $config['description'] = "type can be omitted for mutations only allowing one type, e.g. many-to-many-objects";
     }
 }

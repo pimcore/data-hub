@@ -15,8 +15,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
+use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\ListOfType;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\KeyValueType;
+use Pimcore\Model\Document\PageSnippet;
 
 class PageSnippetType extends AbstractDocumentType
 {
@@ -41,7 +46,6 @@ class PageSnippetType extends AbstractDocumentType
      */
     public function build(&$config)
     {
-
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver\PageSnippet();
         $resolver->setGraphQLService($this->getGraphQlService());
 
@@ -49,6 +53,61 @@ class PageSnippetType extends AbstractDocumentType
         $config['fields']['elements'] = [
             'type' => Type::listOf($this->documentElementType),
             'resolve' => [$resolver, "resolveElements"]
+        ];
+
+        $config['fields']['title'] = [
+            'type' => Type::string()
+        ];
+
+        $config['fields']['description'] = [
+            'type' => Type::string()
+        ];
+
+        $keyValue = new ListOfType(KeyValueType::getInstance());
+
+        $config['fields']['rendered'] = [
+            'type' => Type::string(),
+            'args' => [
+                'attributes' => [
+                    'type' => $keyValue,
+                    'description' => 'Attributes passed into the controller/action',
+                    'defaultValue' => []
+                ],
+                'query' => [
+                    'type' => $keyValue,
+                    'description' => 'Query Params passed into the controller/action',
+                    'defaultValue' => []
+                ],
+                'options' => [
+                    'type' => $keyValue,
+                    'description' => 'Options passed into the controller/action',
+                    'defaultValue' => []
+                ],
+                'use_layout' => [
+                    'type' => Type::boolean(),
+                    'description' => 'Disable Layout Rendering'
+                ]
+            ],
+            'resolve' => static function($value, $args) {
+                $documentId = $value['id'];
+                $document = PageSnippet::getById($documentId);
+
+                $attributes = KeyValueType::resolveAssociativeArray($args['attributes']);
+                $query = KeyValueType::resolveAssociativeArray($args['query']);
+                $options = KeyValueType::resolveAssociativeArray($args['options']);
+
+                if ($document instanceof PageSnippet) {
+                    return \Pimcore\Model\Document\Service::render(
+                        $document,
+                        $attributes,
+                        $args['use_layout'] ?? false,
+                        $query,
+                        $options
+                    );
+                }
+
+                return null;
+            }
         ];
     }
 }

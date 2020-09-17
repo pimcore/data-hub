@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -35,7 +36,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -45,12 +46,8 @@ class HotspotType
         if ($value instanceof ElementDescriptor) {
 
             $image = Asset::getById($value["id"]);
-            if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new \Exception('not allowed to view asset');
-                } else {
-                    return null;
-                }
+            if (!WorkspaceHelper::checkPermission($image, 'read')) {
+                return null;
             }
 
             $data = new ElementDescriptor($image);
@@ -66,7 +63,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -79,7 +76,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -92,7 +89,7 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -105,11 +102,12 @@ class HotspotType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
     public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        /** @var array $metadata */
         $metadata = is_array($value) ? $value['data'] : [];
         if (isset($args['keys'])) {
             /** @var MarkerHotspotItem $item */

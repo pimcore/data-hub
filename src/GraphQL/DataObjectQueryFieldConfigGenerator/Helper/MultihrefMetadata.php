@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -68,18 +69,14 @@ class MultihrefMetadata
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args, $value);
+        $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
             $result = [];
             /** @var $relation ElementMetadata */
             foreach ($relations as $relation) {
                 $element = $relation->getElement();
-                if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read')) {
-                    if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                        throw new \Exception('not allowed to view ' . $relation->getFullPath());
-                    } else {
-                        continue;
-                    }
+                if (!WorkspaceHelper::checkPermission($element, 'read')) {
+                    continue;
                 }
 
                 $data = [];

@@ -2,12 +2,13 @@
 
 ## Supported query datatypes
 
-Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
+Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
 * Advanced Many-to-Many Relation
 * Advanced Many-to-Many Object Relation
+* Block
 * Boolean Select
-* [Calculated Value](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Calculated_Value_Type.html)
+* [Calculated Value](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Calculated_Value_Type.html)
 * Checkbox
 * [Classification Store](ClassificationStore.md) page for more info.
 * Country
@@ -17,7 +18,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Email
 * External Image
 * Gender
-* [Field-Collections](https://pimcore.com/docs/5.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
+* [Field-Collections](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
 * Firstname
 * Geobounds
 * Geopoint
@@ -38,11 +39,15 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Newsletter Confirmed
 * Numeric
 * Quantity Value
+* Reverse Many-to-Many Object Relation
 * RgbaColor
 * Select
 * Slider
+* StructuredTable
+* Table
 * Textarea
 * Time
+* [URL Slug](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Others.html)
 * Video
 * Wysiwyg
 
@@ -119,7 +124,7 @@ Sort by name, descending.
 ## Filtering
 
 You can use Pimcore's webservice filter logic
-as described [here](https://pimcore.com/docs/5.x/Development_Documentation/Web_Services/Query_Filters.html).
+as described [here](https://pimcore.com/docs/6.x/Development_Documentation/Web_Services/Query_Filters.html).
 
 See Example: [Filtered News Listing](Filtering.md)
 

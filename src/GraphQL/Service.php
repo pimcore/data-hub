@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
@@ -30,9 +32,11 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
+use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
@@ -52,7 +56,7 @@ class Service
     /**
      * @var ContainerInterface
      */
-    protected $queryOperatorFactories;
+    protected $dataObjectQueryOperatorFactories;
 
     /**
      * @var ContainerInterface
@@ -128,6 +132,11 @@ class Service
      * @var Factory
      */
     protected $modelFactory;
+
+    /**
+     * @var array
+     */
+    protected $generalTypes = [];
 
     /**
      * @var array
@@ -475,7 +484,7 @@ class Service
 
 
     /**
-     * @param $generalTypes
+     * @param array $generalTypes
      */
     public function setSupportedGeneralTypes($generalTypes)
     {
@@ -656,7 +665,7 @@ class Service
         if (isset($this->assetDataTypes[$typename])) {
             return $this->assetDataTypes[$typename];
         }
-        throw new \Exception("unknown asset type: " . $typename);
+        throw new ClientSafeException("unknown asset type: " . $typename);
     }
 
 
@@ -670,7 +679,7 @@ class Service
         if (isset($this->classificationStoreDataTypes[$typename])) {
             return $this->classificationStoreDataTypes[$typename];
         }
-        throw new \Exception("unknown classificationstore type: " . $typename);
+        throw new ClientSafeException("unknown classificationstore type: " . $typename);
     }
 
 
@@ -684,7 +693,7 @@ class Service
         if (isset($this->dataObjectDataTypes[$typename])) {
             return $this->dataObjectDataTypes[$typename];
         }
-        throw new \Exception("unknown dataobject type: " . $typename);
+        throw new ClientSafeException("unknown dataobject type: " . $typename);
     }
 
 
@@ -698,7 +707,7 @@ class Service
         if (isset($this->documentDataTypes[$typename])) {
             return $this->documentDataTypes[$typename];
         }
-        throw new \Exception("unknown document type: " . $typename);
+        throw new ClientSafeException("unknown document type: " . $typename);
     }
 
     /**
@@ -711,7 +720,7 @@ class Service
         if (isset($this->propertyDataTypes[$typename])) {
             return $this->propertyDataTypes[$typename];
         }
-        throw new \Exception("unknown property type: " . $typename);
+        throw new ClientSafeException("unknown property type: " . $typename);
     }
 
 
@@ -775,7 +784,7 @@ class Service
     /**
      * @param $object
      * @param Data $fieldDefinition
-     * @param $attribute
+     * @param string $attribute
      * @param array $args
      * @return \stdclass|null
      * @throws \Exception
@@ -783,6 +792,7 @@ class Service
     public static function setValue($object, /* Data $fieldDefinition, */ $attribute, $callback)
     {
 
+        $result = null;
         $setter = $attribute ? 'set' . ucfirst($attribute) : $attribute;
 
         if (!$object) {
@@ -802,6 +812,7 @@ class Service
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
             $context = ["object" => $object];
+            $brickDescriptor = null;
 
             // brick
             $brickType = $attributeParts[0];
@@ -870,7 +881,7 @@ class Service
     /**
      * @param BaseDescriptor $descriptor
      * @param Data $fieldDefinition
-     * @param $attribute
+     * @param string $attribute
      * @param array $args
      * @return \stdclass|null
      */
@@ -900,10 +911,71 @@ class Service
                 $items = $fcData->getItems();
                 $idx = $descriptorData["__itemIdx"];
                 $itemData = $items[$idx];
-                if (isset($args) && isset($args["language"])) {
+                if (is_array($args) && isset($args["language"])) {
                     $result = $itemData->$getter($args["language"]);
                 } else {
                     $result = $itemData->$getter();
+                }
+            }
+        }
+
+        if ($descriptor instanceof BlockDescriptor) {
+            $descriptorData = $descriptor->getArrayCopy();
+            $blockData = null;
+
+            if (isset($descriptorData['__fcFieldname']) && $descriptorData['__fcFieldname']) {
+                $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+                $fcData = $object->$fcFieldNameGetter();
+
+                if ($fcData) {
+                    $items = $fcData->getItems();
+                    $idx = $descriptorData["__itemIdx"];
+                    $itemData = $items[$idx];
+                    $result = [];
+
+                    $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
+                    $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);;
+                }
+            }
+            elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
+                $context = ["object" => $object];
+                $brickDescriptor = null;
+
+                $brickType = $descriptorData['__brickType'];
+                $brickKey = $descriptorData['__brickKey'];
+
+                $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+
+                $brickClass = Definition::getByKey($brickType);
+
+                if (!$brickClass) {
+                    return null;
+                }
+
+                $context['outerFieldname'] = $key;
+
+                $def = $brickClass->getFieldDefinition($brickKey, $context);
+
+                if (!$def) {
+                    return null;
+                }
+
+                if (!empty($key)) {
+                    $blockData = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                }
+            }
+            else {
+                $blockGetter = "get".ucfirst($descriptorData['__blockName']);
+                $blockData = $object->$blockGetter();
+            }
+
+            if ($blockData) {
+                $index = $descriptorData["__blockIndex"];
+                $itemData = $blockData[$index];
+                $result = $itemData[$descriptorData['__blockFieldName']]->getData();
+
+                if (isset($descriptorData['__localized']) && $descriptorData['__localized']) {
+                    $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }
         } else if (substr($attribute, 0, 1) == '~') {
@@ -912,6 +984,7 @@ class Service
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
             $context = ["object" => $object];
+            $brickDescriptor = null;
 
             // brick
             $brickType = $attributeParts[0];
@@ -948,7 +1021,25 @@ class Service
             }
 
         } else if (method_exists($container, $getter)) {
-            $result = $container->$getter();
+            $isLocalizedField = false;
+            $containerDefinition = null;
+
+            if ($container instanceof Concrete) {
+                $containerDefinition = $container->getClass();
+            } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+                $containerDefinition = $container->getDefinition();
+            }
+
+            if ($containerDefinition) {
+                if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
+                    if ($lfDefs->getFieldDefinition($fieldDefinition->getName())) {
+                        $isLocalizedField = true;
+                    }
+                }
+            }
+
+            $result = $container->$getter($isLocalizedField && isset($args['language']) ?  $args['language'] : null);
+
         }
         return $result;
     }
@@ -964,9 +1055,9 @@ class Service
     /**
      * @param ContainerInterface $mutationTypeGeneratorFactories
      */
-    public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $mutationTypeGeneratorFactories): void
+    public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $dataObjectMutationTypeGeneratorFactories): void
     {
-        $this->mutationTypeGeneratorFactories = $mutationTypeGeneratorFactories;
+        $this->dataObjectMutationTypeGeneratorFactories = $dataObjectMutationTypeGeneratorFactories;
     }
 
     /**
@@ -994,13 +1085,14 @@ class Service
     }
 
     /**
-     * @param $data
-     * @param $target
+     * @param array $data
+     * @param AbstractElement $target
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
     public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+        $fieldHelper = null;
         if ($target instanceof Document) {
             $fieldHelper = $this->getDocumentFieldHelper();
         } else if ($target instanceof Asset) {
@@ -1012,5 +1104,23 @@ class Service
         if ($fieldHelper) {
             $fieldHelper->extractData($data, $target, $args, $context, $resolveInfo);
         }
+    }
+
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function querySchemaEnabled(string $type) {
+        $context = Runtime::get('datahub_context');
+        /** @var  $configuration Configuration */
+        $configuration = $context["configuration"];
+        if ($type === "object") {
+            $types = $configuration->getConfiguration()["schema"]["queryEntities"];
+            $enabled = count($types) > 0;
+        } else {
+            $enabled = $configuration->getSpecialEntities()[$type]["read"] ?? false;
+        }
+        return $enabled;
     }
 }

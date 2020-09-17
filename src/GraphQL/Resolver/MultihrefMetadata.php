@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\Document;
 
@@ -37,10 +38,10 @@ class MultihrefMetadata
     protected $fieldHelper;
 
     /**
-     * ObjectMetadata constructor.
-     * @param $fieldDefinition
-     * @param $class
-     * @param $fieldHelper
+     * MultihrefMetadata constructor.
+     * @param ClassDefinition\Data $fieldDefinition
+     * @param ClassDefinition $class
+     * @param mixed $fieldHelper
      */
     public function __construct($fieldDefinition = null, $class = null, $fieldHelper = null)
     {
@@ -51,9 +52,9 @@ class MultihrefMetadata
 
 
     /**
-     * @param null $value
+     * @param array|null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -87,9 +88,9 @@ class MultihrefMetadata
     }
 
     /**
-     * @param null $value
+     * @param array|null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -98,7 +99,7 @@ class MultihrefMetadata
     {
         if ($value && $value['element']) {
 
-            /** @var $relation ElementMetadata */
+            /** @var ElementMetadata $relation */
             $relation = $value['element']['__relation'];
             $meta = $relation->getData();
             $result = [];
@@ -116,6 +117,5 @@ class MultihrefMetadata
 
         return null;
     }
-
 }
 

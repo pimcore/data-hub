@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 
@@ -27,7 +28,7 @@ class ManyToManyRelation extends Base
      * @param Concrete $object
      * @param $newValue
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
@@ -38,6 +39,14 @@ class ManyToManyRelation extends Base
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
+                    if (!isset($newValueItemValue["type"])) {
+                        throw new ClientSafeException("type expected");
+                    }
+
+                    if (!isset($newValueItemValue["id"])) {
+                        throw new ClientSafeException("ID expected");
+                    }
+
                     $element = \Pimcore\Model\Element\Service::getElementById($newValueItemValue["type"], $newValueItemValue["id"]);
                     if ($element) {
                         $result[] = $element;

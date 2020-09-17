@@ -16,14 +16,17 @@ If not otherwise noted then all samples can be tested using this [Endpoint](http
 * [Many-to-Many Object Relation](graphl/querysamples/Sample_ManyToManyObject.md)
 * [Advanced Many-to-Many Relation Metadata](graphl/querysamples/Sample4.md)
 * [Get Asset Directly](graphl/querysamples/Sample_GetAsset.md)
+* [Get Asset Listing](graphl/querysamples/Sample_GetAssetListing.md)
 * [Get Asset Metadata](graphl/querysamples/Sample_AssetMetadata.md)
 * [Advanced Many-to-Many Object Relation + Metadata](graphl/querysamples/Sample7.md)
 * [Website Translator](graphl/querysamples/Sample_WebsiteTranslation.md)
 * [Field-Collections](graphl/querysamples/Sample_Fieldcollections.md)
 * [Get Element Properties](graphl/querysamples/Sample_ElementProperties.md)
+* [Get object parent/children/siblings](graphl/querysamples/Sample_ParentChildrenSiblings.md)
 
 ## Mutation Samples
 * see [Mutation main page](graphl/Mutations.md)
+* [Adding custom mutations](graphl/AddCustomMutations.md)
 
 ## Configuration
 
@@ -63,6 +66,7 @@ admin_pimcoredatahub_webservice:
 
 * Documents: see [Document Query Documentation](./graphl/DocumentQueries.md)
 * DataObjects: see [DataObject Query Documentation](./graphl/DataObjectQueries.md)
+* [Adding custom queries](graphl/AddCustomQuery.md)
 
 ## Mutations
 

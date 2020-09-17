@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -72,15 +73,11 @@ class Href
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
 
-        $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args, $value);
+        $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
 
         if ($relation instanceof ElementInterface) {
-            if (!WorkspaceHelper::isAllowed($relation, $context['configuration'], 'read')) {
-                if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                    throw new \Exception('not allowed to view ' . $relation->getFullPath());
-                } else {
-                    return null;
-                }
+            if (!WorkspaceHelper::checkPermission($relation, 'read')) {
+                return null;
             }
 
             $data = new ElementDescriptor($relation);

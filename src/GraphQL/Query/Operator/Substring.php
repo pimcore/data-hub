@@ -95,7 +95,7 @@ class Substring extends AbstractOperator
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
     public function getStart()
     {
@@ -103,7 +103,7 @@ class Substring extends AbstractOperator
     }
 
     /**
-     * @param mixed $start
+     * @param int|null $start
      */
     public function setStart($start)
     {
@@ -111,7 +111,7 @@ class Substring extends AbstractOperator
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
     public function getLength()
     {
@@ -119,7 +119,7 @@ class Substring extends AbstractOperator
     }
 
     /**
-     * @param mixed $length
+     * @param int|null $length
      */
     public function setLength($length)
     {

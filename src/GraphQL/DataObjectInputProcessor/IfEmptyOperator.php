@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\Concrete;
 
 class IfEmptyOperator extends BaseOperator
@@ -36,7 +37,7 @@ class IfEmptyOperator extends BaseOperator
      * @param Concrete $object
      * @param $newValue
      * @param $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo $info
      * @return void|null
      * @throws \Exception|\UnexpectedValueException
@@ -53,26 +54,25 @@ class IfEmptyOperator extends BaseOperator
         }
 
         if (count($children) !== 1) {
-            throw new \UnexpectedValueException("Only one child allowed");
+            throw new ClientSafeException("Only one child allowed");
         }
 
         $firstChild = $children[0];
 
         if ($firstChild['isOperator']) {
-            throw new \Exception("Not allowed");
-        } else {
+            throw new ClientSafeException("First child should not be an operator");
+        }
 
-            $key = $firstChild["attributes"]["attribute"];
-            $fieldDefinition = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $key);
-            if ($fieldDefinition) {
-                $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($firstChild);
-                $valueFromChild = $valueResolver->getLabeledValue($object, null);
+        $key = $firstChild["attributes"]["attribute"];
+        $fieldDefinition = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $key);
+        if ($fieldDefinition) {
+            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($firstChild);
+            $valueFromChild = $valueResolver->getLabeledValue($object, null);
 
-                if (!$valueFromChild || $fieldDefinition->isEmpty($valueFromChild->value)) {
-                    $parentProcessor = $this->getParentProcessor($this->nodeDef, $class);
-                    if ($parentProcessor) {
-                        call_user_func_array($parentProcessor, [$object, $newValue, $args, $context, $info]);
-                    }
+            if (!$valueFromChild || $fieldDefinition->isEmpty($valueFromChild->value)) {
+                $parentProcessor = $this->getParentProcessor($this->nodeDef, $class);
+                if ($parentProcessor) {
+                    call_user_func_array($parentProcessor, [$object, $newValue, $args, $context, $info]);
                 }
             }
         }
