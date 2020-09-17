@@ -377,7 +377,7 @@ class MutationType extends ObjectType
                 $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
                 foreach ($columns as $column) {
-                    $result = $fieldHelper->getMutationFieldConfigFromConfig($column, $class, $inputFields);
+                    $result = $fieldHelper->getMutationFieldConfigFromConfig($column, $class);
                     if ($result) {
                         $inputFields[$result['key']] = $result['arg'];
                         $processor = $result['processor'];
