@@ -195,6 +195,9 @@ class AssetType
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'];
             $asset = $this->getAssetFromValue($value, $context);
+            if(!$asset) {
+                return [];
+            }
             $thumbnail = $asset->getThumbnail($thumbnailName, false);
             $thumbnailConfig = $thumbnail->getConfig();
             $thumbConfigRes = clone $thumbnailConfig;
