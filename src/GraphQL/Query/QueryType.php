@@ -429,7 +429,7 @@ class QueryType extends ObjectType
                                 // @TODO Figure out if there's a way to use UnionType as InputObjectType.
 //                                'values' => [
 //                                    'type' => new UnionType([
-//                                        'name' => 'filterFacetArgValues',
+//                                        'name' => $ucFirstClassName . 'filterFacetArgValues',
 //                                        'types' => [Type::listOf(Type::string()), Type::string()]
 //                                    ])
 //                                ],
