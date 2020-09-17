@@ -690,15 +690,15 @@ class QueryType
         foreach ($options as &$option) {
             $prefix = (is_numeric($option['value'])) ? $field  . ':' : '';
             if(!empty($option['value'])) {
-                $option['label'] = $prefix . $translator->trans($option['value']);
+                $option['label'] = $translator->trans($prefix . $option['value']);
             } else {
-                $option['label'] = $prefix . $translator->trans('No Value');
+                $option['label'] = $translator->trans('No Value');
             }
         }
 
         $value = [
             'field' => $field,
-            'label' => $filter->getLabel(),
+            'label' => $translator->trans($filter->getLabel()),
             'options' => $options,
         ];
 
