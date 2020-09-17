@@ -496,7 +496,10 @@ class QueryType
                         $filterDefinition = $object->$getter();
                     }
                 }
-                if (!$filterDefinition && isset($args['filterDefinition']['fallbackFilterDefinitionId'])) {
+                if (
+                    !($filterDefinition && $filterDefinition instanceof AbstractFilterDefinition)
+                    && isset($args['filterDefinition']['fallbackFilterDefinitionId'])
+                ) {
                     $filterDefinition = AbstractFilterDefinition::getById($args['filterDefinition']['fallbackFilterDefinitionId']);
                 }
             }
