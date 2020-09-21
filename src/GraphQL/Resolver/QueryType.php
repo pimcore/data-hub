@@ -123,7 +123,8 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
     }
 
@@ -136,7 +137,8 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
     }
 
@@ -148,7 +150,8 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
 
@@ -179,7 +182,7 @@ class QueryType
         }
 
         if (!$this->omitPermissionCheck) {
-            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read')) {
                 return null;
             }
         }
@@ -411,7 +414,7 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
-        $event =  new ListingEvent(
+        $event = new ListingEvent(
             $objectList,
             $args,
             $context,
@@ -480,7 +483,7 @@ class QueryType
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface $resultList */
         $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
 
-        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition*/
+        /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition */
         $currentFilters = [];
         $facets = [];
         $filterDefinition = false;
@@ -496,12 +499,11 @@ class QueryType
                         $filterDefinition = $object->$getter();
                     }
                 }
-                if (
-                    !($filterDefinition && $filterDefinition instanceof AbstractFilterDefinition)
-                    && isset($args['filterDefinition']['fallbackFilterDefinitionId'])
-                ) {
-                    $filterDefinition = AbstractFilterDefinition::getById($args['filterDefinition']['fallbackFilterDefinitionId']);
-                }
+            }
+            if (!($filterDefinition && $filterDefinition instanceof AbstractFilterDefinition)
+                && isset($args['filterDefinition']['fallbackFilterDefinitionId'])
+            ) {
+                $filterDefinition = AbstractFilterDefinition::getById($args['filterDefinition']['fallbackFilterDefinitionId']);
             }
             if ($filterDefinition) {
                 $filterService = $factory->getFilterService();
@@ -525,7 +527,7 @@ class QueryType
                 $resultList->setOrder('ASC');
                 $filterValues = [];
                 if (!empty($args['facets'])) {
-                    foreach ($args['facets'] as  $facet) {
+                    foreach ($args['facets'] as $facet) {
                         $filterValues[$facet['field']] = $facet['values'];
                     }
                 }
@@ -631,11 +633,9 @@ class QueryType
         // Price filter.
         if (isset($args['priceFrom']) && !isset($args['priceTo'])) {
             $resultList->addPriceCondition($args['priceFrom']);
-        }
-        elseif (isset($args['priceFrom']) && !isset($args['priceTo'])) {
+        } elseif (isset($args['priceFrom']) && !isset($args['priceTo'])) {
             $resultList->addPriceCondition(null, $args['priceTo']);
-        }
-        elseif(isset($args['priceFrom']) && isset($args['priceTo'])) {
+        } elseif (isset($args['priceFrom']) && isset($args['priceTo'])) {
             $resultList->addPriceCondition($args['priceFrom'], $args['priceTo']);
         }
         $resultList->getInProductList(!isset($args['published']) || !empty($args['published']));
@@ -708,8 +708,8 @@ class QueryType
         $options = $resultList->getGroupByValues($field, true, !method_exists($filter, 'getUseAndCondition') || !$filter->getUseAndCondition());
 
         foreach ($options as &$option) {
-            $prefix = (is_numeric($option['value'])) ? $field  . ':' : '';
-            if(!empty($option['value'])) {
+            $prefix = (is_numeric($option['value'])) ? $field . ':' : '';
+            if (!empty($option['value'])) {
                 $option['label'] = $translator->trans($prefix . $option['value']);
             } else {
                 $option['label'] = $translator->trans('No Value');
