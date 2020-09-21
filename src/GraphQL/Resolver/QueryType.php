@@ -562,9 +562,12 @@ class QueryType
 
         // sorting
         if (!empty($args['sortBy'])) {
-            $resultList->setOrderKey($args['sortBy']);
             if (!empty($args['sortOrder'])) {
-                $resultList->setOrder($args['sortOrder']);
+                $resultList->setOrderKey(array_map(function($a, $b) {
+                    return [$a, $b];
+                }, $args['sortBy'], $args['sortOrder']));
+            } else {
+                $resultList->setOrderKey($args['sortBy']);
             }
         }
 
