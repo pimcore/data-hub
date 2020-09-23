@@ -31,7 +31,7 @@
 mutation {
   updateDocumentPage(id: 99, input: {
     
-    elements: {input: [
+    editables: {input: [
       {_tagName: "content:2.headline"
       text:"HEYYOU 3"},
       {_tagName: "headline"
@@ -63,7 +63,7 @@ mutation {
 		key: "documentkey47"	
 		parentId: 1
 		input: {
-			elements: {
+			editables: {
 				areablock: [
 					{
 						_tagName: "content"
@@ -133,7 +133,7 @@ mutation {
 	updateDocumentEmail(
 		id: 144
 		input: {
-			elements: {
+			editables: {
 				wysiwyg: [
 					{
 						_tagName: "greeting_text"

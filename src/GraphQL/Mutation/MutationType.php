@@ -351,7 +351,7 @@ class MutationType extends ObjectType
     public function processDocumentPageMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
         $inputValues = $args["input"];
         foreach ($inputValues as $key => $value) {
-            if ($key == 'elements') {
+            if ($key == 'editables') {
                 if (method_exists($element, 'getEditables')) {
                     $element->getEditables();
                 } else {
@@ -409,7 +409,7 @@ class MutationType extends ObjectType
                     'controller' => Type::string(),
                     'action' => Type::string(),
                     'template' => Type::string(),
-                    'elements' => $elementInputTypeList
+                    'editables' => $elementInputTypeList
                 ]
             ]);
         return $inputType;
