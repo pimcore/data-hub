@@ -18,20 +18,21 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
 
 class Geopoint extends Base
 {
 
     /**
-     * @param Concrete $object
+     * @param Concrete|AbstractData $object
      * @param $newValue
-     * @param $args
+     * @param array $args
      * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
-    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
+    public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {

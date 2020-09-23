@@ -22,19 +22,20 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
 class Image extends Base
 {
 
     /**
-     * @param Concrete $object
+     * @param Concrete|AbstractData $object
      * @param $newValue
-     * @param $args
+     * @param array $args
      * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
-    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
+    public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
 

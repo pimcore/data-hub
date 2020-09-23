@@ -32,7 +32,6 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
@@ -249,11 +248,11 @@ class Service
     /**
      * @param $nodeDef
      * @param $typeName
-     * @param ClassDefinition|null $class
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param null $container
      * @return mixed
      */
-    public function buildDataObjectMutationDataConfig($nodeDef, ClassDefinition $class = null, $container = null)
+    public function buildDataObjectMutationDataConfig($nodeDef, $class = null, $container = null)
     {
         /** @var DataObjectMutationFieldConfigGeneratorInterface $factory */
         $typeName = $nodeDef["attributes"]["dataType"];
@@ -832,7 +831,7 @@ class Service
      * @return \stdclass|null
      * @throws \Exception
      */
-    public static function setValue($object, /* Data $fieldDefinition, */ $attribute, $callback)
+    public static function setValue($object, $attribute, $callback)
     {
 
         $result = null;

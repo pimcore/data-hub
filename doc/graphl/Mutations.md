@@ -28,6 +28,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * DateTime
 * Email
 * External Image
+* [Field Collections](./FieldcollectionMutations.md)
 * Firstname
 * Gender
 * Geopoint
