@@ -16,7 +16,9 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
+use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
 use Pimcore\Model\AbstractModel;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class Configuration
@@ -24,8 +26,8 @@ use Pimcore\Model\AbstractModel;
  */
 class Configuration extends AbstractModel
 {
-    public const SECURITYCONFIG_AUTH_APIKEY = "datahub_apikey"; 
-    
+    public const SECURITYCONFIG_AUTH_APIKEY = "datahub_apikey";
+
     /**
      * @var string
      */
@@ -198,6 +200,10 @@ class Configuration extends AbstractModel
     public function delete(): void
     {
         $this->getDao()->delete();
+
+        $event = new GenericEvent($this);
+        $event->setArgument("configuration", $this);
+        \Pimcore::getEventDispatcher()->dispatch(ConfigurationEvents::CONFIGURATION_POST_DELETE, $event);
     }
 
     /**
