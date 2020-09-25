@@ -1,9 +1,7 @@
 ## Document Mutations
 
 > Experimental + not feature complete! Subject to change without notice.
-
-> Important Note: To be able to fully exploit this feature you have to understand Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html) 
-
+ 
 ## Supported Document types
 
 * Email
@@ -22,9 +20,11 @@
 * Wysiwyg
 * ...
 
-## Basic 
+## Free-form API
 
-## Sample 1 (Update existing document)
+> Important Note: To be able to fully exploit this feature you have to understand Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html) 
+
+### Sample 1 (Update existing document)
 
 
 ```graphql
@@ -53,7 +53,7 @@ mutation {
 }
 ```
 
-## Sample 2 (Create document with areablocks and nested block with images)
+### Sample 2 (Create document with areablocks and nested block with images)
 
 See demo document 99 for reference.
 
@@ -83,21 +83,21 @@ mutation {
 					{ _tagName: "content:3.image", alt: "alt text", id: 67 }
 					{
 						_tagName: "content:2.images:1.image"
-						alt: "alt text"
+						alt: "alt text for image 1"
 						id: 18
 					}
 					{
 						_tagName: "content:2.images:2.image"
-						alt: "alt text"
+						alt: "alt text for image 2"
 						id: 22
 					}
 				]
 				input: [
 					{
 						_tagName: "content:1.headline"
-						text: "HEY, I AM A HEADLINE SUBHEADLINE"
+						text: "HEY, I AM A SUBHEADLINE"
 					}
-					{ _tagName: "headline", text: "THIS IST HEHEADLINE" }
+					{ _tagName: "headline", text: "THIS IS THE HEADLINE" }
 				]
 				wysiwyg: [
 					{ _tagName: "content:1.lead", text: "The lead text" }
@@ -124,7 +124,7 @@ mutation {
 
 ![Grid](../img/graphql/document_create_mutation.png)
 
-## Sample 3 (Update email document)
+### Sample 3 (Update email document)
 
 See demo document 144 for reference.
 
@@ -154,7 +154,7 @@ mutation {
 
 ![Grid](../img/graphql/document_updateemail_mutation.png)
 
-## Sample 4 (Create a new link document)
+### Sample 4 (Create a new link document)
 
 ```graphql
 mutation {
@@ -169,3 +169,160 @@ mutation {
 }
 ```
 ![Grid](../img/graphql/document_create_link.png)
+
+## Tree API
+
+If you are not familiar with Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html)
+you can also use the nested approach.
+
+### Sample 4 (Update a page with an areablock using the nested approach)
+
+```graphql
+mutation {
+	updateDocumentPage(
+		id: 99
+		input: {
+			editables: {
+				areablock: [
+					{
+						_tagName: "content"
+						items: [
+							{
+								type: "headlines"
+								editables: {
+									input: [
+										{
+											_tagName: "headline"
+											text: "HEY, I AM A SUBHEADLINE"
+										}
+									]
+								}
+							}
+						]
+					}
+				]
+			}
+			controller: "@AppBundle\\Controller\\ContentController"
+			action: "default"
+		}
+	) {
+		success
+		document {
+			controller
+			elements {
+				__typename
+			}
+		}
+	}
+}
+```
+
+### Sample 5 (Create document with areablocks and nested block with images)
+
+Note that this produces the same result as `Sample 2`but uses the nested API instead
+of the free-form approach
+
+```graphql
+mutation {
+	createDocumentPage(
+		key: "documentkey48"
+		parentId: 1
+		input: {
+			editables: {
+				areablock: [
+					{
+						_tagName: "content"
+						items: [
+							{
+								type: "headlines"
+								hidden: false # optional
+								replace: false # defaults to true, all editables will be replaced (of course, this only makes sense for updates)
+								editables: {
+									input: [
+										{
+											_tagName: "headline"
+											text: "HEY, I AM A SUBHEADLINE"
+										}
+									]
+									wysiwyg: [
+										{
+											_tagName: "lead"
+											text: "The lead text"
+										}
+									]
+								}
+							}
+							{
+								type: "wysiwyg-with-images"
+								replace: false
+								editables: {
+									block: [
+										{
+											_tagName: "images"
+											items: [
+												{
+													replace: false # replace all elements inside the editable
+													editables: {
+														image: [
+															{
+																_tagName: "image"
+																alt: "alt text for image 1"
+																id: 18
+															}
+														]
+													}
+												}
+												{
+													replace: true
+													editables: {
+														image: [
+															{
+																_tagName: "image"
+																alt: "alt text for image 2"
+																id: 22
+															}
+														]
+													}
+												}
+											]
+										}
+									]
+									wysiwyg: [
+										{
+											_tagName: "content"
+											text: "<b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..."
+										}
+									]
+								}
+							}
+							{
+								type: "image"
+								editables: {
+									image: [
+										{
+											_tagName: "image"
+											alt: "alt text"
+											id: 67
+										}
+									]
+								}
+							}
+						]
+					}
+				]
+				input: [{ _tagName: "headline", text: "THIS IST HEHEADLINE" }]
+			}
+			controller: "@AppBundle\\Controller\\ContentController"
+			action: "default"
+		}
+	) {
+		success
+		document {
+			controller
+			elements {
+				__typename
+			}
+		}
+	}
+}
+```  

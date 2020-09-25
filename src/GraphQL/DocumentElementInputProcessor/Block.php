@@ -17,11 +17,13 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Model\Document\PageSnippet;
 use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
 
 class Block extends Base
 {
+    use EditablesTrait;
 
     /**
      * @param PageSnippet $document
@@ -41,7 +43,44 @@ class Block extends Base
 
         $tagName = $newValue['_tagName'];
         $tag->setName($tagName);
-        $tag->setDataFromEditmode($newValue['indices'] ?? []);
+
+        $typeCache = &MutationType::$typeCache;
+
+        $indices = [];
+        if (is_array($newValue) && array_key_exists('indices', $newValue)) {
+            $indices = $newValue['indices'];
+        }
+
+        $idx = 0;
+        if (isset($newValue['items'])) {
+
+            foreach ($newValue['items'] as $blockItem) {
+                $editables = $blockItem['editables'] ?? [];
+
+                $indices[$idx] = $idx + 1;
+
+                if ($blockItem['replace'] ?? true) {
+                    $this->cleanEditables($document, $tagName . ":" . ($idx + 1));
+                }
+
+                foreach ($editables as $editableType => $listByType) {
+                    foreach ($listByType as $tagData) {
+                        $tagData["_tagName"] = $tagName . ":" . ($idx + 1) . "." . $tagData["_tagName"];
+                        $tagData["_tagType"] = $editableType;
+                        $typeDefinition = $typeCache[$editableType];
+                        $processor = $typeDefinition['processor'];
+                        call_user_func_array($processor, [$document, $tagData, $args, $context, $info]);
+                    }
+                }
+
+                $idx++;
+            }
+        }
+
+
+        ksort($indices);
+
+        $tag->setDataFromEditmode($indices);
 
         if (method_exists($document, 'setEditable')) {
             $document->setEditable($tagName, $tag);
@@ -50,7 +89,6 @@ class Block extends Base
             $document->setElement($tagName, $tag);
         }
     }
-
 
 }
 

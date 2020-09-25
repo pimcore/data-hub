@@ -41,9 +41,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MutationType extends ObjectType
 {
-
     use ServiceTrait;
+
     use PermissionInfoTrait;
+
+    /** @var array */
+    public static $documentElementTypes = null;
 
     /**
      * @var LocaleServiceInterface
@@ -53,7 +56,8 @@ class MutationType extends ObjectType
      * @var Factory
      */
     protected $modelFactory;
-    protected $typeCache = [];
+
+    public static $typeCache = [];
     /**
      * @var EventDispatcherInterface
      */
@@ -156,7 +160,7 @@ class MutationType extends ObjectType
 
             $queryResolver = [$queryResolver, "resolveDocumentGetter"];
 
-            $opName = $mutationType. 'Document' . ucfirst($documentType);
+            $opName = $mutationType . 'Document' . ucfirst($documentType);
 
             $service = $this->getGraphQlService();
             $graphQlDocumentType = $service->getDocumentTypeDefinition("document_" . $documentType);    // this is for the return stuff
@@ -191,17 +195,17 @@ class MutationType extends ObjectType
                 ];
             }
 
-            $inputTypeGetter = "getDocument". ucfirst($documentType) . "MutationInputType";
-            $inputProcessorFn = "processDocument". ucfirst($documentType) . "MutationInput";
+            $inputTypeGetter = "getDocument" . ucfirst($documentType) . "MutationInputType";
+            $inputProcessorFn = "processDocument" . ucfirst($documentType) . "MutationInput";
 
             $processors = [];
-            $inputType = $this->{$inputTypeGetter}($processors);
+            $inputType = $this->{$inputTypeGetter}($context, $processors);
 
             $inputTypeName = 'document_' . $documentType . '_input';
-            $this->typeCache[$inputTypeName] = $inputType;
+            self::$typeCache[$inputTypeName] = $inputType;
 
             $args = array_merge($args, [
-                'input' =>  $inputType
+                'input' => $inputType
             ]);
 
             $updateField = [
@@ -267,15 +271,21 @@ class MutationType extends ObjectType
         }
     }
 
-    public function getDocumentEmailMutationInputType(&$processors = []) {
+    /**
+     * @param array $context
+     * @param array $processors
+     * @return array
+     */
+    public function getDocumentEmailMutationInputType($context, &$processors = [])
+    {
         $service = $this->getGraphQlService();
 
         $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
         $elementFields = [];
         $processors = [];
         foreach ($elementTypes as $elementType) {
-            $typedef = $this->typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
-            $this->typeCache[$elementType] = $typedef;
+            $typedef = self::$typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
+            self::$typeCache[$elementType] = $typedef;
             $elementFields[$elementType] = Type::listOf($typedef['arg']);
             $processors[$elementType] = $typedef['processor'];
         }
@@ -286,7 +296,7 @@ class MutationType extends ObjectType
         ]);
 
         $inputTypeName = 'document_email_input';
-        $inputType = $this->typeCache[$inputTypeName] ??
+        $inputType = self::$typeCache[$inputTypeName] ??
             new InputObjectType([
                 'name' => $inputTypeName,
                 'fields' => [
@@ -308,7 +318,13 @@ class MutationType extends ObjectType
         return $inputType;
     }
 
-    public function getDocumentLinkMutationInputType(&$processors = []) {
+    /**
+     * @param array $context
+     * @param array $processors
+     * @return array
+     */
+    public function getDocumentLinkMutationInputType($context, &$processors = [])
+    {
         $inputType = $this->getGraphQlService()->getDocumentTypeDefinition("document_link_input");
         return $inputType;
     }
@@ -322,7 +338,8 @@ class MutationType extends ObjectType
      * @param Document\Link $element
      * @param array $processors
      */
-    public function processDocumentLinkMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
+    public static function processDocumentLinkMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
+    {
         $inputValues = $args["input"];
         foreach ($inputValues as $key => $value) {
             if ($key == 'object') {
@@ -339,6 +356,10 @@ class MutationType extends ObjectType
         }
     }
 
+    public function processDocumentEmailMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
+    {
+        self::processDocumentPageMutationInput($value, $args, $context, $info, $element, $processors);
+    }
 
     /**
      * @param mixed $value
@@ -348,7 +369,8 @@ class MutationType extends ObjectType
      * @param Document\Page|Document\Email $element
      * @param array $processors
      */
-    public function processDocumentPageMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
+    public function processDocumentPageMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
+    {
         $inputValues = $args["input"];
         foreach ($inputValues as $key => $value) {
             if ($key == 'editables') {
@@ -363,7 +385,7 @@ class MutationType extends ObjectType
                     if ($processor = $processors[$elementType] ?? null) {
                         foreach ($elementTypeValues as $elementTypeValue) {
                             $elementTypeValue['_tagType'] = $elementType;
-                            call_user_func_array($processor, [$element, $elementTypeValue,  $args, $context, $info]);
+                            call_user_func_array($processor, [$element, $elementTypeValue, $args, $context, $info]);
                         }
                     }
                 }
@@ -375,31 +397,43 @@ class MutationType extends ObjectType
         }
     }
 
-    public function processDocumentEmailMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors) {
-        self::processDocumentPageMutationInput($value, $args, $context, $info, $element, $processors);
-    }
-
-    public function getDocumentPageMutationInputType(&$processors = []) {
+    /**
+     * @param array $context
+     * @param array $processors
+     * @return array
+     */
+    public function getDocumentPageMutationInputType($context, &$processors = [])
+    {
 
         $service = $this->getGraphQlService();
+        $configuration = $context['configuration'];
+
 
         $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
         $elementFields = [];
         $processors = [];
         foreach ($elementTypes as $elementType) {
-            $typedef = $this->typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
-            $this->typeCache[$elementType] = $typedef;
+            $typedef = self::$typeCache[$elementType] ?? $service->buildDocumentElementDataMutationType($elementType);
+            self::$typeCache[$elementType] = $typedef;
             $elementFields[$elementType] = Type::listOf($typedef['arg']);
             $processors[$elementType] = $typedef['processor'];
         }
 
-        $elementInputTypeList = new InputObjectType([
-            'name' => 'document_pagemutationelements',
-            'fields' => $elementFields
-        ]);
+        $this->elementFields = $elementFields;
+
+        $elementInputTypeList = self::$typeCache['document_pagemutationelements'] ?? null;
+        if (!$elementInputTypeList) {
+
+            $elementInputTypeList = new InputObjectType(['name' => 'document_pagemutationelements',
+                'fields' => $elementFields]);
+
+            self::$typeCache['document_pagemutationelements'] = $elementInputTypeList;
+            self::$documentElementTypes = $elementInputTypeList;
+        }
+
 
         $inputTypeName = 'document_page_input';
-        $inputType = $this->typeCache[$inputTypeName] ??
+        $inputType = self::$typeCache[$inputTypeName] ??
             new InputObjectType([
                 'name' => $inputTypeName,
                 'fields' => [
@@ -421,7 +455,8 @@ class MutationType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function buildDataObjectMutations(&$config = [], $context = [])
+    public
+    function buildDataObjectMutations(&$config = [], $context = [])
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -466,11 +501,11 @@ class MutationType extends ObjectType
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
                 $inputTypeName = 'Update' . ucfirst($entity) . "Input";
-                $inputType = $this->typeCache[$inputTypeName] ?? new InputObjectType([
-                    'name' => $inputTypeName,
-                    'fields' => $inputFields
-                ]);
-                $this->typeCache[$inputTypeName] = $inputType;
+                $inputType = self::$typeCache[$inputTypeName] ?? new InputObjectType([
+                        'name' => $inputTypeName,
+                        'fields' => $inputFields
+                    ]);
+                self::$typeCache[$inputTypeName] = $inputType;
 
                 $me = $this;
 
@@ -577,11 +612,11 @@ class MutationType extends ObjectType
 
                 if ($inputFields) {
                     $inputTypeName = 'Update' . ucfirst($entity) . "Input";
-                    $inputType = isset($this->typeCache[$inputTypeName]) ? $this->typeCache[$inputTypeName] : new InputObjectType([
+                    $inputType = isset(self::$typeCache[$inputTypeName]) ? self::$typeCache[$inputTypeName] : new InputObjectType([
                         'name' => $inputTypeName,
                         'fields' => $inputFields
                     ]);
-                    $this->typeCache[$inputTypeName] = $inputType;
+                    self::$typeCache[$inputTypeName] = $inputType;
 
 
                     $updateField = [
@@ -622,7 +657,7 @@ class MutationType extends ObjectType
                             $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                             $object = $className::getById($id);
 
-                            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, "delete") ) {
+                            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, "delete")) {
                                 return [
                                     "success" => false,
                                     "message" => "permission denied."
@@ -650,7 +685,8 @@ class MutationType extends ObjectType
         }
     }
 
-    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
+    public
+    function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
     {
         $inputFields = [];
         $processors = [];
@@ -686,7 +722,8 @@ class MutationType extends ObjectType
      * @param bool $omitPermissionCheck
      * @return \Closure
      */
-    public function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false)
+    public
+    function getUpdateObjectResolver($entity, $modelFactory, $processors, $localeService, $object = null, $omitPermissionCheck = false)
     {
         return static function ($value, $args, $context, $info) use ($entity, $modelFactory, $processors, $localeService, $object, $omitPermissionCheck) {
             try {
@@ -743,7 +780,8 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public function buildCreateAssetMutation(&$config, $context)
+    public
+    function buildCreateAssetMutation(&$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -846,7 +884,8 @@ class MutationType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function buildUpdateAssetMutation(&$config, $context)
+    public
+    function buildUpdateAssetMutation(&$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -917,7 +956,8 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public function buildCreateFolderMutation($type, &$config, $context)
+    public
+    function buildCreateFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -960,7 +1000,8 @@ class MutationType extends ObjectType
      * @param $elementType
      * @return \Closure
      */
-    public function getCreateFolderResolver($elementType)
+    public
+    function getCreateFolderResolver($elementType)
     {
         $me = $this;
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
@@ -994,7 +1035,7 @@ class MutationType extends ObjectType
                 ];
             }
 
-            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "create") ) {
+            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "create")) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -1007,7 +1048,7 @@ class MutationType extends ObjectType
             } else if ($elementType === "object") {
                 $newInstance = new DataObject\Folder();
                 $newInstance->setKey($args["key"]);
-            } else if ($elementType === "document"){
+            } else if ($elementType === "document") {
                 $newInstance = new Document\Folder();
                 $newInstance->setKey($args["key"]);
             }
@@ -1030,7 +1071,8 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public function buildUpdateFolderMutation($type, &$config, $context)
+    public
+    function buildUpdateFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -1081,7 +1123,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "update") ) {
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "update")) {
                             return [
                                 "success" => false,
                                 "message" => "permission denied."
@@ -1120,7 +1162,8 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public function buildDeleteAssetMutation(&$config, $context)
+    public
+    function buildDeleteAssetMutation(&$config, $context)
     {
         $this->buildDeleteElementMutation($config, $context, "asset");
     }
@@ -1130,7 +1173,8 @@ class MutationType extends ObjectType
      * @param array $context
      * @param $type
      */
-    public function buildDeleteElementMutation(&$config, $context, $type)
+    public
+    function buildDeleteElementMutation(&$config, $context, $type)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -1197,7 +1241,8 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public function buildDeleteDocumentMutation(&$config, $context)
+    public
+    function buildDeleteDocumentMutation(&$config, $context)
     {
         $this->buildDeleteElementMutation($config, $context, "document");
     }
@@ -1207,7 +1252,8 @@ class MutationType extends ObjectType
      * @param array $config
      * @param array $context
      */
-    public function buildDeleteFolderMutation($type, &$config, $context)
+    public
+    function buildDeleteFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -1244,7 +1290,7 @@ class MutationType extends ObjectType
                             $element = \Pimcore\Model\DataObject\Folder::getById($id);
                         }
 
-                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element,  "delete")) {
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "delete")) {
                             return [
                                 "success" => false,
                                 "message" => "delete " . $type . " permission denied."
@@ -1273,7 +1319,8 @@ class MutationType extends ObjectType
      * @param $elementType
      * @return \Closure
      */
-    public function getUpdateFolderResolver($elementType)
+    public
+    function getUpdateFolderResolver($elementType)
     {
         $me = $this;
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
@@ -1292,7 +1339,7 @@ class MutationType extends ObjectType
                 ];
             }
 
-            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent,  "update") ) {
+            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "update")) {
                 return [
                     "success" => false,
                     "message" => "not allowed to create " . $elementType . "folder "
@@ -1322,7 +1369,8 @@ class MutationType extends ObjectType
     /**
      * @return bool
      */
-    public function isEmpty()
+    public
+    function isEmpty()
     {
         return !$this->config["fields"];
     }
