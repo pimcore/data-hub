@@ -179,41 +179,41 @@ you can also use the nested approach.
 
 ```graphql
 mutation {
-	updateDocumentPage(
-		id: 99
-		input: {
-			editables: {
-				areablock: [
-					{
-						_tagName: "content"
-						items: [
-							{
-								type: "headlines"
-								editables: {
-									input: [
-										{
-											_tagName: "headline"
-											text: "HEY, I AM A SUBHEADLINE"
-										}
-									]
-								}
-							}
-						]
-					}
-				]
-			}
-			controller: "@AppBundle\\Controller\\ContentController"
-			action: "default"
-		}
-	) {
-		success
-		document {
-			controller
-			elements {
-				__typename
-			}
-		}
-	}
+   updateDocumentPage(
+      id: 99
+      input: {
+         editables: {
+            areablock: [
+               {
+                  _tagName: "content"
+                  items: [
+                     {
+                        type: "headlines"
+                        editables: {
+                           input: [
+                              {
+                                 _tagName: "headline"
+                                 text: "HEY, I AM A SUBHEADLINE"
+                              }
+                           ]
+                        }
+                     }
+                  ]
+               }
+            ]
+         }
+         controller: "@AppBundle\\Controller\\ContentController"
+         action: "default"
+      }
+   ) {
+      success
+      document {
+         controller
+         elements {
+            __typename
+         }
+      }
+   }
 }
 ```
 
