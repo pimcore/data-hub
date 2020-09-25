@@ -130,25 +130,25 @@ See demo document 144 for reference.
 
 ```graphql
 mutation {
-	updateDocumentEmail(
-		id: 144
-		input: {
-			editables: {
-				wysiwyg: [
-					{
-						_tagName: "greeting_text"
-						text: "Hello ... I am a <b>Greeting Text</b>"
-					}
-				]
-			}
-			subject: "Email subject"
-		}
-	) {
-		success
-		document {
-			controller
-		}
-	}
+   updateDocumentEmail(
+      id: 144
+      input: {
+         editables: {
+            wysiwyg: [
+               {
+                  _tagName: "greeting_text"
+                  text: "Hello ... I am a <b>Greeting Text</b>"
+               }
+            ]
+         }
+         subject: "Email subject"
+      }
+   ) {
+      success
+      document {
+         controller
+      }
+   }
 }
 ```
 
