@@ -310,7 +310,7 @@ mutation {
 						]
 					}
 				]
-				input: [{ _tagName: "headline", text: "THIS IST HEHEADLINE" }]
+				input: [{ _tagName: "headline", text: "THIS IS THE HEADLINE" }]
 			}
 			controller: "@AppBundle\\Controller\\ContentController"
 			action: "default"
