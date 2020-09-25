@@ -29,27 +29,26 @@
 
 ```graphql
 mutation {
-  updateDocumentPage(id: 99, input: {
-    
-    editables: {input: [
-      {_tagName: "content:2.headline"
-      text:"HEYYOU 3"},
-      {_tagName: "headline"
-      text:"NEW 2"}
-    ],
-      wysiwyg: [
-        {_tagName:"content:1.content",
-        text:"my new <b>wysiwyg</b>"}
-        
-      ]
-    
-    }
-    module: "mymodule"}) {
-    success
-    document {
-      controller
-    }
-  }
+   updateDocumentPage(
+      id: 99
+      input: {
+         editables: {
+            input: [
+               { _tagName: "content:2.headline", text: "HEYYOU 3" }
+               { _tagName: "headline", text: "NEW 2" }
+            ]
+            wysiwyg: [
+               { _tagName: "content:1.content", text: "my new <b>wysiwyg</b>" }
+            ]
+         }
+         module: "mymodule"
+      }
+   ) {
+      success
+      document {
+         controller
+      }
+   }
 }
 ```
 
