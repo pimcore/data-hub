@@ -51,14 +51,14 @@ Get Link Document and resolve the target news text.
 
 ```
 
-## Sample 2 (Page Document Elements)
+## Sample 2 (Page Document Editables)
 
 * get object 61
 * get manytoone relation
 * get target page document
 * get link tag
 * get referenced page document / or news object
-* get input elements of referenced page document / or shorttext of news object
+* get input editables of referenced page document / or shorttext of news object
 
 ```graphql
 {
@@ -66,7 +66,7 @@ Get Link Document and resolve the target news text.
     manytoone {
       ... on document_page {
         fullpath
-        elements {
+        editables {
           ... on document_tagLink {
             _tagType
             _tagName
@@ -78,7 +78,7 @@ Get Link Document and resolve the target news text.
                 ... on document_page {
                   id
                   fullpath
-                  elements {
+                  editables {
                     ... on document_tagInput {
                       name
                       text
@@ -105,7 +105,7 @@ Get Link Document and resolve the target news text.
   getDocument(id: 25) {
     ... on document_page {
       fullpath
-      elements {
+      editables {
         ...on document_tagDate {
           _tagName
           # unix timestamp
