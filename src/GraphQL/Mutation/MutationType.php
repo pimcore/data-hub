@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Mutation;
 
+use GraphQL\Type\Definition\EnumType;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -373,7 +374,11 @@ class MutationType extends ObjectType
     {
         $inputValues = $args["input"];
         foreach ($inputValues as $key => $value) {
-            if ($key == 'editables') {
+            if ($key == 'editableUpdateStrategy') {
+                if ($value == "overwrite") {
+                    $element->setEditables([]);
+                }
+            } else if ($key == 'editables') {
                 if (method_exists($element, 'getEditables')) {
                     $element->getEditables();
                 } else {
@@ -431,6 +436,15 @@ class MutationType extends ObjectType
             self::$documentElementTypes = $elementInputTypeList;
         }
 
+        if (!self::$typeCache['overwrite_strategy']) {
+            self::$typeCache['overwrite_strategy'] = new EnumType([
+                "name" => "overwrite_strategy",
+                "values" => [
+                    "overwrite",
+                    "update"
+                ]
+            ]);
+        }
 
         $inputTypeName = 'document_page_input';
         $inputType = self::$typeCache[$inputTypeName] ??
@@ -443,6 +457,7 @@ class MutationType extends ObjectType
                     'controller' => Type::string(),
                     'action' => Type::string(),
                     'template' => Type::string(),
+                    'editableUpdateStrategy' => self::$typeCache['overwrite_strategy'],
                     'editables' => $elementInputTypeList
                 ]
             ]);

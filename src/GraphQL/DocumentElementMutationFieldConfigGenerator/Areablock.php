@@ -77,7 +77,6 @@ class Areablock extends Base
                         return [
                             '_tagName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf($this->areablockDataInputType),
-                            'replace' => Type::boolean(),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
                             ]

@@ -70,7 +70,6 @@ class Block extends Base
                         return [
                             '_tagName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf(Type::int()),
-                            'replace' => Type::boolean(),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
                             ]
