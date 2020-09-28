@@ -17,12 +17,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
 
 class Image extends Base
 {

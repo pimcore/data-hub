@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
 
 class Multiselect extends Base
 {

@@ -16,9 +16,9 @@
 * Image (for now only target asset + alt text, no hotspots or markers)
 * Input
 * Multiselect
+* Scheduled Block
 * Select
 * Wysiwyg
-* ...
 
 ## Free-form API
 

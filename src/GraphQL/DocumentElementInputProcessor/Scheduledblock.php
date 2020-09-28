@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Model\Document\PageSnippet;
 
-class Block extends Base
+class Scheduledblock extends Base
 {
     use EditablesTrait;
 
@@ -55,13 +55,18 @@ class Block extends Base
         if (isset($newValue['items'])) {
 
             foreach ($newValue['items'] as $blockItem) {
-                $editables = $blockItem['editables'] ?? [];
 
-                $indices[$idx] = $idx + 1;
+                $editables = $blockItem['editables'] ?? [];
+                $date = $blockItem['date'];
 
                 if ($blockItem['replace'] ?? true) {
                     $this->cleanEditables($document, $tagName . ":" . ($idx + 1));
                 }
+
+                $indices[$idx] = [
+                    "key" => $idx,
+                    "date" => $date
+                ];
 
                 foreach ($editables as $editableType => $listByType) {
                     foreach ($listByType as $tagData) {

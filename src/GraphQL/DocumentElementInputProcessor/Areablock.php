@@ -18,9 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
 
 class Areablock extends Base
 {
