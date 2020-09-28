@@ -17,18 +17,30 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfi
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Wysiwyg extends Base
 {
+
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input  */
+    public $processor;
+
+    /**
+     * Wysiwyg constructor.
+     * @param Service $graphQlService
+     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor
+     */
+    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor) {
+        parent::__construct($graphQlService);
+        $this->processor = $processor;
+
+    }
 
     /**
      */
     public function getDocumentElementMutationFieldConfig()
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input();
-        $processor->setGraphQLService($this->getGraphQlService());
-
-        return [
+       return [
             'arg' => new InputObjectType(
                 [
                     'name' => 'document_element_input_wysiwyg',
@@ -38,7 +50,7 @@ class Wysiwyg extends Base
                     ]
                 ]
             ),
-            'processor' => [$processor, 'process']
+            'processor' => [$this->processor, 'process']
         ];
     }
 

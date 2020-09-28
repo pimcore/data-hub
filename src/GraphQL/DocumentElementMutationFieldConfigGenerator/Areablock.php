@@ -27,25 +27,28 @@ class Areablock extends Base
     /** @var InputObjectType */
     static $itemType;
 
+    /** @var AreablockDataInputType  */
     protected $areablockDataInputType;
+
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock  */
+    protected $processor;
 
     /**
      * Areablock constructor.
      * @param Service $graphQlService
      * @param AreablockDataInputType $areablockDataInputType
      */
-    public function __construct(Service $graphQlService, AreablockDataInputType $areablockDataInputType)
+    public function __construct(Service $graphQlService, AreablockDataInputType $areablockDataInputType, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock $processor)
     {
         $this->setGraphQLService($graphQlService);
         $this->areablockDataInputType = $areablockDataInputType;
+        $this->processor = $processor;
     }
 
     /**
      */
     public function getDocumentElementMutationFieldConfig()
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock();
-        $processor->setGraphQLService($this->getGraphQlService());
 
         if (!self::$itemType) {
             self::$itemType = new InputObjectType(
@@ -74,6 +77,7 @@ class Areablock extends Base
                         return [
                             '_tagName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf($this->areablockDataInputType),
+                            'replace' => Type::boolean(),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
                             ]
@@ -82,7 +86,7 @@ class Areablock extends Base
                 ]
 
             ),
-            'processor' => [$processor, 'process']
+            'processor' => [$this->processor, 'process']
         ];
     }
 

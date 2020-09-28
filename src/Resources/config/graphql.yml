@@ -748,11 +748,29 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_select }
 
-    # document element mutation data types
   pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_wysiwyg:
       class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Wysiwyg
       tags:
           - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_wysiwyg }
+
+  # document element input processors
+  pimcore.datahub.graphql.documentmutationelementprocessor: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock'
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Wysiwyg: ~
+
+  Pimcore\Model\Document\Tag\Loader\TagLoaderInterface: '@pimcore.implementation_loader.document.tag'
 
   #
   # built-in dataobject mutation datatypes type generator

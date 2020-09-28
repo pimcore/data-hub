@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfi
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Block extends Base
 {
@@ -25,12 +26,24 @@ class Block extends Base
     /** @var InputObjectType */
     static $itemType;
 
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block  */
+    public $processor;
+
+    /**
+     * Block constructor.
+     * @param Service $graphQlService
+     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor
+     */
+    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor)
+    {
+        parent::__construct($graphQlService);
+        $this->processor = $processor;
+    }
+
     /**
      */
     public function getDocumentElementMutationFieldConfig()
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block();
-        $processor->setGraphQLService($this->getGraphQlService());
 
         if (!self::$itemType) {
             self::$itemType = new InputObjectType(
@@ -57,6 +70,7 @@ class Block extends Base
                         return [
                             '_tagName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf(Type::int()),
+                            'replace' => Type::boolean(),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
                             ]
@@ -64,7 +78,7 @@ class Block extends Base
                     }
                 ]
             ),
-            'processor' => [$processor, 'process']
+            'processor' => [$this->processor, 'process']
         ];
     }
 

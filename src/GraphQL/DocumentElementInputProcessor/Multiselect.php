@@ -36,9 +36,7 @@ class Multiselect extends Base
 
         $text = $newValue['selections'] ?? [];
 
-        /** @var TagLoaderInterface $loader */
-        $loader = \Pimcore::getContainer()->get('pimcore.implementation_loader.document.tag');
-        $tag = $loader->build($tagType);
+        $tag = $this->tagLoader->build($tagType);
         $tag->setName($tagName);
         $tag->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 

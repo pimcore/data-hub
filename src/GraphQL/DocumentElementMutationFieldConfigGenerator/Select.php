@@ -17,17 +17,27 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfi
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Select extends Base
 {
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select  */
+    public $processor;
+
+    /**
+     * Select constructor.
+     * @param Service $graphQlService
+     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select $processor
+     */
+    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select $processor) {
+        parent::__construct($graphQlService);
+        $this->processor = $processor;
+    }
 
     /**
      */
     public function getDocumentElementMutationFieldConfig()
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select();
-        $processor->setGraphQLService($this->getGraphQlService());
-
         return [
             'arg' => new InputObjectType(
                 [
@@ -38,7 +48,7 @@ class Select extends Base
                     ]
                 ]
             ),
-            'processor' => [$processor, 'process']
+            'processor' => [$this->processor, 'process']
         ];
     }
 

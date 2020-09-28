@@ -30,6 +30,21 @@ abstract class Base
 
     use ServiceTrait;
 
+    /**
+     * @var TagLoaderInterface
+     */
+    protected $tagLoader;
+
+    /**
+     * Block constructor.
+     * @param TagLoaderInterface $tagLoader
+     * @param Service $graphQlService
+     */
+    public function __construct(TagLoaderInterface $tagLoader, Service $graphQlService)
+    {
+        $this->tagLoader = $tagLoader;
+        $this->graphQlService = $graphQlService;
+    }
 
     /**
      * @param PageSnippet $document
@@ -45,9 +60,7 @@ abstract class Base
 
         $text = $newValue['text'];
 
-        /** @var TagLoaderInterface $loader */
-        $loader = \Pimcore::getContainer()->get('pimcore.implementation_loader.document.tag');
-        $tag = $loader->build($tagType);
+        $tag = $this->tagLoader->build($tagType);
         $tag->setName($tagName);
         $tag->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 

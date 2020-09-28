@@ -26,21 +26,20 @@ class Image extends Base
     //TODO extend it with markers, hotspots etc.
 
     /**
-     * Base constructor.
+     * Image constructor.
      * @param Service $graphQlService
+     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image $processor
      */
-    public function __construct(Service $graphQlService)
+    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image $processor)
     {
-        $this->setGraphQLService($graphQlService);
+        parent::__construct($graphQlService);
+        $this->processor = $processor;
     }
 
     /**
      */
     public function getDocumentElementMutationFieldConfig()
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image();
-        $processor->setGraphQLService($this->getGraphQlService());
-
         return [
             'arg' => new InputObjectType(
                 [
@@ -52,7 +51,7 @@ class Image extends Base
                     ]
                 ]
             ),
-            'processor' => [$processor, 'process']
+            'processor' => [$this->processor, 'process']
         ];
     }
 

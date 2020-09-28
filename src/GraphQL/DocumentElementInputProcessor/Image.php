@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Logger;
 use Pimcore\Model\Asset;
@@ -50,9 +51,7 @@ class Image extends Base
 
         $tagType = $newValue['_tagType'];
 
-        /** @var TagLoaderInterface $loader */
-        $loader = \Pimcore::getContainer()->get('pimcore.implementation_loader.document.tag');
-        $tag = $loader->build($tagType);
+        $tag = $this->tagLoader->build($tagType);
 
         $tagName = $newValue['_tagName'];
         $tag->setName($tagName);

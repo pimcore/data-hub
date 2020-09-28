@@ -18,12 +18,14 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\PageSnippet;
 use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
 
 class Block extends Base
 {
     use EditablesTrait;
+
 
     /**
      * @param PageSnippet $document
@@ -37,9 +39,7 @@ class Block extends Base
 
         $tagType = $newValue['_tagType'];
 
-        /** @var TagLoaderInterface $loader */
-        $loader = \Pimcore::getContainer()->get('pimcore.implementation_loader.document.tag');
-        $tag = $loader->build($tagType);
+        $tag = $this->tagLoader->build($tagType);
 
         $tagName = $newValue['_tagName'];
         $tag->setName($tagName);
@@ -47,8 +47,10 @@ class Block extends Base
         $typeCache = &MutationType::$typeCache;
 
         $indices = [];
-        if (is_array($newValue) && array_key_exists('indices', $newValue)) {
-            $indices = $newValue['indices'];
+        if (is_array($newValue)) {
+            if (array_key_exists('indices', $newValue)) {
+                $indices = $newValue['indices'];
+            }
         }
 
         $idx = 0;
