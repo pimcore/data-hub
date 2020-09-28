@@ -375,7 +375,7 @@ class MutationType extends ObjectType
         $inputValues = $args["input"];
         foreach ($inputValues as $key => $value) {
             if ($key == 'editableUpdateStrategy') {
-                if ($value == "overwrite") {
+                if ($value == "replaceAll") {
                     $element->setEditables([]);
                 }
             } else if ($key == 'editables') {

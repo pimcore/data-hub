@@ -32,7 +32,7 @@ mutation {
    updateDocumentPage(
       id: 99
       input: {
-         editableUpdateStrategy: overwrite    # defaults to update
+         editableUpdateStrategy: replaceAll    # defaults to update
          editables: {
             input: [
                { _tagName: "content:2.headline", text: "HEYYOU 3" }
@@ -128,7 +128,7 @@ See demo document 144 for reference.
 mutation {
    updateDocumentEmail(
       id: 144
-      editableUpdateStrategy: overwrite    # defaults to update
+      editableUpdateStrategy: replaceAll    # defaults to update
       input: {
          editables: {
             wysiwyg: [
