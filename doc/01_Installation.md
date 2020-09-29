@@ -30,5 +30,5 @@ bin/console pimcore:bundle:list
 
 ## Required Backend User Permission
 To access data-hub, user needs to meet one of following criteria:  
-* `admin` role or
-* `plugin_datahub_config` permission
+* be an `admin`
+* have `plugin_datahub_config` permission
