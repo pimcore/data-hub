@@ -71,7 +71,8 @@ admin_pimcoredatahub_webservice:
 
 ## Mutations
 
-See [Mutation Documentation](./graphl/Mutations.md)
+* [DataObject Mutation Documentation](./graphl/Mutations.md)
+* [Document Mutation Documentation](./graphl/DocumentMutations.md)
 
 ## Endpoint + Hands-on-testing using iExplorer
 
