@@ -1,6 +1,6 @@
 # Pimcore Data-Hub
 
-Pimcore Data-Hu is Pimcore’s data delivery & consumption platform. It integrates different input & output channel
+Pimcore Data-Hub is Pimcore’s data delivery & consumption platform. It integrates different input & output channel
 technologies into a simple & easy-to-configure system on top of Pimcore.
 
 ![Overview](./doc/img/overview.jpg)
