@@ -109,10 +109,6 @@ Pagination can be applied as query parameters.
 }
 ```
 
-
-[Get Manufacturer Listing](querysamples/Sample_ManufacturerListing.md) for details.
-
-
 #### Simple Sorting
 Sorting can be applied as query parameters, for example sort by name, descending.
 
