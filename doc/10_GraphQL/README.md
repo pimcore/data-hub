@@ -11,7 +11,7 @@ and services via GraphQL and test them with the integrated
 
 ## Configuration
 Configuration takes place in the endpoint configuration and offers following possibilities: 
-- [General Settings](./01_Configuration/01_General.md)
+- [General Settings](./01_Configuration/01_General_Settings.md)
 - [Schema Definition](./01_Configuration/02_Schema_Settings.md)
 - [Security Settings](./01_Configuration/03_Security_Settings.md)
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
