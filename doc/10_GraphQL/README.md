@@ -34,6 +34,7 @@ data-hub always creates a proper graphQL schema, also have a look at the generat
 for the possible mutations of a certain endpoint. 
 
 See following pages for a general overview of possible mutations:
+- For details on Document mutations see [Document Mutation Documentation](./07_Mutation/01_Document_Mutations.md)
 - For details on Asset mutations see [Asset Mutation Documentation](./07_Mutation/04_Asset_Mutations.md)
 - For details on DataObject mutations see [DataObject Mutation Documentation](./07_Mutation/20_DataObject_Mutations.md)  
 - For details on how to add custom mutations see [Add Custom Mutations Documentation](./07_Mutation/27_Add_Custom_Mutations.md).
