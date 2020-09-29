@@ -102,7 +102,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'get' . ucfirst($type) . "Folder",
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $graphQlType,
@@ -132,7 +133,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'getAsset',
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $assetType,

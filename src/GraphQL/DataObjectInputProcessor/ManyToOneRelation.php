@@ -40,7 +40,7 @@ class ManyToOneRelation extends Base
         Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
             $element = null;
             if (is_array($newValue)) {
-                $element = $this->getElementByIdOrPath($newValue);
+                $element = $this->getElementByTypeAndIdOrPath($newValue);
             }
 
             return $container->$setter($element);

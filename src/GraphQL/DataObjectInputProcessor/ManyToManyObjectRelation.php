@@ -46,7 +46,7 @@ class ManyToManyObjectRelation extends Base
                         throw new ClientSafeException("expected object type");
                     }
                     
-                    $element = $this->getElementByIdOrPath($newValueItemValue);                   
+                    $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);                   
                     
                     if ($element) {
                         $result[] = $element;

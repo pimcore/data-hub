@@ -27,11 +27,6 @@ class TestTrait
     const BY_ID = "ById";
     const BY_PATH = "ByPath";
 
-    protected function getElementResolver()
-    {
-        return '\Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits\TestTrait';
-    }
-
     protected function getElementById($elementType)
     {
         return $elementType . self::BY_ID;
@@ -46,7 +41,7 @@ class TestTrait
 class IdentifierCheckTraitTest extends TestCase
 {
     const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\IdentifierCheckTrait';
-    const TEST_TYPE = 'TestType';
+    const TEST_TYPE = 'object';
 
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
     {
@@ -56,7 +51,18 @@ class IdentifierCheckTraitTest extends TestCase
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
         // Act + Assert 
-        $sut->getElementByIdOrPath($newValueItemValue);
+        $sut->getElementByTypeAndIdOrPath($newValueItemValue);
+    }
+
+    public function testThrowingClientSafeExceptionIfTypeIsNotSupported()
+    {
+        // Arrange
+        $this->expectExceptionMessageMatches('/The type .* is not supported/');
+        $newValueItemValue = array("type" => "wrong");
+        // System under Test
+        $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
+        // Act + Assert 
+        $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
     public function testThrowingClientSafeExceptionIfBothIdAndFullpathAreMissing()
@@ -67,7 +73,7 @@ class IdentifierCheckTraitTest extends TestCase
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
         // Act + Assert 
-        $sut->getElementByIdOrPath($newValueItemValue);
+        $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
     public function testIdentifierCheckPrioritizesIdOverFullpath()
@@ -81,7 +87,7 @@ class IdentifierCheckTraitTest extends TestCase
         // System under Test
         $sut = new TestTrait();
         // Act 
-        $result = $sut->getElementByIdOrPath($newValueItemValue);
+        $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue);
         // Assert
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_ID, $result);
     }
@@ -96,7 +102,21 @@ class IdentifierCheckTraitTest extends TestCase
         // System under Test
         $sut = new TestTrait();
         // Act 
-        $result = $sut->getElementByIdOrPath($newValueItemValue);
+        $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue);
+        // Assert
+        $this->assertEquals(self::TEST_TYPE . TestTrait::BY_PATH, $result);
+    }
+
+    public function testIdentifierCheckIfTypeCanBePassedAsSeparateArgument()
+    {
+        // Arrange
+        $newValueItemValue = array(
+            "fullpath" => "/some/path/withKey"
+        );
+        // System under Test
+        $sut = new TestTrait();
+        // Act 
+        $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue, self::TEST_TYPE);
         // Assert
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_PATH, $result);
     }

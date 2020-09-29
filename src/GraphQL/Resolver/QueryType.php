@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\IdentifierCheckTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
@@ -42,6 +43,7 @@ class QueryType
 
     use ServiceTrait;
     use PermissionInfoTrait;
+    use IdentifierCheckTrait;
 
     /**
      * @var EventDispatcherInterface
@@ -87,15 +89,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $element = null;
-
-        if ($elementType == "asset") {
-            $element = Asset\Folder::getById($args['id']);
-        } else if ($elementType == "document") {
-            $element = Document\Folder::getById($args['id']);
-        } else if ($elementType == "object") {
-            $element = Folder::getById($args['id']);
-        }
+        $element = $this->getElementByTypeAndIdOrPath($args, $elementType);
 
         if (!$element) {
             return null;
@@ -204,7 +198,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $assetElement = Asset::getById($args['id']);
+        $assetElement = $this->getElementByTypeAndIdOrPath($args, 'asset');
         if (!$assetElement) {
             return null;
         }

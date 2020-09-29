@@ -42,7 +42,7 @@ class ManyToManyRelation extends Base
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
-                    $element = $this->getElementByIdOrPath($newValueItemValue);
+                    $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);
 
                     if ($element) {
                         $result[] = $element;

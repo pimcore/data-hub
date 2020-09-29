@@ -22,45 +22,25 @@ trait IdentifierCheckTrait
     private $typeKey = 'type';
     private $idKey = 'id';
     private $fullpathKey = 'fullpath';
-
-    /**
-     * Returns an object of a specific entity identified whether by id or fullpath
-     * @param string $entity object type which is expected and supported by the graphQL configuration
-     * @param array $value array including id or fullpath (in case both are provided the id will be priorized)
-     * @return ElementInterface|null can whether be an object
-     * @throws \ClientSafeException thrown if neither an id nor a fullpath is provided
-     */
-    public function getObjectByEntityAndIdOrPath($entity, $value)
-    {
-        $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
-
-        if (isset($value[$this->idKey])) {
-            return $className::getById($value[$this->idKey]);
-        } else if (isset($value[$this->fullpathKey])) {
-            return $className::getByPath($value[$this->fullpathKey]);
-        }
-
-        throw new ClientSafeException('Either ' . $this->idKey . ' or ' . $this->fullpathKey . ' expected');
-    }
+    private $supportedTypes = array('object', 'asset', 'document');
 
     /**
      * Returns an element (object, document or asset) identified whether by id or fullpath
-     * @param array $value array including type, as well as id or fullpath (in case both are provided the id will be priorized)
+     * @param array $value array including type (if not passed in the optional type argument), as well as id or fullpath (in case both are provided the id will be priorized)
+     * @param string|null $type can whether be 'object', 'asset' or 'document' 
      * @return ElementInterface|null can whether be an object, a document or an asset
      * @throws \ClientSafeException thrown if no type or neither an id nor a fullpath is provided
      */
-    public function getElementByIdOrPath($value)
+    public function getElementByTypeAndIdOrPath($value, $type = null)
     {
-        if (!isset($value[$this->typeKey])) {
-            throw new ClientSafeException('type expected');
+        if (!isset($type)) {
+            $type = $this->getType($value);
         }
 
-        $type = $value[$this->typeKey];
-        return $this->getElementByTypeAndIdOrPath($type, $value);
-    }
+        if (!in_array($type, $this->supportedTypes)) {
+            throw new ClientSafeException('The type "' . $type . '" is not supported');
+        }
 
-    private function getElementByTypeAndIdOrPath($type, $value)
-    {
         if (isset($value[$this->idKey])) {
             return $this->getElementById($type, $value[$this->idKey]);
         }
@@ -73,7 +53,7 @@ trait IdentifierCheckTrait
     }
 
     /**
-     * Can be overwritten if the source has been changed
+     * Can be overwritten
      */
     protected function getElementById($type, $id)
     {
@@ -81,10 +61,19 @@ trait IdentifierCheckTrait
     }
 
     /**
-     * Can be overwritten if the source has been changed
+     * Can be overwritten
      */
     protected function getElementByPath($type, $fullpath)
     {
         return \Pimcore\Model\Element\Service::getElementByPath($type, $fullpath);
+    }
+
+    private function getType($value)
+    {
+        if (!isset($value[$this->typeKey])) {
+            throw new ClientSafeException('type expected');
+        }
+
+        return $value[$this->typeKey];
     }
 }
