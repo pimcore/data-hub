@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\IdentifierCheckTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
@@ -43,7 +43,7 @@ class QueryType
 
     use ServiceTrait;
     use PermissionInfoTrait;
-    use IdentifierCheckTrait;
+    use ElementIdentificationTrait;
 
     /**
      * @var EventDispatcherInterface

@@ -16,13 +16,13 @@
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits;
 
 use PHPUnit\Framework\TestCase;
-use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\IdentifierCheckTrait;
+use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 
 class TestTrait
 {
-    use IdentifierCheckTrait;
+    use ElementIdentificationTrait;
 
     const BY_ID = "ById";
     const BY_PATH = "ByPath";
@@ -38,9 +38,9 @@ class TestTrait
     }
 }
 
-class IdentifierCheckTraitTest extends TestCase
+class ElementIdentificationTraitTest extends TestCase
 {
-    const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\IdentifierCheckTrait';
+    const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait';
     const TEST_TYPE = 'object';
 
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
@@ -76,7 +76,7 @@ class IdentifierCheckTraitTest extends TestCase
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
-    public function testIdentifierCheckPrioritizesIdOverFullpath()
+    public function testElementIdentificationPrioritizesIdOverFullpath()
     {
         // Arrange
         $newValueItemValue = array(
@@ -92,7 +92,7 @@ class IdentifierCheckTraitTest extends TestCase
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_ID, $result);
     }
 
-    public function testIdentifierCheckGetElementByFullPath()
+    public function testElementIdentificationGetElementByFullPath()
     {
         // Arrange
         $newValueItemValue = array(
@@ -107,7 +107,7 @@ class IdentifierCheckTraitTest extends TestCase
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_PATH, $result);
     }
 
-    public function testIdentifierCheckIfTypeCanBePassedAsSeparateArgument()
+    public function testElementIdentificationIfTypeCanBePassedAsSeparateArgument()
     {
         // Arrange
         $newValueItemValue = array(

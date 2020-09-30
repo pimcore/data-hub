@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Traits;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 
-trait IdentifierCheckTrait
+trait ElementIdentificationTrait
 {
     private $typeKey = 'type';
     private $idKey = 'id';
