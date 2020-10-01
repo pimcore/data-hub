@@ -5,7 +5,7 @@ For adding a new query data type two steps are necessary:
 - provide a resolver implementation (optional)
 
 
-To add a tyoe definition, add a section similar to this one to your `services.yml` file.
+To add a type definition, add a section similar to this one to your `services.yml` file.
 
 ```
     pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_mycustomdatatype:
