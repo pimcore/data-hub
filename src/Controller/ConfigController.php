@@ -15,11 +15,15 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
+use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
+use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -303,7 +307,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @return JsonResponse
      */
-    public function getAction(Request $request, Service $graphQlService): JsonResponse
+    public function getAction(Request $request, Service $graphQlService, EventDispatcherInterface $eventDispatcher): JsonResponse
     {
         $this->checkPermission(self::CONFIG_NAME);
 
@@ -323,14 +327,85 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config['schema']['specialEntities'] = [];
         }
 
-        $specialSettings = ["document", "document_folder", "asset", "asset_folder", "asset_listing", "object_folder"];
-        foreach ($specialSettings as $key) {
-            if (!isset($config['schema']['specialEntities'][$key])) {
-                $config['schema']['specialEntities'][$key] = ["id" => $key];
-            }
+        $coreSettings = [
+            new SpecialEntitySetting(
+                'document',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['document']['read'] ?? false,
+                $config['schema']['specialEntities']['document']['create'] ?? false,
+                $config['schema']['specialEntities']['document']['update'] ?? false,
+                $config['schema']['specialEntities']['document']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'document_folder',
+                true,
+                false,
+                false,
+                true,
+                $config['schema']['specialEntities']['document_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['document_folder']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset']['read'] ?? false,
+                $config['schema']['specialEntities']['asset']['create'] ?? false,
+                $config['schema']['specialEntities']['asset']['update'] ?? false,
+                $config['schema']['specialEntities']['asset']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset_folder',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['asset_folder']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'asset_listing',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['asset_listing']['read'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['create'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['update'] ?? false,
+                $config['schema']['specialEntities']['asset_listing']['delete'] ?? false
+            ),
+            new SpecialEntitySetting(
+                'object_folder',
+                true,
+                true,
+                true,
+                true,
+                $config['schema']['specialEntities']['object_folder']['read'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['create'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['update'] ?? false,
+                $config['schema']['specialEntities']['object_folder']['delete'] ?? false
+            )
+        ];
+
+        $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
+        $eventDispatcher->dispatch(ConfigEvents::SPECIAL_ENTITIES, $specialSettingsEvent);
+
+        $finalSettings = [];
+
+        foreach ($specialSettingsEvent->getSpecialSettings() as $item) {
+            $finalSettings[$item->getName()] = $item;
         }
 
-        $config['schema']['specialEntities'] = array_values($config['schema']['specialEntities']);
+        $config['schema']['specialEntities'] = $specialSettingsEvent->getSpecialSettings();
 
         //TODO we probably need this stuff only for graphql stuff
         $supportedQueryDataTypes = $graphQlService->getSupportedDataObjectQueryDataTypes();
@@ -364,16 +439,29 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $data = $request->get('data');
             $modificationDate = $request->get('modificationDate', 0);
 
-            if ($modificationDate < Dao::getConfigModificationDate()) {
-                throw new \Exception('The configuration was modified during editing, please reload the configuration and make your changes again');
-            }
-
             $dataDecoded = json_decode($data, true);
 
             $name = $dataDecoded['general']['name'];
             $config = Dao::getByName($name);
 
-            $keys = ['queryEntities', 'mutationEntities','specialEntities'];
+            $configuration = $config->getConfiguration();
+
+            $savedModificationDate = 0;
+
+            if ($configuration && isset($configuration["general"]["modificationDate"])) {
+                $savedModificationDate = $configuration["general"]["modificationDate"];
+            } else {
+                Dao::getConfigModificationDate();
+            }
+
+            if ($modificationDate < $savedModificationDate) {
+                throw new \Exception('The configuration was modified during editing, please reload the configuration and make your changes again');
+            }
+
+            $dataDecoded['general']['modificationDate'] = time();
+
+
+            $keys = ['queryEntities', 'mutationEntities'];
             foreach ($keys as $key) {
                 $transformedEntities = [];
                 if ($dataDecoded['schema'][$key]) {
@@ -382,6 +470,21 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                     }
                 }
                 $dataDecoded['schema'][$key] = $transformedEntities;
+            }
+
+            if ($dataDecoded['schema']['specialEntities']) {
+                $transformedEntities = [];
+
+                foreach ($dataDecoded['schema']['specialEntities'] as $entity) {
+                    $transformedEntities[$entity['name']] = [
+                        'read' => $entity['readAllowed'],
+                        'create' => $entity['createAllowed'],
+                        'update' => $entity['updateAllowed'],
+                        'delete' => $entity['deleteAllowed'],
+                    ];
+
+                    $dataDecoded['schema']['specialEntities'] = $transformedEntities;
+                }
             }
 
             $config->setConfiguration($dataDecoded);

@@ -138,8 +138,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param ClassDefinition $class
-     * @param $key
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     * @param string $key
      * @param null $container
      *
      * @return mixed
@@ -227,13 +227,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $nodeDef
-     * @param $class
-     * @param $inputFields
+     * @param array $nodeDef
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      *
      * @return Data
      */
-    public function getMutationFieldConfigFromConfig($nodeDef, $class, $inputFields)
+    public function getMutationFieldConfigFromConfig($nodeDef, $class)
     {
         $container = null;
         $result = false;
@@ -306,8 +305,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $nodeDef
-     * @param $class
+     * @param array $nodeDef
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param $container
      * @return mixed
      */

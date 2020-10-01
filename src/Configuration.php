@@ -16,7 +16,9 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
+use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
 use Pimcore\Model\AbstractModel;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class Configuration
@@ -24,6 +26,8 @@ use Pimcore\Model\AbstractModel;
  */
 class Configuration extends AbstractModel
 {
+    public const SECURITYCONFIG_AUTH_APIKEY = "datahub_apikey";
+
     /**
      * @var string
      */
@@ -175,7 +179,7 @@ class Configuration extends AbstractModel
         $this->configuration['general']['name'] = $this->name;
 
         $securityConfig = $this->getSecurityConfig();
-        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === 'datahub_apikey') {
+        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
             $apikey = $securityConfig['apikey'] ?? "";
             if (strlen($apikey) < 16) {
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
@@ -196,6 +200,10 @@ class Configuration extends AbstractModel
     public function delete(): void
     {
         $this->getDao()->delete();
+
+        $event = new GenericEvent($this);
+        $event->setArgument("configuration", $this);
+        \Pimcore::getEventDispatcher()->dispatch(ConfigurationEvents::CONFIGURATION_POST_DELETE, $event);
     }
 
     /**

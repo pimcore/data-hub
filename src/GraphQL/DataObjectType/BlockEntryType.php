@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\BlockDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -96,7 +97,9 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
 
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
-        foreach ($this->fieldDefinition->getChildren() as $fieldDef) {
+        Helper::extractDataDefinitions($this->fieldDefinition, $fieldDefinitions);
+
+        foreach ($fieldDefinitions as $fieldDef) {
             if ($fieldDef instanceof ClassDefinition\Data\Localizedfields) {
                 $fcLocalizedFieldDefs = $fieldDef->getFieldDefinitions();
 
@@ -124,6 +127,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         );
 
         $hasResolve = isset($field['resolve']);
+        /** @var callable $resolve */
         $resolve = $hasResolve ? $field['resolve'] : null;
 
         $field['resolve'] = function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($hasResolve, $resolve, $localized) {

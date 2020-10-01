@@ -38,6 +38,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->processDataObjectQueryTypes($container);
         $this->processDataObjectMutationTypes($container);
         $this->processDocumentElementQueryTypes($container);
+        $this->processDocumentElementMutationTypes($container);
         $this->processCsFeatureQueryTypes($container);
 
         $this->registerAssetDataTypes($container);
@@ -284,6 +285,32 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    protected function processDocumentElementMutationTypes(ContainerBuilder $container)
+    {
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
+
+        $this->createLocatorForTaggedServices(
+            $container,
+            $graphQLServiceDefinition,
+            'graphql mutation_documentelementtypegenerator',
+            'pimcore.datahub.graphql.documentelementmutationtypegenerator',
+            '$documentElementMutationTypeGeneratorFactories'
+        );
+
+        $this->buildSupportedDocumentElementDataTypes(
+            'mutation',
+            $container,
+            $graphQLServiceDefinition,
+            'graphql mutation_documentelementtypegenerator',
+            'pimcore.datahub.graphql.documentelementmutationtypegenerator'
+        );
+    }
+
+
     /**
      * @param ContainerBuilder $container
      */
@@ -296,7 +323,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             $graphQLServiceDefinition,
             'graphql query_documentelementtypegenerator',
             'pimcore.datahub.graphql.documentelementquerytypegenerator',
-            '$documentElementTypeGeneratorFactories'
+            '$documentElementQueryTypeGeneratorFactories'
         );
 
         $this->buildSupportedDocumentElementDataTypes(

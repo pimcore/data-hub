@@ -39,7 +39,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
     /** @var Data */
     protected $fieldDefinition;
-    
+
     /**
      * AbstractRelationsType constructor.
      * @param Service $graphQlService

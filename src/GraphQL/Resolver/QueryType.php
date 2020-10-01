@@ -429,6 +429,10 @@ class QueryType
         $nodes = [];
 
         foreach ($objectList as $object) {
+            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
+                continue;
+            }
+
             $data = [];
             $data['id'] = $object->getId();
             $nodes[] = [

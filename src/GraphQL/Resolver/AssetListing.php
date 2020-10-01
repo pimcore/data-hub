@@ -175,6 +175,10 @@ class AssetListing
         $nodes = [];
 
         foreach ($objectList as $element) {
+            if (!WorkspaceHelper::checkPermission($element, 'read')) {
+                continue;
+            }
+
             $nodes[] = [
                 'cursor' => 'asset-' . $element->getId(),
                 'node' => $element,

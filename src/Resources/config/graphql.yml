@@ -19,9 +19,18 @@ services:
   pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
   pimcore.datahub.graphql.documenttype.document_link: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType'
   pimcore.datahub.graphql.documenttype.document_link_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType'
+  pimcore.datahub.graphql.documenttype.document_areablock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType'
+  pimcore.datahub.graphql.documenttype.document_scheduledblock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType'
+  pimcore.datahub.graphql.documenttype.document_areablock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType'
+  pimcore.datahub.graphql.documenttype.document_scheduledblock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType'
+  pimcore.datahub.graphql.documenttype.document_link_inputtype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType'
+
+
   pimcore.datahub.graphql.documenttype.document_page: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType'
   pimcore.datahub.graphql.documenttype.document_snippet: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType'
   pimcore.datahub.graphql.documenttype._document_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType'
+
+  pimcore.datahub.graphql.documenttype.document_page_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType'
 
  # data object
   pimcore.datahub.graphql.dataobjecttype.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType'
@@ -142,9 +151,27 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType: ~
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType: ~
+
   #
   # built-in document-elements query datatypes type generator
   #
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_areablock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Areablock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_areablock }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_block:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Block
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_block }
 
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox
@@ -195,6 +222,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relations
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relations }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_scheduledblock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Scheduledblock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_scheduledblock }
 
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_select:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Select
@@ -631,6 +663,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documenttype, id: _document_folder }
 
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.documenttype, id: document_link_input }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: elementdescriptor_input }
@@ -676,12 +713,83 @@ services:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video_data }
 
   #
+  # document mutation types
+  #
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.document_inputtype, id: document_page_input }
+
+  #
   # input type definitions
   #
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: image_input }
+
+  # document element mutation data types
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_areablock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Areablock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_areablock }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_block:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Block
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_block }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_image:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Image
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_image }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Input
+    tags:
+        - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_input }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_multiselect:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Multiselect
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_multiselect }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_scheduledblock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Scheduledblock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_scheduledblock }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_select:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Select
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_select }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_wysiwyg:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Wysiwyg
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_wysiwyg }
+
+  # document element input processors
+  pimcore.datahub.graphql.documentmutationelementprocessor: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock'
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Wysiwyg: ~
+
+
+  Pimcore\Model\Document\Tag\Loader\TagLoaderInterface: '@pimcore.implementation_loader.document.tag'
 
   #
   # built-in dataobject mutation datatypes type generator
@@ -726,6 +834,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ExternalImage
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_externalImage }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_fieldcollections:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Fieldcollections
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_fieldcollections }
 
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_geopoint:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Geopoint

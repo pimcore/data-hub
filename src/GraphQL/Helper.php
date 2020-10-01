@@ -15,6 +15,8 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Db;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\ClassDefinition\Layout;
 
 /**
  * @internal
@@ -122,5 +124,21 @@ class Helper
         $db = Db::get();
         $absoluteColumnName = (strpos($columnName, '.') !== false) ? $columnName : $defaultTable . '.' . $columnName;
         return $db->quoteIdentifier($absoluteColumnName);
+    }
+
+    /**
+     * @param Layout|Data $def
+     */
+    public static function extractDataDefinitions($def, &$fieldDefinitions = [])
+    {
+        if ($def instanceof Layout || $def instanceof Data\Block || $def instanceof Data\Localizedfields) {
+            if ($def->hasChildren()) {
+                foreach ($def->getChildren() as $child) {
+                    self::extractDataDefinitions($child, $fieldDefinitions);
+                }
+            }
+        } else if ($def instanceof Data) {
+            $fieldDefinitions[$def->getName()] = $def;
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
 class IfEmptyOperator extends BaseOperator
 {
@@ -34,15 +35,15 @@ class IfEmptyOperator extends BaseOperator
 
 
     /**
-     * @param Concrete $object
+     * @param Concrete|AbstractData $object
      * @param $newValue
-     * @param $args
+     * @param array $args
      * @param array $context
      * @param ResolveInfo $info
      * @return void|null
      * @throws \Exception|\UnexpectedValueException
      */
-    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
+    public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $class = $object->getClass();
 

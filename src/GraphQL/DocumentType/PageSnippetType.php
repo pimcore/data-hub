@@ -55,6 +55,11 @@ class PageSnippetType extends AbstractDocumentType
             'resolve' => [$resolver, "resolveElements"]
         ];
 
+        $config['fields']['editables'] = [
+            'type' => Type::listOf($this->documentElementType),
+            'resolve' => [$resolver, "resolveElements"]
+        ];
+
         $config['fields']['title'] = [
             'type' => Type::string()
         ];

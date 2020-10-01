@@ -26,7 +26,7 @@ class ElementDescriptorInputType extends InputObjectType
 
 
     /**
-     * AssetInputType constructor.
+     * ElementDescriptorInputType constructor.
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
