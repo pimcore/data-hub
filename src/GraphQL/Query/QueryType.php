@@ -66,8 +66,14 @@ class QueryType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
-    {
+    public function __construct(
+        Service $graphQlService,
+        LocaleServiceInterface $localeService,
+        Factory $modelFactory,
+        EventDispatcherInterface $eventDispatcher,
+        $config = [],
+        $context = []
+    ) {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
         }
@@ -95,10 +101,12 @@ class QueryType extends ObjectType
 
             if ($type == "asset") {
                 $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition("_" . $type . "_folder");
-            } else if ($type == "document") {
-                $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
             } else {
-                $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+                if ($type == "document") {
+                    $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
+                } else {
+                    $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+                }
             }
 
             // GETTER DEFINITION
@@ -145,7 +153,6 @@ class QueryType extends ObjectType
             $config['fields']['getAsset'] = $defGet;
         }
     }
-
 
 
     /**
@@ -221,7 +228,7 @@ class QueryType extends ObjectType
     }
 
     /**
-     * @param array &$config
+     * @param array $config
      * @param array $context
      * @throws \Exception
      */
@@ -318,7 +325,8 @@ class QueryType extends ObjectType
                 Logger::error("class " . $entity . " not found");
                 continue;
             }
-            if (!is_subclass_of ('\\Pimcore\Model\\DataObject\\' . $class->getName(), \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
+            if (!is_subclass_of('\\Pimcore\Model\\DataObject\\' . $class->getName(),
+                \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface::class)) {
                 Logger::info("class " . $entity . " is not filterable.");
                 continue;
             }
@@ -330,17 +338,17 @@ class QueryType extends ObjectType
 
             $filterFacetType = new ObjectType(
                 [
-                    'name' => 'filterFacets',
+                    'name' => $ucFirstClassName . 'FilterFacets',
                     'fields' => [
                         'facet' => [
                             'type' => new ObjectType([
-                                'name' => 'filterFacet',
+                                'name' => $ucFirstClassName . 'FilterFacet',
                                 'fields' => [
                                     'field' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
                                     'options' => [
                                         'type' => Type::listOf(new ObjectType([
-                                            'name' => 'filterFacetOption',
+                                            'name' => $ucFirstClassName . 'FilterFacetOption',
                                             'fields' => [
                                                 'value' => ['type' => Type::string()],
                                                 'label' => ['type' => Type::string()],
@@ -402,7 +410,14 @@ class QueryType extends ObjectType
                     ],
                     'filter' => ['type' => Type::string()],
                     'filterDefinition' => [
-                        'type' => Type::int(),
+                        'type' => new InputObjectType([
+                            'name'  => $ucFirstClassName . 'FilterDefinitionArg',
+                            'fields' => [
+                                'id' => ['type' => Type::int()],
+                                'relationField' => ['type' => Type::string()],
+                                'fallbackFilterDefinitionId' => ['type' => Type::int()],
+                            ],
+                        ]),
                         'description' => "Define the id of a filterDefinition to use to configure the filter.",
                     ],
                     'published' => ['type' => Type::boolean()],
@@ -414,14 +429,14 @@ class QueryType extends ObjectType
                     'priceTo' => ['type' => Type::float()],
                     'facets' => [
                         'type' => Type::listOf(new InputObjectType([
-                            'name' => 'filterFacetArg',
+                            'name' => $ucFirstClassName . 'FilterFacetArg',
                             'fields' => [
                                 'field' => ['type' => Type::string()],
                                 'values' => ['type' => Type::listOf(Type::string())],
                                 // @TODO Figure out if there's a way to use UnionType as InputObjectType.
 //                                'values' => [
 //                                    'type' => new UnionType([
-//                                        'name' => 'filterFacetArgValues',
+//                                        'name' => $ucFirstClassName . 'filterFacetArgValues',
 //                                        'types' => [Type::listOf(Type::string()), Type::string()]
 //                                    ])
 //                                ],
@@ -517,7 +532,7 @@ class QueryType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
-        $event =  new QueryTypeEvent(
+        $event = new QueryTypeEvent(
             $this,
             $config,
             $context
@@ -530,11 +545,9 @@ class QueryType extends ObjectType
         $this->buildAssetQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
-
         if (interface_exists('\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IndexableInterface')) {
             $this->buildFilterQueries($config, $context);
         }
-
         $this->buildAssetListingQueries($config, $context);
         $this->buildFolderQueries("asset", $config, $context);
         $this->buildFolderQueries("document", $config, $context);
