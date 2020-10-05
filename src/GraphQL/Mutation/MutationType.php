@@ -194,7 +194,8 @@ class MutationType extends ObjectType
                 ];
             } else {
                 $args = [
-                    'id' => ['type' => Type::nonNull(Type::int())]
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()]
                 ];
             }
 
@@ -211,16 +212,17 @@ class MutationType extends ObjectType
                 'input' => $inputType
             ]);
 
+            $me = $this;
             $updateField = [
                 'type' => $updateResultType,
-                'args' => $args, 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($documentType, $inputProcessorFn, $processors, $mutationType) {
+                'args' => $args, 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($documentType, $inputProcessorFn, $processors, $mutationType, $me) {
                     if ($mutationType == 'update') {
-                        $element = Document::getById($args["id"]);
+                        $element = $me->getElementByTypeAndIdOrPath($args, 'document');
 
                         if (!WorkspaceHelper::checkPermission($element, "update")) {
                             return [
                                 "success" => false,
-                                "message" => "not allowed to create asset"
+                                "message" => "not allowed to update document"
                             ];
                         }
                     } else {
