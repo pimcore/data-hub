@@ -20,4 +20,4 @@ And get the configuration done by defining
 - security definitions
 - and additional settings
 
-Example for [GraphQL](./GraphQL/README.md)
+Example for [GraphQL](./10_GraphQL/README.md)
