@@ -145,8 +145,9 @@ class QueryType
     }
 
     /**
+     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      * @param null $value
-     * @param array $args
+     * @param array $args 
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
@@ -158,13 +159,12 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $documentElement = null;
-
-        if (isset($args['id'])) {
-            $documentElement = Document::getById($args['id']);
-        } else if (isset($args['path'])) {
-            $documentElement = Document::getByPath($args['path']);
+        // TODO: remove this workaround for Release 1.0
+        if ($args && isset($args['path'])) {
+            $args['fullpath'] = $args['path'];
         }
+
+        $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
 
         if (!$documentElement) {
             return null;
@@ -226,7 +226,7 @@ class QueryType
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
 
-        if (!$args["id"]) {
+        if (!isset($args["id"]) && !isset($args["fullpath"])) {
             return null;
         }
 
@@ -240,7 +240,16 @@ class QueryType
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
-        $conditionParts[] = '(o_id =' . $args['id'] . ')';
+        if ($args && isset($args["id"])) {
+            $conditionParts[] = '(o_id =' . $args['id'] . ')';
+        }
+        
+        if ($args && isset($args["fullpath"])) {
+            $fullpath = Service::correctPath($args['fullpath']);
+            $keyAndPath = $this->extractKeyAndPath($fullpath);
+            $conditionParts[] = '(o_path ="'. $keyAndPath['path'] .'")';
+            $conditionParts[] = '(o_key ="'. $keyAndPath['key'] .'")';
+        }
 
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -260,7 +269,8 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            throw new ClientSafeException('object with ID ' . $args["id"] . ' not found');
+            $identifiers = ($args["id"] ? ' ID: ' . $args["id"] : '') . ($args["fullpath"] ? ' FULLPATH: ' . $args["fullpath"] : '');
+            throw new ClientSafeException('object with' . $identifiers . ' not found');
         }
         $object = $objectList[0];
 
@@ -449,4 +459,25 @@ class QueryType
         return $value['totalCount'];
     }
 
+    /**
+     * Exact copy of the Pimcore\Model\Element\Dao::extractKeyAndPath() function
+     * @param string $fullpath
+     *
+     * @return array
+     */
+    protected function extractKeyAndPath($fullpath)
+    {
+        $key = '';
+        $path = $fullpath;
+        if ($fullpath !== '/') {
+            $lastPart = strrpos($fullpath, '/') + 1;
+            $key = substr($fullpath, $lastPart);
+            $path = substr($fullpath, 0, $lastPart);
+        }
+
+        return [
+            'key' => $key,
+            'path' => $path
+        ];
+    }
 }

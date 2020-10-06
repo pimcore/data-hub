@@ -165,7 +165,8 @@ class QueryType extends ObjectType
                 'name' => 'getDocument',
                 'args' => [
                     'id' => ['type' => Type::int()],
-                    'path' => ['type' => Type::string()],
+                    'path' => ['type' => Type::string(), 'description' => "Get document by 'path' is deprecated as it is wrongly named. The 'path' argument will be replaced by 'fullpath' for Release 1.0."],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $this->getGraphQlService()->getDocumentTypeDefinition("document"),
@@ -213,7 +214,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'get' . $ucFirstClassName,
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => ClassTypeDefinitions::get($class),
