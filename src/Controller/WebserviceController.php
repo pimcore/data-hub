@@ -83,6 +83,15 @@ class WebserviceController extends FrontendController
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
 
+        $cacheKey = $this->computeCacheKey($request);
+
+        if($response = \Pimcore\Cache::load($cacheKey)) {
+            Logger::debug("Loading response from cache: key $cacheKey");
+            return $response;
+        } else {
+            Logger::debug("Cache entry not found for key $cacheKey");
+        }
+
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
 
@@ -188,6 +197,27 @@ class WebserviceController extends FrontendController
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
+        $this->cacheSave($cacheKey, $response, [$clientname]);
+
         return $response;
+    }
+
+    private function computeCacheKey(Request $request) {
+        $clientname = $request->get('clientname');
+
+        $input = json_decode($request->getContent(), true);
+        $input = print_r($input, true);
+
+        return md5($clientname . $input);
+    }
+
+    private function cacheSave($cacheKey, $response, $extraTags = []) {
+        $lifetime = 30; // How to get this value from external config?
+        \Pimcore\Cache::save(
+            $response,
+            $cacheKey,
+            array_merge(["output","datahub"], $extraTags),
+            $lifetime);
     }
 }
