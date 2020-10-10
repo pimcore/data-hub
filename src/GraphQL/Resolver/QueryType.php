@@ -243,12 +243,10 @@ class QueryType
         if ($args && isset($args["id"])) {
             $conditionParts[] = '(o_id =' . $args['id'] . ')';
         }
-        
+
         if ($args && isset($args["fullpath"])) {
             $fullpath = Service::correctPath($args['fullpath']);
-            $keyAndPath = $this->extractKeyAndPath($fullpath);
-            $conditionParts[] = '(o_path ="'. $keyAndPath['path'] .'")';
-            $conditionParts[] = '(o_key ="'. $keyAndPath['key'] .'")';
+            $conditionParts[] = '(concat(o_path, o_key) =' . Db::get()->quote($fullpath) . ')';
         }
 
         /** @var $configuration Configuration */
@@ -269,7 +267,7 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            $identifiers = ($args["id"] ? ' ID: ' . $args["id"] : '') . ($args["fullpath"] ? ' FULLPATH: ' . $args["fullpath"] : '');
+            $identifiers = ($args["id"] ? " ID: " . $args["id"] : "") . ($args["fullpath"] ? " FULLPATH: '" . $args["fullpath"] . "'" : "");
             throw new ClientSafeException('object with' . $identifiers . ' not found');
         }
         $object = $objectList[0];
@@ -337,6 +335,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
+        $db = Db::get();
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
@@ -344,6 +343,17 @@ class QueryType
         $conditionParts = [];
         if (isset($args['ids'])) {
             $conditionParts[] = '(o_id IN (' . $args['ids'] . '))';
+        }
+        if (isset($args['fullpaths'])) {
+            $quotedFullpaths = array_map(
+                static function ($fullpath) use ($db) {
+                    $fullpath = trim($fullpath, " '");
+                    $fullpath = Service::correctPath($fullpath);
+                    return $db->quote($fullpath);
+                },
+                explode(',', $args['fullpaths'])
+            );
+            $conditionParts[] = '(concat(o_path, o_key) IN (' . implode(',', $quotedFullpaths) . '))';
         }
 
         // paging
@@ -377,7 +387,6 @@ class QueryType
         }
 
         // check permissions
-        $db = Db::get();
         $workspacesTableName = 'plugin_datahub_workspaces_object';
         $conditionParts[] = ' (
             (
@@ -457,27 +466,5 @@ class QueryType
     public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return $value['totalCount'];
-    }
-
-    /**
-     * Exact copy of the Pimcore\Model\Element\Dao::extractKeyAndPath() function
-     * @param string $fullpath
-     *
-     * @return array
-     */
-    protected function extractKeyAndPath($fullpath)
-    {
-        $key = '';
-        $path = $fullpath;
-        if ($fullpath !== '/') {
-            $lastPart = strrpos($fullpath, '/') + 1;
-            $key = substr($fullpath, $lastPart);
-            $path = substr($fullpath, 0, $lastPart);
-        }
-
-        return [
-            'key' => $key,
-            'path' => $path
-        ];
     }
 }
