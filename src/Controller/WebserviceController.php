@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
@@ -52,12 +53,18 @@ class WebserviceController extends FrontendController
     private $permissionsService;
 
     /**
+     * @var OutputCacheService
+     */
+    private $cacheService;
+    
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService)
+    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService, OutputCacheService $cacheService)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->permissionsService = $permissionsService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -83,14 +90,12 @@ class WebserviceController extends FrontendController
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
 
-        $cacheKey = $this->computeCacheKey($request);
-
-        if($response = \Pimcore\Cache::load($cacheKey)) {
-            Logger::debug("Loading response from cache: key $cacheKey");
+        if($response = $this->cacheService->load($request)) {
+            Logger::debug("Loading response from cache");
             return $response;
-        } else {
-            Logger::debug("Cache entry not found for key $cacheKey");
         }
+        
+        Logger::debug("Cache entry not found");
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
@@ -198,26 +203,8 @@ class WebserviceController extends FrontendController
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
-        $this->cacheSave($cacheKey, $response, [$clientname]);
+        $this->cacheService->save($request, $response);
 
         return $response;
-    }
-
-    private function computeCacheKey(Request $request) {
-        $clientname = $request->get('clientname');
-
-        $input = json_decode($request->getContent(), true);
-        $input = print_r($input, true);
-
-        return md5($clientname . $input);
-    }
-
-    private function cacheSave($cacheKey, $response, $extraTags = []) {
-        $lifetime = 30; // How to get this value from external config?
-        \Pimcore\Cache::save(
-            $response,
-            $cacheKey,
-            array_merge(["output","datahub"], $extraTags),
-            $lifetime);
     }
 }
