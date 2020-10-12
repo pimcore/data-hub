@@ -23,6 +23,9 @@
       "bundles": [
         "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
       ]
+    },
+    "branch-alias": {
+      "dev-master": "1.0-dev"
     }
   },
   "require-dev": {
