@@ -63,7 +63,7 @@ class OutputCacheService
         
         $cacheKey = $this->computeKey($request);
         
-        return \Pimcore\Cache::load($cacheKey);
+        return $this->loadFromCache($cacheKey);
     }
     
     
@@ -71,15 +71,19 @@ class OutputCacheService
         if ($this->useCache($request)) {
             $cacheKey = $this->computeKey($request);
             $clientname = $request->get('clientname');
+            $extraTags = array_merge(["output","datahub", $clientname], $extraTags);
             
-            \Pimcore\Cache::save(
-                $response,
-                $cacheKey,
-                array_merge(["output","datahub", $clientname], $extraTags),
-                $this->lifetime);
+            $this->saveToCache($cacheKey, $response, $extraTags);
         }
     }
     
+    protected function loadFromCache($key) {
+        return \Pimcore\Cache::load($key);
+    }
+    
+    protected function saveToCache($key, $item, $tags = []) : void { 
+        \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);
+    }
     
     private function computeKey(Request $request) : string {
         $clientname = $request->get('clientname');
@@ -96,19 +100,17 @@ class OutputCacheService
             return false;
         }
         
-        $disableCacheForSingleRequest = false;
-        
-        if (\Pimcore::inDebugMode()){
+        if(PIMCORE_DEBUG) {
             $disableCacheForSingleRequest = filter_var($request->query->get('pimcore_nocache', 'false'), FILTER_VALIDATE_BOOLEAN)
             || filter_var($request->query->get('pimcore_outputfilters_disabled', 'false'), FILTER_VALIDATE_BOOLEAN);
+            
+            if($disableCacheForSingleRequest) {
+                
+                Logger::debug("Output cache is disabled for this request");
+                return false;
+            }
         }
-        
-        if($disableCacheForSingleRequest) {
-            Logger::debug("Output cache is disabled for this request");
-            return false;
-        }
-        
-        
+
         return true;
     }
 }

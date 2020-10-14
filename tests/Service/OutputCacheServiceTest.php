@@ -12,131 +12,152 @@
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
-namespace Pimcore\Bundle\DataHubBundle\Tests\Controller;
+namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use PHPUnit\Framework\TestCase;
-use Pimcore\Bundle\DataHubBundle\Configuration;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+const PIMCORE_DEBUG = true;
+
 
 class OutputCacheServiceTest extends TestCase
-{    
-    const CORRECT_API_KEY = "correct_key";
+{   
+    
+    protected $container;
+    protected $request;
+    protected $sut;
+    
+    protected function setUp(): void
+    {
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container->method('getParameter')
+            ->willReturn(array(
+                'graphql' => array(
+                    'output_cache_enabled' => true,
+                    'output_cache_lifetime' => 25
+                )
+            ));
+            
+        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+            ->setConstructorArgs([$this->container])
+            ->setMethods(['loadFromCache', 'saveToCache'])
+            ->getMock();
+            
+        $payload = '{"query":"{\n  getProductCategoryListing {\n    edges {\n      node {\n        fullpath\n      }\n    }\n  }\n}","variables":null,"operationName":null}';
+        $this->request = Request::create('/api', 'POST', array("apikey" => "super_secret_api_key"), [], [], [], $payload);
+        $this->request->headers->set("Content-Type", "application/json");
+        $this->request->request->set('clientname', 'test-datahub-config');        
+    }
+    
 
-    public function testSecurityCheckFailsWhenNoApiKeyinRequest()
+    public function testReturnNullWhenItemIsNotCached()
     {   
         // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                 "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                 "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request();
-       
-
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
+        $this->sut->method('loadFromCache')->willReturn(null);
+                
         // Act
-        $result = $sut->performSecurityCheck($request, $configuration);
+        $cacheItem = $this->sut->load($this->request);
+        
         // Assert
-        $this->assertFalse($result);
+        $this->assertEquals(null, $cacheItem);
     }
 
-    public function testSecurityCheckFailsWhenInvalidApiKeyInRequest()
+    
+    public function testReturnItemWhenItIsCached()
+    {
+        // Arrange
+        $response = new JsonResponse(['data' => 123]);
+        $this->sut->method('loadFromCache')->willReturn($response);
+        
+        // Act
+        $cacheItem = $this->sut->load($this->request);
+        
+        // Assert
+        $this->assertEquals($response, $cacheItem);
+    }
+    
+
+    public function testSaveItemWhenCacheIsEnabled()
     {
         // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request(array("apikey" => "wrong_key"));
-       
-
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
+        $this->sut
+            ->expects($this->once())
+            ->method('saveToCache');
+        
+        $response = new JsonResponse(['data' => 123]);
+        
         // Act
-        $result = $sut->performSecurityCheck($request, $configuration);
-        //Assert
-        $this->assertFalse($result);
+        $this->sut->save($this->request, $response);
+    }
+    
+
+    public function testIgnoreSaveWhenCacheIsDisabled()
+    {
+        // Arrange
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container->method('getParameter')
+            ->willReturn(array(
+                'graphql' => array(
+                    'output_cache_enabled' => false
+                )
+            ));
+
+        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+            ->setConstructorArgs([$this->container])
+            ->setMethods(['saveToCache'])
+            ->getMock();
+        
+        $this->sut
+            ->expects($this->never())
+            ->method('saveToCache');
+        
+        $response = new JsonResponse(['data' => 123]);
+        
+        // Act
+        $this->sut->save($this->request, $response);
     }
 
-    public function testSecurityCheckPassesWhenCorrectApiKeyInQuery()
+    
+    public function testIgnoreLoadWhenCacheIsDisabled()
     {
-        // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request(array("apikey" => self::CORRECT_API_KEY));
-      
-
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
+        // Arrange
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container->method('getParameter')
+        ->willReturn(array(
+            'graphql' => array(
+                'output_cache_enabled' => false
+            )
+        ));
+        
+        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+            ->setConstructorArgs([$this->container])
+            ->setMethods(['loadFromCache'])
+            ->getMock();
+        
+        $this->sut
+            ->expects($this->never())
+            ->method('loadFromCache');
+        
+        $response = new JsonResponse(['data' => 123]);
+        
         // Act
-        $result = $sut->performSecurityCheck($request, $configuration); 
-        // Assert
-        $this->assertTrue($result);
+        $this->sut->save($this->request, $response);
     }
+    
 
-    public function testSecurityCheckPassesWhenCorrectApiKeyInApikeyHeader()
+    public function testIgnoreCacheWhenRequestParameterIsPassed()
     {
         // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request();
-        $request->headers->set("apikey", self::CORRECT_API_KEY);
-
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
+        $response = new JsonResponse(['data' => 123]);
+        $this->sut->method('loadFromCache')->willReturn($response);
+        $this->request->query->set('pimcore_nocache', 'true');
+        
         // Act
-        $result = $sut->performSecurityCheck($request, $configuration); 
+        $cacheItem = $this->sut->load($this->request);
+        
         // Assert
-        $this->assertTrue($result);
-    }
-
-    public function testSecurityCheckPassesWhenCorrectXApiKeyInApikeyHeader()
-    {
-        // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request();
-        $request->headers->set("X-API-Key", self::CORRECT_API_KEY);
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
-        // Act
-        $result = $sut->performSecurityCheck($request, $configuration); 
-        // Assert
-        $this->assertTrue($result);
-    }
-
-    public function testSecurityCheckPrioritizesHeaderOverQueryParam()
-    {
-        // Arrange  
-        $configuration = $this->createMock(Configuration::class);  
-        $configuration->method('getSecurityConfig')
-            ->willReturn(array(
-                "method" => Configuration::SECURITYCONFIG_AUTH_APIKEY,
-                "apikey" => self::CORRECT_API_KEY
-            ));
-        $request = new Request(array("apikey", "wrong_key"));
-        $request->headers->set("apikey", self::CORRECT_API_KEY);
-        // System under Test            
-        $sut = new \Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService();
-        // Act
-        $result = $sut->performSecurityCheck($request, $configuration); 
-        // Assert
-        $this->assertTrue($result);
+        $this->assertEquals(null, $cacheItem);
     }
 }
