@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Cache\Runtime;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -66,7 +67,7 @@ class ClassTypeDefinitions
         $className = is_string($class) ? $class : $class->getName();
         $result = self::$definitions[$className];
         if (!$result) {
-            throw new \Exception('type definition ' . $className . ' not found');
+            throw new ClientSafeException('type definition ' . $className . ' not found');
         }
 
         return $result;

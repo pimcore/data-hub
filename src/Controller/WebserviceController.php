@@ -26,6 +26,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
@@ -46,11 +47,17 @@ class WebserviceController extends FrontendController
     private $eventDispatcher;
 
     /**
+     * @var CheckConsumerPermissionsService
+     */
+    private $permissionsService;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->permissionsService = $permissionsService;
     }
 
     /**
@@ -72,7 +79,9 @@ class WebserviceController extends FrontendController
             throw new NotFoundHttpException('No active configuration found for ' . $clientname);
         }
 
-        $this->performSecurityCheck($request, $configuration);
+        if (!$this->permissionsService->performSecurityCheck($request, $configuration)) {
+            throw new AccessDeniedHttpException('Permission denied, apikey not valid');
+        }
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
@@ -88,7 +97,6 @@ class WebserviceController extends FrontendController
 
         $queryType = new QueryType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
         $mutationType = new MutationType($service, $localeService, $modelFactory, $this->eventDispatcher, [], $context);
-
 
         try {
             $schemaConfig = [
@@ -113,8 +121,8 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $rawInput = file_get_contents('php://input');
-        $input = json_decode($rawInput, true);
+        $input = json_decode($request->getContent(), true);
+
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
 
@@ -169,37 +177,17 @@ class WebserviceController extends FrontendController
                 ],
             ];
         }
-        
+
         $origin = '*';
         if (!empty($_SERVER['HTTP_ORIGIN'])) {
             $origin = $_SERVER['HTTP_ORIGIN'];
         }
-        header('Access-Control-Allow-Origin: ' . $origin);
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
-        
-        return new JsonResponse($output);
-    }
 
-    /**
-     * @param Request $request
-     * @param Configuration $configuration
-     *
-     * @return void
-     *
-     * @throws AccessDeniedHttpException
-     */
-    protected function performSecurityCheck(Request $request, Configuration $configuration): void
-    {
-        $securityConfig = $configuration->getSecurityConfig();
-        if ($securityConfig['method'] === 'datahub_apikey') {
-            $apiKey = $request->get('apikey');
-            if ($apiKey === $securityConfig['apikey']) {
-                return;
-            }
-        }
-
-        throw new AccessDeniedHttpException('Permission denied, apikey not valid');
+        $response = new JsonResponse($output);
+        $response->headers->set('Access-Control-Allow-Origin', $origin);
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+        return $response;
     }
 }

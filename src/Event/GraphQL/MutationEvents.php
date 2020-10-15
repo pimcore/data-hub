@@ -22,4 +22,11 @@ final class MutationEvents
      * @var string
      */
     const PRE_BUILD = 'pimcore.datahub.graphql.mutation.preBuild';
+
+    /**
+     * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent")
+     *
+     * @var string
+     */
+    const POST_BUILD = 'pimcore.datahub.graphql.mutation.postBuild';
 }

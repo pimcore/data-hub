@@ -17,18 +17,24 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 class QueryType
@@ -36,6 +42,11 @@ class QueryType
 
     use ServiceTrait;
     use PermissionInfoTrait;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var null
@@ -49,12 +60,14 @@ class QueryType
 
     /**
      * QueryType constructor.
-     * @param $class
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param ClassDefinition $class
      * @param $configuration
-     * @param $omitPermissionCheck
+     * @param bool $omitPermissionCheck
      */
-    public function __construct($class = null, $configuration = null, $omitPermissionCheck = false)
+    public function __construct(EventDispatcherInterface $eventDispatcher, $class = null, $configuration = null, $omitPermissionCheck = false)
     {
+        $this->eventDispatcher = $eventDispatcher;
         $this->class = $class;
         $this->configuration = $configuration;
         $this->omitPermissionCheck = $omitPermissionCheck;
@@ -63,10 +76,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
     {
@@ -88,12 +101,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($element, $context['configuration'], 'read') && !$this->omitPermissionCheck) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view element ' . Service::getElementType($element));
-            } else {
-                return null;
-            }
+        if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'read')) {
+            return null;
         }
 
         $data = new ElementDescriptor();
@@ -107,10 +116,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
@@ -120,10 +129,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
@@ -132,10 +141,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
@@ -144,10 +153,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -167,10 +176,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($documentElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view document ' . $documentElement->getFullPath());
-            } else {
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
                 return null;
             }
         }
@@ -186,10 +193,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -202,10 +209,8 @@ class QueryType
             return null;
         }
 
-        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read') && !$this->omitPermissionCheck ) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view asset ' . $assetElement->getFullPath());
-            } else {
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($assetElement, 'read')) {
                 return null;
             }
         }
@@ -219,10 +224,10 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
-     * @throws \Exception
+     * @throws ClientSafeException
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
@@ -237,7 +242,7 @@ class QueryType
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var $listClass Listing */
+        /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
@@ -261,12 +266,14 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            throw new \Exception('object with ID ' . $args["id"] . ' not found');
+            throw new ClientSafeException('object with ID ' . $args["id"] . ' not found');
         }
         $object = $objectList[0];
 
-        if (!WorkspaceHelper::isAllowed($object, $configuration, 'read') && !$this->omitPermissionCheck) {
-            throw new \Exception('permission denied. check your workspace settings');
+        if (!$this->omitPermissionCheck) {
+            if (!WorkspaceHelper::checkPermission($object, 'read')) {
+                throw new ClientSafeException('permission denied. check your workspace settings');
+            }
         }
 
         $data = new ElementDescriptor($object);
@@ -279,7 +286,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -291,7 +298,7 @@ class QueryType
         $object = AbstractObject::getById($objectId);
 
         $data = new ElementDescriptor();
-        if (WorkspaceHelper::isAllowed($object, $this->configuration, 'read') && !$this->omitPermissionCheck) {
+        if ($this->omitPermissionCheck || WorkspaceHelper::checkPermission($object, 'read')) {
             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         }
@@ -303,7 +310,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -315,7 +322,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
      * @throws \Exception
@@ -367,18 +374,31 @@ class QueryType
 
         // check permissions
         $db = Db::get();
+        $workspacesTableName = 'plugin_datahub_workspaces_object';
         $conditionParts[] = ' (
-                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(CONCAT(o_path,o_key),cpath)=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-                                                    OR
-                                                    (select `read` from plugin_datahub_workspaces_object where configuration = ' . $db->quote($configuration->getName()) . ' and LOCATE(cpath,CONCAT(o_path,o_key))=1  ORDER BY LENGTH(cpath) DESC LIMIT 1)=1
-                                                 )';
+            (
+                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
+                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
+                AND LOCATE(CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
+                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
+                LIMIT 1
+            )=1
+            OR
+            (
+                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
+                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
+                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key))=1
+                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
+                LIMIT 1
+            )=1
+        )';
 
         if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);
             if (!$filter) {
-                throw new \Exception('unable to decode filter');
+                throw new ClientSafeException('unable to decode filter');
             }
-            $filterCondition = \Pimcore\Bundle\AdminBundle\Controller\Rest\Helper::buildSqlCondition($filter);
+            $filterCondition = Helper::buildSqlCondition($objectList->getTableName(), $filter);
             $conditionParts[] = $filterCondition;
         }
 
@@ -389,12 +409,25 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
+        $event =  new ListingEvent(
+            $objectList,
+            $args,
+            $context,
+            $resolveInfo
+        );
+        $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
+        $objectList = $event->getListing();
+
         $totalCount = $objectList->getTotalCount();
         $objectList = $objectList->load();
 
         $nodes = [];
 
         foreach ($objectList as $object) {
+            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
+                continue;
+            }
+
             $data = [];
             $data['id'] = $object->getId();
             $nodes[] = [
@@ -413,7 +446,7 @@ class QueryType
     /**
      * @param null $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
@@ -423,4 +456,3 @@ class QueryType
     }
 
 }
-

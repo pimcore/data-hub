@@ -19,8 +19,10 @@ use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInterface;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\File;
 use Pimcore\Logger;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -31,13 +33,13 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 {
     /**
      * @param $nodeDef
-     * @param $class
+     * @param ClassDefinition $class
+     * @param $container
      *
      * @return array|bool
      */
-    public function getQueryFieldConfigFromConfig($nodeDef, $class)
+    public function getQueryFieldConfigFromConfig($nodeDef, $class, $container = null)
     {
-        $container = null;
         $result = false;
 
         $attributes = $nodeDef['attributes'];
@@ -96,8 +98,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field ' . $key);
-
+                    Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
                     return false;
                 }
 
@@ -137,8 +138,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $class
-     * @param $key
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     * @param string $key
      * @param null $container
      *
      * @return mixed
@@ -206,7 +207,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             case 'mutation':
                 return $this->getGraphQlService()->supportsDataObjectMutationDataType($typeName);
             default:
-                throw new \Exception("unknown operation type");
+                throw new ClientSafeException("unknown operation type " . $typeName);
         }
     }
 
@@ -226,13 +227,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $nodeDef
-     * @param $class
-     * @param $inputFields
+     * @param array $nodeDef
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      *
      * @return Data
      */
-    public function getMutationFieldConfigFromConfig($nodeDef, $class, $inputFields)
+    public function getMutationFieldConfigFromConfig($nodeDef, $class)
     {
         $container = null;
         $result = false;
@@ -305,8 +305,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $nodeDef
-     * @param $class
+     * @param array $nodeDef
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param $container
      * @return mixed
      */

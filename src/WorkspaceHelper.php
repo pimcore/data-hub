@@ -16,6 +16,9 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
+use Pimcore\Cache\Runtime;
 use Pimcore\Db;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
@@ -217,7 +220,36 @@ class WorkspaceHelper
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
     }
 
+
     /**
+     * @param ElementInterface|OwnerAwareFieldInterface $element
+     * @param string $type
+     *
+     * @return bool
+     *
+     * @throws NotAllowedException
+     */
+    public static function checkPermission($element, $type) {
+        $context = Runtime::get("datahub_context");
+        /** @var Configuration  $configuration */
+        $configuration = $context["configuration"];
+
+        if ($configuration->skipPermisssionCheck()) {
+            return true;
+        }
+
+        $isAllowed = self::isAllowed($element, $configuration, $type);
+        if (!$isAllowed && PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+            $elementType = Service::getElementType($element);
+            throw new ClientSafeException($type . " access for " . $elementType . " " . $element->getFullPath() . " denied");
+        }
+
+        return $isAllowed;
+    }
+
+    /**
+     * @internal
+     *
      * @param ElementInterface|OwnerAwareFieldInterface $element
      * @param Configuration $configuration
      * @param string $type
@@ -256,6 +288,7 @@ class WorkspaceHelper
             if (empty($permissionsParent) && $type === 'read') {
                 // check for children with permissions
                 $path = $element->getRealFullPath() . '/';
+                $path = str_replace("_", '\\_', $path);
                 if ($element->getId() === 1) {
                     $path = '/';
                 }

@@ -16,53 +16,70 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 class AssetType extends ObjectType
 {
     use ServiceTrait;
 
+    /**
+     * @var string
+     */
     protected $fieldname;
 
     /**
-     * AssetType constructor.
      * @param Service $graphQlService
-     * @param AssetMetadataItem $assetMetadataItemType
      * @param array $config
      * @param array $context
+     *
+     * @throws \Exception
      */
-    public function __construct(Service $graphQlService, $config = ["name" => "asset"], $context = [])
+    public function __construct(Service $graphQlService, $config = ['name' => 'asset'], $context = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
     }
 
-
     /**
-     * @param array $config
+     * @param $config
+     *
+     * @throws \Exception
      */
     public function build(&$config)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetType();
+        $resolver = new Resolver\AssetType();
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $service = $this->getGraphQlService();
-        $assetMetadataItemType = $service->buildAssetType("asset_metadataitem");
+        $assetTree = $service->buildGeneralType('asset_tree');
+        $assetMetadataItemType = $service->buildAssetType('asset_metadataitem');
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
-        $elementResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset');
+        $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
+
+        // see https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images#Resolution_switching_Same_size_different_resolutions
+        $resolutionsType = Type::listOf(new ObjectType([
+            'name' => 'resolutions',
+            'fields' => [
+                'url' => Type::string(),
+                'resolution' => Type::float(),
+            ],
+        ]));
+        $resolutionsArgumentsType = [
+            'type' => Type::listOf(Type::float()),
+            'description' => 'List of resolution types [2, 5, ...]',
+            'defaultValue' => [2]
+        ];
+
 
         $config['fields'] = [
             'creationDate' => Type::int(),
-            'id' => ['name' => 'id',
+            'id' => [
+                'name' => 'id',
                 'type' => Type::id(),
             ],
             'filename' => Type::string(),
@@ -70,39 +87,38 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
-
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                    if ($value instanceof ElementDescriptor) {
-                        $image = Asset::getById($value["id"]);
-                        if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                throw new \Exception('not allowed to view asset');
-                            } else {
-                                return null;
-                            }
-                        }
-
-                        if ($image instanceof Asset\Image || $image instanceof Asset\Video) {
-                            if (isset($args["thumbnail"])) {
-                                return $image->getThumbnail($args["thumbnail"], false);
-                            } else {
-                                return $image->getFullPath();
-                            }
-                        }
-                        if ($image instanceof Asset\Document)
-                        {
-                            if (isset($args["thumbnail"])) {
-                                return $image->getImageThumbnail($args["thumbnail"]);
-                            } else {
-                                return $image->getFullPath();
-                            }
-                        }
-                    }
-                }
+                'resolve' => [$resolver, 'resolvePath'],
+            ],
+            'resolutions' => [
+                'type' => $resolutionsType,
+                'args' => [
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                    'types' => $resolutionsArgumentsType
+                ],
+                'resolve' => [$resolver, 'resolveResolutions'],
+            ],
+            'srcset' => [
+                'type' => Type::listOf(new ObjectType([
+                    'name' => 'srcset',
+                    'fields' => [
+                        'descriptor' => Type::string(),
+                        'url' => Type::string(),
+                        'resolutions' => [
+                            'type' => $resolutionsType,
+                            'args' => [
+                                'types' => $resolutionsArgumentsType,
+                            ],
+                            'resolve' => [$resolver, 'resolveResolutions'],
+                        ],
+                    ]
+                ])),
+                'args' => [
+                    'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                ],
+                'resolve' => [$resolver, 'resolveSrcSet'],
             ],
             'mimetype' => Type::string(),
-
             'modificationDate' => Type::int(),
             'type' => Type::string(),
             'filesize' => Type::int(),
@@ -110,53 +126,39 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()]
-
                 ],
-                'resolve' => function($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                    if ($value instanceof ElementDescriptor) {
-                        $image = Asset::getById($value["id"]);
-                        if (!WorkspaceHelper::isAllowed($image, $context['configuration'], 'read')) {
-                            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                                throw new \Exception('not allowed to view asset');
-                            } else {
-                                return null;
-                            }
-                        }
-                        if ($image instanceof Asset\Image || $image instanceof Asset\Video) {
-                            if (isset($args["thumbnail"])) {
-                                $thumb = $image->getThumbnail($args['thumbnail'], false);                                
-                                return base64_encode(file_get_contents($thumb->getFileSystemPath()));
-                            } else {
-                                return base64_encode(file_get_contents($image->getFileSystemPath()));
-                            }
-                        }
-                        if ($image instanceof Asset\Document)
-                        {
-                            if (isset($args["thumbnail"])) {
-                                $thumb = $image->getImageThumbnail($args['thumbnail']);
-                                return base64_encode(file_get_contents($thumb->getFileSystemPath()));
-                            } else {
-                                return base64_encode(file_get_contents($image->getFileSystemPath()));
-                            }
-                        }
-                    }
-                    return null;
-                }
+                'resolve' => [$resolver, 'resolveData'],
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
-                'resolve' => [$resolver, "resolveMetadata"]
+                'args' => [
+                    'language' => ['type' => Type::string()],
+                    'ignore_language' => ['type' => Type::boolean()]
+                ],
+                'resolve' => [$resolver, 'resolveMetadata']
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
+                        'description' => 'comma separated list of key names'
                     ]
                 ],
                 'resolve' => [$elementResolver, "resolveProperties"]
-            ]
+            ],
+            'parent' => [
+                'type' => $assetTree,
+                'resolve' => [$elementResolver, "resolveParent"],
+            ],
+            'children' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveChildren"],
+            ],
+            '_siblings' => [
+                'type' => Type::listOf($assetTree),
+                'resolve' => [$elementResolver, "resolveSiblings"],
+            ],
         ];
     }
 

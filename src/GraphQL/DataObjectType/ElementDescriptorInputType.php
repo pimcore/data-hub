@@ -26,7 +26,7 @@ class ElementDescriptorInputType extends InputObjectType
 
 
     /**
-     * AssetInputType constructor.
+     * ElementDescriptorInputType constructor.
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
@@ -48,5 +48,6 @@ class ElementDescriptorInputType extends InputObjectType
             'type' => Type::string(),
             'id' => Type::int(),
         ];
+        $config['description'] = "type can be omitted for mutations only allowing one type, e.g. many-to-many-objects";
     }
 }

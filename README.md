@@ -1,42 +1,26 @@
-# Data Hub Bundle
+# Pimcore Data-Hub
 
-## General
+Pimcore Data-Hub is Pimcore’s data delivery & consumption platform. It integrates different input & output channel
+technologies into a simple & easy-to-configure system on top of Pimcore.
 
-Welcome at pimcore’s new data delivery & consumption platform.
-It aims to integrate different input & output channel technologies into a simple & easy-to-configure system on top of pimcore.
-Contributions of any kind are warmly appreciated.
+![Overview](./doc/img/overview.jpg)
+
 A short introduction video of an output channel based on the GraphQL query language can be found [here](./doc/img/graphql/intro.mp4).
 
-## Minimum Requirements
+## Features in a nutshell
+- Pimcore data-hub provides an easy to configure interface layer for data delivery and consumption.
+- Besides internal php API the tool of choice to connect Pimcore to any other systems and applications, 
+  no matter if they are backend applications like ERP systems or frontend applications like your store front. 
+- Define multiple endpoints for different use-cases and target/source systems.   
+- Central and easy to use GUI to transform and prepare data for defined endpoints.
+- Restrict the data to be exposed to endpoints by defining workspaces and schemas.
 
-* Pimcore >= 5.7
-
-## Install
-```bash 
-composer require pimcore/data-hub:dev-master
-```
-
-## Supported Channels
-
-* ![](./doc/img/graphql/logo_mini.png) **[GraphQL](doc/GraphQL.md)**
-* ![](./doc/img/csv/logo_small.png) CSV/XLS (coming soon...)
-* ![](./doc/img/rest/logo_small.png) webservice (coming soon...)
-* ...
-
-## Adding a new configuration
-
-![Configuration Overview](./doc/img/graphql/configuration3.png)
-
-Choose the channel type
-
-![Add Configuration](./doc/img/add_config.png)
-
-And get the configuration done
-
-Example for [GraphQL](doc/GraphQL.md)
-
-## Required Backend User Permission
-
-Either:
-* `admin` role or
-* `plugin_datahub_config`
+## Further Information
+- [Installation](./doc/01_Installation.md)
+- [Basic principle](./doc/02_Basic_Principle.md) for configuring an endpoint
+- Integrated endpoint technologies
+  - [GraphQL](./doc/10_GraphQL/README.md)
+  
+## Contributions
+As data-hub is a community project, any contributions highly appreciated.
+For details see our [Contributing guide](https://github.com/pimcore/data-hub/blob/master/CONTRIBUTING.md).

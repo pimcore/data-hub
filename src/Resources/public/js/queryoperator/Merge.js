@@ -114,7 +114,7 @@ pimcore.plugin.datahub.queryoperator.merge = Class.create(pimcore.plugin.datahub
             width: 400,
             height: 350,
             modal: true,
-            title: t('operator_merge_settings'),
+            title: this.getDefaultText(),
             layout: "fit",
             items: [this.configPanel]
         });
@@ -125,6 +125,7 @@ pimcore.plugin.datahub.queryoperator.merge = Class.create(pimcore.plugin.datahub
 
     commitData: function(params) {
         this.node.set('isOperator', true);
+        this.node.data.configAttributes.label = this.textField.getValue();
         this.node.data.configAttributes.flatten = this.flattenField.getValue();
         this.node.data.configAttributes.unique = this.uniqueField.getValue();
         this.node.set('text', this.textField.getValue());

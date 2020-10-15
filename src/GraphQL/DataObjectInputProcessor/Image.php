@@ -15,30 +15,33 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
+use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
 class Image extends Base
 {
 
     /**
-     * @param Concrete $object
+     * @param Concrete|AbstractData $object
      * @param $newValue
-     * @param $args
-     * @param $context
+     * @param array $args
+     * @param array $context
      * @param ResolveInfo $info
      * @throws \Exception
      */
-    public function process(Concrete $object, $newValue, $args, $context, ResolveInfo $info)
+    public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
 
         if(!array_key_exists('id',$newValue)) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception("Field {$attribute}.id was not provided.");
+                throw new UserError("Field {$attribute}.id was not provided.");
             }
             return null;
         }

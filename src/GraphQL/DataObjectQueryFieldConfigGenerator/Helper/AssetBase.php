@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -81,12 +82,8 @@ class AssetBase
 
         $assetElement = $this->getAssetElement($asset);
 
-        if (!WorkspaceHelper::isAllowed($assetElement, $context['configuration'], 'read')) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new \Exception('not allowed to view ' . $asset->getFullPath());
-            } else {
-                return null;
-            }
+        if (!WorkspaceHelper::checkPermission($assetElement, 'read')) {
+            return null;
         }
 
         $data = new ElementDescriptor($assetElement);
