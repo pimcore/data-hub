@@ -28,6 +28,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
+use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -161,6 +162,7 @@ class QueryType
 
         // TODO: remove this workaround for Release 1.0
         if ($args && isset($args['path'])) {
+            Logger::warn("Argument 'path' deprecated: will no longer be supported by Release 1.0. Use 'fullpath' instead.");
             $args['fullpath'] = $args['path'];
         }
 
