@@ -135,6 +135,46 @@ class LinkDataType extends ObjectType
                             }
                         }
                     ],
+                    'accesskey' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["accesskey"] : null;
+                            }
+                        }
+                    ],
+                    'relation' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["rel"] : null;
+                            }
+                        }
+                    ],
+                    'tabindex' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["tabindex"] : null;
+                            }
+                        }
+                    ],
+                    'class' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["class"] : null;
+                            }
+                        }
+                    ],
+                    'attributes' => [
+                        'type' => Type::string(),
+                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                                return $value->getData() ? $value->getData()["attributes"] : null;
+                            }
+                        }
+                    ],
                 ]
             ];
         parent::__construct($config);
