@@ -140,8 +140,16 @@ class GraphqlListener implements EventSubscriberInterface
     public function onMutationPostBuild(MutationTypeEvent $event)
     {
         $config = $event->getConfig();
-        $config['fields']['getProductListing']['args']['foo'] = [
-            'type'  => Type::boolean()
+        
+        //additional check for a field value
+        $config['fields']['createProduct']['args']['foo'] = [
+            'type' => Type::nonNull(Type::string())
+        ];
+        
+        //additional checks for input fields
+        $input = $config['fields']['createProduct']['args']['input'];
+        $input->config['fields']['foo'] = [
+            'type' => Type::nonNull(Type::string())
         ];
         $event->setConfig($config);
     }
