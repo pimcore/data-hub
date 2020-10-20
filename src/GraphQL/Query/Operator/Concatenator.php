@@ -30,7 +30,7 @@ class Concatenator extends AbstractOperator
         parent::__construct($config, $context);
 
         $this->glue = $config["glue"];
-        $this->forceValue = $config["forceValue"];
+        $this->forceValue = $config["forceValue"] ?? false;
     }
 
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

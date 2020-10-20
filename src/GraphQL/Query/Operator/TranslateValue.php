@@ -49,7 +49,14 @@ class TranslateValue extends AbstractOperator
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
             if ($childResult) {
-                $result->value = $translator->trans($this->prefix . $childResult->value, []);
+                if (is_array($childResult->value)) {
+                    $result->value = [];
+                    foreach ($childResult->value as $childValue) {
+                        $result->value[] = $translator->trans($this->prefix . $childValue, []);
+                    }
+                } else {
+                    $result->value = $translator->trans($this->prefix . $childResult->value, []);
+                }
                 return $result;
             }
         }
