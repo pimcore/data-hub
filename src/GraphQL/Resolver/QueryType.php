@@ -227,9 +227,11 @@ class QueryType
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        $isIdSet = $args && isset($args["id"]);
+        $isFullpathSet = $args && isset($args["fullpath"]);
 
-        if (!isset($args["id"]) && !isset($args["fullpath"])) {
-            return null;
+        if (!$isIdSet && !$isFullpathSet) {
+            throw new ClientSafeException('object id or fullpath is required');
         }
 
         if ($args && isset($args['defaultLanguage'])) {
@@ -242,11 +244,11 @@ class QueryType
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
-        if ($args && isset($args["id"])) {
+        if ($isIdSet) {
             $conditionParts[] = '(o_id =' . $args['id'] . ')';
         }
 
-        if ($args && isset($args["fullpath"])) {
+        if ($isFullpathSet) {
             $fullpath = Service::correctPath($args['fullpath']);
             $conditionParts[] = '(concat(o_path, o_key) =' . Db::get()->quote($fullpath) . ')';
         }
@@ -269,7 +271,7 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            $identifiers = ($args["id"] ? " ID: " . $args["id"] : "") . ($args["fullpath"] ? " FULLPATH: '" . $args["fullpath"] . "'" : "");
+            $identifiers = ($isIdSet ? " ID: " . $args["id"] : "") . ($isFullpathSet ? " FULLPATH: '" . $args["fullpath"] . "'" : "");
             throw new ClientSafeException('object with' . $identifiers . ' not found');
         }
         $object = $objectList[0];
