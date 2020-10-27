@@ -819,7 +819,7 @@ class MutationType extends ObjectType
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"];
-                            $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+                            $value = $queryResolver($value, $args, $context, $info);
 
                             return $value;
                         }
