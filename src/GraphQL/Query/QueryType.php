@@ -24,6 +24,7 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
+use Pimcore\Bundle\DataHubBundle\FilterService\HijackAbstractFilterService;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -321,6 +322,10 @@ class QueryType extends ObjectType
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getQueryEntities();
+        //Get Filter Service Instance to Hijack configured filter services
+        $factory = \Pimcore\Bundle\EcommerceFrameworkBundle\Factory::getInstance();
+        $filterService = $factory->getFilterService();
+        $filterTypes = HijackAbstractFilterService::getFilterTypes($filterService);
 
         foreach ($entities as $entity) {
             $class = ClassDefinition::getByName($entity);
@@ -339,59 +344,41 @@ class QueryType extends ObjectType
 
             $edgeType = $this->getEdgeTypeDefinition($class, $context);
 
-            $filterSelection = new ObjectType([
-                'name' => $ucFirstClassName . 'FilterMultiRelation',
-                'fields' => [
-                    'filterType' => ['type' => Type::string()],
-                    'field' => ['type' => Type::string()],
-                    'label' => ['type' => Type::string()],
-                    'options' => [
-                        'type' => Type::listOf(new ObjectType([
-                                'name' => $ucFirstClassName . 'FilterMultiRelationOption',
-                                'fields' => [
-                                    'value' => ['type' => Type::string()],
-                                    'label' => ['type' => Type::string()],
-                                    'count' => ['type' => Type::int()],
-                                ],
-                            ])
-                        ),
-                    ],
-                ],
-            ]);
+            //Create ObjectTypes for each configured filter Type in "ecommerce-config.yml"
+            $filterFields = [];
+            foreach ($filterTypes as $filterType){
 
-            $filterRange = new ObjectType([
-                'name' => $ucFirstClassName . 'FilterMultiNumberRange',
-                'fields' => [
-                    'filterType' => ['type' => Type::string()],
-                    'field' => ['type' => Type::string()],
-                    'label' => ['type' => Type::string()],
-                    'options' => [
-                        'type' => Type::listOf(new ObjectType([
-                                'name' => $ucFirstClassName . 'FilterMultiNumberRangeOption',
+                $entry = new ObjectType([
+                    'name' => $ucFirstClassName . $filterType,
+                    'fields' => [
+                        'filterType' => ['type' => Type::string()],
+                        'field' => ['type' => Type::string()],
+                        'label' => ['type' => Type::string()],
+                        'options' => [
+                            'type' => Type::listOf(new ObjectType([
+                                'name' => $ucFirstClassName . $filterType. 'Option',
                                 'fields' => [
                                     'value' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
                                     'count' => ['type' => Type::int()],
                                 ],
-                            ])
-                        ),
-                    ],
-                ]
-            ]);
+                            ]),),
+                        ],
+                    ]
+                ]);
+                $filterFields[$filterType] = $entry;
+            }
 
             $unionType = new UnionType([
                 'name' => $ucFirstClassName . 'FilterFacet',
-                'types' => [$filterSelection, $filterRange],
-                'resolveType' => function ($value) use ($resolver, $filterSelection, $filterRange) {
-                    if ($value['filter']->getType() == 'FilterMultiRelation') {
-                        $filterSelection->resolveFieldFn = [$resolver, "resolveFacet"];
-                        return $filterSelection;
+                'types' => $filterFields,
+                'resolveType' => function ($value) use ($resolver, $filterFields) {
+                    $type = $value['filter']->getType();
+                    if(isset($filterFields[$type])){
+                        $filterFields[$type]->resolveFieldFn = [$resolver, "resolveFacet"];
+                        return $filterFields[$type];
                     }
-                    if ($value['filter']->getType() == 'FilterMultiNumberRange') {
-                        $filterRange->resolveFieldFn = [$resolver, "resolveFacet"];
-                        return $filterRange;
-                    }
-                    throw new \Exception("No Filter Type found, only types allowed which are defined in ecommerce-config.yml, setup as ObjectType (above) and defined in Pimcore Backend Filter Definitions");
+                    throw new \Exception("No Filter Type found, only types allowed which are defined in ecommerce-config.yml");
                 }
             ]);
 
