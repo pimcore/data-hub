@@ -563,7 +563,7 @@ class QueryType
         // sorting
         if (!empty($args['sortBy'])) {
             if (!empty($args['sortOrder'])) {
-                $resultList->setOrderKey(array_map(function($a, $b) {
+                $resultList->setOrderKey(array_map(function ($a, $b) {
                     return [$a, $b];
                 }, $args['sortBy'], $args['sortOrder']));
             } else {
@@ -725,6 +725,6 @@ class QueryType
             'options' => $options,
         ];
 
-        return $value;
+        return isset($value[$resolveInfo->fieldName]) ? $value[$resolveInfo->fieldName] : null;
     }
 }
