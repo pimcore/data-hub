@@ -537,7 +537,13 @@ class QueryType
                         // not use the first values entry.
                         $filterType = $filterService->getFilterType($filter->getType());
                         $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
-                        if (isset($filterValues[$field]) && !\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
+
+                        // Check if filter is requested from GraphQL Query
+                        // If still adding field to facets an empty array is in the response
+                        if (!isset($filterValues[$field])) {
+                            continue;
+                        }
+                        if (!\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
                             $filterValues[$field] = current($filterValues[$field]);
                         }
 
