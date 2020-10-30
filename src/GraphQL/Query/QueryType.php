@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
 
+use GraphQL\Type\Definition\CustomScalarType;
 use GraphQL\Type\Definition\InputObjectField;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
@@ -73,7 +74,8 @@ class QueryType extends ObjectType
         EventDispatcherInterface $eventDispatcher,
         $config = [],
         $context = []
-    ) {
+    )
+    {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
         }
@@ -190,7 +192,8 @@ class QueryType extends ObjectType
      * @param null $configuration
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
-    protected function getResolver($class = null, $configuration = null) {
+    protected function getResolver($class = null, $configuration = null)
+    {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
@@ -336,33 +339,62 @@ class QueryType extends ObjectType
 
             $edgeType = $this->getEdgeTypeDefinition($class, $context);
 
-            $filterFacetType = new ObjectType(
-                [
-                    'name' => $ucFirstClassName . 'FilterFacets',
-                    'fields' => [
-                        'facet' => [
-                            'type' => new ObjectType([
-                                'name' => $ucFirstClassName . 'FilterFacet',
+            $filterSelection = new ObjectType([
+                'name' => $ucFirstClassName . 'FilterMultiRelation',
+                'fields' => [
+                    'filterType' => ['type' => Type::string()],
+                    'field' => ['type' => Type::string()],
+                    'label' => ['type' => Type::string()],
+                    'options' => [
+                        'type' => Type::listOf(new ObjectType([
+                                'name' => $ucFirstClassName . 'FilterMultiRelationOption',
                                 'fields' => [
-                                    'field' => ['type' => Type::string()],
+                                    'value' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
-                                    'options' => [
-                                        'type' => Type::listOf(new ObjectType([
-                                            'name' => $ucFirstClassName . 'FilterFacetOption',
-                                            'fields' => [
-                                                'value' => ['type' => Type::string()],
-                                                'label' => ['type' => Type::string()],
-                                                'count' => ['type' => Type::int()],
-                                            ],
-                                        ]),),
-                                    ],
+                                    'count' => ['type' => Type::int()],
                                 ],
-                            ]),
-                            'resolve' => [$resolver, "resolveFacet"]
-                        ],
+                            ])
+                        ),
+                    ],
+                ],
+            ]);
+
+            $filterRange = new ObjectType([
+                'name' => $ucFirstClassName . 'FilterMultiNumberRange',
+                'fields' => [
+                    'filterType' => ['type' => Type::string()],
+                    'field' => ['type' => Type::string()],
+                    'label' => ['type' => Type::string()],
+                    'options' => [
+                        'type' => Type::listOf(new ObjectType([
+                                'name' => $ucFirstClassName . 'FilterMultiNumberRangeOption',
+                                'fields' => [
+                                    'value' => ['type' => Type::string()],
+                                    'label' => ['type' => Type::string()],
+                                    'count' => ['type' => Type::int()],
+                                ],
+                            ])
+                        ),
                     ],
                 ]
-            );
+            ]);
+
+            $unionType = new UnionType([
+                'name' => $ucFirstClassName . 'FilterFacet',
+                'types' => [$filterSelection, $filterRange],
+                'resolveType' => function ($value) use ($resolver, $filterSelection, $filterRange) {
+                    if ($value['filter']->getType() == 'FilterMultiRelation') {
+                        $filterSelection->resolveFieldFn = [$resolver, "resolveFacet"];
+                        return $filterSelection;
+                    }
+                    if ($value['filter']->getType() == 'FilterMultiNumberRange') {
+                        $filterRange->resolveFieldFn = [$resolver, "resolveFacet"];
+                        return $filterRange;
+                    }
+                    throw new \Exception("No Filter Type found, only types allowed which are defined in ecommerce-config.yml, setup as ObjectType (above) and defined in Pimcore Backend Filter Definitions");
+                }
+            ]);
+
             $filterType = new ObjectType(
                 [
                     'name' => $ucFirstClassName . 'Filter',
@@ -372,7 +404,7 @@ class QueryType extends ObjectType
                             'resolve' => [$resolver, "resolveEdges"]
                         ],
                         'facets' => [
-                            'type' => Type::listOf($filterFacetType),
+                            'type' => UnionType::listOf($unionType),
                             'resolve' => [$resolver, "resolveFacets"]
                         ],
                         'totalCount' => [
@@ -411,7 +443,7 @@ class QueryType extends ObjectType
                     'filter' => ['type' => Type::string()],
                     'filterDefinition' => [
                         'type' => new InputObjectType([
-                            'name'  => $ucFirstClassName . 'FilterDefinitionArg',
+                            'name' => $ucFirstClassName . 'FilterDefinitionArg',
                             'fields' => [
                                 'id' => ['type' => Type::int()],
                                 'relationField' => ['type' => Type::string()],
@@ -432,7 +464,20 @@ class QueryType extends ObjectType
                             'name' => $ucFirstClassName . 'FilterFacetArg',
                             'fields' => [
                                 'field' => ['type' => Type::string()],
-                                'values' => ['type' => Type::listOf(Type::string())],
+                                'values' => ['type' => new CustomScalarType([
+                                    'name' => $ucFirstClassName . 'filterFacetArgValues',
+                                    'description' => 'The Input can be any kind of array.
+                                    For Select Filters a String Array is required e.g.
+                                    "values": [
+                                        "11",
+                                        "12"
+                                    ]
+                                    For Range Filters an Object Array is required e.g.
+                                    "values": [
+                                        {"from": "10"},
+                                        {"to": "100"}
+                                    ]'
+                                ])],
                                 // @TODO Figure out if there's a way to use UnionType as InputObjectType.
 //                                'values' => [
 //                                    'type' => new UnionType([
