@@ -346,7 +346,7 @@ class QueryType extends ObjectType
 
             //Create ObjectTypes for each configured filter Type in "ecommerce-config.yml"
             $filterFields = [];
-            foreach ($filterTypes as $filterType){
+            foreach ($filterTypes as $filterType) {
 
                 $entry = new ObjectType([
                     'name' => $ucFirstClassName . $filterType,
@@ -356,7 +356,7 @@ class QueryType extends ObjectType
                         'label' => ['type' => Type::string()],
                         'options' => [
                             'type' => Type::listOf(new ObjectType([
-                                'name' => $ucFirstClassName . $filterType. 'Option',
+                                'name' => $ucFirstClassName . $filterType . 'Option',
                                 'fields' => [
                                     'value' => ['type' => Type::string()],
                                     'label' => ['type' => Type::string()],
@@ -374,7 +374,7 @@ class QueryType extends ObjectType
                 'types' => $filterFields,
                 'resolveType' => function ($value) use ($resolver, $filterFields) {
                     $type = $value['filter']->getType();
-                    if(isset($filterFields[$type])){
+                    if (isset($filterFields[$type])) {
                         $filterFields[$type]->resolveFieldFn = [$resolver, "resolveFacet"];
                         return $filterFields[$type];
                     }
@@ -451,9 +451,9 @@ class QueryType extends ObjectType
                             'name' => $ucFirstClassName . 'FilterFacetArg',
                             'fields' => [
                                 'field' => ['type' => Type::string()],
-                                'values' => ['type' => new CustomScalarType([
-                                    'name' => $ucFirstClassName . 'filterFacetArgValues',
-                                    'description' => 'The Input can be any kind of array.
+                                'values' => ['type' => CustomScalarType::listOf(new CustomScalarType([
+                                        'name' => 'Object', //used for GraphIQL Editor to recognize a Type
+                                        'description' => 'The Input can be any kind of array.
                                     For Select Filters a String Array is required e.g.
                                     "values": [
                                         "11",
@@ -464,14 +464,8 @@ class QueryType extends ObjectType
                                         {"from": "10"},
                                         {"to": "100"}
                                     ]'
-                                ])],
-                                // @TODO Figure out if there's a way to use UnionType as InputObjectType.
-//                                'values' => [
-//                                    'type' => new UnionType([
-//                                        'name' => $ucFirstClassName . 'filterFacetArgValues',
-//                                        'types' => [Type::listOf(Type::string()), Type::string()]
-//                                    ])
-//                                ],
+                                    ])
+                                )],
                             ],
                         ])),
                     ],
