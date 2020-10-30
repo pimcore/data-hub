@@ -15,6 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
+use GraphQL\Language\AST\InlineFragmentNode;
+use GraphQL\Language\AST\NodeList;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -531,6 +533,24 @@ class QueryType
                         $filterValues[$facet['field']] = $facet['values'];
                     }
                 }
+                // Read out requested filter from GraphQL Request Query to check if an output is necessary or not
+                $filterNodes = null;
+                /** @var NodeList $requestedFilters */
+                $requestedFilters = $resolveInfo->operation->selectionSet->selections[0]->selectionSet->selections[0]->selectionSet->selections;
+
+                foreach ($requestedFilters as $filter){
+                    if($filter->name->value == 'facets'){
+                        $filterNodes = $filter->selectionSet->selections;
+                    }
+                }
+                $requestFilters = [];
+                if(!empty($filterNodes)){
+                    foreach ($filterNodes as $filterNode){
+                        /** @var InlineFragmentNode $filterNode */
+                        $requestFilters[] = $filterNode->typeCondition->name->value;
+                    }
+                }
+
                 if ($filters = $filterDefinition->getFilters()) {
                     foreach ($filters as $k => $filter) {
                         // Check if this filter can handle multiple values and if
@@ -539,8 +559,15 @@ class QueryType
                         $field = \Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::getFieldFromFilter($filterType, $filter);
 
                         // Check if filter is requested from GraphQL Query
-                        // If still adding field to facets an empty array is in the response
-                        if (!isset($filterValues[$field])) {
+                        $hasFilter = false;
+                        foreach($requestFilters as $requestFilter) {
+                            if (strpos($requestFilter, $filter->getType()) !== FALSE){
+                                $hasFilter = true;
+                                break;
+                            }
+                        }
+                        // If still adding field to facets which is not request an empty array is in the output result
+                        if(!$hasFilter){
                             continue;
                         }
                         if (!\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
