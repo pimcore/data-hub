@@ -26,7 +26,11 @@ class HijackAbstractFilterService extends FilterService
     {
         $types = $instance->filterTypes;
         if (!empty($types)) {
-            return $types;
+            $filterTypes = [];
+            foreach ($types as $key => $filterType) {
+                $filterTypes[] = $key;
+            }
+            return $filterTypes;
         }
         return [];
     }
