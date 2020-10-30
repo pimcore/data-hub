@@ -720,6 +720,7 @@ class QueryType
         }
 
         $value = [
+            'filterType' => $filter->getType(),
             'field' => $field,
             'label' => $translator->trans($filter->getLabel()),
             'options' => $options,
