@@ -68,14 +68,7 @@ class QueryType extends ObjectType
      * @param array $context
      * @throws \Exception
      */
-    public function __construct(
-        Service $graphQlService,
-        LocaleServiceInterface $localeService,
-        Factory $modelFactory,
-        EventDispatcherInterface $eventDispatcher,
-        $config = [],
-        $context = []
-    )
+    public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
     {
         if (!isset($config['name'])) {
             $config['name'] = 'Query';
@@ -158,6 +151,7 @@ class QueryType extends ObjectType
     }
 
 
+
     /**
      * @param array $config
      * @param array $context
@@ -193,8 +187,7 @@ class QueryType extends ObjectType
      * @param null $configuration
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
-    protected function getResolver($class = null, $configuration = null)
-    {
+    protected function getResolver($class = null, $configuration = null) {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
         return $resolver;
@@ -558,7 +551,7 @@ class QueryType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
-        $event = new QueryTypeEvent(
+        $event =  new QueryTypeEvent(
             $this,
             $config,
             $context

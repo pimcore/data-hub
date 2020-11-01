@@ -125,8 +125,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
     }
 
@@ -139,8 +138,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
     }
 
@@ -152,8 +150,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
-    {
+    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
 
@@ -184,7 +181,7 @@ class QueryType
         }
 
         if (!$this->omitPermissionCheck) {
-            if (!WorkspaceHelper::checkPermission($documentElement, 'read')) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
                 return null;
             }
         }
@@ -416,7 +413,7 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
-        $event = new ListingEvent(
+        $event =  new ListingEvent(
             $objectList,
             $args,
             $context,
@@ -431,6 +428,10 @@ class QueryType
         $nodes = [];
 
         foreach ($objectList as $object) {
+            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
+                continue;
+            }
+
             $data = [];
             $data['id'] = $object->getId();
             $nodes[] = [
