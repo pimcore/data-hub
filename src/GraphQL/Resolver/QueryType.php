@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Language\AST\InlineFragmentNode;
+use GraphQL\Language\AST\NodeKind;
 use GraphQL\Language\AST\NodeList;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -547,7 +548,12 @@ class QueryType
                 if(!empty($filterNodes)){
                     foreach ($filterNodes as $filterNode){
                         /** @var InlineFragmentNode $filterNode */
-                        $requestFilters[] = $filterNode->typeCondition->name->value;
+                        if($filterNode->kind == NodeKind::FRAGMENT_SPREAD){
+                            $requestFilters[] = $filterNode->name->value;
+                        }
+                        if($filterNode->kind == NodeKind::INLINE_FRAGMENT){
+                            $requestFilters[] = $filterNode->typeCondition->name->value;
+                        }
                     }
                 }
 
