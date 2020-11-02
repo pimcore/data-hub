@@ -24,7 +24,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
@@ -33,7 +32,6 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\Document;
-use Pimcore\Model\Element\Service;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
@@ -292,10 +290,7 @@ class QueryType
      */
     public function resolveEdge($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $nodeData = $value['node'];
-        $objectId = $nodeData['id'];
-
-        $object = AbstractObject::getById($objectId);
+        $object = $value['node'];
 
         $data = new ElementDescriptor();
         if ($this->omitPermissionCheck || WorkspaceHelper::checkPermission($object, 'read')) {
@@ -316,7 +311,23 @@ class QueryType
      */
     public function resolveEdges($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        return $value['edges'];
+        $objectList = $value['edges']();
+        $nodes = [];
+
+        foreach ($objectList as $object) {
+            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
+                continue;
+            }
+
+            $data = [];
+            $data['id'] = $object->getId();
+            $nodes[] = [
+                'cursor' => 'object-' . $object->getId(),
+                'node' => $object,
+            ];
+        }
+
+        return $nodes;
     }
 
     /**
@@ -337,9 +348,16 @@ class QueryType
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
+
         $conditionParts = [];
+        $db = Db::get();
         if (isset($args['ids'])) {
-            $conditionParts[] = '(o_id IN (' . $args['ids'] . '))';
+            // Explode it and then quote it
+            if (!is_array($args['ids'])) {
+                $args['ids'] = explode(',', $args['ids']);
+            }
+            $ids = implode(', ', array_map([$db, 'quote'], $args['ids']));
+            $conditionParts[] = '(o_id IN (' . $ids . '))';
         }
 
         // paging
@@ -373,7 +391,6 @@ class QueryType
         }
 
         // check permissions
-        $db = Db::get();
         $workspacesTableName = 'plugin_datahub_workspaces_object';
         $conditionParts[] = ' (
             (
@@ -418,26 +435,10 @@ class QueryType
         $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
         $objectList = $event->getListing();
 
-        $totalCount = $objectList->getTotalCount();
-        $objectList = $objectList->load();
 
-        $nodes = [];
-
-        foreach ($objectList as $object) {
-            if (!$this->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'read')) {
-                continue;
-            }
-
-            $data = [];
-            $data['id'] = $object->getId();
-            $nodes[] = [
-                'cursor' => 'object-' . $object->getId(),
-                'node' => $data,
-            ];
-        }
         $connection = [];
-        $connection['edges'] = $nodes;
-        $connection['totalCount'] = $totalCount;
+        $connection['edges'] = [$objectList, 'load'];
+        $connection['totalCount'] = [$objectList, 'getTotalCount'];
 
         return $connection;
     }
@@ -452,7 +453,7 @@ class QueryType
      */
     public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        return $value['totalCount'];
+        return $value['totalCount']();
     }
 
 }
