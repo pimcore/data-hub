@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
+use GraphQL\Language\AST\FragmentSpreadNode;
 use GraphQL\Language\AST\InlineFragmentNode;
 use GraphQL\Language\AST\NodeKind;
 use GraphQL\Language\AST\NodeList;
@@ -27,7 +28,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition;
@@ -548,11 +548,21 @@ class QueryType
                 $requestFilters = [];
                 if(!empty($filterNodes)){
                     foreach ($filterNodes as $filterNode){
-                        /** @var InlineFragmentNode $filterNode */
-                        if($filterNode->kind == NodeKind::FRAGMENT_SPREAD){
-                            $requestFilters[] = $filterNode->name->value;
+                        if($filterNode->kind == NodeKind::FRAGMENT_SPREAD && $filters = $filterDefinition->getFilters()){
+                            /** @var FragmentSpreadNode $filterNode */
+                            //check for fragments type name because fragments can have any name
+                            foreach ($filters as $savedFilter){
+                                foreach ($resolveInfo->fragments as $fragment){
+                                    if(strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false){
+                                        if($filterNode->name->value == $fragment->name->value){
+                                            $requestFilters[] = $fragment->typeCondition->name;
+                                        }
+                                    }
+                                }
+                            }
                         }
                         if($filterNode->kind == NodeKind::INLINE_FRAGMENT){
+                            /** @var InlineFragmentNode $filterNode */
                             $requestFilters[] = $filterNode->typeCondition->name->value;
                         }
                     }
