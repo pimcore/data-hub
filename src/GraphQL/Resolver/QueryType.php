@@ -161,7 +161,7 @@ class QueryType
         }
 
         // TODO: remove this workaround for Release 1.0
-        if ($args && isset($args['path'])) {
+        if ($args['path'] ?? false) {
             Logger::warn("Argument 'path' deprecated: will no longer be supported by Release 1.0. Use 'fullpath' instead.");
             $args['fullpath'] = $args['path'];
         }
@@ -227,14 +227,14 @@ class QueryType
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $isIdSet = $args["id"] ?? false;
-        $isFullpathSet = $args["fullpath"] ?? false;
+        $isIdSet = $args['id'] ?? false;
+        $isFullpathSet = $args['fullpath'] ?? false;
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath is required');
         }
 
-        if ($args && isset($args['defaultLanguage'])) {
+        if ($args['defaultLanguage'] ?? false) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -271,7 +271,7 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            $identifiers = ($isIdSet ? " ID: " . $args["id"] : "") . ($isFullpathSet ? " FULLPATH: '" . $args["fullpath"] . "'" : "");
+            $identifiers = ($isIdSet ? ' ID: ' . $args['id'] : '') . ($isFullpathSet ? " FULLPATH: '" . $args['fullpath'] . "'" : '');
             throw new ClientSafeException('object with' . $identifiers . ' not found');
         }
         $object = $objectList[0];
