@@ -227,8 +227,8 @@ class QueryType
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
-        $isIdSet = $args && isset($args["id"]);
-        $isFullpathSet = $args && isset($args["fullpath"]);
+        $isIdSet = $args["id"] ?? false;
+        $isFullpathSet = $args["fullpath"] ?? false;
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath is required');
