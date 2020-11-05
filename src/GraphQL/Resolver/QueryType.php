@@ -539,18 +539,18 @@ class QueryType
                 /** @var NodeList $requestedFilters */
                 $requestedFilters = $resolveInfo->operation->selectionSet->selections[0]->selectionSet->selections[0]->selectionSet->selections;
 
-                foreach ($requestedFilters as $filter){
-                    if($filter->name->value == 'facets'){
-                        $filterNodes = $filter->selectionSet->selections;
+                foreach ($requestedFilters as $filter) {
+                    if ($filter->name->value == 'facets') {
+                        $filterNodes[] = $filter->selectionSet->selections;
                     }
                 }
 
                 //Facets could be multiple in a Request e.g. to separate filters and categories
                 //Merge everything together
-                if(count($filterNodes) >= 1){
-                    $tempFilterNodes =  [];
-                    foreach ($filterNodes as $filterNode){
-                        foreach ($filterNode as $node){
+                if (count($filterNodes) >= 1) {
+                    $tempFilterNodes = [];
+                    foreach ($filterNodes as $filterNode) {
+                        foreach ($filterNode as $node) {
                             $tempFilterNodes[] = $node;
                         }
                     }
@@ -558,22 +558,22 @@ class QueryType
                 }
 
                 $requestFilters = [];
-                if(!empty($filterNodes)){
-                    foreach ($filterNodes as $filterNode){
-                        if($filterNode->kind == NodeKind::FRAGMENT_SPREAD && $filters = $filterDefinition->getFilters()){
+                if (!empty($filterNodes)) {
+                    foreach ($filterNodes as $filterNode) {
+                        if ($filterNode->kind == NodeKind::FRAGMENT_SPREAD && $filters = $filterDefinition->getFilters()) {
                             /** @var FragmentSpreadNode $filterNode */
                             //check for fragments type name because fragments can have any name
-                            foreach ($filters as $savedFilter){
-                                foreach ($resolveInfo->fragments as $fragment){
-                                    if(strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false){
-                                        if($filterNode->name->value == $fragment->name->value){
+                            foreach ($filters as $savedFilter) {
+                                foreach ($resolveInfo->fragments as $fragment) {
+                                    if (strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false) {
+                                        if ($filterNode->name->value == $fragment->name->value) {
                                             $requestFilters[] = $fragment->typeCondition->name->value;
                                         }
                                     }
                                 }
                             }
                         }
-                        if($filterNode->kind == NodeKind::INLINE_FRAGMENT){
+                        if ($filterNode->kind == NodeKind::INLINE_FRAGMENT) {
                             /** @var InlineFragmentNode $filterNode */
                             $requestFilters[] = $filterNode->typeCondition->name->value;
                         }
@@ -589,18 +589,20 @@ class QueryType
 
                         // Check if filter is requested from GraphQL Query
                         $hasFilter = false;
-                        foreach($requestFilters as $requestFilter) {
-                            if (strpos($requestFilter, $filter->getType()) !== FALSE){
+                        foreach ($requestFilters as $requestFilter) {
+                            if (strpos($requestFilter, $filter->getType()) !== FALSE) {
                                 $hasFilter = true;
                                 break;
                             }
                         }
                         // If still adding field to facets which is not request an empty array is in the output result
-                        if(!$hasFilter){
+                        if (!$hasFilter) {
                             continue;
                         }
                         if (!\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
-                            $filterValues[$field] = current($filterValues[$field]);
+                            if (isset($filterValues[$field])) {
+                                $filterValues[$field] = current($filterValues[$field]);
+                            }
                         }
 
                         $facets[$k] = [
@@ -772,7 +774,7 @@ class QueryType
             }
         }
         //just store fragments one time
-        if($storeFragments){
+        if ($storeFragments) {
             //store all fragment type names because we don't have the FilterDefinition here
             foreach ($resolveInfo->fragments as $fragment) {
                 $filterNames[] = $fragment->typeCondition->name->value;
@@ -790,7 +792,7 @@ class QueryType
             }
 
         }
-        if(!empty($facets)){
+        if (!empty($facets)) {
             return $facets;
         }
         return $value['facets'];
