@@ -544,6 +544,19 @@ class QueryType
                         $filterNodes = $filter->selectionSet->selections;
                     }
                 }
+
+                //Facets could be multiple in a Request e.g. to separate filters and categories
+                //Merge everything together
+                if(count($filterNodes) >= 1){
+                    $tempFilterNodes =  [];
+                    foreach ($filterNodes as $filterNode){
+                        foreach ($filterNode as $node){
+                            $tempFilterNodes[] = $node;
+                        }
+                    }
+                    $filterNodes = $tempFilterNodes;
+                }
+
                 $requestFilters = [];
                 if(!empty($filterNodes)){
                     foreach ($filterNodes as $filterNode){
@@ -554,7 +567,7 @@ class QueryType
                                 foreach ($resolveInfo->fragments as $fragment){
                                     if(strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false){
                                         if($filterNode->name->value == $fragment->name->value){
-                                            $requestFilters[] = $fragment->typeCondition->name;
+                                            $requestFilters[] = $fragment->typeCondition->name->value;
                                         }
                                     }
                                 }
@@ -735,6 +748,51 @@ class QueryType
      */
     public function resolveFacets($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        //check which values are necessary if multiple facet arguments sent in the request
+        //this prevents empty arrays in multiple facet types
+        $facetName = end($resolveInfo->path);
+
+        $filterNodes = null;
+        /** @var NodeList $requestedFilters */
+        $requestedFilters = $resolveInfo->operation->selectionSet->selections[0]->selectionSet->selections[0]->selectionSet->selections;
+
+        foreach ($requestedFilters as $filter) {
+            if ($filter->alias->value == $facetName) {
+                $filterNodes = $filter->selectionSet->selections;
+            }
+        }
+        $filterNames = [];
+        $storeFragments = false;
+        foreach ($filterNodes as $filterNode) {
+            if ($filterNode->kind == NodeKind::FRAGMENT_SPREAD) {
+                $storeFragments = true;
+            }
+            if ($filterNode->kind == NodeKind::INLINE_FRAGMENT) {
+                $filterNames[] = $filterNode->typeCondition->name->value;
+            }
+        }
+        //just store fragments one time
+        if($storeFragments){
+            //store all fragment type names because we don't have the FilterDefinition here
+            foreach ($resolveInfo->fragments as $fragment) {
+                $filterNames[] = $fragment->typeCondition->name->value;
+            }
+        }
+
+        $facets = [];
+        foreach ($value['facets'] as $facet) {
+            $filter = $facet['filter'];
+            $filterType = $filter->getType();
+            foreach ($filterNames as $filterName) {
+                if (strpos($filterName, $filterType) !== false) {
+                    $facets[] = $facet;
+                }
+            }
+
+        }
+        if(!empty($facets)){
+            return $facets;
+        }
         return $value['facets'];
     }
 
