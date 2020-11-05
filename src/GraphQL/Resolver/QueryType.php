@@ -764,9 +764,11 @@ class QueryType
             }
         }
         $filterNames = [];
+        $fragmentNames = [];
         $storeFragments = false;
         foreach ($filterNodes as $filterNode) {
             if ($filterNode->kind == NodeKind::FRAGMENT_SPREAD) {
+                $fragmentNames[] =  $filterNode->name->value;
                 $storeFragments = true;
             }
             if ($filterNode->kind == NodeKind::INLINE_FRAGMENT) {
@@ -775,11 +777,14 @@ class QueryType
         }
         //just store fragments one time
         if ($storeFragments) {
-            //store all fragment type names because we don't have the FilterDefinition here
+            //store all fragment type names which are set as filter fragments
             foreach ($resolveInfo->fragments as $fragment) {
-                $filterNames[] = $fragment->typeCondition->name->value;
+                if(in_array($fragment->name->value, $fragmentNames)){
+                    $filterNames[] = $fragment->typeCondition->name->value;
+                }
             }
         }
+
 
         $facets = [];
         foreach ($value['facets'] as $facet) {
