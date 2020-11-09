@@ -825,11 +825,10 @@ class QueryType
         $options = $resultList->getGroupByValues($field, true, !method_exists($filter, 'getUseAndCondition') || !$filter->getUseAndCondition());
 
         foreach ($options as &$option) {
-            $prefix = (is_numeric($option['value'])) ? $field . ':' : '';
             if (!empty($option['value'])) {
-                $option['label'] = $translator->trans($prefix . $option['value']);
+                $option['label'] = $option['value'];
             } else {
-                $option['label'] = $translator->trans('No Value');
+                $option['label'] = '';
             }
         }
 
