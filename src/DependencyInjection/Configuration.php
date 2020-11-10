@@ -27,10 +27,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('pimcore_data_hub');
-
-        $rootNode
+        $treeBuilder = new TreeBuilder('pimcore_data_hub');
+        $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('graphql')
                     ->children()
