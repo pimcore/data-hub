@@ -85,12 +85,6 @@ pimcore.plugin.datahub.config = Class.create({
                 }
             }
 
-            menuItems.push({
-                text: t('plugin_pimcore_datahub_type_locked'),
-                iconCls: "plugin_pimcore_datahub_icon_locked",
-                disabled: true
-            });
-
             var addConfigButton = new Ext.SplitButton({
                 text: t("plugin_pimcore_datahub_configpanel_add"),
                 iconCls: "pimcore_icon_add",
