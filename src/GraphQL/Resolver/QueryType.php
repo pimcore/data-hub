@@ -484,7 +484,13 @@ class QueryType
         }
 
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface $resultList */
-        $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+        if ($args && $args['defaultLanguage']) {
+            // get language based tenant
+            $resultList = $factory->getIndexService()->getProductListForTenant('default_' . $args['defaultLanguage']);
+        } else {
+            // get fallback resultList
+            $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+        }
 
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition */
         $currentFilters = [];
