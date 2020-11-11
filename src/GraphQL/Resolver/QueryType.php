@@ -485,7 +485,13 @@ class QueryType
         }
 
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\IndexService\ProductList\ProductListInterface $resultList */
-        $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+        if ($args && $args['defaultLanguage']) {
+            // get language based tenant
+            $resultList = $factory->getIndexService()->getProductListForTenant('default_' . $args['defaultLanguage']);
+        } else {
+            // get fallback resultList
+            $resultList = $factory->getIndexService()->getProductListForCurrentTenant();
+        }
 
         /** @var \Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractFilterDefinition $filterDefinition */
         $currentFilters = [];
@@ -540,28 +546,41 @@ class QueryType
                 /** @var NodeList $requestedFilters */
                 $requestedFilters = $resolveInfo->operation->selectionSet->selections[0]->selectionSet->selections[0]->selectionSet->selections;
 
-                foreach ($requestedFilters as $filter){
-                    if($filter->name->value == 'facets'){
-                        $filterNodes = $filter->selectionSet->selections;
+                foreach ($requestedFilters as $filter) {
+                    if ($filter->name->value == 'facets') {
+                        $filterNodes[] = $filter->selectionSet->selections;
                     }
                 }
+
+                //Facets could be multiple in a Request e.g. to separate filters and categories
+                //Merge everything together
+                if (count($filterNodes) >= 1) {
+                    $tempFilterNodes = [];
+                    foreach ($filterNodes as $filterNode) {
+                        foreach ($filterNode as $node) {
+                            $tempFilterNodes[] = $node;
+                        }
+                    }
+                    $filterNodes = $tempFilterNodes;
+                }
+
                 $requestFilters = [];
-                if(!empty($filterNodes)){
-                    foreach ($filterNodes as $filterNode){
-                        if($filterNode->kind == NodeKind::FRAGMENT_SPREAD && $filters = $filterDefinition->getFilters()){
+                if (!empty($filterNodes)) {
+                    foreach ($filterNodes as $filterNode) {
+                        if ($filterNode->kind == NodeKind::FRAGMENT_SPREAD && $filters = $filterDefinition->getFilters()) {
                             /** @var FragmentSpreadNode $filterNode */
                             //check for fragments type name because fragments can have any name
-                            foreach ($filters as $savedFilter){
-                                foreach ($resolveInfo->fragments as $fragment){
-                                    if(strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false){
-                                        if($filterNode->name->value == $fragment->name->value){
-                                            $requestFilters[] = $fragment->typeCondition->name;
+                            foreach ($filters as $savedFilter) {
+                                foreach ($resolveInfo->fragments as $fragment) {
+                                    if (strpos($fragment->typeCondition->name->value, $savedFilter->getType()) !== false) {
+                                        if ($filterNode->name->value == $fragment->name->value) {
+                                            $requestFilters[] = $fragment->typeCondition->name->value;
                                         }
                                     }
                                 }
                             }
                         }
-                        if($filterNode->kind == NodeKind::INLINE_FRAGMENT){
+                        if ($filterNode->kind == NodeKind::INLINE_FRAGMENT) {
                             /** @var InlineFragmentNode $filterNode */
                             $requestFilters[] = $filterNode->typeCondition->name->value;
                         }
@@ -577,18 +596,20 @@ class QueryType
 
                         // Check if filter is requested from GraphQL Query
                         $hasFilter = false;
-                        foreach($requestFilters as $requestFilter) {
-                            if (strpos($requestFilter, $filter->getType()) !== FALSE){
+                        foreach ($requestFilters as $requestFilter) {
+                            if (strpos($requestFilter, $filter->getType()) !== FALSE) {
                                 $hasFilter = true;
                                 break;
                             }
                         }
                         // If still adding field to facets which is not request an empty array is in the output result
-                        if(!$hasFilter){
+                        if (!$hasFilter) {
                             continue;
                         }
                         if (!\Pimcore\Bundle\DataHubBundle\FilterService\FilterType\HijackAbstractFilterType::isMultiValueFilter($filterType, $filter)) {
-                            $filterValues[$field] = current($filterValues[$field]);
+                            if (isset($filterValues[$field])) {
+                                $filterValues[$field] = current($filterValues[$field]);
+                            }
                         }
 
                         $facets[$k] = [
@@ -736,6 +757,56 @@ class QueryType
      */
     public function resolveFacets($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        //check which values are necessary if multiple facet arguments sent in the request
+        //this prevents empty arrays in multiple facet types
+        $facetName = end($resolveInfo->path);
+
+        $filterNodes = null;
+        /** @var NodeList $requestedFilters */
+        $requestedFilters = $resolveInfo->operation->selectionSet->selections[0]->selectionSet->selections[0]->selectionSet->selections;
+
+        foreach ($requestedFilters as $filter) {
+            if ($filter->alias->value == $facetName) {
+                $filterNodes = $filter->selectionSet->selections;
+            }
+        }
+        $filterNames = [];
+        $fragmentNames = [];
+        $storeFragments = false;
+        foreach ($filterNodes as $filterNode) {
+            if ($filterNode->kind == NodeKind::FRAGMENT_SPREAD) {
+                $fragmentNames[] =  $filterNode->name->value;
+                $storeFragments = true;
+            }
+            if ($filterNode->kind == NodeKind::INLINE_FRAGMENT) {
+                $filterNames[] = $filterNode->typeCondition->name->value;
+            }
+        }
+        //just store fragments one time
+        if ($storeFragments) {
+            //store all fragment type names which are set as filter fragments
+            foreach ($resolveInfo->fragments as $fragment) {
+                if(in_array($fragment->name->value, $fragmentNames)){
+                    $filterNames[] = $fragment->typeCondition->name->value;
+                }
+            }
+        }
+
+
+        $facets = [];
+        foreach ($value['facets'] as $facet) {
+            $filter = $facet['filter'];
+            $filterType = $filter->getType();
+            foreach ($filterNames as $filterName) {
+                if (strpos($filterName, $filterType) !== false) {
+                    $facets[] = $facet;
+                }
+            }
+
+        }
+        if (!empty($facets)) {
+            return $facets;
+        }
         return $value['facets'];
     }
 
@@ -761,11 +832,10 @@ class QueryType
         $options = $resultList->getGroupByValues($field, true, !method_exists($filter, 'getUseAndCondition') || !$filter->getUseAndCondition());
 
         foreach ($options as &$option) {
-            $prefix = (is_numeric($option['value'])) ? $field . ':' : '';
             if (!empty($option['value'])) {
-                $option['label'] = $translator->trans($prefix . $option['value']);
+                $option['label'] = $option['value'];
             } else {
-                $option['label'] = $translator->trans('No Value');
+                $option['label'] = '';
             }
         }
 
