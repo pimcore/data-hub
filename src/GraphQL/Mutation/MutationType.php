@@ -379,12 +379,7 @@ class MutationType extends ObjectType
                     $element->setEditables([]);
                 }
             } else if ($key == 'editables') {
-                if (method_exists($element, 'getEditables')) {
-                    $element->getEditables();
-                } else {
-                    // this one is deprecated and will be removed with pimcore 7
-                    $element->getElements();
-                }
+                $element->getEditables();
 
                 foreach ($value as $elementType => $elementTypeValues) {
                     if ($processor = $processors[$elementType] ?? null) {

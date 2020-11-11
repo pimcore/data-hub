@@ -88,12 +88,7 @@ class Areablock extends Base
 
         $tag->setDataFromEditmode($indices);
 
-        if (method_exists($document, 'setEditable')) {
-            $document->setEditable($tagName, $tag);
-        } else {
-            // this one is deprecated and will be removed with pimcore 7
-            $document->setElement($tagName, $tag);
-        }
+        $document->setEditable($tagName, $tag);
     }
 
 }

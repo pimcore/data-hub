@@ -23,12 +23,7 @@ trait EditablesTrait
 
     public function cleanEditables(PageSnippet $document, $tagName)
     {
-        if (method_exists($document, 'setEditable')) {
-            $editables = $document->getEditables();
-        } else {
-            // this one is deprecated and will be removed with pimcore 7
-            $editables = $document->getElements();
-        }
+        $editables = $document->getEditables();
 
         /** @var Tag $editable */
         foreach ($editables as $editable) {

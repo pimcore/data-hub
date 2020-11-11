@@ -61,12 +61,7 @@ abstract class Base
         $tag->setName($tagName);
         $tag->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 
-        if (method_exists($document, 'setEditable')) {
-            $document->setEditable($tagName, $tag);
-        } else {
-            // this one is deprecated and will be removed with pimcore 7
-            $document->setElement($tagName, $tag);
-        }
+        $document->setEditable($tagName, $tag);
     }
 
 }
