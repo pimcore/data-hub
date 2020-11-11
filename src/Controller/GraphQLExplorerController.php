@@ -17,11 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 
 use Pimcore\Bundle\CoreBundle\EventListener\Frontend\TagManagerListener;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
-class GraphQLExplorerController extends Controller
+class GraphQLExplorerController extends AbstractController
 {
     /**
      * @param RouterInterface $routingService
