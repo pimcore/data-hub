@@ -40,16 +40,23 @@ trait ElementIdentificationTrait
         if (!in_array($type, $this->supportedTypes)) {
             throw new ClientSafeException('The type "' . $type . '" is not supported');
         }
+        
+        $isIdSet = $value[$this->idKey] ?? false;
+        $isFullpathSet = $value[$this->fullpathKey] ?? false;
 
-        if (isset($value[$this->idKey])) {
+        if ($isIdSet && $isFullpathSet) {
+            throw new ClientSafeException('either id or fullpath expected but not both');
+        }
+
+        if ($isIdSet) {
             return $this->getElementById($type, $value[$this->idKey]);
         }
 
-        if (isset($value[$this->fullpathKey])) {
+        if ($isFullpathSet) {
             return $this->getElementByPath($type, $value[$this->fullpathKey]);
         }
 
-        throw new ClientSafeException('Either ' . $this->idKey . ' or ' . $this->fullpathKey . ' expected');
+        throw new ClientSafeException('either ' . $this->idKey . ' or ' . $this->fullpathKey . ' expected');
     }
 
     /**

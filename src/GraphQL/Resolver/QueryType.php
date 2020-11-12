@@ -231,7 +231,7 @@ class QueryType
         $isFullpathSet = $args['fullpath'] ?? false;
 
         if (!$isIdSet && !$isFullpathSet) {
-            throw new ClientSafeException('object id or fullpath is required');
+            throw new ClientSafeException('object id or fullpath expected');
         }
 
         if ($args['defaultLanguage'] ?? false) {
@@ -271,8 +271,8 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            $identifiers = ($isIdSet ? ' ID: ' . $args['id'] : '') . ($isFullpathSet ? " FULLPATH: '" . $args['fullpath'] . "'" : '');
-            throw new ClientSafeException('object with' . $identifiers . ' not found');
+            $errorMessage = $this->createArgumentErrorMessage($isFullpathSet, $isIdSet, $args);
+            throw new ClientSafeException($errorMessage);
         }
         $object = $objectList[0];
 
@@ -470,5 +470,20 @@ class QueryType
     public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
         return $value['totalCount'];
+    }
+
+    private function createArgumentErrorMessage($isFullpathSet, $isIdSet, $args)
+    {
+        if ($isIdSet && $isFullpathSet) {
+            return 'either id or fullpath expected but not both';
+        }
+        if ($isIdSet) {
+            return "object with id:'" . $args['id'] . "' not found";
+        }
+        if ($isFullpathSet) {
+            return "object with fullpath:'" . $args['fullpath'] . "' not found";
+        }
+
+        return 'either id or fullpath expected';
     }
 }

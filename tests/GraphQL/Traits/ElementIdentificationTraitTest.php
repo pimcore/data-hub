@@ -68,7 +68,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfBothIdAndFullpathAreMissing()
     {
         // Arrange
-        $this->expectExceptionMessageRegExp('/Either .* or .* expected/');
+        $this->expectExceptionMessageRegExp('/either .* or .* expected/');
         $newValueItemValue = array("type" => self::TEST_TYPE);
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
@@ -76,9 +76,10 @@ class ElementIdentificationTraitTest extends TestCase
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
-    public function testElementIdentificationPrioritizesIdOverFullpath()
+    public function testThrowingClientSafeExceptionIfBothIdAndFullpathArePassed()
     {
         // Arrange
+        $this->expectExceptionMessage('either id or fullpath expected but not both');
         $newValueItemValue = array(
             "type" => self::TEST_TYPE,
             "id" => 4,
@@ -86,10 +87,8 @@ class ElementIdentificationTraitTest extends TestCase
         );
         // System under Test
         $sut = new TestTrait();
-        // Act 
-        $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue);
-        // Assert
-        $this->assertEquals(self::TEST_TYPE . TestTrait::BY_ID, $result);
+        // Act & Assert
+        $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
     public function testElementIdentificationGetElementByFullPath()
