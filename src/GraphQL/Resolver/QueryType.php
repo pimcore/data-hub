@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
@@ -27,6 +28,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
+use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -42,6 +44,7 @@ class QueryType
 
     use ServiceTrait;
     use PermissionInfoTrait;
+    use ElementIdentificationTrait;
 
     /**
      * @var EventDispatcherInterface
@@ -87,15 +90,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $element = null;
-
-        if ($elementType == "asset") {
-            $element = Asset\Folder::getById($args['id']);
-        } else if ($elementType == "document") {
-            $element = Document\Folder::getById($args['id']);
-        } else if ($elementType == "object") {
-            $element = Folder::getById($args['id']);
-        }
+        $element = $this->getElementByTypeAndIdOrPath($args, $elementType);
 
         if (!$element) {
             return null;
@@ -151,8 +146,9 @@ class QueryType
     }
 
     /**
+     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      * @param null $value
-     * @param array $args
+     * @param array $args 
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
@@ -164,13 +160,13 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $documentElement = null;
-
-        if (isset($args['id'])) {
-            $documentElement = Document::getById($args['id']);
-        } else if (isset($args['path'])) {
-            $documentElement = Document::getByPath($args['path']);
+        // TODO: remove this workaround for Release 1.0
+        if ($args['path'] ?? false) {
+            Logger::warn("Argument 'path' deprecated: will no longer be supported by Release 1.0. Use 'fullpath' instead.");
+            $args['fullpath'] = $args['path'];
         }
+
+        $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
 
         if (!$documentElement) {
             return null;
@@ -204,7 +200,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $assetElement = Asset::getById($args['id']);
+        $assetElement = $this->getElementByTypeAndIdOrPath($args, 'asset');
         if (!$assetElement) {
             return null;
         }
@@ -231,12 +227,14 @@ class QueryType
      */
     public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        $isIdSet = $args['id'] ?? false;
+        $isFullpathSet = $args['fullpath'] ?? false;
 
-        if (!$args["id"]) {
-            return null;
+        if (!$isIdSet && !$isFullpathSet) {
+            throw new ClientSafeException('object id or fullpath expected');
         }
 
-        if ($args && isset($args['defaultLanguage'])) {
+        if ($args['defaultLanguage'] ?? false) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
@@ -246,7 +244,14 @@ class QueryType
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
 
-        $conditionParts[] = '(o_id =' . $args['id'] . ')';
+        if ($isIdSet) {
+            $conditionParts[] = '(o_id =' . $args['id'] . ')';
+        }
+
+        if ($isFullpathSet) {
+            $fullpath = Service::correctPath($args['fullpath']);
+            $conditionParts[] = '(concat(o_path, o_key) =' . Db::get()->quote($fullpath) . ')';
+        }
 
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
@@ -266,7 +271,8 @@ class QueryType
         $objectList->setUnpublished(1);
         $objectList = $objectList->load();
         if (!$objectList) {
-            throw new ClientSafeException('object with ID ' . $args["id"] . ' not found');
+            $errorMessage = $this->createArgumentErrorMessage($isFullpathSet, $isIdSet, $args);
+            throw new ClientSafeException($errorMessage);
         }
         $object = $objectList[0];
 
@@ -333,6 +339,7 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
+        $db = Db::get();
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
@@ -340,6 +347,17 @@ class QueryType
         $conditionParts = [];
         if (isset($args['ids'])) {
             $conditionParts[] = '(o_id IN (' . $args['ids'] . '))';
+        }
+        if (isset($args['fullpaths'])) {
+            $quotedFullpaths = array_map(
+                static function ($fullpath) use ($db) {
+                    $fullpath = trim($fullpath, " '");
+                    $fullpath = Service::correctPath($fullpath);
+                    return $db->quote($fullpath);
+                },
+                explode(',', $args['fullpaths'])
+            );
+            $conditionParts[] = '(concat(o_path, o_key) IN (' . implode(',', $quotedFullpaths) . '))';
         }
 
         // paging
@@ -373,7 +391,6 @@ class QueryType
         }
 
         // check permissions
-        $db = Db::get();
         $workspacesTableName = 'plugin_datahub_workspaces_object';
         $conditionParts[] = ' (
             (
@@ -455,4 +472,18 @@ class QueryType
         return $value['totalCount'];
     }
 
+    private function createArgumentErrorMessage($isFullpathSet, $isIdSet, $args)
+    {
+        if ($isIdSet && $isFullpathSet) {
+            return 'either id or fullpath expected but not both';
+        }
+        if ($isIdSet) {
+            return "object with id:'" . $args['id'] . "' not found";
+        }
+        if ($isFullpathSet) {
+            return "object with fullpath:'" . $args['fullpath'] . "' not found";
+        }
+
+        return 'either id or fullpath expected';
+    }
 }

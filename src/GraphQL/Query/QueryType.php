@@ -102,7 +102,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'get' . ucfirst($type) . "Folder",
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $graphQlType,
@@ -132,7 +133,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'getAsset',
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $assetType,
@@ -163,7 +165,8 @@ class QueryType extends ObjectType
                 'name' => 'getDocument',
                 'args' => [
                     'id' => ['type' => Type::int()],
-                    'path' => ['type' => Type::string()],
+                    'path' => ['type' => Type::string(), 'description' => "Get document by 'path' is deprecated as it is wrongly named. The 'path' argument will be replaced by 'fullpath' for Release 1.0."],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $this->getGraphQlService()->getDocumentTypeDefinition("document"),
@@ -211,7 +214,8 @@ class QueryType extends ObjectType
             $defGet = [
                 'name' => 'get' . $ucFirstClassName,
                 'args' => [
-                    'id' => ['type' => Type::nonNull(Type::int())],
+                    'id' => ['type' => Type::int()],
+                    'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => ClassTypeDefinitions::get($class),
@@ -254,6 +258,10 @@ class QueryType extends ObjectType
                 'name' => 'get' . $ucFirstClassName . 'Listing',
                 'args' => [
                     'ids' => ['type' => Type::string()],
+                    'fullpaths' => [
+                        'type' => Type::string(),
+                        'description' => "Comma separated list of fullpath"
+                    ],
                     'defaultLanguage' => ['type' => Type::string()],
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
@@ -330,6 +338,10 @@ class QueryType extends ObjectType
             'name' => 'getAssetListing',
             'args' => [
                 'ids' => ['type' => Type::string()],
+                'fullpaths' => [
+                    'type' => Type::string(),
+                    'description' => "Comma separated list of fullpath"
+                ],
                 'defaultLanguage' => ['type' => Type::string()],
                 'first' => ['type' => Type::int()],
                 'after' => ['type' => Type::int()],

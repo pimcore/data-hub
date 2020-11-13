@@ -94,6 +94,7 @@ class AssetListing
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
+        $db = Db::get();
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = Asset\Listing::class;
 
@@ -102,6 +103,18 @@ class AssetListing
         $conditionParts = [];
         if (isset($args['ids'])) {
             $conditionParts[] = '(id IN (' . $args['ids'] . '))';
+        }
+
+        if (isset($args['fullpaths'])) {
+            $quotedFullpaths = array_map(
+                static function ($fullpath) use ($db) {
+                    $fullpath = trim($fullpath, " '");
+                    $fullpath = \Pimcore\Model\Element\Service::correctPath($fullpath);
+                    return $db->quote($fullpath);
+                },
+                explode(',', $args['fullpaths'])
+            );
+            $conditionParts[] = '(concat(path, filename) IN (' . implode(',', $quotedFullpaths) . '))';
         }
 
         // paging
@@ -125,7 +138,6 @@ class AssetListing
         $configuration = $context['configuration'];
 
         // check permissions
-        $db = Db::get();
         $tableName = 'assets';
         $workspacesTableName = 'plugin_datahub_workspaces_asset';
         $conditionParts[] = ' (
