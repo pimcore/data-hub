@@ -258,7 +258,10 @@ class QueryType extends ObjectType
                 'name' => 'get' . $ucFirstClassName . 'Listing',
                 'args' => [
                     'ids' => ['type' => Type::string()],
-                    'fullpaths' => ['type' => Type::string()],
+                    'fullpaths' => [
+                        'type' => Type::string(),
+                        'description' => "Comma separated list of fullpath"
+                    ],
                     'defaultLanguage' => ['type' => Type::string()],
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
@@ -335,7 +338,10 @@ class QueryType extends ObjectType
             'name' => 'getAssetListing',
             'args' => [
                 'ids' => ['type' => Type::string()],
-                'fullpaths' => ['type' => Type::string()],
+                'fullpaths' => [
+                    'type' => Type::string(),
+                    'description' => "Comma separated list of fullpath"
+                ],
                 'defaultLanguage' => ['type' => Type::string()],
                 'first' => ['type' => Type::int()],
                 'after' => ['type' => Type::int()],
