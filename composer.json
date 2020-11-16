@@ -2,7 +2,7 @@
   "name": "pimcore/data-hub",
   "license": "GPL-3.0+",
   "type": "pimcore-bundle",
-  "description": "Pimcore Data Hub",
+  "description": "Pimcore Data-Hub",
   "config": {
     "discard-changes": true
   },
