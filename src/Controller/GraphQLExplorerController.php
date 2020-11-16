@@ -55,7 +55,7 @@ class GraphQLExplorerController extends AbstractController
             $url = $url . '?' . http_build_query($urlParams);
         }
 
-        return $this->render('PimcoreDataHubBundle:Feature:explorer.html.twig', [
+        return $this->render('@PimcoreDataHub/Feature/explorer.html.twig', [
             'graphQLUrl' => $url,
             'tokenHeader' => 'access-token'
         ]);
