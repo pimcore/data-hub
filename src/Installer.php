@@ -15,21 +15,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Doctrine\DBAL\Migrations\Version;
-use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Db;
-use Pimcore\Extension\Bundle\Installer\MigrationInstaller;
+use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
 use Pimcore\Logger;
 
-class Installer extends MigrationInstaller
+class Installer extends AbstractInstaller
 {
-
-    public function getMigrationVersion(): string
-    {
-        return '20190904131554';
-    }
-
     public function needsReloadAfterInstall(): bool
     {
         return true;
@@ -57,7 +49,7 @@ class Installer extends MigrationInstaller
     /**
      * {@inheritdoc}
      */
-    public function migrateInstall(Schema $schema, Version $version)
+    public function install()
     {
         // create backend permission
         \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
@@ -75,12 +67,12 @@ class Installer extends MigrationInstaller
                         `create` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         `read` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         `update` TINYINT(1) UNSIGNED NULL DEFAULT '0',
-                        `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',                    
-                        PRIMARY KEY (`cid`, `configuration`)                
+                        `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',
+                        PRIMARY KEY (`cid`, `configuration`)
                         )
                     COLLATE='utf8mb4_general_ci'
                     ENGINE=InnoDB
-                    ;                        
+                    ;
                 ");
             }
         } catch (\Exception $e) {
@@ -88,9 +80,5 @@ class Installer extends MigrationInstaller
         }
 
         return true;
-    }
-
-    public function migrateUninstall(Schema $schema, Version $version)
-    {
     }
 }
