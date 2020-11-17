@@ -86,7 +86,7 @@ class WebserviceController extends FrontendController
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
 
-        $config = $this->container->getParameter('pimcore_data_hub');
+        $config = $this->getParameter('pimcore_data_hub');
 
         if (isset($config['graphql']) && isset($config['graphql']['not_allowed_policy'])) {
             PimcoreDataHubBundle::setNotAllowedPolicy($config['graphql']['not_allowed_policy']);

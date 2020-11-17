@@ -46,7 +46,10 @@ services:
   pimcore.datahub.graphql.fieldhelper.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper'
   pimcore.datahub.graphql.fieldhelper.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper'
 
-  Pimcore\Bundle\DataHubBundle\GraphQL\Service: ~
+  Pimcore\Bundle\DataHubBundle\GraphQL\Service:
+    public: true
+    calls:
+      - [setTagManagerListener, ['@?pimcore.event_listener.frontend.tag_manager']]
 
   # Field helper
   Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper:

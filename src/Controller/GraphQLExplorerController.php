@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
 use Pimcore\Bundle\CoreBundle\EventListener\Frontend\TagManagerListener;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,6 @@ class GraphQLExplorerController extends AbstractController
     /**
      * @param RouterInterface $routingService
      * @param Request $request
-     * @param TagManagerListener $tagManagerListener
      *
      * @Cache(expires="tomorrow", public=true)
      *
@@ -34,8 +34,9 @@ class GraphQLExplorerController extends AbstractController
      *
      * @throws \Exception
      */
-    public function explorerAction(RouterInterface $routingService, Request $request, ?TagManagerListener $tagManagerListener)
+    public function explorerAction(RouterInterface $routingService, Request $request, Service $service)
     {
+        $tagManagerListener = $service->getTagManagerListener();
         // disable Tag & Snippet Management
         if($tagManagerListener) {
             $tagManagerListener->disable();
