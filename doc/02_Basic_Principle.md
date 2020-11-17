@@ -1,11 +1,11 @@
 # Basic Principle
 
-Pimcore data-hub allows to define multiple endpoints that allow data delivery and consumption. These 
+Pimcore Datahub allows defining multiple endpoints that allow data delivery and consumption. These 
 endpoints are configured via so called configurations that can be added in Pimcore admin user interface: 
 
 ## Adding a new configuration
 
-Open data-hub configuration panel
+Open Datahub configuration panel
 
 ![Configuration Overview](./img/graphql/configuration3.png)
 
