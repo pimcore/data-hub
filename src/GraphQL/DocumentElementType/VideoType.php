@@ -21,7 +21,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Model\Document\Tag\Video;
+use Pimcore\Model\Document\Editable\Video;
 
 class VideoType extends ObjectType
 {
@@ -36,9 +36,9 @@ class VideoType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => 'document_tagVideo',
+                    'name' => 'document_editableVideo',
                     'fields' => [
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -46,7 +46,7 @@ class VideoType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {

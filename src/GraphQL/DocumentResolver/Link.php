@@ -70,7 +70,7 @@ class Link
     public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
 
-        if ($value instanceof Document\Tag\Link) {
+        if ($value instanceof Document\Editable\Link) {
             $value = $value->getData();
         }
 

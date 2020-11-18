@@ -22,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotCropType;
 use Pimcore\Model\Asset;
-use Pimcore\Model\Document\Tag\Image;
+use Pimcore\Model\Document\Editable\Image;
 
 class ImageType extends ObjectType
 {
@@ -47,9 +47,9 @@ class ImageType extends ObjectType
 
             $config =
                 [
-                    'name' => 'document_tagImage',
+                    'name' => 'document_editableImage',
                     'fields' => [
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
@@ -57,7 +57,7 @@ class ImageType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {

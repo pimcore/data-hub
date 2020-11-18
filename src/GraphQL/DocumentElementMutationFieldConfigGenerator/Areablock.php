@@ -75,7 +75,7 @@ class Areablock extends Base
                     'name' => 'document_element_input_areablock',
                     'fields' => function () {
                         return [
-                            '_tagName' => Type::nonNull(Type::string()),
+                            '_editableName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf($this->areablockDataInputType),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),

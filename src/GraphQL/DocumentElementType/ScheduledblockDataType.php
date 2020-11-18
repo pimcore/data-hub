@@ -37,9 +37,9 @@ class ScheduledblockDataType extends ObjectType
 
         $config =
             [
-                'name' => 'document_tagScheduledblock_data',
+                'name' => 'document_editableScheduledblock_data',
                 'fields' => [
-                    '_tagType' => [
+                    '_editableType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value) {
@@ -47,7 +47,7 @@ class ScheduledblockDataType extends ObjectType
                             }
                         }
                     ],
-                    '_tagName' => [
+                    '_editableName' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value) {

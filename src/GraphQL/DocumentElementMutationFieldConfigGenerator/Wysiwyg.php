@@ -45,7 +45,7 @@ class Wysiwyg extends Base
                 [
                     'name' => 'document_element_input_wysiwyg',
                     'fields' => [
-                        '_tagName' => Type::nonNull(Type::string()),
+                        '_editableName' => Type::nonNull(Type::string()),
                         'text' => Type::string(),
                     ]
                 ]

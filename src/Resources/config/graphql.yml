@@ -792,7 +792,7 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Wysiwyg: ~
 
 
-  Pimcore\Model\Document\Tag\Loader\TagLoaderInterface: '@Pimcore\Model\Document\Editable\Loader\EditableLoader'
+  Pimcore\Model\Document\Editable\Loader\EditableLoaderInterface: '@Pimcore\Model\Document\Editable\Loader\EditableLoader'
 
   #
   # built-in dataobject mutation datatypes type generator

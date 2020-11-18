@@ -76,7 +76,7 @@ class Scheduledblock extends Base
                     'name' => 'document_element_input_scheduledblock',
                     'fields' => function () {
                         return [
-                            '_tagName' => Type::nonNull(Type::string()),
+                            '_editableName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf($this->scheduledblockDataInputType),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),

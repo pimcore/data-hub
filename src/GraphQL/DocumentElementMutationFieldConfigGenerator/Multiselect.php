@@ -44,7 +44,7 @@ class Multiselect extends Base
                 [
                     'name' => 'document_element_input_multisleect',
                     'fields' => [
-                        '_tagName' => Type::nonNull(Type::string()),
+                        '_editableName' => Type::nonNull(Type::string()),
                         'selections' => Type::listOf(Type::string()),
                     ]
                 ]

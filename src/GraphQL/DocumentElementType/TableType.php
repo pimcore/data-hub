@@ -22,7 +22,7 @@ class TableType extends SimpleTextType
     public static function getInstance()
     {
         if (!self::$instance) {
-            $config = self::getStandardConfig("document_tagTable");
+            $config = self::getStandardConfig("document_editableTable");
             self::$instance = new static($config);
         }
 

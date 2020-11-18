@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Tag\Loader\TagLoaderInterface;
+use Pimcore\Model\Document\Editable\Loader\EditableLoaderInterface;
 
 
 abstract class Base
@@ -28,18 +28,18 @@ abstract class Base
     use ServiceTrait;
 
     /**
-     * @var TagLoaderInterface
+     * @var EditableLoaderInterface
      */
-    protected $tagLoader;
+    protected $editableLoader;
 
     /**
      * Block constructor.
-     * @param TagLoaderInterface $tagLoader
+     * @param EditableLoaderInterface $editableLoader
      * @param Service $graphQlService
      */
-    public function __construct(TagLoaderInterface $tagLoader, Service $graphQlService)
+    public function __construct(EditableLoaderInterface $editableLoader, Service $graphQlService)
     {
-        $this->tagLoader = $tagLoader;
+        $this->editableLoader = $editableLoader;
         $this->graphQlService = $graphQlService;
     }
 
@@ -52,16 +52,16 @@ abstract class Base
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
-        $tagName = $newValue['_tagName'];
-        $tagType = $newValue['_tagType'];
+        $editableName = $newValue['_editableName'];
+        $editableType = $newValue['_editableType'];
 
         $text = $newValue['text'];
 
-        $tag = $this->tagLoader->build($tagType);
-        $tag->setName($tagName);
-        $tag->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
+        $editable = $this->editableLoader->build($editableType);
+        $editable->setName($editableName);
+        $editable->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 
-        $document->setEditable($tagName, $tag);
+        $document->setEditable($editableName, $editable);
     }
 
 }

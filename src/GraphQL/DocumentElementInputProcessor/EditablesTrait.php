@@ -16,19 +16,19 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Tag;
+use Pimcore\Model\Document\Editable;
 
 trait EditablesTrait
 {
 
-    public function cleanEditables(PageSnippet $document, $tagName)
+    public function cleanEditables(PageSnippet $document, $editableName)
     {
         $editables = $document->getEditables();
 
-        /** @var Tag $editable */
+        /** @var Editable $editable */
         foreach ($editables as $editable) {
             $name = $editable->getName();
-            if ($name === $tagName || strpos($name, $tagName . ".") === 0) {
+            if ($name === $editableName || strpos($name, $editableName . ".") === 0) {
                 $document->removeEditable($name);
             }
         }

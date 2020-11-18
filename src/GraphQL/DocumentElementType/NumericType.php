@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\Document\Editable\Numeric;
 
 class NumericType extends ObjectType
 {
@@ -31,9 +32,9 @@ class NumericType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_tagNumeric",
+                    'name' => "document_editableNumeric",
                     'fields' => [
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -41,10 +42,10 @@ class NumericType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
+                                if ($value instanceof Numeric) {
                                     return $value->getType();
                                 }
                             }
@@ -52,7 +53,7 @@ class NumericType extends ObjectType
                         'number' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
+                                if ($value instanceof Numeric) {
                                     return $value->getData();
                                 }
                             }

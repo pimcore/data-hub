@@ -41,20 +41,20 @@ class LinkDataType extends ObjectType
 
         $config =
             [
-                'name' => "document_tagLink_data",
+                'name' => "document_editableLink_data",
                 'fields' => [
-                    '_tagType' => [
+                    '_editableType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getType();
                             }
                         }
                     ],
-                    '_tagName' => [
+                    '_editableName' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getName();
                             }
                         }
@@ -62,7 +62,7 @@ class LinkDataType extends ObjectType
                     'internal' => [
                         'type' => Type::boolean(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["internal"] : null;
                             }
                         }
@@ -70,7 +70,7 @@ class LinkDataType extends ObjectType
                     'internalType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["internalType"] : null;
                             }
                         }
@@ -78,7 +78,7 @@ class LinkDataType extends ObjectType
                     'internalId' => [
                         'type' => Type::int(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["internalId"] : null;
                             }
                         }
@@ -86,7 +86,7 @@ class LinkDataType extends ObjectType
                     'path' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["path"] : null;
                             }
                         }
@@ -94,7 +94,7 @@ class LinkDataType extends ObjectType
                     'text' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["text"] : null;
                             }
                         }
@@ -106,7 +106,7 @@ class LinkDataType extends ObjectType
                     'windowTarget' => [ // Target is already in use.
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["target"] : null;
                             }
                         }
@@ -114,7 +114,7 @@ class LinkDataType extends ObjectType
                     'parameters' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["parameters"] : null;
                             }
                         }
@@ -122,7 +122,7 @@ class LinkDataType extends ObjectType
                     'anchor' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["anchor"] : null;
                             }
                         }
@@ -130,7 +130,7 @@ class LinkDataType extends ObjectType
                     'title' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["title"] : null;
                             }
                         }
@@ -138,7 +138,7 @@ class LinkDataType extends ObjectType
                     'accesskey' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["accesskey"] : null;
                             }
                         }
@@ -146,7 +146,7 @@ class LinkDataType extends ObjectType
                     'relation' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["rel"] : null;
                             }
                         }
@@ -154,7 +154,7 @@ class LinkDataType extends ObjectType
                     'tabindex' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["tabindex"] : null;
                             }
                         }
@@ -162,7 +162,7 @@ class LinkDataType extends ObjectType
                     'class' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["class"] : null;
                             }
                         }
@@ -170,7 +170,7 @@ class LinkDataType extends ObjectType
                     'attributes' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                            if ($value instanceof \Pimcore\Model\Document\Tag\Link) {
+                            if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData() ? $value->getData()["attributes"] : null;
                             }
                         }

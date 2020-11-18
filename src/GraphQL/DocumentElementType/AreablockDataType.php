@@ -37,9 +37,9 @@ class AreablockDataType extends ObjectType
 
         $config =
             [
-                'name' => 'document_tagAreablock_data',
+                'name' => 'document_editableAreablock_data',
                 'fields' => [
-                    '_tagType' => [
+                    '_editableType' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value) {
@@ -47,7 +47,7 @@ class AreablockDataType extends ObjectType
                             }
                         }
                     ],
-                    '_tagName' => [
+                    '_editableName' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value) {

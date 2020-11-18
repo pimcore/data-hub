@@ -18,9 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
-use Pimcore\Model\Document\Tag;
-use Pimcore\Model\Document\Tag\Areablock;
-use Pimcore\Model\Document\Tag\BlockInterface;
+use Pimcore\Model\Document\Editable;
+use Pimcore\Model\Document\Editable\Areablock;
+use Pimcore\Model\Document\Editable\BlockInterface;
 
 
 class PageSnippet
@@ -44,7 +44,7 @@ class PageSnippet
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
-            $elements = $document->getElements();
+            $elements = $document->getEditables();
 
             $service = $this->getGraphQlService();
             $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();
@@ -57,7 +57,7 @@ class PageSnippet
                 }
             }
 
-            usort($result, function (Tag $a, Tag $b) use ($sortBy) {
+            usort($result, function (Editable $a, Editable $b) use ($sortBy) {
                 // "Natural order" comparison so that "10" is ordered after "2"
                 return strnatcmp($sortBy[$a->getName()], $sortBy[$b->getName()]);
             });
@@ -72,7 +72,7 @@ class PageSnippet
      * Return a string to sort the elements by to get them in the same order as they are in the blocks.
      *
      * @param string $elementName
-     * @param Tag[] $elements
+     * @param Editable[] $elements
      * @return string
      */
     private function getElementSortIndex($elementName, $elements)

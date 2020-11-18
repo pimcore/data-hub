@@ -18,8 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\Document\Tag\Areablock;
-use Pimcore\Model\Document\Tag\Scheduledblock;
+use Pimcore\Model\Document\Editable\Scheduledblock;
 
 class ScheduledblockType extends ObjectType
 {
@@ -31,9 +30,9 @@ class ScheduledblockType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => 'document_tagScheduledblock',
+                    'name' => 'document_editableScheduledblock',
                     'fields' => [
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -41,7 +40,7 @@ class ScheduledblockType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {

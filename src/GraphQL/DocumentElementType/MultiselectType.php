@@ -32,9 +32,9 @@ class MultiselectType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_tagMultiselect",
+                    'name' => "document_editableMultiselect",
                     'fields' => [
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -42,10 +42,10 @@ class MultiselectType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
+                                if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
                             }
@@ -53,7 +53,7 @@ class MultiselectType extends ObjectType
                         'selections' => [
                             'type' => Type::listOf(Type::string()),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Multiselect) {
+                                if ($value instanceof \Pimcore\Model\Document\Editable\Multiselect) {
                                     return $value->getData();
                                 }
                             }

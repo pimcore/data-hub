@@ -44,7 +44,7 @@ class Image extends Base
                 [
                     'name' => 'document_element_input_image',
                     'fields' => [
-                        '_tagName' => Type::nonNull(Type::string()),
+                        '_editableName' => Type::nonNull(Type::string()),
                         'id' => Type::int(),               // the target asset
                         'alt' => Type::string()
                     ]

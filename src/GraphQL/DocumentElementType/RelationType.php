@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Model\Document\Tag\Relation;
+use Pimcore\Model\Document\Editable\Relation;
 
 class RelationType extends ObjectType
 {
@@ -40,9 +40,9 @@ class RelationType extends ObjectType
 
             $config =
                 [
-                    'name' => 'document_tagRelation',
+                    'name' => 'document_editableRelation',
                     'fields' => [
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
@@ -50,7 +50,7 @@ class RelationType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {

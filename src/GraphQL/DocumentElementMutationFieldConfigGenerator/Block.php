@@ -68,7 +68,7 @@ class Block extends Base
                     'name' => 'document_element_input_block',
                     'fields' => function () {
                         return [
-                            '_tagName' => Type::nonNull(Type::string()),
+                            '_editableName' => Type::nonNull(Type::string()),
                             'indices' => Type::listOf(Type::int()),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),

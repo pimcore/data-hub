@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\Document\Tag\Date;
+use Pimcore\Model\Document\Editable\Date;
 
 class DateType extends ObjectType
 {
@@ -30,9 +30,9 @@ class DateType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_tagDate",
+                    'name' => "document_editableDate",
                     'fields' => [
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Date) {
@@ -40,10 +40,10 @@ class DateType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
+                                if ($value instanceof Date) {
                                     return $value->getType();
                                 }
                             }
@@ -51,7 +51,7 @@ class DateType extends ObjectType
                         'timestamp' => [
                             'type' => Type::int(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
+                                if ($value instanceof Date) {
                                     $data = $value->getData();
                                     if ($data instanceof Carbon) {
                                         return $data->getTimestamp();
@@ -63,7 +63,7 @@ class DateType extends ObjectType
                             'type' => Type::string(),
                             'args' => ['format' => ['type' => Type::nonNull(Type::string()), 'description' => 'see Carbon::format']],
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Date) {
+                                if ($value instanceof Date) {
                                     $data = $value->getData();
                                     if ($data instanceof Carbon) {
                                         $format = $args['format'];
