@@ -397,7 +397,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         ];
 
         $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
-        $eventDispatcher->dispatch(ConfigEvents::SPECIAL_ENTITIES, $specialSettingsEvent);
+        $eventDispatcher->dispatch($specialSettingsEvent, ConfigEvents::SPECIAL_ENTITIES);
 
         $finalSettings = [];
 
