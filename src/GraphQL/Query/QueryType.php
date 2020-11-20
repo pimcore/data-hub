@@ -372,7 +372,7 @@ class QueryType extends ObjectType
             $config,
             $context
         );
-        $this->eventDispatcher->dispatch(QueryEvents::PRE_BUILD, $event);
+        $this->eventDispatcher->dispatch($event, QueryEvents::PRE_BUILD);
 
         $config = $event->getConfig();
         $context = $event->getContext();
@@ -387,7 +387,7 @@ class QueryType extends ObjectType
 
         $event->setConfig($config);
         $event->setContext($context);
-        $this->eventDispatcher->dispatch(QueryEvents::POST_BUILD, $event);
+        $this->eventDispatcher->dispatch($event, QueryEvents::POST_BUILD);
         $config = $event->getConfig();
     }
 }

@@ -178,7 +178,7 @@ class AssetListing
             $context,
             $resolveInfo
         );
-        $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
+        $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
         $objectList = $event->getListing();
 
         $totalCount = $objectList->getTotalCount();

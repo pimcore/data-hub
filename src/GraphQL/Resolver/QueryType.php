@@ -148,7 +148,7 @@ class QueryType
     /**
      * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      * @param null $value
-     * @param array $args 
+     * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @return array
@@ -432,7 +432,7 @@ class QueryType
             $context,
             $resolveInfo
         );
-        $this->eventDispatcher->dispatch(ListingEvents::PRE_LOAD, $event);
+        $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
         $objectList = $event->getListing();
 
         $totalCount = $objectList->getTotalCount();

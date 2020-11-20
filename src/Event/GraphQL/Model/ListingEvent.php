@@ -16,7 +16,7 @@ namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 
 use Pimcore\Model\Listing\AbstractListing;
 use GraphQL\Type\Definition\ResolveInfo;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ListingEvent extends Event
 {
