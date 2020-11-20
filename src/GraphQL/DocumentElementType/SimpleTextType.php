@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\Document\Tag\Table;
+use Pimcore\Model\Document\Editable\Table;
 
 class SimpleTextType extends ObjectType
 {
@@ -33,7 +33,7 @@ class SimpleTextType extends ObjectType
         return [
             'name' => $name,
             'fields' => [
-                '_tagName' => [
+                '_editableName' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value) {
@@ -41,7 +41,7 @@ class SimpleTextType extends ObjectType
                         }
                     }
                 ],
-                '_tagType' => [
+                '_editableType' => [
                     'type' => Type::string(),
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value) {

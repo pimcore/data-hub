@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Model\Document\Tag\Pdf;
+use Pimcore\Model\Document\Editable\Pdf;
 
 class PdfType extends ObjectType
 {
@@ -40,9 +40,9 @@ class PdfType extends ObjectType
 
             $config =
                 [
-                    'name' => "document_tagPdf",
+                    'name' => "document_editablePdf",
                     'fields' => [
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -50,10 +50,10 @@ class PdfType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof \Pimcore\Model\Document\Tag\Numeric) {
+                                if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
                             }

@@ -25,7 +25,7 @@ class WysiwygType extends SimpleTextType
     public static function getInstance()
     {
         if (!self::$instance) {
-            $config = self::getStandardConfig("document_tagWysiwyg");
+            $config = self::getStandardConfig("document_editableWysiwyg");
             self::$instance = new static($config);
         }
 

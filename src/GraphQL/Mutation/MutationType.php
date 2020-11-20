@@ -388,7 +388,7 @@ class MutationType extends ObjectType
                 foreach ($value as $elementType => $elementTypeValues) {
                     if ($processor = $processors[$elementType] ?? null) {
                         foreach ($elementTypeValues as $elementTypeValue) {
-                            $elementTypeValue['_tagType'] = $elementType;
+                            $elementTypeValue['_editableType'] = $elementType;
                             call_user_func_array($processor, [$element, $elementTypeValue, $args, $context, $info]);
                         }
                     }

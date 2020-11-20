@@ -22,7 +22,7 @@ class TextareaType extends SimpleTextType
     public static function getInstance()
     {
         if (!self::$instance) {
-            $config = self::getStandardConfig("document_tagTextarea");
+            $config = self::getStandardConfig("document_editableTextarea");
             self::$instance = new static($config);
         }
 

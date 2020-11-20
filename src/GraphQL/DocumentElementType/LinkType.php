@@ -32,9 +32,9 @@ class LinkType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => 'document_tagLink',
+                    'name' => 'document_editableLink',
                     'fields' => [
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {
@@ -42,7 +42,7 @@ class LinkType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value) {

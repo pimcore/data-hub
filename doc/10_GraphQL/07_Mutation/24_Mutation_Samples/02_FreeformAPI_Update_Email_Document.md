@@ -11,7 +11,7 @@ mutation {
          editables: {
             wysiwyg: [
                {
-                  _tagName: "greeting_text"
+                  _editableName: "greeting_text"
                   text: "Hello ... I am a <b>Greeting Text</b>"
                }
             ]

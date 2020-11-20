@@ -44,11 +44,11 @@ mutation {
          editableUpdateStrategy: replaceAll    # defaults to update
          editables: {
             input: [
-               { _tagName: "content:2.headline", text: "HEYYOU 3" }
-               { _tagName: "headline", text: "NEW 2" }
+               { _editableName: "content:2.headline", text: "HEYYOU 3" }
+               { _editableName: "headline", text: "NEW 2" }
             ]
             wysiwyg: [
-               { _tagName: "content:1.content", text: "my new <b>wysiwyg</b>" }
+               { _editableName: "content:1.content", text: "my new <b>wysiwyg</b>" }
             ]
          }
          module: "mymodule"
@@ -85,14 +85,14 @@ mutation {
          editables: {
             areablock: [
                {
-                  _tagName: "content"
+                  _editableName: "content"
                   items: [
                      {
                         type: "headlines"
                         editables: {
                            input: [
                               {
-                                 _tagName: "headline"
+                                 _editableName: "headline"
                                  text: "HEY, I AM A SUBHEADLINE"
                               }
                            ]

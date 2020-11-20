@@ -18,8 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\Document\Tag\Block;
-use Pimcore\Model\Document\Tag\Checkbox;
+use Pimcore\Model\Document\Editable\Block;
+use Pimcore\Model\Document\Editable\Checkbox;
 
 class BlockType extends ObjectType
 {
@@ -30,9 +30,9 @@ class BlockType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_tagBlock",
+                    'name' => "document_editableBlock",
                     'fields' => [
-                        '_tagName' => [
+                        '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {
@@ -40,7 +40,7 @@ class BlockType extends ObjectType
                                 }
                             }
                         ],
-                        '_tagType' => [
+                        '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Checkbox) {

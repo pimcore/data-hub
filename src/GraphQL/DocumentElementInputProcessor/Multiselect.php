@@ -30,16 +30,16 @@ class Multiselect extends Base
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
-        $tagName = $newValue['_tagName'];
-        $tagType = $newValue['_tagType'];
+        $editableName = $newValue['_editableName'];
+        $editableType = $newValue['_editableType'];
 
         $text = $newValue['selections'] ?? [];
 
-        $tag = $this->tagLoader->build($tagType);
-        $tag->setName($tagName);
-        $tag->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
+        $editable = $this->editableLoader->build($editableType);
+        $editable->setName($editableName);
+        $editable->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 
-        $document->setEditable($tagName, $tag);
+        $document->setEditable($editableName, $editable);
     }
 
 }

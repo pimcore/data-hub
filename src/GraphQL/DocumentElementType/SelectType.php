@@ -22,7 +22,7 @@ class SelectType extends SimpleTextType
     public static function getInstance()
     {
         if (!self::$instance) {
-            $config = self::getStandardConfig("document_tagSelect");
+            $config = self::getStandardConfig("document_editableSelect");
             self::$instance = new static($config);
         }
 

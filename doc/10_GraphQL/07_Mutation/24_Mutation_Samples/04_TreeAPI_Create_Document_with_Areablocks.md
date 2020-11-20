@@ -12,7 +12,7 @@ mutation {
          editables: {
             areablock: [
                {
-                  _tagName: "content"
+                  _editableName: "content"
                   items: [
                      {
                         type: "headlines"
@@ -21,12 +21,12 @@ mutation {
                         editables: {
                            input: [
                               {
-                                 _tagName: "headline"
+                                 _editableName: "headline"
                                  text: "HEY, I AM A SUBHEADLINE"
                               }
                            ]
                            wysiwyg: [
-                              { _tagName: "lead", text: "The lead text" }
+                              { _editableName: "lead", text: "The lead text" }
                            ]
                         }
                      }
@@ -36,14 +36,14 @@ mutation {
                         editables: {
                            block: [
                               {
-                                 _tagName: "images"
+                                 _editableName: "images"
                                  items: [
                                     {
                                        replace: false # replace all elements inside the editable
                                        editables: {
                                           image: [
                                              {
-                                                _tagName: "image"
+                                                _editableName: "image"
                                                 alt: "alt text for image 1"
                                                 id: 18
                                              }
@@ -55,7 +55,7 @@ mutation {
                                        editables: {
                                           image: [
                                              {
-                                                _tagName: "image"
+                                                _editableName: "image"
                                                 alt: "alt text for image 2"
                                                 id: 22
                                              }
@@ -67,7 +67,7 @@ mutation {
                            ]
                            wysiwyg: [
                               {
-                                 _tagName: "content"
+                                 _editableName: "content"
                                  text: "<b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..."
                               }
                            ]
@@ -77,14 +77,14 @@ mutation {
                         type: "image"
                         editables: {
                            image: [
-                              { _tagName: "image", alt: "alt text", id: 67 }
+                              { _editableName: "image", alt: "alt text", id: 67 }
                            ]
                         }
                      }
                   ]
                }
             ]
-            input: [{ _tagName: "headline", text: "THIS IS THE HEADLINE" }]
+            input: [{ _editableName: "headline", text: "THIS IS THE HEADLINE" }]
          }
          controller: "@AppBundle\\Controller\\ContentController"
          action: "default"

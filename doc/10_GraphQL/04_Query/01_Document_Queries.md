@@ -41,8 +41,8 @@
     ... on document_page {
       fullpath
       editables {
-        ...on document_tagDate {
-          _tagName
+        ...on document_editableDate {
+          _editableName
           # unix timestamp
           timestamp
           # as formatted string
@@ -59,7 +59,7 @@
 * get data object ID 61
 * get many-to-one relation
 * get target page document
-* get link tag
+* get link editable
 * get referenced page document / or news object
 * get input editables of referenced page document / or shorttext of news object
 
@@ -70,9 +70,9 @@
       ... on document_page {
         fullpath
         editables {
-          ... on document_tagLink {
-            _tagType
-            _tagName
+          ... on document_editableLink {
+            _editableType
+            _editableName
             data {
               internal
               path
@@ -82,7 +82,7 @@
                   id
                   fullpath
                   editables {
-                    ... on document_tagInput {
+                    ... on document_editableInput {
                       name
                       text
                     }

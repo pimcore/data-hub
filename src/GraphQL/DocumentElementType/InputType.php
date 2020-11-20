@@ -22,7 +22,7 @@ class InputType extends SimpleTextType
     public static function getInstance()
     {
         if (!self::$instance) {
-            $config = self::getStandardConfig("document_tagInput");
+            $config = self::getStandardConfig("document_editableInput");
             self::$instance = new static($config);
         }
 

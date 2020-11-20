@@ -46,17 +46,17 @@ class Image extends Base
             $dataFromEditMode['alt'] = $newValue['alt'];
         }
 
-        $tagType = $newValue['_tagType'];
+        $editableType = $newValue['_editableType'];
 
-        $tag = $this->tagLoader->build($tagType);
+        $editable = $this->editableLoader->build($editableType);
 
-        $tagName = $newValue['_tagName'];
-        $tag->setName($tagName);
+        $editableName = $newValue['_editableName'];
+        $editable->setName($editableName);
 
 
-        $tag->setDataFromEditmode($dataFromEditMode);
+        $editable->setDataFromEditmode($dataFromEditMode);
 
-        $document->setEditable($tagName, $tag);
+        $document->setEditable($editableName, $editable);
     }
 
 }

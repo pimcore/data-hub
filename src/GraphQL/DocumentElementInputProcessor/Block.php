@@ -35,12 +35,12 @@ class Block extends Base
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
 
-        $tagType = $newValue['_tagType'];
+        $editableType = $newValue['_editableType'];
 
-        $tag = $this->tagLoader->build($tagType);
+        $editable = $this->editableLoader->build($editableType);
 
-        $tagName = $newValue['_tagName'];
-        $tag->setName($tagName);
+        $editableName = $newValue['_editableName'];
+        $editable->setName($editableName);
 
         $typeCache = &MutationType::$typeCache;
 
@@ -60,16 +60,16 @@ class Block extends Base
                 $indices[$idx] = $idx + 1;
 
                 if ($blockItem['replace'] ?? true) {
-                    $this->cleanEditables($document, $tagName . ":" . ($idx + 1));
+                    $this->cleanEditables($document, $editableName . ":" . ($idx + 1));
                 }
 
                 foreach ($editables as $editableType => $listByType) {
-                    foreach ($listByType as $tagData) {
-                        $tagData["_tagName"] = $tagName . ":" . ($idx + 1) . "." . $tagData["_tagName"];
-                        $tagData["_tagType"] = $editableType;
+                    foreach ($listByType as $editableData) {
+                        $editableData["_editableName"] = $editableName . ":" . ($idx + 1) . "." . $editableData["_editableName"];
+                        $editableData["_editableType"] = $editableType;
                         $typeDefinition = $typeCache[$editableType];
                         $processor = $typeDefinition['processor'];
-                        call_user_func_array($processor, [$document, $tagData, $args, $context, $info]);
+                        call_user_func_array($processor, [$document, $editableData, $args, $context, $info]);
                     }
                 }
 
@@ -80,9 +80,9 @@ class Block extends Base
 
         ksort($indices);
 
-        $tag->setDataFromEditmode($indices);
+        $editable->setDataFromEditmode($indices);
 
-        $document->setEditable($tagName, $tag);
+        $document->setEditable($editableName, $editable);
     }
 
 }

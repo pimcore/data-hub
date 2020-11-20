@@ -30,7 +30,7 @@ class ScheduledblockDataInputType extends InputObjectType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = ["name" => "document_tagScheduledblock_data_item"], $context = [])
+    public function __construct(Service $graphQlService, $config = ["name" => "document_editableScheduledblock_data_item"], $context = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);

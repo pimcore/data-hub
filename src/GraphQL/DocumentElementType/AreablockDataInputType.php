@@ -30,7 +30,7 @@ class AreablockDataInputType extends InputObjectType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = ["name" => "document_tagAreablock_data_item"], $context = [])
+    public function __construct(Service $graphQlService, $config = ["name" => "document_editableAreablock_data_item"], $context = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);
