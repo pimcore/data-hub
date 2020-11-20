@@ -104,7 +104,7 @@ class MutationType extends ObjectType
             $config,
             $context
         );
-        $this->eventDispatcher->dispatch(MutationEvents::PRE_BUILD, $event);
+        $this->eventDispatcher->dispatch($event, MutationEvents::PRE_BUILD);
 
         $config = $event->getConfig();
         $context = $event->getContext();
@@ -136,7 +136,7 @@ class MutationType extends ObjectType
 
         $event->setConfig($config);
         $event->setContext($context);
-        $this->eventDispatcher->dispatch(MutationEvents::POST_BUILD, $event);
+        $this->eventDispatcher->dispatch($event, MutationEvents::POST_BUILD);
         $config = $event->getConfig();
 
         if (isset($config["fields"]) && count($config["fields"]) > 1) {
@@ -669,7 +669,7 @@ class MutationType extends ObjectType
                         try {
                             /** @var $configuration Configuration */
                             $configuration = $context['configuration'];
-                            
+
                             $object = $me->getElementByTypeAndIdOrPath($args, 'object');
 
                             if(!$object){

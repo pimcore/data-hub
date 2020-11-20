@@ -143,7 +143,7 @@ class WebserviceController extends FrontendController
                 $schema,
                 $context);
 
-            $this->eventDispatcher->dispatch(ExecutorEvents::PRE_EXECUTE, $event);
+            $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             $result = GraphQL::executeQuery(
                 $event->getSchema(),
@@ -158,8 +158,7 @@ class WebserviceController extends FrontendController
             );
 
             $exResult = new ExecutorResultEvent($request, $result);
-            $this->eventDispatcher->dispatch(ExecutorEvents::POST_EXECUTE,
-                $exResult);
+            $this->eventDispatcher->dispatch($exResult, ExecutorEvents::POST_EXECUTE);
             $result = $exResult->getResult();
 
             if (PIMCORE_DEBUG) {

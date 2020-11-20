@@ -203,7 +203,7 @@ class Configuration extends AbstractModel
 
         $event = new GenericEvent($this);
         $event->setArgument("configuration", $this);
-        \Pimcore::getEventDispatcher()->dispatch(ConfigurationEvents::CONFIGURATION_POST_DELETE, $event);
+        \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_POST_DELETE);
     }
 
     /**

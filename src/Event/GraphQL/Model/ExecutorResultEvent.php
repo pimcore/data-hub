@@ -17,8 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 use GraphQL\Executor\ExecutionResult;
 use Pimcore\Event\Traits\RequestAwareTrait;
 use Pimcore\Event\Traits\ResponseAwareTrait;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ExecutorResultEvent extends Event
 {

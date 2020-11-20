@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Event\Traits\RequestAwareTrait;
 use Pimcore\Event\Traits\ResponseAwareTrait;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class MutationTypeEvent extends Event
 {

@@ -92,7 +92,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $event = new GenericEvent($this);
         $event->setArgument("list", $list);
-        \Pimcore::getEventDispatcher()->dispatch(AdminEvents::CONFIGURATION_LIST, $event);
+        \Pimcore::getEventDispatcher()->dispatch($event, AdminEvents::CONFIGURATION_LIST);
         $list = $event->getArgument("list");
 
         $tree = [];
@@ -397,7 +397,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         ];
 
         $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
-        $eventDispatcher->dispatch(ConfigEvents::SPECIAL_ENTITIES, $specialSettingsEvent);
+        $eventDispatcher->dispatch($specialSettingsEvent, ConfigEvents::SPECIAL_ENTITIES);
 
         $finalSettings = [];
 
