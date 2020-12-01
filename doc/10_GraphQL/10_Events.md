@@ -76,7 +76,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GraphqlListener implements EventSubscriberInterface
+class GraphQlListener implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
@@ -121,7 +121,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use GraphQL\Type\Definition\Type;
 
-class GraphqlListener implements EventSubscriberInterface
+class GraphQlListener implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
@@ -182,7 +182,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GraphqlListener implements EventSubscriberInterface
+class GraphQlListener implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
