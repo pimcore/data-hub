@@ -17,13 +17,52 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Layout;
+use Pimcore\Model\DataObject\Listing;
+use Pimcore\Model\DataObject\Listing\Concrete;
 
 /**
  * @internal
  */
 class Helper
 {
-    public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null)
+
+    /**
+     * @param Listing $list
+     * @param \stdClass $filter
+     * @param array $columns
+     * @param array $mappingTable
+     */
+    public static function addJoins(&$list, $filter, $columns, &$mappingTable = [])
+    {
+        $parts = get_object_vars($filter);
+        foreach ($parts as $key => $value) {
+            foreach ($columns as $column) {
+                $attributes = $column["attributes"];
+                $name = $attributes["attribute"];
+
+                if (strpos($name, '~') !== false) {
+
+                    $nameParts = explode('~', $name);
+                    $brickName = $nameParts[0];
+                    $brickKey = $nameParts[1];
+                    if ($brickKey === $key) {
+                        $list->addObjectbrick($brickName);
+                        $mappingTable[$brickKey] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $defaultTable
+     * @param string $q
+     * @param string|null $op
+     * @param string|null $subject
+     * @param array $fieldMappingTable
+     * @return string
+     */
+    public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null, $fieldMappingTable = [])
     {
 
         // Examples:
@@ -108,7 +147,11 @@ class Helper
                             $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
-                        $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' = ' . $db->quote($value) . ')';
+                        if (isset($fieldMappingTable, $key)) {
+                            $parts[] = '(' . $db->quoteIdentifier($key) . ' = ' . $db->quote($value) . ')';
+                        } else {
+                            $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' = ' . $db->quote($value) . ')';
+                        }
                     }
                 }
             }

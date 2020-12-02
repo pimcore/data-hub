@@ -415,7 +415,13 @@ class QueryType
             if (!$filter) {
                 throw new ClientSafeException('unable to decode filter');
             }
-            $filterCondition = Helper::buildSqlCondition($objectList->getTableName(), $filter);
+
+            $className = $this->class->getName();
+            $columns = $this->configuration->configuration["schema"]["queryEntities"][$className]["columnConfig"]["columns"];
+
+            Helper::addJoins($objectList, $filter, $columns, $mappingTable);
+
+            $filterCondition = Helper::buildSqlCondition($objectList->getTableName(), $filter, null, null, $mappingTable);
             $conditionParts[] = $filterCondition;
         }
 
