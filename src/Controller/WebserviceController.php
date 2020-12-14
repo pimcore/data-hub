@@ -124,7 +124,6 @@ class WebserviceController extends FrontendController
         $input = json_decode($request->getContent(), true);
 
         $query = $input['query'];
-        $variableValues = isset($input['variables']) ? $input['variables'] : null;
 
         try {
             $rootValue = [];
@@ -142,6 +141,9 @@ class WebserviceController extends FrontendController
                 $query,
                 $schema,
                 $context);
+            
+            $input = json_decode($event->getRequest()->getContent(), true);
+            $variableValues = isset($input['variables']) ? $input['variables'] : null;
 
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
