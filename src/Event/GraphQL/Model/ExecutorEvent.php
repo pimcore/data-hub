@@ -26,7 +26,7 @@ class ExecutorEvent extends Event
     use ResponseAwareTrait;
 
     /**
-     * @var string
+     * @var mixed
      */
     protected $request;
 
@@ -46,7 +46,7 @@ class ExecutorEvent extends Event
     protected $context;
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getRequest()
     {
@@ -54,11 +54,12 @@ class ExecutorEvent extends Event
     }
 
     /**
-     * @param string $request
+     * @param mixed $request
+     * @param bool $asString
      */
-    public function setRequest(string $request)
+    public function setRequest($request, $asString = true)
     {
-        $this->request = $request;
+        $this->request = $asString ? (string)$request : $request;
     }
 
     /**
