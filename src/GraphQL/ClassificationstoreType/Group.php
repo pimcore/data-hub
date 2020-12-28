@@ -66,8 +66,11 @@ class Group extends ObjectType
                     $groupId = $value["id"];
                     $language = $value["_language"];
                     if (!$language) {
-                        //TODO maybe add the "global" defaultLanguage if specified ?
-                        $language = "default";
+                        // Let's try to "inherit" the language from what's already been parsed from this query
+                        $language = $this->getGraphQlService()->getLocaleService()->getLocale();
+                        if (!$language) {
+                            $language = "default";
+                        }
                     }
 
                     $keyRelations = new Classificationstore\KeyGroupRelation\Listing();
