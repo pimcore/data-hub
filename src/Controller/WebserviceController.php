@@ -146,7 +146,7 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues =  $event->getRequest()->get('variables');
+                // $variableValues =  $event->getRequest()->get('variables');
             }
 
             $result = GraphQL::executeQuery(
