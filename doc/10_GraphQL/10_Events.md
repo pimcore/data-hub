@@ -1,6 +1,6 @@
 # Events
 
-Datahub GraphQL events are based on symfony event dispatcher, which are triggered during execution of Query and Mutation requests.
+Datahub GraphQL events are based on the Symfony event dispatcher, and are triggered during execution of Query and Mutation requests.
 [Read more](https://github.com/pimcore/pimcore/blob/master/doc/Development_Documentation/20_Extending_Pimcore/11_Event_API_and_Event_Manager.md) about events on Pimcore documentation.
 
 All Datahub events are defined as a constant on component classes:
@@ -9,17 +9,25 @@ All Datahub events are defined as a constant on component classes:
 - [Executor](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ExecutorEvents.php)
 - [Listing](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ListingEvents.php)
 
-## Event Listener examples
+## Event Subscriber examples
 
-Add configuration in your `app/config/services.yml`:
+With Symfony, you can listen to events using either [Event Listeners or Event Subscribers](https://symfony.com/doc/current/event_dispatcher.html).
+Event Subscribers are used in the examples below.
+
+Create a new class in `src/AppBundle/EventListener/GraphQlSubscriber.php` and use `autoconfigure: true` in your service configuration file 
+(`app/config/services.yml` or `src/AppBundle/Resources/config/services.yml`)
+to let Symfony automatically recognize it as an Event Subscriber,
+either under `_defaults` or directly with the service:
+
 ```yml
 services:
-    AppBundle\EventListener\GraphQlListener:
-        tags:
-            - { name: kernel.event_listener}
-```
+    _defaults: # Defaults for this file
+        autoconfigure: true  # Let Symfony automatically configure Event Subscribers, Commands etc.
+        # ...
 
-Add Listener class `src/AppBundle/EventListener/GraphQlListener`
+    AppBundle\EventListener\:
+        resource: '../../EventListener'
+```
 
 #### Example 1: Query & Mutation execution
 ```php
@@ -31,7 +39,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorResultEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GraphQlListener implements EventSubscriberInterface
+class GraphQlSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
@@ -76,7 +84,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GraphQlListener implements EventSubscriberInterface
+class GraphQlSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
@@ -121,7 +129,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use GraphQL\Type\Definition\Type;
 
-class GraphQlListener implements EventSubscriberInterface
+class GraphQlSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
@@ -182,7 +190,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GraphQlListener implements EventSubscriberInterface
+class GraphQlSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc
