@@ -228,6 +228,7 @@ class MutationType extends ObjectType
                         }
 
                         $key = $args["key"];
+                        $key = DataObject\Service::getValidKey($key,'object');
 
                         /** @var  $newInstance Concrete */
                         $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
