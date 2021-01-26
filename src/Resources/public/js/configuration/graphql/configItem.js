@@ -637,5 +637,19 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.entitySelectionDialog.show();
     },
 
+    _confirmDirtyClose: function () {
+        Ext.MessageBox.confirm(
+            t("element_has_unsaved_changes"),
+            t("element_unsaved_changes_message"),
+            function (buttonValue) {
+                if (buttonValue === "yes") {
+                    this._confirmedDirtyClose = true;
+
+                    this.tab.fireEventedAction("close", [this.tab, {}]);
+                    this.parent.configPanel.editPanel.remove(this.tab);
+                }
+            }.bind(this)
+        );
+    },
 
 });
