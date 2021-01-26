@@ -13,6 +13,9 @@
 
 pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
 pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
+
+    saveUrl: "/admin/pimcoredatahub/config/save",
+
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
@@ -30,7 +33,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 componentCls: 'plugin_pimcore_datahub_statusbar',
                 itemId: 'footer'
             },
-            items: [this.getGeneral(), this.getSchema(), this.getSecurity()]
+            items: this.getItems()
         });
 
         this.tab.on("activate", this.tabactivated.bind(this));
@@ -41,6 +44,10 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.parent.configPanel.editPanel.updateLayout();
 
         this.showInfo();
+    },
+
+    getItems: function() {
+        return [this.getGeneral(), this.getSchema(), this.getSecurity()];
     },
 
     openExplorer: function (callbackFn) {
@@ -108,7 +115,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     tabdestroy: function () {
         this.tabdestroyed = true;
     },
-
 
     getGeneral: function () {
 
@@ -309,7 +315,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     onAdd: function (type) {
         this.showEntitySelectionDialog(type);
     },
-
 
     updateData: function (data, grid) {
     },
@@ -536,7 +541,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         var saveData = this.getSaveData();
 
         Ext.Ajax.request({
-            url: "/admin/pimcoredatahub/config/save",
+            url: this.saveUrl,
             params: {
                 data: saveData,
                 modificationDate: this.modificationDate
