@@ -33,8 +33,11 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 componentCls: 'plugin_pimcore_datahub_statusbar',
                 itemId: 'footer'
             },
-            items: this.getItems()
         });
+
+        //create sub panels after main panel is generated - to be able to reference it in sub panels
+        this.tab.add(this.getItems());
+        this.tab.setActiveTab(0);
 
         this.tab.on("activate", this.tabactivated.bind(this));
         this.tab.on("destroy", this.tabdestroy.bind(this));
