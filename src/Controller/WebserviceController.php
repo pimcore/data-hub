@@ -121,7 +121,11 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $input = json_decode($request->getContent(), true);
+        if($request->getMethod() == 'GET') {
+            $input = json_decode($request->get('query'), true);
+        } else {
+            $input = json_decode($request->getContent(), true);
+        }
 
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
