@@ -46,6 +46,8 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.parent.configPanel.editPanel.setActiveTab(this.tab);
         this.parent.configPanel.editPanel.updateLayout();
 
+        this.setupChangeDetector();
+
         this.showInfo();
     },
 
@@ -111,7 +113,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     tabactivated: function () {
-        this.setupChangeDetector();
         this.tabdestroyed = false;
     },
 
