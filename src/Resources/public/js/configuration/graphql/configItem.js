@@ -13,6 +13,9 @@
 
 pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
 pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
+
+    saveUrl: "/admin/pimcoredatahub/config/save",
+
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
@@ -30,8 +33,11 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 componentCls: 'plugin_pimcore_datahub_statusbar',
                 itemId: 'footer'
             },
-            items: [this.getGeneral(), this.getSchema(), this.getSecurity()]
         });
+
+        //create sub panels after main panel is generated - to be able to reference it in sub panels
+        this.tab.add(this.getItems());
+        this.tab.setActiveTab(0);
 
         this.tab.on("activate", this.tabactivated.bind(this));
         this.tab.on("destroy", this.tabdestroy.bind(this));
@@ -40,7 +46,13 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.parent.configPanel.editPanel.setActiveTab(this.tab);
         this.parent.configPanel.editPanel.updateLayout();
 
+        this.setupChangeDetector();
+
         this.showInfo();
+    },
+
+    getItems: function() {
+        return [this.getGeneral(), this.getSchema(), this.getSecurity()];
     },
 
     openExplorer: function (callbackFn) {
@@ -101,14 +113,12 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     tabactivated: function () {
-        this.setupChangeDetector();
         this.tabdestroyed = false;
     },
 
     tabdestroy: function () {
         this.tabdestroyed = true;
     },
-
 
     getGeneral: function () {
 
@@ -309,7 +319,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     onAdd: function (type) {
         this.showEntitySelectionDialog(type);
     },
-
 
     updateData: function (data, grid) {
     },
@@ -536,7 +545,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         var saveData = this.getSaveData();
 
         Ext.Ajax.request({
-            url: "/admin/pimcoredatahub/config/save",
+            url: this.saveUrl,
             params: {
                 data: saveData,
                 modificationDate: this.modificationDate
@@ -637,5 +646,19 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.entitySelectionDialog.show();
     },
 
+    _confirmDirtyClose: function () {
+        Ext.MessageBox.confirm(
+            t("element_has_unsaved_changes"),
+            t("element_unsaved_changes_message"),
+            function (buttonValue) {
+                if (buttonValue === "yes") {
+                    this._confirmedDirtyClose = true;
+
+                    this.tab.fireEventedAction("close", [this.tab, {}]);
+                    this.parent.configPanel.editPanel.remove(this.tab);
+                }
+            }.bind(this)
+        );
+    },
 
 });

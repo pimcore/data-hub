@@ -129,7 +129,7 @@ class Configuration extends AbstractModel
      */
     public function isActive()
     {
-        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['active'] : false;
+        return $this->configuration && $this->configuration['general'] ? ($this->configuration['general']['active'] ?? false) : false;
     }
 
     /**
