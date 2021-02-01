@@ -31,7 +31,7 @@ class CheckboxType extends ObjectType
     public static function getInstance()
     {
 
-        if (!self::$instance) {
+        if (!isset(self::$instance)) {
             $fields = Helper::getCommonFields();
             $fields['checked'] = [
                 'type' => Type::boolean(),

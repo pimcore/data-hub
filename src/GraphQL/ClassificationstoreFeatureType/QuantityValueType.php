@@ -36,7 +36,7 @@ class QuantityValueType extends ObjectType
     public static function getInstance(Service $service, string $name, string $innerType, string $fieldname)
     {
 
-        if (!self::$instance[$name]) {
+        if (!isset(self::$instance[$name])) {
             $innerType = $service->getDataObjectTypeDefinition($innerType);
 
             $fields = Helper::getCommonFields();

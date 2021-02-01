@@ -31,7 +31,7 @@ class StringType extends ObjectType
      */
     public static function getInstance(string $name, string $valueField)
     {
-        if (!self::$instance[$name]) {
+        if (!isset(self::$instance[$name])) {
             $fields = Helper::getCommonFields();
             $fields[$valueField] = [
                 'type' => Type::string(),

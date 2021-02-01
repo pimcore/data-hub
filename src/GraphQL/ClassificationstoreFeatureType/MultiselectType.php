@@ -35,7 +35,7 @@ class MultiselectType extends ObjectType
     public static function getInstance(Service $service, string $name, $fieldname = "selections")
     {
 
-        if (!self::$instance[$name]) {
+        if (!isset(self::$instance[$name])) {
             $fields = Helper::getCommonFields();
             $fields[$fieldname] = [
                 'type' => Type::listOf(Type::string()),

@@ -33,7 +33,7 @@ class DateType extends ObjectType
     public static function getInstance()
     {
 
-        if (!self::$instance) {
+        if (!isset(self::$instance)) {
             $fields = Helper::getCommonFields();
             $fields['date'] = [
                 'type' => Type::string(),
