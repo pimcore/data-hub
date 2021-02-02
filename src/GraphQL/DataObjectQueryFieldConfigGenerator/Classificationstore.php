@@ -43,7 +43,12 @@ class Classificationstore extends Base
                     $language = isset($args["language"]) ? $args["language"] : null;
                     /** @var  $csField \Pimcore\Model\DataObject\Classificationstore*/
                     $csField = $value[$fieldName];
-                    $activeGroups = $csField->getActiveGroups();
+
+                    $fd = new Data\Classificationstore();
+                    $fd->setName($fieldName);
+                    $activeGroups = [];
+                    $activeGroups = $fd->recursiveGetActiveGroupsIds($csField->getObject(), $activeGroups);
+
                     $result = [];
                     foreach ($activeGroups as $groupId => $enabled) {
                         // in case group name and description is not needed this can be optimized
