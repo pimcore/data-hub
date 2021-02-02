@@ -1011,7 +1011,8 @@ class Service
             }
             else {
                 $blockGetter = "get".ucfirst($descriptorData['__blockName']);
-                $blockData = $object->$blockGetter();
+                $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
+                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ?  $descriptorData['args']['language'] : null);                
             }
 
             if ($blockData) {
@@ -1066,27 +1067,37 @@ class Service
             }
 
         } else if (method_exists($container, $getter)) {
-            $isLocalizedField = false;
-            $containerDefinition = null;
-
-            if ($container instanceof Concrete) {
-                $containerDefinition = $container->getClass();
-            } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
-                $containerDefinition = $container->getDefinition();
-            }
-
-            if ($containerDefinition) {
-                if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
-                    if ($lfDefs->getFieldDefinition($fieldDefinition->getName())) {
-                        $isLocalizedField = true;
-                    }
-                }
-            }
-
+            $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
             $result = $container->$getter($isLocalizedField && isset($args['language']) ?  $args['language'] : null);
 
         }
         return $result;
+    }
+    
+    /**
+     * Check whether given field in container is localized
+     * @param Concrete|AbstractData|\Pimcore\Model\DataObject\Objectbrick\Data\AbstractData $container
+     * @param string $fieldName
+     * @return bool
+     */
+    private static function isLocalizedField($container,$fieldName): bool {
+        $containerDefinition = null;
+
+        if ($container instanceof Concrete) {
+            $containerDefinition = $container->getClass();
+        } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+            $containerDefinition = $container->getDefinition();
+        }
+
+        if ($containerDefinition) {
+            if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
+                if ($lfDefs->getFieldDefinition($fieldName)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
