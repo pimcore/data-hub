@@ -13,6 +13,7 @@
 
 * Areablock
 * Block
+* Embed  
 * Image (for now only target asset + alt text, no hotspots or markers)
 * Input
 * Multiselect

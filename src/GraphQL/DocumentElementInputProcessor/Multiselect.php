@@ -39,7 +39,11 @@ class Multiselect extends Base
         $editable->setName($editableName);
         $editable->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
 
-        $document->setEditable($editableName, $editable);
+        if (method_exists($document, 'setElement')) {
+            $document->setElement($editableName, $editable);
+        } else {
+            $document->setEditable($editable);
+        }
     }
 
 }

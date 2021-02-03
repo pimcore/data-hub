@@ -87,7 +87,11 @@ class Scheduledblock extends Base
 
         $editable->setDataFromEditmode($indices);
 
-        $document->setEditable($editableName, $editable);
+        if (method_exists($document, 'setElement')) {
+            $document->setElement($editableName, $editable);
+        } else {
+            $document->setEditable($editable);
+        }
     }
 
 }

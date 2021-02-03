@@ -747,6 +747,11 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_block }
 
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_embed:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Embed
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_embed }
+
   pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_image:
       class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Image
       tags:
@@ -783,6 +788,8 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock: ~
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Embed: ~
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image: ~
 

@@ -15,33 +15,12 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
+
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document\PageSnippet;
-use Pimcore\Model\Document\Editable\Loader\EditableLoaderInterface;
 
-
-abstract class Base
+class Embed extends Base
 {
-
-    use ServiceTrait;
-
-    /**
-     * @var EditableLoaderInterface
-     */
-    protected $editableLoader;
-
-    /**
-     * Block constructor.
-     * @param EditableLoaderInterface $editableLoader
-     * @param Service $graphQlService
-     */
-    public function __construct(EditableLoaderInterface $editableLoader, Service $graphQlService)
-    {
-        $this->editableLoader = $editableLoader;
-        $this->graphQlService = $graphQlService;
-    }
 
     /**
      * @param PageSnippet $document
@@ -55,11 +34,12 @@ abstract class Base
         $editableName = $newValue['_editableName'];
         $editableType = $newValue['_editableType'];
 
-        $text = $newValue['text'];
+        $url = $newValue['url'];
 
+        /** @var \Pimcore\Model\Document\Editable\Embed $editable */
         $editable = $this->editableLoader->build($editableType);
         $editable->setName($editableName);
-        $editable->setDataFromResource($text);                   // this should be at least valid for input, wysiwyg
+        $editable->setDataFromResource(serialize(['url' => $url]));                   // this should be at least valid for input, wysiwyg
 
         if (method_exists($document, 'setElement')) {
             $document->setElement($editableName, $editable);
