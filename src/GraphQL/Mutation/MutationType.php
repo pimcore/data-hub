@@ -435,7 +435,7 @@ class MutationType extends ObjectType
             self::$documentElementTypes = $elementInputTypeList;
         }
 
-        if (!self::$typeCache['overwrite_strategy']) {
+        if (!isset(self::$typeCache['overwrite_strategy'])) {
             self::$typeCache['overwrite_strategy'] = new EnumType([
                 "name" => "overwrite_strategy",
                 "values" => [
@@ -832,7 +832,7 @@ class MutationType extends ObjectType
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             $args["id"] = $value["id"] ?? null;
                             $value = $queryResolver($value, $args, $context, $info);
-                          
+
                             return $value;
                         }
                     ]
