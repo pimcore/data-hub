@@ -15,6 +15,7 @@
 * Areablock
 * Checkbox
 * Date
+* Embed  
 * Image
 * Input
 * Link

@@ -186,6 +186,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_date }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_embed:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Embed
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_embed }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_input:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Input
     tags:
