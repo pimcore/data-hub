@@ -15,7 +15,7 @@
     ]
   },
   "require": {
-    "pimcore/pimcore": "^6.8",
+    "pimcore/pimcore": "^6.8 || ^10.0",
     "webonyx/graphql-php": "^0.13"
   },
   "extra": {
