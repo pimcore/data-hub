@@ -121,7 +121,7 @@ class Configuration extends AbstractModel
      */
     public function getSqlObjectCondition(): ?string
     {
-        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] : null;
+        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] ?? null : null;
     }
 
     /**
@@ -231,7 +231,7 @@ class Configuration extends AbstractModel
      */
     public function getQueryEntities(): array
     {
-        $schema = $this->configuration['schema'];
+        $schema = $this->configuration['schema'] ?? null;
         $entities = $schema ? $schema['queryEntities'] : [];
         $entities = is_array($entities) ? array_keys($entities) : [];
 
@@ -243,7 +243,7 @@ class Configuration extends AbstractModel
      */
     public function getSpecialEntities(): array
     {
-        $schema = $this->configuration['schema'];
+        $schema = $this->configuration['schema'] ?? null;
         $entities = $schema ? $schema['specialEntities'] : [];
 
         return $entities;
@@ -254,7 +254,7 @@ class Configuration extends AbstractModel
      */
     public function getMutationEntities(): array
     {
-        $schema = $this->configuration['schema'];
+        $schema = $this->configuration['schema'] ?? null;
         $entities = $schema ? $schema['mutationEntities'] : [];
         $entities = is_array($entities) ? array_keys($entities) : [];
 
