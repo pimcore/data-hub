@@ -47,7 +47,7 @@ class AssetType
 
                 $map = [];
                 $keys = [];
-                $language = $args['language'] ?: $this->getGraphQlService()->getLocaleService()->findLocale();
+                $language = isset($args['language']) ?  $args['language'] : $this->getGraphQlService()->getLocaleService()->findLocale();
 
                 foreach ($metadata as $item) {
                     $keys[$item['name']] = 1;
@@ -57,9 +57,9 @@ class AssetType
                 $result = [];
 
                 foreach ($keys as $key => $found) {
-                    if ($map[$language][$key]) {
+                    if (isset($map[$language][$key])) {
                         $result[] = $map[$language][$key];
-                    } elseif ($map['default'][$key]) {
+                    } elseif (isset($map['default'][$key])) {
                         $result[] = $map['default'][$key];
                     }
                 }
