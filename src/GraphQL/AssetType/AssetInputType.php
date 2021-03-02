@@ -49,6 +49,17 @@ class AssetInputType extends InputObjectType
             'parentId' => Type::int(),
             'data' => [
                 'type' => Type::string(),
+            ],
+            'metadata' => [
+                'type' => Type::listOf(new InputObjectType([
+                    'name' => 'MetadataItem',
+                    'fields' => [
+                        'name'  => Type::nonNull(Type::string()),
+                        'type' => Type::nonNull(Type::string()),
+                        'data' => Type::string(),
+                        'language' => Type::string()
+                    ]
+                ]))
             ]
         ];
     }
