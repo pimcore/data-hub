@@ -109,7 +109,7 @@ class OutputCacheService
         $input = json_decode($request->getContent(), true);
         $input = print_r($input, true);
         
-        return md5($clientname . $input);
+        return md5("output_" . $clientname . $input);
     }
     
     private function useCache(Request $request) : bool {
