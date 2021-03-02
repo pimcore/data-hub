@@ -15,17 +15,15 @@
 namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 
 use Pimcore\Event\Traits\RequestAwareTrait;
-use Pimcore\Event\Traits\ResponseAwareTrait;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
 class OutputCachePreLoadEvent extends Event
 {
     use RequestAwareTrait;
-    use ResponseAwareTrait;
 
     /**
-     * @var string
+     * @var Request
      */
     protected $request;
 
@@ -35,7 +33,7 @@ class OutputCachePreLoadEvent extends Event
     protected $useCache;
 
     /**
-     * @return string
+     * @return Request
      */
     public function getRequest()
     {
@@ -51,7 +49,7 @@ class OutputCachePreLoadEvent extends Event
     }
 
     /**
-     * @param bool $request
+     * @param bool $useCache
      */
     public function setUseCache(bool $useCache)
     {

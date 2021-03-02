@@ -26,9 +26,22 @@ class OutputCachePreSaveEvent extends Event
     use ResponseAwareTrait;
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * @var Response
      */
     protected $response;
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
 
     /**
      * @return Response
