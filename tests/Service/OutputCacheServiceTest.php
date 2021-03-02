@@ -15,7 +15,9 @@
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use PHPUnit\Framework\TestCase;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -26,6 +28,7 @@ class OutputCacheServiceTest extends TestCase
 {   
     
     protected $container;
+    protected $eventDispatcher;
     protected $request;
     protected $sut;
     
@@ -39,9 +42,13 @@ class OutputCacheServiceTest extends TestCase
                     'output_cache_lifetime' => 25
                 )
             ));
-            
+        
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->eventDispatcher->method('dispatch')
+            ->willReturnArgument(1);
+
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
-            ->setConstructorArgs([$this->container])
+            ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['loadFromCache', 'saveToCache'])
             ->getMock();
             
@@ -105,7 +112,7 @@ class OutputCacheServiceTest extends TestCase
             ));
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
-            ->setConstructorArgs([$this->container])
+            ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['saveToCache'])
             ->getMock();
         
@@ -132,7 +139,7 @@ class OutputCacheServiceTest extends TestCase
         ));
         
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
-            ->setConstructorArgs([$this->container])
+            ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['loadFromCache'])
             ->getMock();
         
@@ -153,6 +160,7 @@ class OutputCacheServiceTest extends TestCase
         $response = new JsonResponse(['data' => 123]);
         $this->sut->method('loadFromCache')->willReturn($response);
         $this->request->query->set('pimcore_nocache', 'true');
+        \Pimcore::setDebugMode(true);
         
         // Act
         $cacheItem = $this->sut->load($this->request);

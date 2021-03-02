@@ -15,10 +15,14 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreLoadEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
 use Psr\Container\ContainerInterface;
 use Pimcore\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class OutputCacheService 
 {
@@ -34,22 +38,33 @@ class OutputCacheService
      */
     private $lifetime = 30;
     
+    /**
+     * @var EventDispatcherInterface
+     */
+    public $eventDispatcher;
+
     
     /**
      * @param ContainerInterface $container
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
     {
+        $this->eventDispatcher = $eventDispatcher;
+
         $config = $container->getParameter('pimcore_data_hub');
 
         if (isset($config['graphql'])) {
-            
             if (isset($config['graphql']['output_cache_enabled'])) {
                 $this->cacheEnabled = filter_var($config['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
             }
             
             if (isset($config['graphql']['output_cache_lifetime'])) {
                 $this->lifetime = intval($config['graphql']['output_cache_lifetime']);
+            }
+
+            if (isset($config['graphql']['output_cache_exclude_pattern'])) {
+                $this->exclude_pattern = $config['graphql']['output_cache_exclude_pattern'];
             }
         }
     }
@@ -73,7 +88,10 @@ class OutputCacheService
             $clientname = $request->get('clientname');
             $extraTags = array_merge(["output","datahub", $clientname], $extraTags);
             
-            $this->saveToCache($cacheKey, $response, $extraTags);
+            $event = new OutputCachePreSaveEvent($request, $response);
+            $this->eventDispatcher->dispatch(OutputCacheEvents::PRE_SAVE, $event);
+
+            $this->saveToCache($cacheKey, $event->getResponse(), $extraTags);
         }
     }
     
@@ -100,17 +118,20 @@ class OutputCacheService
             return false;
         }
         
-        if(PIMCORE_DEBUG) {
+        if(\Pimcore::getDebugMode()) {
             $disableCacheForSingleRequest = filter_var($request->query->get('pimcore_nocache', 'false'), FILTER_VALIDATE_BOOLEAN)
             || filter_var($request->query->get('pimcore_outputfilters_disabled', 'false'), FILTER_VALIDATE_BOOLEAN);
             
             if($disableCacheForSingleRequest) {
-                
                 Logger::debug("Output cache is disabled for this request");
                 return false;
             }
         }
 
-        return true;
+        // So far, cache will be used, unless the listener denies it
+        $event = new OutputCachePreLoadEvent($request, true);
+        $this->eventDispatcher->dispatch(OutputCacheEvents::PRE_LOAD, $event);
+        
+        return $event->isUseCache();
     }
 }
