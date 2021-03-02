@@ -50,3 +50,24 @@ for an endpoint in an iframe within Pimcore or as an additional browser tab.
 ## Events
 It is possible to customize default behavior of graphQL endpoint with event listeners. For details 
 see [Events Documentation](./10_Events.md). 
+
+
+## Output cache
+It is possible to keep a cache of the responses delivered by the endpoint, using the same default cache backend configured for Pimcore (Doctrine, Redis,...). This is specially useful to speed up the endpoint replies when it produces complex responses with many dependencies.
+
+The cache can be enabled and configured with a configuration entry like this in your `config.yml` file:
+```yml
+#### DATAHUB OUTPUT CACHE
+pimcore_data_hub:
+    graphql:
+        output_cache_enabled: true    # Enables/disables the output (responses) cache
+        output_cache_lifetime: 20     # If enabled, for how many seconds each response will be cached
+```
+By default the cache is disabled but if it is enabled and you don't specify a value for `output_cache_lifetime`, its default value is set to 30 seconds.
+
+### Disable Output Cache for a Single Request (only in DEBUG MODE)
+Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://pimcore.com/docs/pimcore/current/Development_Documentation/Development_Tools_and_Details/Cache/Full_Page_Cache.html).
+
+### Customize the Cache Behaviour
+It is possible to customize some behavior of output cache with event listeners. For details 
+see [Events Documentation](./10_Events.md).
