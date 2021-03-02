@@ -178,7 +178,7 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
     },
 
     onAdd: function (btn, ev) {
-        this.grid.store.insert(0, {
+        this.grid.store.add({
             read: true,
             cpath: ""
         });
