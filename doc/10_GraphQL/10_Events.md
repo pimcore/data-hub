@@ -8,6 +8,7 @@ All Datahub events are defined as a constant on component classes:
 - [Mutation](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/MutationEvents.php)
 - [Executor](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ExecutorEvents.php)
 - [Listing](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ListingEvents.php)
+- [Ouput cache](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/OutputCacheEvents.php)
 
 ## Event Subscriber examples
 
@@ -217,4 +218,62 @@ class GraphQlSubscriber implements EventSubscriberInterface
     }
 }
 
+```
+
+#### Example 5: Add custom conditions to enable/disable output (responses) cache per request
+
+- `OutputCacheEvents::PRE_LOAD`: is triggered before trying to load an entry from cache, if cache is enabled. You can disable the cache  for this request by setting `$event->setUseCache(false)`. If you disable the cache, the entry won't be loaded nor saved
+- `OutputCacheEvents::PRE_SAVE`: if cache is enabled, it's triggered before saving an entry into the cache. You can use it to modify the response before it gets saved.
+
+```php
+<?php
+
+namespace AppBundle\EventListener;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreLoadEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class GraphqlListener implements EventSubscriberInterface
+{
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            OutputCacheEvents::PRE_LOAD => 'onPreLoadCache',
+            OutputCacheEvents::PRE_SAVE => 'onPreSaveCache'
+        ];
+    }
+
+    /**
+     * @param OutputCachePreLoadEvent $event
+     */
+    public function onPreLoadCache(OutputCachePreLoadEvent $event) 
+    {
+        $uri = $event->getRequest()->getMethod();
+        
+        if(str_contains($uri, "my-special-endpoint"))
+        {
+            $event->setUseCache(false);
+        }
+    }
+
+    /**
+     * @param OutputCachePreSaveEvent $event
+     */
+    public function onPreSaveCache(OutputCachePreSaveEvent $event) 
+    {
+        $uri = $event->getRequest()->getMethod();
+        
+        if(str_contains($uri, "my-awesome-endpoint"))
+        {
+            $response = $event->getResponse();
+            // modify the response as you want it to be saved...
+
+            $event->setResponse($response);
+        }
+    }
+}
 ```

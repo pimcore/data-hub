@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
@@ -52,12 +53,18 @@ class WebserviceController extends FrontendController
     private $permissionsService;
 
     /**
+     * @var OutputCacheService
+     */
+    private $cacheService;
+    
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService)
+    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService, OutputCacheService $cacheService)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->permissionsService = $permissionsService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -82,6 +89,13 @@ class WebserviceController extends FrontendController
         if (!$this->permissionsService->performSecurityCheck($request, $configuration)) {
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
+
+        if($response = $this->cacheService->load($request)) {
+            Logger::debug("Loading response from cache");
+            return $response;
+        }
+        
+        Logger::debug("Cache entry not found");
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
@@ -191,6 +205,9 @@ class WebserviceController extends FrontendController
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+
+        $this->cacheService->save($request, $response);
+
         return $response;
     }
 }

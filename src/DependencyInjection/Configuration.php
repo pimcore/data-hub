@@ -33,6 +33,8 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('graphql')
                     ->children()
                         ->scalarNode('not_allowed_policy')->info('throw exception = 1, return null = 2')->defaultValue(2)->end()
+                        ->booleanNode('output_cache_enabled')->info('enables output cache for graphql responses. It is disabled by default')->defaultValue(false)->end()
+                        ->integerNode('output_cache_lifetime')->info('output cache in seconds. Default is 30 seconds')->defaultValue(30)->end()
                     ->end()
                 ->end()
             ->end()
