@@ -71,7 +71,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
      */
     public function getTypes(): array
     {
