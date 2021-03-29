@@ -297,7 +297,7 @@ class PimcoreObjectType extends ObjectType
      *
      * @throws InvariantViolation
      */
-    public function getFields()
+    public function getFields(): array
     {
         if (null === $this->fields) {
             $fields = isset($this->config['fields']) ? $this->config['fields'] : [];

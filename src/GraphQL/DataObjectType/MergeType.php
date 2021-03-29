@@ -73,7 +73,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
     /**
      * @return array|\GraphQL\Type\Definition\ObjectType[]
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $nodeDef = $this->nodeDef;
         $childTypes = [];

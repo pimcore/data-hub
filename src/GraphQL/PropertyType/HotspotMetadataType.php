@@ -62,7 +62,7 @@ class HotspotMetadataType extends UnionType
      * @return array|\GraphQL\Type\Definition\ObjectType[]
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $service = $this->getGraphQlService();
 

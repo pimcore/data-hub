@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use GraphQL\Error\Debug;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -56,7 +56,7 @@ class WebserviceController extends FrontendController
      * @var OutputCacheService
      */
     private $cacheService;
-    
+
     /**
      * @param EventDispatcherInterface $eventDispatcher
      */
@@ -94,7 +94,7 @@ class WebserviceController extends FrontendController
             Logger::debug("Loading response from cache");
             return $response;
         }
-        
+
         Logger::debug("Cache entry not found");
 
         // context info, will be passed on to all resolver function
@@ -180,7 +180,7 @@ class WebserviceController extends FrontendController
             $result = $exResult->getResult();
 
             if (PIMCORE_DEBUG) {
-                $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;
+                $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE | DebugFlag::RETHROW_INTERNAL_EXCEPTIONS;
                 $output = $result->toArray($debug);
             } else {
                 $output = $result->toArray(false);

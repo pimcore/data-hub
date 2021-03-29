@@ -45,7 +45,7 @@ class VideoTypeDataType extends UnionType
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         // why not just use scalars ?
         // https://kamranicus.com/posts/2018-07-02-handling-multiple-scalar-types-in-graphql

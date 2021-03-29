@@ -53,7 +53,7 @@ class FieldcollectionType  extends UnionType implements ContainerAwareInterface
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         return $this->types;
     }
