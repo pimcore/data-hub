@@ -27,7 +27,7 @@ abstract class AbstractTable extends Base
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
-            'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) use ($fieldDefinition, $attribute) {
+            'resolve' => function ($value, $args = [], $context, ResolveInfo $resolveInfo = null) use ($fieldDefinition, $attribute) {
                 $result = Service::resolveValue($value, $fieldDefinition, $attribute, $args);
 
                 // The table has no specific definition of columns, so we cannot have a ObjectType in schema for it.
