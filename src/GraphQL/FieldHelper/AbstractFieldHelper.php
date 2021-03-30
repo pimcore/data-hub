@@ -121,7 +121,7 @@ abstract class AbstractFieldHelper
      *
      * @return array
      */
-    public function extractData(&$data = [], $container, $args, $context, ResolveInfo $resolveInfo = null)
+    public function extractData(&$data, $container, $args, $context, ResolveInfo $resolveInfo = null)
     {
         if ($container instanceof ElementInterface) {
             // we have to at least add the ID and pass it around even if not requested because we need it internally
