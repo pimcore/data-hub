@@ -33,6 +33,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
+use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Document;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
