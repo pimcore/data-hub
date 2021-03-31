@@ -40,7 +40,7 @@ class FileUploadService
                     $items = &$items[$key];
                 }
 
-                $items = $request->files[$fileKey];
+                $items = $request->files->get($fileKey);
             }
         }
 
