@@ -135,7 +135,13 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $input = json_decode($request->getContent(), true);
+        $contentType = $request->getContentType() ?? '';
+
+        if (mb_stripos($contentType, 'multipart/form-data') !== false) {
+            $input = json_decode($request->request->get('operations'), true);
+        } else {
+            $input = json_decode($request->getContent(), true);
+        }
 
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
