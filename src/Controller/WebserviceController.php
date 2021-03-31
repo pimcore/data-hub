@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
@@ -26,9 +26,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
-use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
+use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Localization\LocaleServiceInterface;
@@ -58,13 +59,23 @@ class WebserviceController extends FrontendController
     private $cacheService;
 
     /**
+     * @var FileUploadService
+     */
+    private $uploadService;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService, OutputCacheService $cacheService)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        CheckConsumerPermissionsService $permissionsService,
+        OutputCacheService $cacheService,
+        FileUploadService $uploadService
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->permissionsService = $permissionsService;
         $this->cacheService = $cacheService;
+        $this->uploadService = $uploadService;
     }
 
     /**
@@ -77,8 +88,12 @@ class WebserviceController extends FrontendController
      *
      * @throws \Exception
      */
-    public function webonyxAction(Service $service, LocaleServiceInterface $localeService, Factory $modelFactory, Request $request)
-    {
+    public function webonyxAction(
+        Service $service,
+        LocaleServiceInterface $localeService,
+        Factory $modelFactory,
+        Request $request
+    ) {
         $clientname = $request->get('clientname');
 
         $configuration = Configuration::getByName($clientname);
@@ -90,7 +105,7 @@ class WebserviceController extends FrontendController
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
 
-        if($response = $this->cacheService->load($request)) {
+        if ($response = $this->cacheService->load($request)) {
             Logger::debug("Loading response from cache");
             return $response;
         }
@@ -135,7 +150,13 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $input = json_decode($request->getContent(), true);
+        $contentType = $request->headers->get('content-type') ?? '';
+
+        if (mb_stripos($contentType, 'multipart/form-data') !== false) {
+            $input = $this->uploadService->parseUploadedFiles($request);
+        } else {
+            $input = json_decode($request->getContent(), true);
+        }
 
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
@@ -155,12 +176,13 @@ class WebserviceController extends FrontendController
                 $request,
                 $query,
                 $schema,
-                $context);
+                $context
+            );
 
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues =  $event->getRequest()->get('variables', $variableValues);
+                $variableValues = $event->getRequest()->get('variables', $variableValues);
             }
 
             $result = GraphQL::executeQuery(
