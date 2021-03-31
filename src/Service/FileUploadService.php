@@ -1,62 +1,24 @@
 <?php
 
-namespace Pimcore\Bundle\DataHubBundle\EventListener;
+namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use GraphQL\Error\InvariantViolation;
 use GraphQL\Server\RequestError;
 use GraphQL\Utils\Utils;
-use Pimcore\Bundle\DataHubBundle\Controller\WebserviceController;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
-class KernelControllerListener implements EventSubscriberInterface
+class FileUploadService
 {
-    /**
-     * @inheritDoc
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::CONTROLLER => 'onKernelController',
-        ];
-    }
-
-    /**
-     * @param \Symfony\Component\HttpKernel\Event\ControllerEvent $event
-     *
-     * @throws \GraphQL\Server\RequestError
-     */
-    public function onKernelController(ControllerEvent $event): void
-    {
-        $controller = $event->getController();
-
-        // when a controller class defines multiple action methods, the controller
-        // is returned as [$controllerInstance, 'methodName']
-        if (is_array($controller)) {
-            $controller = $controller[0];
-        }
-
-        if ($controller instanceof WebserviceController) {
-            $request = $event->getRequest();
-            $contentType = $request->getContentType() ?? '';
-
-            if (mb_stripos($contentType, 'multipart/form-data') !== false) {
-                $this->validateParsedBody($request);
-
-                $this->parseUploadedFiles($request);
-            }
-        }
-    }
-
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @throws \GraphQL\Server\RequestError
+     * @return array
+     * @throws RequestError
      */
-    protected function parseUploadedFiles(Request $request): void
+    public function parseUploadedFiles(Request $request): array
     {
+        $this->validateParsedBody($request);
+
         $bodyParams = $request->request->all();
 
         if (!isset($bodyParams['map'])) {
@@ -81,6 +43,8 @@ class KernelControllerListener implements EventSubscriberInterface
                 $items = $request->files[$fileKey];
             }
         }
+
+        return $result;
     }
 
     /**
