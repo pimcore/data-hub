@@ -15,8 +15,8 @@
 namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 
 use Pimcore\Event\Traits\RequestAwareTrait;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class OutputCachePreLoadEvent extends Event
 {
