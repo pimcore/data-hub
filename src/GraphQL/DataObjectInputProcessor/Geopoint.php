@@ -36,12 +36,12 @@ class Geopoint extends Base
     {
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
-            $geopoint = new \Pimcore\Model\DataObject\Data\Geopoint();
+            $geoCoordinates = new \Pimcore\Model\DataObject\Data\GeoCoordinates();
             if ($newValue) {
-                $geopoint->setLongitude($newValue["longitude"]);
-                $geopoint->setLatitude($newValue["latitude"]);
+                $geoCoordinates->setLongitude($newValue["longitude"]);
+                $geoCoordinates->setLatitude($newValue["latitude"]);
             }
-            return $container->$setter($geopoint);
+            return $container->$setter($geoCoordinates);
         });
     }
 }
