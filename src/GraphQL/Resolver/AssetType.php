@@ -112,16 +112,17 @@ class AssetType
         $asset = $this->getAssetFromValue($value, $context);
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
+            $data = stream_get_contents($asset->getStream());
             return isset($args['thumbnail'])
-                ? base64_encode(file_get_contents($asset->getThumbnail($args['thumbnail'],
-                    false)->getFileSystemPath()))
-                : base64_encode(file_get_contents($asset->getFileSystemPath()));
+                ? base64_encode(stream_get_contents($asset->getThumbnail($args['thumbnail'],
+                    false)->getStream()))
+                : base64_encode(stream_get_contents($asset->getStream()));
         } elseif ($asset instanceof Asset\Document) {
             return isset($args['thumbnail'])
-                ? base64_encode(file_get_contents($asset->getImageThumbnail($args['thumbnail'])->getFileSystemPath()))
-                : base64_encode(file_get_contents($asset->getFileSystemPath()));
+                ? base64_encode(stream_get_contents($asset->getImageThumbnail($args['thumbnail'])->getStream()))
+                : base64_encode(stream_get_contents($asset->getStream()));
         } elseif ($asset instanceof Asset) {
-            return base64_encode(file_get_contents($asset->getFileSystemPath()));
+            return base64_encode(stream_get_contents($asset->getStream()));
         }
         return null;
     }

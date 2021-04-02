@@ -59,7 +59,7 @@ class AssetFieldHelper extends AbstractFieldHelper
                         return $container->getThumbnail($args['thumbnail'], false);
                     } else if ($realName == "data") {
                         $thumb = $container->getThumbnail($args['thumbnail'], false);
-                        return file_get_contents($thumb->getFileSystemPath());
+                        return stream_get_contents($thumb->getStream());
                     }
 
                 };
@@ -69,7 +69,7 @@ class AssetFieldHelper extends AbstractFieldHelper
                     $data[$realName] = $container->getThumbnail($thumbnailArgument);
                 } else if ($realName == "data") {
                     $thumb = $container->getThumbnail($thumbnailArgument, false);
-                    $data[$realName] = file_get_contents($thumb->getFileSystemPath());
+                    $data[$realName] = stream_get_contents($thumb->getStream());
                 }
             }
         } else {
