@@ -28,7 +28,7 @@ class Geobounds
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
-     * @return \Pimcore\Model\DataObject\Data\Geopoint
+     * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
      * @throws \Exception
      */
     public function resolveNorthEast($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
@@ -45,7 +45,7 @@ class Geobounds
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
-     * @return \Pimcore\Model\DataObject\Data\Geopoint
+     * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
      * @throws \Exception
      */
     public function resolveSouthWest($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
