@@ -56,7 +56,7 @@ class WebserviceController extends FrontendController
      * @var OutputCacheService
      */
     private $cacheService;
-    
+
     /**
      * @param EventDispatcherInterface $eventDispatcher
      */
@@ -94,7 +94,7 @@ class WebserviceController extends FrontendController
             Logger::debug("Loading response from cache");
             return $response;
         }
-        
+
         Logger::debug("Cache entry not found");
 
         // context info, will be passed on to all resolver function
@@ -179,7 +179,7 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($exResult, ExecutorEvents::POST_EXECUTE);
             $result = $exResult->getResult();
 
-            if (PIMCORE_DEBUG) {
+            if (\Pimcore::inDebugMode()) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;
                 $output = $result->toArray($debug);
             } else {
