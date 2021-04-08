@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use Pimcore\Bundle\CoreBundle\EventListener\Frontend\TagManagerListener;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

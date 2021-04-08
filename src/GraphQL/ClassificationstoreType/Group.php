@@ -60,7 +60,7 @@ class Group extends ObjectType
             'description' => Type::string(),
             'features' => [
                 'type' => Type::listOf($this->featureType),
-                'resolve' => function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value, $args, $context, ResolveInfo $resolveInfo = null) {
                     /** @var Classificationstore $csValue */
                     $csValue = $value["_csValue"];
                     $groupId = $value["id"];

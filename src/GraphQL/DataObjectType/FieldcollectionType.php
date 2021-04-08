@@ -49,11 +49,11 @@ class FieldcollectionType  extends UnionType implements ContainerAwareInterface
 
 
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         return $this->types;
     }

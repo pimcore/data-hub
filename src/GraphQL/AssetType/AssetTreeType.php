@@ -32,7 +32,7 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
      * @return array
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $types = [];
         $types[] = $this->getGraphQlService()->buildAssetType('asset');
