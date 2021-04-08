@@ -33,6 +33,7 @@ class Geopoint
      */
     public function resolveLongitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        // cannot be changed to GeoCoordinates due to BC reasons
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLongitude();
         }
@@ -50,6 +51,7 @@ class Geopoint
      */
     public function resolveLatitude($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
     {
+        // cannot be changed to GeoCoordinates due to BC reasons
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLatitude();
         }

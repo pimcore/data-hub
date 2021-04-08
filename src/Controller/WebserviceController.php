@@ -201,7 +201,7 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($exResult, ExecutorEvents::POST_EXECUTE);
             $result = $exResult->getResult();
 
-            if (PIMCORE_DEBUG) {
+            if (\Pimcore::inDebugMode()) {
                 $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE | DebugFlag::RETHROW_INTERNAL_EXCEPTIONS;
                 $output = $result->toArray($debug);
             } else {
