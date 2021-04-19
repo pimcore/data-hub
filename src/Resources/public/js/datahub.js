@@ -23,24 +23,23 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
     },
 
     pimcoreReady: function (params, broker) {
-
-
         var user = pimcore.globalmanager.get("user");
-
         if (user.admin || user.isAllowed("plugin_datahub_config")) {
-            var menu = pimcore.globalmanager.get("layout_toolbar").settingsMenu;
-            menu.add({
-                text: t("plugin_pimcore_datahub_toolbar"),
-                iconCls: "plugin_pimcore_datahub_nav_icon",
-                handler: function () {
-                    try {
-                        pimcore.globalmanager.get("plugin_pimcore_datahub_config").activate();
-                    }
-                    catch (e) {
-                        pimcore.globalmanager.add("plugin_pimcore_datahub_config", new pimcore.plugin.datahub.config());
-                    }
+
+            let navEl = Ext.get('pimcore_menu_search').insertSibling('<li id="pimcore_menu_datahub" data-menu-tooltip="'
+                + t('plugin_pimcore_datahub_toolbar') +
+                '" class="pimcore_menu_item pimcore_menu_needs_children"><img src="/bundles/pimcoreadmin/img/flat-white-icons/mind_map.svg"></li>', 'before');
+
+            navEl.on('mousedown', function () {
+                try {
+                    pimcore.globalmanager.get("plugin_pimcore_datahub_config").activate();
+                }
+                catch (e) {
+                    pimcore.globalmanager.add("plugin_pimcore_datahub_config", new pimcore.plugin.datahub.config());
                 }
             });
+
+            pimcore.helpers.initMenuTooltips();
         }
     }
 });

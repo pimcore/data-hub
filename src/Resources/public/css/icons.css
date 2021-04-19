@@ -3,11 +3,12 @@
 }
 
 .plugin_pimcore_datahub_nav_icon {
-    background: url(/bundles/pimcoreadmin/img/flat-color-icons/electronics.svg) center center no-repeat;
+    background: url(/bundles/pimcoreadmin/img/flat-color-icons/mind_map.svg) center center no-repeat;
 }
 
-.pimcore_version_6 .plugin_pimcore_datahub_nav_icon {
-    background: url(/bundles/pimcoreadmin/img/flat-white-icons/electronics.svg) center center no-repeat;
+.pimcore_version_6 .plugin_pimcore_datahub_nav_icon,
+.pimcore_version_10 .plugin_pimcore_datahub_nav_icon {
+    background: url(/bundles/pimcoreadmin/img/flat-white-icons/mind_map.svg) center center no-repeat;
 }
 
 .plugin_pimcore_datahub_icon_graphql {
