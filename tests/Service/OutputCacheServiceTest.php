@@ -21,9 +21,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-const PIMCORE_DEBUG = true;
-
-
 class OutputCacheServiceTest extends TestCase
 {
 
