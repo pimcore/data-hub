@@ -24,6 +24,10 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
 class Fieldcollections extends Base
 {
+
+    /** @var array  */
+    public static $typeCache = [];
+
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
@@ -79,16 +83,23 @@ class Fieldcollections extends Base
         ]);
 
         $inputTypeName = "fieldcollections_" . $fieldName . "_input";
-        $inputType = new InputObjectType([
-            'name' => $inputTypeName,
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => "if true then the entire item list will be overwritten"
-                ],
-                'items' => $groupsInputType
-            ]
-        ]);
+
+        $inputType = self::$typeCache[$inputTypeName] ?? null;
+
+        if (!$inputType) {
+
+            $inputType = new InputObjectType([
+                'name' => $inputTypeName,
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => "if true then the entire item list will be overwritten"
+                    ],
+                    'items' => $groupsInputType
+                ]
+            ]);
+            self::$typeCache[$inputTypeName] = $inputType;
+        }
 
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Fieldcollections($nodeDef, $fieldProcessors);
         $processor->setGraphQLService($this->getGraphQlService());
