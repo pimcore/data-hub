@@ -35,15 +35,8 @@ class ManyToManyObjectRelation extends Base
         parent::__construct($graphQlService);
     }
 
-
-    /**
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @return array
-     * @throws \Exception
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\ManyToManyObjectRelation($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());

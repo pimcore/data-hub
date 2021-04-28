@@ -19,14 +19,8 @@ use GraphQL\Type\Definition\Type;
 
 class BooleanSelect extends Base
 {
-
-    /**
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @return array
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Base($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());

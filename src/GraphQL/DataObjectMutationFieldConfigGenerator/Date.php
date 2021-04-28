@@ -19,15 +19,8 @@ use GraphQL\Type\Definition\Type;
 
 class Date extends Base
 {
-
-
-    /**
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @return array
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Date($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());

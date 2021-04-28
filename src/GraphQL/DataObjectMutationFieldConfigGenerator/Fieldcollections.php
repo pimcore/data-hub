@@ -24,15 +24,8 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
 class Fieldcollections extends Base
 {
-
-    /**
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @return array
-     * @throws \Exception
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $fieldName = $nodeDef['attributes']['attribute'];
 

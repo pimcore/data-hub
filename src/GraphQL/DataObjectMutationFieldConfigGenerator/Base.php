@@ -41,9 +41,10 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
      * @param array $nodeDef
      * @param ClassDefinition $class
      * @param mixed $container
+     * @param array $params
      * @return array
      */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Base($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());

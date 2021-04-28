@@ -20,15 +20,8 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Multiselect extends Base
 {
-
-    /**
-     * @param $nodeDef
-     * @param Data $fieldDefinition
-     * @param $class
-     * @param $container
-     * @return array
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef,  $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef,  $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Base($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());

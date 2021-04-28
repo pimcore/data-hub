@@ -18,14 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 class Geopoint extends Base
 {
 
-    /**
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @return array
-     * @throws \Exception
-     */
-    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null)
+    /** {@inheritdoc } */
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Geopoint($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
