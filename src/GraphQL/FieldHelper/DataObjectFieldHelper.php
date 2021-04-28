@@ -239,7 +239,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         $attributes = $nodeDef['attributes'];
 
-        if ($nodeDef['isOperator']) {
+        if ($nodeDef['isOperator'] ?? false)  {
             $key = $attributes['label'];
             $key = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $key);
 
