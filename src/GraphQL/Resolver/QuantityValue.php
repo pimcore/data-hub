@@ -30,7 +30,7 @@ class QuantityValue
      * @return array
      * @throws \Exception
      */
-    public function resolveUnit($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveUnit($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
             $unit = $value->getUnit();
@@ -48,7 +48,7 @@ class QuantityValue
      * @return string
      * @throws \Exception
      */
-    public function resolveValue($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveValue($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
             return $value->getValue();
@@ -65,7 +65,7 @@ class QuantityValue
      * @return string
      * @throws \Exception
      */
-    public function resolveToString($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveToString($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $returnValue = null;
 

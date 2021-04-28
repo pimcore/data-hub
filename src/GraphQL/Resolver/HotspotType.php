@@ -41,7 +41,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveImage($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveImage($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof ElementDescriptor) {
 
@@ -68,7 +68,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveCrop($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveCrop($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         return !empty($value['crop']) ? $value['crop'] : null;
     }
@@ -81,7 +81,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveHotspots($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveHotspots($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         return !empty($value['hotspots']) ? $value['hotspots'] : null;
     }
@@ -94,7 +94,7 @@ class HotspotType
      * @return array
      * @throws \Exception
      */
-    public function resolveMarker($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveMarker($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         return !empty($value['marker']) ? $value['marker'] : null;
     }
@@ -105,7 +105,7 @@ class HotspotType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
-    public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         /** @var array $metadata */
         $metadata = is_array($value) ? $value['data'] : [];

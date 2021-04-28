@@ -30,7 +30,7 @@ class UrlSlug
      * @return string|null
      * @throws \Exception
      */
-    public function resolveSlug($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSlug($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
             return $value->getSlug();
@@ -46,7 +46,7 @@ class UrlSlug
      * @return int|null
      * @throws \Exception
      */
-    public function resolveSiteId($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSiteId($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
             return $value->getSiteId();

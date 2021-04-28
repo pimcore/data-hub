@@ -34,7 +34,7 @@ class AssetType
      * @return array
      * @throws \Exception
      */
-    public function resolveMetadata($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
 
@@ -83,7 +83,7 @@ class AssetType
      * @return string|null
      * @throws \Exception
      */
-    public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
 
@@ -107,7 +107,7 @@ class AssetType
      * @return string|null
      * @throws \Exception
      */
-    public function resolveData($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
 
@@ -136,7 +136,7 @@ class AssetType
      * @return array
      * @throws \Exception
      */
-    public function resolveSrcSet($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSrcSet($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
 
@@ -166,7 +166,7 @@ class AssetType
      * @return array
      * @throws \Exception
      */
-    public function resolveResolutions($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveResolutions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $types = $args['types'];
         $thumbnail = $value['url'];

@@ -36,7 +36,7 @@ class DataObject extends Element
      *
      * @return int
      */
-    public function resolveIndex($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveIndex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if (null === $value) {
             return null;
@@ -59,7 +59,7 @@ class DataObject extends Element
      *
      * @return string
      */
-    public function resolveChildrenSortBy($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveChildrenSortBy($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if (null === $value) {
             return null;
