@@ -55,7 +55,7 @@ class Element
      * @return array|Property[]|null
      * @throws ClientSafeException
      */
-    public function resolveProperties($value = null, array $args = [], array $context, ResolveInfo $resolveInfo = null)
+    public function resolveProperties($value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null)
     {
         $elementId = $value["id"];
         $element = ElementService::getElementById($this->elementType, $elementId);
@@ -88,7 +88,7 @@ class Element
      * @return array
      * @throws \Exception
      */
-    public function resolveParent($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveParent($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
@@ -108,7 +108,7 @@ class Element
      * @return array
      * @throws \Exception
      */
-    public function resolveChildren($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveChildren($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
@@ -126,7 +126,7 @@ class Element
      * @return array
      * @throws \Exception
      */
-    public function resolveSiblings($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSiblings($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
