@@ -31,7 +31,7 @@ class Geobounds
      * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
      * @throws \Exception
      */
-    public function resolveNorthEast($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveNorthEast($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geobounds) {
             return $value->getNorthEast();
@@ -48,7 +48,7 @@ class Geobounds
      * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
      * @throws \Exception
      */
-    public function resolveSouthWest($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveSouthWest($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geobounds) {
             return $value->getSouthWest();

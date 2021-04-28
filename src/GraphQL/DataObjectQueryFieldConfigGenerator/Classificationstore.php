@@ -38,7 +38,7 @@ class Classificationstore extends Base
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'args' => ['language' => ['type' => Type::string()]],
             'description' => "returns a list of group containers",
-            'resolve' => function ($value, $args, $context, ResolveInfo $resolveInfo = null) {
+            'resolve' => function ($value, $args, $context = [], ResolveInfo $resolveInfo = null) {
                     $fieldName = $resolveInfo->fieldName;
                     $language = isset($args["language"]) ? $args["language"] : null;
                     /** @var  $csField \Pimcore\Model\DataObject\Classificationstore*/

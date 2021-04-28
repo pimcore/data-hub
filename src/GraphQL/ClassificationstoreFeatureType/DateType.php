@@ -43,7 +43,7 @@ class DateType extends ObjectType
                         'description' => 'see Carbon::format'
                     ]
                 ],
-                'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         $dateValue = $value->getValue();
                         if ($dateValue instanceof Carbon) {

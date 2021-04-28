@@ -83,7 +83,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null, $elementType)
+    public function resolveFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null, $elementType)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -115,7 +115,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveAssetFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveAssetFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
     }
 
@@ -128,7 +128,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveDocumentFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
     }
 
@@ -140,7 +140,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveObjectFolderGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+    public function resolveObjectFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
         return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
     }
 
@@ -153,7 +153,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveDocumentGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveDocumentGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -193,7 +193,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveAssetGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveAssetGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -224,7 +224,7 @@ class QueryType
      * @return array
      * @throws ClientSafeException
      */
-    public function resolveObjectGetter($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveObjectGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $isIdSet = $args['id'] ?? false;
         $isFullpathSet = $args['fullpath'] ?? false;
@@ -295,7 +295,7 @@ class QueryType
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
-    public function resolveEdge($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $object = $value['node'];
 
@@ -316,7 +316,7 @@ class QueryType
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
-    public function resolveEdges($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $objectList = $value['edges']();
         $nodes = [];
@@ -345,7 +345,7 @@ class QueryType
      * @return array
      * @throws \Exception
      */
-    public function resolveListing($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveListing($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -476,7 +476,7 @@ class QueryType
      * @param ResolveInfo|null $resolveInfo
      * @return mixed
      */
-    public function resolveListingTotalCount($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveListingTotalCount($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         return $value['totalCount']();
     }

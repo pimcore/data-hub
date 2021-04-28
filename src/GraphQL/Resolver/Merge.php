@@ -55,7 +55,7 @@ class Merge
      * @return array
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
         $operatorImpl = $this->getGraphQlService()->buildQueryOperator($this->typeName, $this->attributes);

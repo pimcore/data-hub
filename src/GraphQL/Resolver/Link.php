@@ -32,7 +32,7 @@ class Link
      * @return array
      * @throws \Exception
      */
-    public function resolveText($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolveText($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
             return $value->getText();
@@ -49,7 +49,7 @@ class Link
      * @return array
      * @throws \Exception
      */
-    public function resolvePath($value = null, $args = [], $context, ResolveInfo $resolveInfo = null)
+    public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
             return $value->getPath();

@@ -35,7 +35,7 @@ class StringType extends ObjectType
             $fields = Helper::getCommonFields();
             $fields[$valueField] = [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }

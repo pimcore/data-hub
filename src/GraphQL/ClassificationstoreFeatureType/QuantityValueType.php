@@ -42,7 +42,7 @@ class QuantityValueType extends ObjectType
             $fields = Helper::getCommonFields();
             $fields[$fieldname] = [
                 'type' => $innerType,
-                'resolve' => static function ($value = null, $args = [], $context, ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
