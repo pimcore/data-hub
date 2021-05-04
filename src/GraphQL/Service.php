@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 declare(strict_types=1);
 
@@ -1012,7 +1012,7 @@ class Service
             else {
                 $blockGetter = "get".ucfirst($descriptorData['__blockName']);
                 $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
-                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ?  $descriptorData['args']['language'] : null);                
+                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ?  $descriptorData['args']['language'] : null);
             }
 
             if ($blockData) {
@@ -1073,7 +1073,7 @@ class Service
         }
         return $result;
     }
-    
+
     /**
      * Check whether given field in container is localized
      * @param Concrete|AbstractData|\Pimcore\Model\DataObject\Objectbrick\Data\AbstractData $container

@@ -3,7 +3,7 @@ Copyright (C) Pimcore GmbH
 
 This software is available under two different licenses: 
 * GNU General Public License version 3 (GPLv3) as Pimcore Community Edition
-* Pimcore Enterprise License (PEL)
+* Pimcore Commercial License (PCL)
 
 The default Pimcore license, without a valid Pimcore Enterprise License agreement, is the Open-Source GPLv3 license.
 
@@ -23,10 +23,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## Pimcore Enterprise License (PEL)
+## Pimcore Commercial License (PCL)
 Alternatively, commercial and supported versions of the program - also known as
 Enterprise Distributions - must be used in accordance with the terms and conditions
-contained in a separate written agreement between you and Pimcore GmbH. For more information about the Pimcore Enterprise License (PEL) please contact info@pimcore.com.
+contained in a separate written agreement between you and Pimcore GmbH. For more information about the Pimcore Commercial License (PCL) please contact info@pimcore.com.
 
 
 Please see also (files in this directory):  
