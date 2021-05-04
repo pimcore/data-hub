@@ -375,7 +375,8 @@ services:
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_reverseManyToManyObjectRelation:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ReverseManyToManyObjectRelation
     tags:
-      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseManyToManyObjectRelation }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseManyToManyObjectRelation } # deprecated since 6.9, removed in 10
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseObjectRelation }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multihrefMetadata:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\MultihrefMetadata
