@@ -57,6 +57,7 @@ class AssetType extends ObjectType
         $service = $this->getGraphQlService();
         $assetTree = $service->buildGeneralType('asset_tree');
         $assetMetadataItemType = $service->buildAssetType('asset_metadataitem');
+        $assetTagType = $service->buildAssetType('asset_tag');
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
@@ -128,6 +129,13 @@ class AssetType extends ObjectType
                     'thumbnail' => ['type' => Type::string()]
                 ],
                 'resolve' => [$resolver, 'resolveData'],
+            ],
+            'tags' => [
+                'type' => Type::listOf($assetTagType),
+                'args' => [
+                    'name' => ['type' => Type::string()],
+                ],
+                'resolve' => [$resolver, 'resolveTag']
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),

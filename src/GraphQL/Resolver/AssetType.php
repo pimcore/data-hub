@@ -21,10 +21,48 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Element\Tag;
 
 class AssetType
 {
     use ServiceTrait;
+
+    /**
+     * @param array $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if ($asset) {
+
+            $tag = new Tag();
+            $tags = $tag->getDao()->getTagsForElement('asset', $asset->getId());
+
+            if ($tags) {
+                $result = [];
+                foreach($tags as $tag) {
+                    $result[] = [
+                        'id' => $tag->getId(),
+                        'name' => $tag->getName(),
+                        'path' => $tag->getNamePath(),
+                    ];
+                }
+
+                if ($result) {
+                    return $result;
+                }
+            }
+        }
+
+        return null;
+
+    }
 
     /**
      * @param array $value
