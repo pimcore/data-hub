@@ -141,6 +141,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.assettype_factory, id: asset_metadataitem }
 
+  pimcore.datahub.graphql.generaltype.factory.asset_tag:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTag
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: asset_tag }
+
   pimcore.datahub.graphql.generaltype.factory.video:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
@@ -606,6 +613,9 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.assettype, id: asset_metadata_item }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTag:
+    tags:
+      - { name: pimcore.datahub.graphql.assettype, id: asset_tag }
 
   Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType:
     tags:
