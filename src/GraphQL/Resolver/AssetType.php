@@ -18,14 +18,14 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
-use Pimcore\Model\Element\Tag;
 
 class AssetType
 {
-    use ServiceTrait;
+    use ServiceTrait, ElementTagTrait;
 
     /**
      * @param array $value
@@ -41,23 +41,11 @@ class AssetType
 
         if ($asset) {
 
-            $tag = new Tag();
-            $tags = $tag->getDao()->getTagsForElement('asset', $asset->getId());
-
-            if ($tags) {
-                $result = [];
-                foreach($tags as $tag) {
-                    $result[] = [
-                        'id' => $tag->getId(),
-                        'name' => $tag->getName(),
-                        'path' => $tag->getNamePath(),
-                    ];
-                }
-
-                if ($result) {
-                    return $result;
-                }
+            $result = $this->getTags('asset',$asset->getId());
+            if ($result) {
+                return $result;
             }
+
         }
 
         return null;

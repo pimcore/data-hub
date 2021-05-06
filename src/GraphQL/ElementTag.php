@@ -13,14 +13,14 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
+namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AssetTag extends ObjectType
+class ElementTag extends ObjectType
 {
     use ServiceTrait;
 
@@ -32,7 +32,7 @@ class AssetTag extends ObjectType
     public function __construct(Service $graphQlService, $config = [])
     {
         $this->graphQlService = $graphQlService;
-        $config['name'] = 'asset_tag';
+        $config['name'] = 'element_tag';
         $this->build($config);
         parent::__construct($config);
     }
