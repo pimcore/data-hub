@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
@@ -27,7 +27,6 @@ use Pimcore\Model\Element\ElementInterface;
 
 abstract class AbstractFieldHelper
 {
-
     use ServiceTrait;
 
     /**
@@ -159,7 +158,6 @@ abstract class AbstractFieldHelper
         }
 
         foreach ($selections as $selectionNode) {
-
             if ($selectionNode instanceof FieldNode) {
                 $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
             } elseif ($selectionNode instanceof InlineFragmentNode) {

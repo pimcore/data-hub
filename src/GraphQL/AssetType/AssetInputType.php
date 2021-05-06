@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
@@ -24,20 +24,19 @@ class AssetInputType extends InputObjectType
 {
     use ServiceTrait;
 
-
     /**
      * AssetInputType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = ["name" => "AssetInput"], $context = [])
+    public function __construct(Service $graphQlService, $config = ['name' => 'AssetInput'], $context = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
     }
-
 
     /**
      * @param array $config
@@ -54,7 +53,7 @@ class AssetInputType extends InputObjectType
                 'type' => Type::listOf(new InputObjectType([
                     'name' => 'MetadataItem',
                     'fields' => [
-                        'name'  => Type::nonNull(Type::string()),
+                        'name' => Type::nonNull(Type::string()),
                         'type' => Type::nonNull(Type::string()),
                         'data' => Type::string(),
                         'language' => Type::string()

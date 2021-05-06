@@ -21,12 +21,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Areablock extends Base
 {
-
     protected $areablockDataType;
-
 
     /**
      * Areablock constructor.
+     *
      * @param Service $graphQlService
      * @param AreablockDataType $areablockDataType
      */

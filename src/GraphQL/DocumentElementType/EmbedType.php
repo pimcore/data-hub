@@ -9,13 +9,12 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
-use Carbon\Carbon;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
@@ -31,7 +30,7 @@ class EmbedType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_editableEmbed",
+                    'name' => 'document_editableEmbed',
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),

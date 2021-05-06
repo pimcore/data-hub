@@ -32,12 +32,12 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
 
     /**
      * AnyTargetType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'AnyTarget'])
     {
-
         $this->setGraphQLService($graphQlService);
 
         parent::__construct($config);
@@ -45,45 +45,46 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
     public function getTypes(): array
     {
-
         $service = $this->getGraphQlService();
 
         $types = [];
 
-        if ($service->querySchemaEnabled("object")) {
+        if ($service->querySchemaEnabled('object')) {
             $objectTypes = array_values(ClassTypeDefinitions::getAll(false));
             $types = $objectTypes;
         }
 
-        if ($service->querySchemaEnabled("asset")) {
-            $assetType = $service->buildAssetType("asset");
+        if ($service->querySchemaEnabled('asset')) {
+            $assetType = $service->buildAssetType('asset');
             $types[] = $assetType;
         }
 
-        if ($service->querySchemaEnabled("asset_folder")) {
-            $assetFolderType = $service->getAssetTypeDefinition("_asset_folder");
+        if ($service->querySchemaEnabled('asset_folder')) {
+            $assetFolderType = $service->getAssetTypeDefinition('_asset_folder');
             $types[] = $assetFolderType;
         }
 
-        if ($service->querySchemaEnabled("document_folder")) {
-            $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
+        if ($service->querySchemaEnabled('document_folder')) {
+            $documentFolderType = $service->getDocumentTypeDefinition('_document_folder');
             $types[] = $documentFolderType;
         }
 
-        if ($service->querySchemaEnabled("object_folder")) {
-            $objectFolderType = $service->getDataObjectTypeDefinition("_object_folder");
+        if ($service->querySchemaEnabled('object_folder')) {
+            $objectFolderType = $service->getDataObjectTypeDefinition('_object_folder');
             $types[] = $objectFolderType;
         }
 
-        if ($service->querySchemaEnabled("document")) {
-            $documentUnionType = $service->getDocumentTypeDefinition("document");
+        if ($service->querySchemaEnabled('document')) {
+            $documentUnionType = $service->getDocumentTypeDefinition('document');
             $supportedDocumentTypes = $documentUnionType->getTypes();
             $types = array_merge($types, $supportedDocumentTypes);
         }
+
         return $types;
     }
 
@@ -97,19 +98,21 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
                 $type = ClassTypeDefinitions::get($element['__elementSubtype']);
 
                 return $type;
-            } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->buildAssetType("asset");
-            } else if ($element['__elementType'] == 'document') {
+            } elseif ($element['__elementType'] == 'asset') {
+                return  $this->getGraphQlService()->buildAssetType('asset');
+            } elseif ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
                     //TODO maybe catch unsupported types for now ?
-                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
+
                     return $typeDefinition;
                 }
             }
         }
+
         return null;
     }
 }

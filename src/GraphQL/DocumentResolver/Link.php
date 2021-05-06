@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver;
@@ -21,13 +21,13 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
 
-
 class Link
 {
     use ServiceTrait;
 
     /**
      * Link constructor.
+     *
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
      */
     public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService)
@@ -40,7 +40,9 @@ class Link
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveObject($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -58,30 +60,31 @@ class Link
         return null;
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-
         if ($value instanceof Document\Editable\Link) {
             $value = $value->getData();
         }
 
         if (is_array($value)) {
-            $internal = $value["internal"];
+            $internal = $value['internal'];
             if ($internal) {
-                $internalId = $value["internalId"];
-                $internalType = $value["internalType"];
+                $internalId = $value['internalId'];
+                $internalType = $value['internalType'];
                 $relation = Service::getElementById($internalType, $internalId);
                 if ($relation) {
                     $data = RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
+
                     return $data;
                 }
             }
@@ -90,4 +93,3 @@ class Link
         return null;
     }
 }
-

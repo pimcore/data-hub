@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pimcore
  *
@@ -29,7 +30,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
     {
         $this
             ->setName('datahub:graphql:rebuild-definitions')
-            ->setDescription("Rebuild GraphQL endpoint definitions")
+            ->setDescription('Rebuild GraphQL endpoint definitions')
             ->addOption(
             'definitions',
                 null,
@@ -41,7 +42,9 @@ class RebuildDefinitionsCommand extends AbstractCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int|void|null
+     *
      * @throws \Exception
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -54,12 +57,11 @@ class RebuildDefinitionsCommand extends AbstractCommand
             $list = Configuration\Dao::getList();
             foreach ($list as $configuration) {
                 $endpoint = $configuration->getName();
-                $included[]= $endpoint;
+                $included[] = $endpoint;
             }
         }
 
         foreach ($included as $endpoint) {
-
             $config = Configuration::getByName($endpoint);
             if (!$config) {
                 $this->output->writeln('<error>Could not find config: ' . $endpoint . '</error>');

@@ -43,7 +43,7 @@ class AssetMetadataItem extends ObjectType
     public function build(&$config)
     {
         $config['fields'] = [
-            'name'  => Type::string(),
+            'name' => Type::string(),
             'type' => Type::string(),
             'data' => Type::string(),
             'language' => Type::string()

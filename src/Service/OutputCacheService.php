@@ -18,11 +18,11 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreLoadEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
-use Psr\Container\ContainerInterface;
 use Pimcore\Logger;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class OutputCacheService
 {
@@ -42,7 +42,6 @@ class OutputCacheService
      * @var EventDispatcherInterface
      */
     public $eventDispatcher;
-
 
     /**
      * @param ContainerInterface $container
@@ -69,10 +68,9 @@ class OutputCacheService
         }
     }
 
-
-    public function load(Request $request) {
-
-        if(!$this->useCache($request)) {
+    public function load(Request $request)
+    {
+        if (!$this->useCache($request)) {
             return null;
         }
 
@@ -81,12 +79,12 @@ class OutputCacheService
         return $this->loadFromCache($cacheKey);
     }
 
-
-    public function save(Request $request, JsonResponse $response, $extraTags = []) : void {
+    public function save(Request $request, JsonResponse $response, $extraTags = []): void
+    {
         if ($this->useCache($request)) {
             $cacheKey = $this->computeKey($request);
             $clientname = $request->get('clientname');
-            $extraTags = array_merge(["output","datahub", $clientname], $extraTags);
+            $extraTags = array_merge(['output', 'datahub', $clientname], $extraTags);
 
             $event = new OutputCachePreSaveEvent($request, $response);
             $this->eventDispatcher->dispatch(OutputCacheEvents::PRE_SAVE, $event);
@@ -95,35 +93,41 @@ class OutputCacheService
         }
     }
 
-    protected function loadFromCache($key) {
+    protected function loadFromCache($key)
+    {
         return \Pimcore\Cache::load($key);
     }
 
-    protected function saveToCache($key, $item, $tags = []) : void {
+    protected function saveToCache($key, $item, $tags = []): void
+    {
         \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);
     }
 
-    private function computeKey(Request $request) : string {
+    private function computeKey(Request $request): string
+    {
         $clientname = $request->get('clientname');
 
         $input = json_decode($request->getContent(), true);
         $input = print_r($input, true);
 
-        return md5("output_" . $clientname . $input);
+        return md5('output_' . $clientname . $input);
     }
 
-    private function useCache(Request $request) : bool {
-        if(!$this->cacheEnabled) {
-            Logger::debug("Output cache is disabled");
+    private function useCache(Request $request): bool
+    {
+        if (!$this->cacheEnabled) {
+            Logger::debug('Output cache is disabled');
+
             return false;
         }
 
-        if(\Pimcore::inDebugMode()) {
+        if (\Pimcore::inDebugMode()) {
             $disableCacheForSingleRequest = filter_var($request->query->get('pimcore_nocache', 'false'), FILTER_VALIDATE_BOOLEAN)
             || filter_var($request->query->get('pimcore_outputfilters_disabled', 'false'), FILTER_VALIDATE_BOOLEAN);
 
-            if($disableCacheForSingleRequest) {
-                Logger::debug("Output cache is disabled for this request");
+            if ($disableCacheForSingleRequest) {
+                Logger::debug('Output cache is disabled for this request');
+
                 return false;
             }
         }

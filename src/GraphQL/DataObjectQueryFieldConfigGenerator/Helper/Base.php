@@ -38,10 +38,9 @@ class Base
      */
     public $attribute;
 
-
-
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      * @param $attribute
      * @param $fieldDefinition
@@ -69,6 +68,7 @@ class Base
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $result = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
+
         return $result;
     }
 }

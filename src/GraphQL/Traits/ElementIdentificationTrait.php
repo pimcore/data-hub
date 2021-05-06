@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Traits;
@@ -22,13 +22,16 @@ trait ElementIdentificationTrait
     private $typeKey = 'type';
     private $idKey = 'id';
     private $fullpathKey = 'fullpath';
-    private $supportedTypes = array('object', 'asset', 'document');
+    private $supportedTypes = ['object', 'asset', 'document'];
 
     /**
      * Returns an element (object, document or asset) identified whether by id or fullpath
+     *
      * @param array $value array including type (if not passed in the optional type argument), as well as id or fullpath (in case both are provided the id will be priorized)
      * @param string|null $type can whether be 'object', 'asset' or 'document'
+     *
      * @return ElementInterface|null can whether be an object, a document or an asset
+     *
      * @throws \ClientSafeException thrown if no type or neither an id nor a fullpath is provided
      */
     public function getElementByTypeAndIdOrPath($value, $type = null)

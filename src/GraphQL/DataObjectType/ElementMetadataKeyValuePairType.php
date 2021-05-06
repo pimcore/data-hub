@@ -20,6 +20,7 @@ use GraphQL\Type\Definition\Type;
 
 /**
  * Class ElementMetadataKeyValuePairType
+ *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType
  */
 class ElementMetadataKeyValuePairType extends ObjectType

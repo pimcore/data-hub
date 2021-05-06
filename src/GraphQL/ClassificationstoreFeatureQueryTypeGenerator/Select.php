@@ -19,12 +19,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringTy
 
 class Select extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|StringType
      */
     public function getFieldType()
     {
-        return StringType::getInstance("csFeatureSelect", "selection");
+        return StringType::getInstance('csFeatureSelect', 'selection');
     }
 }

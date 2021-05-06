@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\Type;
 
 class Checkbox extends Base
 {
-
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
@@ -31,5 +30,4 @@ class Checkbox extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
 }

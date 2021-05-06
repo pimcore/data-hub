@@ -25,11 +25,11 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefinitionInterface
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -72,9 +72,9 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
         }
 
         // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
-        if (strpos($attribute, "~") !== FALSE && !isset($grapQLConfig['resolve'])) {
+        if (strpos($attribute, '~') !== false && !isset($grapQLConfig['resolve'])) {
             $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-            $grapQLConfig['resolve'] = [$resolver, "resolve"];
+            $grapQLConfig['resolve'] = [$resolver, 'resolve'];
         }
 
         return $grapQLConfig;
@@ -102,7 +102,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
-    }
 
+        return [$resolver, 'resolve'];
+    }
 }

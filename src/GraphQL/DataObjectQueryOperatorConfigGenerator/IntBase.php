@@ -19,8 +19,6 @@ use GraphQL\Type\Definition\Type;
 
 class IntBase extends Base
 {
-
-
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])
     {
         return Type::int();

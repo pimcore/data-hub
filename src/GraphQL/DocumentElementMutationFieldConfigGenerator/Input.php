@@ -21,7 +21,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Input extends Base
 {
-
     /**
      * @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input
      */
@@ -29,16 +28,16 @@ class Input extends Base
 
     /**
      * Input constructor.
+     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor
      */
-    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor) {
+    public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor)
+    {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
-    /**
-     */
     public function getDocumentElementMutationFieldConfig()
     {
         return [
@@ -54,5 +53,4 @@ class Input extends Base
             'processor' => [$this->processor, 'process']
         ];
     }
-
 }

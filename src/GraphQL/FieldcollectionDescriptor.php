@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 class FieldcollectionDescriptor extends BaseDescriptor
 {
-
     /**
      * FieldcollectionDecriptor constructor.
      */
@@ -25,5 +24,4 @@ class FieldcollectionDescriptor extends BaseDescriptor
     {
         parent::__construct();
     }
-
 }

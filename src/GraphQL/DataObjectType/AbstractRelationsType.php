@@ -42,6 +42,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 
     /**
      * AbstractRelationsType constructor.
+     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param null $class
@@ -57,7 +58,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
         if ($fieldDefinition && $class) {
             if ($class instanceof ClassDefinition) {
                 $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
-            } else if ($class instanceof Definition) {
+            } elseif ($class instanceof Definition) {
                 $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
             }
         }
@@ -116,14 +117,14 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
         if (!$fd instanceof Data\ManyToManyObjectRelation) {
             if ($fd->getAssetsAllowed()) {
                 $service = $this->getGraphQlService();
-                $assetType = $service->buildAssetType("asset");
+                $assetType = $service->buildAssetType('asset');
 
                 $types[] = $assetType;
             }
 
             if ($fd->getDocumentsAllowed()) {
                 /** @var DocumentType $documentUnionType */
-                $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
+                $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
                 $supportedDocumentTypes = $documentUnionType->getTypes();
                 $types = array_merge($types, $supportedDocumentTypes);
             }
@@ -142,15 +143,16 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
                 $type = ClassTypeDefinitions::get($element['__elementSubtype']);
 
                 return $type;
-            } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->buildAssetType("asset");
-            } else if ($element['__elementType'] == 'document') {
+            } elseif ($element['__elementType'] == 'asset') {
+                return  $this->getGraphQlService()->buildAssetType('asset');
+            } elseif ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
                     //TODO maybe catch unsupported types for now ?
-                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
+
                     return $typeDefinition;
                 }
             }

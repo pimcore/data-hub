@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
@@ -29,12 +29,13 @@ class MultiselectType extends ObjectType
     /**
      * @param Service $service
      * @param string $name
+     *
      * @return MultiselectType
+     *
      * @throws \Exception
      */
-    public static function getInstance(Service $service, string $name, $fieldname = "selections")
+    public static function getInstance(Service $service, string $name, $fieldname = 'selections')
     {
-
         if (!isset(self::$instance[$name])) {
             $fields = Helper::getCommonFields();
             $fields[$fieldname] = [
@@ -57,6 +58,4 @@ class MultiselectType extends ObjectType
 
         return self::$instance[$name];
     }
-
-
 }

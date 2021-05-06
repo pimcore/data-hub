@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\MultiselectType;
 
 class Multiselect extends Base
 {
-
     /**
      * @return MultiselectType
      */

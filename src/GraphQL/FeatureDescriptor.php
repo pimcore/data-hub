@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 class FeatureDescriptor extends \ArrayObject
 {
-
     protected $id;
 
     protected $type;
@@ -71,6 +70,4 @@ class FeatureDescriptor extends \ArrayObject
     {
         $this->value = $value;
     }
-
-
 }

@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\Type;
 
 class ExternalImage extends Base
 {
-
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
@@ -29,8 +28,7 @@ class ExternalImage extends Base
         return [
             'arg' => Type::string(),
             'processor' => [$processor, 'process'],
-            'description' => "External Image URL"
+            'description' => 'External Image URL'
         ];
     }
-
 }

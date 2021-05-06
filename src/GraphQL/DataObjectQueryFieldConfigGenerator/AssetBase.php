@@ -19,13 +19,14 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class AssetBase extends Base
 {
-
     /**
      * @param array $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
@@ -42,12 +43,14 @@ class AssetBase extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
+     *
      * @throws \Exception
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->getGraphQlService()->buildAssetType("asset");
+        return $this->getGraphQlService()->buildAssetType('asset');
     }
 
     /**
@@ -60,7 +63,7 @@ class AssetBase extends Base
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\AssetBase($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
-    }
 
+        return [$resolver, 'resolve'];
+    }
 }

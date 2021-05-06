@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\EmbedType;
 
 class Embed extends Base
 {
-
     /**
      * @return EmbedType
      */

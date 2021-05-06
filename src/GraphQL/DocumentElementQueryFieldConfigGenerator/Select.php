@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\SelectType;
 
 class Select extends Base
 {
-
     /**
      * @return SelectType
      */

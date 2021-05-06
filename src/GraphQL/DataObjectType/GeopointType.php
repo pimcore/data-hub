@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -31,11 +31,11 @@ class GeopointType extends ObjectType
                     'fields' => [
                         'longitude' => [
                             'type' => Type::float(),
-                            'resolve' => [$resolver, "resolveLongitude"]
+                            'resolve' => [$resolver, 'resolveLongitude']
                         ],
                         'latitude' => [
                             'type' => Type::float(),
-                            'resolve' => [$resolver, "resolveLatitude"]
+                            'resolve' => [$resolver, 'resolveLatitude']
                         ],
 
                     ],

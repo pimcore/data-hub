@@ -31,14 +31,16 @@ class CheckConsumerPermissionsService
         $securityConfig = $configuration->getSecurityConfig();
         if ($securityConfig['method'] === Configuration::SECURITYCONFIG_AUTH_APIKEY) {
             $apiKey = $request->headers->get('apikey');
-            if(empty($apiKey)) {
+            if (empty($apiKey)) {
                 $apiKey = $request->headers->get('X-API-Key');
             }
-            if(empty($apiKey)) {
+            if (empty($apiKey)) {
                 $apiKey = $request->get('apikey');
             }
+
             return $apiKey === $securityConfig['apikey'];
         }
+
         return false;
     }
 }

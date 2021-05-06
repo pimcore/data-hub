@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -28,15 +28,15 @@ class RelationsType extends ObjectType
 
     /**
      * @param Service $graphQlService
+     *
      * @return RelationType
+     *
      * @throws \Exception
      */
     public static function getInstance(Service $graphQlService)
     {
-
         if (!self::$instance) {
-
-            $anyTargetType = $graphQlService->buildGeneralType("anytarget");
+            $anyTargetType = $graphQlService->buildGeneralType('anytarget');
 
             $config =
                 [
@@ -61,7 +61,6 @@ class RelationsType extends ObjectType
                         'relations' => [
                             'type' => Type::listOf($anyTargetType),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
-
                                 if ($value instanceof Relations) {
                                     $targets = $value->getElements();
                                     if ($targets) {
@@ -70,8 +69,8 @@ class RelationsType extends ObjectType
                                             $data = new ElementDescriptor($target);
                                             $graphQlService->extractData($data, $target, $args, $context, $resolveInfo);
                                             $result[] = $data;
-
                                         }
+
                                         return $result;
                                     }
                                 }
@@ -84,6 +83,4 @@ class RelationsType extends ObjectType
 
         return self::$instance;
     }
-
-
 }

@@ -20,12 +20,12 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Geobounds extends Base
 {
-
     /**
      * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)

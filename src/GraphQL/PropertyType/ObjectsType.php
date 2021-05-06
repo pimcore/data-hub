@@ -32,13 +32,15 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
     /**
      * ObjectsType constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);
-        parent::__construct(["name" => "hotspot_metadata_object"]);
+        parent::__construct(['name' => 'hotspot_metadata_object']);
     }
+
     /**
      * @return array
      *
@@ -50,23 +52,23 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
         $service = $this->getGraphQlService();
 
-        if ($service->querySchemaEnabled("object")) {
+        if ($service->querySchemaEnabled('object')) {
             $objectTypes = array_values(ClassTypeDefinitions::getAll(true));
             $types = array_merge($types, $objectTypes);
         }
 
-        if ($service->querySchemaEnabled("document")) {
-            $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
+        if ($service->querySchemaEnabled('document')) {
+            $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
             $supportedDocumentTypes = $documentUnionType->getTypes();
             $types = array_merge($types, $supportedDocumentTypes);
         }
 
-        if ($service->querySchemaEnabled("asset")) {
-            $types[] = $this->getGraphQlService()->buildAssetType("asset");
+        if ($service->querySchemaEnabled('asset')) {
+            $types[] = $this->getGraphQlService()->buildAssetType('asset');
         }
 
-        if ($service->querySchemaEnabled("asset_folder")) {
-            $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
+        if ($service->querySchemaEnabled('asset_folder')) {
+            $types[] = $this->getGraphQlService()->getAssetTypeDefinition('_asset_folder');
         }
 
         return $types;
@@ -82,14 +84,15 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
                 $type = ClassTypeDefinitions::get($element['__elementSubtype']);
 
                 return $type;
-            } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->buildAssetType("asset");
-            } else if ($element['__elementType'] == 'document') {
+            } elseif ($element['__elementType'] == 'asset') {
+                return  $this->getGraphQlService()->buildAssetType('asset');
+            } elseif ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
-                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
+
                     return $typeDefinition;
                 }
             }
@@ -97,5 +100,4 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
         return null;
     }
-
 }

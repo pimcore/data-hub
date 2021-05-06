@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -20,6 +21,7 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
  * Class ImageGallery
+ *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
  */
 class ImageGallery extends Base
@@ -31,7 +33,9 @@ class ImageGallery extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @throws \Exception
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
@@ -50,12 +54,15 @@ class ImageGallery extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
+     *
      * @throws \Exception
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         $hotspotType = $this->getGraphQlService()->getDataObjectTypeDefinition(Hotspotimage::TYPE);
+
         return Type::listOf($hotspotType);
     }
 
@@ -69,6 +76,7 @@ class ImageGallery extends Base
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\ImageGallery($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
+
+        return [$resolver, 'resolve'];
     }
 }

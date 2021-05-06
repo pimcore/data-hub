@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -30,11 +30,11 @@ class GeoboundsType extends ObjectType
                     'fields' => [
                         'northEast' => [
                             'type' => GeopointType::getInstance(),
-                            'resolve' => [$resolver, "resolveNorthEast"]
+                            'resolve' => [$resolver, 'resolveNorthEast']
                         ],
                         'southWest' => [
                             'type' => GeopointType::getInstance(),
-                            'resolve' => [$resolver, "resolveSouthWest"]
+                            'resolve' => [$resolver, 'resolveSouthWest']
                         ],
 
                     ],

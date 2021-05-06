@@ -15,20 +15,18 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Scheduledblock extends Base
 {
-
-    /** @var ScheduledblockDataType  */
+    /** @var ScheduledblockDataType */
     protected $scheduledblockDataType;
-
 
     /**
      * Scheduledblock constructor.
+     *
      * @param Service $graphQlService
      * @param ScheduledblockDataType $areablockDataType
      */

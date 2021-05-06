@@ -53,6 +53,7 @@ class ReverseManyToManyObjectRelation extends Base
     {
         $className = $fieldDefinition->getOwnerClassName();
         $type = Type::listOf(ClassTypeDefinitions::get($className));
+
         return $type;
     }
 
@@ -66,6 +67,7 @@ class ReverseManyToManyObjectRelation extends Base
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\ReverseManyToManyObjects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+
         return [$resolver, 'resolve'];
     }
 }

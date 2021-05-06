@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\General;
@@ -29,16 +29,14 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
 
     use ServiceTrait;
 
-
-
     /**
      * AnyDocumentTargetType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'AnyDocumentTarget'])
     {
-
         $this->setGraphQLService($graphQlService);
 
         parent::__construct($config);
@@ -46,6 +44,7 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
     public function getTypes(): array
@@ -53,12 +52,13 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
         $types = [];
 
         $service = $this->getGraphQlService();
-        $documentFolderType = $service->getDocumentTypeDefinition("_document_folder");
+        $documentFolderType = $service->getDocumentTypeDefinition('_document_folder');
 
         $types[] = $documentFolderType;
-        $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
+        $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
         $supportedDocumentTypes = $documentUnionType->getTypes();
         $types = array_merge($types, $supportedDocumentTypes);
+
         return $types;
     }
 
@@ -73,13 +73,15 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
-                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
+
                     return $typeDefinition;
                 }
             } else {
-                die("To be done");
+                die('To be done');
             }
         }
+
         return null;
     }
 }

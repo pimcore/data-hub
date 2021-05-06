@@ -39,8 +39,8 @@ class Multihref extends Base implements TypeDefinitionInterface
     {
         return $this->enrichConfig($fieldDefinition, $class, $attribute,
             [
-                'name'    => $fieldDefinition->getName(),
-                'type'    => $this->getFieldType($fieldDefinition, $class, $container),
+                'name' => $fieldDefinition->getName(),
+                'type' => $this->getFieldType($fieldDefinition, $class, $container),
                 'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
             ],
             $container
@@ -69,6 +69,7 @@ class Multihref extends Base implements TypeDefinitionInterface
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Multihref($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
+
+        return [$resolver, 'resolve'];
     }
 }

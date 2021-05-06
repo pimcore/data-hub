@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Mutation;
@@ -68,12 +68,14 @@ class MutationType extends ObjectType
 
     /**
      * MutationType constructor.
+     *
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
      * @param EventDispatcherInterface $eventDispatcher
      * @param array $config
      * @param array $context
+     *
      * @throws \Exception
      */
     public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
@@ -98,7 +100,7 @@ class MutationType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
-        $config["fields"] = [];
+        $config['fields'] = [];
         $event = new MutationTypeEvent(
             $this,
             $config,
@@ -120,27 +122,25 @@ class MutationType extends ObjectType
         $this->buildUpdateDocumentMutation($config, $context, 'create', 'link');
         $this->buildUpdateDocumentMutation($config, $context, 'update', 'link');
 
-        $this->buildCreateFolderMutation("asset", $config, $context);
-        $this->buildCreateFolderMutation("object", $config, $context);
-        $this->buildCreateFolderMutation("document", $config, $context);
-        $this->buildUpdateFolderMutation("asset", $config, $context);
-        $this->buildUpdateFolderMutation("object", $config, $context);
-        $this->buildUpdateFolderMutation("document", $config, $context);
+        $this->buildCreateFolderMutation('asset', $config, $context);
+        $this->buildCreateFolderMutation('object', $config, $context);
+        $this->buildCreateFolderMutation('document', $config, $context);
+        $this->buildUpdateFolderMutation('asset', $config, $context);
+        $this->buildUpdateFolderMutation('object', $config, $context);
+        $this->buildUpdateFolderMutation('document', $config, $context);
         $this->buildDeleteAssetMutation($config, $context);
         $this->buildDeleteDocumentMutation($config, $context);
-        $this->buildDeleteFolderMutation("asset", $config, $context);
-        $this->buildDeleteFolderMutation("document", $config, $context);
-        $this->buildDeleteFolderMutation("object", $config, $context);
-
-
+        $this->buildDeleteFolderMutation('asset', $config, $context);
+        $this->buildDeleteFolderMutation('document', $config, $context);
+        $this->buildDeleteFolderMutation('object', $config, $context);
 
         $event->setConfig($config);
         $event->setContext($context);
         $this->eventDispatcher->dispatch($event, MutationEvents::POST_BUILD);
         $config = $event->getConfig();
 
-        if (isset($config["fields"]) && count($config["fields"]) > 1) {
-            ksort($config["fields"]);
+        if (isset($config['fields']) && count($config['fields']) > 1) {
+            ksort($config['fields']);
         }
     }
 
@@ -149,6 +149,7 @@ class MutationType extends ObjectType
      *
      * @param $config
      * @param array $context
+     *
      * @throws \Exception
      */
     public function buildUpdateDocumentMutation(&$config, $context, $mutationType, $documentType)
@@ -157,28 +158,29 @@ class MutationType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["document"]["update"]) && $entities["document"]["update"]) {
+        if (isset($entities['document']['update']) && $entities['document']['update']) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
 
-            $queryResolver = [$queryResolver, "resolveDocumentGetter"];
+            $queryResolver = [$queryResolver, 'resolveDocumentGetter'];
 
             $opName = $mutationType . 'Document' . ucfirst($documentType);
 
             $service = $this->getGraphQlService();
-            $graphQlDocumentType = $service->getDocumentTypeDefinition("document_" . $documentType);    // this is for the return stuff
+            $graphQlDocumentType = $service->getDocumentTypeDefinition('document_' . $documentType);    // this is for the return stuff
 
             $updateResultType = new ObjectType([
                 'name' => ucfirst($opName) . 'Result',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
-                    "document" => [
+                    'document' => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $graphQlDocumentType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args["id"] = $value["id"];
+                            $args['id'] = $value['id'];
                             $value = $queryResolver($value, $args, $context, $info);
+
                             return $value;
                         }
                     ]
@@ -190,7 +192,7 @@ class MutationType extends ObjectType
                     'key' => ['type' => Type::nonNull(Type::string())],
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
-                    'published' => ['type' => Type::boolean(), 'description' => "Default is true!"]
+                    'published' => ['type' => Type::boolean(), 'description' => 'Default is true!']
                 ];
             } else {
                 $args = [
@@ -199,8 +201,8 @@ class MutationType extends ObjectType
                 ];
             }
 
-            $inputTypeGetter = "getDocument" . ucfirst($documentType) . "MutationInputType";
-            $inputProcessorFn = "processDocument" . ucfirst($documentType) . "MutationInput";
+            $inputTypeGetter = 'getDocument' . ucfirst($documentType) . 'MutationInputType';
+            $inputProcessorFn = 'processDocument' . ucfirst($documentType) . 'MutationInput';
 
             $processors = [];
             $inputType = $this->{$inputTypeGetter}($context, $processors);
@@ -219,32 +221,32 @@ class MutationType extends ObjectType
                     if ($mutationType == 'update') {
                         $element = $me->getElementByTypeAndIdOrPath($args, 'document');
 
-                        if (!WorkspaceHelper::checkPermission($element, "update")) {
+                        if (!WorkspaceHelper::checkPermission($element, 'update')) {
                             return [
-                                "success" => false,
-                                "message" => "not allowed to update document"
+                                'success' => false,
+                                'message' => 'not allowed to update document'
                             ];
                         }
                     } else {
                         $parent = null;
 
-                        if (isset($args["parentId"])) {
-                            $parent = Document::getById($args["parentId"]);
-                        } else if (isset($args["path"])) {
-                            $parent = Document::getByPath($args["path"]);
+                        if (isset($args['parentId'])) {
+                            $parent = Document::getById($args['parentId']);
+                        } elseif (isset($args['path'])) {
+                            $parent = Document::getByPath($args['path']);
                         }
 
                         if (!$parent) {
                             return [
-                                "success" => false,
-                                "message" => "unable to resolve parent"
+                                'success' => false,
+                                'message' => 'unable to resolve parent'
                             ];
                         }
 
-                        if (!WorkspaceHelper::checkPermission($parent, "create")) {
+                        if (!WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
-                                "success" => false,
-                                "message" => "not allowed to create document"
+                                'success' => false,
+                                'message' => 'not allowed to create document'
                             ];
                         }
 
@@ -254,20 +256,19 @@ class MutationType extends ObjectType
                         $element = $factory->build($className);
 
                         $element->setParentId($parent->getId());
-                        $element->setKey($args["key"]);
+                        $element->setKey($args['key']);
                         $element->setPublished($args['published'] ?? true);
                     }
 
-
-                    if (isset($args["input"])) {
-                        MutationType::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
+                    if (isset($args['input'])) {
+                        self::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
                     }
                     $element->save();
 
                     return [
-                        "success" => true,
-                        "message" => "document updated: " . $element->getId(),
-                        "id" => $element->getId()
+                        'success' => true,
+                        'message' => 'document updated: ' . $element->getId(),
+                        'id' => $element->getId()
                     ];
                 }
             ];
@@ -279,6 +280,7 @@ class MutationType extends ObjectType
     /**
      * @param array $context
      * @param array $processors
+     *
      * @return array
      */
     public function getDocumentEmailMutationInputType($context, &$processors = [])
@@ -320,20 +322,22 @@ class MutationType extends ObjectType
                     'bcc' => Type::string()
                 ]
             ]);
+
         return $inputType;
     }
 
     /**
      * @param array $context
      * @param array $processors
+     *
      * @return array
      */
     public function getDocumentLinkMutationInputType($context, &$processors = [])
     {
-        $inputType = $this->getGraphQlService()->getDocumentTypeDefinition("document_link_input");
+        $inputType = $this->getGraphQlService()->getDocumentTypeDefinition('document_link_input');
+
         return $inputType;
     }
-
 
     /**
      * @param mixed $value
@@ -345,16 +349,16 @@ class MutationType extends ObjectType
      */
     public static function processDocumentLinkMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
     {
-        $inputValues = $args["input"];
+        $inputValues = $args['input'];
         foreach ($inputValues as $key => $value) {
             if ($key == 'object') {
-                Logger::debug("test");
-                $type = $value["type"];
-                $id = $value["id"];
+                Logger::debug('test');
+                $type = $value['type'];
+                $id = $value['id'];
                 $target = \Pimcore\Model\Element\Service::getElementById($type, $id);
                 $element->setObject($target);
             } else {
-                $setter = "set" . ucfirst($key);
+                $setter = 'set' . ucfirst($key);
 
                 $element->$setter($value);
             }
@@ -376,13 +380,13 @@ class MutationType extends ObjectType
      */
     public function processDocumentPageMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
     {
-        $inputValues = $args["input"];
+        $inputValues = $args['input'];
         foreach ($inputValues as $key => $value) {
             if ($key == 'editableUpdateStrategy') {
-                if ($value == "replaceAll") {
+                if ($value == 'replaceAll') {
                     $element->setEditables([]);
                 }
-            } else if ($key == 'editables') {
+            } elseif ($key == 'editables') {
                 $element->getEditables();
 
                 foreach ($value as $elementType => $elementTypeValues) {
@@ -394,7 +398,7 @@ class MutationType extends ObjectType
                     }
                 }
             } else {
-                $setter = "set" . ucfirst($key);
+                $setter = 'set' . ucfirst($key);
 
                 $element->$setter($value);
             }
@@ -404,14 +408,13 @@ class MutationType extends ObjectType
     /**
      * @param array $context
      * @param array $processors
+     *
      * @return array
      */
     public function getDocumentPageMutationInputType($context, &$processors = [])
     {
-
         $service = $this->getGraphQlService();
         $configuration = $context['configuration'];
-
 
         $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
         $elementFields = [];
@@ -427,7 +430,6 @@ class MutationType extends ObjectType
 
         $elementInputTypeList = self::$typeCache['document_pagemutationelements'] ?? null;
         if (!$elementInputTypeList) {
-
             $elementInputTypeList = new InputObjectType(['name' => 'document_pagemutationelements',
                 'fields' => $elementFields]);
 
@@ -437,10 +439,10 @@ class MutationType extends ObjectType
 
         if (!isset(self::$typeCache['overwrite_strategy'])) {
             self::$typeCache['overwrite_strategy'] = new EnumType([
-                "name" => "overwrite_strategy",
-                "values" => [
-                    "overwrite",
-                    "update"
+                'name' => 'overwrite_strategy',
+                'values' => [
+                    'overwrite',
+                    'update'
                 ]
             ]);
         }
@@ -460,27 +462,26 @@ class MutationType extends ObjectType
                     'editables' => $elementInputTypeList
                 ]
             ]);
+
         return $inputType;
     }
-
 
     /**
      * @param array $config
      * @param array $context
+     *
      * @throws \Exception
      */
-    public
-    function buildDataObjectMutations(&$config = [], $context = [])
+    public function buildDataObjectMutations(&$config = [], $context = [])
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getMutationEntities();
 
-
         foreach ($entities as $entity) {
             $class = ClassDefinition::getByName($entity);
             if (!$class) {
-                Logger::error("class " . $entity . " not found");
+                Logger::error('class ' . $entity . ' not found');
                 continue;
             }
             $entityConfig = $configuration->getMutationEntityConfig($entity);
@@ -491,10 +492,10 @@ class MutationType extends ObjectType
             $modelFactory = $this->modelFactory;
             $localeService = $this->localeService;
 
-            if (isset($entityConfig["create"]) && $entityConfig["create"]) {
+            if (isset($entityConfig['create']) && $entityConfig['create']) {
                 // create
                 $createResultType = new ObjectType([
-                    'name' => 'Create' . ucfirst($entity) . "Result",
+                    'name' => 'Create' . ucfirst($entity) . 'Result',
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
                         'message' => ['type' => Type::string()],
@@ -502,8 +503,9 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                $args["id"] = $value["id"];
+                                $args['id'] = $value['id'];
                                 $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+
                                 return $value;
                             }
                         ]
@@ -514,7 +516,7 @@ class MutationType extends ObjectType
 
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
-                $inputTypeName = 'Update' . ucfirst($entity) . "Input";
+                $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
                 $inputType = self::$typeCache[$inputTypeName] ?? new InputObjectType([
                         'name' => $inputTypeName,
                         'fields' => $inputFields
@@ -530,70 +532,70 @@ class MutationType extends ObjectType
                         'key' => ['type' => Type::nonNull(Type::string())],
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
-                        'published' => ['type' => Type::boolean(), 'description' => "Default is true!"],
+                        'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'type' => ['type' => Type::string()],
                         'input' => $inputType,
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
                         $parent = null;
 
-                        if (isset($args["parentId"])) {
-                            $parent = AbstractObject::getById($args["parentId"]);
-                        } else if (isset($args["path"])) {
-                            $parent = AbstractObject::getByPath($args["path"]);
+                        if (isset($args['parentId'])) {
+                            $parent = AbstractObject::getById($args['parentId']);
+                        } elseif (isset($args['path'])) {
+                            $parent = AbstractObject::getByPath($args['path']);
                         }
 
                         //TODO maybe add error code?
                         if (!$parent) {
                             return [
-                                "success" => false,
-                                "message" => "unable to resolve parent"
+                                'success' => false,
+                                'message' => 'unable to resolve parent'
                             ];
                         }
 
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
-                        if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "create")) {
+                        if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
-                                "success" => false,
-                                "message" => "not allowed to create object " . $entity
+                                'success' => false,
+                                'message' => 'not allowed to create object ' . $entity
                             ];
                         }
 
                         $published = true;
                         // default is true!
-                        if (isset($args["published"])) {
-                            $published = $args["published"];
+                        if (isset($args['published'])) {
+                            $published = $args['published'];
                         }
 
-                        $key = $args["key"];
-                        $key = DataObject\Service::getValidKey($key,'object');
+                        $key = $args['key'];
+                        $key = DataObject\Service::getValidKey($key, 'object');
 
-                        /** @var  $newInstance Concrete */
+                        /** @var $newInstance Concrete */
                         $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
                         $newInstance = $modelFactory->build($className);
                         $newInstance->setPublished($published);
                         $newInstance->setParent($parent);
                         $newInstance->setKey($key);
 
-                        if (isset($args["type"]) && $args["type"] == "object" || $args["type"] == "variant") {
-                            $newInstance->setType($args["type"]);
+                        if (isset($args['type']) && $args['type'] == 'object' || $args['type'] == 'variant') {
+                            $newInstance->setType($args['type']);
                         }
 
                         $resolver = $me->getUpdateObjectResolver($processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
                         call_user_func_array($resolver, [$value, $args, $context, $info]);
 
-                        if (isset($args["omitMandatoryCheck"])) {
-                            $newInstance->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                        if (isset($args['omitMandatoryCheck'])) {
+                            $newInstance->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                         }
 
                         $newInstance->save();
 
                         return [
-                            "success" => true,
-                            "message" => "object created: " . $newInstance->getId(),
-                            "id" => $newInstance->getId()
+                            'success' => true,
+                            'message' => 'object created: ' . $newInstance->getId(),
+                            'id' => $newInstance->getId()
                         ];
                     }
                 ];
@@ -601,13 +603,13 @@ class MutationType extends ObjectType
                 $config['fields'][$opName] = $createField;
             }
 
-            if (isset($entityConfig["update"]) && $entityConfig["update"]) {
+            if (isset($entityConfig['update']) && $entityConfig['update']) {
 
                 // update
                 $opName = 'update' . ucfirst($entity);
 
                 $updateResultType = new ObjectType([
-                    'name' => 'Update' . ucfirst($entity) . "Result",
+                    'name' => 'Update' . ucfirst($entity) . 'Result',
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
                         'message' => ['type' => Type::string()],
@@ -615,8 +617,9 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                $args["id"] = $value["id"];
+                                $args['id'] = $value['id'];
                                 $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+
                                 return $value;
                             }
                         ]
@@ -626,13 +629,12 @@ class MutationType extends ObjectType
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
                 if ($inputFields) {
-                    $inputTypeName = 'Update' . ucfirst($entity) . "Input";
+                    $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
                     $inputType = isset(self::$typeCache[$inputTypeName]) ? self::$typeCache[$inputTypeName] : new InputObjectType([
                         'name' => $inputTypeName,
                         'fields' => $inputFields
                     ]);
                     self::$typeCache[$inputTypeName] = $inputType;
-
 
                     $updateField = [
                         'type' => $updateResultType,
@@ -649,11 +651,11 @@ class MutationType extends ObjectType
                 }
             }
 
-            if (isset($entityConfig["delete"]) && $entityConfig["delete"]) {
+            if (isset($entityConfig['delete']) && $entityConfig['delete']) {
                 $opName = 'delete' . ucfirst($entity);
 
                 $deleteResultType = new ObjectType([
-                    'name' => 'Delete' . ucfirst($entity) . "Result",
+                    'name' => 'Delete' . ucfirst($entity) . 'Result',
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
                         'message' => ['type' => Type::string()]
@@ -673,43 +675,40 @@ class MutationType extends ObjectType
 
                             $object = $me->getElementByTypeAndIdOrPath($args, 'object');
 
-                            if(!$object){
+                            if (!$object) {
                                 return [
-                                    "success" => false,
-                                    "message" => "unable to delete object. Unknown id or fullpath"
+                                    'success' => false,
+                                    'message' => 'unable to delete object. Unknown id or fullpath'
                                 ];
                             }
 
-                            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, "delete")) {
+                            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'delete')) {
                                 return [
-                                    "success" => false,
-                                    "message" => "permission denied."
+                                    'success' => false,
+                                    'message' => 'permission denied.'
                                 ];
                             }
                             $object->delete();
 
                             return [
-                                "success" => true,
-                                "message" => ""
+                                'success' => true,
+                                'message' => ''
                             ];
                         } catch (\Exception $e) {
                             return [
-                                "success" => false,
-                                "message" => $e->getMessage()
+                                'success' => false,
+                                'message' => $e->getMessage()
                             ];
-
                         }
                     }
                 ];
 
                 $config['fields'][$opName] = $deleteField;
             }
-
         }
     }
 
-    public
-    function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
+    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
     {
         $inputFields = [];
         $processors = [];
@@ -741,29 +740,30 @@ class MutationType extends ObjectType
      * @param LocaleServiceInterface $localeService
      * @param null $object
      * @param bool $omitPermissionCheck
+     *
      * @return \Closure
      */
-    public
-    function getUpdateObjectResolver($processors, $localeService, $object = null, $omitPermissionCheck = false)
+    public function getUpdateObjectResolver($processors, $localeService, $object = null, $omitPermissionCheck = false)
     {
         $me = $this;
+
         return static function ($value, $args, $context, $info) use ($processors, $localeService, $object, $omitPermissionCheck, $me) {
             try {
                 if (!$object) {
                     $object = $me->getElementByTypeAndIdOrPath($args, 'object');
                 }
 
-                if(!$object) {
+                if (!$object) {
                     return [
-                        "success" => false,
-                        "message" => "unable to update object. Unknown id or fullpath"
+                        'success' => false,
+                        'message' => 'unable to update object. Unknown id or fullpath'
                     ];
                 }
 
-                if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($object, "update")) {
+                if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'update')) {
                     return [
-                        "success" => false,
-                        "message" => "permission denied."
+                        'success' => false,
+                        'message' => 'permission denied.'
                     ];
                 }
 
@@ -771,17 +771,16 @@ class MutationType extends ObjectType
                     $localeService->setLocale($args['defaultLanguage']);
                 }
 
-                if (isset($args["omitMandatoryCheck"])) {
-                    $object->setOmitMandatoryCheck($args["omitMandatoryCheck"]);
+                if (isset($args['omitMandatoryCheck'])) {
+                    $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                 }
 
-                $dataIn = $args["input"];
+                $dataIn = $args['input'];
                 if (is_array($dataIn)) {
                     foreach ($dataIn as $key => $value) {
                         if (isset($processors[$key])) {
                             $processor = $processors[$key];
                             call_user_func_array($processor, [$object, $value, $args, $context, $info]);
-
                         }
                     }
                 }
@@ -789,16 +788,15 @@ class MutationType extends ObjectType
                 $object->save();
             } catch (\Exception $e) {
                 return [
-                    "success" => false,
-                    "message" => $e->getMessage()
+                    'success' => false,
+                    'message' => $e->getMessage()
                 ];
-
             }
 
             return [
-                "success" => true,
-                "message" => "hurray",
-                "id" => $object->getId()
+                'success' => true,
+                'message' => 'hurray',
+                'id' => $object->getId()
             ];
         };
     }
@@ -807,30 +805,29 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public
-    function buildCreateAssetMutation(&$config, $context)
+    public function buildCreateAssetMutation(&$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["asset"]["create"]) && $entities["asset"]["create"]) {
+        if (isset($entities['asset']['create']) && $entities['asset']['create']) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
-            $queryResolver = [$queryResolver, "resolveAssetGetter"];
+            $queryResolver = [$queryResolver, 'resolveAssetGetter'];
             $service = $this->getGraphQlService();
-            $assetType = $service->buildAssetType("asset");
+            $assetType = $service->buildAssetType('asset');
 
             $createResultType = new ObjectType([
                 'name' => 'CreateAssetResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
-                    "assetData" => [
+                    'assetData' => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args["id"] = $value["id"] ?? null;
+                            $args['id'] = $value['id'] ?? null;
                             $value = $queryResolver($value, $args, $context, $info);
 
                             return $value;
@@ -849,93 +846,93 @@ class MutationType extends ObjectType
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
                     'type' => ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
                     $parent = null;
 
-                    if (isset($args["parentId"])) {
-                        $parent = Asset::getById($args["parentId"]);
-                    } else if (isset($args["path"])) {
-                        $parent = Asset::getByPath($args["path"]);
+                    if (isset($args['parentId'])) {
+                        $parent = Asset::getById($args['parentId']);
+                    } elseif (isset($args['path'])) {
+                        $parent = Asset::getByPath($args['path']);
                     }
 
                     //TODO maybe add error code?
                     if (!$parent) {
                         return [
-                            "success" => false,
-                            "message" => "unable to resolve parent"
+                            'success' => false,
+                            'message' => 'unable to resolve parent'
                         ];
                     }
 
-                    if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "create")) {
+                    if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                         return [
-                            "success" => false,
-                            "message" => "not allowed to create asset"
+                            'success' => false,
+                            'message' => 'not allowed to create asset'
                         ];
                     }
 
-                    $type = $args["type"];
+                    $type = $args['type'];
 
-                    /** @var  $newInstance Concrete */
+                    /** @var $newInstance Concrete */
                     $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
                     $newInstance = new $className();
                     $newInstance->setParentId($parent->getId());
 
-                    if (isset($args["input"])) {
-                        $inputValues = $args["input"];
+                    if (isset($args['input'])) {
+                        $inputValues = $args['input'];
                         foreach ($inputValues as $key => $value) {
-                            if ($key === "data") {
+                            if ($key === 'data') {
                                 $value = base64_decode($value);
                             }
-                            $setter = "set" . ucfirst($key);
+                            $setter = 'set' . ucfirst($key);
                             $newInstance->$setter($value);
                         }
                     }
                     $newInstance->save();
 
                     return [
-                        "success" => true,
-                        "message" => "asset created: " . $newInstance->getId(),
-                        "id" => $newInstance->getId()
+                        'success' => true,
+                        'message' => 'asset created: ' . $newInstance->getId(),
+                        'id' => $newInstance->getId()
                     ];
                 }
             ];
 
             $config['fields'][$opName] = $createField;
-
         }
     }
 
     /**
      * @param $config
      * @param array $context
+     *
      * @throws \Exception
      */
-    public
-    function buildUpdateAssetMutation(&$config, $context)
+    public function buildUpdateAssetMutation(&$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["asset"]["update"]) && $entities["asset"]["update"]) {
+        if (isset($entities['asset']['update']) && $entities['asset']['update']) {
             $queryResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, null, $configuration);
             $queryResolver->setGraphQlService($this->getGraphQlService());
-            $queryResolver = [$queryResolver, "resolveAssetGetter"];
+            $queryResolver = [$queryResolver, 'resolveAssetGetter'];
             $service = $this->getGraphQlService();
-            $assetType = $service->buildAssetType("asset");
+            $assetType = $service->buildAssetType('asset');
 
             $updateResultType = new ObjectType([
                 'name' => 'UpdateAssetResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
-                    "assetData" => [
+                    'assetData' => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args["id"] = $value["id"];
+                            $args['id'] = $value['id'];
                             $value = $queryResolver($value, $args, $context, $info);
+
                             return $value;
                         }
                     ]
@@ -950,33 +947,31 @@ class MutationType extends ObjectType
                 'args' => [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition("asset_input"),
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
 
-
-                    if (isset($args["input"])) {
-                        $inputValues = $args["input"];
+                    if (isset($args['input'])) {
+                        $inputValues = $args['input'];
                         foreach ($inputValues as $key => $value) {
-                            if ($key === "data") {
+                            if ($key === 'data') {
                                 $value = base64_decode($value);
                             }
-                            $setter = "set" . ucfirst($key);
+                            $setter = 'set' . ucfirst($key);
                             $element->$setter($value);
                         }
                     }
                     $element->save();
 
                     return [
-                        "success" => true,
-                        "message" => "asset updated: " . $element->getId(),
-                        "id" => $element->getId()
+                        'success' => true,
+                        'message' => 'asset updated: ' . $element->getId(),
+                        'id' => $element->getId()
                     ];
                 }
             ];
 
             $config['fields'][$opName] = $updateField;
-
         }
     }
 
@@ -985,17 +980,16 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public
-    function buildCreateFolderMutation($type, &$config, $context)
+    public function buildCreateFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["create"]) && $entities[$type . "_folder"]["create"]) {
-            $opName = 'create' . ucfirst($type) . "Folder";
+        if (isset($entities[$type . '_folder']['create']) && $entities[$type . '_folder']['create']) {
+            $opName = 'create' . ucfirst($type) . 'Folder';
             $createResultType = new ObjectType([
-                'name' => 'Create' . ucfirst($type) . "FolderResult",
+                'name' => 'Create' . ucfirst($type) . 'FolderResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
@@ -1008,7 +1002,7 @@ class MutationType extends ObjectType
                 'parentId' => ['type' => Type::int()]
             ];
 
-            if ($type === "asset") {
+            if ($type === 'asset') {
                 $args['filename'] = ['type' => Type::nonNull(Type::string())];
             } else {
                 $args['key'] = ['type' => Type::nonNull(Type::string())];
@@ -1027,59 +1021,59 @@ class MutationType extends ObjectType
 
     /**
      * @param $elementType
+     *
      * @return \Closure
      */
-    public
-    function getCreateFolderResolver($elementType)
+    public function getCreateFolderResolver($elementType)
     {
         $me = $this;
+
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
-
-            if ($elementType == "asset") {
-                if (isset($args["parentId"])) {
-                    $parent = Asset::getById($args["parentId"]);
-                } else if (isset($args["path"])) {
-                    $parent = Asset::getByPath($args["path"]);
+            if ($elementType == 'asset') {
+                if (isset($args['parentId'])) {
+                    $parent = Asset::getById($args['parentId']);
+                } elseif (isset($args['path'])) {
+                    $parent = Asset::getByPath($args['path']);
                 }
-            } else if ($elementType == "document") {
-                if (isset($args["parentId"])) {
-                    $parent = Document::getById($args["parentId"]);
-                } else if (isset($args["path"])) {
-                    $parent = Document::getByPath($args["path"]);
+            } elseif ($elementType == 'document') {
+                if (isset($args['parentId'])) {
+                    $parent = Document::getById($args['parentId']);
+                } elseif (isset($args['path'])) {
+                    $parent = Document::getByPath($args['path']);
                 }
             } else {
-                if (isset($args["parentId"])) {
-                    $parent = AbstractObject::getById($args["parentId"]);
-                } else if (isset($args["path"])) {
-                    $parent = AbstractObject::getByPath($args["path"]);
+                if (isset($args['parentId'])) {
+                    $parent = AbstractObject::getById($args['parentId']);
+                } elseif (isset($args['path'])) {
+                    $parent = AbstractObject::getByPath($args['path']);
                 }
             }
 
             if (!$parent) {
                 return [
-                    "success" => false,
-                    "message" => "unable to resolve parent"
+                    'success' => false,
+                    'message' => 'unable to resolve parent'
                 ];
             }
 
-            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "create")) {
+            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                 return [
-                    "success" => false,
-                    "message" => "not allowed to create " . $elementType . "folder "
+                    'success' => false,
+                    'message' => 'not allowed to create ' . $elementType . 'folder '
                 ];
             }
 
-            if ($elementType === "asset") {
+            if ($elementType === 'asset') {
                 $newInstance = new Folder();
-                $newInstance->setFilename($args["filename"]);
-            } else if ($elementType === "object") {
+                $newInstance->setFilename($args['filename']);
+            } elseif ($elementType === 'object') {
                 $newInstance = new DataObject\Folder();
-                $newInstance->setKey($args["key"]);
-            } else if ($elementType === "document") {
+                $newInstance->setKey($args['key']);
+            } elseif ($elementType === 'document') {
                 $newInstance = new Document\Folder();
-                $newInstance->setKey($args["key"]);
+                $newInstance->setKey($args['key']);
             }
 
             $newInstance->setParentId($parent->getId());
@@ -1087,12 +1081,11 @@ class MutationType extends ObjectType
             $newInstance->save();
 
             return [
-                "success" => true,
-                "message" => "folder created: " . $newInstance->getId(),
-                "id" => $newInstance->getId()
+                'success' => true,
+                'message' => 'folder created: ' . $newInstance->getId(),
+                'id' => $newInstance->getId()
             ];
         };
-
     }
 
     /**
@@ -1100,32 +1093,31 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public
-    function buildUpdateFolderMutation($type, &$config, $context)
+    public function buildUpdateFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["update"]) && $entities[$type . "_folder"]["update"]) {
+        if (isset($entities[$type . '_folder']['update']) && $entities[$type . '_folder']['update']) {
             // update
-            $opName = 'update' . ucfirst($type) . "Folder";
+            $opName = 'update' . ucfirst($type) . 'Folder';
 
             $inputFields = [
                 'parentId' => ['type' => Type::int()]
             ];
-            if ($type === "asset") {
+            if ($type === 'asset') {
                 $inputFields['filename'] = ['type' => Type::string()];
             } else {
                 $inputFields['key'] = ['type' => Type::string()];
             }
             $inputType = new InputObjectType([
-                'name' => 'Update' . ucfirst($type) . "FolderInput",
+                'name' => 'Update' . ucfirst($type) . 'FolderInput',
                 'fields' => $inputFields
             ]);
 
             $updateResultType = new ObjectType([
-                'name' => 'Update' . ucfirst($type) . "FolderResult",
+                'name' => 'Update' . ucfirst($type) . 'FolderResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()]
@@ -1147,49 +1139,47 @@ class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "update")) {
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'update')) {
                             return [
-                                "success" => false,
-                                "message" => "permission denied."
+                                'success' => false,
+                                'message' => 'permission denied.'
                             ];
                         }
 
-                        $inputArgs = isset($args["input"]) ? $args["input"] : [];
+                        $inputArgs = isset($args['input']) ? $args['input'] : [];
 
                         foreach ($inputArgs as $argKey => $argValue) {
-                            $setter = "set" . ucfirst($argKey);
+                            $setter = 'set' . ucfirst($argKey);
                             $element->$setter($argValue);
                         }
 
                         $element->save();
                     } catch (\Exception $e) {
                         return [
-                            "success" => false,
-                            "message" => $e->getMessage()
+                            'success' => false,
+                            'message' => $e->getMessage()
                         ];
                     }
 
                     return [
-                        "success" => true,
-                        "message" => "hurray",
-                        "id" => $element->getId()
+                        'success' => true,
+                        'message' => 'hurray',
+                        'id' => $element->getId()
                     ];
                 }
             ];
 
             $config['fields'][$opName] = $updateField;
         }
-
     }
 
     /**
      * @param $config
      * @param array $context
      */
-    public
-    function buildDeleteAssetMutation(&$config, $context)
+    public function buildDeleteAssetMutation(&$config, $context)
     {
-        $this->buildDeleteElementMutation($config, $context, "asset");
+        $this->buildDeleteElementMutation($config, $context, 'asset');
     }
 
     /**
@@ -1197,14 +1187,13 @@ class MutationType extends ObjectType
      * @param array $context
      * @param $type
      */
-    public
-    function buildDeleteElementMutation(&$config, $context, $type)
+    public function buildDeleteElementMutation(&$config, $context, $type)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type]["delete"]) && $entities[$type]["delete"]) {
+        if (isset($entities[$type]['delete']) && $entities[$type]['delete']) {
             $opName = 'delete' . ucfirst($type);
 
             $deleteResultType = new ObjectType([
@@ -1225,27 +1214,27 @@ class MutationType extends ObjectType
                     'fullpath' => ['type' => Type::string()],
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
-                        $id = $args["id"];
+                        $id = $args['id'];
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "delete")) {
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
-                                "success" => false,
-                                "message" => "delete " . $type . " permission denied."
+                                'success' => false,
+                                'message' => 'delete ' . $type . ' permission denied.'
                             ];
                         }
                         $element->delete();
 
                         return [
-                            "success" => true,
-                            "message" => $type . " " . $id . " deleted"
+                            'success' => true,
+                            'message' => $type . ' ' . $id . ' deleted'
                         ];
                     } catch (\Exception $e) {
                         return [
-                            "success" => false,
-                            "message" => $e->getMessage()
+                            'success' => false,
+                            'message' => $e->getMessage()
                         ];
                     }
                 }
@@ -1259,10 +1248,9 @@ class MutationType extends ObjectType
      * @param $config
      * @param array $context
      */
-    public
-    function buildDeleteDocumentMutation(&$config, $context)
+    public function buildDeleteDocumentMutation(&$config, $context)
     {
-        $this->buildDeleteElementMutation($config, $context, "document");
+        $this->buildDeleteElementMutation($config, $context, 'document');
     }
 
     /**
@@ -1270,18 +1258,17 @@ class MutationType extends ObjectType
      * @param array $config
      * @param array $context
      */
-    public
-    function buildDeleteFolderMutation($type, &$config, $context)
+    public function buildDeleteFolderMutation($type, &$config, $context)
     {
         /** @var $configuration Configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["delete"]) && $entities[$type . "_folder"]["delete"]) {
-            $opName = 'delete' . ucfirst($type) . "Folder";
+        if (isset($entities[$type . '_folder']['delete']) && $entities[$type . '_folder']['delete']) {
+            $opName = 'delete' . ucfirst($type) . 'Folder';
 
             $deleteResultType = new ObjectType([
-                'name' => 'Delete' . ucfirst($type) . "FolderResult",
+                'name' => 'Delete' . ucfirst($type) . 'FolderResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()]
@@ -1298,27 +1285,27 @@ class MutationType extends ObjectType
                     'fullpath' => ['type' => Type::string()],
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
-                        $id = $args["id"];
+                        $id = $args['id'];
                         /** @var $configuration Configuration */
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, "delete")) {
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
-                                "success" => false,
-                                "message" => "delete " . $type . " permission denied."
+                                'success' => false,
+                                'message' => 'delete ' . $type . ' permission denied.'
                             ];
                         }
                         $element->delete();
 
                         return [
-                            "success" => true,
-                            "message" => ""
+                            'success' => true,
+                            'message' => ''
                         ];
                     } catch (\Exception $e) {
                         return [
-                            "success" => false,
-                            "message" => $e->getMessage()
+                            'success' => false,
+                            'message' => $e->getMessage()
                         ];
                     }
                 }
@@ -1330,61 +1317,60 @@ class MutationType extends ObjectType
 
     /**
      * @param $elementType
+     *
      * @return \Closure
      */
-    public
-    function getUpdateFolderResolver($elementType)
+    public function getUpdateFolderResolver($elementType)
     {
         $me = $this;
+
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
-            if (isset($args["parentId"])) {
-                $parent = AbstractObject::getById($args["parentId"]);
-            } else if (isset($args["path"])) {
-                $parent = AbstractObject::getByPath($args["path"]);
+            if (isset($args['parentId'])) {
+                $parent = AbstractObject::getById($args['parentId']);
+            } elseif (isset($args['path'])) {
+                $parent = AbstractObject::getByPath($args['path']);
             }
 
             if (!$parent) {
                 return [
-                    "success" => false,
-                    "message" => "unable to resolve parent"
+                    'success' => false,
+                    'message' => 'unable to resolve parent'
                 ];
             }
 
-            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, "update")) {
+            if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'update')) {
                 return [
-                    "success" => false,
-                    "message" => "not allowed to create " . $elementType . "folder "
+                    'success' => false,
+                    'message' => 'not allowed to create ' . $elementType . 'folder '
                 ];
             }
 
-            if ($elementType === "asset") {
+            if ($elementType === 'asset') {
                 $newInstance = new Folder();
-                $newInstance->setFilename($args["filename"]);
+                $newInstance->setFilename($args['filename']);
             } else {
                 $newInstance = new \Pimcore\Model\DataObject\Folder();
-                $newInstance->setKey($args["key"]);
+                $newInstance->setKey($args['key']);
             }
             $newInstance->setParentId($parent->getId());
 
             $newInstance->save();
 
             return [
-                "success" => true,
-                "message" => "folder created: " . $newInstance->getId(),
-                "id" => $newInstance->getId()
+                'success' => true,
+                'message' => 'folder created: ' . $newInstance->getId(),
+                'id' => $newInstance->getId()
             ];
         };
-
     }
 
     /**
      * @return bool
      */
-    public
-    function isEmpty()
+    public function isEmpty()
     {
-        return !$this->config["fields"];
+        return !$this->config['fields'];
     }
 }

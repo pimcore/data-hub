@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 class ManyToOneRelation extends Base
 {
-
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
@@ -25,9 +24,8 @@ class ManyToOneRelation extends Base
         $processor->setGraphQLService($this->getGraphQlService());
 
         return [
-            'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition("elementdescriptor_input"),
+            'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('elementdescriptor_input'),
             'processor' => [$processor, 'process']
         ];
     }
-
 }

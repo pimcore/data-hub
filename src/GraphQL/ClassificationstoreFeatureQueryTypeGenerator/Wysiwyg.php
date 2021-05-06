@@ -19,12 +19,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringTy
 
 class Wysiwyg extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|StringType
      */
     public function getFieldType()
     {
-        return StringType::getInstance("csFeatureWysiwyg", "text");
+        return StringType::getInstance('csFeatureWysiwyg', 'text');
     }
 }

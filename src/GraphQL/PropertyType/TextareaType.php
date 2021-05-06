@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -29,15 +29,15 @@ class TextareaType extends ObjectType
 
     /**
      * TextareaType constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
     {
-
         $this->graphQlService = $graphQlService;
 
         $config = [
-            'name' => "property_textarea",
+            'name' => 'property_textarea',
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
@@ -60,7 +60,7 @@ class TextareaType extends ObjectType
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem) {
                             return $value->getValue();
-                        } else if ($value instanceof Property) {
+                        } elseif ($value instanceof Property) {
                             return $value->getData();
                         }
                     }

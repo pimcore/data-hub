@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -30,6 +30,7 @@ class QuantityValueType extends ObjectType
 
     /**
      * QuantityValueType constructor.
+     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config
@@ -54,9 +55,7 @@ class QuantityValueType extends ObjectType
         }
 
         $config['fields'] = self::getFieldConfig($this->getGraphQlService(), $valueType);
-
     }
-
 
     public static function getFieldConfig(Service $graphQlService, $valueType)
     {
@@ -65,18 +64,19 @@ class QuantityValueType extends ObjectType
         $fields = [
             'unit' => [
                 'type' => QuantityValueUnitType::getInstance(),
-                'resolve' => [$resolver, "resolveUnit"]
+                'resolve' => [$resolver, 'resolveUnit']
             ],
             'value' => [
                 'type' => $valueType,
-                'resolve' => [$resolver, "resolveValue"]
+                'resolve' => [$resolver, 'resolveValue']
             ],
             'toString' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, "resolveToString"],
+                'resolve' => [$resolver, 'resolveToString'],
                 'args' => ['language' => ['type' => Type::string()]]
             ]
         ];
+
         return $fields;
     }
 }

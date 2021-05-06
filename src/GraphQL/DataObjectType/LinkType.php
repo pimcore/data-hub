@@ -30,12 +30,12 @@ class LinkType extends ObjectType
                 [
                     'fields' => [
                         'text' => [
-                            'type'    => Type::string(),
-                            'resolve' => [$resolver, "resolveText"]
+                            'type' => Type::string(),
+                            'resolve' => [$resolver, 'resolveText']
                         ],
                         'path' => [
-                            'type'    => Type::string(),
-                            'resolve' => [$resolver, "resolvePath"]
+                            'type' => Type::string(),
+                            'resolve' => [$resolver, 'resolvePath']
                         ]
                     ],
                 ];

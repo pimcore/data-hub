@@ -19,12 +19,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringTy
 
 class Slider extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|StringType
      */
     public function getFieldType()
     {
-        return StringType::getInstance("csFeatureSlider", "slidervalue");
+        return StringType::getInstance('csFeatureSlider', 'slidervalue');
     }
 }

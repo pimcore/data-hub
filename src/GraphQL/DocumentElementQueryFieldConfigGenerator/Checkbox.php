@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\CheckboxType;
 
 class Checkbox extends Base
 {
-
     /**
      * @return CheckboxType
      */

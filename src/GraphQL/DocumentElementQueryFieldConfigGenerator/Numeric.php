@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\NumericType;
 
 class Numeric extends Base
 {
-
     /**
      * @return NumericType
      */

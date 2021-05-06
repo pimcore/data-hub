@@ -31,7 +31,7 @@ class LocaleSwitcher extends Base
 
         $factories = $this->getGraphQlService()->getDataObjectMutationTypeGeneratorFactories();
 
-        $typeName = strtolower($nodeDef["attributes"]["class"]);
+        $typeName = strtolower($nodeDef['attributes']['class']);
         $factory = $factories->get('typegenerator_dataobjectmutationoperator_' . $typeName);
         $determinedType = $factory->resolveInputTypeFromNodeDef($nodeDef, $class, $container);
 
@@ -40,5 +40,4 @@ class LocaleSwitcher extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
 }

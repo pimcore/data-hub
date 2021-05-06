@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -24,10 +24,8 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\Document;
 
-
 class MultihrefMetadata
 {
-
     use ServiceTrait;
 
     protected $fieldDefinition;
@@ -39,6 +37,7 @@ class MultihrefMetadata
 
     /**
      * MultihrefMetadata constructor.
+     *
      * @param ClassDefinition\Data $fieldDefinition
      * @param ClassDefinition $class
      * @param mixed $fieldHelper
@@ -50,13 +49,14 @@ class MultihrefMetadata
         $this->fieldHelper = $fieldHelper;
     }
 
-
     /**
      * @param array|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveElement($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -71,9 +71,9 @@ class MultihrefMetadata
 
         if ($value['element']['__elementType'] == 'object') {
             $element = AbstractObject::getById($destId);
-        } else  if ($value['element']['__elementType'] == 'asset') {
+        } elseif ($value['element']['__elementType'] == 'asset') {
             $element = Asset::getById($destId);
-        } else if ($value['element']['__elementType'] == 'document') {
+        } elseif ($value['element']['__elementType'] == 'document') {
             $element = Document::getById($destId);
         }
 
@@ -92,7 +92,9 @@ class MultihrefMetadata
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -118,4 +120,3 @@ class MultihrefMetadata
         return null;
     }
 }
-

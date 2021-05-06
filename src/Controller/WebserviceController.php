@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
@@ -106,11 +106,12 @@ class WebserviceController extends FrontendController
         }
 
         if ($response = $this->cacheService->load($request)) {
-            Logger::debug("Loading response from cache");
+            Logger::debug('Loading response from cache');
+
             return $response;
         }
 
-        Logger::debug("Cache entry not found");
+        Logger::debug('Cache entry not found');
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];

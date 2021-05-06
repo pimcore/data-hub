@@ -27,8 +27,8 @@ class Numeric extends Base
         $processor->setGraphQLService($this->getGraphQlService());
 
         $type = Type::float();
-        $nodeAttributes = $nodeDef["attributes"];
-        $key = $nodeAttributes["attribute"];
+        $nodeAttributes = $nodeDef['attributes'];
+        $key = $nodeAttributes['attribute'];
         $fieldDefinition = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $key);
         if ($fieldDefinition instanceof Data\Numeric) {
             if ($fieldDefinition->getInteger()) {
@@ -41,6 +41,4 @@ class Numeric extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
-
 }

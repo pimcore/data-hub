@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
@@ -30,7 +30,6 @@ class CheckboxType extends ObjectType
      */
     public static function getInstance()
     {
-
         if (!isset(self::$instance)) {
             $fields = Helper::getCommonFields();
             $fields['checked'] = [
@@ -44,7 +43,7 @@ class CheckboxType extends ObjectType
 
             $config =
                 [
-                    'name' => "csFeatureCheckbox",
+                    'name' => 'csFeatureCheckbox',
                     'interfaces' => [CsFeature::getInstance()],
                     'fields' => $fields
 
@@ -54,6 +53,4 @@ class CheckboxType extends ObjectType
 
         return self::$instance;
     }
-
-
 }

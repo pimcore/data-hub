@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\TextareaType;
 
 class Textarea extends Base
 {
-
     /**
      * @return TextareaType
      */

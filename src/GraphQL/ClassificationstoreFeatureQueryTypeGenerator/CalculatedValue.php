@@ -19,12 +19,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringTy
 
 class CalculatedValue extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|StringType
      */
     public function getFieldType()
     {
-        return StringType::getInstance("csFeatureCalculatedValue", "calculatedvalue");
+        return StringType::getInstance('csFeatureCalculatedValue', 'calculatedvalue');
     }
 }

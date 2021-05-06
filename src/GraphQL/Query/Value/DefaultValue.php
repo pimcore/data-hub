@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pimcore
  *
@@ -8,11 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    Object
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
@@ -20,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Element\ElementInterface;
 
 class DefaultValue extends AbstractValue
 {
@@ -50,7 +47,6 @@ class DefaultValue extends AbstractValue
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
             if ($value) {
-
                 $value = $this->getGraphQlService()->getElementFromArrayObject($value);
 
                 $result = new \stdClass();
@@ -59,6 +55,7 @@ class DefaultValue extends AbstractValue
                 return $result;
             }
         }
+
         return null;
     }
 }

@@ -22,6 +22,7 @@ use Pimcore\Model\Dao\AbstractDao;
 
 /**
  * Class Dao
+ *
  * @package Pimcore\Bundle\DataHubBundle\Configuration
  */
 class Dao extends AbstractDao
@@ -194,6 +195,7 @@ class Dao extends AbstractDao
     /**
      * @param $who
      * @param $to
+     *
      * @throws \Exception
      */
     public static function moveConfiguration($who, $to): void
@@ -212,6 +214,7 @@ class Dao extends AbstractDao
     /**
      * @param $who
      * @param $to
+     *
      * @throws \Exception
      */
     public static function moveFolder($who, $to): void
@@ -225,6 +228,7 @@ class Dao extends AbstractDao
     /**
      * @param $who
      * @param $to
+     *
      * @throws \Exception
      */
     private static function moveFolderRec($who, $to): void
@@ -253,6 +257,7 @@ class Dao extends AbstractDao
     /**
      * @param $old
      * @param $now
+     *
      * @throws \Exception
      */
     private static function moveSubfolders($old, $now): void

@@ -22,6 +22,7 @@ class Table extends AbstractTable
 {
     /**
      * @param Data|Data\Table $fieldDefinition
+     *
      * @return array
      */
     protected function getTableColumns(Data $fieldDefinition): array
@@ -36,12 +37,14 @@ class Table extends AbstractTable
             foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
                 $columns[$columnConfig['key']] = Type::string();
             }
+
             return $columns;
         }
 
         foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
             $columns['col' . $i] = Type::string();
         }
+
         return $columns;
     }
 }

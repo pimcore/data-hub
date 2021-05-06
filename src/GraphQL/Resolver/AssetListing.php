@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -21,15 +21,13 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Listing\AbstractListing;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AssetListing
@@ -40,6 +38,7 @@ class AssetListing
 
     /**
      * AssetListing constructor.
+     *
      * @param Service                  $graphQlService
      * @param EventDispatcherInterface $eventDispatcher
      */
@@ -55,6 +54,7 @@ class AssetListing
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -67,6 +67,7 @@ class AssetListing
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -85,7 +86,9 @@ class AssetListing
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveListing($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -110,6 +113,7 @@ class AssetListing
                 static function ($fullpath) use ($db) {
                     $fullpath = trim($fullpath, " '");
                     $fullpath = \Pimcore\Model\Element\Service::correctPath($fullpath);
+
                     return $db->quote($fullpath);
                 },
                 explode(',', $args['fullpaths'])
@@ -172,7 +176,7 @@ class AssetListing
             $objectList->setCondition($condition);
         }
 
-        $event =  new ListingEvent(
+        $event = new ListingEvent(
             $objectList,
             $args,
             $context,
@@ -208,6 +212,7 @@ class AssetListing
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveListingTotalCount($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -215,13 +220,14 @@ class AssetListing
         return $value['totalCount'];
     }
 
-
     /**
      * @param array $elements
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     protected function extractMultipleElements($elements, $args, $context, $resolveInfo)
@@ -232,6 +238,7 @@ class AssetListing
                 $result[] = $this->extractSingleElement($element, $args, $context, $resolveInfo);
             }
         }
+
         return array_filter($result);
     }
 
@@ -240,7 +247,9 @@ class AssetListing
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     protected function extractSingleElement($element, $args, $context, $resolveInfo)
@@ -261,7 +270,7 @@ class AssetListing
 
             return $data;
         }
+
         return null;
     }
 }
-

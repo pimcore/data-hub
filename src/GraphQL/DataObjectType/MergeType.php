@@ -21,7 +21,6 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -39,6 +38,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
 
     /**
      * MergeType constructor.
+     *
      * @param Service $graphQlService
      * @param $nodeDef
      * @param null $class
@@ -105,7 +105,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
                 return $type;
             } else {
                 if ($element['__elementType'] == 'asset') {
-                    return $this->getGraphQlService()->buildAssetType("asset");
+                    return $this->getGraphQlService()->buildAssetType('asset');
                 }
             }
         }

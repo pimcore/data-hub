@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Checkbox
 
 class Checkbox extends Base
 {
-
     /**
      * @return CheckboxType
      */

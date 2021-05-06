@@ -21,11 +21,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Link extends Base
 {
-
     protected $linkDataType;
 
     /**
      * Link constructor.
+     *
      * @param Service $graphQlService
      * @param LinkDataType $linkDataType
      */

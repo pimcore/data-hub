@@ -19,13 +19,13 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Multisel
 
 class Languagemultiselect extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|MultiselectType
+     *
      * @throws \Exception
      */
     public function getFieldType()
     {
-        return MultiselectType::getInstance($this->getGraphQlService(), "csFeatureLangugeMultiselect", "languages");
+        return MultiselectType::getInstance($this->getGraphQlService(), 'csFeatureLangugeMultiselect', 'languages');
     }
 }

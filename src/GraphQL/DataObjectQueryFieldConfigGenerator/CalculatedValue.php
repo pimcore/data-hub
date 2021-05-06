@@ -19,6 +19,7 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
  * Class CalculatedValue
+ *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
  */
 class CalculatedValue extends Base

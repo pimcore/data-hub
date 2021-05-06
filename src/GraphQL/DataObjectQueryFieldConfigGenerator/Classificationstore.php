@@ -23,12 +23,12 @@ use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 
 class Classificationstore extends Base
 {
-
     /**
      * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
@@ -37,36 +37,36 @@ class Classificationstore extends Base
             'name' => $fieldDefinition->getName(),
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'args' => ['language' => ['type' => Type::string()]],
-            'description' => "returns a list of group containers",
+            'description' => 'returns a list of group containers',
             'resolve' => function ($value, $args, $context = [], ResolveInfo $resolveInfo = null) {
-                    $fieldName = $resolveInfo->fieldName;
-                    $language = isset($args["language"]) ? $args["language"] : null;
-                    /** @var  $csField \Pimcore\Model\DataObject\Classificationstore*/
-                    $csField = $value[$fieldName];
+                $fieldName = $resolveInfo->fieldName;
+                $language = isset($args['language']) ? $args['language'] : null;
+                /** @var $csField \Pimcore\Model\DataObject\Classificationstore */
+                $csField = $value[$fieldName];
 
-                    $fd = new Data\Classificationstore();
-                    $fd->setName($fieldName);
-                    $activeGroups = [];
-                    $activeGroups = $fd->recursiveGetActiveGroupsIds($csField->getObject(), $activeGroups);
+                $fd = new Data\Classificationstore();
+                $fd->setName($fieldName);
+                $activeGroups = [];
+                $activeGroups = $fd->recursiveGetActiveGroupsIds($csField->getObject(), $activeGroups);
 
-                    $result = [];
-                    foreach ($activeGroups as $groupId => $enabled) {
-                        // in case group name and description is not needed this can be optimized
-                        // analyze the resolveInfo
-                        $groupConfig = GroupConfig::getById($groupId);
+                $result = [];
+                foreach ($activeGroups as $groupId => $enabled) {
+                    // in case group name and description is not needed this can be optimized
+                    // analyze the resolveInfo
+                    $groupConfig = GroupConfig::getById($groupId);
 
-                        if ($groupConfig) {
-                            $result[] = [
-                                "id" => $groupId,
-                                "name" => $groupConfig->getName(),
-                                "description" => $groupConfig->getDescription(),
-                                "_csValue" => $csField,
-                                "_language" => $language
+                    if ($groupConfig) {
+                        $result[] = [
+                                'id' => $groupId,
+                                'name' => $groupConfig->getName(),
+                                'description' => $groupConfig->getDescription(),
+                                '_csValue' => $csField,
+                                '_language' => $language
                             ];
-                        }
-
                     }
-                    return $result;
+                }
+
+                return $result;
             }
         ], $container);
     }
@@ -81,7 +81,8 @@ class Classificationstore extends Base
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         $service = $this->getGraphQlService();
-        $groupType = $service->getClassificationStoreTypeDefinition("cs_group");
+        $groupType = $service->getClassificationStoreTypeDefinition('cs_group');
+
         return Type::listOf($groupType);
     }
 }

@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
@@ -20,10 +20,8 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Logger;
 use Pimcore\Model\Asset;
 
-
 class DocumentFieldHelper extends AbstractFieldHelper
 {
-
     /**
      * @param FieldNode $ast
      * @param array $data

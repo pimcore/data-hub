@@ -59,6 +59,7 @@ class Href extends Base
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Href($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
+
+        return [$resolver, 'resolve'];
     }
 }

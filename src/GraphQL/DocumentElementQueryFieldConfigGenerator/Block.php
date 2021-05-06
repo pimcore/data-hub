@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\BlockType;
 
 class Block extends Base
 {
-
     /**
      * @return BlockType
      */

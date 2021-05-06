@@ -9,12 +9,11 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
-
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -23,7 +22,6 @@ use Pimcore\Model\Document\PageSnippet;
 
 class Image extends Base
 {
-
     /**
      * @param PageSnippet $document
      * @param mixed $newValue
@@ -33,7 +31,6 @@ class Image extends Base
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
-
         $dataFromEditMode = [];
 
         $assetId = $newValue['id'];
@@ -53,7 +50,6 @@ class Image extends Base
         $editableName = $newValue['_editableName'];
         $editable->setName($editableName);
 
-
         $editable->setDataFromEditmode($dataFromEditMode);
 
         if (method_exists($document, 'setElement')) {
@@ -62,6 +58,4 @@ class Image extends Base
             $document->setEditable($editable);
         }
     }
-
 }
-

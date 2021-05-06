@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\General;
@@ -27,6 +27,7 @@ abstract class FolderType extends ObjectType
 
     /**
      * FolderType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
@@ -41,6 +42,5 @@ abstract class FolderType extends ObjectType
     /**
      * @param array $config
      */
-    public abstract function build(&$config);
-
+    abstract public function build(&$config);
 }

@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
@@ -28,17 +28,17 @@ class HardlinkType extends AbstractDocumentType
 
     /**
      * HardlinkType constructor.
+     *
      * @param Service $graphQlService
      * @param AnyDocumentTargetType $anyDocumentTargetType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, AnyDocumentTargetType $anyDocumentTargetType, $config = ["name" => "document_hardlink"], $context = [])
+    public function __construct(Service $graphQlService, AnyDocumentTargetType $anyDocumentTargetType, $config = ['name' => 'document_hardlink'], $context = [])
     {
         $this->anyDocumentTargetType = $anyDocumentTargetType;
         parent::__construct($graphQlService, $config);
     }
-
 
     /**
      * @param array $config
@@ -55,7 +55,7 @@ class HardlinkType extends AbstractDocumentType
                 'childrenFromSource' => Type::boolean(),
                 'target' => [
                     'type' => $this->anyDocumentTargetType,
-                    'resolve' => [$resolver, "resolveTarget"]
+                    'resolve' => [$resolver, 'resolveTarget']
                 ]
             ]
         );

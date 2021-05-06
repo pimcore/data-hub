@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -23,16 +23,15 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class ScheduledblockDataType extends ObjectType
 {
-
     use ServiceTrait;
 
     /**
      * ScheduledblockDataType constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
     {
-
         $this->graphQlService = $graphQlService;
 
         $config =
@@ -54,14 +53,14 @@ class ScheduledblockDataType extends ObjectType
                                 return $value->getName();
                             }
                         }
-                    ]
-                    ,
+                    ],
                     'key' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['key'];
                             }
+
                             return null;
                         }
                     ],
@@ -71,6 +70,7 @@ class ScheduledblockDataType extends ObjectType
                             if (is_array($value)) {
                                 return $value['date'];
                             }
+
                             return null;
                         }
                     ],
@@ -78,5 +78,4 @@ class ScheduledblockDataType extends ObjectType
             ];
         parent::__construct($config);
     }
-
 }

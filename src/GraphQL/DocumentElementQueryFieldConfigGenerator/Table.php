@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\TableType;
 
 class Table extends Base
 {
-
     /**
      * @return TableType
      */

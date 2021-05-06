@@ -22,7 +22,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 abstract class Base implements OperatorTypeDefinitionInterface
 {
-
     /**
      * @var Service
      */
@@ -30,6 +29,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -43,6 +43,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
      * @param null $class
      * @param null $container
      * @param array $params
+     *
      * @return \GraphQL\Type\Definition\StringType
      */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])
@@ -73,7 +74,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
         return $this->enrichConfig([
             'name' => $fieldname,
             'type' => $type,
-            'resolve' => [$resolver, "resolve"]
+            'resolve' => [$resolver, 'resolve']
 
         ], $container);
     }
@@ -107,5 +108,4 @@ abstract class Base implements OperatorTypeDefinitionInterface
     {
         return Type::string();
     }
-
 }

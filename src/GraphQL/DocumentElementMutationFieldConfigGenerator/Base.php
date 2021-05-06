@@ -20,11 +20,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class Base
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -32,12 +32,8 @@ class Base
         $this->setGraphQLService($graphQlService);
     }
 
-
-    /**
-     */
     public function getDocumentElementMutationFieldConfig()
     {
         throw new \Exception("needs to be implemented in the base class. let's see, maybe there are similarities");
     }
-
 }

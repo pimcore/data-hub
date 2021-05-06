@@ -19,9 +19,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\RelationType;
 
 class Relation extends Base
 {
-
     /**
      * @return \GraphQL\Type\Definition\StringType|RelationType
+     *
      * @throws \Exception
      */
     public function getFieldType()

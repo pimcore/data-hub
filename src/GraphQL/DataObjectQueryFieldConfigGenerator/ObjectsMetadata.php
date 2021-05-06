@@ -51,6 +51,7 @@ class ObjectsMetadata extends Base
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         $type = new ObjectMetadataType($this->getGraphQlService(), $fieldDefinition, $class);
+
         return Type::listOf($type);
     }
 

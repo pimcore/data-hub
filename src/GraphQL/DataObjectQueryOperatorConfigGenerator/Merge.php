@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
@@ -22,7 +22,6 @@ use Pimcore\Model\DataObject\Localizedfield;
 
 class Merge extends StringBase
 {
-
     protected function getFieldname($attributes)
     {
         $label = ($attributes['label'] ? $attributes['label'] : '#'.uniqid());
@@ -49,12 +48,11 @@ class Merge extends StringBase
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Merge($typeName, $attributes, $class, $container);
         $resolver->setGraphQlService($this->graphQlService);
 
-
         return $this->enrichConfig(
             [
-                'name'    => $fieldname,
-                'type'    => $type,
-                'resolve' => [$resolver, "resolve"]
+                'name' => $fieldname,
+                'type' => $type,
+                'resolve' => [$resolver, 'resolve']
             ],
             $container
         );

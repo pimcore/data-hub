@@ -21,10 +21,8 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\Asset\Image;
 use Pimcore\Model\Asset\Video;
 
-
 class AssetFieldHelper extends AbstractFieldHelper
 {
-
     /**
      * @param FieldNode $ast
      * @param array $data
@@ -48,26 +46,24 @@ class AssetFieldHelper extends AbstractFieldHelper
 
         $realName = $astName;
 
-        if (($astName == "fullpath"  || $astName == "data") && $thumbnailArgument && ($container instanceof Image || $container instanceof Video)) {
-
+        if (($astName == 'fullpath' || $astName == 'data') && $thumbnailArgument && ($container instanceof Image || $container instanceof Video)) {
             if ($ast->alias) {
                 // defer it
                 $data[$realName] = function ($source, $args, $context, ResolveInfo $info) use ($container, $thumbnailArgument, $realName
                 ) {
-
-                    if ($realName == "fullpath") {
+                    if ($realName == 'fullpath') {
                         return $container->getThumbnail($args['thumbnail'], false);
-                    } else if ($realName == "data") {
+                    } elseif ($realName == 'data') {
                         $thumb = $container->getThumbnail($args['thumbnail'], false);
+
                         return stream_get_contents($thumb->getStream());
                     }
-
                 };
             } else {
                 //TODO extract duplicate code
-                if ($realName == "fullpath") {
+                if ($realName == 'fullpath') {
                     $data[$realName] = $container->getThumbnail($thumbnailArgument);
-                } else if ($realName == "data") {
+                } elseif ($realName == 'data') {
                     $thumb = $container->getThumbnail($thumbnailArgument, false);
                     $data[$realName] = stream_get_contents($thumb->getStream());
                 }

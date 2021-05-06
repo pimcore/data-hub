@@ -30,5 +30,4 @@ class BooleanSelect extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
 }

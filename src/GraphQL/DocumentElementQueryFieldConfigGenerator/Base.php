@@ -20,11 +20,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 abstract class Base
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -35,5 +35,5 @@ abstract class Base
     /**
      * @return \GraphQL\Type\Definition\StringType
      */
-    public abstract function getFieldType();
+    abstract public function getFieldType();
 }

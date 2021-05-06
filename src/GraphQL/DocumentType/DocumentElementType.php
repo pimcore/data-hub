@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -33,6 +32,7 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
 
     /**
      * DocumentElementType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -42,13 +42,11 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         parent::__construct($config);
     }
 
-
     /**
      * @return array
      */
     public function getTypes(): array
     {
-
         $service = $this->getGraphQlService();
         $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();
         $supportedTypes = [];
@@ -58,7 +56,6 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         }
 
         return $supportedTypes;
-
     }
 
     /**
@@ -71,9 +68,10 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         $supportedTypes = $service->getSupportedDocumentElementQueryDataTypes();
         if (in_array($type, $supportedTypes)) {
             $queryType = $service->buildDocumentElementDataQueryType($type);
+
             return $queryType;
         }
+
         return null;
     }
-
 }

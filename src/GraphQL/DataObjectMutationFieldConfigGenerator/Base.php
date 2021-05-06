@@ -20,15 +20,14 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGeneratorI
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements DataObjectMutationFieldConfigGeneratorInterface
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -36,12 +35,12 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
         $this->setGraphQLService($graphQlService);
     }
 
-
     /**
      * @param array $nodeDef
      * @param ClassDefinition $class
      * @param mixed $container
      * @param array $params
+     *
      * @return array
      */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
@@ -54,5 +53,4 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
             'processor' => [$processor, 'process']
         ];
     }
-
 }

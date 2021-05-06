@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\PdfType;
 
 class Pdf extends Base
 {
-
     /**
      * @return PdfType
      */

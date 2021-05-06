@@ -22,12 +22,12 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Geopolygon extends Base
 {
-
     /**
      * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)

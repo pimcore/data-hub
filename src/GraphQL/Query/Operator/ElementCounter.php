@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pimcore
  *
@@ -8,11 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    Object
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
@@ -27,7 +25,7 @@ class ElementCounter extends AbstractOperator
     {
         parent::__construct($config, $context);
 
-        $this->countEmpty = $config["countEmpty"];
+        $this->countEmpty = $config['countEmpty'];
     }
 
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
@@ -40,7 +38,6 @@ class ElementCounter extends AbstractOperator
         $count = 0;
 
         foreach ($children as $c) {
-
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);

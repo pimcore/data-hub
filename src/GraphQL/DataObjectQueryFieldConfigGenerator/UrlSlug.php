@@ -26,6 +26,6 @@ class UrlSlug extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf($this->getGraphQlService()->getDataObjectTypeDefinition("url_slug"));
+        return Type::listOf($this->getGraphQlService()->getDataObjectTypeDefinition('url_slug'));
     }
 }

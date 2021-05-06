@@ -19,7 +19,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\WysiwygType;
 
 class Wysiwyg extends Base
 {
-
     /**
      * @return WysiwygType
      */

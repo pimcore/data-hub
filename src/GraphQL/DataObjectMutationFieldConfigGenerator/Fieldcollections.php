@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
@@ -24,8 +24,7 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
 class Fieldcollections extends Base
 {
-
-    /** @var array  */
+    /** @var array */
     public static $typeCache = [];
 
     /** {@inheritdoc } */
@@ -47,21 +46,18 @@ class Fieldcollections extends Base
             }
         }
 
-
-        $groupsInputTypeName = "fieldcollections_" . $fieldName . "_groups_input";
+        $groupsInputTypeName = 'fieldcollections_' . $fieldName . '_groups_input';
 
         $groupsInputFields = [];
 
         $fieldProcessors = [];
 
-
         foreach ($allowedFcTypes as $allowedFcType) {
             $fcDef = Definition::getByKey($allowedFcType);
 
-            $listInputTypeName = "fieldcollections_" . $fieldName . "_" . $allowedFcType . "_input";
+            $listInputTypeName = 'fieldcollections_' . $fieldName . '_' . $allowedFcType . '_input';
 
             $inputFields = [];
-
 
             $this->generateInputFieldsAndProcessors($inputFields, $processors, $fcDef);
 
@@ -74,7 +70,6 @@ class Fieldcollections extends Base
             ]);
             $groupsInputFields[$allowedFcType] = Type::listOf($listItemType);
             $fieldProcessors[$allowedFcType] = $processors;
-
         }
 
         $groupsInputType = new InputObjectType([
@@ -82,18 +77,17 @@ class Fieldcollections extends Base
             'fields' => $groupsInputFields
         ]);
 
-        $inputTypeName = "fieldcollections_" . $fieldName . "_input";
+        $inputTypeName = 'fieldcollections_' . $fieldName . '_input';
 
         $inputType = self::$typeCache[$inputTypeName] ?? null;
 
         if (!$inputType) {
-
             $inputType = new InputObjectType([
                 'name' => $inputTypeName,
                 'fields' => [
                     'replace' => [
                         'type' => Type::boolean(),
-                        'description' => "if true then the entire item list will be overwritten"
+                        'description' => 'if true then the entire item list will be overwritten'
                     ],
                     'items' => $groupsInputType
                 ]
@@ -115,12 +109,12 @@ class Fieldcollections extends Base
      * @param $processors
      * @param Definition $fcDef
      */
-    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, Definition $fcDef) {
+    public function generateInputFieldsAndProcessors(&$inputFields, &$processors, Definition $fcDef)
+    {
         $fcFieldDefinitions = $fcDef->getFieldDefinitions();
 
         /** @var $fieldHelper DataObjectFieldHelper */
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-
 
         /** @var Data $fcFieldDef */
         foreach ($fcFieldDefinitions as $fcFieldDef) {

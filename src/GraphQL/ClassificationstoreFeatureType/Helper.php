@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
@@ -23,7 +23,6 @@ use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
 
 class Helper extends ObjectType
 {
-
     /**
      * @return array
      */
@@ -69,9 +68,7 @@ class Helper extends ObjectType
                 }
             ]
         ];
+
         return $fields;
-
     }
-
-
 }

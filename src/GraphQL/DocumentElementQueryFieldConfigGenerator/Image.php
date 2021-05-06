@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageType;
 
 class Image extends Base
 {
-   /**
+    /**
      * @return ImageType
      */
     public function getFieldType()

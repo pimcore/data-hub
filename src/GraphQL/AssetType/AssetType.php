@@ -9,17 +9,17 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 class AssetType extends ObjectType
 {
@@ -74,7 +74,6 @@ class AssetType extends ObjectType
             'description' => 'List of resolution types [2, 5, ...]',
             'defaultValue' => [2]
         ];
-
 
         $config['fields'] = [
             'creationDate' => Type::int(),
@@ -145,19 +144,19 @@ class AssetType extends ObjectType
                         'description' => 'comma separated list of key names'
                     ]
                 ],
-                'resolve' => [$elementResolver, "resolveProperties"]
+                'resolve' => [$elementResolver, 'resolveProperties']
             ],
             'parent' => [
                 'type' => $assetTree,
-                'resolve' => [$elementResolver, "resolveParent"],
+                'resolve' => [$elementResolver, 'resolveParent'],
             ],
             'children' => [
                 'type' => Type::listOf($assetTree),
-                'resolve' => [$elementResolver, "resolveChildren"],
+                'resolve' => [$elementResolver, 'resolveChildren'],
             ],
             '_siblings' => [
                 'type' => Type::listOf($assetTree),
-                'resolve' => [$elementResolver, "resolveSiblings"],
+                'resolve' => [$elementResolver, 'resolveSiblings'],
             ],
         ];
     }

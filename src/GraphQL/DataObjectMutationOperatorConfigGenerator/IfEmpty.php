@@ -31,8 +31,8 @@ class IfEmpty extends Base
 
         $factories = $this->getGraphQlService()->getDataObjectMutationTypeGeneratorFactories();
 
-        $typeName = strtolower($nodeDef["attributes"]["class"]);
-        $factory = $factories->get('typegenerator_' . "dataobjectmutation" . 'operator_' . $typeName);
+        $typeName = strtolower($nodeDef['attributes']['class']);
+        $factory = $factories->get('typegenerator_' . 'dataobjectmutation' . 'operator_' . $typeName);
         $determinedType = $factory->resolveInputTypeFromNodeDef($nodeDef, $class, $container);
 
         return [
@@ -40,5 +40,4 @@ class IfEmpty extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
 }

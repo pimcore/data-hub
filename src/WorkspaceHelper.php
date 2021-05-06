@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle;
@@ -45,13 +45,11 @@ class WorkspaceHelper
     public static function cleanupWorkspaces(array $workspaces)
     {
         foreach ($workspaces as $type => &$spaces) {
-
             if (!is_array($spaces)) {
                 continue;
             }
 
             foreach ($spaces as $spaceIndex => $space) {
-
                 $element = Service::getElementByPath($type, $space['cpath']);
                 if ($element instanceof ElementInterface) {
                     continue;
@@ -95,7 +93,6 @@ class WorkspaceHelper
         }
 
         foreach ($spaces as $spaceIndex => &$space) {
-
             if (!isset($space['cpath'])) {
                 continue;
             }
@@ -116,7 +113,6 @@ class WorkspaceHelper
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
                 }
-
             } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
 
                 // it's a sub element
@@ -220,7 +216,6 @@ class WorkspaceHelper
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
     }
 
-
     /**
      * @param ElementInterface|OwnerAwareFieldInterface $element
      * @param string $type
@@ -229,10 +224,11 @@ class WorkspaceHelper
      *
      * @throws NotAllowedException
      */
-    public static function checkPermission($element, $type) {
-        $context = Runtime::get("datahub_context");
-        /** @var Configuration  $configuration */
-        $configuration = $context["configuration"];
+    public static function checkPermission($element, $type)
+    {
+        $context = Runtime::get('datahub_context');
+        /** @var Configuration $configuration */
+        $configuration = $context['configuration'];
 
         if ($configuration->skipPermisssionCheck()) {
             return true;
@@ -241,7 +237,7 @@ class WorkspaceHelper
         $isAllowed = self::isAllowed($element, $configuration, $type);
         if (!$isAllowed && PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
             $elementType = Service::getElementType($element);
-            throw new ClientSafeException($type . " access for " . $elementType . " " . $element->getFullPath() . " denied");
+            throw new ClientSafeException($type . ' access for ' . $elementType . ' ' . $element->getFullPath() . ' denied');
         }
 
         return $isAllowed;
@@ -288,7 +284,7 @@ class WorkspaceHelper
             if (empty($permissionsParent) && $type === 'read') {
                 // check for children with permissions
                 $path = $element->getRealFullPath() . '/';
-                $path = str_replace("_", '\\_', $path);
+                $path = str_replace('_', '\\_', $path);
                 if ($element->getId() === 1) {
                     $path = '/';
                 }

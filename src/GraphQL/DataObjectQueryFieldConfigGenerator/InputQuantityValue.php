@@ -25,6 +25,6 @@ class InputQuantityValue extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->getGraphQlService()->getDataObjectTypeDefinition("input_quantity_value");
+        return $this->getGraphQlService()->getDataObjectTypeDefinition('input_quantity_value');
     }
 }

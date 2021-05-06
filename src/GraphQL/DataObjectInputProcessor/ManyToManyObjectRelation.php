@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-
 class ManyToManyObjectRelation extends Base
 {
     use ElementIdentificationTrait;
@@ -33,17 +32,18 @@ class ManyToManyObjectRelation extends Base
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
+     *
      * @throws \Exception
      */
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
-        Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
+        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
-                    if (isset($newValueItemValue["type"]) && $newValueItemValue["type"] !== 'object') {
-                        throw new ClientSafeException("expected object type");
+                    if (isset($newValueItemValue['type']) && $newValueItemValue['type'] !== 'object') {
+                        throw new ClientSafeException('expected object type');
                     }
 
                     $element = $this->getElementByTypeAndIdOrPath($newValueItemValue, 'object');
@@ -58,4 +58,3 @@ class ManyToManyObjectRelation extends Base
         });
     }
 }
-

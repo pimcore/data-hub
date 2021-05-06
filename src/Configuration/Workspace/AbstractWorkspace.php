@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pimcore
  *
@@ -8,11 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    User
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Configuration\Workspace;
@@ -58,7 +56,6 @@ class AbstractWorkspace extends AbstractModel
      * @var bool
      */
     public $delete = false;
-
 
     /**
      * @return string
@@ -123,8 +120,6 @@ class AbstractWorkspace extends AbstractModel
     {
         $this->create = $create;
     }
-
-
 
     /**
      * @return bool

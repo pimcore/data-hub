@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -26,21 +26,21 @@ class PdfType extends ObjectType
 {
     protected static $instance;
 
-
     /**
      * @param Service $service
+     *
      * @return PdfType
+     *
      * @throws \Exception
      */
     public static function getInstance(Service $service)
     {
         if (!self::$instance) {
-
-            $assetType = $service->buildAssetType("asset");
+            $assetType = $service->buildAssetType('asset');
 
             $config =
                 [
-                    'name' => "document_editablePdf",
+                    'name' => 'document_editablePdf',
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
@@ -66,6 +66,7 @@ class PdfType extends ObjectType
                                     if ($pdfAsset) {
                                         $data = new ElementDescriptor($pdfAsset);
                                         $service->extractData($data, $pdfAsset, $args, $context, $resolveInfo);
+
                                         return $data;
                                     }
                                 }

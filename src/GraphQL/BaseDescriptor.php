@@ -15,8 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-use Symfony\Component\Console\Descriptor\DescriptorInterface;
-
 abstract class BaseDescriptor extends \ArrayObject
 {
     /**
@@ -26,7 +24,6 @@ abstract class BaseDescriptor extends \ArrayObject
      */
     public function __construct()
     {
-        parent::__construct([], self::STD_PROP_LIST| self::ARRAY_AS_PROPS);
+        parent::__construct([], self::STD_PROP_LIST | self::ARRAY_AS_PROPS);
     }
-
 }

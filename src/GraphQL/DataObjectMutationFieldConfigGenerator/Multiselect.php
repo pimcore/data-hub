@@ -16,12 +16,11 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Multiselect extends Base
 {
     /** {@inheritdoc } */
-    public function getGraphQlMutationFieldConfig($nodeDef,  $class, $container = null, $params = [])
+    public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Base($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
@@ -31,5 +30,4 @@ class Multiselect extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
 }

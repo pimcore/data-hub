@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -9,11 +10,8 @@ declare(strict_types=1);
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    Object
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
@@ -23,6 +21,7 @@ use Pimcore\Model\Asset;
 
 /**
  * Class ThumbnailHtml
+ *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator
  */
 class ThumbnailHtml extends AbstractOperator
@@ -48,7 +47,9 @@ class ThumbnailHtml extends AbstractOperator
     /**
      * @param \Pimcore\Model\Element\ElementInterface $element
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass|null
+     *
      * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

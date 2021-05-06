@@ -22,15 +22,15 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Block extends Base
 {
-
     /** @var InputObjectType */
-    static $itemType;
+    public static $itemType;
 
-    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block  */
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block */
     public $processor;
 
     /**
      * Block constructor.
+     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor
      */
@@ -40,11 +40,8 @@ class Block extends Base
         $this->processor = $processor;
     }
 
-    /**
-     */
     public function getDocumentElementMutationFieldConfig()
     {
-
         if (!self::$itemType) {
             self::$itemType = new InputObjectType(
                 [
@@ -52,8 +49,8 @@ class Block extends Base
                     'fields' => function () {
                         return [
                             'replace' => [
-                                "type" => Type::boolean(),
-                                "description" => "if true (default), all elements inside the block will be replaced"
+                                'type' => Type::boolean(),
+                                'description' => 'if true (default), all elements inside the block will be replaced'
                                 ],
                             'editables' => MutationType::$documentElementTypes
                         ];
@@ -80,5 +77,4 @@ class Block extends Base
             'processor' => [$this->processor, 'process']
         ];
     }
-
 }
