@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -12,7 +14,6 @@
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
-declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Traits;
 
@@ -20,27 +21,26 @@ use Pimcore\Model\Element\Tag;
 
 trait ElementTagTrait
 {
-
     /**
      * @param string $element_type
      * @param int $id
+     *
      * @return array
      */
-    protected function getTags(string $element_type,int $id) {
+    protected function getTags(string $element_type, int $id)
+    {
         $tag = new Tag();
         $tags = $tag->getDao()->getTagsForElement($element_type, $id);
         $result = [];
         if ($tags) {
-            foreach($tags as $tag) {
+            foreach ($tags as $tag) {
                 $result[] = [
                     'id' => $tag->getId(),
                     'name' => $tag->getName(),
                     'path' => $tag->getNamePath(),
                 ];
             }
-
         }
         return $result;
     }
-
 }

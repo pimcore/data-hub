@@ -41,7 +41,7 @@ class AssetType
 
         if ($asset) {
 
-            $result = $this->getTags('asset',$asset->getId());
+            $result = $this->getTags('asset', $asset->getId());
             if ($result) {
                 return $result;
             }

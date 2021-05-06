@@ -43,7 +43,7 @@ class DataObject extends Element
 
         if ($object) {
 
-            $result = $this->getTags('object',$object->getId());
+            $result = $this->getTags('object', $object->getId());
             if ($result) {
                 return $result;
             }
