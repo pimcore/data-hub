@@ -40,11 +40,11 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
         parent::__construct(["name" => "hotspot_metadata_object"]);
     }
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $types = [];
 

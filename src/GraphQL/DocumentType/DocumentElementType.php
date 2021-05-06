@@ -46,7 +46,7 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
     /**
      * @return array
      */
-    public function getTypes()
+    public function getTypes(): array
     {
 
         $service = $this->getGraphQlService();
