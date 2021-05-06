@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
@@ -39,8 +39,8 @@ class Objects extends Base implements TypeDefinitionInterface
     {
         return $this->enrichConfig($fieldDefinition, $class, $attribute,
             [
-                'name'    => $fieldDefinition->getName(),
-                'type'    => $this->getFieldType($fieldDefinition, $class, $container),
+                'name' => $fieldDefinition->getName(),
+                'type' => $this->getFieldType($fieldDefinition, $class, $container),
                 'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
             ],
             $container
@@ -69,6 +69,7 @@ class Objects extends Base implements TypeDefinitionInterface
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-        return [$resolver, "resolve"];
+
+        return [$resolver, 'resolve'];
     }
 }

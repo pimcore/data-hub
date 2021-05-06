@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle;
@@ -22,11 +22,12 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class Configuration
+ *
  * @package Pimcore\Bundle\DataHubBundle
  */
 class Configuration extends AbstractModel
 {
-    public const SECURITYCONFIG_AUTH_APIKEY = "datahub_apikey";
+    public const SECURITYCONFIG_AUTH_APIKEY = 'datahub_apikey';
 
     /**
      * @var string
@@ -179,8 +180,8 @@ class Configuration extends AbstractModel
         $this->configuration['general']['name'] = $this->name;
 
         $securityConfig = $this->getSecurityConfig();
-        if (($this->configuration['general']['active']  ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
-            $apikey = $securityConfig['apikey'] ?? "";
+        if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
+            $apikey = $securityConfig['apikey'] ?? '';
             if (strlen($apikey) < 16) {
                 throw new \Exception('API key does not satisfy the minimum length of 16 characters');
             }
@@ -202,7 +203,7 @@ class Configuration extends AbstractModel
         $this->getDao()->delete();
 
         $event = new GenericEvent($this);
-        $event->setArgument("configuration", $this);
+        $event->setArgument('configuration', $this);
         \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_POST_DELETE);
     }
 
@@ -221,7 +222,7 @@ class Configuration extends AbstractModel
      *
      * @return Configuration|null
      */
-    public static function getByName($name): ?Configuration
+    public static function getByName($name): ?self
     {
         return Dao::getByName($name);
     }
@@ -289,6 +290,7 @@ class Configuration extends AbstractModel
     public function getQueryColumnConfig($entityName)
     {
         $config = $this->getQueryEntityConfig($entityName);
+
         return $config['columnConfig'] ?? null;
     }
 

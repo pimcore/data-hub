@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class VideoType extends ObjectType
 {
-
     use ServiceTrait;
 
     /**
@@ -30,13 +29,13 @@ class VideoType extends ObjectType
      */
     protected $videoDataType;
 
-
     /**
      * VideoType constructor.
+     *
      * @param Service $graphQlService
      * @param VideoTypeDataType $videoDataType
      */
-    public function __construct(Service $graphQlService , VideoTypeDataType $videoDataType )
+    public function __construct(Service $graphQlService, VideoTypeDataType $videoDataType)
     {
         $this->setGraphQLService($graphQlService);
         $this->videoDataType = $videoDataType;
@@ -52,29 +51,29 @@ class VideoType extends ObjectType
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Video();
         $resolver->setGraphQLService($this->getGraphQlService());
         $service = $this->getGraphQlService();
-        $assetType = $service->buildAssetType("asset");
+        $assetType = $service->buildAssetType('asset');
 
         $config['fields'] =
             [
                 'type' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, "resolveType"]
+                    'resolve' => [$resolver, 'resolveType']
                 ],
                 'data' => [
                     'type' => $this->videoDataType,
-                    'resolve' => [$resolver, "resolveData"]
+                    'resolve' => [$resolver, 'resolveData']
                 ],
                 'poster' => [
                     'type' => $assetType,
-                    'resolve' => [$resolver, "resolvePoster"]
+                    'resolve' => [$resolver, 'resolvePoster']
                 ],
                 'title' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, "resolveTitle"]
+                    'resolve' => [$resolver, 'resolveTitle']
                 ],
                 'description' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, "resolveDescription"]
+                    'resolve' => [$resolver, 'resolveDescription']
                 ],
 
             ];

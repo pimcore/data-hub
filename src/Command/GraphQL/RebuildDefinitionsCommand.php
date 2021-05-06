@@ -1,15 +1,16 @@
 <?php
+
 /**
  * Pimcore
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Command\GraphQL;
@@ -29,7 +30,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
     {
         $this
             ->setName('datahub:graphql:rebuild-definitions')
-            ->setDescription("Rebuild GraphQL endpoint definitions")
+            ->setDescription('Rebuild GraphQL endpoint definitions')
             ->addOption(
             'definitions',
                 null,
@@ -41,7 +42,9 @@ class RebuildDefinitionsCommand extends AbstractCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int|void|null
+     *
      * @throws \Exception
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -54,12 +57,11 @@ class RebuildDefinitionsCommand extends AbstractCommand
             $list = Configuration\Dao::getList();
             foreach ($list as $configuration) {
                 $endpoint = $configuration->getName();
-                $included[]= $endpoint;
+                $included[] = $endpoint;
             }
         }
 
         foreach ($included as $endpoint) {
-
             $config = Configuration::getByName($endpoint);
             if (!$config) {
                 $this->output->writeln('<error>Could not find config: ' . $endpoint . '</error>');

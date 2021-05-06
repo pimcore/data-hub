@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -32,7 +32,6 @@ class VideoType extends ObjectType
      */
     public static function getInstance(Service $graphQlService, AssetType $assetType)
     {
-
         if (!self::$instance) {
             $config =
                 [
@@ -53,8 +52,7 @@ class VideoType extends ObjectType
                                     return $value->getName();
                                 }
                             }
-                        ]
-                        ,
+                        ],
                         'id' => [
                             'type' => Type::int()
                         ],
@@ -89,9 +87,11 @@ class VideoType extends ObjectType
                                     $relation = $value->getPosterAsset();
                                     if ($relation) {
                                         $data = RelationHelper::processRelation($relation, $graphQlService, $args, $context, $resolveInfo);
+
                                         return $data;
                                     }
                                 }
+
                                 return null;
                             }
                         ],
@@ -102,9 +102,11 @@ class VideoType extends ObjectType
                                     $relation = $value->getVideoAsset();
                                     if ($relation) {
                                         $data = RelationHelper::processRelation($relation, $graphQlService, $args, $context, $resolveInfo);
+
                                         return $data;
                                     }
                                 }
+
                                 return null;
                             }
                         ],
@@ -115,6 +117,4 @@ class VideoType extends ObjectType
 
         return self::$instance;
     }
-
-
 }

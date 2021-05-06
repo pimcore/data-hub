@@ -1,16 +1,17 @@
 <?php
 declare(strict_types=1);
+
 /**
  * Pimcore
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\SharedType;
@@ -22,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 /**
  * Class HotspotHotspotType
+ *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\SharedType
  */
 class HotspotHotspotType extends ObjectType
@@ -30,6 +32,7 @@ class HotspotHotspotType extends ObjectType
 
     /**
      * HotspotHotspotType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -45,7 +48,7 @@ class HotspotHotspotType extends ObjectType
      */
     public function build(&$config)
     {
-        $propertyType = $this->getGraphQlService()->buildGeneralType("hotspot_metadata");
+        $propertyType = $this->getGraphQlService()->buildGeneralType('hotspot_metadata');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
 
         $config['fields'] = [
@@ -61,11 +64,9 @@ class HotspotHotspotType extends ObjectType
                         'description' => 'comma seperated list of key names'
                     ]
                 ],
-                'resolve' => [$resolver, "resolveMetadata"]
+                'resolve' => [$resolver, 'resolveMetadata']
             ],
             'name' => Type::string(),
         ];
     }
-
-
 }

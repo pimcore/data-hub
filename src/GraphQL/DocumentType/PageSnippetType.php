@@ -5,19 +5,17 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
-use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ListOfType;
-use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\KeyValueType;
@@ -25,21 +23,20 @@ use Pimcore\Model\Document\PageSnippet;
 
 class PageSnippetType extends AbstractDocumentType
 {
-
     protected $documentElementType;
 
     /**
      * PageSnippetType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, DocumentElementType $documentElementType, $config = ["name" => "document_pageSnippet"], $context = [])
+    public function __construct(Service $graphQlService, DocumentElementType $documentElementType, $config = ['name' => 'document_pageSnippet'], $context = [])
     {
         $this->documentElementType = $documentElementType;
         parent::__construct($graphQlService, $config);
     }
-
 
     /**
      * @param array $config
@@ -52,12 +49,12 @@ class PageSnippetType extends AbstractDocumentType
         $this->buildBaseFields($config);
         $config['fields']['elements'] = [
             'type' => Type::listOf($this->documentElementType),
-            'resolve' => [$resolver, "resolveElements"]
+            'resolve' => [$resolver, 'resolveElements']
         ];
 
         $config['fields']['editables'] = [
             'type' => Type::listOf($this->documentElementType),
-            'resolve' => [$resolver, "resolveElements"]
+            'resolve' => [$resolver, 'resolveElements']
         ];
 
         $config['fields']['title'] = [
@@ -93,7 +90,7 @@ class PageSnippetType extends AbstractDocumentType
                     'description' => 'Disable Layout Rendering'
                 ]
             ],
-            'resolve' => static function($value, $args) {
+            'resolve' => static function ($value, $args) {
                 $documentId = $value['id'];
                 $document = PageSnippet::getById($documentId);
 

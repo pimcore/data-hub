@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -27,7 +27,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Cache\Runtime;
-use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -51,9 +50,9 @@ class PimcoreObjectType extends ObjectType
 
     protected $fields;
 
-
     /**
      * PimcoreObjectType constructor.
+     *
      * @param Service $graphQlService
      * @param string $className
      * @param string $classId
@@ -106,11 +105,11 @@ class PimcoreObjectType extends ObjectType
                         'description' => 'comma separated list of key names'
                     ]
                 ],
-                'resolve' => [$resolver, "resolveProperties"]
+                'resolve' => [$resolver, 'resolveProperties']
             ],
             'parent' => [
                 'type' => $objectTreeType,
-                'resolve' => [$resolver, "resolveParent"],
+                'resolve' => [$resolver, 'resolveParent'],
             ],
             'children' => [
                 'type' => Type::listOf($objectTreeType),
@@ -149,9 +148,8 @@ class PimcoreObjectType extends ObjectType
                         continue;
                     }
 
-                    if (!$column["isOperator"] && is_array($column["attributes"]) && $column["attributes"]["dataType"] == "fieldcollections") {
+                    if (!$column['isOperator'] && is_array($column['attributes']) && $column['attributes']['dataType'] == 'fieldcollections') {
                         $this->addFieldCollectionDefs($column, $class, $fields);
-
                     } else {
                         /** @var $fieldHelper DataObjectFieldHelper */
                         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
@@ -171,8 +169,7 @@ class PimcoreObjectType extends ObjectType
 
     public function addFieldCollectionDefs($column, ClassDefinition $class, &$fields)
     {
-
-        $fieldname = $column["attributes"]["attribute"];
+        $fieldname = $column['attributes']['attribute'];
         /** @var $fieldDef ClassDefinition\Data\Fieldcollections */
         $fieldDef = $class->getFieldDefinition(($fieldname));
         $allowedFcs = $fieldDef->getAllowedTypes();
@@ -183,25 +180,23 @@ class PimcoreObjectType extends ObjectType
         $unionTypes = [];
 
         foreach ($allowedFcs as $allowedFcName) {
-
-            $fcKey = "graphql_fieldcollection_" . $allowedFcName;
+            $fcKey = 'graphql_fieldcollection_' . $allowedFcName;
             if (Runtime::isRegistered($fcKey)) {
                 $itemFcType = Runtime::get($fcKey);
             } else {
                 $fcDef = Definition::getByKey($allowedFcName);
                 $fcFields = [];
 
-
                 $fcFieldDefs = $fcDef->getFieldDefinitions();
 
                 foreach ($fcFieldDefs as $key => $fieldDef) {
                     $attrName = $fieldDef->getName();
                     $columnDesc = [
-                        "isOperator" => false,
-                        "attributes" => [
-                            "attribute" => $attrName,
-                            "label" => $fieldDef->getName(),
-                            "dataType" => $fieldDef->getFieldtype()
+                        'isOperator' => false,
+                        'attributes' => [
+                            'attribute' => $attrName,
+                            'label' => $fieldDef->getName(),
+                            'dataType' => $fieldDef->getFieldtype()
                         ]
                     ];
                     $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
@@ -210,7 +205,7 @@ class PimcoreObjectType extends ObjectType
                     }
                 }
 
-                $fcLocalizedFields = $fcDef->getFieldDefinition("localizedfields");
+                $fcLocalizedFields = $fcDef->getFieldDefinition('localizedfields');
                 if ($fcLocalizedFields instanceof ClassDefinition\Data\Localizedfields) {
                     $fcLocalizedFieldDefs = $fcLocalizedFields->getFieldDefinitions();
 
@@ -218,11 +213,11 @@ class PimcoreObjectType extends ObjectType
                         $attrName = $fieldDef->getName();
 
                         $columnDesc = [
-                            "isOperator" => false,
-                            "attributes" => [
-                                "attribute" => $attrName,
-                                "label" => $fieldDef->getName(),
-                                "dataType" => $fieldDef->getFieldtype()
+                            'isOperator' => false,
+                            'attributes' => [
+                                'attribute' => $attrName,
+                                'label' => $fieldDef->getName(),
+                                'dataType' => $fieldDef->getFieldtype()
                             ]
                         ];
                         $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef, $fcLocalizedFields);
@@ -232,11 +227,11 @@ class PimcoreObjectType extends ObjectType
                     }
                 }
 
-                $typename = "fieldcollection_" . $allowedFcName;
+                $typename = 'fieldcollection_' . $allowedFcName;
 
                 $itemFcType = new ObjectType([
-                    "name" => $typename,
-                    "fields" => $fcFields
+                    'name' => $typename,
+                    'fields' => $fcFields
                 ]);
 
                 Runtime::save($itemFcType, $fcKey);
@@ -245,51 +240,50 @@ class PimcoreObjectType extends ObjectType
             $unionTypes[] = $itemFcType;
         }
 
-        $unionname = "object_" . $this->className . "_" . $fieldname;
+        $unionname = 'object_' . $this->className . '_' . $fieldname;
 
         $unionTypesConfig = [
-            "name" => $unionname,
-            "types" => $unionTypes
+            'name' => $unionname,
+            'types' => $unionTypes
         ];
 
         $union = new FieldcollectionType($this->getGraphQlService(), $unionTypesConfig);
 
-
         $fields[$fieldname] =
             [
-                "name" => $fieldname,
-                "type" => Type::listOf($union),
-                "resolve" => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldname) {
+                'name' => $fieldname,
+                'type' => Type::listOf($union),
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldname) {
                     if ($value[$fieldname] instanceof Fieldcollection) {
                         $lofItems = [];
                         $fcData = $value[$fieldname];
 
                         $items = $fcData->getItems();
                         if ($items) {
-                            /** @var  $item AbstractData */
+                            /** @var $item AbstractData */
                             $idx = -1;
 
                             foreach ($items as $item) {
                                 $idx++;
                                 $data = new FieldcollectionDescriptor();
-                                $data["__fcType"] = $item->getType();
-                                $data["__fcFieldname"] = $fieldname;
-                                $data["__itemIdx"] = $idx;
+                                $data['__fcType'] = $item->getType();
+                                $data['__fcFieldname'] = $fieldname;
+                                $data['__itemIdx'] = $idx;
 
-
-                                $data["id"] = $value["id"];
+                                $data['id'] = $value['id'];
                                 $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                                 $fieldHelper->extractData($data, $item, $args, $context, $resolveInfo);
                                 $lofItems[] = $data;
                             }
                         }
+
                         return $lofItems;
                     }
+
                     return null;
                 }
 
             ];
-
     }
 
     /**
@@ -306,6 +300,4 @@ class PimcoreObjectType extends ObjectType
 
         return $this->fields;
     }
-
-
 }

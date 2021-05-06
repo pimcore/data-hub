@@ -5,27 +5,24 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Element\ElementInterface;
 
 class Href
 {
-
     use ServiceTrait;
 
     /**
@@ -43,9 +40,9 @@ class Href
      */
     public $attribute;
 
-
     /**
      * Href constructor.
+     *
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
      * @param $attribute
      * @param $fieldDefinition
@@ -72,7 +69,6 @@ class Href
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-
         $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
 
         if ($relation instanceof ElementInterface) {
@@ -82,6 +78,7 @@ class Href
 
             $data = new ElementDescriptor($relation);
             $this->getGraphQlService()->extractData($data, $relation, $args, $context, $resolveInfo);
+
             return $data;
         }
     }

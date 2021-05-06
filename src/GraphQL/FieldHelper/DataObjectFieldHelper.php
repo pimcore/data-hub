@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
@@ -52,7 +52,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $result = [
                 'key' => $key,
                 'config' => $this->getGraphQlOperatorConfig(
-                    "query",
+                    'query',
                     $nodeDef,
                     $class,
                     null,
@@ -99,6 +99,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
                 if (!$fieldDefinition) {
                     Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+
                     return false;
                 }
 
@@ -131,7 +132,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $attributes = $nodeDef['attributes'];
         $operatorTypeName = $attributes['class'];
 
-        $builder = "buildDataObject" . ucfirst($mode) . "OperatorConfig";
+        $builder = 'buildDataObject' . ucfirst($mode) . 'OperatorConfig';
         $typeDef = $this->getGraphQlService()->$builder($operatorTypeName, $nodeDef, $class, $container, $params);
 
         return $typeDef;
@@ -146,7 +147,6 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      */
     public function getFieldDefinitionFromKey($class, $key, &$container = null)
     {
-
         $fieldDefinition = null;
         $parts = explode('~', $key);
 
@@ -194,7 +194,9 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param Data $fieldDefinition
      * @param string $operationType
+     *
      * @return bool
+     *
      * @throws \Exception
      */
     public function supportsGraphQL(Data $fieldDefinition, string $operationType)
@@ -207,7 +209,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             case 'mutation':
                 return $this->getGraphQlService()->supportsDataObjectMutationDataType($typeName);
             default:
-                throw new ClientSafeException("unknown operation type " . $typeName);
+                throw new ClientSafeException('unknown operation type ' . $typeName);
         }
     }
 
@@ -223,6 +225,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     {
         $typeName = $fieldDefinition->getFieldtype();
         $typeDef = $this->getGraphQlService()->buildDataObjectQueryDataConfig($attribute, $typeName, $fieldDefinition, $class, $container);
+
         return $typeDef;
     }
 
@@ -239,22 +242,21 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         $attributes = $nodeDef['attributes'];
 
-        if ($nodeDef['isOperator'] ?? false)  {
+        if ($nodeDef['isOperator'] ?? false) {
             $key = $attributes['label'];
             $key = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $key);
 
             $result = $this->getGraphQlOperatorConfig(
-                "mutation",
+                'mutation',
                 $nodeDef,
                 $class,
                 null,
                 []
             );
 
-            $result["key"] = $key;
+            $result['key'] = $key;
         } else {
             $key = $attributes['attribute'];
-
 
             // system columns which are not part of the common set (see PimcoreObjectType)
             if ($attributes['dataType'] == 'system') {
@@ -280,11 +282,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                         return null;
                 }
             } else {
-                /** @var  $fieldDefinition */
+                /** @var $fieldDefinition */
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
                     Logger::error('could not resolve field ' . $key);
+
                     return false;
                 }
 
@@ -308,11 +311,13 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param array $nodeDef
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param $container
+     *
      * @return mixed
      */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container)
     {
         $typeDef = $this->getGraphQlService()->buildDataObjectMutationDataConfig($nodeDef, $class, $container);
+
         return $typeDef;
     }
 
@@ -366,7 +371,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         if ($container instanceof Concrete) {
             $containerDefinition = $container->getClass();
-        } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+        } elseif ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
             $containerDefinition = $container->getDefinition();
         }
 
@@ -410,5 +415,4 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             }
         }
     }
-
 }

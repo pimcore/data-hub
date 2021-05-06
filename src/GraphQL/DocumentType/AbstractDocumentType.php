@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
@@ -26,13 +26,13 @@ abstract class AbstractDocumentType extends ObjectType
 
     /**
      * AbstractDocumentType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
     public function __construct(Service $graphQlService, $config = [])
     {
-
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
@@ -41,15 +41,13 @@ abstract class AbstractDocumentType extends ObjectType
     /**
      * @param array $config
      */
-    public abstract function build(&$config);
-
+    abstract public function build(&$config);
 
     /**
      * @param array $config
      */
     public function buildBaseFields(&$config)
     {
-
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document', $this->getGraphQLService());
         $documentTree = $this->getGraphQlService()->buildGeneralType('document_tree');
@@ -90,5 +88,4 @@ abstract class AbstractDocumentType extends ObjectType
             ],
         ];
     }
-
 }

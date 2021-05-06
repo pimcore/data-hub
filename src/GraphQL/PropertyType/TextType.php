@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -25,11 +25,11 @@ use Pimcore\Model\Property;
 
 class TextType extends ObjectType
 {
-
     use ServiceTrait;
 
     /**
      * TextType constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -37,7 +37,7 @@ class TextType extends ObjectType
         $this->graphQlService = $graphQlService;
 
         $config = [
-            'name' => "property_text",
+            'name' => 'property_text',
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
@@ -60,10 +60,9 @@ class TextType extends ObjectType
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem) {
                             return $value->getValue();
-                        } else if ($value instanceof Property) {
+                        } elseif ($value instanceof Property) {
                             return $value->getData();
                         }
-
                     }
                 ]
             ]

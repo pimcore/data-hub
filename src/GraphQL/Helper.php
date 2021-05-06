@@ -1,15 +1,16 @@
 <?php
+
 /**
  * Pimcore
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
@@ -18,14 +19,12 @@ use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Layout;
 use Pimcore\Model\DataObject\Listing;
-use Pimcore\Model\DataObject\Listing\Concrete;
 
 /**
  * @internal
  */
 class Helper
 {
-
     /**
      * @param Listing $list
      * @param \stdClass $filter
@@ -37,11 +36,10 @@ class Helper
         $parts = get_object_vars($filter);
         foreach ($parts as $key => $value) {
             foreach ($columns as $column) {
-                $attributes = $column["attributes"];
-                $name = $attributes["attribute"];
+                $attributes = $column['attributes'];
+                $name = $attributes['attribute'];
 
                 if (strpos($name, '~') !== false) {
-
                     $nameParts = explode('~', $name);
                     $brickName = $nameParts[0];
                     $brickKey = $nameParts[1];
@@ -60,6 +58,7 @@ class Helper
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
+     *
      * @return string
      */
     public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null, $fieldMappingTable = [])
@@ -182,6 +181,7 @@ class Helper
     {
         $db = Db::get();
         $absoluteColumnName = (strpos($columnName, '.') !== false) ? $columnName : $defaultTable . '.' . $columnName;
+
         return $db->quoteIdentifier($absoluteColumnName);
     }
 
@@ -196,7 +196,7 @@ class Helper
                     self::extractDataDefinitions($child, $fieldDefinitions);
                 }
             }
-        } else if ($def instanceof Data) {
+        } elseif ($def instanceof Data) {
             $fieldDefinitions[$def->getName()] = $def;
         }
     }

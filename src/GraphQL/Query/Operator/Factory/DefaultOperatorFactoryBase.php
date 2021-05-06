@@ -7,12 +7,12 @@ declare(strict_types=1);
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory;
@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
 {
-
     use ServiceTrait;
 
     /**
@@ -31,10 +30,9 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
      */
     protected $className;
 
-
-
     /**
      * DefaultQueryOperatorFactory constructor.
+     *
      * @param string $className
      */
     public function __construct(Service $graphQlService, string $className)
@@ -46,13 +44,14 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
     /**
      * @param array $configElement
      * @param null $context
+     *
      * @return OperatorInterface
      */
     public function build(array $configElement = [], $context = null): OperatorInterface
     {
-        $operatorImpl = new $this->className($configElement, $context);;
+        $operatorImpl = new $this->className($configElement, $context);
         $operatorImpl->setGraphQlService($this->getGraphQlService());
+
         return $operatorImpl;
     }
-
 }

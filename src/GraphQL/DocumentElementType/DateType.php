@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -30,7 +30,7 @@ class DateType extends ObjectType
         if (!self::$instance) {
             $config =
                 [
-                    'name' => "document_editableDate",
+                    'name' => 'document_editableDate',
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
@@ -68,6 +68,7 @@ class DateType extends ObjectType
                                     if ($data instanceof Carbon) {
                                         $format = $args['format'];
                                         $formattedValue = $data->format($format);
+
                                         return $formattedValue;
                                     }
                                 }

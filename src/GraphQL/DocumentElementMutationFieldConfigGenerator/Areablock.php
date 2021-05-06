@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator;
@@ -23,18 +23,18 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Areablock extends Base
 {
-
     /** @var InputObjectType */
-    static $itemType;
+    public static $itemType;
 
-    /** @var AreablockDataInputType  */
+    /** @var AreablockDataInputType */
     protected $areablockDataInputType;
 
-    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock  */
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock */
     protected $processor;
 
     /**
      * Areablock constructor.
+     *
      * @param Service $graphQlService
      * @param AreablockDataInputType $areablockDataInputType
      */
@@ -45,11 +45,8 @@ class Areablock extends Base
         $this->processor = $processor;
     }
 
-    /**
-     */
     public function getDocumentElementMutationFieldConfig()
     {
-
         if (!self::$itemType) {
             self::$itemType = new InputObjectType(
                 [
@@ -59,8 +56,8 @@ class Areablock extends Base
                             'type' => Type::nonNull(Type::string()),
                             'hidden' => Type::boolean(),
                             'replace' => [
-                                "type" => Type::boolean(),
-                                "description" => "if true (default), all elements inside the block will be replaced"
+                                'type' => Type::boolean(),
+                                'description' => 'if true (default), all elements inside the block will be replaced'
                             ],
                             'editables' => MutationType::$documentElementTypes
                         ];
@@ -88,5 +85,4 @@ class Areablock extends Base
             'processor' => [$this->processor, 'process']
         ];
     }
-
 }

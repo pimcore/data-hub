@@ -5,42 +5,37 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
-use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Logger;
-use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\DataObject\Service;
-use Pimcore\Model\Document;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
 
 class QueryType
 {
-
     use ServiceTrait;
     use PermissionInfoTrait;
     use ElementIdentificationTrait;
@@ -62,6 +57,7 @@ class QueryType
 
     /**
      * QueryType constructor.
+     *
      * @param EventDispatcherInterface $eventDispatcher
      * @param ClassDefinition $class
      * @param $configuration
@@ -80,7 +76,9 @@ class QueryType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
     public function resolveFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null, $elementType)
@@ -100,10 +98,11 @@ class QueryType
         }
 
         $data = new ElementDescriptor();
-        $getter = "get" . ucfirst($elementType) . "FieldHelper";
+        $getter = 'get' . ucfirst($elementType) . 'FieldHelper';
         $fieldHelper = $this->getGraphQlService()->$getter();
         $fieldHelper->extractData($data, $element, $args, $context, $resolveInfo);
         $data = $data->getArrayCopy();
+
         return $data;
     }
 
@@ -112,24 +111,14 @@ class QueryType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
-    public function resolveAssetFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "asset");
-    }
-
-
-    /**
-     * @param null $value
-     * @param array $args
-     * @param array $context
-     * @param ResolveInfo|null $resolveInfo
-     * @return array
-     * @throws ClientSafeException
-     */
-    public function resolveDocumentFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "document");
+    public function resolveAssetFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, 'asset');
     }
 
     /**
@@ -137,20 +126,41 @@ class QueryType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
-    public function resolveObjectFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, "object");
+    public function resolveDocumentFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, 'document');
+    }
+
+    /**
+     * @param null $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return array
+     *
+     * @throws ClientSafeException
+     */
+    public function resolveObjectFolderGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveFolderGetter($value, $args, $context, $resolveInfo, 'object');
     }
 
     /**
      * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
+     *
      * @param null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
     public function resolveDocumentGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -172,7 +182,7 @@ class QueryType
         }
 
         if (!$this->omitPermissionCheck) {
-            if (!WorkspaceHelper::checkPermission($documentElement, 'read') ) {
+            if (!WorkspaceHelper::checkPermission($documentElement, 'read')) {
                 return null;
             }
         }
@@ -184,13 +194,14 @@ class QueryType
         return $data;
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
     public function resolveAssetGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -212,16 +223,18 @@ class QueryType
 
         $data = new ElementDescriptor($assetElement);
         $this->getGraphQlService()->extractData($data, $assetElement, $args, $context, $resolveInfo);
+
         return $data;
     }
-
 
     /**
      * @param null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws ClientSafeException
      */
     public function resolveObjectGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -293,6 +306,7 @@ class QueryType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -308,12 +322,12 @@ class QueryType
         return $nodeData;
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -342,7 +356,9 @@ class QueryType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveListing($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -372,6 +388,7 @@ class QueryType
                 static function ($fullpath) use ($db) {
                     $fullpath = trim($fullpath, " '");
                     $fullpath = Service::correctPath($fullpath);
+
                     return $db->quote($fullpath);
                 },
                 explode(',', $args['fullpaths'])
@@ -436,7 +453,7 @@ class QueryType
             }
 
             $className = $this->class->getName();
-            $columns = $this->configuration->configuration["schema"]["queryEntities"][$className]["columnConfig"]["columns"];
+            $columns = $this->configuration->configuration['schema']['queryEntities'][$className]['columnConfig']['columns'];
 
             Helper::addJoins($objectList, $filter, $columns, $mappingTable);
 
@@ -451,7 +468,7 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
-        $event =  new ListingEvent(
+        $event = new ListingEvent(
             $objectList,
             $args,
             $context,
@@ -460,7 +477,6 @@ class QueryType
         $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
         $objectList = $event->getListing();
 
-
         $connection = [];
         $connection['edges'] = [$objectList, 'load'];
         $connection['totalCount'] = [$objectList, 'getTotalCount'];
@@ -468,12 +484,12 @@ class QueryType
         return $connection;
     }
 
-
     /**
      * @param null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return mixed
      */
     public function resolveListingTotalCount($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)

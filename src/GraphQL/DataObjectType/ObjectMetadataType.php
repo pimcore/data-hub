@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -26,7 +26,6 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
 class ObjectMetadataType extends ObjectType
 {
-
     use ServiceTrait;
 
     protected $class;
@@ -36,6 +35,7 @@ class ObjectMetadataType extends ObjectType
 
     /**
      * ObjectMetadataType constructor.
+     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param null $class
@@ -48,7 +48,7 @@ class ObjectMetadataType extends ObjectType
         $this->fieldDefinition = $fieldDefinition;
         if ($class instanceof Definition) {
             $config['name'] = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
-        } else if ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
+        } elseif ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
             $config['name'] = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
         } else {
             $config['name'] = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
@@ -75,11 +75,11 @@ class ObjectMetadataType extends ObjectType
         $fields = ['element' =>
             [
                 'type' => $elementTypeDefinition,
-                'resolve' => [$resolver, "resolveElement"]
+                'resolve' => [$resolver, 'resolveElement']
             ],
             'metadata' => [
                 'type' => Type::listOf(new ElementMetadataKeyValuePairType()),
-                'resolve' => [$resolver, "resolveMetadata"]
+                'resolve' => [$resolver, 'resolveMetadata']
 
             ]];
 

@@ -5,14 +5,27 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 declare(strict_types=1);
+
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
@@ -66,7 +79,6 @@ class Service
      * @var ContainerInterface
      */
     protected $documentElementMutationTypeGeneratorFactories;
-
 
     /**
      * @var ContainerInterface
@@ -173,12 +185,11 @@ class Service
      */
     protected $dataObjectDataTypes = [];
 
-
     protected $tagManagerListener;
-
 
     /**
      * Service constructor.
+     *
      * @param AssetFieldHelper $assetFieldHelper
      * @param DocumentFieldHelper $documentFieldHelper
      * @param DataObjectFieldHelper $objectFieldHelper
@@ -211,8 +222,7 @@ class Service
         ContainerInterface $generalTypeGeneratorFactories,
         ContainerInterface $assetTypeGeneratorFactories,
         ContainerInterface $csFeatureTypeGeneratorFactories
-    )
-    {
+    ) {
         $this->assetFieldHelper = $assetFieldHelper;
         $this->documentFieldHelper = $documentFieldHelper;
         $this->objectFieldHelper = $objectFieldHelper;
@@ -244,23 +254,25 @@ class Service
         /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
         $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_dataobjectquerydatatype_' . $typeName);
         $result = $factory->getGraphQlFieldConfig($attribute, $fieldDefinition, $class, $container);
+
         return $result;
     }
-
 
     /**
      * @param $nodeDef
      * @param $typeName
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param null $container
+     *
      * @return mixed
      */
     public function buildDataObjectMutationDataConfig($nodeDef, $class = null, $container = null)
     {
         /** @var DataObjectMutationFieldConfigGeneratorInterface $factory */
-        $typeName = $nodeDef["attributes"]["dataType"];
+        $typeName = $nodeDef['attributes']['dataType'];
         $factory = $this->dataObjectMutationTypeGeneratorFactories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
         $result = $factory->getGraphQlMutationFieldConfig($nodeDef, $class, $container);
+
         return $result;
     }
 
@@ -303,6 +315,7 @@ class Service
 
     /**
      * @param $elementName
+     *
      * @return mixed
      */
     public function buildDocumentElementDataQueryType($elementName)
@@ -315,6 +328,7 @@ class Service
 
     /**
      * @param $elementName
+     *
      * @return mixed
      */
     public function buildDocumentElementDataMutationType($elementName)
@@ -327,6 +341,7 @@ class Service
 
     /**
      * @param $elementName
+     *
      * @return mixed
      */
     public function buildCsFeatureDataQueryType($elementName)
@@ -336,7 +351,6 @@ class Service
 
         return $result;
     }
-
 
     /**
      * @param $typeName
@@ -358,7 +372,6 @@ class Service
         return $this->dataObjectMutationTypeGeneratorFactories->has('typegenerator_dataobjectmutationdatatype_' . $typeName);
     }
 
-
     /**
      * @param $typeName
      * @param $nodeDef
@@ -374,6 +387,7 @@ class Service
         /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
         $factory = $this->dataObjectQueryTypeGeneratorFactories->get('typegenerator_queryoperator_' . $typeName);
         $result = $factory->getGraphQlQueryOperatorConfig($typeName, $nodeDef, $class, $container, $params);
+
         return $result;
     }
 
@@ -383,7 +397,9 @@ class Service
      * @param ClassDefinition|null $class
      * @param null $container
      * @param array $params
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function buildDataObjectMutationOperatorConfig($typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
@@ -393,8 +409,9 @@ class Service
         // $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationoperator_' . $typeName);
         $factory = $this->dataObjectMutationOperatorFactories->get($typeName);
         $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
-        $configGenerator = $factory->build($nodeDef["attributes"], $context);
+        $configGenerator = $factory->build($nodeDef['attributes'], $context);
         $result = $configGenerator->getGraphQlMutationOperatorConfig($nodeDef, $class, $container, $params);
+
         return $result;
     }
 
@@ -405,6 +422,7 @@ class Service
      * @param ClassDefinition|null $class
      * @param null $container
      * @param array $params
+     *
      * @return mixed
      */
     public function buildDataObjectOperatorQueryType($mode, $typeName, $nodeDef, ClassDefinition $class = null, $container = null, $params = [])
@@ -417,31 +435,35 @@ class Service
         return $result;
     }
 
-
     /**
      * @param $typeName
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function buildGeneralType($typeName)
     {
         $factory = $this->generalTypeGeneratorFactories->get($typeName);
         $result = $factory->build();
+
         return $result;
     }
 
     /**
      * @param $typeName
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function buildAssetType($typeName)
     {
         $factory = $this->assetTypeGeneratorFactories->get($typeName);
         $result = $factory->build();
+
         return $result;
     }
-
 
     /**
      * @param $typeName
@@ -466,7 +488,9 @@ class Service
 
     /**
      * @param $nodeConfig
+     *
      * @return mixed|DefaultValue
+     *
      * @throws \Exception
      */
     public function buildValueResolverFromAttributes($nodeConfig)
@@ -510,7 +534,6 @@ class Service
         $this->supportedDocumentElementMutationDataTypes = $supportedDocumentElementMutationDataTypes;
     }
 
-
     /**
      * @param $supportedCsFeatureQueryDataTypes
      */
@@ -519,7 +542,6 @@ class Service
         $this->supportedCsFeatureQueryDataTypes = $supportedCsFeatureQueryDataTypes;
     }
 
-
     /**
      * @param array $generalTypes
      */
@@ -527,7 +549,6 @@ class Service
     {
         $this->generalTypes = $generalTypes;
     }
-
 
     /**
      * @return array
@@ -577,22 +598,21 @@ class Service
         $this->supportedDataObjectMutationDataTypes = $supportedDataObjectMutationDataTypes;
     }
 
-
     /**
      * @param $value
+     *
      * @return mixed
      */
     public function getElementFromArrayObject($value)
     {
         if ($value instanceof \ArrayObject) {
             $value = $value->getArrayCopy();
-            if (isset($value["__elementType"])) {
-                $value = \Pimcore\Model\Element\Service::getElementById($value["__elementType"], $value["id"]);
+            if (isset($value['__elementType'])) {
+                $value = \Pimcore\Model\Element\Service::getElementById($value['__elementType'], $value['id']);
             }
         }
 
         return $value;
-
     }
 
     /**
@@ -691,7 +711,6 @@ class Service
         $this->propertyDataTypes = $dataTypes;
     }
 
-
     /**
      * @param $dataTypes
      */
@@ -702,7 +721,9 @@ class Service
 
     /**
      * @param $typename
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getAssetTypeDefinition($typename)
@@ -710,13 +731,14 @@ class Service
         if (isset($this->assetDataTypes[$typename])) {
             return $this->assetDataTypes[$typename];
         }
-        throw new ClientSafeException("unknown asset type: " . $typename);
+        throw new ClientSafeException('unknown asset type: ' . $typename);
     }
-
 
     /**
      * @param $typename
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getClassificationStoreTypeDefinition($typename)
@@ -724,13 +746,14 @@ class Service
         if (isset($this->classificationStoreDataTypes[$typename])) {
             return $this->classificationStoreDataTypes[$typename];
         }
-        throw new ClientSafeException("unknown classificationstore type: " . $typename);
+        throw new ClientSafeException('unknown classificationstore type: ' . $typename);
     }
-
 
     /**
      * @param $typename
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getDataObjectTypeDefinition($typename)
@@ -738,13 +761,14 @@ class Service
         if (isset($this->dataObjectDataTypes[$typename])) {
             return $this->dataObjectDataTypes[$typename];
         }
-        throw new ClientSafeException("unknown dataobject type: " . $typename);
+        throw new ClientSafeException('unknown dataobject type: ' . $typename);
     }
-
 
     /**
      * @param $typename
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getDocumentTypeDefinition($typename)
@@ -752,12 +776,14 @@ class Service
         if (isset($this->documentDataTypes[$typename])) {
             return $this->documentDataTypes[$typename];
         }
-        throw new ClientSafeException("unknown document type: " . $typename);
+        throw new ClientSafeException('unknown document type: ' . $typename);
     }
 
     /**
      * @param $typename
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getPropertyTypeDefinition($typename)
@@ -765,9 +791,8 @@ class Service
         if (isset($this->propertyDataTypes[$typename])) {
             return $this->propertyDataTypes[$typename];
         }
-        throw new ClientSafeException("unknown property type: " . $typename);
+        throw new ClientSafeException('unknown property type: ' . $typename);
     }
-
 
     /**
      * gets value for given object and getter, including inherited values
@@ -798,7 +823,7 @@ class Service
                     $brickDefinition = Definition::getByKey($brickType);
                     $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
                     $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
-                    $value = $localizedFields->getLocalizedValue($brickDescriptor['brickfield'], isset($args["language"]) ? $args["language"] : null);
+                    $value = $localizedFields->getLocalizedValue($brickDescriptor['brickfield'], isset($args['language']) ? $args['language'] : null);
                 } else {
                     $brickFieldGetter = 'get' . ucfirst($brickKey);
                     $value = $value->$brickFieldGetter();
@@ -831,12 +856,13 @@ class Service
      * @param Data $fieldDefinition
      * @param string $attribute
      * @param array $args
+     *
      * @return \stdclass|null
+     *
      * @throws \Exception
      */
     public static function setValue($object, $attribute, $callback)
     {
-
         $result = null;
         $setter = $attribute ? 'set' . ucfirst($attribute) : $attribute;
 
@@ -856,7 +882,7 @@ class Service
         } elseif (count($attributeParts) > 1) {
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
-            $context = ["object" => $object];
+            $context = ['object' => $object];
             $brickDescriptor = null;
 
             // brick
@@ -891,49 +917,47 @@ class Service
                         $def = $locFields->getFieldDefinition($key, $context);
                     }
                 }
-                $brickGetter = "get" . ucfirst($key);
+                $brickGetter = 'get' . ucfirst($key);
 
                 $brickContainer = $object->$brickGetter();
-                $subBrickGetter = "get" . ucfirst($brickType);
-                $subBrickSetter = "set" . ucfirst($brickType);
+                $subBrickGetter = 'get' . ucfirst($brickType);
+                $subBrickSetter = 'set' . ucfirst($brickType);
                 $subBrickType = $brickContainer->$subBrickGetter();
 
                 if (!$subBrickType) {
-                    /** @var  $brickClass AbstractData */
+                    /** @var $brickClass AbstractData */
                     $brickClass = 'Pimcore\\Model\\DataObject\\Objectbrick\\Data\\' . ucfirst($brickType);
                     $subBrickType = new $brickClass($object);
-                    $subBrickSetter = "set" . ucfirst($brickType);
+                    $subBrickSetter = 'set' . ucfirst($brickType);
                     $brickContainer->$subBrickSetter($subBrickType);
                 }
 
-                $innerSetter = "set" . ucfirst($def->getName());
+                $innerSetter = 'set' . ucfirst($def->getName());
                 $result = $callback($subBrickType, $innerSetter);
 
                 $brickContainer->$subBrickSetter($subBrickType);
 
-
                 return $result;
-
             }
-
-        } else if (method_exists($container, $setter)) {
+        } elseif (method_exists($container, $setter)) {
             $result = $callback($container, $setter);
         }
+
         return $result;
     }
-
 
     /**
      * @param BaseDescriptor $descriptor
      * @param Data $fieldDefinition
      * @param string $attribute
      * @param array $args
+     *
      * @return \stdclass|null
      */
     public static function resolveValue(BaseDescriptor $descriptor, Data $fieldDefinition, $attribute, $args = [])
     {
         $getter = 'get' . ucfirst($fieldDefinition->getName());
-        $objectId = $descriptor["id"];
+        $objectId = $descriptor['id'];
         $object = Concrete::getById($objectId);
         if (!$object) {
             return null;
@@ -948,16 +972,15 @@ class Service
         $brickKey = null;
 
         if ($descriptor instanceof FieldcollectionDescriptor) {
-
             $descriptorData = $descriptor->getArrayCopy();
-            $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+            $fcFieldNameGetter = 'get' . ucfirst($descriptorData['__fcFieldname']);
             $fcData = $object->$fcFieldNameGetter();
             if ($fcData) {
                 $items = $fcData->getItems();
-                $idx = $descriptorData["__itemIdx"];
+                $idx = $descriptorData['__itemIdx'];
                 $itemData = $items[$idx];
-                if (is_array($args) && isset($args["language"])) {
-                    $result = $itemData->$getter($args["language"]);
+                if (is_array($args) && isset($args['language'])) {
+                    $result = $itemData->$getter($args['language']);
                 } else {
                     $result = $itemData->$getter();
                 }
@@ -969,21 +992,20 @@ class Service
             $blockData = null;
 
             if (isset($descriptorData['__fcFieldname']) && $descriptorData['__fcFieldname']) {
-                $fcFieldNameGetter = "get" . ucfirst($descriptorData['__fcFieldname']);
+                $fcFieldNameGetter = 'get' . ucfirst($descriptorData['__fcFieldname']);
                 $fcData = $object->$fcFieldNameGetter();
 
                 if ($fcData) {
                     $items = $fcData->getItems();
-                    $idx = $descriptorData["__itemIdx"];
+                    $idx = $descriptorData['__itemIdx'];
                     $itemData = $items[$idx];
                     $result = [];
 
-                    $blockGetter = "get" . ucfirst($descriptorData['__blockName']);
-                    $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);;
+                    $blockGetter = 'get' . ucfirst($descriptorData['__blockName']);
+                    $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);
                 }
-            }
-            elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
-                $context = ["object" => $object];
+            } elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
+                $context = ['object' => $object];
                 $brickDescriptor = null;
 
                 $brickType = $descriptorData['__brickType'];
@@ -1006,17 +1028,16 @@ class Service
                 }
 
                 if (!empty($key)) {
-                    $blockData = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                    $blockData = self::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
                 }
-            }
-            else {
-                $blockGetter = "get".ucfirst($descriptorData['__blockName']);
+            } else {
+                $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);
                 $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
-                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ?  $descriptorData['args']['language'] : null);                
+                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ? $descriptorData['args']['language'] : null);
             }
 
             if ($blockData) {
-                $index = $descriptorData["__blockIndex"];
+                $index = $descriptorData['__blockIndex'];
                 $itemData = $blockData[$index];
                 $result = $itemData[$descriptorData['__blockFieldName']]->getData();
 
@@ -1024,12 +1045,12 @@ class Service
                     $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
                 }
             }
-        } else if (substr($attribute, 0, 1) == '~') {
+        } elseif (substr($attribute, 0, 1) == '~') {
             // key value, ignore for now
         } elseif (count($attributeParts) > 1) {
             // TODO once the datahub gets integrated into the core we should try to share this code
             // with Pimcore\Model\DataObject\Service::gridObjectData
-            $context = ["object" => $object];
+            $context = ['object' => $object];
             $brickDescriptor = null;
 
             // brick
@@ -1061,31 +1082,33 @@ class Service
                         $def = $locFields->getFieldDefinition($key, $context);
                     }
                 }
-                $value = Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                $value = self::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+
                 return $value;
-
             }
-
-        } else if (method_exists($container, $getter)) {
+        } elseif (method_exists($container, $getter)) {
             $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
-            $result = $container->$getter($isLocalizedField && isset($args['language']) ?  $args['language'] : null);
-
+            $result = $container->$getter($isLocalizedField && isset($args['language']) ? $args['language'] : null);
         }
+
         return $result;
     }
-    
+
     /**
      * Check whether given field in container is localized
+     *
      * @param Concrete|AbstractData|\Pimcore\Model\DataObject\Objectbrick\Data\AbstractData $container
      * @param string $fieldName
+     *
      * @return bool
      */
-    private static function isLocalizedField($container,$fieldName): bool {
+    private static function isLocalizedField($container, $fieldName): bool
+    {
         $containerDefinition = null;
 
         if ($container instanceof Concrete) {
             $containerDefinition = $container->getClass();
-        } else if ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+        } elseif ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
             $containerDefinition = $container->getDefinition();
         }
 
@@ -1147,13 +1170,14 @@ class Service
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      */
-    public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+    public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
         $fieldHelper = null;
         if ($target instanceof Document) {
             $fieldHelper = $this->getDocumentFieldHelper();
-        } else if ($target instanceof Asset) {
+        } elseif ($target instanceof Asset) {
             $fieldHelper = $this->getAssetFieldHelper();
-        } else if ($target instanceof AbstractObject) {
+        } elseif ($target instanceof AbstractObject) {
             $fieldHelper = $this->getObjectFieldHelper();
         }
 
@@ -1162,25 +1186,28 @@ class Service
         }
     }
 
-
     /**
      * @param string $type
+     *
      * @return bool
      */
-    public function querySchemaEnabled(string $type) {
+    public function querySchemaEnabled(string $type)
+    {
         $context = Runtime::get('datahub_context');
-        /** @var  $configuration Configuration */
-        $configuration = $context["configuration"];
-        if ($type === "object") {
-            $types = $configuration->getConfiguration()["schema"]["queryEntities"];
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
+        if ($type === 'object') {
+            $types = $configuration->getConfiguration()['schema']['queryEntities'];
             $enabled = count($types) > 0;
         } else {
-            $enabled = $configuration->getSpecialEntities()[$type]["read"] ?? false;
+            $enabled = $configuration->getSpecialEntities()[$type]['read'] ?? false;
         }
+
         return $enabled;
     }
 
-    public function setTagManagerListener($tagManagerListener) {
+    public function setTagManagerListener($tagManagerListener)
+    {
         $this->tagManagerListener = $tagManagerListener;
     }
 
@@ -1191,6 +1218,4 @@ class Service
     {
         return $this->tagManagerListener;
     }
-
-
 }

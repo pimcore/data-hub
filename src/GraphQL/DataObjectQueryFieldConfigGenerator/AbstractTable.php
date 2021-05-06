@@ -1,8 +1,19 @@
 <?php
 
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
-
 
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ObjectType;
@@ -20,6 +31,7 @@ abstract class AbstractTable extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
@@ -54,6 +66,7 @@ abstract class AbstractTable extends Base
                         $row
                     );
                 }
+
                 return $rows;
             }
         ], $container);
@@ -63,13 +76,14 @@ abstract class AbstractTable extends Base
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return ListOfType|StringType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         if ($class instanceof Definition) {
             $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
-        } else if ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
+        } elseif ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
             $name = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
         } else {
             $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
@@ -86,11 +100,13 @@ abstract class AbstractTable extends Base
                 'fields' => $columns
             ]
         );
+
         return Type::listOf($type);
     }
 
     /**
      * @param Data $fieldDefinition
+     *
      * @return array
      */
     abstract protected function getTableColumns(Data $fieldDefinition): array;

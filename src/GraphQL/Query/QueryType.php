@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query;
@@ -31,10 +31,8 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Factory;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-
 class QueryType extends ObjectType
 {
-
     use ServiceTrait;
     use PermissionInfoTrait;
 
@@ -53,14 +51,15 @@ class QueryType extends ObjectType
      */
     protected $modelFactory;
 
-
     /**
      * QueryType constructor.
+     *
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
      * @param array $config
      * @param array $context
+     *
      * @throws \Exception
      */
     public function __construct(Service $graphQlService, LocaleServiceInterface $localeService, Factory $modelFactory, EventDispatcherInterface $eventDispatcher, $config = [], $context = [])
@@ -87,30 +86,30 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities[$type . "_folder"]["read"]) && $entities[$type . "_folder"]["read"]) {
+        if (isset($entities[$type . '_folder']['read']) && $entities[$type . '_folder']['read']) {
             $resolver = $this->getResolver();
 
-            if ($type == "asset") {
-                $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition("_" . $type . "_folder");
-            } else if ($type == "document") {
-                $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition("_" . $type . "_folder");
+            if ($type == 'asset') {
+                $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition('_' . $type . '_folder');
+            } elseif ($type == 'document') {
+                $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition('_' . $type . '_folder');
             } else {
-                $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition("_" . $type . "_folder");
+                $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition('_' . $type . '_folder');
             }
 
             // GETTER DEFINITION
             $defGet = [
-                'name' => 'get' . ucfirst($type) . "Folder",
+                'name' => 'get' . ucfirst($type) . 'Folder',
                 'args' => [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $graphQlType,
-                'resolve' => [$resolver, "resolve" . ucfirst($type) . "FolderGetter"]
+                'resolve' => [$resolver, 'resolve' . ucfirst($type) . 'FolderGetter']
             ];
 
-            $config['fields']['get' . ucfirst($type) . "Folder"] = $defGet;
+            $config['fields']['get' . ucfirst($type) . 'Folder'] = $defGet;
         }
     }
 
@@ -124,9 +123,9 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
         $service = $this->getGraphQlService();
-        $assetType = $service->buildAssetType("asset");
+        $assetType = $service->buildAssetType('asset');
 
-        if ($entities["asset"]["read"] ?? false) {
+        if ($entities['asset']['read'] ?? false) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION
@@ -138,14 +137,12 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $assetType,
-                'resolve' => [$resolver, "resolveAssetGetter"]
+                'resolve' => [$resolver, 'resolveAssetGetter']
             ];
 
             $config['fields']['getAsset'] = $defGet;
         }
     }
-
-
 
     /**
      * @param array $config
@@ -157,7 +154,7 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (isset($entities["document"]["read"]) && $entities["document"]["read"]) {
+        if (isset($entities['document']['read']) && $entities['document']['read']) {
             $resolver = $this->getResolver();
 
             // GETTER DEFINITION
@@ -169,29 +166,32 @@ class QueryType extends ObjectType
                     'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
-                'type' => $this->getGraphQlService()->getDocumentTypeDefinition("document"),
-                'resolve' => [$resolver, "resolveDocumentGetter"]
+                'type' => $this->getGraphQlService()->getDocumentTypeDefinition('document'),
+                'resolve' => [$resolver, 'resolveDocumentGetter']
             ];
 
             $config['fields']['getDocument'] = $defGet;
         }
     }
 
-
     /**
      * @param null $class
      * @param null $configuration
+     *
      * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
      */
-    protected function getResolver($class = null, $configuration = null) {
+    protected function getResolver($class = null, $configuration = null)
+    {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
+
         return $resolver;
     }
 
     /**
      * @param array $config
      * @param array $context
+     *
      * @throws \Exception
      */
     public function buildDataObjectQueries(&$config = [], $context = []): void
@@ -203,7 +203,7 @@ class QueryType extends ObjectType
         foreach ($entities as $entity) {
             $class = ClassDefinition::getByName($entity);
             if (!$class) {
-                Logger::error("class " . $entity . " not found");
+                Logger::error('class ' . $entity . ' not found');
                 continue;
             }
 
@@ -219,7 +219,7 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => ClassTypeDefinitions::get($class),
-                'resolve' => [$resolver, "resolveObjectGetter"],
+                'resolve' => [$resolver, 'resolveObjectGetter'],
             ];
 
             // LISTING DEFINITION
@@ -230,7 +230,7 @@ class QueryType extends ObjectType
                         'cursor' => Type::string(),
                         'node' => [
                             'type' => ClassTypeDefinitions::get($class),
-                            'resolve' => [$resolver, "resolveEdge"]
+                            'resolve' => [$resolver, 'resolveEdge']
                         ],
                     ],
                 ]
@@ -243,11 +243,11 @@ class QueryType extends ObjectType
 
                         'edges' => [
                             'type' => Type::listOf($edgeType),
-                            'resolve' => [$resolver, "resolveEdges"]
+                            'resolve' => [$resolver, 'resolveEdges']
                         ],
                         'totalCount' => [
                             'description' => 'The total count of all queryable objects for this schema listing',
-                            'resolve' => [$resolver, "resolveListingTotalCount"],
+                            'resolve' => [$resolver, 'resolveListingTotalCount'],
                             'type' => Type::int()
                         ]
                     ]
@@ -260,7 +260,7 @@ class QueryType extends ObjectType
                     'ids' => ['type' => Type::string()],
                     'fullpaths' => [
                         'type' => Type::string(),
-                        'description' => "Comma separated list of fullpath"
+                        'description' => 'Comma separated list of fullpath'
                     ],
                     'defaultLanguage' => ['type' => Type::string()],
                     'first' => ['type' => Type::int()],
@@ -268,13 +268,13 @@ class QueryType extends ObjectType
                     'sortBy' => ['type' => Type::listOf(Type::string())],
                     'sortOrder' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                        'description' => 'Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by',
                     ],
                     'filter' => ['type' => Type::string()],
                     'published' => ['type' => Type::boolean()],
                 ],
                 'type' => $listingType,
-                'resolve' => [$resolver, "resolveListing"],
+                'resolve' => [$resolver, 'resolveListing'],
             ];
 
             if (!isset($config['fields'])) {
@@ -289,6 +289,7 @@ class QueryType extends ObjectType
     /**
      * @param array $config
      * @param array $context
+     *
      * @throws \Exception
      */
     public function buildAssetListingQueries(&$config = [], $context = []): void
@@ -296,13 +297,13 @@ class QueryType extends ObjectType
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
-        if (!isset($entities["asset_listing"]["read"]) || !$entities["asset_listing"]["read"]) {
+        if (!isset($entities['asset_listing']['read']) || !$entities['asset_listing']['read']) {
             return;
         }
 
         $listResolver = new AssetListing($this->getGraphQlService(), $this->eventDispatcher);
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService(), $configuration);
-        $assetTree = $this->getGraphQlService()->buildGeneralType("asset_tree");
+        $assetTree = $this->getGraphQlService()->buildGeneralType('asset_tree');
 
         $edgeType = new ObjectType(
             [
@@ -311,7 +312,7 @@ class QueryType extends ObjectType
                     'cursor' => Type::string(),
                     'node' => [
                         'type' => $assetTree,
-                        'resolve' => [$listResolver, "resolveEdge"]
+                        'resolve' => [$listResolver, 'resolveEdge']
                     ],
                 ],
             ]
@@ -323,11 +324,11 @@ class QueryType extends ObjectType
                 'fields' => [
                     'edges' => [
                         'type' => Type::listOf($edgeType),
-                        'resolve' => [$listResolver, "resolveEdges"]
+                        'resolve' => [$listResolver, 'resolveEdges']
                     ],
                     'totalCount' => [
                         'description' => 'The total count of all queryable assets for this schema listing',
-                        'resolve' => [$listResolver, "resolveListingTotalCount"],
+                        'resolve' => [$listResolver, 'resolveListingTotalCount'],
                         'type' => Type::int()
                     ]
                 ]
@@ -340,7 +341,7 @@ class QueryType extends ObjectType
                 'ids' => ['type' => Type::string()],
                 'fullpaths' => [
                     'type' => Type::string(),
-                    'description' => "Comma separated list of fullpath"
+                    'description' => 'Comma separated list of fullpath'
                 ],
                 'defaultLanguage' => ['type' => Type::string()],
                 'first' => ['type' => Type::int()],
@@ -348,12 +349,12 @@ class QueryType extends ObjectType
                 'sortBy' => ['type' => Type::listOf(Type::string())],
                 'sortOrder' => [
                     'type' => Type::listOf(Type::string()),
-                    'description' => "Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by",
+                    'description' => 'Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by',
                 ],
                 'filter' => ['type' => Type::string()],
             ],
             'type' => $listingType,
-            'resolve' => [$listResolver, "resolveListing"],
+            'resolve' => [$listResolver, 'resolveListing'],
         ];
 
         $config['fields']['getAssetListing'] = $defListing;
@@ -367,7 +368,7 @@ class QueryType extends ObjectType
      */
     public function build(&$config = [], $context = [])
     {
-        $event =  new QueryTypeEvent(
+        $event = new QueryTypeEvent(
             $this,
             $config,
             $context
@@ -381,9 +382,9 @@ class QueryType extends ObjectType
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
         $this->buildAssetListingQueries($config, $context);
-        $this->buildFolderQueries("asset", $config, $context);
-        $this->buildFolderQueries("document", $config, $context);
-        $this->buildFolderQueries("object", $config, $context);
+        $this->buildFolderQueries('asset', $config, $context);
+        $this->buildFolderQueries('document', $config, $context);
+        $this->buildFolderQueries('object', $config, $context);
 
         $event->setConfig($config);
         $event->setContext($context);

@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -30,20 +30,20 @@ class ImageType extends ObjectType
 
     /**
      * @param Service $graphQlService
+     *
      * @return ImageType
+     *
      * @throws \Exception
      */
     public static function getInstance(Service $graphQlService)
     {
-
         if (!self::$instance) {
-
             $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\HotspotType();
             $resolver->setGraphQLService($graphQlService);
 
-            $assetType = $graphQlService->buildAssetType("asset");
-            $hotspotMarkerType = $graphQlService->buildGeneralType("hotspotmarker");
-            $hotspotHotspotType = $graphQlService->buildGeneralType("hotspothotspot");
+            $assetType = $graphQlService->buildAssetType('asset');
+            $hotspotMarkerType = $graphQlService->buildGeneralType('hotspotmarker');
+            $hotspotHotspotType = $graphQlService->buildGeneralType('hotspothotspot');
 
             $config =
                 [
@@ -64,8 +64,7 @@ class ImageType extends ObjectType
                                     return $value->getName();
                                 }
                             }
-                        ]
-                        ,
+                        ],
                         'image' => [
                             'type' => $assetType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
@@ -74,6 +73,7 @@ class ImageType extends ObjectType
                                     if (isset($data['id'])) {
                                         $data = new ElementDescriptor(Asset::getById($data['id']));
                                         $result = $resolver->resolveImage($data, $args, $context, $resolveInfo);
+
                                         return $result;
                                     }
                                 }
@@ -124,6 +124,4 @@ class ImageType extends ObjectType
 
         return self::$instance;
     }
-
-
 }

@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -20,10 +20,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 
-
 class Base
 {
-
     use ServiceTrait;
 
     protected $typeName;
@@ -36,6 +34,7 @@ class Base
 
     /**
      * Base constructor.
+     *
      * @param string $typeName
      * @param array $attributes
      * @param ClassDefinition $class
@@ -48,7 +47,6 @@ class Base
         $this->class = $class;
         $this->container = $container;
     }
-
 
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -68,6 +66,7 @@ class Base
      * Helper method that allows dynamic inspection into the resolver attributes.
      *
      * @param string $type
+     *
      * @return string|null
      */
     public function getResolverAttribute(string $type): ?string
@@ -79,4 +78,3 @@ class Base
         }
     }
 }
-

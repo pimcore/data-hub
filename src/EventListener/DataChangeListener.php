@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\EventListener;
@@ -28,7 +28,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataChangeListener implements EventSubscriberInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -37,10 +36,10 @@ class DataChangeListener implements EventSubscriberInterface
         return [
             DataObjectEvents::POST_UPDATE => 'onObjectUpdate',
             DataObjectEvents::POST_DELETE => 'onObjectDelete',
-            DocumentEvents::POST_UPDATE   => 'onDocumentUpdate',
-            DocumentEvents::POST_DELETE   => 'onDocumentDelete',
-            AssetEvents::POST_UPDATE      => 'onAssetUpdate',
-            AssetEvents::POST_DELETE      => 'onAssetDelete',
+            DocumentEvents::POST_UPDATE => 'onDocumentUpdate',
+            DocumentEvents::POST_DELETE => 'onDocumentDelete',
+            AssetEvents::POST_UPDATE => 'onAssetUpdate',
+            AssetEvents::POST_DELETE => 'onAssetDelete',
         ];
     }
 
@@ -149,7 +148,6 @@ class DataChangeListener implements EventSubscriberInterface
 
         /** @var Configuration $configurationEntity */
         foreach ($configList as $configurationEntity) {
-
             try {
                 $entity = WorkspaceHelper::modifyWorkspaceRowByType($configurationEntity, $dataType, $modificationType, $searchValue, $replaceValue);
             } catch (\Throwable $e) {

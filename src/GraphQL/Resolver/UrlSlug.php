@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -27,14 +27,17 @@ class UrlSlug
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function resolveSlug($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
             return $value->getSlug();
         }
+
         return null;
     }
 
@@ -43,12 +46,14 @@ class UrlSlug
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return int|null
+     *
      * @throws \Exception
      */
     public function resolveSiteId($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\UrlSlug) {
             return $value->getSiteId();
         }
 

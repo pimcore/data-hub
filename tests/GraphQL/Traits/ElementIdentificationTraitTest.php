@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits;
@@ -50,7 +50,7 @@ class ElementIdentificationTraitTest extends TestCase
         $newValueItemValue = array();
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
-        // Act + Assert 
+        // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
@@ -61,7 +61,7 @@ class ElementIdentificationTraitTest extends TestCase
         $newValueItemValue = array("type" => "wrong");
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
-        // Act + Assert 
+        // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
@@ -72,7 +72,7 @@ class ElementIdentificationTraitTest extends TestCase
         $newValueItemValue = array("type" => self::TEST_TYPE);
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
-        // Act + Assert 
+        // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
 
@@ -100,7 +100,7 @@ class ElementIdentificationTraitTest extends TestCase
         );
         // System under Test
         $sut = new TestTrait();
-        // Act 
+        // Act
         $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue);
         // Assert
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_PATH, $result);
@@ -114,7 +114,7 @@ class ElementIdentificationTraitTest extends TestCase
         );
         // System under Test
         $sut = new TestTrait();
-        // Act 
+        // Act
         $result = $sut->getElementByTypeAndIdOrPath($newValueItemValue, self::TEST_TYPE);
         // Assert
         $this->assertEquals(self::TEST_TYPE . TestTrait::BY_PATH, $result);

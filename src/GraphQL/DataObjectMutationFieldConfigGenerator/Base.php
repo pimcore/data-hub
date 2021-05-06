@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
@@ -20,15 +20,14 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGeneratorI
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Base implements DataObjectMutationFieldConfigGeneratorInterface
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -36,12 +35,12 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
         $this->setGraphQLService($graphQlService);
     }
 
-
     /**
      * @param array $nodeDef
      * @param ClassDefinition $class
      * @param mixed $container
      * @param array $params
+     *
      * @return array
      */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
@@ -54,5 +53,4 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
             'processor' => [$processor, 'process']
         ];
     }
-
 }
