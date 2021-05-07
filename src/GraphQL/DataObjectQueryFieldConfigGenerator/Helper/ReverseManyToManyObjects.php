@@ -5,21 +5,19 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
@@ -46,6 +44,7 @@ class ReverseManyToManyObjects
 
     /**
      * Objects constructor.
+     *
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition
@@ -71,7 +70,7 @@ class ReverseManyToManyObjects
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $objectId = $value["id"];
+        $objectId = $value['id'];
         $object = Concrete::getById($objectId);
 
         $relations = $object->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
@@ -93,8 +92,6 @@ class ReverseManyToManyObjects
 
             return $result;
         }
-
-
 
         return $relations;
     }

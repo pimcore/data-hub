@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\BlockElement;
-use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\DataObject\Service;
 
@@ -77,14 +76,14 @@ class Block extends Base
             $fieldname = $fieldDefinition->getName();
 
             if (count($attributeParts) > 1) {
-                $id = $value["id"];
+                $id = $value['id'];
                 $object = Concrete::getById($id);
 
                 if (!$object) {
                     return null;
                 }
 
-                $context = ["object" => $object];
+                $context = ['object' => $object];
                 $brickDescriptor = null;
 
                 $brickType = $attributeParts[0];
@@ -112,8 +111,7 @@ class Block extends Base
                     $value = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
                     $fieldDefinition = $def;
                 }
-            }
-            else {
+            } else {
                 $id = $value['id'];
                 $value = $value[$fieldname];
             }
@@ -148,8 +146,7 @@ class Block extends Base
                                 $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
                                 $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                                 $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
-                            }
-                            elseif ($isBrick) {
+                            } elseif ($isBrick) {
                                 $blockDescriptor['__brickType'] = $attributeParts[0];
                                 $blockDescriptor['__brickKey'] = $attributeParts[1];
                             }
@@ -171,8 +168,7 @@ class Block extends Base
                         $blockDescriptor['__fcFieldname'] = $originalValue['__fcFieldname'];
                         $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                         $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
-                    }
-                    elseif ($isBrick) {
+                    } elseif ($isBrick) {
                         $blockDescriptor['__brickType'] = $attributeParts[0];
                         $blockDescriptor['__brickKey'] = $attributeParts[1];
                     }

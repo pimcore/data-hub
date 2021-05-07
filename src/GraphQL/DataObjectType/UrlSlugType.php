@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -30,6 +30,7 @@ class UrlSlugType extends ObjectType
 
     /**
      * UrlSlugType constructor.
+     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config
@@ -49,9 +50,7 @@ class UrlSlugType extends ObjectType
     public function build(&$config)
     {
         $config['fields'] = self::getFieldConfig($this->getGraphQlService());
-
     }
-
 
     public static function getFieldConfig(Service $graphQlService)
     {
@@ -60,13 +59,14 @@ class UrlSlugType extends ObjectType
         $fields = [
             'slug' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, "resolveSlug"]
+                'resolve' => [$resolver, 'resolveSlug']
             ],
             'siteId' => [
                 'type' => Type::int(),
-                'resolve' => [$resolver, "resolveSiteId"]
+                'resolve' => [$resolver, 'resolveSiteId']
             ]
         ];
+
         return $fields;
     }
 }

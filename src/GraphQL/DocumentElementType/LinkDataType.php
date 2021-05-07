@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -24,24 +24,24 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class LinkDataType extends ObjectType
 {
-
     use ServiceTrait;
 
     /**
      * LinkDataType constructor.
+     *
      * @param Service $graphQlService
+     *
      * @throws \Exception
      */
     public function __construct(Service $graphQlService)
     {
-
         $this->graphQlService = $graphQlService;
 
-        $anyTargetType = $graphQlService->buildGeneralType("anytarget");
+        $anyTargetType = $graphQlService->buildGeneralType('anytarget');
 
         $config =
             [
-                'name' => "document_editableLink_data",
+                'name' => 'document_editableLink_data',
                 'fields' => [
                     '_editableType' => [
                         'type' => Type::string(),
@@ -63,7 +63,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::boolean(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["internal"] : null;
+                                return $value->getData() ? $value->getData()['internal'] : null;
                             }
                         }
                     ],
@@ -71,7 +71,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["internalType"] : null;
+                                return $value->getData() ? $value->getData()['internalType'] : null;
                             }
                         }
                     ],
@@ -79,7 +79,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::int(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["internalId"] : null;
+                                return $value->getData() ? $value->getData()['internalId'] : null;
                             }
                         }
                     ],
@@ -87,7 +87,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["path"] : null;
+                                return $value->getData() ? $value->getData()['path'] : null;
                             }
                         }
                     ],
@@ -95,19 +95,19 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["text"] : null;
+                                return $value->getData() ? $value->getData()['text'] : null;
                             }
                         }
                     ],
                     'target' => [
                         'type' => $anyTargetType,
-                        'resolve' => [new Link($this->getGraphQlService()), "resolveTarget"]
+                        'resolve' => [new Link($this->getGraphQlService()), 'resolveTarget']
                     ],
                     'windowTarget' => [ // Target is already in use.
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["target"] : null;
+                                return $value->getData() ? $value->getData()['target'] : null;
                             }
                         }
                     ],
@@ -115,7 +115,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["parameters"] : null;
+                                return $value->getData() ? $value->getData()['parameters'] : null;
                             }
                         }
                     ],
@@ -123,7 +123,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["anchor"] : null;
+                                return $value->getData() ? $value->getData()['anchor'] : null;
                             }
                         }
                     ],
@@ -131,7 +131,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["title"] : null;
+                                return $value->getData() ? $value->getData()['title'] : null;
                             }
                         }
                     ],
@@ -139,7 +139,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["accesskey"] : null;
+                                return $value->getData() ? $value->getData()['accesskey'] : null;
                             }
                         }
                     ],
@@ -147,7 +147,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["rel"] : null;
+                                return $value->getData() ? $value->getData()['rel'] : null;
                             }
                         }
                     ],
@@ -155,7 +155,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["tabindex"] : null;
+                                return $value->getData() ? $value->getData()['tabindex'] : null;
                             }
                         }
                     ],
@@ -163,7 +163,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["class"] : null;
+                                return $value->getData() ? $value->getData()['class'] : null;
                             }
                         }
                     ],
@@ -171,7 +171,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()["attributes"] : null;
+                                return $value->getData() ? $value->getData()['attributes'] : null;
                             }
                         }
                     ],
@@ -179,5 +179,4 @@ class LinkDataType extends ObjectType
             ];
         parent::__construct($config);
     }
-
 }

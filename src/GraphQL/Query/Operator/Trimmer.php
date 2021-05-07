@@ -1,18 +1,16 @@
 <?php
+
 /**
  * Pimcore
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    Object
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
@@ -31,7 +29,7 @@ class Trimmer extends AbstractOperator
     {
         parent::__construct($config, $context);
 
-        $this->trim = $config["trim"];
+        $this->trim = $config['trim'];
     }
 
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

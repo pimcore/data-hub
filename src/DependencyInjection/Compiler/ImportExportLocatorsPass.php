@@ -5,14 +5,27 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 declare(strict_types=1);
+
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler;
 
@@ -105,8 +118,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         string $type,
         string $tag,
         string $argument
-    )
-    {
+    ) {
         $resolvers = $container->findTaggedServiceIds($tag);
 
         $mapping = [];
@@ -146,8 +158,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         Definition $definition,
         string $type,
         string $tag
-    )
-    {
+    ) {
         $resolvers = $container->findTaggedServiceIds($tag);
 
         $mapping = [];
@@ -222,8 +233,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         Definition $definition,
         string $type,
         string $tag
-    )
-    {
+    ) {
         $resolvers = $container->findTaggedServiceIds($tag);
 
         $mapping = [];
@@ -285,7 +295,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
-
     /**
      * @param ContainerBuilder $container
      */
@@ -309,7 +318,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             'pimcore.datahub.graphql.documentelementmutationtypegenerator'
         );
     }
-
 
     /**
      * @param ContainerBuilder $container
@@ -348,8 +356,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         Definition $definition,
         string $type,
         string $tag
-    )
-    {
+    ) {
         $resolvers = $container->findTaggedServiceIds($tag);
 
         $mapping = [];
@@ -416,8 +423,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         Definition $definition,
         string $type,
         string $tag
-    )
-    {
+    ) {
         $resolvers = $container->findTaggedServiceIds($tag);
 
         $mapping = [];
@@ -453,9 +459,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function registerAssetDataTypes(
         ContainerBuilder $container
-    )
-    {
-        $this->registerElementTypes($container, "pimcore.datahub.graphql.assettype", 'registerAssetDataTypes');
+    ) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.assettype', 'registerAssetDataTypes');
     }
 
     /**
@@ -467,8 +472,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         ContainerBuilder $container,
         $tag,
         $methodCall
-    )
-    {
+    ) {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
 
         $resolvers = $container->findTaggedServiceIds($tag);
@@ -478,7 +482,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         foreach ($resolvers as $id => $tagEntries) {
             foreach ($tagEntries as $tagEntry) {
                 $typeDef = $container->getDefinition($id);
-                $dataTypes[$tagEntry["id"]] = $typeDef;
+                $dataTypes[$tagEntry['id']] = $typeDef;
             }
         }
 
@@ -491,9 +495,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function registerDataObjectDataTypes(
         ContainerBuilder $container
-    )
-    {
-        $this->registerElementTypes($container, "pimcore.datahub.graphql.dataobjecttype", 'registerDataObjectDataTypes');
+    ) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.dataobjecttype', 'registerDataObjectDataTypes');
     }
 
     /**
@@ -502,10 +505,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function registerDocumentDataTypes(
         ContainerBuilder $container
-    )
-    {
-
-        $this->registerElementTypes($container, "pimcore.datahub.graphql.documenttype", 'registerDocumentDataTypes');
+    ) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.documenttype', 'registerDocumentDataTypes');
     }
 
     /**
@@ -514,10 +515,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function registerClassificationStoreDataTypes(
         ContainerBuilder $container
-    )
-    {
-
-        $this->registerElementTypes($container, "pimcore.datahub.graphql.cstype", 'registerClassificationStoreDataTypes');
+    ) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.cstype', 'registerClassificationStoreDataTypes');
     }
 
     /**
@@ -526,9 +525,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
      */
     private function registerPropertyDataTypes(
         ContainerBuilder $container
-    )
-    {
-        $this->registerElementTypes($container, "pimcore.datahub.graphql.propertytype", 'registerPropertyDataTypes');
+    ) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.propertytype', 'registerPropertyDataTypes');
     }
-
 }

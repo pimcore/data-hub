@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -19,10 +19,8 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
@@ -34,18 +32,18 @@ class DocumentType extends ObjectType
 
     /**
      * DocumentType constructor.
+     *
      * @param Service $graphQlService
+     *
      * @throws \Exception
      */
     public function __construct(Service $graphQlService)
     {
-
         $this->graphQlService = $graphQlService;
-        $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
-
+        $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
 
         $config = [
-            'name' => "property_document",
+            'name' => 'property_document',
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
@@ -69,19 +67,20 @@ class DocumentType extends ObjectType
                         $element = null;
                         if ($value instanceof MarkerHotspotItem) {
                             $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
-                        } else if ($value instanceof Property) {
+                        } elseif ($value instanceof Property) {
                             $element = $value->getData();
                         }
                         if ($element) {
                             if (!WorkspaceHelper::checkPermission($element, 'read')) {
                                 return null;
                             }
-                            /** @var  $element Document */
+                            /** @var $element Document */
                             $data = new ElementDescriptor($element);
                             $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 
                             return $data;
                         }
+
                         return null;
                     }
 

@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
@@ -25,17 +25,17 @@ class QuantityValueType extends ObjectType
 {
     protected static $instance = [];
 
-
     /**
      * @param Service $service
      * @param string $name
      * @param string $innerType
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public static function getInstance(Service $service, string $name, string $innerType, string $fieldname)
     {
-
         if (!isset(self::$instance[$name])) {
             $innerType = $service->getDataObjectTypeDefinition($innerType);
 
@@ -60,6 +60,4 @@ class QuantityValueType extends ObjectType
 
         return self::$instance[$name];
     }
-
-
 }

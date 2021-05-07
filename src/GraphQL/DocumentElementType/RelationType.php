@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
@@ -28,15 +28,15 @@ class RelationType extends ObjectType
 
     /**
      * @param Service $graphQlService
+     *
      * @return RelationType
+     *
      * @throws \Exception
      */
     public static function getInstance(Service $graphQlService)
     {
-
         if (!self::$instance) {
-
-            $anyTargetType = $graphQlService->buildGeneralType("anytarget");
+            $anyTargetType = $graphQlService->buildGeneralType('anytarget');
 
             $config =
                 [
@@ -89,6 +89,7 @@ class RelationType extends ObjectType
                                     $target = $value->getElement();
                                     if ($target) {
                                         $desc = new ElementDescriptor($target);
+
                                         return $desc;
                                     }
                                 }
@@ -101,6 +102,4 @@ class RelationType extends ObjectType
 
         return self::$instance;
     }
-
-
 }

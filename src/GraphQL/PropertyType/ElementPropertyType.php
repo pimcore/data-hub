@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -55,6 +55,7 @@ class ElementPropertyType extends UnionType
 
     /**
      * PropertyType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -65,55 +66,54 @@ class ElementPropertyType extends UnionType
         parent::__construct($config);
     }
 
-
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
+     *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $service = $this->getGraphQlService();
 
-        $this->checkboxType = $service->getPropertyTypeDefinition("property_checkbox");
-        $this->textType = $service->getPropertyTypeDefinition("property_text");
+        $this->checkboxType = $service->getPropertyTypeDefinition('property_checkbox');
+        $this->textType = $service->getPropertyTypeDefinition('property_text');
 
         $supportedTypes = [
             $this->checkboxType,
             $this->textType,
         ];
 
-        if ($this->getGraphQlService()->querySchemaEnabled("asset")) {
-            $this->assetType = $service->getPropertyTypeDefinition("property_asset");
+        if ($this->getGraphQlService()->querySchemaEnabled('asset')) {
+            $this->assetType = $service->getPropertyTypeDefinition('property_asset');
             $supportedTypes[] = $this->assetType;
         }
 
-        if ($this->getGraphQlService()->querySchemaEnabled("asset_folder")) {
-            $this->assetFolderType = $service->getPropertyTypeDefinition("property_assetfolder");
+        if ($this->getGraphQlService()->querySchemaEnabled('asset_folder')) {
+            $this->assetFolderType = $service->getPropertyTypeDefinition('property_assetfolder');
             $supportedTypes[] = $this->assetFolderType;
         }
 
-        if ($this->getGraphQlService()->querySchemaEnabled("object")) {
-            $this->objectType = $service->getPropertyTypeDefinition("property_object");
+        if ($this->getGraphQlService()->querySchemaEnabled('object')) {
+            $this->objectType = $service->getPropertyTypeDefinition('property_object');
             $supportedTypes[] = $this->objectType;
         }
 
-        if ($this->getGraphQlService()->querySchemaEnabled("object_folder")) {
-            $this->objectFolderType = $service->getPropertyTypeDefinition("property_objectfolder");
+        if ($this->getGraphQlService()->querySchemaEnabled('object_folder')) {
+            $this->objectFolderType = $service->getPropertyTypeDefinition('property_objectfolder');
             $supportedTypes[] = $this->objectFolderType;
         }
 
-        if ($this->getGraphQlService()->querySchemaEnabled("document")) {
-            $this->documentType = $service->getPropertyTypeDefinition("property_document");
+        if ($this->getGraphQlService()->querySchemaEnabled('document')) {
+            $this->documentType = $service->getPropertyTypeDefinition('property_document');
             $supportedTypes[] = $this->documentType;
         }
 
-        if ($this->getGraphQlService()->querySchemaEnabled("document_folder")) {
-            $this->documentFolderType = $service->getPropertyTypeDefinition("property_documentfolder");
+        if ($this->getGraphQlService()->querySchemaEnabled('document_folder')) {
+            $this->documentFolderType = $service->getPropertyTypeDefinition('property_documentfolder');
             $supportedTypes[] = $this->documentFolderType;
         }
 
         return $supportedTypes;
-
     }
 
     /**
@@ -124,14 +124,14 @@ class ElementPropertyType extends UnionType
         if ($element instanceof \Pimcore\Model\Property) {
             $type = $element->getType();
             switch ($type) {
-                case "bool":
-                case "checkbox": {
+                case 'bool':
+                case 'checkbox': {
                     return $this->checkboxType;
                 }
-                case "text": {
+                case 'text': {
                     return $this->textType;
                 }
-                case "asset": {
+                case 'asset': {
                     $asset = $element->getData();
                     if ($asset instanceof Folder) {
                         return $this->assetFolderType;
@@ -139,7 +139,7 @@ class ElementPropertyType extends UnionType
                         return $this->assetType;
                     }
                 }
-                case "document": {
+                case 'document': {
                     $doc = $element->getData();
                     if ($doc instanceof Document\Folder) {
                         return $this->documentFolderType;
@@ -147,7 +147,7 @@ class ElementPropertyType extends UnionType
                         return $this->documentType;
                     }
                 }
-                case "object": {
+                case 'object': {
                     $object = $element->getData();
                     if ($object instanceof \Pimcore\Model\DataObject\Folder) {
                         return $this->objectFolderType;
@@ -156,10 +156,10 @@ class ElementPropertyType extends UnionType
                     }
                 }
                 default:
-                    throw new ClientSafeException("unkown property type: " . $type);
+                    throw new ClientSafeException('unkown property type: ' . $type);
             }
         }
+
         return null;
     }
-
 }

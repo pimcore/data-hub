@@ -1,18 +1,16 @@
 <?php
+
 /**
  * Pimcore
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @category   Pimcore
- * @package    Object
- *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
@@ -21,7 +19,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 class Alias extends AbstractOperator
 {
-
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();
@@ -37,7 +34,7 @@ class Alias extends AbstractOperator
 
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
-            $valueFromChild = $valueResolver->getLabeledValue($element, $resolveInfo);;
+            $valueFromChild = $valueResolver->getLabeledValue($element, $resolveInfo);
             if ($valueFromChild) {
                 $result->value = $valueFromChild->value;
             }

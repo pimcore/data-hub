@@ -1,6 +1,19 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
+
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ResolveInfo;
@@ -8,8 +21,8 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject;
 use Pimcore\Cache\Runtime;
+use Pimcore\Model\DataObject;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -21,6 +34,7 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
 
     /**
      * ObjectTreeType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -32,18 +46,20 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $context = Runtime::get('datahub_context');
-        /** @var  $configuration Configuration */
-        $configuration = $context["configuration"];
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
 
         $types = array_values(ClassTypeDefinitions::getAll(true));
-        if ($configuration->getSpecialEntities()["object_folder"]["read"] ?? false) {
+        if ($configuration->getSpecialEntities()['object_folder']['read'] ?? false) {
             $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
         }
+
         return $types;
     }
 

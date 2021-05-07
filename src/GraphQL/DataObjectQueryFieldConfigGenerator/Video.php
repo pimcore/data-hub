@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
@@ -19,12 +19,12 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Video extends Base
 {
-
     /**
      * @param $attribute
      * @param Data $fieldDefinition
      * @param null $class
      * @param null $container
+     *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
@@ -45,6 +45,7 @@ class Video extends Base
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         $graphQlService = $this->getGraphQlService();
-        return $graphQlService->getDataObjectTypeDefinition("object_datatype_video");
+
+        return $graphQlService->getDataObjectTypeDefinition('object_datatype_video');
     }
 }

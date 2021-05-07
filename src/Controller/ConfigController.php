@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
@@ -18,8 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
-use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
+use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -39,7 +39,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
     /**
      * @param $path
-     *
      * @param $name
      *
      * @return array
@@ -91,9 +90,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $list = Dao::getList();
 
         $event = new GenericEvent($this);
-        $event->setArgument("list", $list);
+        $event->setArgument('list', $list);
         \Pimcore::getEventDispatcher()->dispatch($event, AdminEvents::CONFIGURATION_LIST);
-        $list = $event->getArgument("list");
+        $list = $event->getArgument('list');
 
         $tree = [];
 
@@ -448,8 +447,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             $savedModificationDate = 0;
 
-            if ($configuration && isset($configuration["general"]["modificationDate"])) {
-                $savedModificationDate = $configuration["general"]["modificationDate"];
+            if ($configuration && isset($configuration['general']['modificationDate'])) {
+                $savedModificationDate = $configuration['general']['modificationDate'];
             } else {
                 Dao::getConfigModificationDate();
             }
@@ -459,7 +458,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
 
             $dataDecoded['general']['modificationDate'] = time();
-
 
             $keys = ['queryEntities', 'mutationEntities'];
             foreach ($keys as $key) {
@@ -512,11 +510,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $url = $routingService->generate('admin_pimcoredatahub_config', ['clientname' => $name]);
         if ($url) {
-
             return $this->json(['explorerUrl' => $url]);
         } else {
             throw new \Exception('unable to resolve');
-
         }
     }
 
@@ -545,5 +541,4 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         return $this->adminJson($thumbnails);
     }
-
 }

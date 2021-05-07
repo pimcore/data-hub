@@ -1,21 +1,32 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
+
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
-use Pimcore\Model\Document;
-use Pimcore\Cache\Runtime;
-use GraphQL\Type\Definition\UnionType;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Pimcore\Cache\Runtime;
+use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class DocumentTreeType extends UnionType implements ContainerAwareInterface
 {
-
     use ContainerAwareTrait;
 
     use ServiceTrait;
@@ -24,6 +35,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
 
     /**
      * DocumentTreeType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -35,16 +47,17 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $context = Runtime::get('datahub_context');
-        /** @var  $configuration Configuration */
-        $configuration = $context["configuration"];
+        /** @var $configuration Configuration */
+        $configuration = $context['configuration'];
 
         $types = [];
-        $types[] = $this->getGraphQlService()->getDocumentTypeDefinition("_document_folder");
+        $types[] = $this->getGraphQlService()->getDocumentTypeDefinition('_document_folder');
         $supportedTypes = [
             'document_email',
             'document_hardlink',
@@ -63,7 +76,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
 
     public function resolveType($element, $context, ResolveInfo $info)
     {
-        $element = Document::getById($element["id"]);
+        $element = Document::getById($element['id']);
 
         if ($element instanceof Document\Folder) {
             return $this->types['_document_folder'];

@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -69,7 +69,7 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof DataObject) {
+        if (!$object instanceof self) {
             return null;
         }
 
@@ -92,7 +92,7 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof DataObject) {
+        if (!$object instanceof self) {
             return null;
         }
 

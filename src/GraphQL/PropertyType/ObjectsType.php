@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -32,41 +32,43 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
     /**
      * ObjectsType constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);
-        parent::__construct(["name" => "hotspot_metadata_object"]);
+        parent::__construct(['name' => 'hotspot_metadata_object']);
     }
+
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $types = [];
 
         $service = $this->getGraphQlService();
 
-        if ($service->querySchemaEnabled("object")) {
+        if ($service->querySchemaEnabled('object')) {
             $objectTypes = array_values(ClassTypeDefinitions::getAll(true));
             $types = array_merge($types, $objectTypes);
         }
 
-        if ($service->querySchemaEnabled("document")) {
-            $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition("document");
+        if ($service->querySchemaEnabled('document')) {
+            $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
             $supportedDocumentTypes = $documentUnionType->getTypes();
             $types = array_merge($types, $supportedDocumentTypes);
         }
 
-        if ($service->querySchemaEnabled("asset")) {
-            $types[] = $this->getGraphQlService()->buildAssetType("asset");
+        if ($service->querySchemaEnabled('asset')) {
+            $types[] = $this->getGraphQlService()->buildAssetType('asset');
         }
 
-        if ($service->querySchemaEnabled("asset_folder")) {
-            $types[] = $this->getGraphQlService()->getAssetTypeDefinition("_asset_folder");
+        if ($service->querySchemaEnabled('asset_folder')) {
+            $types[] = $this->getGraphQlService()->getAssetTypeDefinition('_asset_folder');
         }
 
         return $types;
@@ -82,14 +84,15 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
                 $type = ClassTypeDefinitions::get($element['__elementSubtype']);
 
                 return $type;
-            } else if ($element['__elementType'] == 'asset') {
-                return  $this->getGraphQlService()->buildAssetType("asset");
-            } else if ($element['__elementType'] == 'document') {
+            } elseif ($element['__elementType'] == 'asset') {
+                return  $this->getGraphQlService()->buildAssetType('asset');
+            } elseif ($element['__elementType'] == 'document') {
                 $document = Document::getById($element['id']);
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
-                    $typeDefinition = $service->getDocumentTypeDefinition("document_" . $documentType);
+                    $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
+
                     return $typeDefinition;
                 }
             }
@@ -97,5 +100,4 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
         return null;
     }
-
 }

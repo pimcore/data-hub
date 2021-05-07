@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -57,7 +57,9 @@ class AssetType
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -73,7 +75,7 @@ class AssetType
 
                 $map = [];
                 $keys = [];
-                $language = isset($args['language']) ?  $args['language'] : $this->getGraphQlService()->getLocaleService()->findLocale();
+                $language = isset($args['language']) ? $args['language'] : $this->getGraphQlService()->getLocaleService()->findLocale();
 
                 foreach ($metadata as $item) {
                     $keys[$item['name']] = 1;
@@ -97,7 +99,6 @@ class AssetType
         }
 
         return null;
-
     }
 
     /**
@@ -107,6 +108,7 @@ class AssetType
      * @param ResolveInfo $resolveInfo
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -120,9 +122,9 @@ class AssetType
         } elseif ($asset instanceof Asset) {
             return $asset->getFullPath();
         }
+
         return null;
     }
-
 
     /**
      * @param mixed $value
@@ -131,6 +133,7 @@ class AssetType
      * @param ResolveInfo $resolveInfo
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -139,6 +142,7 @@ class AssetType
 
         if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
             $data = stream_get_contents($asset->getStream());
+
             return isset($args['thumbnail'])
                 ? base64_encode(stream_get_contents($asset->getThumbnail($args['thumbnail'],
                     false)->getStream()))
@@ -150,6 +154,7 @@ class AssetType
         } elseif ($asset instanceof Asset) {
             return base64_encode(stream_get_contents($asset->getStream()));
         }
+
         return null;
     }
 
@@ -160,6 +165,7 @@ class AssetType
      * @param ResolveInfo $resolveInfo
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveSrcSet($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -178,8 +184,10 @@ class AssetType
                     ];
                 }
             }
+
             return $mediaQueries;
         }
+
         return null;
     }
 
@@ -190,6 +198,7 @@ class AssetType
      * @param ResolveInfo $resolveInfo
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveResolutions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -216,6 +225,7 @@ class AssetType
                     ];
                 }
             }
+
             return $resolutions;
         }
 
@@ -235,6 +245,7 @@ class AssetType
                     'resolution' => $type,
                 ];
             }
+
             return $resolutions;
         }
 
@@ -246,6 +257,7 @@ class AssetType
      * @param array       $context
      *
      * @return Asset|null
+     *
      * @throws \Exception
      */
     protected function getAssetFromValue($value, $context)
@@ -262,5 +274,4 @@ class AssetType
 
         return $asset;
     }
-
 }

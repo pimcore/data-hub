@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Service;
@@ -31,14 +31,16 @@ class CheckConsumerPermissionsService
         $securityConfig = $configuration->getSecurityConfig();
         if ($securityConfig['method'] === Configuration::SECURITYCONFIG_AUTH_APIKEY) {
             $apiKey = $request->headers->get('apikey');
-            if(empty($apiKey)) {
+            if (empty($apiKey)) {
                 $apiKey = $request->headers->get('X-API-Key');
             }
-            if(empty($apiKey)) {
+            if (empty($apiKey)) {
                 $apiKey = $request->get('apikey');
-            }         
+            }
+
             return $apiKey === $securityConfig['apikey'];
         }
+
         return false;
     }
 }

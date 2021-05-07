@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
@@ -47,6 +47,7 @@ class HotspotMetadataType extends UnionType
 
     /**
      * PropertyType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -57,26 +58,25 @@ class HotspotMetadataType extends UnionType
         parent::__construct($config);
     }
 
-
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
+     *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $service = $this->getGraphQlService();
 
-        $this->assetType = $service->getPropertyTypeDefinition("property_asset");
-        $this->documentType = $service->getPropertyTypeDefinition("property_document");
-        $this->objectType = $service->getPropertyTypeDefinition("property_object");
-        $this->checkboxType = $service->getPropertyTypeDefinition("property_checkbox");
-        $this->textareaType = $service->getPropertyTypeDefinition("property_textarea");
-        $this->textType = $service->getPropertyTypeDefinition("property_text");
+        $this->assetType = $service->getPropertyTypeDefinition('property_asset');
+        $this->documentType = $service->getPropertyTypeDefinition('property_document');
+        $this->objectType = $service->getPropertyTypeDefinition('property_object');
+        $this->checkboxType = $service->getPropertyTypeDefinition('property_checkbox');
+        $this->textareaType = $service->getPropertyTypeDefinition('property_textarea');
+        $this->textType = $service->getPropertyTypeDefinition('property_text');
 
-        $supportedTypes = [$this->checkboxType, $this->textType, $this->textareaType,$this->assetType, $this->documentType, $this->objectType];
+        $supportedTypes = [$this->checkboxType, $this->textType, $this->textareaType, $this->assetType, $this->documentType, $this->objectType];
 
         return $supportedTypes;
-
     }
 
     /**
@@ -87,29 +87,29 @@ class HotspotMetadataType extends UnionType
         if ($element instanceof MarkerHotspotItem) {
             $type = $element->getType();
             switch ($type) {
-                case "checkbox": {
+                case 'checkbox': {
                     return $this->checkboxType;
                 }
-                case "textarea": {
+                case 'textarea': {
                     return $this->textareaType;
                 }
-                case "textfield": {
+                case 'textfield': {
                     return $this->textType;
                 }
-                case "asset": {
+                case 'asset': {
                     return $this->assetType;
                 }
-                case "document": {
+                case 'document': {
                     return $this->documentType;
                 }
-                case "object": {
+                case 'object': {
                     return $this->objectType;
                 }
                 default:
-                    throw new ClientSafeException("unkown metadata type: " . $type);
+                    throw new ClientSafeException('unkown metadata type: ' . $type);
             }
         }
+
         return null;
     }
-
 }

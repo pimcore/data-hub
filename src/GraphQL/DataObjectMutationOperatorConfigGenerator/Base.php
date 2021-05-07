@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator;
@@ -21,11 +21,11 @@ use Pimcore\Model\DataObject\ClassDefinition;
 
 abstract class Base
 {
-
     use ServiceTrait;
 
     /**
      * Base constructor.
+     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -33,46 +33,45 @@ abstract class Base
         $this->graphQlService = $graphQlService;
     }
 
-
     /**
      * @param $nodeDef
      * @param ClassDefinition $class
+     *
      * @return mixed
      */
     public function resolveInputTypeFromNodeDef($nodeDef, ClassDefinition $class)
     {
-        $nodeDefAttributes = $nodeDef["attributes"];
+        $nodeDefAttributes = $nodeDef['attributes'];
         $children = $nodeDefAttributes['childs'];
 
         $firstChild = $children[0];
-        $firstChildAttributes = $firstChild["attributes"];
+        $firstChildAttributes = $firstChild['attributes'];
         $service = $this->getGraphQlService();
 
         $factories = $service->getDataObjectMutationTypeGeneratorFactories();
 
-        if ($firstChild["isOperator"]) {
+        if ($firstChild['isOperator']) {
             //  we only support the simple case with one child
-            $operatorClass = $firstChildAttributes["class"];
+            $operatorClass = $firstChildAttributes['class'];
             $typeName = strtolower($operatorClass);
             $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationoperator_' . $typeName);
             $result = $mutationConfigGenerator->resolveInputTypeFromNodeDef($firstChild, $class);
-
         } else {
-            $typeName = $firstChildAttributes["dataType"];
+            $typeName = $firstChildAttributes['dataType'];
             $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
             $config = $mutationConfigGenerator->getGraphQlMutationFieldConfig($firstChild, $class);
-            $result = $config["arg"];
+            $result = $config['arg'];
         }
 
         return $result;
     }
-
 
     /**
      * @param $nodeDef
      * @param null $class
      * @param null $container
      * @param array $params
+     *
      * @return array
      */
     public function getGraphQlMutationOperatorConfig($nodeDef, $class = null, $container = null, $params = [])
@@ -80,10 +79,10 @@ abstract class Base
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\BaseOperator($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        $typeName = strtolower($nodeDef["attributes"]["class"]);
+        $typeName = strtolower($nodeDef['attributes']['class']);
 
         $factories = $this->getGraphQlService()->getDataObjectMutationTypeGeneratorFactories();
-        $factory = $factories->get('typegenerator_' . "mutation" . 'operator_' . $typeName);
+        $factory = $factories->get('typegenerator_' . 'mutation' . 'operator_' . $typeName);
         $determinedType = $factory->resolveInputTypeFromNodeDef($nodeDef, $class, $container);
 
         return [
@@ -91,6 +90,4 @@ abstract class Base
             'processor' => [$processor, 'process']
         ];
     }
-
-
 }

@@ -5,17 +5,17 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use GraphQL\Error\Debug;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -26,9 +26,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
-use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
+use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Localization\LocaleServiceInterface;
@@ -58,13 +59,23 @@ class WebserviceController extends FrontendController
     private $cacheService;
 
     /**
+     * @var FileUploadService
+     */
+    private $uploadService;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, CheckConsumerPermissionsService $permissionsService, OutputCacheService $cacheService)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        CheckConsumerPermissionsService $permissionsService,
+        OutputCacheService $cacheService,
+        FileUploadService $uploadService
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->permissionsService = $permissionsService;
         $this->cacheService = $cacheService;
+        $this->uploadService = $uploadService;
     }
 
     /**
@@ -77,8 +88,12 @@ class WebserviceController extends FrontendController
      *
      * @throws \Exception
      */
-    public function webonyxAction(Service $service, LocaleServiceInterface $localeService, Factory $modelFactory, Request $request)
-    {
+    public function webonyxAction(
+        Service $service,
+        LocaleServiceInterface $localeService,
+        Factory $modelFactory,
+        Request $request
+    ) {
         $clientname = $request->get('clientname');
 
         $configuration = Configuration::getByName($clientname);
@@ -90,12 +105,13 @@ class WebserviceController extends FrontendController
             throw new AccessDeniedHttpException('Permission denied, apikey not valid');
         }
 
-        if($response = $this->cacheService->load($request)) {
-            Logger::debug("Loading response from cache");
+        if ($response = $this->cacheService->load($request)) {
+            Logger::debug('Loading response from cache');
+
             return $response;
         }
 
-        Logger::debug("Cache entry not found");
+        Logger::debug('Cache entry not found');
 
         // context info, will be passed on to all resolver function
         $context = ['clientname' => $clientname, 'configuration' => $configuration];
@@ -135,7 +151,13 @@ class WebserviceController extends FrontendController
             throw $e;
         }
 
-        $input = json_decode($request->getContent(), true);
+        $contentType = $request->headers->get('content-type') ?? '';
+
+        if (mb_stripos($contentType, 'multipart/form-data') !== false) {
+            $input = $this->uploadService->parseUploadedFiles($request);
+        } else {
+            $input = json_decode($request->getContent(), true);
+        }
 
         $query = $input['query'];
         $variableValues = isset($input['variables']) ? $input['variables'] : null;
@@ -155,12 +177,13 @@ class WebserviceController extends FrontendController
                 $request,
                 $query,
                 $schema,
-                $context);
+                $context
+            );
 
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues =  $event->getRequest()->get('variables', $variableValues);
+                $variableValues = $event->getRequest()->get('variables', $variableValues);
             }
 
             $result = GraphQL::executeQuery(
@@ -180,7 +203,7 @@ class WebserviceController extends FrontendController
             $result = $exResult->getResult();
 
             if (\Pimcore::inDebugMode()) {
-                $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE | Debug::RETHROW_INTERNAL_EXCEPTIONS;
+                $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE | DebugFlag::RETHROW_INTERNAL_EXCEPTIONS;
                 $output = $result->toArray($debug);
             } else {
                 $output = $result->toArray(false);

@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
@@ -58,6 +58,7 @@ class DocumentType extends UnionType implements ContainerAwareInterface
 
     /**
      * DocumentType constructor.
+     *
      * @param Service $graphQlService
      * @param PageType $pageType
      * @param LinkType $linkType
@@ -80,13 +81,12 @@ class DocumentType extends UnionType implements ContainerAwareInterface
         parent::__construct($config);
     }
 
-
     /**
      * @return array
      *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         return $this->types;
     }
@@ -96,16 +96,16 @@ class DocumentType extends UnionType implements ContainerAwareInterface
      */
     public function resolveType($element, $context, ResolveInfo $info)
     {
-        $element = Document::getById($element["id"]);
+        $element = Document::getById($element['id']);
         if ($element instanceof Document\Page) {
             return $this->pageType;
-        } else if ($element instanceof Document\Link) {
+        } elseif ($element instanceof Document\Link) {
             return $this->linkType;
-        } else if ($element instanceof Document\Email) {
+        } elseif ($element instanceof Document\Email) {
             return $this->emailType;
-        } else if ($element instanceof Document\Hardlink) {
+        } elseif ($element instanceof Document\Hardlink) {
             return $this->hardlinkType;
-        } else if ($element instanceof Document\Snippet) {
+        } elseif ($element instanceof Document\Snippet) {
             return $this->snippetType;
         }
 

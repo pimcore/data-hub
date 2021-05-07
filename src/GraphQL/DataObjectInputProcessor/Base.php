@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
@@ -22,17 +22,15 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-
 class Base
 {
-
     use ServiceTrait;
 
     protected $nodeDef;
 
-
     /**
      * Base constructor.
+     *
      * @param array $nodeDef
      */
     public function __construct($nodeDef)
@@ -43,8 +41,9 @@ class Base
     /**
      * @return mixed
      */
-    public function getAttribute() {
-        return $this->nodeDef["attributes"]["attribute"];
+    public function getAttribute()
+    {
+        return $this->nodeDef['attributes']['attribute'];
     }
 
     /**
@@ -53,52 +52,52 @@ class Base
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
+     *
      * @throws \Exception
      */
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
 
-        Service::setValue($object, $attribute, function($container, $setter) use ($newValue) {
+        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
             return $container->$setter($newValue);
         });
     }
 
-
     /**
      * @param $nodeDef
      * @param ClassDefinition $class
+     *
      * @return |null
      */
-    public function getParentProcessor($nodeDef, ClassDefinition $class) {
-        $nodeDefAttributes = $nodeDef["attributes"];
+    public function getParentProcessor($nodeDef, ClassDefinition $class)
+    {
+        $nodeDefAttributes = $nodeDef['attributes'];
         $children = $nodeDefAttributes['childs'];
         if (!$children) {
             return null;
         }
 
         $firstChild = $children[0];
-        $firstChildAttributes = $firstChild["attributes"];
+        $firstChildAttributes = $firstChild['attributes'];
         $service = $this->getGraphQlService();
 
         $factories = $service->getDataObjectMutationTypeGeneratorFactories();
 
-        if ($firstChild["isOperator"]) {
+        if ($firstChild['isOperator']) {
             //  we only support the simple case with one child
-            $operatorClass = $firstChildAttributes["class"];
+            $operatorClass = $firstChildAttributes['class'];
             $typeName = strtolower($operatorClass);
             $mutationConfigGenerator = $factories->get('typegenerator_mutationoperator_' . $typeName);
             $config = $mutationConfigGenerator->getGraphQlMutationOperatorConfig($firstChild, $class);
         } else {
-            $typeName = $firstChildAttributes["dataType"];
+            $typeName = $firstChildAttributes['dataType'];
             $mutationConfigGenerator = $factories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
             $config = $mutationConfigGenerator->getGraphQlMutationFieldConfig($firstChild, $class);
-
         }
 
+        $result = $config['processor'];
 
-        $result = $config["processor"];
         return $result;
     }
 }
-

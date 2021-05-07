@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -33,6 +32,7 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
 
     /**
      * DocumentElementType constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -42,13 +42,11 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         parent::__construct($config);
     }
 
-
     /**
      * @return array
      */
-    public function getTypes()
+    public function getTypes(): array
     {
-
         $service = $this->getGraphQlService();
         $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();
         $supportedTypes = [];
@@ -58,7 +56,6 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         }
 
         return $supportedTypes;
-
     }
 
     /**
@@ -71,9 +68,10 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         $supportedTypes = $service->getSupportedDocumentElementQueryDataTypes();
         if (in_array($type, $supportedTypes)) {
             $queryType = $service->buildDocumentElementDataQueryType($type);
+
             return $queryType;
         }
+
         return null;
     }
-
 }

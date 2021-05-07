@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
@@ -27,8 +27,8 @@ class Numeric extends Base
         $processor->setGraphQLService($this->getGraphQlService());
 
         $type = Type::float();
-        $nodeAttributes = $nodeDef["attributes"];
-        $key = $nodeAttributes["attribute"];
+        $nodeAttributes = $nodeDef['attributes'];
+        $key = $nodeAttributes['attribute'];
         $fieldDefinition = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $key);
         if ($fieldDefinition instanceof Data\Numeric) {
             if ($fieldDefinition->getInteger()) {
@@ -41,6 +41,4 @@ class Numeric extends Base
             'processor' => [$processor, 'process']
         ];
     }
-
-
 }

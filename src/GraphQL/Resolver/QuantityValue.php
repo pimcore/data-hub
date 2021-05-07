@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -27,13 +27,16 @@ class QuantityValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveUnit($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
             $unit = $value->getUnit();
+
             return ($unit instanceof \Pimcore\Model\DataObject\QuantityValue\Unit) ? $unit->getObjectVars() : [];
         }
 
@@ -45,12 +48,14 @@ class QuantityValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return string
+     *
      * @throws \Exception
      */
     public function resolveValue($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
             return $value->getValue();
         }
 
@@ -62,14 +67,16 @@ class QuantityValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return string
+     *
      * @throws \Exception
      */
     public function resolveToString($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $returnValue = null;
 
-        if($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
             $currentLocale = null;
             $localService = null;
             if (isset($args['language'])) {
@@ -79,7 +86,7 @@ class QuantityValue
                 $localService->setLocale($args['language']);
             }
 
-            $returnValue =  (string)$value->__toString();
+            $returnValue = (string)$value->__toString();
 
             if (isset($args['language'])) {
                 $localService->setLocale($currentLocale);

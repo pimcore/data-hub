@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType;
@@ -32,33 +32,33 @@ class Feature extends UnionType implements ContainerAwareInterface
 
     /**
      * Feature constructor.
+     *
      * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'csFeature'])
     {
-
         $this->setGraphQLService($graphQlService);
 
         parent::__construct($config);
     }
 
     /**
-     * @return array|\GraphQL\Type\Definition\ObjectType[]
+     * @return array
+     *
      * @throws \Exception
      */
-    public function getTypes()
+    public function getTypes(): array
     {
-
         $service = $this->getGraphQlService();
         $supportedFeatureTypeNames = $service->getSupportedCsFeatureQueryDataTypes();
 
         $types = [];
         foreach ($supportedFeatureTypeNames as $featureTypeName) {
             $featureType = $service->buildCsFeatureDataQueryType($featureTypeName);
-            $types[]= $featureType;
-
+            $types[] = $featureType;
         }
+
         return $types;
     }
 
@@ -68,14 +68,14 @@ class Feature extends UnionType implements ContainerAwareInterface
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if (!$element instanceof FeatureDescriptor) {
-            throw new ClientSafeException("expected feature descriptor");
+            throw new ClientSafeException('expected feature descriptor');
         }
 
         $type = $element->getType();
 
         $service = $this->getGraphQlService();
         $resolvedType = $service->buildCsFeatureDataQueryType($type);
-        return $resolvedType;
 
+        return $resolvedType;
     }
 }

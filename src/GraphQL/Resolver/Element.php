@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -20,23 +20,17 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
-use Pimcore\Model\Document;
-use Pimcore\Model\Property;
-use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\Service as ElementService;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-
+use Pimcore\Model\Property;
 
 class Element
 {
-
     use ServiceTrait, ElementTagTrait;
 
     /** @var string */
@@ -77,16 +71,18 @@ class Element
      * @param array            $args
      * @param array            $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array|Property[]|null
+     *
      * @throws ClientSafeException
      */
     public function resolveProperties($value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null)
     {
-        $elementId = $value["id"];
+        $elementId = $value['id'];
         $element = ElementService::getElementById($this->elementType, $elementId);
 
         if (!$element) {
-            throw new ClientSafeException("element " . $this->elementType . " " . $elementId . " not found");
+            throw new ClientSafeException('element ' . $this->elementType . ' ' . $elementId . ' not found');
         }
 
         if (isset($args['keys'])) {
@@ -110,7 +106,9 @@ class Element
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveParent($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -122,6 +120,7 @@ class Element
                 return $this->extractSingleElement($parent, $args, $context, $resolveInfo);
             }
         }
+
         return null;
     }
 
@@ -130,7 +129,9 @@ class Element
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveChildren($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -138,8 +139,10 @@ class Element
         $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
             $arguments = $this->composeArguments($args);
+
             return $this->extractMultipleElements($element->getChildren(...$arguments), $args, $context, $resolveInfo);
         }
+
         return [];
     }
 
@@ -148,7 +151,9 @@ class Element
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveSiblings($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -156,13 +161,16 @@ class Element
         $element = ElementService::getElementById($this->elementType, $value['id']);
         if ($element) {
             $arguments = $this->composeArguments($args);
+
             return $this->extractMultipleElements($element->getSiblings(...$arguments), $args, $context, $resolveInfo);
         }
+
         return [];
     }
 
     /**
      * @param array $args
+     *
      * @return array
      */
     protected function composeArguments($args = [])
@@ -171,6 +179,7 @@ class Element
         if ($this->elementType === 'object') {
             $arguments[] = isset($args['objectTypes']) ? $args['objectTypes'] : [AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER];
         }
+
         return $arguments;
     }
 
@@ -179,7 +188,9 @@ class Element
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     protected function extractMultipleElements($elements, $args, $context, $resolveInfo)
@@ -190,6 +201,7 @@ class Element
                 $result[] = $this->extractSingleElement($element, $args, $context, $resolveInfo);
             }
         }
+
         return array_filter($result);
     }
 
@@ -198,7 +210,9 @@ class Element
      * @param array $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     protected function extractSingleElement($element, $args, $context, $resolveInfo)
@@ -216,8 +230,10 @@ class Element
         $elementType = $treeType->resolveType($data, $context, $resolveInfo);
         if (in_array($elementType, $treeType->getTypes(), true)) {
             $this->getFieldHelper()->extractData($data, $element, $args, $context, $resolveInfo);
+
             return $data;
         }
+
         return null;
     }
 
@@ -234,8 +250,9 @@ class Element
             case 'object':
                 return $this->getGraphQlService()->buildGeneralType('object_tree');
             default:
-                trigger_error("unknown element type");
+                trigger_error('unknown element type');
         }
+
         return null;
     }
 
@@ -252,8 +269,9 @@ class Element
             case 'object':
                 return $this->getGraphQLService()->getObjectFieldHelper();
             default:
-                trigger_error("unknown element type");
+                trigger_error('unknown element type');
         }
+
         return null;
     }
 }

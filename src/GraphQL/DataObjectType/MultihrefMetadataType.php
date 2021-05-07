@@ -5,12 +5,12 @@
  *
  * This source file is available under two different licenses:
  * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Enterprise License (PEL)
+ * - Pimcore Commercial License (PCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
@@ -36,6 +36,7 @@ class MultihrefMetadataType extends ObjectType
 
     /**
      * MultihrefMetadataType constructor.
+     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param null $class
@@ -59,14 +60,14 @@ class MultihrefMetadataType extends ObjectType
         $fieldDefinition = $this->fieldDefinition;
         $class = $this->class;
         $resolver = new MultihrefMetadata($fieldDefinition, $class, $this->getGraphQlService()->getObjectFieldHelper());
-        $fields = ['element'  =>
+        $fields = ['element' =>
                        [
-                           'type'    => new HrefType($this->getGraphQlService(), $this->fieldDefinition, $this->class),
-                           'resolve' => [$resolver, "resolveElement"]
+                           'type' => new HrefType($this->getGraphQlService(), $this->fieldDefinition, $this->class),
+                           'resolve' => [$resolver, 'resolveElement']
                        ],
                    'metadata' => [
-                       'type'    => Type::listOf(new ElementMetadataKeyValuePairType()),
-                       'resolve' => [$resolver, "resolveMetadata"]
+                       'type' => Type::listOf(new ElementMetadataKeyValuePairType()),
+                       'resolve' => [$resolver, 'resolveMetadata']
                    ]];
 
         $config['fields'] = $fields;
