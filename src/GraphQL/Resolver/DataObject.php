@@ -17,8 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
 class DataObject extends Element
 {
@@ -34,7 +34,9 @@ class DataObject extends Element
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -42,7 +44,6 @@ class DataObject extends Element
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
         if ($object) {
-
             $result = $this->getTags('object', $object->getId());
             if ($result) {
                 return $result;
@@ -50,7 +51,6 @@ class DataObject extends Element
         }
 
         return null;
-
     }
 
     /**

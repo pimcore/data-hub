@@ -19,10 +19,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -47,7 +46,9 @@ class Element
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -55,15 +56,13 @@ class Element
         $element = ElementService::getElementById($this->elementType, $value['id']);
 
         if ($element) {
-
-            $result = $this->getTags('document',$element->getId());
+            $result = $this->getTags('document', $element->getId());
             if ($result) {
                 return $result;
             }
         }
 
         return null;
-
     }
 
     /**
