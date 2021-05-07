@@ -51,6 +51,7 @@ abstract class AbstractDocumentType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document', $this->getGraphQLService());
         $documentTree = $this->getGraphQlService()->buildGeneralType('document_tree');
+        $elementTagType = $this->getGraphQlService()->buildGeneralType('element_tag');
 
         $config['fields'] = [
             'creationDate' => Type::int(),
@@ -64,6 +65,13 @@ abstract class AbstractDocumentType extends ObjectType
             'controller' => Type::string(),
             'action' => Type::string(),
             'template' => Type::string(),
+            'tags' => [
+                'type' => Type::listOf($elementTagType),
+                'args' => [
+                    'name' => ['type' => Type::string()],
+                ],
+                'resolve' => [$resolver, 'resolveTag']
+            ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [

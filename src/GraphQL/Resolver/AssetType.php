@@ -17,13 +17,38 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 
 class AssetType
 {
-    use ServiceTrait;
+    use ServiceTrait, ElementTagTrait;
+
+    /**
+     * @param array $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if ($asset) {
+            $result = $this->getTags('asset', $asset->getId());
+            if ($result) {
+                return $result;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * @param array $value

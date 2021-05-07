@@ -127,6 +127,14 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: element_property }
 
+  pimcore.datahub.graphql.generaltype.factory.element_tag:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: element_tag }
+
+
   pimcore.datahub.graphql.generaltype.factory.asset:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
@@ -606,7 +614,6 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem:
     tags:
       - { name: pimcore.datahub.graphql.assettype, id: asset_metadata_item }
-
 
   Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType:
     tags:
@@ -1133,3 +1140,11 @@ services:
   Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextType:
     tags:
       - { name: pimcore.datahub.graphql.propertytype, id: property_text }
+
+
+  # element tags 
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag:
+    tags:
+      - { name: pimcore.datahub.graphql.elementtag, id: element_tag }
+

@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -29,7 +30,7 @@ use Pimcore\Model\Property;
 
 class Element
 {
-    use ServiceTrait;
+    use ServiceTrait, ElementTagTrait;
 
     /** @var string */
     protected $elementType;
@@ -38,6 +39,30 @@ class Element
     {
         $this->elementType = $elementType;
         $this->setGraphQLService($graphQlService);
+    }
+
+    /**
+     * @param array $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        $element = ElementService::getElementById($this->elementType, $value['id']);
+
+        if ($element) {
+            $result = $this->getTags('document', $element->getId());
+            if ($result) {
+                return $result;
+            }
+        }
+
+        return null;
     }
 
     /**

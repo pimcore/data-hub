@@ -77,6 +77,7 @@ class PimcoreObjectType extends ObjectType
     {
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $objectTreeType = $this->getGraphQlService()->buildGeneralType('object_tree');
+        $elementTagType = $this->getGraphQlService()->buildGeneralType('element_tag');
 
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\DataObject($this->getGraphQLService());
 
@@ -96,6 +97,13 @@ class PimcoreObjectType extends ObjectType
             ],
             'classname' => [
                 'type' => Type::string(),
+            ],
+            'tags' => [
+                'type' => Type::listOf($elementTagType),
+                'args' => [
+                    'name' => ['type' => Type::string()],
+                ],
+                'resolve' => [$resolver, 'resolveTag']
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
