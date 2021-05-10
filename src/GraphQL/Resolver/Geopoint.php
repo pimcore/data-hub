@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\Data\GeoCoordinates;
 
 class Geopoint
 {
@@ -35,6 +36,7 @@ class Geopoint
     public function resolveLongitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         // cannot be changed to GeoCoordinates due to BC reasons
+        @class_alias(GeoCoordinates::class, 'Pimcore\Model\DataObject\Data\Geopoint');
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLongitude();
         }
@@ -55,6 +57,7 @@ class Geopoint
     public function resolveLatitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         // cannot be changed to GeoCoordinates due to BC reasons
+        @class_alias(GeoCoordinates::class, 'Pimcore\Model\DataObject\Data\Geopoint');
         if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
             return $value->getLatitude();
         }
