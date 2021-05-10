@@ -103,7 +103,7 @@ class ImageGallery
                     $data = new ElementDescriptor($image);
                     $this->getGraphQlService()->extractData($data, $image, $args, $context, $resolveInfo);
 
-                    $data['data'] = $data['data'] ? base64_encode($data['data']) : null;
+                    $data['data'] = isset($data['data']) ? base64_encode($data['data']) : null;
                     $data['crop'] = $relation->getCrop();
                     $data['hotspots'] = $relation->getHotspots();
                     $data['marker'] = $relation->getMarker();
