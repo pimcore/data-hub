@@ -16,6 +16,8 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\PermissionEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\PermissionEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Cache\Runtime;
@@ -24,6 +26,7 @@ use Pimcore\Logger;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class WorkspaceHelper
 {
@@ -232,6 +235,14 @@ class WorkspaceHelper
 
         if ($configuration->skipPermisssionCheck()) {
             return true;
+        }
+
+        $event = new PermissionEvent($element, $type);
+        /** @var EventDispatcher $eventDispatcher */
+        $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
+        $eventDispatcher->dispatch($event, PermissionEvents::PRE_CHECK);
+        if(!$event->isGranted()){
+            throw new ClientSafeException('access for '.  $element->getFullPath() . ' denied');
         }
 
         $isAllowed = self::isAllowed($element, $configuration, $type);
