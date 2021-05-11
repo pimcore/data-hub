@@ -22,7 +22,5 @@ final class PermissionEvents
      *
      * @var string
      */
-    const PRE_CHECK = 'pimcore.datahub.graphql.permission.preCheck'; 
-
-
+    const PRE_CHECK = 'pimcore.datahub.graphql.permission.preCheck';
 }

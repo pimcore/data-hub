@@ -241,7 +241,7 @@ class WorkspaceHelper
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
         $eventDispatcher->dispatch($event, PermissionEvents::PRE_CHECK);
-        if(!$event->isGranted()){
+        if (!$event->isGranted()) {
             throw new ClientSafeException('access for '.  $element->getFullPath() . ' denied');
         }
 
