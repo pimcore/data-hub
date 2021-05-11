@@ -9,15 +9,12 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
-use Pimcore\Event\Traits\RequestAwareTrait;
-use Pimcore\Event\Traits\ResponseAwareTrait;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -33,7 +30,7 @@ class PermissionEvent extends Event
      * @var string
      */
     protected $type;
-    
+
     /**
      * @var bool
      */
@@ -70,7 +67,7 @@ class PermissionEvent extends Event
     {
         $this->type = $type;
     }
-    
+
     /**
      * @return bool
      */
