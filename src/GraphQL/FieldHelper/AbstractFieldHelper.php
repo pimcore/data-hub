@@ -133,10 +133,12 @@ abstract class AbstractFieldHelper
 
         foreach ($fieldAstList as $astNode) {
             if ($astNode instanceof FieldNode) {
-                /** @var $selectionSet SelectionSetNode */
+                /** @var SelectionSetNode $selectionSet */
                 $selectionSet = $astNode->selectionSet;
-                $selections = $selectionSet->selections;
-                $this->processSelections($data, $selections, $container, $args, $context, $resolveInfo);
+                if ($selectionSet !== null) {
+                    $selections = $selectionSet->selections;
+                    $this->processSelections($data, $selections, $container, $args, $context, $resolveInfo);
+                }
             }
         }
 
