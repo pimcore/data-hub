@@ -1,7 +1,5 @@
 # Document Queries
 
-> Experimental + not feature complete! Subject to change without notice.
-
 ## Supported Document types
 
 * Email

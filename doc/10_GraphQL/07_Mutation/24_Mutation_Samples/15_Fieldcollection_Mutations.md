@@ -1,7 +1,5 @@
 ## Fieldcollection Mutations
 
-> This is an experimental feature and subject to change without notice.
-
 A [Field Collection](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
 is a list of items which can have different types.
 
