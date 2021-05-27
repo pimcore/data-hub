@@ -44,4 +44,45 @@ trait ElementTagTrait
 
         return $result;
     }
+
+    /**
+     * @param string $element_type
+     * @param int $id
+     * @param array $tags
+     *
+     * @return boolean
+     */
+    protected function setTags(string $element_type, int $id, $tags)
+    {
+        $tag = new Tag;
+        $tag->getDao()->setTagsForElement($element_type, $id, $tags);
+        return true;
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return array|boolean
+     */
+    protected function getTagsFromInput(array $input)
+    {
+        $tags = [];
+        foreach ($input as $idx => $tag_input) {
+            if (isset($tag_input['id']) && $tag_input['id']) {
+                $tag_id = $tag_input['id'];
+                $tag = Tag::getById($tag_input['id']);
+            } elseif (isset($tag_input['path']) && $tag_input['path']) {
+                $tag_id = $tag_input['path'];
+                $tag = Tag::getByPath($tag_input['path']);
+            } else {
+                return false;
+            }
+            if (!$tag) {
+                return false;
+            }
+            $tags[] = $tag;
+        }
+        return $tags;
+    }
+
 }
