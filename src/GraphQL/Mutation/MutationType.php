@@ -26,6 +26,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -47,6 +48,7 @@ class MutationType extends ObjectType
 
     use PermissionInfoTrait;
     use ElementIdentificationTrait;
+    use ElementTagTrait;
 
     /** @var array */
     public static $documentElementTypes = null;
@@ -839,6 +841,7 @@ class MutationType extends ObjectType
             $opName = 'createAsset';
             $omitPermissionCheck = $this->omitPermissionCheck;
 
+            $me = $this;
             $createField = [
                 'type' => $createResultType,
                 'args' => [
@@ -847,7 +850,7 @@ class MutationType extends ObjectType
                     'parentId' => ['type' => Type::int()],
                     'type' => ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck) {
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck,$me) {
                     $parent = null;
 
                     if (isset($args['parentId'])) {
@@ -878,17 +881,33 @@ class MutationType extends ObjectType
                     $newInstance = new $className();
                     $newInstance->setParentId($parent->getId());
 
+                    $tags = [];
                     if (isset($args['input'])) {
                         $inputValues = $args['input'];
                         foreach ($inputValues as $key => $value) {
-                            if ($key === 'data') {
-                                $value = base64_decode($value);
+                            //TODO: ask pimcore/pimcore to implement something like Asset::setTags
+                            if ($key == 'tags') {
+                                $tags = $me->getTagsFromInput($value);
+                                if(false === $tags) {
+                                    return [
+                                        'success' => false,
+                                        'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                    ];
+                                }
+                            } else {
+                                if ($key === 'data') {
+                                    $value = base64_decode($value);
+                                }
+                                $setter = 'set' . ucfirst($key);
+                                $newInstance->$setter($value);
                             }
-                            $setter = 'set' . ucfirst($key);
-                            $newInstance->$setter($value);
                         }
                     }
                     $newInstance->save();
+
+                    if ($tags) {
+                        $me->setTags('asset', $newInstance->getId(), $tags);
+                    }
 
                     return [
                         'success' => true,
@@ -952,16 +971,32 @@ class MutationType extends ObjectType
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
 
                     if (isset($args['input'])) {
+                        $tags = [];
                         $inputValues = $args['input'];
                         foreach ($inputValues as $key => $value) {
-                            if ($key === 'data') {
-                                $value = base64_decode($value);
+                            //TODO: ask pimcore/pimcore to implement something like Asset::setTags
+                            if ($key == 'tags') {
+                                $tags = $me->getTagsFromInput($value);
+                                if(false === $tags) {
+                                    return [
+                                        'success' => false,
+                                        'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                    ];
+                                }
+                            } else {
+                                if ($key === 'data') {
+                                    $value = base64_decode($value);
+                                }
+                                $setter = 'set' . ucfirst($key);
+                                $element->$setter($value);
                             }
-                            $setter = 'set' . ucfirst($key);
-                            $element->$setter($value);
                         }
                     }
                     $element->save();
+
+                    if ($tags) {
+                        $me->setTags('asset', $element->getId(), $tags);
+                    }
 
                     return [
                         'success' => true,
