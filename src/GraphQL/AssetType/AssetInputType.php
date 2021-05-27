@@ -49,6 +49,15 @@ class AssetInputType extends InputObjectType
             'data' => [
                 'type' => Type::string(),
             ],
+            'tags' => [
+                'type' => Type::listOf(new InputObjectType([
+                    'name' => 'ElementTag',
+                    'fields' => [
+                        'id' => Type::id(),
+                        'path' => Type::string(),
+                    ]
+                ]))
+            ],
             'metadata' => [
                 'type' => Type::listOf(new InputObjectType([
                     'name' => 'MetadataItem',
