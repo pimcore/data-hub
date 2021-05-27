@@ -850,7 +850,7 @@ class MutationType extends ObjectType
                     'parentId' => ['type' => Type::int()],
                     'type' => ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck,$me) {
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck, $me) {
                     $parent = null;
 
                     if (isset($args['parentId'])) {
@@ -888,7 +888,7 @@ class MutationType extends ObjectType
                             //TODO: ask pimcore/pimcore to implement something like Asset::setTags
                             if ($key == 'tags') {
                                 $tags = $me->getTagsFromInput($value);
-                                if(false === $tags) {
+                                if (false === $tags) {
                                     return [
                                         'success' => false,
                                         'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
@@ -977,7 +977,7 @@ class MutationType extends ObjectType
                             //TODO: ask pimcore/pimcore to implement something like Asset::setTags
                             if ($key == 'tags') {
                                 $tags = $me->getTagsFromInput($value);
-                                if(false === $tags) {
+                                if (false === $tags) {
                                     return [
                                         'success' => false,
                                         'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
