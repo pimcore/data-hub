@@ -33,7 +33,7 @@ class ElementTag extends ObjectType
      */
     public static function getElementTagInputTypeDefinition()
     {
-        if(!isset(self::$tagTypeCache['ElementTag'])) {
+        if (!isset(self::$tagTypeCache['ElementTag'])) {
             self::$tagTypeCache['ElementTag'] = [
                 'type' => Type::listOf(new InputObjectType([
                     'name' => 'ElementTag',
@@ -44,6 +44,7 @@ class ElementTag extends ObjectType
                 ]))
             ];
         }
+
         return self::$tagTypeCache['ElementTag'];
     }
 
