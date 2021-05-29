@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
@@ -262,10 +263,24 @@ class MutationType extends ObjectType
                         $element->setPublished($args['published'] ?? true);
                     }
 
+                    $tags = [];
                     if (isset($args['input'])) {
                         self::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
+                        if (isset($args['input']['tags']) && ($tag_input = $args['input']['tags'])) {
+                            $tags = $me->getTagsFromInput($tag_input);
+                            if(false === $tags) {
+                                return [
+                                    'success' => false,
+                                    'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                ];
+                            }
+                        }
                     }
                     $element->save();
+
+                    if ($tags) {
+                        $me->setTags('document', $element->getId(), $tags);
+                    }
 
                     return [
                         'success' => true,
@@ -321,7 +336,8 @@ class MutationType extends ObjectType
                     'replyTo' => Type::string(),
                     'to' => Type::string(),
                     'cc' => Type::string(),
-                    'bcc' => Type::string()
+                    'bcc' => Type::string(),
+                    'tags' => ElementTag::getElementTagInputTypeDefinition(),
                 ]
             ]);
 
@@ -359,6 +375,8 @@ class MutationType extends ObjectType
                 $id = $value['id'];
                 $target = \Pimcore\Model\Element\Service::getElementById($type, $id);
                 $element->setObject($target);
+            } elseif ($key == 'tags') {
+                //skip it to process in callee method
             } else {
                 $setter = 'set' . ucfirst($key);
 
@@ -399,6 +417,8 @@ class MutationType extends ObjectType
                         }
                     }
                 }
+            } elseif ($key == 'tags') {
+                //skip it to process in callee method
             } else {
                 $setter = 'set' . ucfirst($key);
 
@@ -461,7 +481,8 @@ class MutationType extends ObjectType
                     'action' => Type::string(),
                     'template' => Type::string(),
                     'editableUpdateStrategy' => self::$typeCache['overwrite_strategy'],
-                    'editables' => $elementInputTypeList
+                    'editables' => $elementInputTypeList,
+                    'tags' => ElementTag::getElementTagInputTypeDefinition(),
                 ]
             ]);
 
@@ -517,6 +538,8 @@ class MutationType extends ObjectType
                 $opName = 'create' . ucfirst($entity);
 
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
+
+                $inputFields['tags'] = ElementTag::getElementTagInputTypeDefinition();
 
                 $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
                 $inputType = self::$typeCache[$inputTypeName] ?? new InputObjectType([
@@ -592,7 +615,28 @@ class MutationType extends ObjectType
                             $newInstance->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                         }
 
+                        $tags = [];
+                        if (isset($args['input'])) {
+                            $inputValues = $args['input'];
+                            foreach ($inputValues as $key => $value) {
+                                //TODO: ask pimcore/pimcore to implement something like Asset::setTags
+                                if ($key == 'tags') {
+                                    $tags = $me->getTagsFromInput($value);
+                                    if(false === $tags) {
+                                        return [
+                                            'success' => false,
+                                            'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+
                         $newInstance->save();
+
+                        if ($tags) {
+                            $me->setTags('object', $newInstance->getId(), $tags);
+                        }
 
                         return [
                             'success' => true,
@@ -630,27 +674,27 @@ class MutationType extends ObjectType
 
                 $this->generateInputFieldsAndProcessors($inputFields, $processors, $context, $entity, $class);
 
-                if ($inputFields) {
-                    $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
-                    $inputType = isset(self::$typeCache[$inputTypeName]) ? self::$typeCache[$inputTypeName] : new InputObjectType([
-                        'name' => $inputTypeName,
-                        'fields' => $inputFields
-                    ]);
-                    self::$typeCache[$inputTypeName] = $inputType;
+                $inputFields['tags'] = ElementTag::getElementTagInputTypeDefinition();
 
-                    $updateField = [
-                        'type' => $updateResultType,
-                        'args' => [
-                            'id' => ['type' => Type::int()],
-                            'fullpath' => ['type' => Type::string()],
-                            'defaultLanguage' => ['type' => Type::string()],
-                            'omitMandatoryCheck' => ['type' => Type::boolean()],
-                            'input' => ['type' => $inputType],
-                        ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck)
-                    ];
+                $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
+                $inputType = isset(self::$typeCache[$inputTypeName]) ? self::$typeCache[$inputTypeName] : new InputObjectType([
+                    'name' => $inputTypeName,
+                    'fields' => $inputFields
+                ]);
+                self::$typeCache[$inputTypeName] = $inputType;
 
-                    $config['fields'][$opName] = $updateField;
-                }
+                $updateField = [
+                    'type' => $updateResultType,
+                    'args' => [
+                        'id' => ['type' => Type::int()],
+                        'fullpath' => ['type' => Type::string()],
+                        'defaultLanguage' => ['type' => Type::string()],
+                        'omitMandatoryCheck' => ['type' => Type::boolean()],
+                        'input' => ['type' => $inputType],
+                    ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck)
+                ];
+
+                $config['fields'][$opName] = $updateField;
             }
 
             if (isset($entityConfig['delete']) && $entityConfig['delete']) {
@@ -778,16 +822,29 @@ class MutationType extends ObjectType
                 }
 
                 $dataIn = $args['input'];
+                $tags = [];
                 if (is_array($dataIn)) {
                     foreach ($dataIn as $key => $value) {
                         if (isset($processors[$key])) {
                             $processor = $processors[$key];
                             call_user_func_array($processor, [$object, $value, $args, $context, $info]);
+                        } elseif ($key == 'tags') {
+                            $tags = $me->getTagsFromInput($value);
+                            if(false === $tags) {
+                                return [
+                                    'success' => false,
+                                    'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                ];
+                            }
                         }
                     }
                 }
 
                 $object->save();
+
+                if ($tags) {
+                    $me->setTags('object', $object->getId(), $tags);
+                }
             } catch (\Exception $e) {
                 return [
                     'success' => false,
