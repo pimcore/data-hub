@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -49,15 +50,7 @@ class AssetInputType extends InputObjectType
             'data' => [
                 'type' => Type::string(),
             ],
-            'tags' => [
-                'type' => Type::listOf(new InputObjectType([
-                    'name' => 'ElementTag',
-                    'fields' => [
-                        'id' => Type::id(),
-                        'path' => Type::string(),
-                    ]
-                ]))
-            ],
+            'tags' => ElementTag::getElementTagInputTypeDefinition(),
             'metadata' => [
                 'type' => Type::listOf(new InputObjectType([
                     'name' => 'MetadataItem',
