@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -55,7 +56,8 @@ class DocumentLinkInputType extends InputObjectType
 //                    ]]),
             'direct' => Type::string(),
             'linktype' => Type::string(),
-            'href' => Type::string()
+            'href' => Type::string(),
+            'tags' => ElementTag::getElementTagInputTypeDefinition(),
         ];
     }
 }
