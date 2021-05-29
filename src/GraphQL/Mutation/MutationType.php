@@ -23,8 +23,8 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
@@ -268,7 +268,7 @@ class MutationType extends ObjectType
                         self::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
                         if (isset($args['input']['tags']) && ($tag_input = $args['input']['tags'])) {
                             $tags = $me->getTagsFromInput($tag_input);
-                            if(false === $tags) {
+                            if (false === $tags) {
                                 return [
                                     'success' => false,
                                     'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
@@ -622,7 +622,7 @@ class MutationType extends ObjectType
                                 //TODO: ask pimcore/pimcore to implement something like Asset::setTags
                                 if ($key == 'tags') {
                                     $tags = $me->getTagsFromInput($value);
-                                    if(false === $tags) {
+                                    if (false === $tags) {
                                         return [
                                             'success' => false,
                                             'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
@@ -830,7 +830,7 @@ class MutationType extends ObjectType
                             call_user_func_array($processor, [$object, $value, $args, $context, $info]);
                         } elseif ($key == 'tags') {
                             $tags = $me->getTagsFromInput($value);
-                            if(false === $tags) {
+                            if (false === $tags) {
                                 return [
                                     'success' => false,
                                     'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
