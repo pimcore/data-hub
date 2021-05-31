@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -22,6 +23,30 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 class ElementTag extends ObjectType
 {
     use ServiceTrait;
+
+    protected static $tagTypeCache = [];
+
+    /**
+     * Type definition for ElementTag
+     *
+     * @return array
+     */
+    public static function getElementTagInputTypeDefinition()
+    {
+        if (!isset(self::$tagTypeCache['ElementTag'])) {
+            self::$tagTypeCache['ElementTag'] = [
+                'type' => Type::listOf(new InputObjectType([
+                    'name' => 'ElementTag',
+                    'fields' => [
+                        'id' => Type::id(),
+                        'path' => Type::string(),
+                    ]
+                ]))
+            ];
+        }
+
+        return self::$tagTypeCache['ElementTag'];
+    }
 
     /**
      * AssetTag constructor.
