@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Block;
-use Pimcore\Model\Document\Editable\Checkbox;
 
 class BlockType extends ObjectType
 {
