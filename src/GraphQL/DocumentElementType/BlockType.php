@@ -35,7 +35,7 @@ class BlockType extends ObjectType
                         '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Checkbox) {
+                                if ($value instanceof Block) {
                                     return $value->getName();
                                 }
                             }
@@ -43,7 +43,7 @@ class BlockType extends ObjectType
                         '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Checkbox) {
+                                if ($value instanceof Block) {
                                     return $value->getType();
                                 }
                             }
