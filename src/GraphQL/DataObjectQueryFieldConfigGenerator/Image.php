@@ -15,6 +15,21 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
+use Pimcore\Model\DataObject\ClassDefinition\Data;
+
 class Image extends AssetBase
 {
+    /**
+     * @param $attribute
+     * @param Data $fieldDefinition
+     * @param $class
+     *
+     * @return \Closure
+     */
+    public function getResolver($attribute, $fieldDefinition, $class)
+    {
+        $resolver = new Helper\Image($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
+
+        return [$resolver, 'resolve'];
+    }
 }
