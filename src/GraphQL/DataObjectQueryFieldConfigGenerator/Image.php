@@ -19,7 +19,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Image extends AssetBase
 {
-
     /**
      * @param $attribute
      * @param Data $fieldDefinition
