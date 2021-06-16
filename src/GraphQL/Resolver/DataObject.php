@@ -19,6 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\AbstractObject;
 
 class DataObject extends Element
 {
@@ -69,7 +70,7 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof self) {
+        if (!$object instanceof AbstractObject) {
             return null;
         }
 
