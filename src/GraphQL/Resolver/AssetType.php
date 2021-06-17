@@ -202,7 +202,7 @@ class AssetType
     public function resolveResolutions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $types = $args['types'];
-        $thumbnail = $value['url'];
+        $thumbnail = $value['url'] ?? null;
 
         $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
