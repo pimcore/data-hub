@@ -87,7 +87,7 @@ class OutputCacheService
             $extraTags = array_merge(['output', 'datahub', $clientname], $extraTags);
 
             $event = new OutputCachePreSaveEvent($request, $response);
-            $this->eventDispatcher->dispatch(OutputCacheEvents::PRE_SAVE, $event);
+            $this->eventDispatcher->dispatch($event, OutputCacheEvents::PRE_SAVE);
 
             $this->saveToCache($cacheKey, $event->getResponse(), $extraTags);
         }
@@ -134,7 +134,7 @@ class OutputCacheService
 
         // So far, cache will be used, unless the listener denies it
         $event = new OutputCachePreLoadEvent($request, true);
-        $this->eventDispatcher->dispatch(OutputCacheEvents::PRE_LOAD, $event);
+        $this->eventDispatcher->dispatch($event, OutputCacheEvents::PRE_LOAD);
 
         return $event->isUseCache();
     }
