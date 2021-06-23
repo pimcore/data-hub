@@ -102,7 +102,7 @@ Updates german title and short text and returns the modification date.
 Request:
 ```
 mutation {
-  updateNews(id: 8, defaultLanguage: "de", input: {title: "german TITLE", shortText: "new short text"}) {
+  updateNews(id: 773, defaultLanguage: "de", input: {title: "german TITLE", shortText: "new short text"}) {
     success
     output {
       modificationDate

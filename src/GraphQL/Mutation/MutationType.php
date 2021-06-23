@@ -603,7 +603,7 @@ class MutationType extends ObjectType
                         $newInstance->setParent($parent);
                         $newInstance->setKey($key);
 
-                        if (isset($args['type']) && $args['type'] == 'object' || $args['type'] == 'variant') {
+                        if (isset($args['type']) && ($args['type'] == 'object' || $args['type'] == 'variant')) {
                             $newInstance->setType($args['type']);
                         }
 

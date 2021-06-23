@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Block;
-use Pimcore\Model\Document\Editable\Checkbox;
 
 class BlockType extends ObjectType
 {
@@ -35,7 +34,7 @@ class BlockType extends ObjectType
                         '_editableName' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Checkbox) {
+                                if ($value instanceof Block) {
                                     return $value->getName();
                                 }
                             }
@@ -43,7 +42,7 @@ class BlockType extends ObjectType
                         '_editableType' => [
                             'type' => Type::string(),
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
-                                if ($value instanceof Checkbox) {
+                                if ($value instanceof Block) {
                                     return $value->getType();
                                 }
                             }
