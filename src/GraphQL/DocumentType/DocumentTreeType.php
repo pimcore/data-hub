@@ -63,8 +63,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
             'document_hardlink',
             'document_link',
             'document_page',
-            'document_snippet',
-            '_document_folder'
+            'document_snippet'
         ];
         foreach ($supportedTypes as $supportedType) {
             $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
