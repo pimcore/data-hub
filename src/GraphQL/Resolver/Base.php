@@ -57,6 +57,7 @@ class Base
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);
 
         $value = $valueFromOperator->value ?? null;
+
         return $value;
     }
 
