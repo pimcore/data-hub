@@ -56,7 +56,8 @@ class Base
         $element = AbstractObject::getById($value['id']);
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);
 
-        return $valueFromOperator->value ?? null;
+        $value = $valueFromOperator->value ?? null;
+        return $value;
     }
 
     /**
