@@ -251,6 +251,48 @@ class AssetType
     }
 
     /**
+     * @param mixed $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function resolveDimensions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        if ($value instanceof ElementDescriptor) {
+            $thumbnailName = $args['thumbnail'] ?? null;
+
+            /**
+             * @var Asset\Image $asset
+             */
+            $asset = $this->getAssetFromValue($value, $context);
+
+            if (!$thumbnailName) {
+                return [
+                    'width' => $asset->getWidth(),
+                    'height' => $asset->getHeight(),
+                ];
+            }
+
+            /** @var Asset\Image\Thumbnail $thumbnail */
+            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+
+            $width = $thumbnail->getWidth();
+            $height = $thumbnail->getHeight();
+
+            return [
+                'width' => $width,
+                'height' => $height
+            ];
+        }
+
+        return [];
+    }
+
+    /**
      * @param mixed       $value
      * @param array       $context
      *
