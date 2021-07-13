@@ -62,6 +62,14 @@ class AssetType extends ObjectType
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
         $elementResolver = new Resolver\Element('asset', $this->getGraphQlService());
 
+        $dimensionsType = new ObjectType([
+            'name' => 'dimensions',
+            'fields' => [
+                'width' => Type::int(),
+                'height' => Type::int(),
+            ],
+        ]);
+
         // see https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images#Resolution_switching_Same_size_different_resolutions
         $resolutionsType = Type::listOf(new ObjectType([
             'name' => 'resolutions',
@@ -97,6 +105,13 @@ class AssetType extends ObjectType
                     'types' => $resolutionsArgumentsType
                 ],
                 'resolve' => [$resolver, 'resolveResolutions'],
+            ],
+            'dimensions' => [
+                'type' => $dimensionsType,
+                'args' => [
+                    'thumbnail' => ['type' => Type::string()]
+                ],
+                'resolve' => [$resolver, 'resolveDimensions'],
             ],
             'srcset' => [
                 'type' => Type::listOf(new ObjectType([
