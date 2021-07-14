@@ -270,6 +270,10 @@ class AssetType
              */
             $asset = $this->getAssetFromValue($value, $context);
 
+            if (!$asset instanceof Asset\Image) {
+                return null;
+            }
+
             if (!$thumbnailName) {
                 return [
                     'width' => $asset->getWidth(),
@@ -277,7 +281,6 @@ class AssetType
                 ];
             }
 
-            /** @var Asset\Image\Thumbnail $thumbnail */
             $thumbnail = $asset->getThumbnail($thumbnailName, false);
 
             $width = $thumbnail->getWidth();
