@@ -203,10 +203,11 @@ class AssetType
     {
         $types = $args['types'];
         $thumbnail = $value['url'] ?? null;
+        $resolutions = [];
 
         $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
-            $resolutions = [];
+
             $thumbnailName = $thumbnail->getConfig()->getName();
             $asset = $thumbnail->getAsset();
             if (!WorkspaceHelper::checkPermission($asset, 'read')) {
@@ -231,17 +232,19 @@ class AssetType
             $thumbnailName = $args['thumbnail'];
             $asset = $this->getAssetFromValue($value, $context);
             /** @var Asset\Image\Thumbnail $thumbnail */
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
-            $thumbnailConfig = $thumbnail->getConfig();
-            $resolutions = [];
-            foreach ($types as $type) {
-                $thumbConfigRes = clone $thumbnailConfig;
-                $thumbConfigRes->setHighResolution($type);
-                $thumbConfigRes->setMedias([]);
-                $resolutions[] = [
-                    'url' => $asset->getThumbnail($thumbConfigRes, false),
-                    'resolution' => $type,
-                ];
+            if (method_exists($asset, 'getThumbnail')) {
+                $thumbnail = $asset->getThumbnail($thumbnailName, false);
+                $thumbnailConfig = $thumbnail->getConfig();
+                $resolutions = [];
+                foreach ($types as $type) {
+                    $thumbConfigRes = clone $thumbnailConfig;
+                    $thumbConfigRes->setHighResolution($type);
+                    $thumbConfigRes->setMedias([]);
+                    $resolutions[] = [
+                        'url' => $asset->getThumbnail($thumbConfigRes, false),
+                        'resolution' => $type,
+                    ];
+                }
             }
 
             return $resolutions;
