@@ -207,7 +207,6 @@ class AssetType
 
         $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
-
             $thumbnailName = $thumbnail->getConfig()->getName();
             $asset = $thumbnail->getAsset();
             if (!WorkspaceHelper::checkPermission($asset, 'read')) {
