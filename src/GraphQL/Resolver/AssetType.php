@@ -120,7 +120,7 @@ class AssetType
                 //TODO temporary workaround for https://github.com/pimcore/data-hub/issues/392
                 // we should add format parameter to the schema
                 if ($value) {
-                    $formats = $value["formats"] ?? [];
+                    $formats = $value['formats'] ?? [];
                     $firstFormat = array_values($formats)[0] ?? null;
                     if ($firstFormat) {
                         return $firstFormat;
