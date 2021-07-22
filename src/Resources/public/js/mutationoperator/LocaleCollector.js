@@ -14,12 +14,12 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-pimcore.registerNS("pimcore.plugin.datahub.mutationoperator.ifempty");
+pimcore.registerNS("pimcore.plugin.datahub.mutationoperator.localecollector");
 
-pimcore.plugin.datahub.mutationoperator.ifempty = Class.create(pimcore.plugin.datahub.mutationoperator.mutationoperator, {
-    class: "IfEmpty",
-    iconCls: "plugin_pimcore_datahub_icon_ifempty",
-    defaultText: "IfEmpty",
+pimcore.plugin.datahub.mutationoperator.localecollector = Class.create(pimcore.plugin.datahub.mutationoperator.mutationoperator, {
+    class: "LocaleCollector",
+    iconCls: "plugin_pimcore_datahub_icon_localecollector",
+    defaultText: "Locale Collector",
     group: "other",
     hasTooltip: true
 });

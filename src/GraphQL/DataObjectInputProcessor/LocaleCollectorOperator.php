@@ -19,21 +19,8 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class LocaleSwitcherOperator extends BaseOperator
+class LocaleCollectorOperator extends BaseOperator
 {
-    protected $locale;
-
-    /**
-     * LocaleSwitcherOperator constructor.
-     *
-     * @param $nodeDef
-     */
-    public function __construct($nodeDef)
-    {
-        parent::__construct($nodeDef);
-        $this->locale = $nodeDef['attributes']['locale'];
-    }
-
     /**
      * @param Concrete|AbstractData $object
      * @param $newValue
@@ -44,15 +31,17 @@ class LocaleSwitcherOperator extends BaseOperator
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $localeService = $this->getGraphQlService()->getLocaleService();
-
         $currentLocale = $localeService->getLocale();
 
-        $localeService->setLocale($this->locale);
+        foreach ($newValue as $locale => $value) {
+            $localeService->setLocale($locale);
 
-        $class = $object->getClass();
-        $parentProcessor = $this->getParentProcessor($this->nodeDef, $class);
-        if ($parentProcessor) {
-            call_user_func_array($parentProcessor, [$object, $newValue, $args, $context, $info]);
+            $class = $object->getClass();
+            $parentProcessor = $this->getParentProcessor($this->nodeDef, $class);
+
+            if ($parentProcessor) {
+                call_user_func_array($parentProcessor, [$object, $value, $args, $context, $info]);
+            }
         }
 
         $localeService->setLocale($currentLocale);

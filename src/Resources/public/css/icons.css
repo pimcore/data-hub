@@ -27,6 +27,9 @@
     background: url(/bundles/pimcoreadmin/img/flat-color-icons/disclaimer.svg) center center no-repeat !important;
 }
 
+.plugin_pimcore_datahub_icon_localecollector {
+    background: url(/bundles/pimcoreadmin/img/flat-color-icons/translation.svg) center center no-repeat !important;
+}
 
 #plugin_pimcore_datahub_icon_toolbar {
     background-image: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) !important;

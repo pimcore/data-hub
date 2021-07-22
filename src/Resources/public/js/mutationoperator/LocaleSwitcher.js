@@ -14,70 +14,14 @@
  * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-
 pimcore.registerNS("pimcore.plugin.datahub.mutationoperator.localeswitcher");
 
-pimcore.plugin.datahub.mutationoperator.localeswitcher = Class.create(pimcore.plugin.datahub.Abstract, {
-    type: "operator",
+pimcore.plugin.datahub.mutationoperator.localeswitcher = Class.create(pimcore.plugin.datahub.mutationoperator.mutationoperator, {
     class: "LocaleSwitcher",
     iconCls: "pimcore_icon_operator_localeswitcher",
     defaultText: "Locale Switcher",
     group: "other",
-    mode: "mutation",
-
-    getConfigTreeNode: function (configAttributes) {
-        if (configAttributes) {
-            var nodeLabel = this.getNodeLabel(configAttributes);
-            var node = {
-                draggable: true,
-                iconCls: this.iconCls,
-                text: nodeLabel,
-                configAttributes: configAttributes,
-                isTarget: true,
-                isChildAllowed: this.allowChild,
-                expanded: true,
-                leaf: false,
-                expandable: false
-            };
-        } else {
-
-            //For building up operator list
-            var configAttributes = {type: this.type, class: this.class};
-
-            var node = {
-                draggable: true,
-                iconCls: this.iconCls,
-                text: this.getDefaultText(),
-                configAttributes: configAttributes,
-                isTarget: true,
-                leaf: true,
-                isChildAllowed: this.allowChild
-            };
-        }
-        node.isOperator = true;
-        return node;
-    },
-
-
-    getCopyNode: function (source) {
-        var copy = source.createNode({
-            iconCls: this.iconCls,
-            text: source.data.text,
-            isTarget: true,
-            leaf: false,
-            expandable: false,
-            isOperator: true,
-            isChildAllowed: this.allowChild,
-            configAttributes: {
-                label: source.data.text,
-                type: this.type,
-                class: this.class
-            }
-        });
-
-        return copy;
-    },
-
+    hasTooltip: true,
 
     getConfigDialog: function (node, params) {
         this.node = node;
@@ -121,7 +65,6 @@ pimcore.plugin.datahub.mutationoperator.localeswitcher = Class.create(pimcore.pl
 
         this.localeField = new Ext.form.ComboBox(options);
 
-
         this.configPanel = new Ext.Panel({
             layout: "form",
             bodyStyle: "padding: 10px;",
@@ -145,32 +88,19 @@ pimcore.plugin.datahub.mutationoperator.localeswitcher = Class.create(pimcore.pl
         });
 
         this.window.show();
+
         return this.window;
     },
 
-    commitData: function (params) {
-        this.node.data.configAttributes.label = this.textField.getValue();
+    commitData: function ($super, params) {
         this.node.data.configAttributes.locale = this.localeField.getValue();
 
-        var nodeLabel = this.getNodeLabel(this.node.data.configAttributes);
-        this.node.set('text', nodeLabel);
-        this.node.set('isOperator', true);
-        this.window.close();
-
-        if (params && params.callback) {
-            params.callback();
-        }
-    },
-
-    allowChild: function (targetNode, dropNode) {
-        if (targetNode.childNodes.length > 0) {
-            return false;
-        }
-        return true;
+        $super(params);
     },
 
     getNodeLabel: function(configAttributes) {
         var nodeLabel = configAttributes.label;
+
         if (configAttributes.locale) {
             nodeLabel += '<span class="pimcore_gridnode_hint"> (' + configAttributes.locale + ')</span>';
         }

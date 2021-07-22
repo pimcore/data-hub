@@ -11,3 +11,7 @@ Only sets the value if current one is empty.
 #### Locale Switcher
 
 Switches to different language other than the default language.
+
+#### Locale Collector
+
+Allows editing all languages for a single field.
