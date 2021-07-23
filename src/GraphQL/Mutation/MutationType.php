@@ -648,7 +648,7 @@ class MutationType extends ObjectType
 
                         $newInstance->save();
 
-                        if (isset($args['omitVersionCreate'])&& $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
+                        if (isset($args['omitVersionCreate']) && $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
                             Version::enable();
                         }
 
