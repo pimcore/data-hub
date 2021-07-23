@@ -41,6 +41,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Factory;
+use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MutationType extends ObjectType
@@ -559,6 +560,8 @@ class MutationType extends ObjectType
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
+                        'omitVersionCreate' => ['type' => Type::boolean()],
+                        'userId' => ['type' => Type::int()],
                         'type' => ['type' => Type::string()],
                         'input' => $inputType,
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($entity, $modelFactory, $processors, $localeService, $me) {
@@ -615,6 +618,11 @@ class MutationType extends ObjectType
                             $newInstance->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                         }
 
+                        if (isset($args['userId'])) {
+                            $newInstance->setUserOwner($args['userId']);
+                            $newInstance->setUserModification($args['userId']);
+                        }
+
                         $tags = [];
                         if (isset($args['input'])) {
                             $inputValues = $args['input'];
@@ -632,7 +640,17 @@ class MutationType extends ObjectType
                             }
                         }
 
+                        $omitVersionCreateBefore = Version::$disabled;
+
+                        if (isset($args['omitVersionCreate']) && $args['omitVersionCreate']) {
+                            Version::disable();
+                        }
+
                         $newInstance->save();
+
+                        if (isset($args['omitVersionCreate'])&& $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
+                            Version::enable();
+                        }
 
                         if ($tags) {
                             $me->setTags('object', $newInstance->getId(), $tags);
@@ -690,6 +708,8 @@ class MutationType extends ObjectType
                         'fullpath' => ['type' => Type::string()],
                         'defaultLanguage' => ['type' => Type::string()],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
+                        'omitVersionCreate' => ['type' => Type::boolean()],
+                        'userId' => ['type' => Type::int()],
                         'input' => ['type' => $inputType],
                     ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck)
                 ];
@@ -821,6 +841,10 @@ class MutationType extends ObjectType
                     $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                 }
 
+                if (isset($args['userId'])) {
+                    $object->setUserModification($args['userId']);
+                }
+
                 $dataIn = $args['input'];
                 $tags = [];
                 if (is_array($dataIn)) {
@@ -840,7 +864,17 @@ class MutationType extends ObjectType
                     }
                 }
 
+                $omitVersionCreateBefore = Version::$disabled;
+
+                if (isset($args['omitVersionCreate']) && $args['omitVersionCreate']) {
+                    Version::disable();
+                }
+
                 $object->save();
+
+                if (isset($args['omitVersionCreate']) && $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
+                    Version::enable();
+                }
 
                 if ($tags) {
                     $me->setTags('object', $object->getId(), $tags);
