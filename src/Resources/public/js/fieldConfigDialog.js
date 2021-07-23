@@ -106,7 +106,6 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
             var items = this.getOperatorTrees();
             items.unshift(this.getClassDefinitionTreePanel());
 
-
             this.brickKeys = [];
             this.leftPanel = new Ext.Panel({
                 cls: "pimcore_panel_tree pimcore_gridconfig_leftpanel",

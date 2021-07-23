@@ -21,5 +21,37 @@ pimcore.plugin.datahub.mutationoperator.localecollector = Class.create(pimcore.p
     iconCls: "plugin_pimcore_datahub_icon_localecollector",
     defaultText: "Locale Collector",
     group: "other",
-    hasTooltip: true
+    hasTooltip: true,
+
+    allowChild: function (targetNode, dropNode) {
+        return (
+            !targetNode.childNodes.length > 0
+            && in_array(dropNode.data.dataType, [
+                "booleanSelect",
+                "checkbox",
+                "country",
+                "countrymultiselect",
+                "date",
+                "datetime",
+                "email",
+                "externalImage",
+                "geopoint",
+                "firstname",
+                "gender",
+                "input",
+                "image",
+                "language",
+                "lastname",
+                "newsletterActive",
+                "manyToOneRelation",
+                "multiselect",
+                "newsletterConfirmed",
+                "numeric",
+                "select",
+                "slider",
+                "textarea",
+                "time"
+            ])
+        );
+    }
 });

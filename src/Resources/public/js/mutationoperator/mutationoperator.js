@@ -133,10 +133,10 @@ pimcore.plugin.datahub.mutationoperator.mutationoperator = Class.create(pimcore.
     },
 
     allowChild: function (targetNode, dropNode) {
-        return targetNode.childNodes.length > 0;
+        return !targetNode.childNodes.length > 0;
     },
 
-    getNodeLabel: function(configAttributes) {
+    getNodeLabel: function (configAttributes) {
         return configAttributes.label;
     }
 });

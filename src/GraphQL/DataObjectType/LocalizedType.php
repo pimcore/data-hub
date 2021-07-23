@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\ListOfType;
 use Pimcore\Tool;
 
 class LocalizedType extends InputObjectType
@@ -33,6 +34,10 @@ class LocalizedType extends InputObjectType
     {
         try {
             $determinedTypeName = $determinedType->toString();
+
+            if ($determinedType instanceof ListOfType) {
+                $determinedTypeName = $determinedType->getOfType()->toString() . 'List';
+            }
         } catch (\Throwable $throwable) {
             return $determinedType;
         }
