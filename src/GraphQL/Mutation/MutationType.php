@@ -40,6 +40,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
+use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -196,12 +197,15 @@ class MutationType extends ObjectType
                     'key' => ['type' => Type::nonNull(Type::string())],
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
-                    'published' => ['type' => Type::boolean(), 'description' => 'Default is true!']
+                    'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
+                    'userId' => ['type' => Type::int()]
                 ];
             } else {
                 $args = [
                     'id' => ['type' => Type::int()],
-                    'fullpath' => ['type' => Type::string()]
+                    'fullpath' => ['type' => Type::string()],
+                    'omitVersionCreate' => ['type' => Type::boolean()],
+                    'userId' => ['type' => Type::int()]
                 ];
             }
 
@@ -266,7 +270,7 @@ class MutationType extends ObjectType
 
                     $tags = [];
                     if (isset($args['input'])) {
-                        self::{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
+                        $me->{$inputProcessorFn}($value, $args, $context, $info, $element, $processors);
                         if (isset($args['input']['tags']) && ($tag_input = $args['input']['tags'])) {
                             $tags = $me->getTagsFromInput($tag_input);
                             if (false === $tags) {
@@ -277,7 +281,8 @@ class MutationType extends ObjectType
                             }
                         }
                     }
-                    $element->save();
+
+                    $me->saveElement($element, $args);
 
                     if ($tags) {
                         $me->setTags('document', $element->getId(), $tags);
@@ -369,6 +374,7 @@ class MutationType extends ObjectType
     public static function processDocumentLinkMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
     {
         $inputValues = $args['input'];
+
         foreach ($inputValues as $key => $value) {
             if ($key == 'object') {
                 Logger::debug('test');
@@ -378,6 +384,9 @@ class MutationType extends ObjectType
                 $element->setObject($target);
             } elseif ($key == 'tags') {
                 //skip it to process in callee method
+            } elseif ($key == 'href') {
+                $element->setDirect($value);
+                $element->setLinktype('direct');
             } else {
                 $setter = 'set' . ucfirst($key);
 
@@ -560,7 +569,6 @@ class MutationType extends ObjectType
                         'parentId' => ['type' => Type::int()],
                         'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
-                        'omitVersionCreate' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
                         'type' => ['type' => Type::string()],
                         'input' => $inputType,
@@ -618,11 +626,6 @@ class MutationType extends ObjectType
                             $newInstance->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                         }
 
-                        if (isset($args['userId'])) {
-                            $newInstance->setUserOwner($args['userId']);
-                            $newInstance->setUserModification($args['userId']);
-                        }
-
                         $tags = [];
                         if (isset($args['input'])) {
                             $inputValues = $args['input'];
@@ -640,17 +643,7 @@ class MutationType extends ObjectType
                             }
                         }
 
-                        $omitVersionCreateBefore = Version::$disabled;
-
-                        if (isset($args['omitVersionCreate']) && $args['omitVersionCreate']) {
-                            Version::disable();
-                        }
-
-                        $newInstance->save();
-
-                        if (isset($args['omitVersionCreate']) && $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
-                            Version::enable();
-                        }
+                        $me->saveElement($newInstance, $args);
 
                         if ($tags) {
                             $me->setTags('object', $newInstance->getId(), $tags);
@@ -841,10 +834,6 @@ class MutationType extends ObjectType
                     $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                 }
 
-                if (isset($args['userId'])) {
-                    $object->setUserModification($args['userId']);
-                }
-
                 $dataIn = $args['input'];
                 $tags = [];
                 if (is_array($dataIn)) {
@@ -864,17 +853,7 @@ class MutationType extends ObjectType
                     }
                 }
 
-                $omitVersionCreateBefore = Version::$disabled;
-
-                if (isset($args['omitVersionCreate']) && $args['omitVersionCreate']) {
-                    Version::disable();
-                }
-
-                $object->save();
-
-                if (isset($args['omitVersionCreate']) && $args['omitVersionCreate'] && !$omitVersionCreateBefore) {
-                    Version::enable();
-                }
+                $me->saveElement($object, $args);
 
                 if ($tags) {
                     $me->setTags('object', $object->getId(), $tags);
@@ -940,6 +919,7 @@ class MutationType extends ObjectType
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
                     'type' => ['type' => Type::nonNull(Type::string()), 'description' => 'image or whatever'],
+                    'userId' => ['type' => Type::int()],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck, $me) {
                     $parent = null;
@@ -994,7 +974,8 @@ class MutationType extends ObjectType
                             }
                         }
                     }
-                    $newInstance->save();
+
+                    $me->saveElement($newInstance, $args);
 
                     if ($tags) {
                         $me->setTags('asset', $newInstance->getId(), $tags);
@@ -1057,7 +1038,9 @@ class MutationType extends ObjectType
                 'args' => [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
+                    'omitVersionCreate' => ['type' => Type::boolean()],
+                    'userId' => ['type' => Type::int()],
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input')
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
 
@@ -1083,7 +1066,8 @@ class MutationType extends ObjectType
                             }
                         }
                     }
-                    $element->save();
+
+                    $me->saveElement($element, $args);
 
                     if ($tags) {
                         $me->setTags('asset', $element->getId(), $tags);
@@ -1125,7 +1109,8 @@ class MutationType extends ObjectType
 
             $args = [
                 'path' => ['type' => Type::string()],
-                'parentId' => ['type' => Type::int()]
+                'parentId' => ['type' => Type::int()],
+                'userId' => ['type' => Type::int()]
             ];
 
             if ($type === 'asset') {
@@ -1204,6 +1189,11 @@ class MutationType extends ObjectType
 
             $newInstance->setParentId($parent->getId());
 
+            if (isset($args['userId'])) {
+                $newInstance->setUserOwner($args['userId']);
+                $newInstance->setUserModification($args['userId']);
+            }
+
             $newInstance->save();
 
             return [
@@ -1258,7 +1248,8 @@ class MutationType extends ObjectType
                 'args' => [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
-                    'input' => ['type' => $inputType],
+                    'userId' => ['type' => Type::int()],
+                    'input' => ['type' => $inputType]
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
                         /** @var $configuration Configuration */
@@ -1277,6 +1268,10 @@ class MutationType extends ObjectType
                         foreach ($inputArgs as $argKey => $argValue) {
                             $setter = 'set' . ucfirst($argKey);
                             $element->$setter($argValue);
+                        }
+
+                        if (isset($args['userId'])) {
+                            $element->setUserModification($args['userId']);
                         }
 
                         $element->save();
@@ -1498,5 +1493,39 @@ class MutationType extends ObjectType
     public function isEmpty()
     {
         return !$this->config['fields'];
+    }
+
+    /**
+     * @param AbstractElement|Asset|DataObject|Document
+     * @param array $options
+     */
+    protected function saveElement($element, $options): void
+    {
+        if (
+            isset($options['userId'])
+            && empty($element->getId())
+            && method_exists($element, 'setUserOwner')
+        ) {
+            $element->setUserOwner($options['userId']);
+        }
+
+        if (
+            isset($options['userId'])
+            && method_exists($element, 'setUserModification')
+        ) {
+            $element->setUserModification($options['userId']);
+        }
+
+        $omitVersionCreateBefore = Version::$disabled;
+
+        if (isset($options['omitVersionCreate']) && $options['omitVersionCreate']) {
+            Version::disable();
+        }
+
+        $element->save();
+
+        if (isset($options['omitVersionCreate']) && $options['omitVersionCreate'] && !$omitVersionCreateBefore) {
+            Version::enable();
+        }
     }
 }
