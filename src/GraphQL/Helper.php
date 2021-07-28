@@ -37,7 +37,7 @@ class Helper
         foreach ($parts as $key => $value) {
             foreach ($columns as $column) {
                 $attributes = $column['attributes'];
-                
+
                 if (isset($attributes['attribute'])) {
                     $name = $attributes['attribute'];
 
