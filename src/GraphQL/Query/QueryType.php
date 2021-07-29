@@ -352,6 +352,7 @@ class QueryType extends ObjectType
                     'description' => 'Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by',
                 ],
                 'filter' => ['type' => Type::string()],
+                'published' => ['type' => Type::boolean()],
             ],
             'type' => $listingType,
             'resolve' => [$listResolver, 'resolveListing'],
