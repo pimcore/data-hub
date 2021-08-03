@@ -36,16 +36,19 @@ class Helper
         $parts = get_object_vars($filter);
         foreach ($parts as $key => $value) {
             foreach ($columns as $column) {
-                $attributes = $column['attributes'];
-                $name = $attributes['attribute'];
+                
+                if (!isset($column['isOperator']) or !$column['isOperator']) {
+                    $attributes = $column['attributes'];
+                    $name = $attributes['attribute'];
 
-                if (strpos($name, '~') !== false) {
-                    $nameParts = explode('~', $name);
-                    $brickName = $nameParts[0];
-                    $brickKey = $nameParts[1];
-                    if ($brickKey === $key) {
-                        $list->addObjectbrick($brickName);
-                        $mappingTable[$brickKey] = 1;
+                    if (strpos($name, '~') !== false) {
+                        $nameParts = explode('~', $name);
+                        $brickName = $nameParts[0];
+                        $brickKey = $nameParts[1];
+                        if ($brickKey === $key) {
+                            $list->addObjectbrick($brickName);
+                            $mappingTable[$brickKey] = 1;
+                        }
                     }
                 }
             }
