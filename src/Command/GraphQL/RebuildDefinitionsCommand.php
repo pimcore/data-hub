@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Command\GraphQL;
@@ -82,6 +82,5 @@ class RebuildDefinitionsCommand extends AbstractCommand
             //TODO remove this as soon as support for Symfony 4 gets dropped
             return 0;
         }
-
     }
 }
