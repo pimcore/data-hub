@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Command\GraphQL;
@@ -33,10 +33,10 @@ class RebuildDefinitionsCommand extends AbstractCommand
             ->setName('datahub:graphql:rebuild-definitions')
             ->setDescription('Rebuild GraphQL endpoint definitions')
             ->addOption(
-            'definitions',
+                'definitions',
                 null,
                 InputOption::VALUE_REQUIRED,
-            'Comma separated list of endpoints'
+                'Comma separated list of endpoints'
             );
     }
 
@@ -76,6 +76,12 @@ class RebuildDefinitionsCommand extends AbstractCommand
 
         $this->output->writeln('done');
 
-        return Command::SUCCESS;
+        if (defined('Symfony\Component\Console\Command\Command::SUCCESS')) {
+            return Command::SUCCESS;
+        } else {
+            //TODO remove this as soon as support for Symfony 4 gets dropped
+            return 0;
+        }
+
     }
 }
