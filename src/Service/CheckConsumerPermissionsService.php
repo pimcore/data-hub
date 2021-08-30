@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CheckConsumerPermissionsService
 {
+    public const TOKEN_HEADER = 'X-API-Key';
+
     /**
      * @param Request $request
      * @param Configuration $configuration
@@ -32,7 +34,7 @@ class CheckConsumerPermissionsService
         if ($securityConfig['method'] === Configuration::SECURITYCONFIG_AUTH_APIKEY) {
             $apiKey = $request->headers->get('apikey');
             if (empty($apiKey)) {
-                $apiKey = $request->headers->get('X-API-Key');
+                $apiKey = $request->headers->get(static::TOKEN_HEADER);
             }
             if (empty($apiKey)) {
                 $apiKey = $request->get('apikey');

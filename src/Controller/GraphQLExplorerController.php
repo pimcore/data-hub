@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,7 +58,7 @@ class GraphQLExplorerController extends AbstractController
 
         return $this->render('@PimcoreDataHub/Feature/explorer.html.twig', [
             'graphQLUrl' => $url,
-            'tokenHeader' => 'access-token'
+            'tokenHeader' => CheckConsumerPermissionsService::TOKEN_HEADER
         ]);
     }
 }
