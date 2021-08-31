@@ -161,6 +161,12 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     value: this.data.general.description
                 },
                 {
+                    xtype: "textfield",
+                    fieldLabel: t("group"),
+                    name: "group",
+                    value: this.data.general.group
+                },
+                {
                     xtype: "displayfield",
                     hideLabel: true,
                     value: t("plugin_pimcore_datahub_configpanel_condition_hint"),

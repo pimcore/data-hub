@@ -96,7 +96,6 @@ pimcore.plugin.datahub.config = Class.create({
             this.tree = new Ext.tree.TreePanel({
                 store: store,
                 region: "west",
-                useArrows: true,
                 autoScroll: true,
                 animate: true,
                 containerScroll: true,
@@ -146,6 +145,10 @@ pimcore.plugin.datahub.config = Class.create({
 
 
     onTreeNodeContextmenu: function (tree, record, item, index, e, eOpts) {
+        if (!record.isLeaf()) {
+            return;
+        }
+
         e.stopEvent();
 
         tree.select();
