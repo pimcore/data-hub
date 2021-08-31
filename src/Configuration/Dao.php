@@ -162,7 +162,7 @@ class Dao extends AbstractDao
         $configurations = [];
 
         foreach ($config['list'] as $item) {
-            $configItem = new Configuration($item['general']['type'], $item['general']['path'], $item['general']['name'], json_decode(json_encode($item), true));;
+            $configItem = new Configuration($item['general']['type'], $item['general']['path'], $item['general']['name'], json_decode(json_encode($item), true));
             $configItem->setGroup($item['general']['group'] ?? null);
             $configurations[] = $configItem;
         }

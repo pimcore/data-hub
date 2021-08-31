@@ -138,8 +138,6 @@ class Configuration extends AbstractModel
         $this->group = $group;
     }
 
-
-
     /**
      * @return string|null
      */
@@ -334,6 +332,4 @@ class Configuration extends AbstractModel
     {
         return $this->configuration['security'] ?? [];
     }
-
-
 }

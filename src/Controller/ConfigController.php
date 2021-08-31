@@ -101,7 +101,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         foreach ($list as $item) {
             if ($item->getGroup()) {
                 if (empty($groups[$item->getGroup()])) {
-
                     $groups[$item->getGroup()] = [
                         'id' => 'group_' . $item->getName(),
                         'text' => $item->getGroup(),
@@ -114,7 +113,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                     ];
                 }
                 $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
-
             } else {
                 $tree[] = $this->buildItem($item);
             }
@@ -123,7 +121,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         foreach ($groups as $group) {
             $tree[] = $group;
         }
-
 
         return $this->json($tree);
     }
