@@ -970,6 +970,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localeswitcher }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_localecollector:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localecollector }
+
   #
   # dataobject mutation operator factory definitions
   #
@@ -988,6 +993,12 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localeswitcher }
 
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.localecollector:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localecollector }
 
   # classification store
   #

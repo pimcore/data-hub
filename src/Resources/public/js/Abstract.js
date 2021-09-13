@@ -29,12 +29,21 @@ pimcore.plugin.datahub.Abstract = Class.create({
         this.objectClassId = classId;
     },
 
-    getDefaultText: function () {
+    getBaseTranslationKey: function () {
         var prefix = 'operator';
+
         if (this.mode == "mutation") {
             prefix = "mutation" + prefix;
         }
-        return (t(this.type + "_" + this.defaultText.toLowerCase().replace(' ', '_')), t(prefix + "_" + this.defaultText.toLowerCase().replace(' ', '_')));
+
+        return (
+            this.type + "_" + this.defaultText.toLowerCase().replace(' ', '_'),
+            prefix + "_" + this.defaultText.toLowerCase().replace(' ', '_')
+        );
+    },
+
+    getDefaultText: function () {
+        return t(this.getBaseTranslationKey());
     },
 
     getConfigTreeNode: function(configAttributes) {
