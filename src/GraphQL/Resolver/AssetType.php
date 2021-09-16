@@ -116,7 +116,24 @@ class AssetType
         if ($asset instanceof Asset\Image) {
             return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
         } elseif ($asset instanceof Asset\Video) {
-            return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
+
+            if(isset($args['format'])) {
+
+                if($args['format'] == 'image') {
+                    return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
+                } else {
+                    $value = $asset->getThumbnail($args['thumbnail']);
+                    if ($value) {
+                        $formats = $value['formats'] ?? [];
+                        $format = $formats[$args['format']] ?? null;
+                        if ($format) {
+                            return $format;
+                        }
+                    }
+                }
+            } else {
+                return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
+            }
         } elseif ($asset instanceof Asset\Document) {
             return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
         } elseif ($asset instanceof Asset) {
