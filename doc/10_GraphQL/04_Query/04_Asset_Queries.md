@@ -83,7 +83,7 @@ Sorting can be applied as query parameters, for example sort by filename, descen
 #### Filtering
 
 You can use Pimcore's webservice filter logic as described 
-[here](https://pimcore.com/docs/6.x/Development_Documentation/Web_Services/Query_Filters.html) 
+[here](https://pimcore.com/docs/pimcore/6.9/Development_Documentation/Web_Services/Query_Filters.html) 
 for filtering listing requests.
 
 For details see [filtering documentation page](./10_Filtering.md)
