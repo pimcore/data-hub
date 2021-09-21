@@ -42,7 +42,7 @@ final class ConfigurationEvents
     const CONFIGURATION_PRE_SAVE = 'pimcore.datahub.configuration.preSave';
 
     /**
-     * Fired before a configuration was saved
+     * Fired after a configuration was saved
      *
      * Arguments:
      *  - configuration | the original configuration instance
