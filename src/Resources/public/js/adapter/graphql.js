@@ -36,7 +36,7 @@ pimcore.plugin.datahub.adapter.graphql = Class.create({
                     this.configPanel.refreshTree();
 
                     if (!data || !data.success) {
-                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_adding_config"), "error", data.message);
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_adding_config") + ': <br/>' + data.message, "error");
                     } else {
                         this.openConfiguration(data.name);
                     }
@@ -98,7 +98,7 @@ pimcore.plugin.datahub.adapter.graphql = Class.create({
                     this.configPanel.refreshTree();
 
                     if (!data || !data.success) {
-                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_cloning_config"), "error", data.message);
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_error_cloning_config") + ': <br/>' + data.message, "error");
                     } else {
                         this.openConfiguration(data.name, tree, record);
                     }
