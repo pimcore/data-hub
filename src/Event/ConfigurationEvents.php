@@ -28,4 +28,28 @@ final class ConfigurationEvents
      * @var string
      */
     const CONFIGURATION_POST_DELETE = 'pimcore.datahub.configuration.postDelete';
+
+    /**
+     * Fired before a configuration gets saved
+     *
+     * Arguments:
+     *  - configuration | the original configuration instance
+     *
+     * @Event("Pimcore\Event\Model\GenericEvent")
+     *
+     * @var string
+     */
+    const CONFIGURATION_PRE_SAVE = 'pimcore.datahub.configuration.preSave';
+
+    /**
+     * Fired after a configuration was saved
+     *
+     * Arguments:
+     *  - configuration | the original configuration instance
+     *
+     * @Event("Pimcore\Event\Model\GenericEvent")
+     *
+     * @var string
+     */
+    const CONFIGURATION_POST_SAVE = 'pimcore.datahub.configuration.postSave';
 }

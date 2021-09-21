@@ -162,6 +162,10 @@ class Configuration extends AbstractModel
      */
     public function save(): void
     {
+        $event = new GenericEvent($this);
+        $event->setArgument('configuration', $this);
+        \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_PRE_SAVE);
+
         if (empty($this->configuration)) {
             $this->configuration = [];
             $this->configuration['general'] = [];
@@ -193,6 +197,10 @@ class Configuration extends AbstractModel
         $this->getDao()->save();
 
         WorkspaceHelper::saveWorkspaces($this, $this->configuration['workspaces']);
+
+        $event = new GenericEvent($this);
+        $event->setArgument('configuration', $this);
+        \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_POST_SAVE);
     }
 
     /**
