@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
+use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\CustomDocumentTypePass;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
@@ -40,6 +41,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new ImportExportLocatorsPass());
+        $container->addCompilerPass(new CustomDocumentTypePass());
     }
 
     /**
