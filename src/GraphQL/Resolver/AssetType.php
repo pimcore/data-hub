@@ -116,10 +116,8 @@ class AssetType
         if ($asset instanceof Asset\Image) {
             return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
         } elseif ($asset instanceof Asset\Video) {
-
-            if(isset($args['format'])) {
-
-                if($args['format'] == 'image') {
+            if (isset($args['format'])) {
+                if ($args['format'] == 'image') {
                     return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
                 } else {
                     $value = $asset->getThumbnail($args['thumbnail']);
