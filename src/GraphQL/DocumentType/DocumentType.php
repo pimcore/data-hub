@@ -57,6 +57,11 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     protected $pageType;
 
     /**
+     * @var array
+     */
+    protected $customTypes;
+
+    /**
      * DocumentType constructor.
      *
      * @param Service $graphQlService
@@ -88,7 +93,15 @@ class DocumentType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes(): array
     {
-        return $this->types;
+        return array_merge($this->types, $this->customTypes);
+    }
+
+    /**
+     * @param $customDataTypes
+     */
+    public function registerCustomDataType($customDataTypes)
+    {
+        $this->customTypes = $customDataTypes;
     }
 
     /**
@@ -107,6 +120,10 @@ class DocumentType extends UnionType implements ContainerAwareInterface
             return $this->hardlinkType;
         } elseif ($element instanceof Document\Snippet) {
             return $this->snippetType;
+        }
+
+        if ($customType = $this->customTypes[get_class($element)] ?? false) {
+            return $customType;
         }
 
         return null;
