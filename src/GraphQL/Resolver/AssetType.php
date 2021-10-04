@@ -113,21 +113,26 @@ class AssetType
     {
         $asset = $this->getAssetFromValue($value, $context);
 
-        if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
-            $value = isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
+        if ($asset instanceof Asset\Image) {
+            return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
+        } elseif ($asset instanceof Asset\Video) {
 
-            if ($asset instanceof Asset\Video) {
-                //TODO temporary workaround for https://github.com/pimcore/data-hub/issues/392
-                // we should add format parameter to the schema
-                if ($value) {
-                    $formats = $value['formats'] ?? [];
-                    $firstFormat = array_values($formats)[0] ?? null;
-                    if ($firstFormat) {
-                        return $firstFormat;
+            if(isset($args['format'])) {
+
+                if($args['format'] == 'image') {
+                    return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
+                } else {
+                    $value = $asset->getThumbnail($args['thumbnail']);
+                    if ($value) {
+                        $formats = $value['formats'] ?? [];
+                        $format = $formats[$args['format']] ?? null;
+                        if ($format) {
+                            return $format;
+                        }
                     }
                 }
             } else {
-                return $value;
+                return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
             }
         } elseif ($asset instanceof Asset\Document) {
             return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
