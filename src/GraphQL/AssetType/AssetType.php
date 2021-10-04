@@ -86,7 +86,8 @@ class AssetType extends ObjectType
             'fullpath' => [
                 'type' => Type::string(),
                 'args' => [
-                    'thumbnail' => ['type' => Type::string()]
+                    'thumbnail' => ['type' => Type::string()],
+                    'format' => ['type' => Type::string()]
                 ],
                 'resolve' => [$resolver, 'resolvePath'],
             ],
