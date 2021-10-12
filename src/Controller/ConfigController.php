@@ -96,12 +96,30 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $tree = [];
 
-        // add configurations to their corresponding folder
-        if (is_array($list)) {
-            foreach ($list as $configuration) {
-                $config = $this->buildItem($configuration);
-                $tree[] = $config;
+        $groups = [];
+        /** @var Configuration $item */
+        foreach ($list as $item) {
+            if ($item->getGroup()) {
+                if (empty($groups[$item->getGroup()])) {
+                    $groups[$item->getGroup()] = [
+                        'id' => 'group_' . $item->getName(),
+                        'text' => $item->getGroup(),
+                        'expandable' => true,
+                        'leaf' => false,
+                        'allowChildren' => true,
+                        'iconCls' => 'pimcore_icon_folder',
+                        'group' => $item->getGroup(),
+                        'children' => [],
+                    ];
+                }
+                $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
+            } else {
+                $tree[] = $this->buildItem($item);
             }
+        }
+
+        foreach ($groups as $group) {
+            $tree[] = $group;
         }
 
         return $this->json($tree);

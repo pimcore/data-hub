@@ -86,209 +86,6 @@ class Dao extends AbstractDao
     }
 
     /**
-     * get all folders.
-     *
-     * @return mixed
-     */
-    public static function getFolders()
-    {
-        $config = &self::getConfig();
-
-        return $config['folders'];
-    }
-
-    /**
-     * get a folder by path.
-     *
-     * @param $path
-     *
-     * @return mixed|null
-     */
-    public static function getFolderByPath($path)
-    {
-        $folders = self::getFolders();
-
-        if (!empty($folders[$path])) {
-            return $folders[$path];
-        }
-
-        return null;
-    }
-
-    /**
-     * add a folder.
-     *
-     * @param $parent
-     * @param $name
-     * @param bool $save
-     *
-     * @return array
-     *
-     * @throws \Exception
-     */
-    public static function addFolder($parent, $name, $save = true): array
-    {
-        if (!$parent) {
-            $parent = null;
-        }
-
-        $path = (!$parent ? self::ROOT_PATH : $parent) . $name . '/';
-
-        if (self::getFolderByPath($path)) {
-            throw new \Exception('directory already exists.');
-        }
-
-        $config = & self::getConfig();
-
-        $folder = [
-            'parent' => $parent,
-            'path' => $path,
-            'name' => $name
-        ];
-
-        $config['folders'][$path] = $folder;
-
-        if ($save) {
-            self::writeConfig($config);
-        }
-
-        return $folder;
-    }
-
-    /**
-     * delete a folder by path.
-     *
-     * @param $path
-     */
-    public static function deleteFolder($path): void
-    {
-        $config = & self::getConfig();
-
-        self::deleteFolderRec($config, $path);
-
-        self::writeConfig($config);
-    }
-
-    /**
-     * @param $config
-     * @param $path
-     */
-    private static function deleteFolderRec(&$config, $path): void
-    {
-        if (!empty($config['folders'][$path])) {
-            unset($config['folders'][$path]);
-
-            foreach ($config['list'] as $key => $item) {
-                if ($item['general']['path'] === $path) {
-                    unset($config['list'][$key]);
-                }
-            }
-
-            foreach ($config['folders'] as $folder) {
-                if ($folder['parent'] === $path) {
-                    self::deleteFolderRec($config, $folder['path']);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param $who
-     * @param $to
-     *
-     * @throws \Exception
-     */
-    public static function moveConfiguration($who, $to): void
-    {
-        $configuration = self::getByName($who);
-
-        if (!$configuration) {
-            return;
-        }
-
-        $configuration->setPath($to);
-
-        $configuration->save();
-    }
-
-    /**
-     * @param $who
-     * @param $to
-     *
-     * @throws \Exception
-     */
-    public static function moveFolder($who, $to): void
-    {
-        self::moveFolderRec($who, $to);
-
-        $config = & self::getConfig();
-        self::writeConfig($config);
-    }
-
-    /**
-     * @param $who
-     * @param $to
-     *
-     * @throws \Exception
-     */
-    private static function moveFolderRec($who, $to): void
-    {
-        $config = & self::getConfig();
-
-        if (empty($config['folders'][$who])) {
-            return;
-        }
-
-        $folder = $config['folders'][$who];
-
-        unset($config['folders'][$who]);
-
-        $now = self::addFolder($to, $folder['name'], false);
-
-        foreach ($config['list'] as &$item) {
-            if ($item['general']['path'] === $who) {
-                $item['general']['path'] = $now['path'];
-            }
-        }
-
-        self::moveSubfolders($who, $now['path']);
-    }
-
-    /**
-     * @param $old
-     * @param $now
-     *
-     * @throws \Exception
-     */
-    private static function moveSubfolders($old, $now): void
-    {
-        $config = & self::getConfig();
-
-        foreach ($config['folders'] as $folder) {
-            if ($folder['parent'] === $old) {
-                self::moveFolderRec($folder['path'], $now);
-            }
-        }
-    }
-
-    /**
-     * get the list of configurations.
-     *
-     * @return array
-     */
-    public static function getList(): array
-    {
-        $config = & self::getConfig();
-        $configurations = [];
-
-        foreach ($config['list'] as $item) {
-            $configurations[] = new Configuration($item['general']['type'], $item['general']['path'], $item['general']['name'], json_decode(json_encode($item), true));
-        }
-
-        return $configurations;
-    }
-
-    /**
      * get latest modification date of configuration file.
      *
      * @return bool|int
@@ -352,5 +149,24 @@ class Dao extends AbstractDao
             'folders' => [],
             'list' => []
         ];
+    }
+
+    /**
+     * get the list of configurations.
+     *
+     * @return array
+     */
+    public static function getList(): array
+    {
+        $config = & self::getConfig();
+        $configurations = [];
+
+        foreach ($config['list'] as $item) {
+            $configItem = new Configuration($item['general']['type'], $item['general']['path'], $item['general']['name'], json_decode(json_encode($item), true));
+            $configItem->setGroup($item['general']['group'] ?? null);
+            $configurations[] = $configItem;
+        }
+
+        return $configurations;
     }
 }

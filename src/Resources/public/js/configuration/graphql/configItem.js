@@ -161,6 +161,12 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     value: this.data.general.description
                 },
                 {
+                    xtype: "textfield",
+                    fieldLabel: t("group"),
+                    name: "group",
+                    value: this.data.general.group
+                },
+                {
                     xtype: "displayfield",
                     hideLabel: true,
                     value: t("plugin_pimcore_datahub_configpanel_condition_hint"),
@@ -554,14 +560,23 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             success: function (response) {
                 var rdata = Ext.decode(response.responseText);
                 if (rdata && rdata.success) {
-                    pimcore.helpers.showNotification(t("success"), t("plugin_pimcore_datahub_configpanel_item_save_success"), "success");
                     this.modificationDate = rdata.modificationDate;
-                    this.resetChanges();
+                    this.saveOnComplete();
                 } else {
                     pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
                 }
             }.bind(this)
         });
+    },
+
+    saveOnComplete: function () {
+        this.parent.configPanel.tree.getStore().load({
+            node: this.parent.configPanel.tree.getRootNode()
+        });
+
+        pimcore.helpers.showNotification(t("success"), t("plugin_pimcore_datahub_configpanel_item_save_success"), "success");
+
+        this.resetChanges();
     },
 
     showEntitySelectionDialog: function (type) {

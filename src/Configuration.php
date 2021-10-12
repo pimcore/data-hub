@@ -45,6 +45,11 @@ class Configuration extends AbstractModel
     public $name;
 
     /**
+     * @var string|null
+     */
+    public $group;
+
+    /**
      * @var array|null
      */
     public $configuration;
@@ -115,6 +120,22 @@ class Configuration extends AbstractModel
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGroup(): ?string
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param string|null $group
+     */
+    public function setGroup(?string $group): void
+    {
+        $this->group = $group;
     }
 
     /**
