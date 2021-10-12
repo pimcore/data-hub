@@ -123,7 +123,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getGroup(): ?string
     {
@@ -131,7 +131,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param string $group
+     * @param string|null $group
      */
     public function setGroup(?string $group): void
     {
