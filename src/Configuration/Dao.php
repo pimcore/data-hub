@@ -93,12 +93,12 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 
     public function setVariables($data) {
         $this->model->setConfiguration($data);
-        $this->model->setName($data['general']['name'] ?? null);
-        $this->model->setType($data['general']['type'] ?? null);
-        $this->model->setPath($data['general']['path'] ?? null);
+        $this->model->setName($data['general']['name'] ?? '');
+        $this->model->setType($data['general']['type'] ?? '');
+        $this->model->setPath($data['general']['path'] ?? '');
         $this->model->setModificationDate($data['general']['modificationDate'] ?? null);
         $this->model->setCreationDate($data['general']['createDate'] ?? null);
-        $this->model->setGroup($data['general']['group'] ?? null);
+        $this->model->setGroup($data['general']['group'] ?? '');
     }
 
     /**
