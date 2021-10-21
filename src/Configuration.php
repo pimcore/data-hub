@@ -23,8 +23,11 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 /**
  * Class Configuration
  *
+ * @method bool isWriteable()
+ *
  * @package Pimcore\Bundle\DataHubBundle
  */
+
 class Configuration extends AbstractModel
 {
     public const SECURITYCONFIG_AUTH_APIKEY = 'datahub_apikey';
@@ -55,6 +58,16 @@ class Configuration extends AbstractModel
     public $configuration;
 
     /**
+     * @var int
+     */
+    protected $creationDate;
+
+    /**
+     * @var int
+     */
+    protected $modificationDate;
+
+    /**
      * Configuration constructor.
      *
      * @param $type
@@ -65,10 +78,60 @@ class Configuration extends AbstractModel
     public function __construct($type, $path, $name = null, $configuration = null)
     {
         $type = $type ?: 'graphql';
-        $this->type = $type;
-        $this->path = $path;
-        $this->name = $name;
-        $this->configuration = $configuration ?: [];
+        $this->setType($type);
+        $this->setPath($path);
+        $this->setName($name);
+        $this->setConfiguration($configuration ?? []);
+    }
+
+    public function getObjectVars()
+    {
+        $data = parent::getObjectVars();
+
+        $data["configuration"]['general']['modificationDate'] = $this->modificationDate;
+        $data["configuration"]['general']['createDate'] = $this->modificationDate;
+
+        return $data["configuration"];
+    }
+
+    /**
+     * @param int $creationDate
+     *
+     * @return self
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = (int) $creationDate;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @param int $modificationDate
+     *
+     * @return self
+     */
+    public function setModificationDate($modificationDate)
+    {
+        $this->modificationDate = (int) $modificationDate;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModificationDate()
+    {
+        return $this->modificationDate;
     }
 
     /**
@@ -95,6 +158,9 @@ class Configuration extends AbstractModel
         if (is_array($configuration)) {
             $configuration = json_decode(json_encode($configuration), true);
         }
+        if(empty($this->getName()) == true) {
+            $this->setName($configuration['configuration']['general']['name'] ?? null);
+        }
         $this->configuration = $configuration;
     }
 
@@ -103,7 +169,7 @@ class Configuration extends AbstractModel
      */
     public function getConfiguration()
     {
-        return $this->configuration;
+        return $this->getObjectVars();
     }
 
     /**
@@ -242,8 +308,7 @@ class Configuration extends AbstractModel
     public static function getList()
     {
         $config = new self(null, null);
-
-        return $config->getDao()->getList();
+        return $config->getDao()->loadList();
     }
 
     /**
@@ -253,7 +318,13 @@ class Configuration extends AbstractModel
      */
     public static function getByName($name): ?self
     {
-        return Dao::getByName($name);
+        try {
+            $config = new self(null, null);
+            $config->getDao()->loadByName($name);
+            return $config;
+        } catch (\Pimcore\Model\Exception\NotFoundException $e) {
+            return null;
+        }
     }
 
     /**
@@ -339,5 +410,16 @@ class Configuration extends AbstractModel
     public function getSecurityConfig()
     {
         return $this->configuration['security'] ?? [];
+    }
+
+    /**
+     *
+     */
+    public function __clone()
+    {
+        if ($this->dao) {
+            $this->dao = clone $this->dao;
+            $this->dao->setModel($this);
+        }
     }
 }

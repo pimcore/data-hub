@@ -20,6 +20,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.parent = parent;
         this.data = data.configuration;
         this.modificationDate = data.modificationDate;
+        this.disableForm = !data['configuration']['general']['writeable'];
 
         this.tab = new Ext.TabPanel({
             activeTab: 0,
@@ -137,6 +138,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     xtype: "checkbox",
                     fieldLabel: t("active"),
                     name: "active",
+                    disabled: this.disableForm,
                     value: this.data.general && this.data.general.hasOwnProperty("active") ? this.data.general.active : true
                 },
                 {
@@ -144,26 +146,30 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     fieldLabel: t("type"),
                     name: "type",
                     value: t("plugin_pimcore_datahub_type_" + this.data.general.type),
-                    readOnly: true
+                    readOnly: true,
+                    disabled: this.disableForm
                 },
                 {
                     xtype: "textfield",
                     fieldLabel: t("name"),
                     name: "name",
                     value: this.data.general.name,
-                    readOnly: true
+                    readOnly: true,
+                    disabled: this.disableForm
                 },
                 {
                     name: "description",
                     fieldLabel: t("description"),
                     xtype: "textarea",
                     height: 100,
+                    disabled: this.disableForm,
                     value: this.data.general.description
                 },
                 {
                     xtype: "textfield",
                     fieldLabel: t("group"),
                     name: "group",
+                    disabled: this.disableForm,
                     value: this.data.general.group
                 },
                 {
@@ -178,6 +184,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     fieldLabel: t("plugin_pimcore_datahub_configpanel_sqlObjectCondition"),
                     xtype: "textarea",
                     height: 100,
+                    disabled: this.disableForm,
                     value: this.data.general.sqlObjectCondition
                 }
             ]
@@ -208,6 +215,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             width: 600,
             fieldLabel: t("plugin_pimcore_datahub_security_datahub_apikey"),
             name: "apikey",
+            disabled: this.disableForm,
             value: this.data.security ? this.data.security.apikey : "",
             minLength: 16
         });
@@ -216,6 +224,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             fieldLabel: t('plugin_pimcore_datahub_skip_permission_check'),
             labelWidth: 200,
             name: "skipPermissionCheck",
+            disabled: this.disableForm,
             value: this.data.security ? this.data.security.skipPermissionCheck : ""
         });
 
@@ -233,6 +242,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     fieldLabel: t("plugin_pimcore_datahub_configpanel_security_method"),
                     name: "method",
                     store: methodsStore,
+                    disabled: this.disableForm,
                     value: this.data.security && this.data.security.method ? this.data.security.method : "datahub_apikey",
                     valueField: 'method',
                     displayField: 'translatedMethod',
@@ -249,6 +259,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                             width: 32,
                             style: "margin-left: 8px",
                             iconCls: "pimcore_icon_clear_cache",
+                            disabled: this.disableForm,
                             handler: function () {
                                 apikeyField.setValue(md5(uniqid()));
                             }.bind(this)
@@ -267,6 +278,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 {
                     xtype: 'fieldset',
                     width: 800,
+                    disable: this.disableForm,
                     title: t("workspaces"),
                     items: [
                         this.documentWorkspace.getPanel(),
@@ -299,12 +311,14 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 {
                     xtype: 'fieldset',
                     title: t('plugin_pimcore_datahub_graphql_query_schema'),
+                    disabled: this.disableForm,
                     items: [
                         this.querySchemaGrid
                     ]
                 }, {
                     xtype: 'fieldset',
                     title: t('plugin_pimcore_datahub_graphql_mutation_schema'),
+                    disabled: this.disableForm,
                     items: [
                         this.mutationSchemaGrid
                     ]
@@ -312,6 +326,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 {
                     xtype: 'fieldset',
                     title: t('plugin_pimcore_datahub_graphql_special_schema'),
+                    disabled: this.disableForm,
                     items: [
                         this.specialSchemaGrid
                     ]
@@ -548,25 +563,30 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     save: function () {
-        var saveData = this.getSaveData();
+        if(this.data["general"]["writeable"] === true) {
+            var saveData = this.getSaveData();
 
-        Ext.Ajax.request({
-            url: this.saveUrl,
-            params: {
-                data: saveData,
-                modificationDate: this.modificationDate
-            },
-            method: "post",
-            success: function (response) {
-                var rdata = Ext.decode(response.responseText);
-                if (rdata && rdata.success) {
-                    this.modificationDate = rdata.modificationDate;
-                    this.saveOnComplete();
-                } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
-                }
-            }.bind(this)
-        });
+            Ext.Ajax.request({
+                url: this.saveUrl,
+                params: {
+                    data: saveData,
+                    modificationDate: this.modificationDate
+                },
+                method: "post",
+                success: function (response) {
+                    var rdata = Ext.decode(response.responseText);
+                    if (rdata && rdata.success) {
+                        this.modificationDate = rdata.modificationDate;
+                        this.saveOnComplete();
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
+                    }
+                }.bind(this)
+            });
+        }
+        else {
+            pimcore.helpers.showNotification(t("info"), t("config_not_writeable"), "info");
+        }
     },
 
     saveOnComplete: function () {

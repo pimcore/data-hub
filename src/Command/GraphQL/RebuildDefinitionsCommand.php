@@ -55,7 +55,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
             $included = $input->getOption('definitions');
             $included = explode(',', $included);
         } else {
-            $list = Configuration\Dao::getList();
+            $list = Configuration::getList();
             foreach ($list as $configuration) {
                 $endpoint = $configuration->getName();
                 $included[] = $endpoint;
