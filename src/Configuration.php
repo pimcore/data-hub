@@ -89,8 +89,7 @@ class Configuration extends AbstractModel
         $data = parent::getObjectVars();
 
         $data["configuration"]['general']['modificationDate'] = $this->modificationDate;
-        $data["configuration"]['general']['createDate'] = $this->modificationDate;
-        $data["configuration"]['general']['writeable'] = $this->isWriteable();
+        $data["configuration"]['general']['createDate'] = $this->creationDate;
 
         return $data["configuration"];
     }
@@ -170,7 +169,9 @@ class Configuration extends AbstractModel
      */
     public function getConfiguration()
     {
-        return $this->getObjectVars();
+        $data = $this->getObjectVars();
+        $data['general']['writeable'] = $this->isWriteable();
+        return $data;
     }
 
     /**
@@ -261,6 +262,10 @@ class Configuration extends AbstractModel
 
         if (!isset($this->configuration['workspaces'])) {
             $this->configuration['workspaces'] = [];
+        }
+
+        if(isset($this->configuration['general']['writeable'])) {
+            unset($this->configuration['general']['writeable']);
         }
 
         if (empty($this->getPath())) {

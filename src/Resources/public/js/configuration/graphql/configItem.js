@@ -21,8 +21,10 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.data = data.configuration;
         this.modificationDate = data.modificationDate;
         this.disableForm = false;
-        if(data['configuration']['general']['writeable'] !== null)
+        if(data['configuration']['general']['writeable'] != null &&
+            data['configuration']['general']['writeable'] != undefined) {
             this.disableForm = !data['configuration']['general']['writeable'];
+        }
 
         this.tab = new Ext.TabPanel({
             activeTab: 0,
@@ -565,7 +567,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     save: function () {
-        if(this.data["general"]["writeable"] === true) {
+        if(this.disableForm === false) {
             var saveData = this.getSaveData();
 
             Ext.Ajax.request({
