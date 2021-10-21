@@ -20,7 +20,9 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.parent = parent;
         this.data = data.configuration;
         this.modificationDate = data.modificationDate;
-        this.disableForm = !data['configuration']['general']['writeable'];
+        this.disableForm = false;
+        if(data['configuration']['general']['writeable'] !== null)
+            this.disableForm = !data['configuration']['general']['writeable'];
 
         this.tab = new Ext.TabPanel({
             activeTab: 0,

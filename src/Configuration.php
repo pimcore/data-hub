@@ -90,6 +90,7 @@ class Configuration extends AbstractModel
 
         $data["configuration"]['general']['modificationDate'] = $this->modificationDate;
         $data["configuration"]['general']['createDate'] = $this->modificationDate;
+        $data["configuration"]['general']['writeable'] = $this->isWriteable();
 
         return $data["configuration"];
     }
