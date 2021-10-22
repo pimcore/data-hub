@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
 use Pimcore\Model\AbstractModel;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -27,7 +26,6 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  *
  * @package Pimcore\Bundle\DataHubBundle
  */
-
 class Configuration extends AbstractModel
 {
     public const SECURITYCONFIG_AUTH_APIKEY = 'datahub_apikey';
@@ -88,10 +86,10 @@ class Configuration extends AbstractModel
     {
         $data = parent::getObjectVars();
 
-        $data["configuration"]['general']['modificationDate'] = $this->modificationDate;
-        $data["configuration"]['general']['createDate'] = $this->creationDate;
+        $data['configuration']['general']['modificationDate'] = $this->modificationDate;
+        $data['configuration']['general']['createDate'] = $this->creationDate;
 
-        return $data["configuration"];
+        return $data['configuration'];
     }
 
     /**
@@ -158,7 +156,7 @@ class Configuration extends AbstractModel
         if (is_array($configuration)) {
             $configuration = json_decode(json_encode($configuration), true);
         }
-        if(empty($this->getName()) == true) {
+        if (empty($this->getName()) == true) {
             $this->setName($configuration['configuration']['general']['name'] ?? null);
         }
         $this->configuration = $configuration;
@@ -171,6 +169,7 @@ class Configuration extends AbstractModel
     {
         $data = $this->getObjectVars();
         $data['general']['writeable'] = $this->isWriteable();
+
         return $data;
     }
 
@@ -264,7 +263,7 @@ class Configuration extends AbstractModel
             $this->configuration['workspaces'] = [];
         }
 
-        if(isset($this->configuration['general']['writeable'])) {
+        if (isset($this->configuration['general']['writeable'])) {
             unset($this->configuration['general']['writeable']);
         }
 
@@ -314,6 +313,7 @@ class Configuration extends AbstractModel
     public static function getList()
     {
         $config = new self(null, null);
+
         return $config->getDao()->loadList();
     }
 
@@ -327,6 +327,7 @@ class Configuration extends AbstractModel
         try {
             $config = new self(null, null);
             $config->getDao()->loadByName($name);
+
             return $config;
         } catch (\Pimcore\Model\Exception\NotFoundException $e) {
             return null;
@@ -418,9 +419,6 @@ class Configuration extends AbstractModel
         return $this->configuration['security'] ?? [];
     }
 
-    /**
-     *
-     */
     public function __clone()
     {
         if ($this->dao) {

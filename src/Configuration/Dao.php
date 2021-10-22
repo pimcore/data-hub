@@ -45,12 +45,8 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     private const LEGACY_FILE = 'datahub-configurations.php';
 
-
     public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
 
-    /**
-     *
-     */
     public function configure()
     {
         $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
@@ -91,7 +87,8 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         $this->deleteData($this->model->getName());
     }
 
-    public function setVariables($data) {
+    public function setVariables($data)
+    {
         $this->model->setConfiguration($data);
         $this->model->setName($data['general']['name'] ?? '');
         $this->model->setType($data['general']['type'] ?? '');
@@ -113,14 +110,13 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     {
         $data = $this->getDataByName($name);
 
-        if(!$data) {
-            $data = $this->getDataByName("list");
+        if (!$data) {
+            $data = $this->getDataByName('list');
             $data = $data[$name] ?? null;
         }
-        if($data) {
+        if ($data) {
             $this->setVariables($data);
-        }
-        else {
+        } else {
             throw new Model\Exception\NotFoundException('Configuration with name: ' . $name . ' does not exist');
         }
     }
@@ -140,6 +136,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         try {
             $config = new Configuration(null, null);
             $config->getDao()->loadByName($name);
+
             return $config;
         } catch (\Pimcore\Model\Exception\NotFoundException $e) {
             return null;
@@ -156,7 +153,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     public static function getConfigModificationDate()
     {
-        return strtotime ('1987-10-09 13:58:00');
+        return strtotime('1987-10-09 13:58:00');
     }
 
     /**
@@ -172,13 +169,12 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         $config = [];
 
         $list = $this->loadIdList();
-        foreach($list as $name) {
+        foreach ($list as $name) {
             $data = $this->getDataByName($name);
-            if($name === "folders" and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
+            if ($name === 'folders' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
                 unset($data[$name]);
-            }
-            else if($name === "list" and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
-                foreach($data as $key => $legacyItem) {
+            } elseif ($name === 'list' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
+                foreach ($data as $key => $legacyItem) {
                     $config[$key] = $legacyItem;
                 }
             } else {
@@ -198,10 +194,10 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     private static function defaultConfig(): array
     {
-        return ["general" => [],
-            "schema" => [],
-            "security" => [],
-            "workspaces" => []
+        return ['general' => [],
+            'schema' => [],
+            'security' => [],
+            'workspaces' => []
         ];
     }
 
@@ -215,8 +211,8 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         $list = [];
 
         $configs = &$this->getConfig();
-        foreach($configs as $item) {
-            $name = $item["general"]["name"];
+        foreach ($configs as $item) {
+            $name = $item['general']['name'];
             $configuration = Configuration::getByName($name);
             $list[$name] = $configuration;
         }
@@ -237,12 +233,14 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     public static function getList(): array
     {
         $configuration = new Configuration(null, null);
+
         return $configuration->getDao()->loadList();
     }
 
     /**
      * @param string $id
      * @param $data
+     *
      * @return \array[][][]
      */
     protected function prepareDataStructureForYaml(string $id, $data)

@@ -15,12 +15,11 @@
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
-use Google\Service\Container;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
@@ -44,8 +43,9 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
     /**
      * @param ContainerBuilder $container
      */
-    public function prepend(ContainerBuilder $container) {
-        $configDir = PIMCORE_CONFIGURATION_DIRECTORY  . "/data-hub";
+    public function prepend(ContainerBuilder $container)
+    {
+        $configDir = PIMCORE_CONFIGURATION_DIRECTORY  . '/data-hub';
         $configLoader = new YamlFileLoader(
             $container,
             new FileLocator($configDir)

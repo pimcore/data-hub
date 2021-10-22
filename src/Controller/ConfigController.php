@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -47,6 +46,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $type = $configuration->getType() ?: 'graphql';
         $name = $configuration->getName();
+
         return [
             'id' => $name,
             'text' => $name,
@@ -122,7 +122,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $this->checkPermission(self::CONFIG_NAME);
 
-        if((new Configuration(null, null))->isWriteable() === false) {
+        if ((new Configuration(null, null))->isWriteable() === false) {
             throw new ConfigWriteException();
         }
 
@@ -130,7 +130,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $request->get('name');
 
             $config = Configuration::getByName($name);
-            if($config->isWriteable() === false) {
+            if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
             if (!$config instanceof Configuration) {
@@ -160,7 +160,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $this->checkPermission(self::CONFIG_NAME);
 
-        if((new Configuration(null, null))->isWriteable() === false) {
+        if ((new Configuration(null, null))->isWriteable() === false) {
             throw new ConfigWriteException();
         }
 
@@ -210,7 +210,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             if (!$originalConfig) {
                 throw new \Exception('Configuration not found');
             }
-            if($originalConfig->isWriteable() === false) {
+            if ($originalConfig->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
 
@@ -369,7 +369,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             $name = $dataDecoded['general']['name'];
             $config = Configuration::getByName($name);
-            if($config->isWriteable() === false) {
+            if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
             $configuration = $config->getConfiguration();
