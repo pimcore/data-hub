@@ -15,12 +15,12 @@ pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
 pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
 
     saveUrl: "/admin/pimcoredatahub/config/save",
+    disableForm: false,
 
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
         this.modificationDate = data.modificationDate;
-        this.disableForm = false;
         if(data['configuration']['general']['writeable'] != null &&
             data['configuration']['general']['writeable'] != undefined) {
             this.disableForm = !data['configuration']['general']['writeable'];
