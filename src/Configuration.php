@@ -156,7 +156,7 @@ class Configuration extends AbstractModel
         if (is_array($configuration)) {
             $configuration = json_decode(json_encode($configuration), true);
         }
-        if (empty($this->getName()) == true) {
+        if (empty($this->getName())) {
             $this->setName($configuration['configuration']['general']['name'] ?? null);
         }
         $this->configuration = $configuration;
