@@ -153,7 +153,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     public static function getConfigModificationDate()
     {
-        return strtotime('1987-10-09 13:58:00');
+        return strtotime('1970-01-01 00:00:00');
     }
 
     /**
