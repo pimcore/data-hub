@@ -108,11 +108,11 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
         }
 
         if (count($this->customTypes)) {
-           foreach ($this->customTypes as $customType) {
-               if ($customType->isTypeof($rawElement, $context, $info)) {
-                  return $customType;
-               }
-           }
+            foreach ($this->customTypes as $customType) {
+                if ($customType->isTypeof($rawElement, $context, $info)) {
+                    return $customType;
+                }
+            }
         }
 
         return null;
