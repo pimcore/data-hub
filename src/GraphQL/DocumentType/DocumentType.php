@@ -105,6 +105,14 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     }
 
     /**
+     * @return array
+     */
+    public function getCustomDataTypes()
+    {
+        return $this->customTypes;
+    }
+
+    /**
      * @inheritdoc
      */
     public function resolveType($element, $context, ResolveInfo $info)
@@ -120,10 +128,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
             return $this->hardlinkType;
         } elseif ($element instanceof Document\Snippet) {
             return $this->snippetType;
-        }
-
-        if ($customType = $this->customTypes[get_class($element)] ?? false) {
-            return $customType;
         }
 
         return null;
