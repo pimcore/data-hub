@@ -50,17 +50,17 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
     },
 
     onPerspectiveEditorLoadStructureForPermissions: function (context, structure) {
-        if(context === 'toolbar') {
+        if(context == 'toolbar') {
             structure['datahub'] = {};
         }
     },
 
     onPerspectiveEditorLoadPermissions: function (context, menu, permissions) {
-        if(context === 'toolbar' && menu === 'datahub') {
-            if(permissions[context][menu] === undefined) {
+        if(context == 'toolbar' && menu == 'datahub') {
+            if(permissions[context][menu] == undefined) {
                 permissions[context][menu] = [];
             }
-            if(permissions[context][menu].indexOf("hidden") == -1) {
+            if(permissions[context][menu].indexOf('hidden') == -1) {
                 permissions[context][menu].push('hidden');
             }
         }
