@@ -23,6 +23,12 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
     },
 
     pimcoreReady: function (params, broker) {
+        var perspectiveCfg = pimcore.globalmanager.get("perspective");
+
+        if (perspectiveCfg.inToolbar("datahub") == false) {
+            return
+        }
+
         var user = pimcore.globalmanager.get("user");
         if (user.admin || user.isAllowed("plugin_datahub_config")) {
 
@@ -41,8 +47,26 @@ pimcore.plugin.datahub = Class.create(pimcore.plugin.admin, {
 
             pimcore.helpers.initMenuTooltips();
         }
+    },
+
+    onPerspectiveEditorLoadStructureForPermissions: function (context, structure) {
+        if(context === 'toolbar') {
+            structure['datahub'] = {};
+        }
+    },
+
+    onPerspectiveEditorLoadPermissions: function (context, menu, permissions) {
+        if(context === 'toolbar' && menu === 'datahub') {
+            if(permissions[context][menu] === undefined) {
+                permissions[context][menu] = [];
+            }
+            if(permissions[context][menu].indexOf("hidden") == -1) {
+                permissions[context][menu].push('hidden');
+            }
+        }
     }
 });
+
 
 var dtaPlugin = new pimcore.plugin.datahub();
 
