@@ -31,7 +31,7 @@ the environment variable `PIMCORE_WRITE_TARGET_DATA_HUB` the storage location ca
 - `settings-store` - write configs to the SettingsStore
 - `disabled` - do not allow to edit/write configs at all
 
-Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/10.2/Development_Documentation/Deployment/Configuration_Environments.html#page_Configuration-Storage-Locations-Fallbacks).
+Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/current/Development_Documentation/Deployment/Configuration_Environments.html#page_Configuration-Storage-Locations-Fallbacks).
 
 #### Example
 ```env 
