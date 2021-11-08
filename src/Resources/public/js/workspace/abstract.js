@@ -20,7 +20,6 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
     initialize: function (parent) {
         this.parent = parent;
         this.workspaces = this.parent.data.workspaces;
-        this.disableForm = parent.disableForm ?? false;
     },
 
     getPanel: function () {
@@ -96,7 +95,6 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
             autoExpandColumn: "cpath",
             autoHeight: true,
             style: "margin-bottom:20px;",
-            disabled: this.disableForm,
             plugins: [
                 this.cellEditing
             ],
