@@ -37,8 +37,8 @@ class Version20210305134111 extends AbstractPimcoreMigration
     {
         $db = Db::get();
         $entry = $db->fetchRow(
-            'SELECT * FROM pimcore_migrations WHERE migration_set = ? AND version = ?',
-            ['PimcoreDataHubBundle', '00000001']
+            'SELECT * FROM pimcore_migrations WHERE migration_set = ?',
+            ['PimcoreDataHubBundle']
         );
 
         if ($entry && !empty($entry['migrated_at'])) {
