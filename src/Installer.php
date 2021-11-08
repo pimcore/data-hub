@@ -23,8 +23,6 @@ use Pimcore\Logger;
 
 class Installer extends SettingsStoreAwareInstaller
 {
-    const DATAHUB_GRAPHQL_PERMISSION = 'plugin_datahub_adapter_graphql';
-
     public function needsReloadAfterInstall(): bool
     {
         return true;
