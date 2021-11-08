@@ -20,7 +20,7 @@ namespace Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Locates configs from path config/pimcore/headless-definitions.
+ * Locates data hub configs
  */
 class DatahubConfigLocator
 {
