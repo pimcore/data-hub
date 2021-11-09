@@ -92,14 +92,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
-     */
-    public function getCustomDataTypes()
-    {
-        return $this->customTypes;
-    }
-
-    /**
      * @inheritdoc
      */
     public function resolveType($element, $context, ResolveInfo $info)

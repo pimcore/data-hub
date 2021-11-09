@@ -33,8 +33,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
 
     private $types;
 
-    private $customTypes = [];
-
     /**
      * DocumentTreeType constructor.
      *
@@ -72,20 +70,11 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
             $types[] = $this->types[$supportedType];
         }
 
-        $document = $this->getGraphQlService()->getDocumentTypeDefinition('document');
-        if (count($document->getCustomDataTypes())) {
-            foreach ($document->getCustomDataTypes() as $ckey => $customType) {
-                $this->customTypes[$ckey] = $this->getGraphQlService()->getDocumentTypeDefinition($ckey);
-                $types[] = $this->customTypes[$ckey];
-            }
-        }
-
         return $types;
     }
 
     public function resolveType($element, $context, ResolveInfo $info)
     {
-        $rawElement = $element;
         $element = Document::getById($element['id']);
 
         if ($element instanceof Document\Folder) {
@@ -105,14 +94,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
         }
         if ($element instanceof Document\Snippet) {
             return $this->types['document_snippet'];
-        }
-
-        if (count($this->customTypes)) {
-            foreach ($this->customTypes as $customType) {
-                if ($customType->isTypeof($rawElement, $context, $info)) {
-                    return $customType;
-                }
-            }
         }
 
         return null;
