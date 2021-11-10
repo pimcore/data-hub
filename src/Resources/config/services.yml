@@ -29,3 +29,5 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Installer:
         public: true
+        arguments:
+            $bundle: "@=service('kernel').getBundle('PimcoreDataHubBundle')"

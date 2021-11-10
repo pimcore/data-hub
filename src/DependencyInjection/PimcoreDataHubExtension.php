@@ -45,7 +45,16 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
      */
     public function prepend(ContainerBuilder $container)
     {
-        $configDir = PIMCORE_CONFIGURATION_DIRECTORY  . '/data-hub';
+        if ($container->hasExtension('doctrine_migrations')) {
+            $loader = new YamlFileLoader(
+                $container,
+                new FileLocator(__DIR__ . '/../Resources/config')
+            );
+
+            $loader->load('doctrine_migrations.yml');
+        }
+
+        $configDir = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
         $configLoader = new YamlFileLoader(
             $container,
             new FileLocator($configDir)
