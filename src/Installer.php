@@ -81,4 +81,15 @@ class Installer extends AbstractInstaller
 
         return true;
     }
+
+    public function isInstalled()
+    {
+        try {
+            Db::get()->fetchOne('SELECT `cid` FROM `plugin_datahub_workspaces_document` LIMIT 1;');
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }
