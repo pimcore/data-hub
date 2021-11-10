@@ -18,14 +18,15 @@ namespace Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Config;
 use Pimcore\File;
-use Pimcore\Model\Dao\AbstractDao;
+use Pimcore\Model;
+use Symfony\Component\Uid\Uuid as Uid;
 
 /**
  * Class Dao
  *
  * @package Pimcore\Bundle\DataHubBundle\Configuration
  */
-class Dao extends AbstractDao
+class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 {
     public const ROOT_PATH = '/';
 
@@ -40,16 +41,42 @@ class Dao extends AbstractDao
     private static $_config = null;
 
     /**
+     * @deprecated Will be removed in Pimcore 11
+     */
+    private const LEGACY_FILE = 'datahub-configurations.php';
+
+    public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
+
+    public function configure()
+    {
+        $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
+
+        parent::configure([
+            'containerConfig' => $config['configurations'] ?? [],
+            'settingsStoreScope' => 'pimcore_data_hub',
+            'storageDirectory' => self::CONFIG_PATH,
+            'legacyConfigFile' => self::LEGACY_FILE,
+            'writeTargetEnvVariableName' => 'PIMCORE_WRITE_TARGET_DATA_HUB'
+        ]);
+    }
+
+    /**
      * save a configuration.
      */
     public function save(): void
     {
-        $name = $this->model->getName();
-        $config = &self::getConfig();
+        if (!$this->model->getName()) {
+            $this->model->getName(Uid::v4());
+        }
 
-        $config['list'][$name] = json_decode(json_encode($this->model->getConfiguration()), true);
+        $ts = time();
+        if (!$this->model->getCreationDate()) {
+            $this->model->setCreationDate($ts);
+        }
+        $this->model->setModificationDate($ts);
 
-        self::writeConfig($config);
+        $data = $this->model->getObjectVars();
+        $this->saveData($this->model->getName(), $data);
     }
 
     /**
@@ -57,48 +84,76 @@ class Dao extends AbstractDao
      */
     public function delete(): void
     {
-        $name = $this->model->getName();
-        $config = & self::getConfig();
+        $this->deleteData($this->model->getName());
+    }
 
-        unset($config['list'][$name]);
-
-        self::writeConfig($config);
+    public function setVariables($data)
+    {
+        $this->model->setConfiguration($data);
+        $this->model->setName($data['general']['name'] ?? '');
+        $this->model->setType($data['general']['type'] ?? '');
+        $this->model->setPath($data['general']['path'] ?? '');
+        $this->model->setModificationDate($data['general']['modificationDate'] ?? null);
+        $this->model->setCreationDate($data['general']['createDate'] ?? null);
+        $this->model->setGroup($data['general']['group'] ?? '');
     }
 
     /**
-     * get a configuration by name.
+     * @internal
+     *
+     * gets a configuration by name.
      *
      * @param string $name
      *
-     * @return Configuration|null
      */
-    public static function getByName($name): ?Configuration
+    public function loadByName($name)
     {
-        $list = self::getList();
+        $data = $this->getDataByName($name);
 
-        foreach ($list as $item) {
-            if ($item->getName() === $name) {
-                return $item;
-            }
+        if (!$data) {
+            $data = $this->getDataByName('list');
+            $data = $data[$name] ?? null;
         }
-
-        return null;
+        if ($data) {
+            $this->setVariables($data);
+        } else {
+            throw new Model\Exception\NotFoundException('Configuration with name: ' . $name . ' does not exist');
+        }
     }
 
     /**
+     * @deprecated Will be removed in Pimcore 11
+     *
+     * get a configuration by name.
+     *
+     * TODO: remove this static function and rename "loadByName" to "getByName"
+     *
+     * @param string $name
+     *
+     */
+    public static function getByName($name)
+    {
+        try {
+            $config = new Configuration(null, null);
+            $config->getDao()->loadByName($name);
+
+            return $config;
+        } catch (\Pimcore\Model\Exception\NotFoundException $e) {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @deprecated will be removed with pimcore 11
+     *
      * get latest modification date of configuration file.
      *
      * @return bool|int
      */
     public static function getConfigModificationDate()
     {
-        $config = Config::locateConfigFile(self::CONFIG_FILE);
-
-        if (!file_exists($config)) {
-            return false;
-        }
-
-        return filemtime($config);
+        return 0;
     }
 
     /**
@@ -106,36 +161,30 @@ class Dao extends AbstractDao
      *
      * @return array|mixed|null
      */
-    private static function &getConfig()
+    private function &getConfig()
     {
         if (self::$_config) {
             return self::$_config;
         }
+        $config = [];
 
-        $file = Config::locateConfigFile(self::CONFIG_FILE);
-        $config = null;
-
-        if (!file_exists($file)) {
-            $config = self::defaultConfig();
-
-            self::writeConfig($config);
-        } else {
-            $config = include($file);
+        $list = $this->loadIdList();
+        foreach ($list as $name) {
+            $data = $this->getDataByName($name);
+            if ($name === 'folders' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
+                unset($data[$name]);
+            } elseif ($name === 'list' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
+                foreach ($data as $key => $legacyItem) {
+                    $config[$key] = $legacyItem;
+                }
+            } else {
+                $config[$name] = $data;
+            }
         }
 
         self::$_config = $config;
 
         return self::$_config;
-    }
-
-    /**
-     * write the configuration file.
-     *
-     * @param $config
-     */
-    private static function writeConfig($config): void
-    {
-        File::putPhpFile(Config::locateConfigFile(self::CONFIG_FILE), to_php_data_file_format($config));
     }
 
     /**
@@ -145,9 +194,10 @@ class Dao extends AbstractDao
      */
     private static function defaultConfig(): array
     {
-        return [
-            'folders' => [],
-            'list' => []
+        return ['general' => [],
+            'schema' => [],
+            'security' => [],
+            'workspaces' => []
         ];
     }
 
@@ -156,17 +206,51 @@ class Dao extends AbstractDao
      *
      * @return array
      */
-    public static function getList(): array
+    public function loadList(): array
     {
-        $config = & self::getConfig();
-        $configurations = [];
+        $list = [];
 
-        foreach ($config['list'] as $item) {
-            $configItem = new Configuration($item['general']['type'], $item['general']['path'], $item['general']['name'], json_decode(json_encode($item), true));
-            $configItem->setGroup($item['general']['group'] ?? null);
-            $configurations[] = $configItem;
+        $configs = &$this->getConfig();
+        foreach ($configs as $item) {
+            $name = $item['general']['name'];
+            $configuration = Configuration::getByName($name);
+            $list[$name] = $configuration;
         }
 
-        return $configurations;
+        return $list;
+    }
+
+    /**
+     * @deprecated Will be removed in Pimcore 11
+     *
+     * get the list of configurations.
+     *
+     * TODO: remove this static function and rename "loadList" to "getList"
+     *
+     * @return array
+     *
+     */
+    public static function getList(): array
+    {
+        $configuration = new Configuration(null, null);
+
+        return $configuration->getDao()->loadList();
+    }
+
+    /**
+     * @param string $id
+     * @param $data
+     *
+     * @return \array[][][]
+     */
+    protected function prepareDataStructureForYaml(string $id, $data)
+    {
+        return [
+            'pimcore_data_hub' => [
+                'configurations' => [
+                    $id => $data,
+                ],
+            ],
+        ];
     }
 }

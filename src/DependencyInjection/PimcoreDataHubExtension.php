@@ -19,6 +19,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
@@ -52,6 +53,18 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             );
 
             $loader->load('doctrine_migrations.yml');
+        }
+
+        $configDir = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
+        $configLoader = new YamlFileLoader(
+            $container,
+            new FileLocator($configDir)
+        );
+
+        //load datahub configs
+        $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
+        foreach ($configLocator->locate('config') as $config) {
+            $configLoader->load($config);
         }
     }
 }
