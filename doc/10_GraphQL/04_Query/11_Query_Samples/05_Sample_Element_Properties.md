@@ -18,6 +18,10 @@ be returned by default.
           name
           text
         }
+        ... on property_select {
+          name
+          text
+        }
         ... on property_document {
           name
           type
