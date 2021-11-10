@@ -17,12 +17,12 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\Exception\ConfigWriteException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,24 +38,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     public const CONFIG_NAME = 'plugin_datahub_config';
 
     /**
-     * @param $path
-     * @param $name
-     *
-     * @return array
-     */
-    private function buildFolder($path, $name): array
-    {
-        return [
-            'id' => $path,
-            'text' => $name,
-            'type' => 'folder',
-            'expanded' => true,
-            'iconCls' => 'pimcore_icon_folder',
-            'children' => [],
-        ];
-    }
-
-    /**
      * @param Configuration $configuration
      *
      * @return array
@@ -63,15 +45,17 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     private function buildItem($configuration): array
     {
         $type = $configuration->getType() ?: 'graphql';
+        $name = $configuration->getName();
 
         return [
-            'id' => $configuration->getName(),
-            'text' => $configuration->getName(),
+            'id' => $name,
+            'text' => $name,
             'type' => 'config',
             'iconCls' => 'plugin_pimcore_datahub_icon_' . $type,
             'expandable' => false,
             'leaf' => true,
-            'adapter' => $type
+            'adapter' => $type,
+            'writeable' => $configuration->isWriteable()
         ];
     }
 
@@ -87,7 +71,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         // check permissions
         $this->checkPermission(self::CONFIG_NAME);
 
-        $list = Dao::getList();
+        $list = Configuration::getList();
 
         $event = new GenericEvent($this);
         $event->setArgument('list', $list);
@@ -138,10 +122,17 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $this->checkPermission(self::CONFIG_NAME);
 
+        if ((new Configuration(null, null))->isWriteable() === false) {
+            throw new ConfigWriteException();
+        }
+
         try {
             $name = $request->get('name');
 
-            $config = Dao::getByName($name);
+            $config = Configuration::getByName($name);
+            if ($config->isWriteable() === false) {
+                throw new ConfigWriteException();
+            }
             if (!$config instanceof Configuration) {
                 throw new \Exception('Name does not exist.');
             }
@@ -157,95 +148,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     }
 
     /**
-     * @Route("/add-folder")
-     *
-     * @param Request $request
-     *
-     * @throws \Exception
-     *
-     * @return JsonResponse
-     */
-    public function addFolderAction(Request $request): ?JsonResponse
-    {
-        $this->checkPermission(self::CONFIG_NAME);
-
-        $parent = $request->get('parent');
-        $name = $request->get('name');
-
-        try {
-            if (!$name) {
-                throw new \Exception('Invalid name.');
-            }
-
-            Dao::addFolder($parent, $name);
-
-            return $this->json(['success' => true]);
-        } catch (\Exception $e) {
-            return $this->json(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    /**
-     * @Route("/delete-folder")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function deleteFolderAction(Request $request): ?JsonResponse
-    {
-        $this->checkPermission(self::CONFIG_NAME);
-
-        $path = $request->get('path');
-
-        if (Dao::getFolderByPath($path)) {
-            Dao::deleteFolder($path);
-
-            return $this->json(['success' => true]);
-        } else {
-            return $this->json(['success' => false]);
-        }
-    }
-
-    /**
-     * @Route("/move")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function moveAction(Request $request): JsonResponse
-    {
-        $this->checkPermission(self::CONFIG_NAME);
-
-        $who = $request->get('who');
-        $to = $request->get('to');
-
-        Dao::moveConfiguration($who, $to);
-
-        return new JsonResponse();
-    }
-
-    /**
-     * @Route("/move-folder")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function moveFolderAction(Request $request): JsonResponse
-    {
-        $this->checkPermission(self::CONFIG_NAME);
-
-        $who = $request->get('who');
-        $to = $request->get('to');
-
-        Dao::moveFolder($who, $to);
-
-        return new JsonResponse();
-    }
-
-    /**
      * @Route("/add")
      *
      * @param Request $request
@@ -258,12 +160,16 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     {
         $this->checkPermission(self::CONFIG_NAME);
 
+        if ((new Configuration(null, null))->isWriteable() === false) {
+            throw new ConfigWriteException();
+        }
+
         try {
             $path = $request->get('path');
             $name = $request->get('name');
             $type = $request->get('type');
 
-            $config = Dao::getByName($name);
+            $config = Configuration::getByName($name);
 
             if ($config instanceof Configuration) {
                 throw new \Exception('Name already exists.');
@@ -294,15 +200,18 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         try {
             $name = $request->get('name');
 
-            $config = Dao::getByName($name);
+            $config = Configuration::getByName($name);
             if ($config instanceof Configuration) {
                 throw new \Exception('Name already exists.');
             }
 
             $originalName = $request->get('originalName');
-            $originalConfig = Dao::getByName($originalName);
+            $originalConfig = Configuration::getByName($originalName);
             if (!$originalConfig) {
                 throw new \Exception('Configuration not found');
+            }
+            if ($originalConfig->isWriteable() === false) {
+                throw new ConfigWriteException();
             }
 
             $originalConfig->setName($name);
@@ -330,7 +239,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         $name = $request->get('name');
 
-        $configuration = Dao::getByName($name);
+        $configuration = Configuration::getByName($name);
         if (!$configuration) {
             throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
         }
@@ -434,7 +343,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 'configuration' => $config,
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
-                'modificationDate' => Dao::getConfigModificationDate()
+                'modificationDate' => $config['general']['modificationDate']
             ]
         );
     }
@@ -459,16 +368,16 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $dataDecoded = json_decode($data, true);
 
             $name = $dataDecoded['general']['name'];
-            $config = Dao::getByName($name);
-
+            $config = Configuration::getByName($name);
+            if ($config->isWriteable() === false) {
+                throw new ConfigWriteException();
+            }
             $configuration = $config->getConfiguration();
 
             $savedModificationDate = 0;
 
             if ($configuration && isset($configuration['general']['modificationDate'])) {
                 $savedModificationDate = $configuration['general']['modificationDate'];
-            } else {
-                Dao::getConfigModificationDate();
             }
 
             if ($modificationDate < $savedModificationDate) {
@@ -506,7 +415,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config->setConfiguration($dataDecoded);
             $config->save();
 
-            return $this->json(['success' => true, 'modificationDate' => Dao::getConfigModificationDate()]);
+            return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
         } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
