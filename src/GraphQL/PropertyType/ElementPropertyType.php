@@ -53,6 +53,9 @@ class ElementPropertyType extends UnionType
     /** @var TextType */
     protected $textType;
 
+    /** @var SelectType */
+    protected $selectType;
+
     /**
      * PropertyType constructor.
      *
@@ -77,10 +80,12 @@ class ElementPropertyType extends UnionType
 
         $this->checkboxType = $service->getPropertyTypeDefinition('property_checkbox');
         $this->textType = $service->getPropertyTypeDefinition('property_text');
+        $this->selectType = $service->getPropertyTypeDefinition('property_select');
 
         $supportedTypes = [
             $this->checkboxType,
             $this->textType,
+            $this->selectType
         ];
 
         if ($this->getGraphQlService()->querySchemaEnabled('asset')) {
@@ -130,6 +135,9 @@ class ElementPropertyType extends UnionType
                 }
                 case 'text': {
                     return $this->textType;
+                }
+                case 'select': {
+                    return $this->selectType;
                 }
                 case 'asset': {
                     $asset = $element->getData();
