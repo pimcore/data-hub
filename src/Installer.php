@@ -77,6 +77,7 @@ class Installer extends SettingsStoreAwareInstaller
             $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
             if ($check) {
                 $this->markInstalled();
+
                 return true;
             }
         }
