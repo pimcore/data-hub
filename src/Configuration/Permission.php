@@ -28,22 +28,22 @@ class Permission extends AbstractModel
     public $uid;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $uname;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $utype;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $configuration;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $type;
 
@@ -65,7 +65,7 @@ class Permission extends AbstractModel
     /**
      * @return int
      */
-    public function getUid(): int
+    public function getUid(): ?int
     {
         return $this->uid;
     }
@@ -81,7 +81,7 @@ class Permission extends AbstractModel
     /**
      * @return string
      */
-    public function getUname(): string
+    public function getUname(): ?string
     {
         return $this->uname;
     }
@@ -97,7 +97,7 @@ class Permission extends AbstractModel
     /**
      * @return string
      */
-    public function getUtype(): string
+    public function getUtype(): ?string
     {
         return $this->utype;
     }
@@ -113,7 +113,7 @@ class Permission extends AbstractModel
     /**
      * @return string
      */
-    public function getConfiguration(): string
+    public function getConfiguration(): ?string
     {
         return $this->configuration;
     }
@@ -129,7 +129,7 @@ class Permission extends AbstractModel
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
