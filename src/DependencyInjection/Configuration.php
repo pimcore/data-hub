@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -28,7 +29,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('pimcore_data_hub');
-        $treeBuilder->getRootNode()
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode
             ->children()
                 ->arrayNode('graphql')
                     ->children()
@@ -40,6 +42,21 @@ class Configuration implements ConfigurationInterface
             ->end()
         ->end();
 
+        $this->addConfigurationsNode($rootNode);
+
         return $treeBuilder;
+    }
+
+    /**
+     * @param ArrayNodeDefinition $rootNode
+     */
+    private function addConfigurationsNode(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('configurations')
+                    ->variablePrototype()->end()
+                ->end()
+            ->end();
     }
 }

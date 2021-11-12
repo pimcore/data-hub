@@ -89,6 +89,7 @@ pimcore.plugin.datahub.config = Class.create({
                 text: t("plugin_pimcore_datahub_configpanel_add"),
                 iconCls: "pimcore_icon_add",
                 handler: firstHandler,
+                disabled:  !pimcore.settings['data-hub-writeable'],
                 menu: menuItems
             });
 
@@ -161,12 +162,14 @@ pimcore.plugin.datahub.config = Class.create({
         menu.add(new Ext.menu.Item({
             text: t('delete'),
             iconCls: "pimcore_icon_delete",
+            disabled: !record.data['writeable'],
             handler: this.deleteConfiguration.bind(this, tree, record)
         }));
 
         menu.add(new Ext.menu.Item({
             text: t('clone'),
             iconCls: "pimcore_icon_clone",
+            disabled: !record.data['writeable'],
             handler: this.cloneConfiguration.bind(this, tree, record)
         }));
 

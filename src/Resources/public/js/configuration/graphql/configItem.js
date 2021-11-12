@@ -103,13 +103,16 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             }.bind(this)
         });
 
-        footer.add({
+        let saveButtonConfig = {
             text: t("save"),
             iconCls: "pimcore_icon_apply",
+            disabled: !this.data.general.writeable,
             handler: this.save.bind(this)
-        });
-
-
+        };
+        if(!this.data.general.writeable) {
+            saveButtonConfig.tooltip = t("config_not_writeable");
+        }
+        footer.add(saveButtonConfig);
     },
 
     tabactivated: function () {
@@ -548,25 +551,25 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     save: function () {
-        var saveData = this.getSaveData();
+            var saveData = this.getSaveData();
 
-        Ext.Ajax.request({
-            url: this.saveUrl,
-            params: {
-                data: saveData,
-                modificationDate: this.modificationDate
-            },
-            method: "post",
-            success: function (response) {
-                var rdata = Ext.decode(response.responseText);
-                if (rdata && rdata.success) {
-                    this.modificationDate = rdata.modificationDate;
-                    this.saveOnComplete();
-                } else {
-                    pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
-                }
-            }.bind(this)
-        });
+            Ext.Ajax.request({
+                url: this.saveUrl,
+                params: {
+                    data: saveData,
+                    modificationDate: this.modificationDate
+                },
+                method: "post",
+                success: function (response) {
+                    var rdata = Ext.decode(response.responseText);
+                    if (rdata && rdata.success) {
+                        this.modificationDate = rdata.modificationDate;
+                        this.saveOnComplete();
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
+                    }
+                }.bind(this)
+            });
     },
 
     saveOnComplete: function () {

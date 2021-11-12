@@ -8,3 +8,7 @@ services:
     Pimcore\Bundle\DataHubBundle\EventListener\DataChangeListener:
         tags:
             - { name: kernel.event_subscriber }
+
+    Pimcore\Bundle\DataHubBundle\EventListener\AdminListener:
+        tags:
+            - { name: kernel.event_listener, event: pimcore.admin.indexAction.settings, method: addIndexSettings }

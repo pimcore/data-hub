@@ -1152,6 +1152,9 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.propertytype, id: property_text }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\SelectType:
+    tags:
+        - { name: pimcore.datahub.graphql.propertytype, id: property_select }
 
   # element tags 
 

@@ -16,34 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
+use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20210305134111;
 use Pimcore\Db;
-use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
+use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Logger;
+use Pimcore\Model\Tool\SettingsStore;
 
-class Installer extends AbstractInstaller
+class Installer extends SettingsStoreAwareInstaller
 {
     public function needsReloadAfterInstall(): bool
     {
         return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canBeInstalled(): bool
-    {
-        return !$this->isInstalled();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInstalled(): bool
-    {
-        $db = Db::get();
-        $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
-
-        return (bool)$check;
     }
 
     /**
@@ -79,6 +62,31 @@ class Installer extends AbstractInstaller
             Logger::warn($e);
         }
 
+        parent::install();
+
         return true;
+    }
+
+    public function isInstalled()
+    {
+        // When switching to SettingsStoreAwareInstaller, we need to explicitly mark this bundle installed, if Settingstore entry doesn't exists and datahub permission is installed
+        // e.g. updating from 1.0.* to 1.1.*
+        $installEntry = SettingsStore::get($this->getSettingsStoreInstallationId(), 'pimcore');
+        if (!$installEntry) {
+            $db = Db::get();
+            $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
+            if ($check) {
+                $this->markInstalled();
+
+                return true;
+            }
+        }
+
+        return parent::isInstalled();
+    }
+
+    public function getLastMigrationVersionClassName(): ?string
+    {
+        return Version20210305134111::class;
     }
 }
