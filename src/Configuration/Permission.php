@@ -23,7 +23,7 @@ use Pimcore\Model\AbstractModel;
 class Permission extends AbstractModel
 {
     /**
-     * @var int
+     * @var int|null
      */
     public $uid;
 
