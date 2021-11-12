@@ -523,12 +523,17 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     createPermissionsGrid: function (type) {
         let fields = ['id', 'read', 'update', 'delete'];
 
+        let permissions = [];
+        if (this.data.permissions && this.data.permissions[type]) {
+            permissions = this.data.permissions[type];
+        }
+
         this[type + "PermissionsStore"] = Ext.create('Ext.data.Store', {
             reader: {
                 type: 'memory'
             },
             fields: fields,
-            data: this.data.permissions[type]
+            data: permissions
         });
 
         let columns = [
