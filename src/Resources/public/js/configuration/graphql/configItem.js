@@ -654,15 +654,22 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         saveData["workspaces"]["asset"] = this.assetWorkspace.getValues();
         saveData["workspaces"]["document"] = this.documentWorkspace.getValues();
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
-        if (this.userPermissionsStore) {
-            saveData["permissions"] = {};
-            saveData["permissions"]["user"] = this.getPermissionsData("user");
-            saveData["permissions"]["role"] = this.getPermissionsData("role");
-        } else {
-            saveData["permissions"] = this.data.permissions;
-        }
+        saveData["permissions"] = this.getPermissionsSaveData();
 
         return Ext.encode(saveData);
+    },
+
+
+    getPermissionsSaveData: function () {
+        if (this.userPermissionsStore) {
+            let data = {};
+            data["user"] = this.getPermissionsData("user");
+            data["role"] = this.getPermissionsData("role");
+
+            return data;
+        }
+
+        return this.data.permissions;
     },
 
     getSchemaData: function (type) {
