@@ -168,7 +168,7 @@ pimcore.plugin.datahub.config = Class.create({
         menu.add(new Ext.menu.Item({
             text: t('clone'),
             iconCls: "pimcore_icon_clone",
-            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('update', record.data),
+            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('create', record.data),
             handler: this.cloneConfiguration.bind(this, tree, record)
         }));
 
