@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Helper;
@@ -38,7 +38,7 @@ class PermissionsHelper
         $db->delete(Permission\Dao::TABLE_NAME, ['configuration' => $config->getName()]);
 
         if (is_array($permissions)) {
-            foreach ($permissions as $userType =>  $userPermissions) {
+            foreach ($permissions as $userType => $userPermissions) {
                 foreach ($userPermissions as $userPermission) {
                     $user = User\AbstractUser::getById($userPermission['id']);
 
@@ -110,7 +110,7 @@ class PermissionsHelper
             return true;
         }
 
-        $configKey = "plugin_datahub_adapter_" . $configuration->getType();
+        $configKey = 'plugin_datahub_adapter_' . $configuration->getType();
         if ($user->isAllowed($configKey)) {
             return true;
         }

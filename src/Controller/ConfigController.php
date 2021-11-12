@@ -22,8 +22,8 @@ use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\User;
 use Pimcore\Model\Exception\ConfigWriteException;
+use Pimcore\Model\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -483,7 +483,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $type = $request->get('type', 'user');
 
         $list = new User\Listing();
-        if ($type === "role") {
+        if ($type === 'role') {
             $list = new User\Role\Listing();
         }
 

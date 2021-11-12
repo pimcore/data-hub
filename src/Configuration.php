@@ -18,8 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
 use Pimcore\Bundle\DataHubBundle\Helper\PermissionsHelper;
 use Pimcore\Model\AbstractModel;
-use Pimcore\Model\User;
-use Pimcore\Tool\Admin;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -253,7 +251,7 @@ class Configuration extends AbstractModel
      */
     public function save(): void
     {
-        if (!PermissionsHelper::isAllowed( $this, "update")) {
+        if (!PermissionsHelper::isAllowed($this, 'update')) {
             throw new \Exception('Permissions missing to save the configuration');
         }
 
@@ -313,7 +311,7 @@ class Configuration extends AbstractModel
      */
     public function delete(): void
     {
-        if (!PermissionsHelper::isAllowed($this, "delete")) {
+        if (!PermissionsHelper::isAllowed($this, 'delete')) {
             throw new \Exception('Permissions missing to delete the configuration');
         }
 
