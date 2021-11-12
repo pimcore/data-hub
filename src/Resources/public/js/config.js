@@ -88,9 +88,8 @@ pimcore.plugin.datahub.config = Class.create({
                 text: t("plugin_pimcore_datahub_configpanel_add"),
                 iconCls: "pimcore_icon_add",
                 handler: firstHandler,
-                disabled:  !pimcore.settings['data-hub-writeable'],
+                disabled:  !pimcore.settings['data-hub-writeable'] || !firstHandler,
                 menu: menuItems,
-                hidden: !firstHandler
             });
 
 
