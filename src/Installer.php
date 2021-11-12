@@ -76,7 +76,7 @@ class Installer extends SettingsStoreAwareInstaller
             $db = Db::get();
             $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
             if ($check) {
-                $this->markInstalled();
+                SettingsStore::set('BUNDLE_INSTALLED__Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle', true, 'bool', 'pimcore');
 
                 return true;
             }
