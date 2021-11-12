@@ -16,7 +16,10 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
+use Pimcore\Bundle\DataHubBundle\Helper\PermissionsHelper;
 use Pimcore\Model\AbstractModel;
+use Pimcore\Model\User;
+use Pimcore\Tool\Admin;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -250,6 +253,10 @@ class Configuration extends AbstractModel
      */
     public function save(): void
     {
+        if (!PermissionsHelper::isAllowed( $this, "update")) {
+            throw new \Exception('Permissions missing to save the configuration');
+        }
+
         $event = new GenericEvent($this);
         $event->setArgument('configuration', $this);
         \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_PRE_SAVE);
@@ -261,6 +268,11 @@ class Configuration extends AbstractModel
 
         if (!isset($this->configuration['workspaces'])) {
             $this->configuration['workspaces'] = [];
+        }
+
+        if (!isset($this->configuration['permissions'])) {
+            $this->configuration['permissions']['user'] = [];
+            $this->configuration['permissions']['role'] = [];
         }
 
         if (isset($this->configuration['general']['writeable'])) {
@@ -289,6 +301,7 @@ class Configuration extends AbstractModel
         $this->getDao()->save();
 
         WorkspaceHelper::saveWorkspaces($this, $this->configuration['workspaces']);
+        PermissionsHelper::savePermissions($this, $this->configuration['permissions']);
 
         $event = new GenericEvent($this);
         $event->setArgument('configuration', $this);
@@ -300,6 +313,10 @@ class Configuration extends AbstractModel
      */
     public function delete(): void
     {
+        if (!PermissionsHelper::isAllowed($this, "delete")) {
+            throw new \Exception('Permissions missing to delete the configuration');
+        }
+
         $this->getDao()->delete();
 
         $event = new GenericEvent($this);
@@ -417,6 +434,14 @@ class Configuration extends AbstractModel
     public function getSecurityConfig()
     {
         return $this->configuration['security'] ?? [];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermissionsConfig()
+    {
+        return $this->configuration['permissions'] ?? [];
     }
 
     public function __clone()

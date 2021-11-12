@@ -68,9 +68,8 @@ pimcore.plugin.datahub.config = Class.create({
 
             let firstHandler;
 
-            for (var key in pimcore.plugin.datahub.adapter) {
-                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) ) {
-
+            for (let key in pimcore.plugin.datahub.adapter) {
+                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) && pimcore.plugin.datahub.helper.isAllowed('create', {'adapter': key})) {
                     let adapter = new pimcore.plugin.datahub.adapter[key](this);
 
                     if (!firstHandler) {
@@ -90,7 +89,8 @@ pimcore.plugin.datahub.config = Class.create({
                 iconCls: "pimcore_icon_add",
                 handler: firstHandler,
                 disabled:  !pimcore.settings['data-hub-writeable'],
-                menu: menuItems
+                menu: menuItems,
+                hidden: !firstHandler
             });
 
 
@@ -162,14 +162,14 @@ pimcore.plugin.datahub.config = Class.create({
         menu.add(new Ext.menu.Item({
             text: t('delete'),
             iconCls: "pimcore_icon_delete",
-            disabled: !record.data['writeable'],
+            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('delete', record.data),
             handler: this.deleteConfiguration.bind(this, tree, record)
         }));
 
         menu.add(new Ext.menu.Item({
             text: t('clone'),
             iconCls: "pimcore_icon_clone",
-            disabled: !record.data['writeable'],
+            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('update', record.data),
             handler: this.cloneConfiguration.bind(this, tree, record)
         }));
 

@@ -52,7 +52,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     getItems: function() {
-        return [this.getGeneral(), this.getSchema(), this.getSecurity()];
+        return [this.getGeneral(), this.getSchema(), this.getSecurity(), this.getPermissions()];
     },
 
     openExplorer: function (callbackFn) {
@@ -106,7 +106,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         let saveButtonConfig = {
             text: t("save"),
             iconCls: "pimcore_icon_apply",
-            disabled: !this.data.general.writeable,
+            disabled: !this.data.general.writeable || !pimcore.plugin.datahub.helper.isAllowed("update", this.data),
             handler: this.save.bind(this)
         };
         if(!this.data.general.writeable) {
@@ -520,6 +520,123 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         });
     },
 
+    createPermissionsGrid: function (type) {
+        let fields = ['id', 'read', 'update', 'delete'];
+
+        this[type + "PermissionsStore"] = Ext.create('Ext.data.Store', {
+            reader: {
+                type: 'memory'
+            },
+            fields: fields,
+            data: this.data.permissions[type]
+        });
+
+        let columns = [
+            {
+                dataIndex: 'id',
+                hidden: true
+            },
+            {
+                sortable: true,
+                dataIndex: 'name',
+                editable: false,
+                filter: 'string',
+                flex: 1
+            }
+        ];
+
+        let additionalColumns = ["read", "update", "delete"];
+
+        for (let i = 0; i < additionalColumns.length; i++) {
+            let checkColumn = Ext.create('Ext.grid.column.Check', {
+                text: t(additionalColumns[i]),
+                dataIndex: additionalColumns[i],
+                operationIndex: additionalColumns[i],
+            });
+            columns.push(checkColumn);
+        }
+
+        columns.push({
+            xtype: 'actioncolumn',
+            menuText: t('delete'),
+            width: 30,
+            items: [{
+                tooltip: t('delete'),
+                icon: "/bundles/pimcoreadmin/img/flat-color-icons/delete.svg",
+                handler: function (grid, rowIndex) {
+                    grid.getStore().removeAt(rowIndex);
+                }.bind(this)
+            }
+            ]
+        });
+
+        let permissionsToolbar = Ext.create('Ext.Toolbar', {
+            cls: 'main-toolbar',
+            items: [
+                {
+                    text: t('add'),
+                    handler: this.showPermissionDialog.bind(this, type),
+                    iconCls: "pimcore_icon_add"
+                }
+            ]
+        });
+
+        this[type + "PermissionsGrid"] = Ext.create('Ext.grid.Panel', {
+            frame: false,
+            bodyCls: "pimcore_editable_grid",
+            autoScroll: true,
+            store: this[type + "PermissionsStore"],
+            columnLines: true,
+            stripeRows: true,
+            columns: {
+                items: columns
+            },
+            trackMouseOver: true,
+            tbar: permissionsToolbar,
+            viewConfig: {
+                forceFit: true,
+                enableTextSelection: true
+            }
+        });
+    },
+
+    getPermissions: function () {
+        if (!pimcore.plugin.datahub.helper.isAllowed("create", this.data)) {
+            return;
+        }
+
+        this.createPermissionsGrid("user");
+        this.createPermissionsGrid("role");
+
+        this.permissionsForm = new Ext.form.FormPanel({
+            bodyStyle: "padding:10px;",
+            autoScroll: true,
+            defaults: {
+                labelWidth: 200,
+                width: 800
+            },
+            border: false,
+            title: t("plugin_pimcore_datahub_configpanel_permissions"),
+            items: [
+                {
+                    xtype: 'fieldset',
+                    title: t('plugin_pimcore_datahub_graphql_permissions_roles'),
+                    items: [
+                        this.rolePermissionsGrid
+                    ]
+                }, {
+                    xtype: 'fieldset',
+                    title: t('plugin_pimcore_datahub_graphql_permissions_users'),
+                    items: [
+                        this.userPermissionsGrid
+                    ]
+                }
+            ]
+        });
+
+        return this.permissionsForm;
+    },
+
     getSaveData: function () {
         var saveData = {};
         saveData["general"] = this.generalForm.getForm().getFieldValues(false, false);
@@ -532,6 +649,14 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         saveData["workspaces"]["asset"] = this.assetWorkspace.getValues();
         saveData["workspaces"]["document"] = this.documentWorkspace.getValues();
         saveData["workspaces"]["object"] = this.objectWorkspace.getValues();
+        if (this.userPermissionsStore) {
+            saveData["permissions"] = {};
+            saveData["permissions"]["user"] = this.getPermissionsData("user");
+            saveData["permissions"]["role"] = this.getPermissionsData("role");
+        } else {
+            saveData["permissions"] = this.data.permissions;
+        }
+
         return Ext.encode(saveData);
     },
 
@@ -539,6 +664,21 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         var tmData = [];
 
         var store = this[type + "SchemaStore"];
+        var data = store.queryBy(function (record, id) {
+            return true;
+        });
+
+        for (var i = 0; i < data.items.length; i++) {
+            tmData.push(data.items[i].data);
+        }
+
+        return tmData;
+    },
+
+    getPermissionsData: function (type) {
+        var tmData = [];
+
+        var store = this[type + "PermissionsStore"];
         var data = store.queryBy(function (record, id) {
             return true;
         });
@@ -664,6 +804,89 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.entitySelectionDialog.show();
     },
 
+    showPermissionDialog: function (type) {
+        let store = this[type + "PermissionsStore"];
+        this.permissionDialog = new Ext.Window({
+            autoHeight: true,
+            title: t('plugin_pimcore_datahub_operator_select_' + type),
+            closeAction: 'close',
+            width: 500,
+            modal: true
+        });
+
+        let permissionStore = new Ext.data.JsonStore({
+            proxy: {
+                url: '/admin/pimcoredatahub/config/permissions-users',
+                extraParams: {
+                    type: type,
+                },
+                type: 'ajax',
+                reader: {
+                    type: 'json',
+                    idProperty: 'id',
+                }
+            },
+            fields: ['id', 'text'],
+            autoDestroy: true,
+            autoLoad: true,
+            sortInfo: {field: 'id', direction: "ASC"}
+        });
+
+        let permissionCombo = new Ext.form.field.Tag({
+            fieldLabel: t("plugin_pimcore_datahub_configpanel_" + type),
+            store: permissionStore,
+            triggerAction: 'all',
+            editable: true,
+            width: 450,
+            queryMode: 'local',
+            filterPickList: true,
+            valueField: "id",
+            displayField: "text"
+        });
+
+        let form = new Ext.form.FormPanel({
+            bodyStyle: 'padding: 10px;',
+            items: [permissionCombo],
+            bbar: [
+                "->",
+                {
+                    xtype: "button",
+                    text: t("OK"),
+                    iconCls: "pimcore_icon_bool",
+                    handler: function () {
+                        var userIds = permissionCombo.getValue();
+                        Ext.each(userIds, function (userId) {
+                            var record = store.getById(userId);
+                            var selected = permissionStore.getById(userId);
+                            if (!record) {
+                                let newUser = {
+                                    id: selected.get('id'),
+                                    name: selected.get('text')
+                                };
+                                let addedRecord = store.addSorted(newUser);
+                                addedRecord = addedRecord[0];
+                                this[type + "PermissionsGrid"].getSelectionModel().select([addedRecord]);
+                            }
+                        }.bind(this));
+
+                        this.permissionDialog.close();
+
+                    }.bind(this)
+                },
+                {
+                    xtype: "button",
+                    text: t("cancel"),
+                    iconCls: "pimcore_icon_cancel",
+                    handler: function () {
+                        this.permissionDialog.close();
+                    }.bind(this)
+                }]
+        });
+
+        this.permissionDialog.add(form);
+        this.permissionDialog.show();
+    },
+
     _confirmDirtyClose: function () {
         Ext.MessageBox.confirm(
             t("element_has_unsaved_changes"),
@@ -677,6 +900,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 }
             }.bind(this)
         );
-    },
+    }
 
 });

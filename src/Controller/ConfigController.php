@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\User;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -55,7 +56,8 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             'expandable' => false,
             'leaf' => true,
             'adapter' => $type,
-            'writeable' => $configuration->isWriteable()
+            'writeable' => $configuration->isWriteable(),
+            'permissions' => $configuration->getPermissionsConfig()
         ];
     }
 
@@ -93,7 +95,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                         'allowChildren' => true,
                         'iconCls' => 'pimcore_icon_folder',
                         'group' => $item->getGroup(),
-                        'children' => [],
+                        'children' => []
                     ];
                 }
                 $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
@@ -467,5 +469,39 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         return $this->adminJson($thumbnails);
+    }
+
+    /**
+     * @Route("/permissions-users", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getPermissionUsersAction(Request $request)
+    {
+        $type = $request->get('type', 'user');
+
+        $list = new User\Listing();
+        if ($type === "role") {
+            $list = new User\Role\Listing();
+        }
+
+        $list->setCondition('type = ? AND id != 1', [$type]);
+        $list->setOrder('ASC');
+        $list->setOrderKey('name');
+
+        $users = [];
+        foreach ($list->getItems() as $user) {
+            if ($user->getId() && $user->getName() != 'system') {
+                $users[] = [
+                    'id' => $user->getId(),
+                    'text' => $user->getName(),
+                    'elementType' => 'user',
+                ];
+            }
+        }
+
+        return $this->adminJson($users);
     }
 }

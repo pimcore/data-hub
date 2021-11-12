@@ -70,6 +70,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     {
         return [
             '/bundles/pimcoredatahub/js/datahub.js',
+            '/bundles/pimcoredatahub/js/helper.js',
             '/bundles/pimcoredatahub/js/config.js',
             '/bundles/pimcoredatahub/js/adapter/graphql.js',
             '/bundles/pimcoredatahub/js/configuration/graphql/configItem.js',
@@ -77,7 +78,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/Abstract.js',
             '/bundles/pimcoredatahub/js/mutationvalue/DefaultValue.js',
             '/bundles/pimcoredatahub/js/queryvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/Abstract.js',
             '/bundles/pimcoredatahub/js/queryoperator/Alias.js',
             '/bundles/pimcoredatahub/js/queryoperator/Concatenator.js',
             '/bundles/pimcoredatahub/js/queryoperator/DateFormatter.js',

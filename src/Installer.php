@@ -24,6 +24,8 @@ use Pimcore\Model\Tool\SettingsStore;
 
 class Installer extends SettingsStoreAwareInstaller
 {
+    const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
+
     public function needsReloadAfterInstall(): bool
     {
         return true;
@@ -36,6 +38,7 @@ class Installer extends SettingsStoreAwareInstaller
     {
         // create backend permission
         \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
+        \Pimcore\Model\User\Permission\Definition::create(self::DATAHUB_ADAPTER_PERMISSION);
 
         try {
             $types = ['document', 'asset', 'object'];
@@ -58,6 +61,22 @@ class Installer extends SettingsStoreAwareInstaller
                     ;
                 ");
             }
+
+            $db->query(
+            "CREATE TABLE IF NOT EXISTS `plugin_datahub_permissions` (
+                `uid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+                `uname` VARCHAR(765) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `utype` ENUM('user','role') NOT NULL DEFAULT 'user',
+                `configuration` VARCHAR(50) NOT NULL DEFAULT '0',
+                `type` VARCHAR(50) NOT NULL DEFAULT '0',
+                `read` TINYINT(1) UNSIGNED NULL DEFAULT '0',
+                `update` TINYINT(1) UNSIGNED NULL DEFAULT '0',
+                `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',
+                PRIMARY KEY (`uid`, `configuration`)
+                )
+            COLLATE='utf8mb4_general_ci'
+            ENGINE=InnoDB
+            ;");
         } catch (\Exception $e) {
             Logger::warn($e);
         }
