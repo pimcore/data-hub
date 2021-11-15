@@ -48,7 +48,7 @@ pimcore.plugin.datahub.adapter.graphql = Class.create({
             return;
         }
         else {
-            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), t("plugin_pimcore_datahub_configpanel_invalid_name"));
+            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), value.length <= 80 ? t("plugin_pimcore_datahub_configpanel_invalid_name") : t("plugin_pimcore_datahub_configpanel_invalid_length"));
         }
     },
 
@@ -110,7 +110,7 @@ pimcore.plugin.datahub.adapter.graphql = Class.create({
             return;
         }
         else {
-            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), t("plugin_pimcore_datahub_configpanel_invalid_name"));
+            Ext.Msg.alert(t("plugin_pimcore_datahub_configpanel"), value.length <= 80 ? t("plugin_pimcore_datahub_configpanel_invalid_name") : t("plugin_pimcore_datahub_configpanel_invalid_length"));
         }
     },
 
