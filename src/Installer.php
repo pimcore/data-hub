@@ -67,24 +67,6 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    public function isInstalled()
-    {
-        // When switching to SettingsStoreAwareInstaller, we need to explicitly mark this bundle installed, if Settingstore entry doesn't exists and datahub permission is installed
-        // e.g. updating from 1.0.* to 1.1.*
-        $installEntry = SettingsStore::get($this->getSettingsStoreInstallationId(), 'pimcore');
-        if (!$installEntry) {
-            $db = Db::get();
-            $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
-            if ($check) {
-                SettingsStore::set('BUNDLE_INSTALLED__Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle', true, 'bool', 'pimcore');
-
-                return true;
-            }
-        }
-
-        return parent::isInstalled();
-    }
-
     public function getLastMigrationVersionClassName(): ?string
     {
         return Version20210305134111::class;
