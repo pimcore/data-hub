@@ -23,7 +23,7 @@ pimcore.plugin.datahub.adapter.graphql = Class.create({
     },
 
     addConfigurationComplete: function (type, button, value, object) {
-        var regresult = value.match(/[a-zA-Z0-9_\-]+/);
+        var regresult = value.match(/[a-zA-Z0-9_]+/);
         if (button == "ok" && value.length > 2 && regresult == value) {
             Ext.Ajax.request({
                 url: "/admin/pimcoredatahub/config/add",
