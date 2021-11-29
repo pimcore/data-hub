@@ -46,7 +46,7 @@ class Installer extends SettingsStoreAwareInstaller
                     CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_' . $type . "` (
                         `cid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
                         `cpath` VARCHAR(765) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-                        `configuration` VARCHAR(50) NOT NULL DEFAULT '0',
+                        `configuration` VARCHAR(80) NOT NULL DEFAULT '0',
                         `create` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         `read` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         `update` TINYINT(1) UNSIGNED NULL DEFAULT '0',

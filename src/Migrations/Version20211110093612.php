@@ -26,6 +26,8 @@ class Version20211110093612 extends AbstractPimcoreMigration
     public function up(Schema $schema)
     {
         $this->addSql('ALTER TABLE `plugin_datahub_workspaces_document` MODIFY `configuration` VARCHAR(80);');
+        $this->addSql('ALTER TABLE `plugin_datahub_workspaces_asset` MODIFY `configuration` VARCHAR(80);');
+        $this->addSql('ALTER TABLE `plugin_datahub_workspaces_object` MODIFY `configuration` VARCHAR(80);');
     }
 
     /**
@@ -35,5 +37,7 @@ class Version20211110093612 extends AbstractPimcoreMigration
     {
         // not needed
         $this->addSql('ALTER TABLE `plugin_datahub_workspaces_document` MODIFY `configuration` VARCHAR(80);');
+        $this->addSql('ALTER TABLE `plugin_datahub_workspaces_asset` MODIFY `configuration` VARCHAR(80);');
+        $this->addSql('ALTER TABLE `plugin_datahub_workspaces_object` MODIFY `configuration` VARCHAR(80);');
     }
 }
