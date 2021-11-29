@@ -55,6 +55,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('configurations')
+                    ->normalizeKeys(false)
                     ->variablePrototype()->end()
                 ->end()
             ->end();
