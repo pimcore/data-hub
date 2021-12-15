@@ -63,7 +63,7 @@ class Permission extends AbstractModel
     public $delete = false;
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getUid(): ?int
     {
@@ -79,7 +79,7 @@ class Permission extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUname(): ?string
     {
@@ -95,7 +95,7 @@ class Permission extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUtype(): ?string
     {
@@ -111,7 +111,7 @@ class Permission extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getConfiguration(): ?string
     {
@@ -127,7 +127,7 @@ class Permission extends AbstractModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getType(): ?string
     {
