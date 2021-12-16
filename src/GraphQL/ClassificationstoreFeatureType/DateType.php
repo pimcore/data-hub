@@ -24,12 +24,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
 class DateType extends ObjectType
 {
+    /** @var static|null */
     protected static $instance;
 
     /**
-     * @param string $name
-     *
-     * @return DateType
+     * @return static
      */
     public static function getInstance()
     {

@@ -25,7 +25,6 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\DataObject\Fieldcollection;
-use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\Service;
 
 /**
@@ -48,17 +47,17 @@ class ImageGallery
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * ImageGallery constructor.
      *
-     * @param GraphQlService                              $graphQlService
-     * @param                                             $attribute
-     * @param ClassDefinition\Data\ImageGallery           $fieldDefinition
-     * @param ClassDefinition|Fieldcollection\Definition  $class
+     * @param GraphQlService $graphQlService
+     * @param string $attribute
+     * @param ClassDefinition\Data\ImageGallery $fieldDefinition
+     * @param ClassDefinition|Fieldcollection\Definition $class
      */
     public function __construct(
         GraphQlService $graphQlService,
@@ -73,12 +72,12 @@ class ImageGallery
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null Empty set return null
+     * @return ElementDescriptor[]|null
      *
      * @throws \Exception
      */
@@ -87,7 +86,6 @@ class ImageGallery
         $result = [];
         $relations = GraphQlService::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
-            /** @var $relation AbstractElement */
             foreach ($relations as $relation) {
                 if ($relation instanceof Hotspotimage) {
                     $image = $relation->getImage();

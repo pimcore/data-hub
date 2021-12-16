@@ -15,15 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class AssetBase extends Base
 {
     /**
-     * @param array $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      *
@@ -31,18 +32,23 @@ class AssetBase extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig($fieldDefinition, $class, $attribute,
-        [
-            'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $class, $container),
-            'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
-        ], $container);
+        return $this->enrichConfig(
+            $fieldDefinition,
+            $class,
+            $attribute,
+            [
+                'name' => $fieldDefinition->getName(),
+                'type' => $this->getFieldType($fieldDefinition, $class, $container),
+                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
+            ],
+            $container
+        );
     }
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      *
@@ -54,9 +60,9 @@ class AssetBase extends Base
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      *
      * @return \Closure
      */

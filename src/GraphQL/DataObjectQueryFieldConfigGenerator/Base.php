@@ -38,10 +38,10 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -54,11 +54,11 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
     }
 
     /**
-     * @param $fieldDefinition
-     * @param $class
-     * @param $attribute
-     * @param $grapQLConfig
-     * @param $container
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     * @param string $attribute
+     * @param array $grapQLConfig
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -82,10 +82,10 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
 
     /**
      * @param Data $fieldDefinition
-     * @param null|ClassDefinition  $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return Type
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

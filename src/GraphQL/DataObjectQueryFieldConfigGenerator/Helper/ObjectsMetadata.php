@@ -17,8 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 class ObjectsMetadata
@@ -26,29 +28,29 @@ class ObjectsMetadata
     use ServiceTrait;
 
     /**
-     * @var
+     * @var ClassDefinition\Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * ObjectsMetadata constructor.
      *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param Service $graphQlService
+     * @param string $attribute
+     * @param ClassDefinition\Data $fieldDefinition
+     * @param ClassDefinition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
@@ -57,7 +59,7 @@ class ObjectsMetadata
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -71,7 +73,7 @@ class ObjectsMetadata
         $result = [];
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
-            /** @var $relation ElementMetadata */
+            /** @var ElementMetadata $relation */
             foreach ($relations as $relation) {
                 $element = $relation->getElement();
                 if (!WorkspaceHelper::checkPermission($element, 'read')) {
@@ -83,7 +85,7 @@ class ObjectsMetadata
                 $this->getGraphQlService()->extractData($elementData, $element, $args, $context, $resolveInfo);
 
                 $elementData['__relation'] = $relation;
-                $elementData['__destId'] = $relation->getObject()->getId();
+                $elementData['__destId'] = $relation->getElement()?->getId();
                 $data['element'] = $elementData;
                 $data['metadata'] = microtime();
 

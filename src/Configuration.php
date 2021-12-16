@@ -23,6 +23,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * Class Configuration
  *
  * @method bool isWriteable()
+ * @method Configuration\Dao getDao()
  *
  * @package Pimcore\Bundle\DataHubBundle
  */
@@ -41,7 +42,7 @@ class Configuration extends AbstractModel
     public $path;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $name;
 
@@ -68,10 +69,10 @@ class Configuration extends AbstractModel
     /**
      * Configuration constructor.
      *
-     * @param $type
-     * @param $path
-     * @param null $name
-     * @param null $configuration
+     * @param string $type
+     * @param string $path
+     * @param string|null $name
+     * @param array|null $configuration
      */
     public function __construct($type, $path, $name = null, $configuration = null)
     {
@@ -174,7 +175,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      */
     public function setName($name): void
     {
@@ -318,7 +319,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return Configuration|null
      */
@@ -370,7 +371,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      *
      * @return mixed
      */
@@ -380,7 +381,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      *
      * @return mixed
      */
@@ -390,7 +391,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      *
      * @return mixed
      */
@@ -402,7 +403,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      *
      * @return mixed
      */

@@ -28,7 +28,7 @@ class Scheduledblock extends Base
      * Scheduledblock constructor.
      *
      * @param Service $graphQlService
-     * @param ScheduledblockDataType $areablockDataType
+     * @param ScheduledblockDataType $scheduledblockDataType
      */
     public function __construct(Service $graphQlService, ScheduledblockDataType $scheduledblockDataType)
     {

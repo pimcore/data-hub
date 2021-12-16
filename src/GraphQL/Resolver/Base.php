@@ -24,12 +24,16 @@ class Base
 {
     use ServiceTrait;
 
+    /** @var string */
     protected $typeName;
 
+    /** @var array */
     protected $attributes;
 
+    /** @var ClassDefinition */
     protected $class;
 
+    /** @var object */
     protected $container;
 
     /**
@@ -38,7 +42,7 @@ class Base
      * @param string $typeName
      * @param array $attributes
      * @param ClassDefinition $class
-     * @param $container
+     * @param object $container
      */
     public function __construct($typeName, $attributes, $class, $container)
     {

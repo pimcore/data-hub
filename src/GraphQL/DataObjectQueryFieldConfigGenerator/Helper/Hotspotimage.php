@@ -45,16 +45,16 @@ class Hotspotimage
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * Hotspotimage constructor.
      *
-     * @param Service                                    $graphQlService
-     * @param                                            $attribute
-     * @param ClassDefinition\Data\Hotspotimage          $fieldDefinition
+     * @param Service $graphQlService
+     * @param string $attribute
+     * @param ClassDefinition\Data\Hotspotimage $fieldDefinition
      * @param ClassDefinition|Fieldcollection\Definition $class
      */
     public function __construct(
@@ -70,19 +70,17 @@ class Hotspotimage
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null Empty set return null
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        $result = [];
-        /** @var $container Hotspotimage */
         $container = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($container instanceof \Pimcore\Model\DataObject\Data\Hotspotimage) {
             $image = $container->getImage();
@@ -100,6 +98,6 @@ class Hotspotimage
             }
         }
 
-        return !empty($result) ? $result : null;
+        return null;
     }
 }

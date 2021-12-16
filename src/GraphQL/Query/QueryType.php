@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\QueryTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType as QueryTypeResolver;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -89,9 +90,9 @@ class QueryType extends ObjectType
         if (isset($entities[$type . '_folder']['read']) && $entities[$type . '_folder']['read']) {
             $resolver = $this->getResolver();
 
-            if ($type == 'asset') {
+            if ($type === 'asset') {
                 $graphQlType = $this->getGraphQlService()->getAssetTypeDefinition('_' . $type . '_folder');
-            } elseif ($type == 'document') {
+            } elseif ($type === 'document') {
                 $graphQlType = $this->getGraphQlService()->getDocumentTypeDefinition('_' . $type . '_folder');
             } else {
                 $graphQlType = $this->getGraphQlService()->getDataObjectTypeDefinition('_' . $type . '_folder');
@@ -175,14 +176,14 @@ class QueryType extends ObjectType
     }
 
     /**
-     * @param null $class
-     * @param null $configuration
+     * @param ClassDefinition|null $class
+     * @param mixed $configuration
      *
-     * @return \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType
+     * @return QueryTypeResolver
      */
     protected function getResolver($class = null, $configuration = null)
     {
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
+        $resolver = new QueryTypeResolver($this->eventDispatcher, $class, $configuration, $this->omitPermissionCheck);
         $resolver->setGraphQlService($this->getGraphQlService());
 
         return $resolver;
@@ -302,7 +303,6 @@ class QueryType extends ObjectType
         }
 
         $listResolver = new AssetListing($this->getGraphQlService(), $this->eventDispatcher);
-        $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('asset', $this->getGraphQlService(), $configuration);
         $assetTree = $this->getGraphQlService()->buildGeneralType('asset_tree');
 
         $edgeType = new ObjectType(

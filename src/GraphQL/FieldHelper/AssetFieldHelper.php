@@ -27,7 +27,7 @@ class AssetFieldHelper extends AbstractFieldHelper
      * @param FieldNode $ast
      * @param array $data
      * @param Asset $container
-     * @param $args
+     * @param array $args
      * @param ResolveInfo|null $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
@@ -49,15 +49,17 @@ class AssetFieldHelper extends AbstractFieldHelper
         if (($astName == 'fullpath' || $astName == 'data') && $thumbnailArgument && ($container instanceof Image || $container instanceof Video)) {
             if ($ast->alias) {
                 // defer it
-                $data[$realName] = function ($source, $args, $context, ResolveInfo $info) use ($container, $thumbnailArgument, $realName
-                ) {
-                    if ($realName == 'fullpath') {
+                $data[$realName] = function ($source, $args, $context, ResolveInfo $info) use ($container, $realName) {
+                    if ($realName === 'fullpath') {
                         return $container->getThumbnail($args['thumbnail'], false);
-                    } elseif ($realName == 'data') {
+                    }
+                    if ($realName === 'data') {
                         $thumb = $container->getThumbnail($args['thumbnail'], false);
 
                         return stream_get_contents($thumb->getStream());
                     }
+
+                    return null;
                 };
             } else {
                 //TODO extract duplicate code

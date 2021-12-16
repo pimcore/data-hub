@@ -29,7 +29,6 @@ abstract class AbstractDocumentType extends ObjectType
      *
      * @param Service $graphQlService
      * @param array $config
-     * @param array $context
      */
     public function __construct(Service $graphQlService, $config = [])
     {

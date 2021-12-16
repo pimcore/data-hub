@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class BlockEntryType extends ObjectType implements ContainerAwareInterface
 {
     /**
-     * @var self
+     * @var static|null
      */
     protected static $instance;
 
@@ -41,21 +41,20 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     /** @var ClassDefinition */
     protected $class;
 
-    /** @var Data\Block */
+    /** @var Data */
     protected $fieldDefinition;
 
     /**
-     * @param Service   $graphQlService
-     * @param Data|null $fieldDefinition
-     * @param null      $class
-     * @param array     $config
+     * @param Service $graphQlService
+     * @param Data $fieldDefinition
+     * @param ClassDefinition|null $class
+     * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition, $class = null, $config = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);
-        $name = null;
 
         $this->build($config);
 
@@ -81,8 +80,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     {
         if ($this->class instanceof Definition) {
             $name = $this->class->getKey();
-        } elseif ($this->class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
-            $name = $this->class->getKey();
         } else {
             $name = $this->class->getName();
         }
@@ -98,7 +95,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
             if ($fieldDef instanceof ClassDefinition\Data\Localizedfields) {
                 $fcLocalizedFieldDefs = $fieldDef->getFieldDefinitions();
 
-                foreach ($fcLocalizedFieldDefs as $key => $localizedFieldDef) {
+                foreach ($fcLocalizedFieldDefs as $localizedFieldDef) {
                     if ($fieldHelper->supportsGraphQL($localizedFieldDef, 'query')) {
                         $fields[$localizedFieldDef->getName()] = $this->prepareField($localizedFieldDef, true);
                     }
@@ -124,7 +121,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         /** @var callable $resolve */
         $resolve = $hasResolve ? $field['resolve'] : null;
 
-        $field['resolve'] = function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($hasResolve, $resolve, $localized) {
+        $field['resolve'] = function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($hasResolve, $resolve) {
             if (!$resolveInfo) {
                 return null;
             }

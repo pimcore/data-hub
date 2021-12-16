@@ -16,14 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
-use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
+use Doctrine\Migrations\AbstractMigration;
 
-class Version20190904131554 extends AbstractPimcoreMigration
+class Version20190904131554 extends AbstractMigration
 {
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->addSql('        
                     CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_document` (
@@ -45,7 +45,7 @@ class Version20190904131554 extends AbstractPimcoreMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         // not needed
     }

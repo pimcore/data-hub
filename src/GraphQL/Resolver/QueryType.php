@@ -46,12 +46,12 @@ class QueryType
     private $eventDispatcher;
 
     /**
-     * @var null
+     * @var ClassDefinition|null
      */
     protected $class;
 
     /**
-     * @var null
+     * @var object
      */
     protected $configuration;
 
@@ -59,8 +59,8 @@ class QueryType
      * QueryType constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher
-     * @param ClassDefinition $class
-     * @param $configuration
+     * @param ClassDefinition|null $class
+     * @param object $configuration
      * @param bool $omitPermissionCheck
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, $class = null, $configuration = null, $omitPermissionCheck = false)
@@ -72,13 +72,13 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      * @param string|null $elementType
      *
-     * @return array
+     * @return array|null
      *
      * @throws ClientSafeException
      */
@@ -108,12 +108,12 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws ClientSafeException
      */
@@ -123,12 +123,12 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws ClientSafeException
      */
@@ -138,12 +138,12 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws ClientSafeException
      */
@@ -155,12 +155,12 @@ class QueryType
     /**
      * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      *
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws ClientSafeException
      */
@@ -196,12 +196,12 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws ClientSafeException
      */
@@ -229,12 +229,12 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor
      *
      * @throws ClientSafeException
      */
@@ -266,7 +266,7 @@ class QueryType
             $conditionParts[] = '(concat(o_path, o_key) =' . Db::get()->quote($fullpath) . ')';
         }
 
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $sqlGetCondition = $configuration->getSqlObjectCondition();
 
@@ -303,14 +303,14 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return mixed
+     * @return array
      */
-    public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdge($value, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $object = $value['node'];
 
@@ -324,14 +324,14 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param array $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return mixed
+     * @return array
      */
-    public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdges($value, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $objectList = $value['edges']();
         $nodes = [];
@@ -341,8 +341,6 @@ class QueryType
                 continue;
             }
 
-            $data = [];
-            $data['id'] = $object->getId();
             $nodes[] = [
                 'cursor' => 'object-' . $object->getId(),
                 'node' => $object,
@@ -353,7 +351,7 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -368,7 +366,6 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $db = Db::get();
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
@@ -419,7 +416,7 @@ class QueryType
             $objectList->setUnpublished(true);
         }
 
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $sqlListCondition = $configuration->getSqlObjectCondition();
 
@@ -462,10 +459,8 @@ class QueryType
             $conditionParts[] = $filterCondition;
         }
 
-        if ($conditionParts) {
-            $condition = implode(' AND ', $conditionParts);
-            $objectList->setCondition($condition);
-        }
+        $condition = implode(' AND ', $conditionParts);
+        $objectList->setCondition($condition);
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
 
@@ -486,7 +481,7 @@ class QueryType
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo

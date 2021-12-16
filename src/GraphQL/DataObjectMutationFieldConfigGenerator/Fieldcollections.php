@@ -17,8 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
-use Pimcore\Model\Asset\MetaData\ClassDefinition\Data\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Localizedfields;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
@@ -42,7 +40,7 @@ class Fieldcollections extends Base
 
             $allowedFcTypes = [];
             foreach ($list as $fcDef) {
-                $allowedFcTypes[] = $fcDef->getName();
+                $allowedFcTypes[] = $fcDef->getKey();
             }
         }
 
@@ -105,18 +103,15 @@ class Fieldcollections extends Base
     }
 
     /**
-     * @param $inputFields
-     * @param $processors
+     * @param array $inputFields
+     * @param array $processors
      * @param Definition $fcDef
      */
     public function generateInputFieldsAndProcessors(&$inputFields, &$processors, Definition $fcDef)
     {
         $fcFieldDefinitions = $fcDef->getFieldDefinitions();
-
-        /** @var $fieldHelper DataObjectFieldHelper */
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
-        /** @var Data $fcFieldDef */
         foreach ($fcFieldDefinitions as $fcFieldDef) {
             if ($fcFieldDef instanceof Localizedfields) {
                 $localizedDefs = $fcFieldDef->getFieldDefinitions();

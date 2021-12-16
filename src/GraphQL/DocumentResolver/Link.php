@@ -16,7 +16,9 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service as GraphQLService;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
@@ -28,9 +30,9 @@ class Link
     /**
      * Link constructor.
      *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
+     * @param GraphQLService $graphQlService
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService)
+    public function __construct(GraphQLService $graphQlService)
     {
         $this->graphQlService = $graphQlService;
     }
@@ -41,7 +43,7 @@ class Link
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
@@ -51,7 +53,7 @@ class Link
         $document = Document::getById($documentId);
 
         if ($document instanceof Document\Link) {
-            $relation = $document->getObject();
+            $relation = $document->getElement();
             if ($relation) {
                 return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
             }
@@ -61,12 +63,12 @@ class Link
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */

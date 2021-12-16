@@ -24,12 +24,13 @@ use Pimcore\Model\Document\Editable\Relations;
 
 class RelationsType extends ObjectType
 {
+    /** @var static|null */
     protected static $instance;
 
     /**
      * @param Service $graphQlService
      *
-     * @return RelationType
+     * @return static
      *
      * @throws \Exception
      */

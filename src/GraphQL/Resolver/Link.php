@@ -23,12 +23,12 @@ class Link
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return string|null
      *
      * @throws \Exception
      */
@@ -42,12 +42,12 @@ class Link
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return string|null
      *
      * @throws \Exception
      */

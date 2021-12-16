@@ -26,7 +26,7 @@ class LocaleSwitcherOperator extends BaseOperator
     /**
      * LocaleSwitcherOperator constructor.
      *
-     * @param $nodeDef
+     * @param array $nodeDef
      */
     public function __construct($nodeDef)
     {
@@ -36,7 +36,7 @@ class LocaleSwitcherOperator extends BaseOperator
 
     /**
      * @param Concrete|AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info

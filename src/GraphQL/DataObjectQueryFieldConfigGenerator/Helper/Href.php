@@ -17,8 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\ElementInterface;
 
 class Href
@@ -26,29 +29,29 @@ class Href
     use ServiceTrait;
 
     /**
-     * @var
+     * @var Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * Href constructor.
      *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param Service $graphQlService
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->attribute = $attribute;
         $this->fieldDefinition = $fieldDefinition;
@@ -58,12 +61,12 @@ class Href
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
@@ -81,5 +84,7 @@ class Href
 
             return $data;
         }
+
+        return null;
     }
 }

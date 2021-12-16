@@ -22,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Block extends Base
 {
-    /** @var InputObjectType */
+    /** @var InputObjectType|null */
     public static $itemType;
 
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block */

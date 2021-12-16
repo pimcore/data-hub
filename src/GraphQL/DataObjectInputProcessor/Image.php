@@ -27,7 +27,7 @@ class Image extends Base
 {
     /**
      * @param Concrete|AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
@@ -46,7 +46,7 @@ class Image extends Base
             return null;
         }
 
-        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $attribute) {
+        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
             $image = null;
 
             if (isset($newValue['id'])) {

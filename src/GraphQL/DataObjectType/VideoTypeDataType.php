@@ -39,7 +39,7 @@ class VideoTypeDataType extends UnionType
     }
 
     /**
-     * @return mixed
+     * @return array
      *
      * @throws \Exception
      */
@@ -69,12 +69,8 @@ class VideoTypeDataType extends UnionType
     {
         if ($element instanceof ElementDescriptor) {
             return $this->assetType;
-        } else {
-            $descriptorType = $info->schema->getType('VideoDataDescriptor');
-
-            return $descriptorType;
         }
 
-        return null;
+        return $info->schema->getType('VideoDataDescriptor');
     }
 }

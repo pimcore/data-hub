@@ -49,7 +49,7 @@ class QuantityValue
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return string
+     * @return float|null
      *
      * @throws \Exception
      */
@@ -68,7 +68,7 @@ class QuantityValue
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return string
+     * @return string|null
      *
      * @throws \Exception
      */
@@ -86,7 +86,7 @@ class QuantityValue
                 $localService->setLocale($args['language']);
             }
 
-            $returnValue = (string)$value->__toString();
+            $returnValue = $value->__toString();
 
             if (isset($args['language'])) {
                 $localService->setLocale($currentLocale);

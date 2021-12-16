@@ -17,8 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 
 class MultihrefMetadata
@@ -26,29 +29,29 @@ class MultihrefMetadata
     use ServiceTrait;
 
     /**
-     * @var
+     * @var Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * MultihrefMetadata constructor.
      *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param Service $graphQlService
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
@@ -57,7 +60,7 @@ class MultihrefMetadata
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -71,7 +74,7 @@ class MultihrefMetadata
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
             $result = [];
-            /** @var $relation ElementMetadata */
+            /** @var ElementMetadata $relation */
             foreach ($relations as $relation) {
                 $element = $relation->getElement();
                 if (!WorkspaceHelper::checkPermission($element, 'read')) {

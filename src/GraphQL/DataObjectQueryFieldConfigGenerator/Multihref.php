@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
@@ -28,10 +29,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class Multihref extends Base implements TypeDefinitionInterface
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -49,8 +50,8 @@ class Multihref extends Base implements TypeDefinitionInterface
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */
@@ -60,9 +61,9 @@ class Multihref extends Base implements TypeDefinitionInterface
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      *
      * @return \Closure
      */

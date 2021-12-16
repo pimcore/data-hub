@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreLoadEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
 use Pimcore\Logger;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,10 +60,6 @@ class OutputCacheService
 
             if (isset($config['graphql']['output_cache_lifetime'])) {
                 $this->lifetime = intval($config['graphql']['output_cache_lifetime']);
-            }
-
-            if (isset($config['graphql']['output_cache_exclude_pattern'])) {
-                $this->exclude_pattern = $config['graphql']['output_cache_exclude_pattern'];
             }
         }
     }

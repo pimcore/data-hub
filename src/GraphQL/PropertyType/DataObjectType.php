@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
@@ -65,7 +64,7 @@ class DataObjectType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             if ($value instanceof MarkerHotspotItem) {
                                 $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
-                            } elseif ($value instanceof Property) {
+                            } else {
                                 $element = $value->getData();
                             }
 
@@ -74,7 +73,6 @@ class DataObjectType extends ObjectType
                                     return null;
                                 }
 
-                                /** @var $element AbstractObject */
                                 $data = new ElementDescriptor($element);
                                 $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 

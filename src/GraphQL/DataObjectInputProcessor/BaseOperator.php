@@ -24,7 +24,7 @@ class BaseOperator extends Base
     /**
      * Base constructor.
      *
-     * @param $nodeDef
+     * @param array $nodeDef
      */
     public function __construct($nodeDef)
     {
@@ -33,7 +33,7 @@ class BaseOperator extends Base
 
     /**
      * @param Concrete|AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info

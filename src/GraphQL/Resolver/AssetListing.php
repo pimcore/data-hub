@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Listing\AbstractListing;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -50,7 +51,7 @@ class AssetListing
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -63,7 +64,7 @@ class AssetListing
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -82,7 +83,7 @@ class AssetListing
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -138,7 +139,7 @@ class AssetListing
             }
         }
 
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 
         // check permissions
@@ -171,10 +172,8 @@ class AssetListing
             $conditionParts[] = $filterCondition;
         }
 
-        if ($conditionParts) {
-            $condition = implode(' AND ', $conditionParts);
-            $objectList->setCondition($condition);
-        }
+        $condition = implode(' AND ', $conditionParts);
+        $objectList->setCondition($condition);
 
         $event = new ListingEvent(
             $objectList,
@@ -208,7 +207,7 @@ class AssetListing
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -223,7 +222,7 @@ class AssetListing
     /**
      * @param array $elements
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
@@ -243,12 +242,12 @@ class AssetListing
     }
 
     /**
-     * @param Element $element
+     * @param ElementInterface $element
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */

@@ -25,7 +25,7 @@ class SimpleTextType extends ObjectType
     protected static $instance;
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return array
      */

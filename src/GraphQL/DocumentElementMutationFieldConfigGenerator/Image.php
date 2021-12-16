@@ -23,6 +23,9 @@ class Image extends Base
 {
     //TODO extend it with markers, hotspots etc.
 
+    /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image */
+    protected $processor;
+
     /**
      * Image constructor.
      *

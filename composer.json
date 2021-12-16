@@ -15,6 +15,7 @@
     ]
   },
   "require": {
+    "php": "^8.0",
     "pimcore/pimcore": "^10.2",
     "webonyx/graphql-php": "^14.6"
   },
@@ -26,6 +27,7 @@
     }
   },
   "require-dev": {
+    "phpstan/phpstan": "^1.2",
     "symfony/phpunit-bridge": "*"
   }
 }

@@ -15,15 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 interface DataObjectQueryFieldConfigGeneratorInterface
 {
     /**
-     * @param array $columnConfig
+     * @param string $columnConfig
      * @param Data $fieldDefinition
-     * @param $class
-     * @param $container
+     * @param ClassDefinition $class
+     * @param object $container
      *
      * @return mixed
      */
@@ -31,19 +32,19 @@ interface DataObjectQueryFieldConfigGeneratorInterface
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null);
 
     /**
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param string $attribute
+     * @param Data|null $fieldDefinition
+     * @param ClassDefinition|null $class
      *
-     * @return mixed
+     * @return \Closure
      */
     public function getResolver($attribute, $fieldDefinition, $class);
 }

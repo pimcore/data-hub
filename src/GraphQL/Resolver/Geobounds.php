@@ -17,18 +17,19 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\Data\GeoCoordinates;
 
 class Geobounds
 {
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
+     * @return GeoCoordinates|null
      *
      * @throws \Exception
      */
@@ -42,12 +43,12 @@ class Geobounds
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return \Pimcore\Model\DataObject\Data\GeoCoordinates
+     * @return GeoCoordinates|null
      *
      * @throws \Exception
      */

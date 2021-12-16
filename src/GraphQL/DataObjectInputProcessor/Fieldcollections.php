@@ -40,7 +40,7 @@ class Fieldcollections extends Base
 
     /**
      * @param Concrete|Fieldcollection\Data\AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
@@ -52,18 +52,15 @@ class Fieldcollections extends Base
         $attribute = $this->getAttribute();
         $getter = 'get' . ucfirst($attribute);
         $setter = 'set' . ucfirst($attribute);
-        /** @var Fieldcollection $currentCollection */
         $currentCollection = $object->$getter();
-        if ($currentCollection) {
-            $currentItems = $currentCollection->getItems() ?? [];
+        if ($currentCollection instanceof Fieldcollection) {
+            $currentItems = $currentCollection->getItems() ?: [];
         } else {
             $currentItems = [];
         }
 
         // auto increment on group level!
         $autoIdx = 0;
-
-        /** @var Fieldcollection\Data\AbstractData[] $newItems */
         $newItems = [];
 
         if (! ($newValue['replace'] ?? false)) {
@@ -72,7 +69,6 @@ class Fieldcollections extends Base
             }
         }
 
-        /** @var $itemGroups */
         $itemGroups = $newValue['items'];
         foreach ($itemGroups as $fcKey => $groupItems) {
             $typeProcessor = $this->processors[$fcKey] ?? [];

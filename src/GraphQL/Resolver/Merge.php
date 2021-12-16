@@ -24,18 +24,25 @@ class Merge
 {
     use ServiceTrait;
 
+    /** @var string|null */
     protected $typeName;
+
+    /** @var array|null */
     protected $attributes;
+
+    /** @var ClassDefinition|null */
     protected $class;
+
+    /** @var object|null */
     protected $container;
 
     /**
      * Merge constructor.
      *
-     * @param string $typeName
-     * @param array $attributes
-     * @param ClassDefinition $class
-     * @param $container
+     * @param string|null $typeName
+     * @param array|null $attributes
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      */
     public function __construct($typeName = null, $attributes = null, $class = null, $container = null)
     {
@@ -46,26 +53,26 @@ class Merge
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        /** @var $operatorImpl \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator */
+        /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator $operatorImpl */
         $operatorImpl = $this->getGraphQlService()->buildQueryOperator($this->typeName, $this->attributes);
 
         $element = AbstractObject::getById($value['id']);
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);
         if ($valueFromOperator) {
             return $valueFromOperator->value;
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

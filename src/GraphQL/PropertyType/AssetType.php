@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\Asset;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
@@ -65,10 +64,9 @@ class AssetType extends ObjectType
                     'type' => $assetType,
                     'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
-                            /** @var $element Asset */
                             if ($value instanceof MarkerHotspotItem) {
                                 $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());
-                            } elseif ($value instanceof Property) {
+                            } else {
                                 $element = $value->getData();
                             }
 

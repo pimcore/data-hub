@@ -18,15 +18,16 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointType;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Geopolygon extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -40,8 +41,8 @@ class Geopolygon extends Base
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $contain
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return ListOfType
      */

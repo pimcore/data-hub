@@ -28,8 +28,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 class ThumbnailHtml extends Base
 {
     /**
-     * @param $config
-     * @param null $container
+     * @param array $config
+     * @param object|null $container
      *
      * @return mixed
      */

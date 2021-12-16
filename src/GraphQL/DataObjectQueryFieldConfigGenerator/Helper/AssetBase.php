@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class AssetBase
@@ -32,12 +33,12 @@ class AssetBase
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
@@ -45,9 +46,9 @@ class AssetBase
      * AssetBase constructor.
      *
      * @param Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
      */
     public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
@@ -58,12 +59,12 @@ class AssetBase
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
@@ -90,8 +91,10 @@ class AssetBase
         return $data;
     }
 
-    /** Return the actual asset (AbstractElement)
-     * @param $asset
+    /**
+     * Return the actual asset (AbstractElement)
+     *
+     * @param mixed $asset
      *
      * @return mixed
      */

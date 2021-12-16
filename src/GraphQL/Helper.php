@@ -26,7 +26,7 @@ use Pimcore\Model\DataObject\Listing;
 class Helper
 {
     /**
-     * @param Listing $list
+     * @param Listing\Concrete $list
      * @param \stdClass $filter
      * @param array $columns
      * @param array $mappingTable
@@ -57,7 +57,7 @@ class Helper
 
     /**
      * @param string $defaultTable
-     * @param string $q
+     * @param string|array $q
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
@@ -157,6 +157,7 @@ class Helper
                             $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
+                        // TODO: Variable $fieldMappingTable and $key in isset() always exists and is not nullable.
                         if (isset($fieldMappingTable, $key)) {
                             if (is_null($value)) {
                                 $parts[] = '(' . $db->quoteIdentifier($key) . ' IS NULL)';

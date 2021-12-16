@@ -22,7 +22,7 @@ use GraphQL\Type\Definition\Type;
 class KeyValueType extends InputObjectType
 {
     /**
-     * @var self
+     * @var static|null
      */
     protected static $instance;
 

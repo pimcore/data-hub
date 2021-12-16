@@ -17,8 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Element\AbstractElement;
 
 class Multihref
@@ -26,29 +28,29 @@ class Multihref
     use ServiceTrait;
 
     /**
-     * @var
+     * @var ClassDefinition\Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
      * Multihref constructor.
      *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param Service $graphQlService
+     * @param string $attribute
+     * @param ClassDefinition\Data $fieldDefinition
+     * @param ClassDefinition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
@@ -57,12 +59,12 @@ class Multihref
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null
+     * @return ElementDescriptor[]|null
      *
      * @throws \Exception
      */
@@ -71,7 +73,7 @@ class Multihref
         $result = [];
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {
-            /** @var $relation AbstractElement */
+            /** @var AbstractElement $relation */
             foreach ($relations as $relation) {
                 if (!WorkspaceHelper::checkPermission($relation, 'read')) {
                     continue;

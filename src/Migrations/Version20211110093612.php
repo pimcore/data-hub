@@ -16,14 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
-use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
+use Doctrine\Migrations\AbstractMigration;
 
-class Version20211110093612 extends AbstractPimcoreMigration
+class Version20211110093612 extends AbstractMigration
 {
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE `plugin_datahub_workspaces_document` MODIFY `configuration` VARCHAR(80);');
         $this->addSql('ALTER TABLE `plugin_datahub_workspaces_asset` MODIFY `configuration` VARCHAR(80);');
@@ -33,7 +33,7 @@ class Version20211110093612 extends AbstractPimcoreMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         // not needed
         $this->addSql('ALTER TABLE `plugin_datahub_workspaces_document` MODIFY `configuration` VARCHAR(50);');

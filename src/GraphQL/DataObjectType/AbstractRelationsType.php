@@ -28,7 +28,7 @@ use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class AbstractRelationsType extends UnionType implements ContainerAwareInterface
+abstract class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -45,7 +45,7 @@ class AbstractRelationsType extends UnionType implements ContainerAwareInterface
      *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
-     * @param null $class
+     * @param ClassDefinition|Definition|null $class
      * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])

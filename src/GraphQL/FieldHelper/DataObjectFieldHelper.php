@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGeneratorInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\File;
 use Pimcore\Logger;
@@ -32,11 +31,11 @@ use Pimcore\Model\DataObject\Objectbrick\Definition;
 class DataObjectFieldHelper extends AbstractFieldHelper
 {
     /**
-     * @param $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition $class
-     * @param $container
+     * @param object|null $container
      *
-     * @return array|bool
+     * @return array|bool|null
      */
     public function getQueryFieldConfigFromConfig($nodeDef, $class, $container = null)
     {
@@ -121,9 +120,11 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param mixed $nodeDef
-     * @param $class
-     * @param $container
+     * @param string $mode
+     * @param array $nodeDef
+     * @param ClassDefinition $class
+     * @param object $container
+     * @param array $params
      *
      * @return mixed
      */
@@ -141,7 +142,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param string $key
-     * @param null $container
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -150,7 +151,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $fieldDefinition = null;
         $parts = explode('~', $key);
 
-        if (substr($key, 0, 1) == '~') {
+        if (substr($key, 0, 1) === '~') {
             // classification store ...
         } elseif (count($parts) > 1) {
             $brickType = $parts[0];
@@ -169,6 +170,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             if ($brickDescriptor) {
                 $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
                 if (!$fieldDefinition) {
+                    /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
                     $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
                     $container = $fieldDefinitionLocalizedFields;
                     $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
@@ -181,6 +183,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         if (!$fieldDefinition) {
+            /** @var Data\Localizedfields|null $container */
             $container = $class->getFieldDefinition('localizedfields');
             $lfDefs = $container;
             if ($lfDefs) {
@@ -214,10 +217,10 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $attribute
-     * @param Data|string $fieldDefinition
-     * @param $class
-     * @param $container
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     * @param object $container
      *
      * @return mixed
      */
@@ -233,7 +236,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param array $nodeDef
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      *
-     * @return Data
+     * @return array|false|null
      */
     public function getMutationFieldConfigFromConfig($nodeDef, $class)
     {
@@ -259,7 +262,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $key = $attributes['attribute'];
 
             // system columns which are not part of the common set (see PimcoreObjectType)
-            if ($attributes['dataType'] == 'system') {
+            if ($attributes['dataType'] === 'system') {
                 switch ($key) {
                     case 'key':
                         return [
@@ -282,7 +285,6 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                         return null;
                 }
             } else {
-                /** @var $fieldDefinition */
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
@@ -310,7 +312,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param array $nodeDef
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
-     * @param $container
+     * @param object $container
      *
      * @return mixed
      */
@@ -322,9 +324,9 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $nodeConf
-     * @param $class
-     * @param null $container
+     * @param array $nodeConf
+     * @param ClassDefinition $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -338,7 +340,6 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         } else {
             $key = $attributes['attribute'];
             $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);
-            /** @var DataObjectQueryFieldConfigGeneratorInterface $factory */
             $type = $this->getGraphQlService()->buildDataObjectDataQueryType($fieldDefinition, $class, $container);
         }
 
@@ -348,8 +349,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     /**
      * @param FieldNode $ast
      * @param array $data
-     * @param $container
-     * @param $args
+     * @param object $container
+     * @param array $args
      * @param ResolveInfo|null $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
@@ -376,6 +377,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         if ($containerDefinition) {
+            /** @var Data\Localizedfields|null $lfDefs */
             if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
                 if ($lfDefs->getFieldDefinition($astName)) {
                     $isLocalizedField = true;
@@ -399,8 +401,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param $container
-     * @param $astName
+     * @param object $container
+     * @param string $astName
      *
      * @return bool
      */
@@ -414,5 +416,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                 return true;
             }
         }
+
+        return false;
     }
 }

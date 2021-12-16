@@ -23,8 +23,6 @@ abstract class FolderType extends ObjectType
 {
     use ServiceTrait;
 
-    private static $instance;
-
     /**
      * FolderType constructor.
      *

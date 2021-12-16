@@ -23,7 +23,7 @@ class LocaleCollector extends Base
     /**
      * @param mixed $nodeDef
      * @param \Pimcore\Model\DataObject\ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
      * @param array $params
      *
      * @return mixed

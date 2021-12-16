@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator;
 
+use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -33,7 +34,7 @@ abstract class Base
     }
 
     /**
-     * @return \GraphQL\Type\Definition\StringType
+     * @return Type
      */
     abstract public function getFieldType();
 }

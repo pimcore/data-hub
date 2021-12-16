@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGene
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\OperatorTypeDefinitionInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 abstract class Base implements OperatorTypeDefinitionInterface
@@ -38,13 +39,13 @@ abstract class Base implements OperatorTypeDefinitionInterface
     }
 
     /**
-     * @param $typeName
-     * @param $nodeDef
-     * @param null $class
-     * @param null $container
+     * @param string $typeName
+     * @param array $nodeDef
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      * @param array $params
      *
-     * @return \GraphQL\Type\Definition\StringType
+     * @return Type
      */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])
     {
@@ -53,9 +54,10 @@ abstract class Base implements OperatorTypeDefinitionInterface
 
     /**
      * @param string $typeName
-     * @param mixed $attributes
-     * @param null $class
-     * @param null $container
+     * @param array $nodeDef
+     * @param ClassDefinition|null $class
+     * @param object|null $container
+     * @param array $params
      *
      * @return mixed
      */
@@ -80,8 +82,8 @@ abstract class Base implements OperatorTypeDefinitionInterface
     }
 
     /**
-     * @param $config
-     * @param $container
+     * @param array $config
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -98,9 +100,9 @@ abstract class Base implements OperatorTypeDefinitionInterface
     }
 
     /**
-     * @param $attributes
-     * @param null $class
-     * @param null $container
+     * @param array $attributes
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */

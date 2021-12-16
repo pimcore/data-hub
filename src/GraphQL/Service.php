@@ -48,7 +48,7 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
-use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
@@ -74,6 +74,11 @@ class Service
      * @var ContainerInterface
      */
     protected $documentElementQueryTypeGeneratorFactories;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $documentElementMutationGeneratorFactories;
 
     /**
      * @var ContainerInterface
@@ -241,11 +246,11 @@ class Service
     }
 
     /**
-     * @param $attribute
-     * @param $typeName
+     * @param string $attribute
+     * @param string $typeName
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition|null $class
-     * @param null $container
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -259,17 +264,16 @@ class Service
     }
 
     /**
-     * @param $nodeDef
-     * @param $typeName
+     * @param array $nodeDef
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
-     * @param null $container
+     * @param object|null $container
      *
      * @return mixed
      */
     public function buildDataObjectMutationDataConfig($nodeDef, $class = null, $container = null)
     {
-        /** @var DataObjectMutationFieldConfigGeneratorInterface $factory */
         $typeName = $nodeDef['attributes']['dataType'];
+        /** @var DataObjectMutationFieldConfigGeneratorInterface $factory */
         $factory = $this->dataObjectMutationTypeGeneratorFactories->get('typegenerator_dataobjectmutationdatatype_' . $typeName);
         $result = $factory->getGraphQlMutationFieldConfig($nodeDef, $class, $container);
 
@@ -277,13 +281,11 @@ class Service
     }
 
     /**
-     * @param $name
-     * @param $attribute
+     * @param string $attribute
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class
-     * @param null $container
      *
-     * @return mixed
+     * @return \Closure
      */
     public function buildDataObjectDataQueryResolver($attribute, Data $fieldDefinition = null, ClassDefinition $class = null)
     {
@@ -296,10 +298,9 @@ class Service
     }
 
     /**
-     * @param $name
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -314,7 +315,7 @@ class Service
     }
 
     /**
-     * @param $elementName
+     * @param string $elementName
      *
      * @return mixed
      */
@@ -327,7 +328,7 @@ class Service
     }
 
     /**
-     * @param $elementName
+     * @param string $elementName
      *
      * @return mixed
      */
@@ -340,7 +341,7 @@ class Service
     }
 
     /**
-     * @param $elementName
+     * @param string $elementName
      *
      * @return mixed
      */
@@ -353,7 +354,7 @@ class Service
     }
 
     /**
-     * @param $typeName
+     * @param string $typeName
      *
      * @return bool
      */
@@ -363,7 +364,7 @@ class Service
     }
 
     /**
-     * @param $typeName
+     * @param string $typeName
      *
      * @return bool
      */
@@ -373,11 +374,11 @@ class Service
     }
 
     /**
-     * @param $typeName
-     * @param $nodeDef
-     * @param Data|null $fieldDefinition
+     * @param string $typeName
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
+     * @param array $params
      *
      * @return mixed
      */
@@ -392,10 +393,10 @@ class Service
     }
 
     /**
-     * @param $typeName
-     * @param $nodeDef
+     * @param string $typeName
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
      * @param array $params
      *
      * @return mixed
@@ -416,11 +417,11 @@ class Service
     }
 
     /**
-     * @param $mode
-     * @param $typeName
-     * @param $nodeDef
+     * @param string $mode
+     * @param string $typeName
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
      * @param array $params
      *
      * @return mixed
@@ -436,7 +437,7 @@ class Service
     }
 
     /**
-     * @param $typeName
+     * @param string $typeName
      *
      * @return mixed
      *
@@ -451,7 +452,7 @@ class Service
     }
 
     /**
-     * @param $typeName
+     * @param string $typeName
      *
      * @return mixed
      *
@@ -466,11 +467,10 @@ class Service
     }
 
     /**
-     * @param $typeName
-     * @param $attributes
-     * @param Data|null $fieldDefinition
+     * @param string $typeName
+     * @param array|null $attributes
      * @param ClassDefinition|null $class
-     * @param null $container
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -487,7 +487,7 @@ class Service
     }
 
     /**
-     * @param $nodeConfig
+     * @param array $nodeConfig
      *
      * @return mixed|DefaultValue
      *
@@ -519,7 +519,7 @@ class Service
     }
 
     /**
-     * @param $supportedDocumentElementQueryDataTypes
+     * @param array $supportedDocumentElementQueryDataTypes
      */
     public function setSupportedDocumentElementQueryDataTypes($supportedDocumentElementQueryDataTypes)
     {
@@ -527,7 +527,7 @@ class Service
     }
 
     /**
-     * @param $supportedDocumentElementMutationDataTypes
+     * @param array $supportedDocumentElementMutationDataTypes
      */
     public function setSupportedDocumentElementMutationDataTypes($supportedDocumentElementMutationDataTypes)
     {
@@ -535,7 +535,7 @@ class Service
     }
 
     /**
-     * @param $supportedCsFeatureQueryDataTypes
+     * @param array $supportedCsFeatureQueryDataTypes
      */
     public function setSupportedCsFeatureQueryDataTypes($supportedCsFeatureQueryDataTypes)
     {
@@ -575,7 +575,7 @@ class Service
     }
 
     /**
-     * @param $supportedDataObjectQueryDataTypes
+     * @param array $supportedDataObjectQueryDataTypes
      */
     public function setSupportedDataObjectQueryDataTypes($supportedDataObjectQueryDataTypes)
     {
@@ -599,7 +599,7 @@ class Service
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return mixed
      */
@@ -680,7 +680,7 @@ class Service
     }
 
     /**
-     * @param $dataTypes
+     * @param array $dataTypes
      */
     public function registerDataObjectDataTypes($dataTypes)
     {
@@ -688,7 +688,7 @@ class Service
     }
 
     /**
-     * @param $dataTypes
+     * @param array $dataTypes
      */
     public function registerAssetDataTypes($dataTypes)
     {
@@ -696,7 +696,7 @@ class Service
     }
 
     /**
-     * @param $dataTypes
+     * @param array $dataTypes
      */
     public function registerDocumentDataTypes($dataTypes)
     {
@@ -704,7 +704,7 @@ class Service
     }
 
     /**
-     * @param $dataTypes
+     * @param array $dataTypes
      */
     public function registerPropertyDataTypes($dataTypes)
     {
@@ -712,7 +712,7 @@ class Service
     }
 
     /**
-     * @param $dataTypes
+     * @param array $dataTypes
      */
     public function registerClassificationStoreDataTypes($dataTypes)
     {
@@ -720,78 +720,78 @@ class Service
     }
 
     /**
-     * @param $typename
+     * @param string $typeName
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getAssetTypeDefinition($typename)
+    public function getAssetTypeDefinition($typeName)
     {
-        if (isset($this->assetDataTypes[$typename])) {
-            return $this->assetDataTypes[$typename];
+        if (isset($this->assetDataTypes[$typeName])) {
+            return $this->assetDataTypes[$typeName];
         }
-        throw new ClientSafeException('unknown asset type: ' . $typename);
+        throw new ClientSafeException('unknown asset type: ' . $typeName);
     }
 
     /**
-     * @param $typename
+     * @param string $typeName
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getClassificationStoreTypeDefinition($typename)
+    public function getClassificationStoreTypeDefinition($typeName)
     {
-        if (isset($this->classificationStoreDataTypes[$typename])) {
-            return $this->classificationStoreDataTypes[$typename];
+        if (isset($this->classificationStoreDataTypes[$typeName])) {
+            return $this->classificationStoreDataTypes[$typeName];
         }
-        throw new ClientSafeException('unknown classificationstore type: ' . $typename);
+        throw new ClientSafeException('unknown classificationstore type: ' . $typeName);
     }
 
     /**
-     * @param $typename
+     * @param string $typeName
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getDataObjectTypeDefinition($typename)
+    public function getDataObjectTypeDefinition($typeName)
     {
-        if (isset($this->dataObjectDataTypes[$typename])) {
-            return $this->dataObjectDataTypes[$typename];
+        if (isset($this->dataObjectDataTypes[$typeName])) {
+            return $this->dataObjectDataTypes[$typeName];
         }
-        throw new ClientSafeException('unknown dataobject type: ' . $typename);
+        throw new ClientSafeException('unknown dataobject type: ' . $typeName);
     }
 
     /**
-     * @param $typename
+     * @param string $typeName
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getDocumentTypeDefinition($typename)
+    public function getDocumentTypeDefinition($typeName)
     {
-        if (isset($this->documentDataTypes[$typename])) {
-            return $this->documentDataTypes[$typename];
+        if (isset($this->documentDataTypes[$typeName])) {
+            return $this->documentDataTypes[$typeName];
         }
-        throw new ClientSafeException('unknown document type: ' . $typename);
+        throw new ClientSafeException('unknown document type: ' . $typeName);
     }
 
     /**
-     * @param $typename
+     * @param string $typeName
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getPropertyTypeDefinition($typename)
+    public function getPropertyTypeDefinition($typeName)
     {
-        if (isset($this->propertyDataTypes[$typename])) {
-            return $this->propertyDataTypes[$typename];
+        if (isset($this->propertyDataTypes[$typeName])) {
+            return $this->propertyDataTypes[$typeName];
         }
-        throw new ClientSafeException('unknown property type: ' . $typename);
+        throw new ClientSafeException('unknown property type: ' . $typeName);
     }
 
     /**
@@ -799,17 +799,16 @@ class Service
      *
      * @static
      *
-     * @param $object
-     * @param $key
-     * @param null $brickType
-     * @param null $brickKey
-     * @param null $fieldDefinition
+     * @param Concrete $object
+     * @param string $key
+     * @param string|null $brickType
+     * @param string|null $brickKey
+     * @param Data|null $fieldDefinition
      *
      * @return \stdclass, value and objectid where the value comes from
      */
     public static function getValueForObject($object, $key, $brickType = null, $brickKey = null, $fieldDefinition = null, $context = [], $brickDescriptor = null, $args = [])
     {
-
         //TODO once this gets integrated into the core, share the code with Service::getValueFromObject
         $getter = 'get' . ucfirst($key);
         $value = $object->$getter();
@@ -852,10 +851,9 @@ class Service
     }
 
     /**
-     * @param $object
-     * @param Data $fieldDefinition
+     * @param Concrete|null $object
      * @param string $attribute
-     * @param array $args
+     * @param \Closure $callback
      *
      * @return \stdclass|null
      *
@@ -871,13 +869,9 @@ class Service
         }
         $container = $object;
 
-        /** @var Concrete $element */
         $attributeParts = explode('~', $attribute);
 
-        $brickType = null;
-        $brickKey = null;
-
-        if (substr($attribute, 0, 1) == '~') {
+        if (substr($attribute, 0, 1) === '~') {
             // key value, ignore for now
         } elseif (count($attributeParts) > 1) {
             // TODO once the datahub gets integrated into the core we should try to share this code
@@ -925,7 +919,7 @@ class Service
                 $subBrickType = $brickContainer->$subBrickGetter();
 
                 if (!$subBrickType) {
-                    /** @var $brickClass AbstractData */
+                    /** @var AbstractData $brickClass */
                     $brickClass = 'Pimcore\\Model\\DataObject\\Objectbrick\\Data\\' . ucfirst($brickType);
                     $subBrickType = new $brickClass($object);
                     $subBrickSetter = 'set' . ucfirst($brickType);
@@ -952,7 +946,7 @@ class Service
      * @param string $attribute
      * @param array $args
      *
-     * @return \stdclass|null
+     * @return mixed
      */
     public static function resolveValue(BaseDescriptor $descriptor, Data $fieldDefinition, $attribute, $args = [])
     {
@@ -967,9 +961,6 @@ class Service
 
         /** @var Concrete $element */
         $attributeParts = explode('~', $attribute);
-
-        $brickType = null;
-        $brickKey = null;
 
         if ($descriptor instanceof FieldcollectionDescriptor) {
             $descriptorData = $descriptor->getArrayCopy();
@@ -1097,7 +1088,7 @@ class Service
     /**
      * Check whether given field in container is localized
      *
-     * @param Concrete|AbstractData|\Pimcore\Model\DataObject\Objectbrick\Data\AbstractData $container
+     * @param object $container
      * @param string $fieldName
      *
      * @return bool
@@ -1164,8 +1155,8 @@ class Service
     }
 
     /**
-     * @param array $data
-     * @param AbstractElement $target
+     * @param mixed $data
+     * @param ElementInterface $target
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -1194,7 +1185,7 @@ class Service
     public function querySchemaEnabled(string $type)
     {
         $context = Runtime::get('datahub_context');
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         if ($type === 'object') {
             $types = $configuration->getConfiguration()['schema']['queryEntities'];

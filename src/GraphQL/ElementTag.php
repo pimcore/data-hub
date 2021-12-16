@@ -49,9 +49,10 @@ class ElementTag extends ObjectType
     }
 
     /**
-     * AssetTag constructor.
+     * ElementTag constructor.
      *
-     * @param $class
+     * @param Service $graphQlService
+     * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
     {

@@ -16,14 +16,14 @@
 namespace Pimcore\Bundle\DataHubBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 use Pimcore\Db;
-use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
 use Pimcore\Model\Tool\SettingsStore;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20210305134111 extends AbstractPimcoreMigration
+class Version20210305134111 extends AbstractMigration
 {
     public function doesSqlMigrations(): bool
     {
@@ -33,7 +33,7 @@ class Version20210305134111 extends AbstractPimcoreMigration
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $db = Db::get();
         $entry = $db->fetchRow(
@@ -49,7 +49,7 @@ class Version20210305134111 extends AbstractPimcoreMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
     }
 }

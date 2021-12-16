@@ -113,7 +113,7 @@ class ExecutorEvent extends Event
 
     /**
      * @param Request $request
-     * @param array $query
+     * @param string $query
      * @param Schema $schema
      * @param array $context
      */

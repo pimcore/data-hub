@@ -97,7 +97,7 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @param $customDataTypes
+     * @param array $customDataTypes
      */
     public function registerCustomDataType($customDataTypes)
     {

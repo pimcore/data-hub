@@ -43,13 +43,13 @@ abstract class DefaultMutationOperatorFactoryBase
 
     /**
      * @param array $configElement
-     * @param null $context
+     * @param mixed $context
      *
      * @return OperatorInterface
      */
     public function build(array $configElement = [], $context = null)
     {
-        /** @var $operatorImpl ServiceTrait */
+        /** @var OperatorInterface $operatorImpl */
         $operatorImpl = new $this->className($this->getGraphQlService());
         $operatorImpl->setGraphQlService($this->getGraphQlService());
 
