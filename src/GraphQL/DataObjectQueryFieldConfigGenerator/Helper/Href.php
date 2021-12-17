@@ -44,8 +44,6 @@ class Href
     public $attribute;
 
     /**
-     * Href constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

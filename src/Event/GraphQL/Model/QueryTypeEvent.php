@@ -89,8 +89,6 @@ class QueryTypeEvent extends Event
     }
 
     /**
-     * MutationEvent constructor.
-     *
      * @param QueryType $queryType
      * @param array $config
      * @param array $context

@@ -50,8 +50,6 @@ class PimcoreObjectType extends ObjectType
     protected $fields;
 
     /**
-     * PimcoreObjectType constructor.
-     *
      * @param Service $graphQlService
      * @param string $className
      * @param string $classId

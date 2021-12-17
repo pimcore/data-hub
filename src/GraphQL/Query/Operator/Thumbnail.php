@@ -24,8 +24,6 @@ class Thumbnail extends AbstractOperator
     private $thumbnailConfig;
 
     /**
-     * Thumbnail constructor.
-     *
      * @param array $config
      * @param mixed $context
      */

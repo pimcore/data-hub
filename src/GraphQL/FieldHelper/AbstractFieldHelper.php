@@ -29,9 +29,6 @@ abstract class AbstractFieldHelper
 {
     use ServiceTrait;
 
-    /**
-     * AbstractFieldHelper constructor.
-     */
     public function __construct()
     {
     }

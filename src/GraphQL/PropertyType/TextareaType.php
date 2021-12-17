@@ -28,8 +28,6 @@ class TextareaType extends ObjectType
     use ServiceTrait;
 
     /**
-     * TextareaType constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)

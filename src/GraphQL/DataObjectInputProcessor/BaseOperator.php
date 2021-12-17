@@ -22,8 +22,6 @@ use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 class BaseOperator extends Base
 {
     /**
-     * Base constructor.
-     *
      * @param array $nodeDef
      */
     public function __construct($nodeDef)

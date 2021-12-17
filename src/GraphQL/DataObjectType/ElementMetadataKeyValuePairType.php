@@ -31,8 +31,6 @@ class ElementMetadataKeyValuePairType extends ObjectType
     protected static $instance;
 
     /**
-     * ElementMetadataKeyValuePairType constructor.
-     *
      * @param array $config
      */
     public function __construct($config = [])

@@ -36,8 +36,6 @@ class ObjectMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * ObjectMetadataType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class

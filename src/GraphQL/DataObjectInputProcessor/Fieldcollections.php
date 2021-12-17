@@ -27,8 +27,6 @@ class Fieldcollections extends Base
     protected $processors;
 
     /**
-     * Fieldcollections constructor.
-     *
      * @param array $nodeDef
      * @param array $processors
      */

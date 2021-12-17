@@ -29,8 +29,6 @@ abstract class Base implements OperatorTypeDefinitionInterface
     protected $graphQlService;
 
     /**
-     * Base constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)

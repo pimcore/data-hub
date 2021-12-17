@@ -25,8 +25,6 @@ class MySafeException extends \Exception implements ClientAware
     protected $category;
 
     /**
-     * MySafeException constructor.
-     *
      * @param string|null $category
      * @param string $message
      * @param int $code

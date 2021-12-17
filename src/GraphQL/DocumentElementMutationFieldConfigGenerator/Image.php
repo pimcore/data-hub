@@ -27,8 +27,6 @@ class Image extends Base
     protected $processor;
 
     /**
-     * Image constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image $processor
      */

@@ -52,8 +52,6 @@ class ImageGallery
     public $attribute;
 
     /**
-     * ImageGallery constructor.
-     *
      * @param GraphQlService $graphQlService
      * @param string $attribute
      * @param ClassDefinition\Data\ImageGallery $fieldDefinition

@@ -37,8 +37,6 @@ class ObjectMetadata
     protected $fieldHelper;
 
     /**
-     * ObjectMetadata constructor.
-     *
      * @param ClassDefinition\Data|null $fieldDefinition
      * @param ClassDefinition|null $class
      * @param DataObjectFieldHelper|null $fieldHelper

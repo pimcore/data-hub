@@ -37,8 +37,6 @@ class MultihrefMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * MultihrefMetadataType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|Definition|null $class

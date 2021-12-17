@@ -29,8 +29,6 @@ class Block extends Base
     public $processor;
 
     /**
-     * Block constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor
      */

@@ -36,8 +36,6 @@ class MultihrefMetadata
     protected $fieldHelper;
 
     /**
-     * MultihrefMetadata constructor.
-     *
      * @param ClassDefinition\Data $fieldDefinition
      * @param ClassDefinition $class
      * @param mixed $fieldHelper

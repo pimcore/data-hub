@@ -43,8 +43,6 @@ class Multihref
     public $attribute;
 
     /**
-     * Multihref constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param ClassDefinition\Data $fieldDefinition

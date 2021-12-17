@@ -35,12 +35,11 @@ class AssetListing
 {
     use ServiceTrait;
 
+    /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
     /**
-     * AssetListing constructor.
-     *
-     * @param Service                  $graphQlService
+     * @param Service $graphQlService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(Service $graphQlService, EventDispatcherInterface $eventDispatcher)

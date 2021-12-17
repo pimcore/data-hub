@@ -31,8 +31,6 @@ class AnyTargetType extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * AnyTargetType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

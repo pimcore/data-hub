@@ -43,8 +43,6 @@ class ObjectsMetadata
     public $attribute;
 
     /**
-     * ObjectsMetadata constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param ClassDefinition\Data $fieldDefinition

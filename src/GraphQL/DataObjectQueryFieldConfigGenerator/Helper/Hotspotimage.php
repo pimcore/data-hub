@@ -50,8 +50,6 @@ class Hotspotimage
     public $attribute;
 
     /**
-     * Hotspotimage constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param ClassDefinition\Data\Hotspotimage $fieldDefinition

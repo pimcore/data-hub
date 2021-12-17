@@ -37,8 +37,6 @@ class Merge
     protected $container;
 
     /**
-     * Merge constructor.
-     *
      * @param string|null $typeName
      * @param array|null $attributes
      * @param ClassDefinition|null $class

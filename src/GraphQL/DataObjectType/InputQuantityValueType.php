@@ -22,8 +22,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class InputQuantityValueType extends QuantityValueType
 {
     /**
-     * FolderType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config

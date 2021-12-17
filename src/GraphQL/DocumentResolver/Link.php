@@ -28,8 +28,6 @@ class Link
     use ServiceTrait;
 
     /**
-     * Link constructor.
-     *
      * @param GraphQLService $graphQlService
      */
     public function __construct(GraphQLService $graphQlService)

@@ -44,8 +44,6 @@ class MultihrefMetadata
     public $attribute;
 
     /**
-     * MultihrefMetadata constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

@@ -30,8 +30,6 @@ class AssetType extends ObjectType
     use ServiceTrait;
 
     /**
-     * AssetType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

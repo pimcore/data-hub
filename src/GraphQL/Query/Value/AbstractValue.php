@@ -42,8 +42,6 @@ abstract class AbstractValue implements ValueInterface
     protected $context;
 
     /**
-     * AbstractValue constructor.
-     *
      * @param array $config
      * @param mixed $context
      */

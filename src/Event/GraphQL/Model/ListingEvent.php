@@ -106,8 +106,6 @@ class ListingEvent extends Event
     }
 
     /**
-     * ListingEvent constructor.
-     *
      * @param AbstractListing $listing
      * @param array $args
      * @param array $context

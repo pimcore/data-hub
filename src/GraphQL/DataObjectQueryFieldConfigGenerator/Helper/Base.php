@@ -41,8 +41,6 @@ class Base
     public $attribute;
 
     /**
-     * Base constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

@@ -193,8 +193,6 @@ class Service
     protected $tagManagerListener;
 
     /**
-     * Service constructor.
-     *
      * @param AssetFieldHelper $assetFieldHelper
      * @param DocumentFieldHelper $documentFieldHelper
      * @param DataObjectFieldHelper $objectFieldHelper

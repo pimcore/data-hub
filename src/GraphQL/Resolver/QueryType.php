@@ -56,8 +56,6 @@ class QueryType
     protected $configuration;
 
     /**
-     * QueryType constructor.
-     *
      * @param EventDispatcherInterface $eventDispatcher
      * @param ClassDefinition|null $class
      * @param object $configuration

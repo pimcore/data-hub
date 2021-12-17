@@ -37,8 +37,6 @@ class Base
     protected $container;
 
     /**
-     * Base constructor.
-     *
      * @param string $typeName
      * @param array $attributes
      * @param ClassDefinition $class

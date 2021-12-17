@@ -31,8 +31,7 @@ abstract class DefaultMutationOperatorFactoryBase
     protected $className;
 
     /**
-     * DefaultQueryOperatorFactory constructor.
-     *
+     * @param Service $graphQlService
      * @param string $className
      */
     public function __construct(Service $graphQlService, string $className)

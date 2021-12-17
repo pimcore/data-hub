@@ -34,8 +34,6 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * ObjectTreeType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

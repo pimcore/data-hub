@@ -43,8 +43,6 @@ class AssetBase
     public $attribute;
 
     /**
-     * AssetBase constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

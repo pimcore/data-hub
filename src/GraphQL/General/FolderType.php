@@ -24,8 +24,6 @@ abstract class FolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * FolderType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

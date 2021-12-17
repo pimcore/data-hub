@@ -22,8 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class AssetFolderType extends FolderType
 {
     /**
-     * AssetFolderType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

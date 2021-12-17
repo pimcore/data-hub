@@ -24,8 +24,6 @@ class LocaleSwitcherOperator extends BaseOperator
     protected $locale;
 
     /**
-     * LocaleSwitcherOperator constructor.
-     *
      * @param array $nodeDef
      */
     public function __construct($nodeDef)

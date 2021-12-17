@@ -25,9 +25,6 @@ class Hardlink
 {
     use ServiceTrait;
 
-    /**
-     * Link constructor.
-     */
     public function __construct()
     {
     }

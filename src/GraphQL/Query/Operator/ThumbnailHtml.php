@@ -32,8 +32,6 @@ class ThumbnailHtml extends AbstractOperator
     private $thumbnailHtmlConfig;
 
     /**
-     * ThumbnailHtml constructor.
-     *
      * @param array $config
      * @param mixed $context
      */

@@ -26,8 +26,6 @@ class DocumentLinkInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * DocumentLinkInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

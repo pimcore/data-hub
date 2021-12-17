@@ -30,8 +30,6 @@ class DocumentType extends ObjectType
     use ServiceTrait;
 
     /**
-     * DocumentType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

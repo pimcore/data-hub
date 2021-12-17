@@ -71,8 +71,6 @@ class MutationType extends ObjectType
     private $eventDispatcher;
 
     /**
-     * MutationType constructor.
-     *
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory

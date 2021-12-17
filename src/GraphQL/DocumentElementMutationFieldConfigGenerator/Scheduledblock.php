@@ -33,8 +33,6 @@ class Scheduledblock extends Base
     protected $processor;
 
     /**
-     * SCheduledblock constructor.
-     *
      * @param Service $graphQlService
      * @param ScheduledblockDataInputType $scheduledblockDataInputType
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock $processor

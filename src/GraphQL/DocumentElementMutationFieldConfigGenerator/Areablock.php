@@ -33,8 +33,6 @@ class Areablock extends Base
     protected $processor;
 
     /**
-     * Areablock constructor.
-     *
      * @param Service $graphQlService
      * @param AreablockDataInputType $areablockDataInputType
      */

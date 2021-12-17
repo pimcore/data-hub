@@ -25,8 +25,6 @@ class AreablockDataInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * AreablockDataInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

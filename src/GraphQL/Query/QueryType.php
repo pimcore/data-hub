@@ -53,8 +53,6 @@ class QueryType extends ObjectType
     protected $modelFactory;
 
     /**
-     * QueryType constructor.
-     *
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory

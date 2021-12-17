@@ -25,8 +25,6 @@ class Scheduledblock extends Base
     protected $scheduledblockDataType;
 
     /**
-     * Scheduledblock constructor.
-     *
      * @param Service $graphQlService
      * @param ScheduledblockDataType $scheduledblockDataType
      */

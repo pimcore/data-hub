@@ -57,8 +57,6 @@ class ElementPropertyType extends UnionType
     protected $selectType;
 
     /**
-     * PropertyType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

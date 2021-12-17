@@ -30,8 +30,6 @@ class ObjectFolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * AssetFolderType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

@@ -43,8 +43,6 @@ class Image
     public $attribute;
 
     /**
-     * Href constructor.
-     *
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

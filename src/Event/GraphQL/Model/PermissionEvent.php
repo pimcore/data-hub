@@ -85,8 +85,6 @@ class PermissionEvent extends Event
     }
 
     /**
-     * MutationEvent constructor.
-     *
      * @param ElementInterface|OwnerAwareFieldInterface $element
      * @param string $type
      */

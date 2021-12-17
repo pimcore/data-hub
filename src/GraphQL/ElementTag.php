@@ -49,8 +49,6 @@ class ElementTag extends ObjectType
     }
 
     /**
-     * ElementTag constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

@@ -62,8 +62,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     protected $customTypes;
 
     /**
-     * DocumentType constructor.
-     *
      * @param Service $graphQlService
      * @param PageType $pageType
      * @param LinkType $linkType

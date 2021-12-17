@@ -30,8 +30,6 @@ class DocumentFolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * DocumentFolderType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

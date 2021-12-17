@@ -41,8 +41,6 @@ class MergeType extends UnionType implements ContainerAwareInterface
     protected $container;
 
     /**
-     * MergeType constructor.
-     *
      * @param Service $graphQlService
      * @param array $nodeDef
      * @param ClassDefinition|null $class

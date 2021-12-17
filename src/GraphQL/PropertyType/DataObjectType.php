@@ -30,8 +30,6 @@ class DataObjectType extends ObjectType
     use ServiceTrait;
 
     /**
-     * DataObjectType constructor.
-     *
      * @param Service $graphQlService
      * @param ObjectsType $objectUnionType
      */

@@ -45,8 +45,6 @@ class ReverseManyToManyObjects
     public $attribute;
 
     /**
-     * Objects constructor.
-     *
      * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition

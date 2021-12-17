@@ -29,8 +29,6 @@ class Base
     protected $nodeDef;
 
     /**
-     * Base constructor.
-     *
      * @param array $nodeDef
      */
     public function __construct($nodeDef)

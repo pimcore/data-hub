@@ -67,8 +67,6 @@ class Configuration extends AbstractModel
     protected $modificationDate;
 
     /**
-     * Configuration constructor.
-     *
      * @param string $type
      * @param string $path
      * @param string|null $name

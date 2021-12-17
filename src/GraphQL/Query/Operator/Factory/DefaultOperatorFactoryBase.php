@@ -31,8 +31,6 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
     protected $className;
 
     /**
-     * DefaultQueryOperatorFactory constructor.
-     *
      * @param string $className
      */
     public function __construct(Service $graphQlService, string $className)

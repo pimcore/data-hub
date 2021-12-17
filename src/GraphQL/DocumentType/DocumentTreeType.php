@@ -36,8 +36,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     private $customTypes = [];
 
     /**
-     * DocumentTreeType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */
