@@ -378,10 +378,9 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         if ($containerDefinition) {
             /** @var Data\Localizedfields|null $lfDefs */
-            if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
-                if ($lfDefs->getFieldDefinition($astName)) {
-                    $isLocalizedField = true;
-                }
+            $lfDefs = $containerDefinition->getFieldDefinition('localizedfields');
+            if ($lfDefs && $lfDefs->getFieldDefinition($astName)) {
+                $isLocalizedField = true;
             }
         }
 

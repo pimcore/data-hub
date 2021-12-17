@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Element\AbstractElement;
 
 class ReverseManyToManyObjects
 {
@@ -76,7 +75,6 @@ class ReverseManyToManyObjects
         $relations = $object->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
         if ($relations) {
             $result = [];
-            /** @var AbstractElement $relation */
             foreach ($relations as $relationRaw) {
                 $relation = Concrete::getById($relationRaw['id']);
                 if ($relation) {

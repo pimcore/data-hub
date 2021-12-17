@@ -957,7 +957,6 @@ class Service
         $result = null;
         $container = $object;
 
-        /** @var Concrete $element */
         $attributeParts = explode('~', $attribute);
 
         if ($descriptor instanceof FieldcollectionDescriptor) {
@@ -1121,7 +1120,7 @@ class Service
     }
 
     /**
-     * @param ContainerInterface $mutationTypeGeneratorFactories
+     * @param ContainerInterface $dataObjectMutationTypeGeneratorFactories
      */
     public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $dataObjectMutationTypeGeneratorFactories): void
     {

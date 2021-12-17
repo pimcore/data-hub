@@ -10,6 +10,7 @@ Thumbs.db
 
 # composer
 composer.lock
+/vendor
 
 # PhpStorm / IDEA
 .idea
