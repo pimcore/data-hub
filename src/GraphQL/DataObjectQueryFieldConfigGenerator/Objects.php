@@ -63,13 +63,6 @@ class Objects extends Base implements TypeDefinitionInterface
         return Type::listOf(new HrefType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

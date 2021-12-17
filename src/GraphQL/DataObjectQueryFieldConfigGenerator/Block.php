@@ -58,13 +58,6 @@ class Block extends Base
         return Type::listOf(new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         return function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use (

@@ -60,13 +60,6 @@ class ReverseManyToManyObjectRelation extends Base
         return $type;
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\ReverseManyToManyObjects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

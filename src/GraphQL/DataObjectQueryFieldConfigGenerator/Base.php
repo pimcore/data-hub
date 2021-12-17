@@ -90,13 +90,6 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
         return Type::string();
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

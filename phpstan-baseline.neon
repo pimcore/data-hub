@@ -81,16 +81,6 @@ parameters:
 			path: src/GraphQL/DataObjectMutationFieldConfigGenerator/Fieldcollections.php
 
 		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\AssetBase\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\AssetBase, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/AssetBase.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Base\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Base, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Base.php
-
-		-
 			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getFieldDefinition\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Block.php
@@ -104,51 +94,6 @@ parameters:
 			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getOwnerFieldName\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Helper/ReverseManyToManyObjects.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Hotspotimage\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Hotspotimage, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Hotspotimage.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Href\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Href, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Href.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Image\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Image, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Image.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\ImageGallery\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\ImageGallery, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/ImageGallery.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Multihref\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Multihref, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Multihref.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\MultihrefMetadata\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\MultihrefMetadata, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/MultihrefMetadata.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Objects\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\Objects, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Objects.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\ObjectsMetadata\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\ObjectsMetadata, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/ObjectsMetadata.php
-
-		-
-			message: "#^Method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\ReverseManyToManyObjectRelation\\:\\:getResolver\\(\\) should return Closure but returns array\\{Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGenerator\\\\Helper\\\\ReverseManyToManyObjects, 'resolve'\\}\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/ReverseManyToManyObjectRelation.php
 
 		-
 			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getAssetsAllowed\\(\\)\\.$#"

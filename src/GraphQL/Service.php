@@ -283,7 +283,7 @@ class Service
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
      */
     public function buildDataObjectDataQueryResolver($attribute, Data $fieldDefinition = null, ClassDefinition $class = null)
     {

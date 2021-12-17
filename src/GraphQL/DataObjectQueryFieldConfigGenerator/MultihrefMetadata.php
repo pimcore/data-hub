@@ -54,13 +54,6 @@ class MultihrefMetadata extends Base
         return Type::listOf(new MultihrefMetadataType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\MultihrefMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

@@ -795,7 +795,7 @@ class MutationType extends ObjectType
      * @param object|null $object
      * @param bool $omitPermissionCheck
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getUpdateObjectResolver($processors, $localeService, $object = null, $omitPermissionCheck = false)
     {
@@ -1128,7 +1128,7 @@ class MutationType extends ObjectType
     /**
      * @param string $elementType
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getCreateFolderResolver($elementType)
     {
@@ -1436,7 +1436,7 @@ class MutationType extends ObjectType
     /**
      * @param string $elementType
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getUpdateFolderResolver($elementType)
     {
