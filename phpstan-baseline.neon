@@ -396,16 +396,6 @@ parameters:
 			path: src/GraphQL/General/FolderType.php
 
 		-
-			message: "#^Variable \\$fieldMappingTable in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: src/GraphQL/Helper.php
-
-		-
-			message: "#^Variable \\$key in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: src/GraphQL/Helper.php
-
-		-
 			message: "#^Static property Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\Mutation\\\\MutationType\\:\\:\\$documentElementTypes \\(array\\) does not accept GraphQL\\\\Type\\\\Definition\\\\InputObjectType\\.$#"
 			count: 1
 			path: src/GraphQL/Mutation/MutationType.php

@@ -157,8 +157,7 @@ class Helper
                             $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
-                        // TODO: Variable $fieldMappingTable and $key in isset() always exists and is not nullable.
-                        if (isset($fieldMappingTable, $key)) {
+                        if (isset($fieldMappingTable[$key])) {
                             if (is_null($value)) {
                                 $parts[] = '(' . $db->quoteIdentifier($key) . ' IS NULL)';
                             } else {
