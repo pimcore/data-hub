@@ -48,6 +48,6 @@ final class Version20211108160248 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql(sprintf("DELETE FROM users_permission_definitions WHERE `key` = '%s'", Installer::DATAHUB_ADAPTER_PERMISSION));
-        $this->addSql('DROP DATABASE IF EXISTS `plugin_datahub_permissions`');
+        $this->addSql('DROP TABLE IF EXISTS `plugin_datahub_permissions`');
     }
 }
