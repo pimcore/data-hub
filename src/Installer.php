@@ -25,6 +25,7 @@ use Pimcore\Model\Tool\SettingsStore;
 class Installer extends SettingsStoreAwareInstaller
 {
     const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
+    const DATAHUB_ADMIN_PERMISSION = 'plugin_datahub_admin';
 
     public function needsReloadAfterInstall(): bool
     {
@@ -39,6 +40,7 @@ class Installer extends SettingsStoreAwareInstaller
         // create backend permission
         \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
         \Pimcore\Model\User\Permission\Definition::create(self::DATAHUB_ADAPTER_PERMISSION);
+        \Pimcore\Model\User\Permission\Definition::create(self::DATAHUB_ADMIN_PERMISSION);
 
         try {
             $types = ['document', 'asset', 'object'];

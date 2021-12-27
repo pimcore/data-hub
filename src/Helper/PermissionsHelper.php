@@ -71,7 +71,7 @@ class PermissionsHelper
         $db = Db::get();
         $userTypes = ['user', 'role'];
         foreach ($userTypes as $userType) {
-            $result = $db->fetchAll('SELECT * FROM ? WHERE configuration = ?', [self::TABLE_NAME, $configuration->getName()]);
+            $result = $db->fetchAll('SELECT * FROM ' . self::TABLE_NAME . ' WHERE configuration = ? AND utype = ?', [$configuration->getName(), $userType]);
             foreach ($result as $row) {
                 $permission = new Permission();
                 $permission->setValues($row);
@@ -106,36 +106,38 @@ class PermissionsHelper
         }
 
         //everything is allowed for admin
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->isAllowed('plugin_datahub_admin')) {
             return true;
         }
 
+        /**
+         * If there are no specific permissions set for this configuration then check the global adapter permission.
+         * Otherwise, check the configured permissions only and ignore the global adapter permission.
+         */
         $configKey = 'plugin_datahub_adapter_' . $configuration->getType();
-        if ($user->isAllowed($configKey)) {
-            return true;
-        }
-
-        $userRoles = $user->getRoles();
-        foreach ($userRoles as $userRoleId) {
-            $role = User\Role::getById($userRoleId);
-            if ($role->getPermission($configKey)) {
+        $permissionSets = PermissionsHelper::loadPermissions($configuration);
+        if(empty($permissionSets)) {
+            if ($user->isAllowed($configKey)) {
                 return true;
+            }
+
+            $userRoles = $user->getRoles();
+            foreach ($userRoles as $userRoleId) {
+                $role = User\Role::getById($userRoleId);
+                if ($role->getPermission($configKey)) {
+                    return true;
+                }
+            }
+        } else {
+            $userIds = array_merge([$user->getId()], $user->getRoles());
+            foreach($permissionSets as $permissionsSet) {
+                foreach($permissionsSet as $item) {
+                    if(in_array($item->uid, $userIds) && $item->$type === true)
+                        return true;
+                }
             }
         }
 
-        $userIds = array_merge([$user->getId()], $user->getRoles());
-
-        try {
-            $db = Db::get();
-            $sql = 'SELECT `' . $type . '` FROM ' . self::TABLE_NAME . ' WHERE uid IN (' . implode(',', $userIds) . ') AND configuration = ' . $db->quote($configuration->getName()) . ' AND `' . $type . '`=1 ORDER BY LENGTH(utype) DESC LIMIT 1';
-            $allowedPermission = $db->fetchOne($sql);
-
-            if ($allowedPermission) {
-                return true;
-            }
-        } catch (\Exception $e) {
-            Logger::warn('Unable to get permission ' . $type . ' for user:' . $user->getName() . ' for configuration:' . $configuration->getName());
-        }
 
         return false;
     }

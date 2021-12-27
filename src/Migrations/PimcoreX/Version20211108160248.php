@@ -29,6 +29,7 @@ final class Version20211108160248 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADAPTER_PERMISSION));
+        $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADMIN_PERMISSION));
         $this->addSql("CREATE TABLE IF NOT EXISTS `plugin_datahub_permissions` (
             `uid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
             `uname` VARCHAR(765) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
@@ -48,6 +49,7 @@ final class Version20211108160248 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql(sprintf("DELETE FROM users_permission_definitions WHERE `key` = '%s'", Installer::DATAHUB_ADAPTER_PERMISSION));
+        $this->addSql(sprintf("DELETE FROM users_permission_definitions WHERE `key` = '%s'", Installer::DATAHUB_ADMIN_PERMISSION));
         $this->addSql('DROP TABLE IF EXISTS `plugin_datahub_permissions`');
     }
 }

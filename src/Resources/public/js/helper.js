@@ -20,7 +20,7 @@ pimcore.plugin.datahub.helper = {
         let userIds = array_merge([user.id], user.roles);
 
         //everything is allowed for admins
-        if (user.admin) {
+        if (user.admin || user.isAllowed('plugin_datahub_admin')) {
             return true;
         }
 
