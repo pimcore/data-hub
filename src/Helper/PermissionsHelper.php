@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\Helper;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Permission;
 use Pimcore\Db;
-use Pimcore\Logger;
 use Pimcore\Model\User;
 use Pimcore\Tool\Admin;
 
@@ -115,8 +114,8 @@ class PermissionsHelper
          * Otherwise, check the configured permissions only and ignore the global adapter permission.
          */
         $configKey = 'plugin_datahub_adapter_' . $configuration->getType();
-        $permissionSets = PermissionsHelper::loadPermissions($configuration);
-        if(empty($permissionSets)) {
+        $permissionSets = self::loadPermissions($configuration);
+        if (empty($permissionSets)) {
             if ($user->isAllowed($configKey)) {
                 return true;
             }
@@ -130,14 +129,14 @@ class PermissionsHelper
             }
         } else {
             $userIds = array_merge([$user->getId()], $user->getRoles());
-            foreach($permissionSets as $permissionsSet) {
-                foreach($permissionsSet as $item) {
-                    if(in_array($item->uid, $userIds) && $item->$type === true)
+            foreach ($permissionSets as $permissionsSet) {
+                foreach ($permissionsSet as $item) {
+                    if (in_array($item->uid, $userIds) && $item->$type === true) {
                         return true;
+                    }
                 }
             }
         }
-
 
         return false;
     }
