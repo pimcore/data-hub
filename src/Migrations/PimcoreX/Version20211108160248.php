@@ -19,6 +19,7 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Installer;
 
 /**
@@ -26,6 +27,26 @@ use Pimcore\Bundle\DataHubBundle\Installer;
  */
 final class Version20211108160248 extends AbstractMigration
 {
+    private function migrateUsers(bool $up) {
+        $listing = new \Pimcore\Model\User\Listing();
+        $listing->setCondition('`type` = ? or `type` = ?', ['role', 'user']);
+        $listing->load();
+        $list = $listing->getItems();
+
+        foreach($list as $item) {
+            $permissions = $item->getPermissions();
+            if(($up === true && in_array( ConfigController::CONFIG_NAME, $permissions) && !in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions)) ||
+                ($up === false && in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions))) {
+                if($up === true) {
+                    $permissions[] = Installer::DATAHUB_ADMIN_PERMISSION;
+                } else {
+                    array_splice($permissions, array_search(Installer::DATAHUB_ADMIN_PERMISSION, $permissions));
+                }
+                $item->setPermissions($permissions);
+                $item->save();
+            }
+        }
+    }
     public function up(Schema $schema): void
     {
         $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADAPTER_PERMISSION));
@@ -44,10 +65,13 @@ final class Version20211108160248 extends AbstractMigration
         COLLATE='utf8mb4_general_ci'
         ENGINE=InnoDB
         ;");
+
+        $this->migrateUsers(true);
     }
 
     public function down(Schema $schema): void
     {
+        $this->migrateUsers(false);
         $this->addSql(sprintf("DELETE FROM users_permission_definitions WHERE `key` = '%s'", Installer::DATAHUB_ADAPTER_PERMISSION));
         $this->addSql(sprintf("DELETE FROM users_permission_definitions WHERE `key` = '%s'", Installer::DATAHUB_ADMIN_PERMISSION));
         $this->addSql('DROP TABLE IF EXISTS `plugin_datahub_permissions`');
