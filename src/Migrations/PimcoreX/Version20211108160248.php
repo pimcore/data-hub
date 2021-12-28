@@ -27,17 +27,18 @@ use Pimcore\Bundle\DataHubBundle\Installer;
  */
 final class Version20211108160248 extends AbstractMigration
 {
-    private function migrateUsers(bool $up) {
+    private function migrateUsers(bool $up)
+    {
         $listing = new \Pimcore\Model\User\Listing();
         $listing->setCondition('`type` = ? or `type` = ?', ['role', 'user']);
         $listing->load();
         $list = $listing->getItems();
 
-        foreach($list as $item) {
+        foreach ($list as $item) {
             $permissions = $item->getPermissions();
-            if(($up === true && in_array( ConfigController::CONFIG_NAME, $permissions) && !in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions)) ||
+            if (($up === true && in_array(ConfigController::CONFIG_NAME, $permissions) && !in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions)) ||
                 ($up === false && in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions))) {
-                if($up === true) {
+                if ($up === true) {
                     $permissions[] = Installer::DATAHUB_ADMIN_PERMISSION;
                 } else {
                     array_splice($permissions, array_search(Installer::DATAHUB_ADMIN_PERMISSION, $permissions));
@@ -47,6 +48,7 @@ final class Version20211108160248 extends AbstractMigration
             }
         }
     }
+
     public function up(Schema $schema): void
     {
         $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADAPTER_PERMISSION));
