@@ -16,9 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\Configuration;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\Helper\PermissionsHelper;
 use Pimcore\Config;
-use Pimcore\File;
 use Pimcore\Model;
 use Symfony\Component\Uid\Uuid as Uid;
 
@@ -215,9 +213,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         foreach ($configs as $item) {
             $name = $item['general']['name'];
             $configuration = Configuration::getByName($name);
-            if (PermissionsHelper::isAllowed($configuration, 'read')) {
-                $list[$name] = $configuration;
-            }
+            $list[$name] = $configuration;
         }
 
         return $list;

@@ -63,22 +63,6 @@ class Installer extends SettingsStoreAwareInstaller
                     ;
                 ");
             }
-
-            $db->query(
-            "CREATE TABLE IF NOT EXISTS `plugin_datahub_permissions` (
-                `uid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
-                `uname` VARCHAR(765) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-                `utype` ENUM('user','role') NOT NULL DEFAULT 'user',
-                `configuration` VARCHAR(50) NOT NULL DEFAULT '0',
-                `type` VARCHAR(50) NOT NULL DEFAULT '0',
-                `read` TINYINT(1) UNSIGNED NULL DEFAULT '0',
-                `update` TINYINT(1) UNSIGNED NULL DEFAULT '0',
-                `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',
-                PRIMARY KEY (`uid`, `configuration`)
-                )
-            COLLATE='utf8mb4_general_ci'
-            ENGINE=InnoDB
-            ;");
         } catch (\Exception $e) {
             Logger::warn($e);
         }

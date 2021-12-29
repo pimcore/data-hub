@@ -57,7 +57,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             'leaf' => true,
             'adapter' => $type,
             'writeable' => $configuration->isWriteable(),
-            'permissions' => $configuration->getPermissionsConfig()
+            'permissions' => [
+                'delete' => $configuration->isAllowed('delete'),
+                'update' => $configuration->isAllowed('update')
+            ]
         ];
     }
 
@@ -85,22 +88,24 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $groups = [];
         /** @var Configuration $item */
         foreach ($list as $item) {
-            if ($item->getGroup()) {
-                if (empty($groups[$item->getGroup()])) {
-                    $groups[$item->getGroup()] = [
-                        'id' => 'group_' . $item->getName(),
-                        'text' => $item->getGroup(),
-                        'expandable' => true,
-                        'leaf' => false,
-                        'allowChildren' => true,
-                        'iconCls' => 'pimcore_icon_folder',
-                        'group' => $item->getGroup(),
-                        'children' => []
-                    ];
+            if($item->isAllowed('read')) {
+                if ($item->getGroup()) {
+                    if (empty($groups[$item->getGroup()])) {
+                        $groups[$item->getGroup()] = [
+                            'id' => 'group_' . $item->getName(),
+                            'text' => $item->getGroup(),
+                            'expandable' => true,
+                            'leaf' => false,
+                            'allowChildren' => true,
+                            'iconCls' => 'pimcore_icon_folder',
+                            'group' => $item->getGroup(),
+                            'children' => []
+                        ];
+                    }
+                    $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
+                } else {
+                    $tree[] = $this->buildItem($item);
                 }
-                $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
-            } else {
-                $tree[] = $this->buildItem($item);
             }
         }
 
@@ -245,6 +250,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         if (!$configuration) {
             throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
         }
+        if(!$configuration->isAllowed('read')) {
+            throw $this->createAccessDeniedHttpException();
+        }
 
         $config = $configuration->getConfiguration();
         $config['schema']['queryEntities'] = array_values($config['schema']['queryEntities'] ?? []);
@@ -343,6 +351,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             [
                 'name' => $configuration->getName(),
                 'configuration' => $config,
+                'userPermissions' => [
+                    'update' => $configuration->isAllowed('update'),
+                    'delete' => $configuration->isAllowed('delete')
+                ],
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
                 'modificationDate' => $config['general']['modificationDate']
@@ -415,9 +427,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
 
             $config->setConfiguration($dataDecoded);
-            $config->save();
 
-            return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
+            if($config->isAllowed('read') && $config->isAllowed('update')) {
+                $config->save();
+                return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
+            } else {
+                return $this->json(['success' => false, 'permissionError' => true]);
+            }
+
         } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }

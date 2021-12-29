@@ -49,6 +49,17 @@ pimcore.plugin.datahub.config = Class.create({
         return this.panel;
     },
 
+    userIsAllowedToCreate: function(adapter) {
+        let user = pimcore.globalmanager.get("user");
+
+        //everything is allowed for admins
+        if (user.admin || user.isAllowed('plugin_datahub_admin')) {
+            return true;
+        }
+
+        return user.isAllowed("plugin_datahub_adapter_" + adapter);
+    },
+
     getTree: function () {
         if (!this.tree) {
 
@@ -69,7 +80,7 @@ pimcore.plugin.datahub.config = Class.create({
             let firstHandler;
 
             for (let key in pimcore.plugin.datahub.adapter) {
-                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) && pimcore.plugin.datahub.helper.isAllowed('create', {'adapter': key})) {
+                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) && this.userIsAllowedToCreate(key)) {
                     let adapter = new pimcore.plugin.datahub.adapter[key](this);
 
                     if (!firstHandler) {
@@ -161,14 +172,14 @@ pimcore.plugin.datahub.config = Class.create({
         menu.add(new Ext.menu.Item({
             text: t('delete'),
             iconCls: "pimcore_icon_delete",
-            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('delete', record.data),
+            disabled: !record.data['writeable'] || (!record.data.permissions.delete),
             handler: this.deleteConfiguration.bind(this, tree, record)
         }));
 
         menu.add(new Ext.menu.Item({
             text: t('clone'),
             iconCls: "pimcore_icon_clone",
-            disabled: !record.data['writeable'] || !pimcore.plugin.datahub.helper.isAllowed('create', record.data),
+            disabled: !record.data['writeable'] || !this.userIsAllowedToCreate(record.data.adapter),
             handler: this.cloneConfiguration.bind(this, tree, record)
         }));
 
