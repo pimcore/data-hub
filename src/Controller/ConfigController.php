@@ -88,7 +88,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $groups = [];
         /** @var Configuration $item */
         foreach ($list as $item) {
-            if($item->isAllowed('read')) {
+            if ($item->isAllowed('read')) {
                 if ($item->getGroup()) {
                     if (empty($groups[$item->getGroup()])) {
                         $groups[$item->getGroup()] = [
@@ -250,7 +250,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         if (!$configuration) {
             throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
         }
-        if(!$configuration->isAllowed('read')) {
+        if (!$configuration->isAllowed('read')) {
             throw $this->createAccessDeniedHttpException();
         }
 
@@ -428,13 +428,13 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
             $config->setConfiguration($dataDecoded);
 
-            if($config->isAllowed('read') && $config->isAllowed('update')) {
+            if ($config->isAllowed('read') && $config->isAllowed('update')) {
                 $config->save();
+
                 return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
             } else {
                 return $this->json(['success' => false, 'permissionError' => true]);
             }
-
         } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }

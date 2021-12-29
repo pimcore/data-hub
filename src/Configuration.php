@@ -485,21 +485,21 @@ class Configuration extends AbstractModel
 
         $permissionConfig = $this->getPermissionsConfig();
         $permissionSets = [];
-        foreach($permissionConfig['user'] ?? [] as $userConfig) {
+        foreach ($permissionConfig['user'] ?? [] as $userConfig) {
             $permissionSets[$userConfig['id']] = $userConfig;
         }
-        foreach($permissionConfig['role'] ?? [] as $roleConfig) {
+        foreach ($permissionConfig['role'] ?? [] as $roleConfig) {
             $permissionSets[$roleConfig['id']] = $roleConfig;
         }
 
         if (empty($permissionSets)) {
             return $user->isAllowed($configKey);
         } else {
-            if(isset($permissionSets[$user->getId()])) {
+            if (isset($permissionSets[$user->getId()])) {
                 return $permissionSets[$user->getId()][$type] ?? false;
             }
-            foreach($user->getRoles() as $roleId) {
-                if(isset($permissionSets[$roleId][$type]) && $permissionSets[$roleId][$type] === true) {
+            foreach ($user->getRoles() as $roleId) {
+                if (isset($permissionSets[$roleId][$type]) && $permissionSets[$roleId][$type] === true) {
                     return $permissionSets[$roleId][$type];
                 }
             }
