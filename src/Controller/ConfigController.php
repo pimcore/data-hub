@@ -178,6 +178,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $path = $request->get('path');
             $name = $request->get('name');
             $type = $request->get('type');
+            $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $type]);
 
             $config = Configuration::getByName($name);
 
@@ -223,6 +224,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             if ($originalConfig->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
+            if(!$originalConfig->isAllowed('update')) {
+                $this->createAccessDeniedHttpException();
+            }
+            $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $originalConfig->getType()]);
 
             $originalConfig->setName($name);
             $originalConfig->save();
