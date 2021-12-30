@@ -19,6 +19,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     initialize: function (data, parent) {
         this.parent = parent;
         this.data = data.configuration;
+        this.userPermissions = data.userPermissions;
         this.modificationDate = data.modificationDate;
 
         this.tab = new Ext.TabPanel({
@@ -106,7 +107,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         let saveButtonConfig = {
             text: t("save"),
             iconCls: "pimcore_icon_apply",
-            disabled: !this.data.general.writeable || !pimcore.plugin.datahub.helper.isAllowed("update", this.data),
+            disabled: !this.data.general.writeable || !this.userPermissions.update,
             handler: this.save.bind(this)
         };
         if(!this.data.general.writeable) {
@@ -606,7 +607,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     getPermissions: function () {
-        if (!pimcore.plugin.datahub.helper.isAllowed("create", this.data)) {
+        if (!this.userPermissions.update) {
             return;
         }
 
@@ -705,32 +706,27 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     save: function () {
-            let saveDataArray = this.getSaveDataArray();
-            if(!pimcore.plugin.datahub.helper.isAllowed("update", saveDataArray)) {
-                pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror_permissions"), "error");
-                this.tab.setActiveTab(this.tab.items.length-1);
-            }
-            else
-            {
-                var saveData = this.getSaveData();
-                Ext.Ajax.request({
-                    url: this.saveUrl,
-                    params: {
-                        data: saveData,
-                        modificationDate: this.modificationDate
-                    },
-                    method: "post",
-                    success: function (response) {
-                        var rdata = Ext.decode(response.responseText);
-                        if (rdata && rdata.success) {
-                            this.modificationDate = rdata.modificationDate;
-                            this.saveOnComplete();
-                        } else {
-                            pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
-                        }
-                    }.bind(this)
-                });
-            }
+        const saveData = this.getSaveData();
+        Ext.Ajax.request({
+            url: this.saveUrl,
+            params: {
+                data: saveData,
+                modificationDate: this.modificationDate
+            },
+            method: "post",
+            success: function (response) {
+                const rdata = Ext.decode(response.responseText);
+                if (rdata && rdata.success) {
+                    this.modificationDate = rdata.modificationDate;
+                    this.saveOnComplete();
+                } else if(rdata && rdata.permissionError) {
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror_permissions"), "error");
+                    this.tab.setActiveTab(this.tab.items.length-1);
+                } else {
+                    pimcore.helpers.showNotification(t("error"), t("plugin_pimcore_datahub_configpanel_item_saveerror"), "error", t(rdata.message));
+                }
+            }.bind(this)
+        });
     },
 
     saveOnComplete: function () {

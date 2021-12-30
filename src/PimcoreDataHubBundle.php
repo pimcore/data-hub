@@ -70,7 +70,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     {
         return [
             '/bundles/pimcoredatahub/js/datahub.js',
-            '/bundles/pimcoredatahub/js/helper.js',
             '/bundles/pimcoredatahub/js/config.js',
             '/bundles/pimcoredatahub/js/adapter/graphql.js',
             '/bundles/pimcoredatahub/js/configuration/graphql/configItem.js',
