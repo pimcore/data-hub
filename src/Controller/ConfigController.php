@@ -224,7 +224,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             if ($originalConfig->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
-            if(!$originalConfig->isAllowed('update')) {
+            if (!$originalConfig->isAllowed('update')) {
                 $this->createAccessDeniedHttpException();
             }
             $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $originalConfig->getType()]);
