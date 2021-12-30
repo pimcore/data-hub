@@ -137,11 +137,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $request->get('name');
 
             $config = Configuration::getByName($name);
+            if (!$config instanceof Configuration) {
+                throw new \Exception('Name does not exist.');
+            }
             if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
-            if (!$config instanceof Configuration) {
-                throw new \Exception('Name does not exist.');
+            if (!$config->isAllowed('delete')) {
+                throw $this->createAccessDeniedHttpException();
             }
 
             WorkspaceHelper::deleteConfiguration($config);
@@ -385,6 +388,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config = Configuration::getByName($name);
             if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
+            }
+            if (!$config->isAllowed('update')) {
+                throw $this->createAccessDeniedHttpException();
             }
             $configuration = $config->getConfiguration();
 
