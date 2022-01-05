@@ -25,7 +25,7 @@ use Pimcore\Model\User\Permission\Definition;
 
 class Installer extends SettingsStoreAwareInstaller
 {
-    CONST DATAHUB_PERMISSION_CATEGORY = 'Datahub';
+    const DATAHUB_PERMISSION_CATEGORY = 'Datahub';
     const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
     const DATAHUB_ADMIN_PERMISSION = 'plugin_datahub_admin';
 
