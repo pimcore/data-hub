@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
+use Pimcore\Model\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,7 +56,11 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             'expandable' => false,
             'leaf' => true,
             'adapter' => $type,
-            'writeable' => $configuration->isWriteable()
+            'writeable' => $configuration->isWriteable(),
+            'permissions' => [
+                'delete' => $configuration->isAllowed('delete'),
+                'update' => $configuration->isAllowed('update')
+            ]
         ];
     }
 
@@ -83,22 +88,24 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $groups = [];
         /** @var Configuration $item */
         foreach ($list as $item) {
-            if ($item->getGroup()) {
-                if (empty($groups[$item->getGroup()])) {
-                    $groups[$item->getGroup()] = [
-                        'id' => 'group_' . $item->getName(),
-                        'text' => $item->getGroup(),
-                        'expandable' => true,
-                        'leaf' => false,
-                        'allowChildren' => true,
-                        'iconCls' => 'pimcore_icon_folder',
-                        'group' => $item->getGroup(),
-                        'children' => [],
-                    ];
+            if ($item->isAllowed('read')) {
+                if ($item->getGroup()) {
+                    if (empty($groups[$item->getGroup()])) {
+                        $groups[$item->getGroup()] = [
+                            'id' => 'group_' . $item->getName(),
+                            'text' => $item->getGroup(),
+                            'expandable' => true,
+                            'leaf' => false,
+                            'allowChildren' => true,
+                            'iconCls' => 'pimcore_icon_folder',
+                            'group' => $item->getGroup(),
+                            'children' => []
+                        ];
+                    }
+                    $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
+                } else {
+                    $tree[] = $this->buildItem($item);
                 }
-                $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
-            } else {
-                $tree[] = $this->buildItem($item);
             }
         }
 
@@ -130,11 +137,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $name = $request->get('name');
 
             $config = Configuration::getByName($name);
+            if (!$config instanceof Configuration) {
+                throw new \Exception('Name does not exist.');
+            }
             if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
-            if (!$config instanceof Configuration) {
-                throw new \Exception('Name does not exist.');
+            if (!$config->isAllowed('delete')) {
+                throw $this->createAccessDeniedHttpException();
             }
 
             WorkspaceHelper::deleteConfiguration($config);
@@ -168,6 +178,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $path = $request->get('path');
             $name = $request->get('name');
             $type = $request->get('type');
+            $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $type]);
 
             $config = Configuration::getByName($name);
 
@@ -213,6 +224,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             if ($originalConfig->isWriteable() === false) {
                 throw new ConfigWriteException();
             }
+            if (!$originalConfig->isAllowed('update')) {
+                throw $this->createAccessDeniedHttpException();
+            }
+            $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $originalConfig->getType()]);
 
             $originalConfig->setName($name);
             $originalConfig->save();
@@ -242,6 +257,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $configuration = Configuration::getByName($name);
         if (!$configuration) {
             throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
+        }
+        if (!$configuration->isAllowed('read')) {
+            throw $this->createAccessDeniedHttpException();
         }
 
         $config = $configuration->getConfiguration();
@@ -341,6 +359,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             [
                 'name' => $configuration->getName(),
                 'configuration' => $config,
+                'userPermissions' => [
+                    'update' => $configuration->isAllowed('update'),
+                    'delete' => $configuration->isAllowed('delete')
+                ],
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
                 'modificationDate' => $config['general']['modificationDate']
@@ -371,6 +393,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $config = Configuration::getByName($name);
             if ($config->isWriteable() === false) {
                 throw new ConfigWriteException();
+            }
+            if (!$config->isAllowed('update')) {
+                throw $this->createAccessDeniedHttpException();
             }
             $configuration = $config->getConfiguration();
 
@@ -413,9 +438,14 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
 
             $config->setConfiguration($dataDecoded);
-            $config->save();
 
-            return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
+            if ($config->isAllowed('read') && $config->isAllowed('update')) {
+                $config->save();
+
+                return $this->json(['success' => true, 'modificationDate' => $dataDecoded['general']['modificationDate']]);
+            } else {
+                return $this->json(['success' => false, 'permissionError' => true]);
+            }
         } catch (\Exception $e) {
             return $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -467,5 +497,39 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         return $this->adminJson($thumbnails);
+    }
+
+    /**
+     * @Route("/permissions-users", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getPermissionUsersAction(Request $request)
+    {
+        $type = $request->get('type', 'user');
+
+        $list = new User\Listing();
+        if ($type === 'role') {
+            $list = new User\Role\Listing();
+        }
+
+        $list->setCondition('type = ? AND id != 1', [$type]);
+        $list->setOrder('ASC');
+        $list->setOrderKey('name');
+
+        $users = [];
+        foreach ($list->getItems() as $user) {
+            if ($user->getId() && $user->getName() != 'system') {
+                $users[] = [
+                    'id' => $user->getId(),
+                    'text' => $user->getName(),
+                    'elementType' => 'user',
+                ];
+            }
+        }
+
+        return $this->adminJson($users);
     }
 }

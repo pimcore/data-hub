@@ -77,7 +77,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
             '/bundles/pimcoredatahub/js/Abstract.js',
             '/bundles/pimcoredatahub/js/mutationvalue/DefaultValue.js',
             '/bundles/pimcoredatahub/js/queryvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/Abstract.js',
             '/bundles/pimcoredatahub/js/queryoperator/Alias.js',
             '/bundles/pimcoredatahub/js/queryoperator/Concatenator.js',
             '/bundles/pimcoredatahub/js/queryoperator/DateFormatter.js',

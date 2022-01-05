@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\Configuration;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Config;
-use Pimcore\File;
 use Pimcore\Model;
 use Symfony\Component\Uid\Uuid as Uid;
 
