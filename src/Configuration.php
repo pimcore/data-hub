@@ -17,6 +17,8 @@ namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Event\ConfigurationEvents;
 use Pimcore\Model\AbstractModel;
+use Pimcore\Model\User;
+use Pimcore\Tool\Admin;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -249,6 +251,10 @@ class Configuration extends AbstractModel
      */
     public function save(): void
     {
+        if (!$this->isAllowed('update')) {
+            throw new \Exception('Permissions missing to save the configuration');
+        }
+
         $event = new GenericEvent($this);
         $event->setArgument('configuration', $this);
         \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_PRE_SAVE);
@@ -260,6 +266,11 @@ class Configuration extends AbstractModel
 
         if (!isset($this->configuration['workspaces'])) {
             $this->configuration['workspaces'] = [];
+        }
+
+        if (!isset($this->configuration['permissions'])) {
+            $this->configuration['permissions']['user'] = [];
+            $this->configuration['permissions']['role'] = [];
         }
 
         if (isset($this->configuration['general']['writeable'])) {
@@ -299,6 +310,10 @@ class Configuration extends AbstractModel
      */
     public function delete(): void
     {
+        if (!$this->isAllowed('delete')) {
+            throw new \Exception('Permissions missing to delete the configuration');
+        }
+
         $this->getDao()->delete();
 
         $event = new GenericEvent($this);
@@ -418,11 +433,78 @@ class Configuration extends AbstractModel
         return $this->configuration['security'] ?? [];
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPermissionsConfig()
+    {
+        return $this->configuration['permissions'] ?? [];
+    }
+
     public function __clone()
     {
         if ($this->dao) {
             $this->dao = clone $this->dao;
             $this->dao->setModel($this);
         }
+    }
+
+    /**
+     * @internal
+     *
+     * @param string $type
+     * @param ?User $user
+     *
+     * @return bool
+     */
+    public function isAllowed(string $type, ?User $user = null)
+    {
+        if (null === $user) {
+            $user = Admin::getCurrentUser();
+        }
+
+        if (!$user) {
+            if (php_sapi_name() === 'cli') {
+                return true;
+            }
+
+            return false;
+        }
+
+        //everything is allowed for admin
+        if ($user->isAdmin() || $user->isAllowed('plugin_datahub_admin')) {
+            return true;
+        }
+
+        /**
+         * If there are no specific permissions set for this configuration then check the global adapter permission.
+         * Otherwise, check the configured permissions only and ignore the global adapter permission.
+         */
+        $configKey = 'plugin_datahub_adapter_' . $this->getType();
+
+        $permissionConfig = $this->getPermissionsConfig();
+        $permissionSets = [];
+        foreach ($permissionConfig['user'] ?? [] as $userConfig) {
+            $permissionSets[$userConfig['name']] = $userConfig;
+        }
+        foreach ($permissionConfig['role'] ?? [] as $roleConfig) {
+            $permissionSets[$roleConfig['name']] = $roleConfig;
+        }
+
+        if (empty($permissionSets)) {
+            return $user->isAllowed($configKey);
+        } else {
+            if (isset($permissionSets[$user->getName()])) {
+                return $permissionSets[$user->getName()][$type] ?? false;
+            }
+            foreach ($user->getRoles() as $roleId) {
+                $role = User\Role::getById($roleId);
+                if (isset($permissionSets[$role->getName()][$type]) && $permissionSets[$role->getName()][$type] === true) {
+                    return $permissionSets[$role->getName()][$type];
+                }
+            }
+        }
+
+        return false;
     }
 }
