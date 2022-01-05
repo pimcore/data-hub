@@ -53,6 +53,12 @@ final class Version20211108160248 extends AbstractMigration
     {
         $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADAPTER_PERMISSION));
         $this->addSql(sprintf("INSERT IGNORE INTO users_permission_definitions (`key`) VALUES('%s');", Installer::DATAHUB_ADMIN_PERMISSION));
+        $this->addSql(sprintf("UPDATE users_permission_definitions SET `category` = '%s' WHERE `key` IN ('%s', '%s', '%s')",
+            Installer::DATAHUB_PERMISSION_CATEGORY,
+            Installer::DATAHUB_ADAPTER_PERMISSION,
+            Installer::DATAHUB_ADMIN_PERMISSION,
+            ConfigController::CONFIG_NAME
+        ));
         $this->migrateUsers(true);
     }
 

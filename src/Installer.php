@@ -21,9 +21,11 @@ use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Logger;
 use Pimcore\Model\Tool\SettingsStore;
+use Pimcore\Model\User\Permission\Definition;
 
 class Installer extends SettingsStoreAwareInstaller
 {
+    CONST DATAHUB_PERMISSION_CATEGORY = 'Datahub';
     const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
     const DATAHUB_ADMIN_PERMISSION = 'plugin_datahub_admin';
 
@@ -38,9 +40,9 @@ class Installer extends SettingsStoreAwareInstaller
     public function install()
     {
         // create backend permission
-        \Pimcore\Model\User\Permission\Definition::create(ConfigController::CONFIG_NAME);
-        \Pimcore\Model\User\Permission\Definition::create(self::DATAHUB_ADAPTER_PERMISSION);
-        \Pimcore\Model\User\Permission\Definition::create(self::DATAHUB_ADMIN_PERMISSION);
+        Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+        Definition::create(self::DATAHUB_ADAPTER_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+        Definition::create(self::DATAHUB_ADMIN_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
 
         try {
             $types = ['document', 'asset', 'object'];
