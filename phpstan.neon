@@ -4,6 +4,8 @@ parameters:
         - src
     bootstrapFiles:
         - phpstan-bootstrap.php
-
+    stubFiles:
+        - stubs/Asset.stub
+        - stubs/Pdf.stub
 includes:
     - phpstan-baseline.neon

@@ -1,0 +1,11 @@
+<?php
+
+namespace Pimcore\Model\Document\Editable;
+
+class Pdf
+{
+    /**
+     * @return \Pimcore\Model\Asset|null
+     */
+    public function getElement();
+}
