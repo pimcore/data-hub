@@ -301,14 +301,14 @@ class QueryType
     }
 
     /**
-     * @param array $value
+     * @param array|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      */
-    public function resolveEdge($value, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $object = $value['node'];
 
