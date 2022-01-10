@@ -21,7 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\DataObject\Data;
 
 class ObjectMetadata
 {
@@ -97,8 +97,7 @@ class ObjectMetadata
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value && $value['element']) {
-
-            /** @var ElementMetadata $relation */
+            /** @var Data\ObjectMetadata $relation */
             $relation = $value['element']['__relation'];
             $meta = $relation->getData();
             $result = [];
