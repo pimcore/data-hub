@@ -322,14 +322,14 @@ class QueryType
     }
 
     /**
-     * @param array $value
+     * @param array|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      */
-    public function resolveEdges($value, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $objectList = $value['edges']();
         $nodes = [];
