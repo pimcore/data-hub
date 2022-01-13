@@ -87,6 +87,22 @@ class PimcoreObjectType extends ObjectType
             [
                 'type' => Type::id(),
             ],
+            'objectType' => [
+                'type' => Type::string(),
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    $object = \Pimcore\Model\DataObject::getById($value['id']);
+
+                    if ($object) {
+                        $result = $object->getType();
+
+                        if ($result) {
+                            return $result;
+                        }
+                    }
+
+                    return null;
+                }
+            ],
             'index' => [
                 'type' => Type::int(),
                 'resolve' => [$resolver, 'resolveIndex']
