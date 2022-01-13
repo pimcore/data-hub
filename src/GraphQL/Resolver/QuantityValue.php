@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\Data\InputQuantityValue;
 
 class QuantityValue
 {
@@ -55,7 +56,7 @@ class QuantityValue
      */
     public function resolveValue($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue || $value instanceof InputQuantityValue) {
             return $value->getValue();
         }
 
