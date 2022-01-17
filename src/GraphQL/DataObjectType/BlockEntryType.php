@@ -81,8 +81,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     {
         if ($this->class instanceof Definition) {
             $name = $this->class->getKey();
-        } elseif ($this->class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
-            $name = $this->class->getKey();
         } else {
             $name = $this->class->getName();
         }

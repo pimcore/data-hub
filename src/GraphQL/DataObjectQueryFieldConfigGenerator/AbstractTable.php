@@ -22,7 +22,8 @@ use GraphQL\Type\Definition\StringType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Pimcore\Model\DataObject\Fieldcollection\Definition as FieldcollectionDefinition;
+use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
 
 abstract class AbstractTable extends Base
 {
@@ -81,10 +82,10 @@ abstract class AbstractTable extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        if ($class instanceof Definition) {
-            $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
-        } elseif ($class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) {
+        if ($class instanceof ObjectbrickDefinition) {
             $name = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
+        } elseif ($class instanceof FieldcollectionDefinition) {
+            $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
         } else {
             $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
         }
