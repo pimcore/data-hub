@@ -280,7 +280,9 @@ class WorkspaceHelper
                 $parent = $parent->getParent();
             }
         }
-        $parentIds[] = $element->getId();
+        if (!is_null($element->getId())) {
+            $parentIds[] = $element->getId();
+        }
 
         try {
             $db = Db::get();
