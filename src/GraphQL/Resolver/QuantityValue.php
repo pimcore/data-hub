@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\Data\InputQuantityValue;
+use Pimcore\Model\DataObject\Data\AbstractQuantityValue;
 
 class QuantityValue
 {
@@ -45,18 +45,18 @@ class QuantityValue
     }
 
     /**
-     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
+     * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return float|null
+     * @return float|string|null
      *
      * @throws \Exception
      */
     public function resolveValue($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue || $value instanceof InputQuantityValue) {
+        if ($value instanceof AbstractQuantityValue) {
             return $value->getValue();
         }
 
