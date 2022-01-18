@@ -48,7 +48,7 @@ class MultihrefMetadataType extends ObjectType
         $this->class = $class;
         $this->setGraphQlService($graphQlService);
         $this->fieldDefinition = $fieldDefinition;
-        $name = ($class instanceof Definition || $class instanceof \Pimcore\Model\DataObject\Objectbrick\Definition) ? $class->getKey() : $class->getName();
+        $name = ($class instanceof Definition) ? $class->getKey() : $class->getName();
 
         $config['name'] = 'object_'.$name.'_'.$fieldDefinition->getName();
         $this->build($config);

@@ -42,7 +42,7 @@ class Fieldcollections extends Base
 
             $allowedFcTypes = [];
             foreach ($list as $fcDef) {
-                $allowedFcTypes[] = $fcDef->getName();
+                $allowedFcTypes[] = $fcDef->getKey();
             }
         }
 

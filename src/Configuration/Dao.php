@@ -24,6 +24,8 @@ use Symfony\Component\Uid\Uuid as Uid;
  * Class Dao
  *
  * @package Pimcore\Bundle\DataHubBundle\Configuration
+ *
+ * @property Configuration $model
  */
 class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 {
@@ -65,7 +67,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     public function save(): void
     {
         if (!$this->model->getName()) {
-            $this->model->getName(Uid::v4());
+            $this->model->setName(Uid::v4());
         }
 
         $ts = time();
@@ -238,7 +240,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 
     /**
      * @param string $id
-     * @param $data
+     * @param mixed $data
      *
      * @return \array[][][]
      */

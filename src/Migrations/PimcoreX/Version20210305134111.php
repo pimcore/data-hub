@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 
 use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Migrations\BundleAwareMigration;
+use Pimcore\Model\Tool\SettingsStore;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
@@ -28,12 +29,18 @@ class Version20210305134111 extends BundleAwareMigration
         return 'PimcoreDataHubBundle';
     }
 
+    protected function checkBundleInstalled()
+    {
+        //need to always return true here, as the migration is setting the bundle installed
+        return true;
+    }
+
     /**
      * @param Schema $schema
      */
     public function up(Schema $schema): void
     {
-        // nothing to do
+        SettingsStore::set('BUNDLE_INSTALLED__Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle', true, 'bool', 'pimcore');
     }
 
     /**
