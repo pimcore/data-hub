@@ -1,14 +1,17 @@
 # Installation
 
-## Minimum Requirements
-
-* Pimcore >= 5.7
-
 ## Install
 
 Install bundle via composer:
+
+For Pimcore version >= 10.2:
 ```bash 
 composer require pimcore/data-hub
+```
+
+For Pimcore version < 10.2:
+```bash
+composer require pimcore/data-hub:~1.0.11
 ```
 
 Enable bundle via console or extensions manager:
