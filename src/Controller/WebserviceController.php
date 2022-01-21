@@ -159,8 +159,8 @@ class WebserviceController extends FrontendController
             $input = json_decode($request->getContent(), true);
         }
 
-        $query = $input['query'];
-        $variableValues = isset($input['variables']) ? $input['variables'] : null;
+        $query = $input['query'] ?? null;
+        $variableValues = $input['variables'] ?? null;
 
         try {
             $rootValue = [];
@@ -195,7 +195,6 @@ class WebserviceController extends FrontendController
                 null,
                 null,
                 $validators
-
             );
 
             $exResult = new ExecutorResultEvent($request, $result);
