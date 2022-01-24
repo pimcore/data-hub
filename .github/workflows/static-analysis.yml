@@ -40,3 +40,14 @@ jobs:
 
             - name: "Run a static analysis with phpstan/phpstan"
               run: "vendor/bin/phpstan analyse --memory-limit=-1"
+
+            - name: "Generate baseline file"
+              if: ${{ failure() }}
+              run: "vendor/bin/phpstan analyse --memory-limit=-1 --generate-baseline"
+
+            - name: "Upload baseline file"
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v2
+              with:
+                  name: phpstan-baseline.neon
+                  path: phpstan-baseline.neon
