@@ -15,12 +15,12 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
-use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\StringType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition as FieldcollectionDefinition;
 use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
@@ -28,10 +28,10 @@ use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
 abstract class AbstractTable extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -75,10 +75,10 @@ abstract class AbstractTable extends Base
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|FieldcollectionDefinition|null $class
+     * @param object|null $container
      *
-     * @return ListOfType|StringType
+     * @return Type
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

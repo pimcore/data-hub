@@ -23,16 +23,19 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class ReverseManyToManyObjectRelation extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig($fieldDefinition, $class, $attribute,
+        return $this->enrichConfig(
+            $fieldDefinition,
+            $class,
+            $attribute,
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
@@ -44,8 +47,8 @@ class ReverseManyToManyObjectRelation extends Base
 
     /**
      * @param Data\ReverseManyToManyObjectRelation $fieldDefinition
-     * @param ClassDefinition $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */
@@ -57,13 +60,6 @@ class ReverseManyToManyObjectRelation extends Base
         return $type;
     }
 
-    /**
-     * @param string $attribute
-     * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper\ReverseManyToManyObjects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

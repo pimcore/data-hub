@@ -25,11 +25,8 @@ abstract class AbstractDocumentType extends ObjectType
     use ServiceTrait;
 
     /**
-     * AbstractDocumentType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
-     * @param array $context
      */
     public function __construct(Service $graphQlService, $config = [])
     {

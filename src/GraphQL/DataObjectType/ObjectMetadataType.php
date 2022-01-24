@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\ObjectMetadata;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition as FieldcollectionDefinition;
 use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
@@ -35,11 +36,9 @@ class ObjectMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * ObjectMetadataType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
-     * @param null $class
+     * @param ClassDefinition|null $class
      * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])

@@ -1,0 +1,482 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeParentInterface\\:\\:end\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\AssetType\\\\AssetFolderType has an unused parameter \\$config\\.$#"
+			count: 1
+			path: src/GraphQL/AssetType/AssetFolderType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\AssetType\\\\AssetInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/AssetType/AssetInputType.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/GraphQL/AssetType/AssetTreeType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\AssetType\\\\AssetType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/AssetType/AssetType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/BooleanSelectType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/CheckboxType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/DateType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/MultiselectType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/QuantityValueType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreFeatureType/StringType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\ClassificationstoreType\\\\Group has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/ClassificationstoreType/Group.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\AbstractModel\\:\\:getType\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectInputProcessor/Fieldcollections.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\AbstractModel\\:\\:setIndex\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectInputProcessor/Fieldcollections.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 2
+			path: src/GraphQL/DataObjectMutationFieldConfigGenerator/Fieldcollections.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getFieldDefinition\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Block.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getOwnerClassId\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Helper/ReverseManyToManyObjects.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getOwnerFieldName\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectQueryFieldConfigGenerator/Helper/ReverseManyToManyObjects.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getAssetsAllowed\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/AbstractRelationsType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getClasses\\(\\)\\.$#"
+			count: 2
+			path: src/GraphQL/DataObjectType/AbstractRelationsType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getDocumentsAllowed\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/AbstractRelationsType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getObjectsAllowed\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/AbstractRelationsType.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/AbstractRelationsType.php
+
+		-
+			message: "#^Instanceof between Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition and Pimcore\\\\Model\\\\DataObject\\\\Fieldcollection\\\\Definition will always evaluate to false\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/BlockEntryType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/BlockEntryType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\ElementDescriptorInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ElementDescriptorInputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ElementMetadataKeyValuePairType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/GeoboundsType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\GeopointInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/GeopointInputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/GeopointType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\HotspotType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/HotspotType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\InputType\\\\AbstractRelationInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/InputType/AbstractRelationInputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/LinkType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/LocalizedType.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/MergeType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\ObjectFolderType has an unused parameter \\$config\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ObjectFolderType.php
+
+		-
+			message: "#^Instanceof between Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\|null and Pimcore\\\\Model\\\\DataObject\\\\Fieldcollection\\\\Definition will always evaluate to false\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ObjectMetadataType.php
+
+		-
+			message: "#^Instanceof between Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\|null and Pimcore\\\\Model\\\\DataObject\\\\Objectbrick\\\\Definition will always evaluate to false\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ObjectMetadataType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\AbstractObject\\:\\:getClass\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ObjectTreeType.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/ObjectTreeType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\PimcoreObjectType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/PimcoreObjectType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\QuantityValueType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/QuantityValueType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/QuantityValueUnitType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\UrlSlugType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DataObjectType/UrlSlugType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentElementType\\\\AreablockDataInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/AreablockDataInputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/AreablockType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/BlockType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/CheckboxType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/DateType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/EmbedType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/ImageType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/InputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/LinkType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/MultiselectType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/NumericType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/PdfType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/RelationType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/RelationsType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentElementType\\\\ScheduledblockDataInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/ScheduledblockDataInputType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/ScheduledblockType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/SelectType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/TableType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/TextareaType.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/VideoType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/VideoType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/WysiwygType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\DocumentFolderType has an unused parameter \\$config\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/DocumentFolderType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\DocumentLinkInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/DocumentLinkInputType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\DocumentPageInputType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/DocumentPageInputType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\EmailType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/EmailType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\HardlinkType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/HardlinkType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\LinkType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/LinkType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentType\\\\PageSnippetType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentType/PageSnippetType.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/FieldHelper/AbstractFieldHelper.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/General/AnyDocumentTargetType.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/General/AnyTargetType.php
+
+		-
+			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\General\\\\FolderType has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/GraphQL/General/FolderType.php
+
+		-
+			message: "#^Static property Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\Mutation\\\\MutationType\\:\\:\\$documentElementTypes \\(array\\) does not accept GraphQL\\\\Type\\\\Definition\\\\InputObjectType\\.$#"
+			count: 1
+			path: src/GraphQL/Mutation/MutationType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\Query\\\\Operator\\\\OperatorInterface\\:\\:setGraphQlService\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Mutation/Operator/Factory/DefaultMutationOperatorFactoryBase.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/GraphQL/PropertyType/ObjectsType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\Listing\\\\AbstractListing\\:\\:getTotalCount\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Resolver/AssetListing.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\Listing\\\\AbstractListing\\:\\:load\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Resolver/AssetListing.php
+
+		-
+			message: "#^Call to method getLatitude\\(\\) on an unknown class Pimcore\\\\Model\\\\DataObject\\\\Data\\\\Geopoint\\.$#"
+			count: 1
+			path: src/GraphQL/Resolver/Geopoint.php
+
+		-
+			message: "#^Call to method getLongitude\\(\\) on an unknown class Pimcore\\\\Model\\\\DataObject\\\\Data\\\\Geopoint\\.$#"
+			count: 1
+			path: src/GraphQL/Resolver/Geopoint.php
+
+		-
+			message: "#^Class Pimcore\\\\Model\\\\DataObject\\\\Data\\\\Geopoint not found\\.$#"
+			count: 2
+			path: src/GraphQL/Resolver/Geopoint.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\Listing\\:\\:getTableName\\(\\)\\.$#"
+			count: 4
+			path: src/GraphQL/Resolver/QueryType.php
+
+		-
+			message: "#^Variable \\$nodeData might not be defined\\.$#"
+			count: 1
+			path: src/GraphQL/Resolver/QueryType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectMutationFieldConfigGeneratorInterface\\:\\:getGraphQlMutationFieldConfig\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Service.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGeneratorInterface\\:\\:getGraphQlOperatorConfig\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Service.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectQueryFieldConfigGeneratorInterface\\:\\:getGraphQlQueryOperatorConfig\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/Service.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getFieldDefinition\\(\\)\\.$#"
+			count: 6
+			path: src/GraphQL/Service.php
+
+		-
+			message: "#^Instanceof between object and Pimcore\\\\Model\\\\DataObject\\\\Objectbrick\\\\Data\\\\AbstractData will always evaluate to false\\.$#"
+			count: 1
+			path: src/GraphQL/Service.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/SharedType/HotspotCropType.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/SharedType/KeyValueType.php
+
+		-
+			message: "#^Method Doctrine\\\\DBAL\\\\Driver\\\\Connection\\:\\:query\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: src/Installer.php
+

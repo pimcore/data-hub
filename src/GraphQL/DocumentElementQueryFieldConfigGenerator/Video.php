@@ -21,8 +21,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class Video extends Base
 {
     /**
-     * Video constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

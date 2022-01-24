@@ -32,10 +32,8 @@ class ThumbnailHtml extends AbstractOperator
     private $thumbnailHtmlConfig;
 
     /**
-     * ThumbnailHtml constructor.
-     *
      * @param array $config
-     * @param null $context
+     * @param mixed $context
      */
     public function __construct(array $config = [], $context = null)
     {
@@ -49,8 +47,6 @@ class ThumbnailHtml extends AbstractOperator
      * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
-     *
-     * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
@@ -58,8 +54,7 @@ class ThumbnailHtml extends AbstractOperator
         $result->label = $this->label;
         $result->value = null;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if ($children && $this->thumbnailHtmlConfig) {
             $c = $children[0];

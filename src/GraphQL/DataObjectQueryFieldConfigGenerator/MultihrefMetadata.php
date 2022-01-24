@@ -17,15 +17,16 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\MultihrefMetadataType;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class MultihrefMetadata extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -43,8 +44,8 @@ class MultihrefMetadata extends Base
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */
@@ -53,13 +54,6 @@ class MultihrefMetadata extends Base
         return Type::listOf(new MultihrefMetadataType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
-    /**
-     * @param $attribute
-     * @param Data $fieldDefinition
-     * @param $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\MultihrefMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

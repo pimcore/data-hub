@@ -16,15 +16,16 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Href extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -39,8 +40,8 @@ class Href extends Base
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */
@@ -49,13 +50,6 @@ class Href extends Base
         return new HrefType($this->getGraphQlService(), $fieldDefinition, $class, ['description' => 'pseudo class for field ' . $fieldDefinition->getName()]);
     }
 
-    /**
-     * @param $attribute
-     * @param Data $fieldDefinition
-     * @param $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Href($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

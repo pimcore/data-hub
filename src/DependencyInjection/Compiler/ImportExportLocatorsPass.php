@@ -455,7 +455,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param Definition $definition
      */
     private function registerAssetDataTypes(
         ContainerBuilder $container
@@ -465,8 +464,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param $tag
-     * @param $methodCall
+     * @param string $tag
+     * @param string $methodCall
      */
     private function registerElementTypes(
         ContainerBuilder $container,
@@ -491,7 +490,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param Definition $definition
      */
     private function registerDataObjectDataTypes(
         ContainerBuilder $container
@@ -501,7 +499,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param Definition $definition
      */
     private function registerDocumentDataTypes(
         ContainerBuilder $container
@@ -511,7 +508,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param Definition $definition
      */
     private function registerClassificationStoreDataTypes(
         ContainerBuilder $container
@@ -521,7 +517,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @param Definition $definition
      */
     private function registerPropertyDataTypes(
         ContainerBuilder $container

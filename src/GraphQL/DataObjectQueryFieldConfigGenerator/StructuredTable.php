@@ -21,29 +21,31 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class StructuredTable extends AbstractTable
 {
     /**
-     * @param Data|Data\StructuredTable $fieldDefinition
+     * @param Data $fieldDefinition
      *
      * @return array
      */
     protected function getTableColumns(Data $fieldDefinition): array
     {
         $cols = [];
-        foreach ($fieldDefinition->getCols() as $i => $columnConfig) {
-            $key = $columnConfig['key'] ?? 'col' . $i;
+        if ($fieldDefinition instanceof Data\StructuredTable) {
+            foreach ($fieldDefinition->getCols() as $i => $columnConfig) {
+                $key = $columnConfig['key'] ?? 'col' . $i;
 
-            switch ($columnConfig['type']) {
-                case 'number':
-                    $type = Type::float();
-                    break;
-                case 'bool':
-                    $type = Type::boolean();
-                    break;
-                case 'text':
-                default:
-                    $type = Type::string();
+                switch ($columnConfig['type']) {
+                    case 'number':
+                        $type = Type::float();
+                        break;
+                    case 'bool':
+                        $type = Type::boolean();
+                        break;
+                    case 'text':
+                    default:
+                        $type = Type::string();
+                }
+
+                $cols[$key] = $type;
             }
-
-            $cols[$key] = $type;
         }
 
         return $cols;

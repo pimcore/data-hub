@@ -20,33 +20,33 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Image
 {
     use ServiceTrait;
 
     /**
-     * @var
+     * @var Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
-     * Href constructor.
-     *
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
-     * @param $attribute
-     * @param $fieldDefinition
-     * @param $class
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
      */
     public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
@@ -58,12 +58,12 @@ class Image
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
@@ -81,5 +81,7 @@ class Image
 
             return $data;
         }
+
+        return null;
     }
 }

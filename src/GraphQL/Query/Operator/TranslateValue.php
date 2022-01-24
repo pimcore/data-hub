@@ -36,11 +36,9 @@ class TranslateValue extends AbstractOperator
         $result->value = null;
 
         $translator = $this->getGraphQlService()->getTranslator();
+        $children = $this->getChildren();
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
-
-        if ($children[0]) {
+        if ($children) {
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($children[0]);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);

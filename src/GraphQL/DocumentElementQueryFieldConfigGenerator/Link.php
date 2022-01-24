@@ -24,8 +24,6 @@ class Link extends Base
     protected $linkDataType;
 
     /**
-     * Link constructor.
-     *
      * @param Service $graphQlService
      * @param LinkDataType $linkDataType
      */

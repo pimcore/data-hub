@@ -23,9 +23,7 @@ use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 class IfEmptyOperator extends BaseOperator
 {
     /**
-     * Base constructor.
-     *
-     * @param $nodeDef
+     * @param array $nodeDef
      */
     public function __construct($nodeDef)
     {
@@ -34,7 +32,7 @@ class IfEmptyOperator extends BaseOperator
 
     /**
      * @param Concrete|AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info

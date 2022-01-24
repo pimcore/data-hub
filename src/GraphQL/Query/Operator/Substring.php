@@ -39,54 +39,51 @@ class Substring extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if (!$children) {
             return $result;
-        } else {
-            $c = $children[0];
+        }
 
-            $valueArray = [];
-            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+        $c = $children[0];
 
-            $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            $isArrayType = $childResult->isArrayType;
-            $childValues = $childResult->value;
-            if ($childValues && !$isArrayType) {
-                $childValues = [$childValues];
-            }
+        $valueArray = [];
+        $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
-            /** @var $childValue string */
-            if (is_array($childValues)) {
-                foreach ($childValues as $childValue) {
-                    $showEllipses = false;
-                    if ($childValue && $this->getEllipses()) {
-                        $start = $this->getStart() ? $this->getStart() : 0;
-                        $length = $this->getLength() ? $this->getLength() : 0;
-                        if (strlen($childValue) > $start + $length) {
-                            $showEllipses = true;
-                        }
+        $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+        $isArrayType = $childResult->isArrayType;
+        $childValues = $childResult->value;
+        if ($childValues && !$isArrayType) {
+            $childValues = [$childValues];
+        }
+
+        if (is_array($childValues)) {
+            foreach ($childValues as $childValue) {
+                $showEllipses = false;
+                if ($childValue && $this->getEllipses()) {
+                    $start = $this->getStart() ? $this->getStart() : 0;
+                    $length = $this->getLength() ? $this->getLength() : 0;
+                    if (strlen($childValue) > $start + $length) {
+                        $showEllipses = true;
                     }
-
-                    $childValue = substr($childValue, $this->getStart(), $this->getLength());
-                    if ($showEllipses) {
-                        $childValue .= '...';
-                    }
-
-                    $valueArray[] = $childValue;
                 }
-            } else {
-                $valueArray[] = $childResult->value;
-            }
 
-            $result->isArrayType = $isArrayType;
-            if ($isArrayType) {
-                $result->value = $valueArray;
-            } else {
-                $result->value = $valueArray[0];
+                $childValue = substr($childValue, $this->getStart(), $this->getLength());
+                if ($showEllipses) {
+                    $childValue .= '...';
+                }
+
+                $valueArray[] = $childValue;
             }
-            $result->$valueArray;
+        } else {
+            $valueArray[] = $childResult->value;
+        }
+
+        $result->isArrayType = $isArrayType;
+        if ($isArrayType) {
+            $result->value = $valueArray;
+        } else {
+            $result->value = $valueArray[0];
         }
 
         return $result;

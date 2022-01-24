@@ -89,10 +89,8 @@ class MutationTypeEvent extends Event
     protected $context;
 
     /**
-     * MutationEvent constructor.
-     *
      * @param MutationType $mutationType
-     * @param $config
+     * @param array $config
      * @param array $context
      */
     public function __construct(MutationType $mutationType, $config, $context)

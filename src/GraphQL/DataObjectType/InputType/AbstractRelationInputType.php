@@ -20,13 +20,11 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AbstractRelationInputType extends InputObjectType
+abstract class AbstractRelationInputType extends InputObjectType
 {
     use ServiceTrait;
 
     /**
-     * AssetInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
@@ -40,7 +38,6 @@ class AbstractRelationInputType extends InputObjectType
 
     /**
      * @param array $config
-     * @param array $context
      */
     public function build(&$config)
     {

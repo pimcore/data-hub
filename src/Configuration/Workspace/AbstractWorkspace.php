@@ -19,8 +19,9 @@ use Pimcore\Model\AbstractModel;
 
 /**
  * @method \Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao getDao()
+ * @method void save()
  */
-class AbstractWorkspace extends AbstractModel
+abstract class AbstractWorkspace extends AbstractModel
 {
     /**
      * @var string

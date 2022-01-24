@@ -31,8 +31,6 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
     protected $container;
 
     /**
-     * DocumentElementType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

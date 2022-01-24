@@ -38,20 +38,19 @@ class DateFormatter extends AbstractOperator
         $result->label = $this->label;
         $result->value = null;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if (!$children) {
             return $result;
-        } else {
-            $c = $children[0];
-            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+        }
 
-            $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            if (!is_null($childResult)) {
-                $childResult = $this->format($childResult->value);
-                $result->value = $childResult;
-            }
+        $c = $children[0];
+        $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+
+        $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+        if (!is_null($childResult)) {
+            $childResult = $this->format($childResult->value);
+            $result->value = $childResult;
         }
 
         return $result;
@@ -64,8 +63,6 @@ class DateFormatter extends AbstractOperator
                 $theValue = Carbon::createFromTimestamp($theValue);
             }
             if ($this->format) {
-                $timestamp = null;
-
                 if ($theValue instanceof Carbon) {
                     $timestamp = $theValue->getTimestamp();
 

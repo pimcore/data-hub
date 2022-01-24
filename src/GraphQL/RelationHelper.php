@@ -23,7 +23,7 @@ class RelationHelper
     /**
      * @param ElementInterface $relation
      * @param Service $graphQlService
-     * @param $args
+     * @param array $args
      * @param array $context
      * @param ResolveInfo $resolveInfo
      *

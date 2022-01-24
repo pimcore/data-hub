@@ -36,8 +36,6 @@ class MultihrefMetadata
     protected $fieldHelper;
 
     /**
-     * MultihrefMetadata constructor.
-     *
      * @param ClassDefinition\Data $fieldDefinition
      * @param ClassDefinition $class
      * @param mixed $fieldHelper
@@ -55,7 +53,7 @@ class MultihrefMetadata
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -93,7 +91,7 @@ class MultihrefMetadata
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */

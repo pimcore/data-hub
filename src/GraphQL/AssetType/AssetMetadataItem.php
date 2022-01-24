@@ -25,9 +25,8 @@ class AssetMetadataItem extends ObjectType
     use ServiceTrait;
 
     /**
-     * AssetMetadataItem constructor.
-     *
-     * @param $class
+     * @param Service $graphQlService
+     * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
     {

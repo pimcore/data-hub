@@ -29,8 +29,6 @@ class UrlSlugType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * UrlSlugType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config

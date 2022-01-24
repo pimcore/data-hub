@@ -26,7 +26,7 @@ class CheckConsumerPermissionsService
      * @param Request $request
      * @param Configuration $configuration
      *
-     * @return void
+     * @return bool
      */
     public function performSecurityCheck(Request $request, Configuration $configuration): bool
     {

@@ -32,7 +32,7 @@ class PageSnippet
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */

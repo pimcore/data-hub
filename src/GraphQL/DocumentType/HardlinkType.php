@@ -27,8 +27,6 @@ class HardlinkType extends AbstractDocumentType
     protected $anyDocumentTargetType;
 
     /**
-     * HardlinkType constructor.
-     *
      * @param Service $graphQlService
      * @param AnyDocumentTargetType $anyDocumentTargetType
      * @param array $config

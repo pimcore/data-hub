@@ -20,14 +20,12 @@ use GraphQL\Error\ClientAware;
 class MySafeException extends \Exception implements ClientAware
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $category;
 
     /**
-     * MySafeException constructor.
-     *
-     * @param null $category
+     * @param string|null $category
      * @param string $message
      * @param int $code
      * @param \Throwable|null $previous

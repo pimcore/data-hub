@@ -24,7 +24,7 @@ class LinkType extends ObjectType
     protected static $instance;
 
     /**
-     * @param mixed[] $config
+     * @param LinkDataType $linkDataType
      */
     public static function getInstance(LinkDataType $linkDataType)
     {

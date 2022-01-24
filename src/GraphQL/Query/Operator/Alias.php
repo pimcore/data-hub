@@ -24,20 +24,19 @@ class Alias extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if (!$children) {
             return $result;
-        } else {
-            $c = $children[0];
+        }
 
-            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+        $c = $children[0];
 
-            $valueFromChild = $valueResolver->getLabeledValue($element, $resolveInfo);
-            if ($valueFromChild) {
-                $result->value = $valueFromChild->value;
-            }
+        $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+
+        $valueFromChild = $valueResolver->getLabeledValue($element, $resolveInfo);
+        if ($valueFromChild) {
+            $result->value = $valueFromChild->value;
         }
 
         return $result;

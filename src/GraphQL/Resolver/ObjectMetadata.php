@@ -21,25 +21,25 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\DataObject\Data;
 
 class ObjectMetadata
 {
     use ServiceTrait;
 
+    /** @var ClassDefinition\Data|null */
     protected $fieldDefinition;
 
+    /** @var ClassDefinition|null */
     protected $class;
 
-    /** @var DataObjectFieldHelper */
+    /** @var DataObjectFieldHelper|null */
     protected $fieldHelper;
 
     /**
-     * ObjectMetadata constructor.
-     *
-     * @param ClassDefinition\Data $fieldDefinition
-     * @param ClassDefinition $class
-     * @param $fieldHelper
+     * @param ClassDefinition\Data|null $fieldDefinition
+     * @param ClassDefinition|null $class
+     * @param DataObjectFieldHelper|null $fieldHelper
      */
     public function __construct($fieldDefinition = null, $class = null, $fieldHelper = null)
     {
@@ -49,12 +49,12 @@ class ObjectMetadata
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -85,20 +85,19 @@ class ObjectMetadata
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         if ($value && $value['element']) {
-
-            /** @var ElementMetadata $relation */
+            /** @var Data\ObjectMetadata $relation */
             $relation = $value['element']['__relation'];
             $meta = $relation->getData();
             $result = [];

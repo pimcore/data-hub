@@ -26,7 +26,7 @@ class Video
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -43,7 +43,7 @@ class Video
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -62,7 +62,7 @@ class Video
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -79,7 +79,7 @@ class Video
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -110,7 +110,7 @@ class Video
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo

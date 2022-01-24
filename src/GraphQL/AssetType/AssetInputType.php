@@ -26,8 +26,6 @@ class AssetInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * AssetInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

@@ -33,8 +33,6 @@ class FieldcollectionType extends UnionType implements ContainerAwareInterface
     protected $types;
 
     /**
-     * FieldcollectionType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

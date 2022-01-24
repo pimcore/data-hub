@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -33,8 +34,6 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * ObjectTreeType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -52,7 +51,7 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
     public function getTypes(): array
     {
         $context = Runtime::get('datahub_context');
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 
         $types = array_values(ClassTypeDefinitions::getAll(true));

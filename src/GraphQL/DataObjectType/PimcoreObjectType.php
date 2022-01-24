@@ -22,7 +22,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
@@ -42,7 +41,7 @@ class PimcoreObjectType extends ObjectType
     protected $className;
 
     /**
-     * @var int
+     * @var string
      */
     protected $classId;
 
@@ -51,8 +50,6 @@ class PimcoreObjectType extends ObjectType
     protected $fields;
 
     /**
-     * PimcoreObjectType constructor.
-     *
      * @param Service $graphQlService
      * @param string $className
      * @param string $classId
@@ -70,7 +67,6 @@ class PimcoreObjectType extends ObjectType
     }
 
     /**
-     * @param $config
      * @param array $context
      */
     public function build($context = [])
@@ -159,7 +155,7 @@ class PimcoreObjectType extends ObjectType
 
         if ($context['clientname']) {
 
-            /** @var $configurationItem Configuration */
+            /** @var Configuration $configurationItem */
             $configurationItem = $context['configuration'];
 
             $queryColumnConfig = $configurationItem->getQueryColumnConfig($this->className);
@@ -175,7 +171,6 @@ class PimcoreObjectType extends ObjectType
                     if (!$column['isOperator'] && is_array($column['attributes']) && $column['attributes']['dataType'] == 'fieldcollections') {
                         $this->addFieldCollectionDefs($column, $class, $fields);
                     } else {
-                        /** @var $fieldHelper DataObjectFieldHelper */
                         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
                         $result = $fieldHelper->getQueryFieldConfigFromConfig($column, $class);
                         if (is_array($result)) {
@@ -194,11 +189,9 @@ class PimcoreObjectType extends ObjectType
     public function addFieldCollectionDefs($column, ClassDefinition $class, &$fields)
     {
         $fieldname = $column['attributes']['attribute'];
-        /** @var $fieldDef ClassDefinition\Data\Fieldcollections */
+        /** @var ClassDefinition\Data\Fieldcollections $fieldDef */
         $fieldDef = $class->getFieldDefinition(($fieldname));
         $allowedFcs = $fieldDef->getAllowedTypes();
-
-        /** @var $fieldHelper DataObjectFieldHelper */
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
         $unionTypes = [];
@@ -284,9 +277,9 @@ class PimcoreObjectType extends ObjectType
 
                         $items = $fcData->getItems();
                         if ($items) {
-                            /** @var $item AbstractData */
                             $idx = -1;
 
+                            /** @var AbstractData $item */
                             foreach ($items as $item) {
                                 $idx++;
                                 $data = new FieldcollectionDescriptor();

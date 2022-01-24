@@ -17,40 +17,39 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Element\AbstractElement;
 
 class ReverseManyToManyObjects
 {
     use ServiceTrait;
 
     /**
-     * @var Data\ReverseManyToManyObjectRelation
+     * @var Data
      */
     public $fieldDefinition;
 
     /**
-     * @var
+     * @var ClassDefinition
      */
     public $class;
 
     /**
-     * @var
+     * @var string
      */
     public $attribute;
 
     /**
-     * Objects constructor.
-     *
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService
+     * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition
-     * @param $class
+     * @param ClassDefinition $class
      */
-    public function __construct(\Pimcore\Bundle\DataHubBundle\GraphQL\Service $graphQlService, $attribute, $fieldDefinition, $class)
+    public function __construct(Service $graphQlService, $attribute, $fieldDefinition, $class)
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->class = $class;
@@ -59,7 +58,7 @@ class ReverseManyToManyObjects
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -76,7 +75,6 @@ class ReverseManyToManyObjects
         $relations = $object->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
         if ($relations) {
             $result = [];
-            /** @var $relation AbstractElement */
             foreach ($relations as $relationRaw) {
                 $relation = Concrete::getById($relationRaw['id']);
                 if ($relation) {

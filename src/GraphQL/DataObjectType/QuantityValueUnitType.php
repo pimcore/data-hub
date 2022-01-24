@@ -20,22 +20,20 @@ use GraphQL\Type\Definition\Type;
 
 class QuantityValueUnitType extends ObjectType
 {
-    /**
-     * @var self
-     */
+    /** @var static|null */
     protected static $instance;
 
     /**
-     * @return QuantityValueUnitType
+     * @return static
      */
     public static function getInstance()
     {
         if (!self::$instance) {
             $config = [
-            'fields' => [
-                'id' => Type::id(),
-                'abbreviation' => Type::string(),
-                'longname' => Type::string()
+                'fields' => [
+                    'id' => Type::id(),
+                    'abbreviation' => Type::string(),
+                    'longname' => Type::string(),
                 ]
             ];
             self::$instance = new static($config);

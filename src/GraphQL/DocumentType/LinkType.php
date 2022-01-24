@@ -24,8 +24,6 @@ class LinkType extends AbstractDocumentType
     use ServiceTrait;
 
     /**
-     * LinkType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context
