@@ -93,7 +93,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                     if (empty($groups[$item->getGroup()])) {
                         $groups[$item->getGroup()] = [
                             'id' => 'group_' . $item->getName(),
-                            'text' => $item->getGroup(),
+                            'text' => htmlspecialchars($item->getGroup()),
                             'expandable' => true,
                             'leaf' => false,
                             'allowChildren' => true,
