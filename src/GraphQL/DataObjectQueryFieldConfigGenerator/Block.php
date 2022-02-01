@@ -117,7 +117,7 @@ class Block extends Base
             if (!$value) {
                 return null;
             }
-            
+
             foreach ($value as $blockIndex => $blockEntries) {
                 foreach ($blockEntries as $key => $blockValue) {
                     if (!$blockValue instanceof BlockElement) {
