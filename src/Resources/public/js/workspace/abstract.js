@@ -30,7 +30,8 @@ pimcore.plugin.datahub.workspace.abstract = Class.create({
         var typesColumns = [
             {text: t("path"), flex: 1, sortable: false, dataIndex: 'cpath',
                 editor: new Ext.form.TextField({}),
-                tdCls: "pimcore_property_droptarget"
+                tdCls: "pimcore_property_droptarget",
+                renderer: Ext.util.Format.htmlEncode
             }
         ];
 

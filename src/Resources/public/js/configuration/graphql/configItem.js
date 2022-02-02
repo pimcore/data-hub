@@ -34,6 +34,9 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 componentCls: 'plugin_pimcore_datahub_statusbar',
                 itemId: 'footer'
             },
+            defaults: {
+                renderer: Ext.util.Format.htmlEncode
+            },
         });
 
         //create sub panels after main panel is generated - to be able to reference it in sub panels
