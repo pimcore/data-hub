@@ -41,6 +41,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -1156,9 +1157,9 @@ class MutationType extends ObjectType
                 }
             } else {
                 if (isset($args['parentId'])) {
-                    $parent = AbstractObject::getById($args['parentId']);
+                    $parent = ElementService::getElementById($elementType, $args['parentId']);
                 } elseif (isset($args['path'])) {
-                    $parent = AbstractObject::getByPath($args['path']);
+                    $parent = ElementService::getElementByPath($elementType, $args['path']);
                 }
             }
 
