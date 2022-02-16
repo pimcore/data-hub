@@ -41,6 +41,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -1142,24 +1143,10 @@ class MutationType extends ObjectType
         return static function ($value, $args, $context, ResolveInfo $info) use ($elementType, $me) {
             $parent = null;
 
-            if ($elementType == 'asset') {
-                if (isset($args['parentId'])) {
-                    $parent = Asset::getById($args['parentId']);
-                } elseif (isset($args['path'])) {
-                    $parent = Asset::getByPath($args['path']);
-                }
-            } elseif ($elementType == 'document') {
-                if (isset($args['parentId'])) {
-                    $parent = Document::getById($args['parentId']);
-                } elseif (isset($args['path'])) {
-                    $parent = Document::getByPath($args['path']);
-                }
-            } else {
-                if (isset($args['parentId'])) {
-                    $parent = AbstractObject::getById($args['parentId']);
-                } elseif (isset($args['path'])) {
-                    $parent = AbstractObject::getByPath($args['path']);
-                }
+            if (isset($args['parentId'])) {
+                $parent = ElementService::getElementById($elementType, $args['parentId']);
+            } elseif (isset($args['path'])) {
+                $parent = ElementService::getElementByPath($elementType, $args['path']);
             }
 
             if (!$parent) {
