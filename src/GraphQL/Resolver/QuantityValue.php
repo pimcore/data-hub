@@ -24,7 +24,7 @@ class QuantityValue
     use ServiceTrait;
 
     /**
-     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
+     * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -35,10 +35,8 @@ class QuantityValue
      */
     public function resolveUnit($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
-            $unit = $value->getUnit();
-
-            return ($unit instanceof \Pimcore\Model\DataObject\QuantityValue\Unit) ? $unit->getObjectVars() : [];
+        if ($value instanceof AbstractQuantityValue && $unit = $value->getUnit()) {
+            return $unit->getObjectVars();
         }
 
         return [];
@@ -64,7 +62,7 @@ class QuantityValue
     }
 
     /**
-     * @param \Pimcore\Model\DataObject\Data\QuantityValue|null $value
+     * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -77,7 +75,7 @@ class QuantityValue
     {
         $returnValue = null;
 
-        if ($value instanceof \Pimcore\Model\DataObject\Data\QuantityValue) {
+        if ($value instanceof AbstractQuantityValue) {
             $currentLocale = null;
             $localService = null;
             if (isset($args['language'])) {
