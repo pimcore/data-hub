@@ -123,7 +123,7 @@ class WebserviceController extends FrontendController
         if (isset($config['graphql']) && isset($config['graphql']['not_allowed_policy'])) {
             PimcoreDataHubBundle::setNotAllowedPolicy($config['graphql']['not_allowed_policy']);
         }
-        
+
         $longRunningHelper->addPimcoreRuntimeCacheProtectedItems(['datahub_context']);
         Runtime::set('datahub_context', $context);
 
