@@ -57,12 +57,11 @@ class RebuildWorkspacesCommand extends AbstractCommand
         if ($options) {
             $option = $input->getOption('configs');
             $configs = explode(',', $option);
-            foreach($configs as $configFromOption) {
+            foreach ($configs as $configFromOption) {
                 $config = Configuration::getByName($configFromOption);
                 if (!$config) {
                     $this->output->writeln('<error>Config ' . $configFromOption . ': Not found.</error>');
-                }
-                else {
+                } else {
                     $list[] = $config;
                 }
             }
@@ -74,12 +73,11 @@ class RebuildWorkspacesCommand extends AbstractCommand
             $configName = $config->getName();
             $this->output->writeln("Config $configName: Processing ...");
             $workspaces = $config->getConfiguration()['workspaces'] ?? null;
-            if(isset($workspaces) === true && count($workspaces) > 0) {
+            if (isset($workspaces) === true && count($workspaces) > 0) {
                 $workspaces = WorkspaceHelper::cleanupWorkspaces($workspaces);
                 WorkspaceHelper::saveWorkspaces($config, $workspaces);
                 $this->output->writeln("Config $configName: Workspaces saved.");
-            }
-            else {
+            } else {
                 $this->output->writeln("Config $configName: No workspaces found.");
             }
         }
