@@ -8,20 +8,22 @@ When deploying configurations following steps are necessary:
 - Deploy configuration file `/var/config/.../example.yaml` - e.g. check it into your VCS and 
   deploy it with your deployment mechanisms. 
 
-- Rebuild workspace permission index by running `datahub:graphql:rebuild-definitions`  
+- Rebuild workspaces by running `datahub:configuration:rebuild-workspaces`  
 
 
 Either call 
 ```bash
-datahub:graphql:rebuild-definitions
+datahub:configuration:rebuild-workspaces
 ``` 
 to do that for all definitions, or
 
 
 ```bash
-datahub:graphql:rebuild-definitions --definitions=newsapp,otherendpoint
+datahub:configuration:rebuild-workspaces --configs=assets,events
 ```
 for specific definitions.
+
+>Note: The command ```datahub:graphql:rebuild-definitions ``` is marked as deprecated and will be removed in a future release.   
 
 ### Configuration Storage
 
