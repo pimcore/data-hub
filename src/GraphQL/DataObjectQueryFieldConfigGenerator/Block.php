@@ -119,6 +119,10 @@ class Block extends Base
             if (is_callable($value)) {
                 $value = $value($value, $args, $context, $resolveInfo);
             }
+            
+            if (!$value) {
+                return null;
+            }
 
             foreach ($value as $blockIndex => $blockEntries) {
                 foreach ($blockEntries as $key => $blockValue) {
