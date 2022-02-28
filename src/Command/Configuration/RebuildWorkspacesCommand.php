@@ -55,8 +55,7 @@ class RebuildWorkspacesCommand extends AbstractCommand
         $list = [];
         $options = $input->getOption('configs');
         if ($options) {
-            $option = $input->getOption('configs');
-            $configs = explode(',', $option);
+            $configs = explode(',', $options);
             foreach ($configs as $configFromOption) {
                 $config = Configuration::getByName($configFromOption);
                 if (!$config) {
