@@ -437,14 +437,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 }
             }
 
-            foreach ($keys as $key) {
-                foreach ($dataDecoded['schema'][$key] ?? [] as $entityKey => $entity) {
-                    foreach ($entity['columnConfig']['columns'] ?? [] as $columnKey => $column) {
-                        unset($dataDecoded['schema'][$key][$entityKey]['columnConfig']['columns'][$columnKey]['attributes']['layout']);
-                    }
-                }
-            }
-
             $config->setConfiguration($dataDecoded);
 
             if ($config->isAllowed('read') && $config->isAllowed('update')) {
