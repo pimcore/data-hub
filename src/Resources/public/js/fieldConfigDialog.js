@@ -175,7 +175,6 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                     attributes.attribute = child.data.key;
                     attributes.label = child.data.layout ? child.data.layout.title : child.data.text;
                     attributes.dataType = child.data.dataType;
-                    attributes.layout = child.data.layout;
                     if (child.data.width) {
                         attributes.width = child.data.width;
                     }

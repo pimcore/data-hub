@@ -32,6 +32,7 @@ use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Cache\Runtime;
 use Pimcore\Controller\FrontendController;
+use Pimcore\Helper\LongRunningHelper;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Logger;
 use Pimcore\Model\Factory;
@@ -92,7 +93,8 @@ class WebserviceController extends FrontendController
         Service $service,
         LocaleServiceInterface $localeService,
         Factory $modelFactory,
-        Request $request
+        Request $request,
+        LongRunningHelper $longRunningHelper
     ) {
         $clientname = $request->get('clientname');
 
@@ -121,6 +123,8 @@ class WebserviceController extends FrontendController
         if (isset($config['graphql']) && isset($config['graphql']['not_allowed_policy'])) {
             PimcoreDataHubBundle::setNotAllowedPolicy($config['graphql']['not_allowed_policy']);
         }
+
+        $longRunningHelper->addPimcoreRuntimeCacheProtectedItems(['datahub_context']);
         Runtime::set('datahub_context', $context);
 
         ClassTypeDefinitions::build($service, $context);
