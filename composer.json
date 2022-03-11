@@ -14,6 +14,15 @@
       "vendor/phpunit"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "DataHubBundle\\Tests\\": "tests"
+    },
+    "files": [
+      "kernel/Kernel.php",
+      "app/AppKernel.php"
+    ]
+  },
   "require": {
     "php": "^8.0",
     "pimcore/pimcore": "^10.2",
@@ -28,6 +37,7 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^1.4",
-    "symfony/phpunit-bridge": "*"
+    "symfony/phpunit-bridge": "*",
+    "codeception/codeception": "~2.4.5 || ^4.1.12"
   }
 }
