@@ -42,7 +42,7 @@ class OutputCacheServiceTest extends TestCase
 
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->eventDispatcher->method('dispatch')
-            ->willReturnArgument(1);
+            ->willReturnArgument(0);
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
