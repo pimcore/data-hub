@@ -46,7 +46,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
     {
         // Arrange
-        $this->expectExceptionMessageMatches('/type expected/');
+        $this->expectExceptionMessageRegExp('/type expected/');
         $newValueItemValue = array();
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
@@ -57,7 +57,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfTypeIsNotSupported()
     {
         // Arrange
-        $this->expectExceptionMessageMatches('/The type .* is not supported/');
+        $this->expectExceptionMessageRegExp('/The type .* is not supported/');
         $newValueItemValue = array("type" => "wrong");
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
@@ -68,7 +68,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfBothIdAndFullpathAreMissing()
     {
         // Arrange
-        $this->expectExceptionMessageMatches('/either .* or .* expected/');
+        $this->expectExceptionMessageRegExp('/either .* or .* expected/');
         $newValueItemValue = array("type" => self::TEST_TYPE);
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);

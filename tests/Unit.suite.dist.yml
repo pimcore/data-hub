@@ -1,5 +1,0 @@
-class_name: UnitTester
-modules:
-    enabled:
-        - \DataHubBundle\Tests\Helper\Unit
-        - Asserts
