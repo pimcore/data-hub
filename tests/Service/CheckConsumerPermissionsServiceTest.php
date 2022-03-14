@@ -22,7 +22,7 @@ class CheckConsumerPermissionsServiceTest extends TestCase
 {
     const CORRECT_API_KEY = "correct_key";
 
-    public function testSecurityCheckFailsWhenNoApiKeyInRequest()
+    public function testSecurityCheckFailsWhenNoApiKeyinRequest()
     {
         // Arrange
         $configuration = $this->createMock(Configuration::class);

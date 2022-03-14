@@ -1,7 +1,0 @@
-actor: GraphQLTester
-modules:
-    enabled:
-        - \DataHubBundle\Tests\Helper\Model
-        - \Pimcore\Tests\Helper\Pimcore:
-              connect_db: true
-        - \Pimcore\Tests\Helper\ClassManager

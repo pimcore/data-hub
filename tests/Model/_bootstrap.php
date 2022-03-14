@@ -1,4 +1,0 @@
-<?php
-
-
-\Pimcore\Bootstrap::kernel();
