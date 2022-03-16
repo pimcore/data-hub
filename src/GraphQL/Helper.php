@@ -126,10 +126,15 @@ class Helper
                         if (array_search(strtolower($objectVar), $ops) !== false) {
                             $innerOp = $mappingTable[strtolower($objectVar)];
                             if ($innerOp == 'NOT') {
-                                if (is_null($objectValue)) {
-                                    $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' IS NULL)';
+                                $valuePart = ' IS NULL';
+                                if (!is_null($objectValue)) {
+                                    $valuePart = ' =' . $db->quote($objectValue) . ')';
+                                }
+
+                                if (isset($fieldMappingTable, $key)) {
+                                    $parts[] = '( NOT ' . $db->quoteIdentifier($key) . $valuePart . ')';
                                 } else {
-                                    $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' =' . $db->quote($objectValue) . ')';
+                                    $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . $valuePart . ')';
                                 }
                             } else {
                                 $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
