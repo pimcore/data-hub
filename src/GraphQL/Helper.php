@@ -131,7 +131,7 @@ class Helper
                                     $valuePart = ' =' . $db->quote($objectValue) . ')';
                                 }
 
-                                if (isset($fieldMappingTable, $key)) {
+                                if (isset($fieldMappingTable[$key])) {
                                     $parts[] = '( NOT ' . $db->quoteIdentifier($key) . $valuePart . ')';
                                 } else {
                                     $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . $valuePart . ')';
