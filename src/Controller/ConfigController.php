@@ -50,7 +50,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
 
         return [
             'id' => $name,
-            'text' => $name,
+            'text' => htmlspecialchars($name),
             'type' => 'config',
             'iconCls' => 'plugin_pimcore_datahub_icon_' . $type,
             'expandable' => false,
