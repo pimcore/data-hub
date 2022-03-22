@@ -36,8 +36,9 @@ class QuantityValue extends Base
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
             if ($newValue) {
-                $unit = \Pimcore\Model\DataObject\QuantityValue\Unit::getByAbbreviation($newValue["unit"]);
-                $quantityValue = new \Pimcore\Model\DataObject\Data\QuantityValue($newValue["value"], $unit);
+                $unit = \Pimcore\Model\DataObject\QuantityValue\Unit::getByAbbreviation($newValue['unit']);
+                $quantityValue = new \Pimcore\Model\DataObject\Data\QuantityValue($newValue['value'], $unit);
+
                 return $container->$setter($quantityValue);
             }
 
