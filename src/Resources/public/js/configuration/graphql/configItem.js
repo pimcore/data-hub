@@ -226,6 +226,13 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             value: this.data.security ? this.data.security.skipPermissionCheck : ""
         });
 
+        var enableIntrospection = new Ext.form.Checkbox({
+            fieldLabel: t('plugin_pimcore_datahub_enable_introspection'),
+            labelWidth: 200,
+            name: "enableIntrospection",
+            value: this.data.security ? this.data.security.enableIntrospection : ""
+        });
+
         this.securityForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
             autoScroll: true,
@@ -263,6 +270,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     ]
                 },
                 skipPermissionCheck,
+                enableIntrospection,
                 {
                     xtype: 'displayfield',
                     hideLabel: true,
