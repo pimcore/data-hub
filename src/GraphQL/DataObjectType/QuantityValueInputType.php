@@ -29,7 +29,7 @@ class QuantityValueInputType extends InputObjectType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, $config = ['name' => 'QuantityValueInput'], $context = [])
+    public function __construct(Service $graphQlService, $config = ['name' => 'QuantityValueInput'])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);
