@@ -23,20 +23,21 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 
 final class Version20211108160248 extends AbstractMigration
 {
-    private function migrateConfiguration(bool $up) {
+    private function migrateConfiguration(bool $up)
+    {
         $configs = Configuration::getList();
-        foreach($configs as $config) {
+        foreach ($configs as $config) {
             $configuration = $config->getConfiguration();
-            if($up === true) {
-                $configuration["security"]["enableIntrospection"] = true;
-            }
-            else {
-                unset($configuration["security"]["enableIntrospection"]);
+            if ($up === true) {
+                $configuration['security']['enableIntrospection'] = true;
+            } else {
+                unset($configuration['security']['enableIntrospection']);
             }
             $config->setConfiguration($configuration);
             $config->save();
         }
     }
+
     public function up(Schema $schema): void
     {
         $this->migrateConfiguration(true);
