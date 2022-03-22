@@ -192,8 +192,8 @@ class WebserviceController extends FrontendController
                 $variableValues = $event->getRequest()->get('variables', $variableValues);
             }
 
-            $enableIntrospection = $configuration->getSecurityConfig()["enableIntrospection"] ?? false;
-            if($enableIntrospection === false) {
+            $enableIntrospection = $configuration->getSecurityConfig()['enableIntrospection'] ?? false;
+            if ($enableIntrospection === false) {
                 DocumentValidator::addRule(new DisableIntrospection());
             }
 
