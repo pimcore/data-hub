@@ -269,13 +269,23 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                         }
                     ]
                 },
-                skipPermissionCheck,
-                enableIntrospection,
                 {
                     xtype: 'displayfield',
                     hideLabel: true,
                     value: t("plugin_pimcore_datahub_security_apikey_description"),
                     cls: "pimcore_extra_label_bottom",
+                    style: "padding-bottom: 0px",
+                    readOnly: true,
+                    disabled: true
+                },
+                skipPermissionCheck,
+                enableIntrospection,
+                {
+                    xtype: 'displayfield',
+                    hideLabel: true,
+                    value: t("plugin_pimcore_datahub_security_introspection_description"),
+                    cls: "pimcore_extra_label_bottom",
+                    style: "padding-bottom: 0px",
                     readOnly: true,
                     disabled: true
                 },
