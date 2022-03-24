@@ -72,8 +72,12 @@ class ReverseManyToManyObjects
     {
         $objectId = $value['id'];
         $object = Concrete::getById($objectId);
+        $parent = $object->getParent() ?? null;
 
         $relations = $object->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
+        if (empty($relations) && isset($parent)) {
+            $relations = $parent->getRelationData($this->fieldDefinition->getOwnerFieldName(), false, $this->fieldDefinition->getOwnerClassId());
+        }
         if ($relations) {
             $result = [];
             /** @var $relation AbstractElement */
