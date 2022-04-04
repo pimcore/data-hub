@@ -1,0 +1,5 @@
+actor: GraphQLTester
+modules:
+    enabled:
+        - \Pimcore\Tests\Helper\Pimcore:
+              connect_db: true
