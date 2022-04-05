@@ -116,7 +116,7 @@ class AssetListing
 
                     return $db->quote($fullpath);
                 },
-                explode(',', $args['fullpaths'])
+                str_getcsv($args['fullpaths'], ",", "'")
             );
             $conditionParts[] = '(concat(path, filename) IN (' . implode(',', $quotedFullpaths) . '))';
         }
