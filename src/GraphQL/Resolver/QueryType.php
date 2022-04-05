@@ -392,7 +392,7 @@ class QueryType
 
                     return $db->quote($fullpath);
                 },
-                str_getcsv($args['fullpaths'], ",", "'")
+                str_getcsv($args['fullpaths'], ',', "'")
             );
             $conditionParts[] = '(concat(o_path, o_key) IN (' . implode(',', $quotedFullpaths) . '))';
         }
