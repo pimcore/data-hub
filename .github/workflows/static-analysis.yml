@@ -31,7 +31,7 @@ jobs:
 
             - name: "Setup Pimcore environment"
               run: |
-                  .github/ci/scripts/setup-pimcore-environment.sh
+                  .github/ci/scripts/setup-pimcore-x-environment.sh
 
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
