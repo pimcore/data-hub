@@ -4,13 +4,12 @@ name: "Codeception Tests Pimcore X"
 on:
     pull_request:
         branches:
-            - "*.*"
-            - "master"
+            - "[0-9]+.[0-9]+"
+            - "[0-9]+.x"
     push:
         branches:
-            - "*.*"
-            - "master"
-            - "*_actions"
+            - "[0-9]+.[0-9]+"
+            - "[0-9]+.x"
 
 env:
     PIMCORE_PROJECT_ROOT: ${{ github.workspace }}

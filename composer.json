@@ -16,8 +16,10 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^1.4",
-    "symfony/phpunit-bridge": "*",
-    "codeception/codeception": "~2.4.5 || ^4.1.12"
+    "symfony/phpunit-bridge": "^1.6",
+    "codeception/codeception": "^4.1.12",
+    "codeception/phpunit-wrapper": "^9",
+    "codeception/module-asserts": "^2"
   },
   "autoload": {
     "psr-4": {
