@@ -23,15 +23,12 @@ jobs:
         name: "Codeception tests"
         runs-on: "ubuntu-20.04"
         continue-on-error: ${{ matrix.experimental }}
-        #        env:
-        #            PIMCORE_TEST_DB_DSN: "mysql://root@127.0.0.1:33006/pimcore_test?serverVersion=${{ matrix.server_version }}"
         strategy:
             matrix:
                 include:
-                    - { php-version: 8.0, database: "mariadb:10.7", server_version: "5.5.5-10.5.0-MariaDB-0+deb10u1-log", dependencies: highest, experimental: false }
-                    - { php-version: 8.0, database: "mariadb:10.7", server_version: "5.5.5-10.5.0-MariaDB-0+deb10u1-log", dependencies: lowest, experimental: false }
-                    - { php-version: 8.1, database: "mariadb:10.7", server_version: "5.5.5-10.5.0-MariaDB-0+deb10u1-log", dependencies: highest, experimental: false }
-#                    - { php-version: 8.1, database: "mariadb:10.7", server_version: "5.5.5-10.5.0-MariaDB-0+deb10u1-log", dependencies: lowest, experimental: false }
+                    - { php-version: 8.0, dependencies: highest, experimental: false }
+                    - { php-version: 8.0, dependencies: lowest, experimental: false }
+                    - { php-version: 8.1, dependencies: highest, experimental: false }
         services:
             redis:
                 image: redis
