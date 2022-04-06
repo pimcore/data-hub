@@ -17,6 +17,7 @@
   "require-dev": {
     "phpstan/phpstan": "^1.4",
     "symfony/phpunit-bridge": "^6",
+    "codeception/module-symfony": "^1.6",
     "codeception/codeception": "^4.1.12",
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2"
