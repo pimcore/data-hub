@@ -33,8 +33,7 @@
       "Pimcore\\Bundle\\DataHubBundle\\Tests\\": "tests"
     },
     "files": [
-      "kernel/Kernel.php",
-      "app/AppKernel.php"
+      "kernel/Kernel.php"
     ]
   },
   "extra": {
