@@ -66,7 +66,10 @@ class ImportingConfigTest extends ModelTestCase
 
         $config->save();
         $config = Configuration::getByName(self::CONFNAME);
-        //this works locally but not on github actions 
+
+        codecept_debug($config);
+
+        //this works locally but not on github actions
         $this->assertEquals(true, $config instanceof Configuration, 'Check if configuration is successfully saved ' . self::CONFNAME);
     }
 }
