@@ -70,6 +70,6 @@ class ImportingConfigTest extends ModelTestCase
         codecept_debug($config);
 
         //this works locally but not on github actions
-        $this->assertEquals(true, $config instanceof Configuration, 'Check if configuration is successfully saved ' . self::CONFNAME);
+        $this->assertEquals(true, $config instanceof Configuration, 'Check if configuration is successfully saved ' . self::CONFNAME . ': ' . print_r($config, true));
     }
 }
