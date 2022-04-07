@@ -206,7 +206,7 @@ class WebserviceController extends FrontendController
             $result = $exResult->getResult();
 
             if (\Pimcore::inDebugMode()) {
-                $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE | DebugFlag::RETHROW_INTERNAL_EXCEPTIONS;
+                $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE;
                 $output = $result->toArray($debug);
             } else {
                 $output = $result->toArray(false);
