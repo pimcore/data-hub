@@ -15,13 +15,13 @@ declare(strict_types=1);
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\Migrations;
+namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Migrations\BundleAwareMigration;
 
-final class Version20211108160248 extends AbstractMigration
+final class Version20220322144548 extends BundleAwareMigration
 {
     private function migrateConfiguration(bool $up)
     {
@@ -40,6 +40,7 @@ final class Version20211108160248 extends AbstractMigration
         }
     }
 
+
     public function up(Schema $schema): void
     {
         $this->migrateConfiguration(true);
@@ -48,5 +49,10 @@ final class Version20211108160248 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->migrateConfiguration(false);
+    }
+
+    protected function getBundleName(): string
+    {
+        return "PimcoreDataHubBundle";
     }
 }
