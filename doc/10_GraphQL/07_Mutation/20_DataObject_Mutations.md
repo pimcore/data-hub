@@ -43,6 +43,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Newsletter Active
 * Newsletter Confirmed
 * Numeric
+* Quantity Value
 * Select
 * Slider
 * Textarea
