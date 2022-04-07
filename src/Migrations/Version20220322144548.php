@@ -27,7 +27,7 @@ final class Version20211108160248 extends AbstractMigration
     {
         $configs = Configuration::getList();
         foreach ($configs as $config) {
-            if($config->getType() === 'graphql') {
+            if ($config->getType() === 'graphql') {
                 $configuration = $config->getConfiguration();
                 if ($up === true) {
                     $configuration['security']['enableIntrospection'] = true;
