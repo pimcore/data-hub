@@ -40,7 +40,6 @@ final class Version20220322144548 extends BundleAwareMigration
         }
     }
 
-
     public function up(Schema $schema): void
     {
         $this->migrateConfiguration(true);
@@ -53,6 +52,6 @@ final class Version20220322144548 extends BundleAwareMigration
 
     protected function getBundleName(): string
     {
-        return "PimcoreDataHubBundle";
+        return 'PimcoreDataHubBundle';
     }
 }
