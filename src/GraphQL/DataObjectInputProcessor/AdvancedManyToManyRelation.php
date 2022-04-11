@@ -46,14 +46,14 @@ class AdvancedManyToManyRelation extends Base
 
                     if ($element) {
                         $metaData = $newValueItemValue['metadata'] ?? null;
-                        if($metaData)  {
-                            foreach($metaData as $metaDataKey => $metaDataValue) {
+                        if ($metaData) {
+                            foreach ($metaData as $metaDataKey => $metaDataValue) {
                                 $columns[] = $metaDataValue['name'];
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
                         $item = new ElementMetadata($attribute, $columns ?? [], $element);
-                        if(isset($data) === true) {
+                        if (isset($data) === true) {
                             $item->setData($data);
                         }
                         $result[] = $item;

@@ -19,7 +19,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\DataObject\Data\ObjectMetadata;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
@@ -47,14 +46,14 @@ class AdvancedManyToManyObjectRelation extends Base
 
                     if ($element) {
                         $metaData = $newValueItemValue['metadata'] ?? null;
-                        if($metaData)  {
-                            foreach($metaData as $metaDataKey => $metaDataValue) {
+                        if ($metaData) {
+                            foreach ($metaData as $metaDataKey => $metaDataValue) {
                                 $columns[] = $metaDataValue['name'];
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
                         $item = new ObjectMetadata($attribute, $columns ?? [], $element);
-                        if(isset($data) === true) {
+                        if (isset($data) === true) {
                             $item->setData($data);
                         }
                         $result[] = $item;
