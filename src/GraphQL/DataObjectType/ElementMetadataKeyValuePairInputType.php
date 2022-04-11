@@ -23,7 +23,7 @@ use GraphQL\Type\Definition\Type;
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType
  */
-class ElementMetadataKeyValuePairInputType extends InputObjectType
+final class ElementMetadataKeyValuePairInputType extends InputObjectType
 {
     /**
      * @var static|null
