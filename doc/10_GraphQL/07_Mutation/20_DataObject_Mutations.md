@@ -40,6 +40,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Many-to-Many Relation
 * Many-to-Many Object Relation
 * Advanced Many-to-Many Relation
+* Advanced Many-to-Many Object Relation
 * Multiselect
 * Newsletter Active
 * Newsletter Confirmed

@@ -20,9 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\DataObject\Data\ObjectMetadata;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class AdvancedManyToManyRelation extends Base
+class AdvancedManyToManyObjectRelation extends Base
 {
     use ElementIdentificationTrait;
 
@@ -52,7 +53,7 @@ class AdvancedManyToManyRelation extends Base
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
-                        $item = new ElementMetadata($attribute, $columns ?? [], $element);
+                        $item = new ObjectMetadata($attribute, $columns ?? [], $element);
                         if(isset($data) === true) {
                             $item->setData($data);
                         }
