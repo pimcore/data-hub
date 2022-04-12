@@ -62,7 +62,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
     public function getGraphQlQueryOperatorConfig($typeName, $nodeDef, $class = null, $container = null, $params = [])
     {
         $attributes = $nodeDef['attributes'];
-        $label = ($attributes['label'] ? $attributes['label'] : '#' . uniqid());
+        $label = (isset($attributes['label']) ? $attributes['label'] : '#' . uniqid());
         $label = lcfirst($label);
         $fieldname = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $label);
 

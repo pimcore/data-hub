@@ -45,7 +45,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $attributes = $nodeDef['attributes'];
 
         if ($nodeDef['isOperator']) {
-            $key = $attributes['label'];
+            $key = isset($attributes['label']) ? $attributes['label'] : '';
 
             $key = File::getValidFilename($key);
 
@@ -243,7 +243,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         $attributes = $nodeDef['attributes'];
 
         if ($nodeDef['isOperator'] ?? false) {
-            $key = $attributes['label'];
+            $key = isset($attributes['label']) ? $attributes['label'] : '';
             $key = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $key);
 
             $result = $this->getGraphQlOperatorConfig(
