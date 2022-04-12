@@ -18,6 +18,8 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
+use GraphQL\Validator\DocumentValidator;
+use GraphQL\Validator\Rules\DisableIntrospection;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ExecutorEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ExecutorEvent;
@@ -188,6 +190,11 @@ class WebserviceController extends FrontendController
 
             if ($event->getRequest() instanceof Request) {
                 $variableValues = $event->getRequest()->get('variables', $variableValues);
+            }
+
+            $disableIntrospection = $configuration->getSecurityConfig()['disableIntrospection'] ?? false;
+            if ($disableIntrospection === true) {
+                DocumentValidator::addRule(new DisableIntrospection());
             }
 
             $result = GraphQL::executeQuery(
