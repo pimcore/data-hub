@@ -86,8 +86,39 @@ Base structure for getting a list of data objects, restricted by IDs:
 ```graphql
 {
   getNewsListing(ids: "4,5") {
-    edges {
+     edges {
     ...
+```
+
+Base structure for getting a list of data objects, restricted by fullpath:
+
+```graphql
+{
+  getNewsListing(fullpaths: "/NewsArticle,/NewsArticle2") {
+    totalCount
+    edges {
+      node {
+        id        
+      }
+    }
+  }
+}
+```
+
+Sometimes it can happen that the fullpath already contains a comma. To make sure the comma is not
+interpreted as a list separator in this case, you can quote the path:
+
+```graphql
+{
+  getNewsListing(fullpaths: "'/NewsArticle,Headline','/NewsArticle2'") {
+    totalCount
+    edges {
+      node {
+        id        
+      }
+    }
+  }
+}
 ```
  
  
