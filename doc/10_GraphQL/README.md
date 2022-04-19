@@ -16,6 +16,17 @@ Configuration takes place in the endpoint configuration and offers following pos
 - [Security Settings](./01_Configuration/03_Security_Settings.md)
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
 
+## External access
+The standard endpoint is
+```
+/pimcore-graphql-webservices/{configurationname}?apikey={yourApiKey}
+```
+So if your configuration name is blogdemo and your apikey 123456 then your endpoint would be
+```
+/pimcore-graphql-webservices/blogdemo?apikey=12345
+```
+Here is a configuration how to [override the standard endpoint](./Configuration/Customize_Endpoint_URL.html)
+
 ## Queries
 Depending on the configuration, the endpoint provides several queries to fetch data from Pimcore. As 
 Datahub always creates a proper graphQL schema, also have a look at the generated schema to get details
