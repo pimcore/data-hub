@@ -986,8 +986,7 @@ class Service
                 }
             }
         }
-
-        if ($descriptor instanceof BlockDescriptor) {
+        else if ($descriptor instanceof BlockDescriptor) {
             $descriptorData = $descriptor->getArrayCopy();
             $blockData = null;
 
