@@ -41,23 +41,25 @@ class ElementCounter extends AbstractOperator
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            $childValues = $childResult->value;
+            if($childResult !== null) {
+                $childValues = $childResult->value;
 
-            if ($this->getCountEmpty()) {
-                if (is_array($childValues)) {
-                    $count += count($childValues);
-                } else {
-                    $count++;
-                }
-            } else {
-                if (is_array($childValues)) {
-                    foreach ($childValues as $childValue) {
-                        if ($childValue) {
-                            $count++;
-                        }
+                if ($this->getCountEmpty()) {
+                    if (is_array($childValues)) {
+                        $count += count($childValues);
+                    } else {
+                        $count++;
                     }
-                } elseif ($childValues) {
-                    $count++;
+                } else {
+                    if (is_array($childValues)) {
+                        foreach ($childValues as $childValue) {
+                            if ($childValue) {
+                                $count++;
+                            }
+                        }
+                    } elseif ($childValues) {
+                        $count++;
+                    }
                 }
             }
         }
