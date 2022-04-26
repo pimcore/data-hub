@@ -31,8 +31,6 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * TreeObjectType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

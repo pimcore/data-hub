@@ -1,0 +1,53 @@
+name: "Static Analysis"
+
+on:
+    pull_request:
+        branches:
+            - "[0-9]+.[0-9]+"
+            - "[0-9]+.x"
+    push:
+        branches:
+            - "[0-9]+.[0-9]+"
+            - "[0-9]+.x"
+
+jobs:
+    static-analysis-phpstan:
+        name: "Static Analysis with PHPStan"
+        runs-on: "ubuntu-20.04"
+        strategy:
+            matrix:
+                include:
+                    - { php-version: "8.0", dependencies: "lowest" }
+                    - { php-version: "8.1", dependencies: "highest" }
+        steps:
+            - name: "Checkout code"
+              uses: "actions/checkout@v2"
+
+            - name: "Install PHP"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                  coverage: "none"
+                  php-version: "${{ matrix.php-version }}"
+
+            - name: "Setup Pimcore environment"
+              run: |
+                  .github/ci/scripts/setup-pimcore-x-environment.sh
+
+            - name: "Install dependencies with Composer"
+              uses: "ramsey/composer-install@v1"
+              with:
+                  dependency-versions: "${{ matrix.dependencies }}"
+
+            - name: "Run a static analysis with phpstan/phpstan"
+              run: "vendor/bin/phpstan analyse --memory-limit=-1"
+
+            - name: "Generate baseline file"
+              if: ${{ failure() }}
+              run: "vendor/bin/phpstan analyse --memory-limit=-1 --generate-baseline"
+
+            - name: "Upload baseline file"
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v2
+              with:
+                  name: phpstan-baseline.neon
+                  path: phpstan-baseline.neon

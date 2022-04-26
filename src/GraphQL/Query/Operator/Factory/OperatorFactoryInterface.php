@@ -23,7 +23,7 @@ interface OperatorFactoryInterface
 {
     /**
      * @param array $configElement
-     * @param null $context
+     * @param mixed $context
      *
      * @return OperatorInterface
      */

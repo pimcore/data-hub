@@ -27,8 +27,6 @@ class Input extends Base
     public $processor;
 
     /**
-     * Input constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor
      */

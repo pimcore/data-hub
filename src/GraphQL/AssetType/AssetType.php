@@ -45,7 +45,7 @@ class AssetType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      *
      * @throws \Exception
      */

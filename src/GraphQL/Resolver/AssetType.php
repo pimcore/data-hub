@@ -27,12 +27,12 @@ class AssetType
     use ServiceTrait, ElementTagTrait;
 
     /**
-     * @param array $value
+     * @param array|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -51,12 +51,12 @@ class AssetType
     }
 
     /**
-     * @param array $value
+     * @param array|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -103,7 +103,7 @@ class AssetType
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -145,7 +145,7 @@ class AssetType
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -177,9 +177,9 @@ class AssetType
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -210,9 +210,9 @@ class AssetType
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -221,10 +221,10 @@ class AssetType
         $types = $args['types'];
         $thumbnail = $value['url'] ?? null;
 
-        $asset = null;
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
             $resolutions = [];
             $thumbnailName = $thumbnail->getConfig()->getName();
+            /** @var Asset\Image $asset */
             $asset = $thumbnail->getAsset();
             if (!WorkspaceHelper::checkPermission($asset, 'read')) {
                 return null;
@@ -246,8 +246,8 @@ class AssetType
 
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'];
+            /** @var Asset\Image $asset */
             $asset = $this->getAssetFromValue($value, $context);
-            /** @var Asset\Image\Thumbnail $thumbnail */
             $thumbnail = $asset->getThumbnail($thumbnailName, false);
             $thumbnailConfig = $thumbnail->getConfig();
             $resolutions = [];
@@ -271,9 +271,9 @@ class AssetType
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -281,10 +281,6 @@ class AssetType
     {
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
-
-            /**
-             * @var Asset\Image $asset
-             */
             $asset = $this->getAssetFromValue($value, $context);
 
             if (!$asset instanceof Asset\Image) {
@@ -313,8 +309,8 @@ class AssetType
     }
 
     /**
-     * @param mixed       $value
-     * @param array       $context
+     * @param mixed $value
+     * @param array $context
      *
      * @return Asset|null
      *

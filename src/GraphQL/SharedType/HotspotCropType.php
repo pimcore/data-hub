@@ -27,7 +27,7 @@ use GraphQL\Type\Definition\Type;
 class HotspotCropType extends ObjectType
 {
     /**
-     * @var self
+     * @var static|null
      */
     protected static $instance;
 

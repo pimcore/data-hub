@@ -21,6 +21,7 @@ use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 abstract class AbstractOperator implements OperatorInterface
 {
     use ServiceTrait;
+
     /**
      * @var string
      */

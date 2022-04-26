@@ -28,8 +28,6 @@ class TextType extends ObjectType
     use ServiceTrait;
 
     /**
-     * TextType constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)

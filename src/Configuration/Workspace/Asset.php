@@ -15,9 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Configuration\Workspace;
 
-/**
- * @method \Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao getDao()
- */
 class Asset extends AbstractWorkspace
 {
 }

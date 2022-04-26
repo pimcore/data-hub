@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
+use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
@@ -23,8 +24,6 @@ abstract class Base
     use ServiceTrait;
 
     /**
-     * Base constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -33,7 +32,7 @@ abstract class Base
     }
 
     /**
-     * @return \GraphQL\Type\Definition\StringType
+     * @return Type
      */
     abstract public function getFieldType();
 }

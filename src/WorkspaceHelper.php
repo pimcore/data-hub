@@ -161,7 +161,7 @@ class WorkspaceHelper
                     $element = \Pimcore\Model\Element\Service::getElementByPath($type, $space['cpath']);
                     if ($element) {
                         $className = '\\Pimcore\\Bundle\\DataHubBundle\\Configuration\\Workspace\\' . \Pimcore\Model\Element\Service::getBaseClassNameForElement($type);
-                        /** @var $workspace Configuration\Workspace\AbstractWorkspace */
+                        /** @var Configuration\Workspace\AbstractWorkspace $workspace */
                         $workspace = new $className();
                         $workspace->setValues($space);
 
@@ -257,7 +257,7 @@ class WorkspaceHelper
     /**
      * @internal
      *
-     * @param ElementInterface|OwnerAwareFieldInterface $element
+     * @param ElementInterface|OwnerAwareFieldInterface|null $element
      * @param Configuration $configuration
      * @param string $type
      *

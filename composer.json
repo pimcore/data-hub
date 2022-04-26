@@ -4,19 +4,37 @@
   "type": "pimcore-bundle",
   "description": "Pimcore Datahub",
   "config": {
-    "discard-changes": true
+      "sort-packages": true,
+      "preferred-install": {
+        "pimcore/pimcore": "source"
+      }
+  },
+  "require": {
+    "php": "^8.0",
+    "pimcore/pimcore": "^10.2",
+    "webonyx/graphql-php": "^14.6"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.4",
+    "symfony/phpunit-bridge": "^6",
+    "codeception/module-symfony": "^1.6",
+    "codeception/codeception": "^4.1.12",
+    "codeception/phpunit-wrapper": "^9",
+    "codeception/module-asserts": "^2"
   },
   "autoload": {
     "psr-4": {
-      "Pimcore\\Bundle\\DataHubBundle\\": "src/"
-    },
-    "exclude-from-classmap": [
-      "vendor/phpunit"
-    ]
+      "Pimcore\\Bundle\\DataHubBundle\\": "src/",
+      "Pimcore\\": "core-extension/Pimcore/"
+    }
   },
-  "require": {
-    "pimcore/pimcore": "^10.2",
-    "webonyx/graphql-php": "^14.6"
+  "autoload-dev": {
+    "psr-4": {
+      "Pimcore\\Bundle\\DataHubBundle\\Tests\\": "tests"
+    },
+    "files": [
+      "kernel/Kernel.php"
+    ]
   },
   "extra": {
     "pimcore": {
@@ -24,8 +42,5 @@
         "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
       ]
     }
-  },
-  "require-dev": {
-    "symfony/phpunit-bridge": "*"
   }
 }

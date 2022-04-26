@@ -18,17 +18,19 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Element\ElementInterface;
 
 class DefaultValue extends AbstractValue
 {
     /**
-     * @param Concrete|null $element
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
      *
-     * {@inheritdoc}
+     * @return \stdClass|null
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
-        if ($element) {
+        if ($element instanceof Concrete) {
             if ($this->dataType == 'system') {
                 $getter = 'get' . ucfirst($this->attribute);
 
@@ -43,7 +45,6 @@ class DefaultValue extends AbstractValue
 
             $resolveFn = $this->getGraphQlService()->buildDataObjectDataQueryResolver($this->attribute, $fieldDefinition, $class);
             $args = null;
-            $context = null;
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
             if ($value) {

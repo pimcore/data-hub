@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
@@ -28,16 +29,19 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class Objects extends Base implements TypeDefinitionInterface
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        return $this->enrichConfig($fieldDefinition, $class, $attribute,
+        return $this->enrichConfig(
+            $fieldDefinition,
+            $class,
+            $attribute,
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
@@ -49,8 +53,8 @@ class Objects extends Base implements TypeDefinitionInterface
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */
@@ -59,13 +63,6 @@ class Objects extends Base implements TypeDefinitionInterface
         return Type::listOf(new HrefType($this->getGraphQlService(), $fieldDefinition, $class));
     }
 
-    /**
-     * @param $attribute
-     * @param Data $fieldDefinition
-     * @param $class
-     *
-     * @return \Closure
-     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Objects($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

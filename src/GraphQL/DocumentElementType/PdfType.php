@@ -70,6 +70,8 @@ class PdfType extends ObjectType
                                         return $data;
                                     }
                                 }
+
+                                return  null;
                             }
                         ]
                     ],

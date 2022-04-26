@@ -33,8 +33,7 @@ class ElementCounter extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
         $count = 0;
 
         foreach ($children as $c) {

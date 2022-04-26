@@ -24,12 +24,12 @@ class Geopoint
     use ServiceTrait;
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return float|null
      *
      * @throws \Exception
      */
@@ -45,12 +45,12 @@ class Geopoint
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return float|null
      *
      * @throws \Exception
      */

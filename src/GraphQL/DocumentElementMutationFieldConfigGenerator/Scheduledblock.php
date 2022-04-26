@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Scheduledblock extends Base
 {
-    /** @var InputObjectType */
+    /** @var InputObjectType|null */
     public static $itemType;
 
     /** @var ScheduledblockDataInputType */
@@ -33,8 +33,6 @@ class Scheduledblock extends Base
     protected $processor;
 
     /**
-     * SCheduledblock constructor.
-     *
      * @param Service $graphQlService
      * @param ScheduledblockDataInputType $scheduledblockDataInputType
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock $processor

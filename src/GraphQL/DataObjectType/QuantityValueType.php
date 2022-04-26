@@ -29,8 +29,6 @@ class QuantityValueType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * QuantityValueType constructor.
-     *
      * @param Service $graphQlService
      * @param Data|null $fieldDefinition
      * @param array $config

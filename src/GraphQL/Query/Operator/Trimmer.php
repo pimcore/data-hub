@@ -36,46 +36,44 @@ class Trimmer extends AbstractOperator
     {
         $result = new \stdClass();
         $result->label = $this->label;
-
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if (!$children) {
             return $result;
-        } else {
-            $c = $children[0];
+        }
 
-            $valueArray = [];
+        $c = $children[0];
 
-            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+        $valueArray = [];
 
-            $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            $isArrayType = $childResult->isArrayType;
-            $childValues = $childResult->value;
-            if ($childValues && !$isArrayType) {
-                $childValues = [$childValues];
-            }
+        $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
-            if ($childValues) {
-                /** @var string $childValue */
-                foreach ($childValues as $childValue) {
-                    if ($this->trim == self::LEFT) {
-                        $childValue = ltrim($childValue);
-                    } elseif ($this->trim == self::RIGHT) {
-                        $childValue = rtrim($childValue);
-                    } elseif ($this->trim == self::BOTH) {
-                        $childValue = trim($childValue);
-                    }
-                    $valueArray[] = $childValue;
+        $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+        $isArrayType = $childResult->isArrayType;
+        $childValues = $childResult->value;
+        if ($childValues && !$isArrayType) {
+            $childValues = [$childValues];
+        }
+
+        if ($childValues) {
+            /** @var string $childValue */
+            foreach ($childValues as $childValue) {
+                if ($this->trim == self::LEFT) {
+                    $childValue = ltrim($childValue);
+                } elseif ($this->trim == self::RIGHT) {
+                    $childValue = rtrim($childValue);
+                } elseif ($this->trim == self::BOTH) {
+                    $childValue = trim($childValue);
                 }
+                $valueArray[] = $childValue;
             }
+        }
 
-            $result->isArrayType = $isArrayType;
-            if ($isArrayType) {
-                $result->value = $valueArray;
-            } else {
-                $result->value = $valueArray[0];
-            }
+        $result->isArrayType = $isArrayType;
+        if ($isArrayType) {
+            $result->value = $valueArray;
+        } else {
+            $result->value = $valueArray[0];
         }
 
         return $result;

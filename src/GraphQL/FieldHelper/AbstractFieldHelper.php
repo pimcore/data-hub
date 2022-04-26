@@ -29,16 +29,13 @@ abstract class AbstractFieldHelper
 {
     use ServiceTrait;
 
-    /**
-     * AbstractFieldHelper constructor.
-     */
     public function __construct()
     {
     }
 
     /**
-     * @param $container
-     * @param $astName
+     * @param object $container
+     * @param string $astName
      *
      * @return bool
      */
@@ -50,8 +47,8 @@ abstract class AbstractFieldHelper
     /**
      * @param FieldNode $ast
      * @param array $data
-     * @param $container
-     * @param $args
+     * @param object $container
+     * @param array $args
      * @param ResolveInfo|null $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
@@ -97,12 +94,11 @@ abstract class AbstractFieldHelper
     public function getArguments(FieldNode $ast)
     {
         $result = [];
-        /** @var $nodeList NodeList */
+        /** @var NodeList $nodeList */
         $nodeList = $ast->arguments;
-        /** @var $iterator \Iterator */
         $count = $nodeList->count();
         for ($i = 0; $i < $count; $i++) {
-            /** @var $argumentNode ArgumentNode */
+            /** @var ArgumentNode $argumentNode */
             $argumentNode = $nodeList[$i];
             $value = $argumentNode->value->value;
             $result[$argumentNode->name->value] = $value;
@@ -112,9 +108,9 @@ abstract class AbstractFieldHelper
     }
 
     /**
-     * @param array $data
-     * @param $container
-     * @param $args
+     * @param mixed $data
+     * @param object $container
+     * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
@@ -146,10 +142,10 @@ abstract class AbstractFieldHelper
     }
 
     /**
-     * @param array $data
-     * @param NodeList $selections
-     * @param $container
-     * @param $args
+     * @param mixed $data
+     * @param NodeList|null $selections
+     * @param object $container
+     * @param array $args
      * @param array $context
      * @param ResolveInfo $resolveInfo
      */
@@ -163,9 +159,8 @@ abstract class AbstractFieldHelper
             if ($selectionNode instanceof FieldNode) {
                 $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
             } elseif ($selectionNode instanceof InlineFragmentNode) {
-                /** @var $selectionSetNode SelectionSetNode */
                 $inlineSelectionSetNode = $selectionNode->selectionSet;
-                /** @var $inlineSelections NodeList[] */
+                /** @var NodeList $inlineSelections */
                 $inlineSelections = $inlineSelectionSetNode->selections;
                 $count = $inlineSelections->count();
                 for ($i = 0; $i < $count; $i++) {

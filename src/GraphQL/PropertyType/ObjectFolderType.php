@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
-use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
@@ -31,8 +30,6 @@ class ObjectFolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * AssetFolderType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception
@@ -74,7 +71,7 @@ class ObjectFolderType extends ObjectType
                             if (!WorkspaceHelper::checkPermission($element, 'read')) {
                                 return null;
                             }
-                            /** @var $element Folder */
+
                             $data = new ElementDescriptor($element);
                             $graphQlService->extractData($data, $element, $args, $context, $resolveInfo);
 

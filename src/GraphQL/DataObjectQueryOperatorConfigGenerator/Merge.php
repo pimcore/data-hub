@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGene
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\MergeType;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Localizedfield;
 
 class Merge extends StringBase
@@ -33,9 +34,10 @@ class Merge extends StringBase
 
     /**
      * @param string $typeName
-     * @param mixed $attributes
-     * @param null $class
-     * @param null $container
+     * @param array $nodeConfig
+     * @param ClassDefinition|null $class
+     * @param object|null $container
+     * @param array $params
      *
      * @return mixed
      */
@@ -59,10 +61,10 @@ class Merge extends StringBase
     }
 
     /**
-     * @param $config
-     * @param $container
+     * @param array $config
+     * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function enrichConfig($config, $container = null)
     {

@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -38,7 +38,7 @@ class TestTrait
     }
 }
 
-class ElementIdentificationTraitTest extends TestCase
+class ElementIdentificationTraitTest extends PHPUnit_Framework_TestCase
 {
     const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait';
     const TEST_TYPE = 'object';
@@ -46,7 +46,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
     {
         // Arrange
-        $this->expectExceptionMessageRegExp('/type expected/');
+        $this->expectExceptionMessageMatches('/type expected/');
         $newValueItemValue = array();
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
@@ -57,7 +57,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfTypeIsNotSupported()
     {
         // Arrange
-        $this->expectExceptionMessageRegExp('/The type .* is not supported/');
+        $this->expectExceptionMessageMatches('/The type .* is not supported/');
         $newValueItemValue = array("type" => "wrong");
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
@@ -68,7 +68,7 @@ class ElementIdentificationTraitTest extends TestCase
     public function testThrowingClientSafeExceptionIfBothIdAndFullpathAreMissing()
     {
         // Arrange
-        $this->expectExceptionMessageRegExp('/either .* or .* expected/');
+        $this->expectExceptionMessageMatches('/either .* or .* expected/');
         $newValueItemValue = array("type" => self::TEST_TYPE);
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);

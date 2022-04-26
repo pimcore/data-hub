@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use GraphQL\Error\InvariantViolation;
 use GraphQL\Server\RequestError;
-use GraphQL\Utils\Utils;
 use Symfony\Component\HttpFoundation\Request;
 
 class FileUploadService
@@ -71,18 +70,6 @@ class FileUploadService
     protected function validateParsedBody(Request $request): void
     {
         $bodyParams = $request->request->all();
-
-        if (null === $bodyParams) {
-            throw new InvariantViolation(
-                'Request is expected to provide parsed body for "multipart/form-data" requests but got null'
-            );
-        }
-
-        if (!is_array($bodyParams)) {
-            throw new RequestError(
-                'GraphQL Server expects JSON object or array, but got ' . Utils::printSafeJson($bodyParams)
-            );
-        }
 
         if (empty($bodyParams)) {
             throw new InvariantViolation(

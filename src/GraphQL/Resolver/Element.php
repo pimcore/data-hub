@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\AbstractObject;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Property;
 
@@ -47,7 +48,7 @@ class Element
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -103,10 +104,10 @@ class Element
     /**
      * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
@@ -126,7 +127,7 @@ class Element
     /**
      * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
@@ -148,7 +149,7 @@ class Element
     /**
      * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
@@ -185,7 +186,7 @@ class Element
     /**
      * @param array $elements
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
      * @return array
@@ -205,12 +206,12 @@ class Element
     }
 
     /**
-     * @param Element $element
+     * @param ElementInterface $element
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */

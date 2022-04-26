@@ -30,8 +30,6 @@ class AnyDocumentTargetType extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * AnyDocumentTargetType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

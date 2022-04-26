@@ -26,8 +26,6 @@ class ScheduledblockDataType extends ObjectType
     use ServiceTrait;
 
     /**
-     * ScheduledblockDataType constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)

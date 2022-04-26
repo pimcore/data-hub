@@ -26,8 +26,6 @@ class AreablockDataType extends ObjectType
     use ServiceTrait;
 
     /**
-     * AreablockDataType constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)

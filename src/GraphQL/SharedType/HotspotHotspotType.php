@@ -31,8 +31,6 @@ class HotspotHotspotType extends ObjectType
     use ServiceTrait;
 
     /**
-     * HotspotHotspotType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

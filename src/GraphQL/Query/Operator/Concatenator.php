@@ -40,8 +40,7 @@ class Concatenator extends AbstractOperator
             $hasValue = false;
         }
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
         $valueArray = [];
 
         foreach ($children as $c) {
@@ -72,10 +71,10 @@ class Concatenator extends AbstractOperator
             $result->value = implode($this->glue, $valueArray);
 
             return $result;
-        } else {
-            $result->empty = true;
-
-            return $result;
         }
+
+        $result->empty = true;
+
+        return $result;
     }
 }

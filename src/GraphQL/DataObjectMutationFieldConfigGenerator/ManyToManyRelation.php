@@ -24,8 +24,6 @@ class ManyToManyRelation extends Base
     protected $elementInputType;
 
     /**
-     * ManyToManyRelation constructor.
-     *
      * @param Service $graphQlService
      * @param ElementDescriptorInputType $elementInputType
      */

@@ -35,8 +35,7 @@ class Merge extends AbstractOperator
         $result->label = $this->label;
         $result->isArrayType = true;
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         $resultItems = [];
 

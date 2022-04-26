@@ -62,8 +62,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     protected $customTypes;
 
     /**
-     * DocumentType constructor.
-     *
      * @param Service $graphQlService
      * @param PageType $pageType
      * @param LinkType $linkType
@@ -97,7 +95,7 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @param $customDataTypes
+     * @param array $customDataTypes
      */
     public function registerCustomDataType($customDataTypes)
     {

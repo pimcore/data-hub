@@ -36,8 +36,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     private $customTypes = [];
 
     /**
-     * DocumentTreeType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */
@@ -55,8 +53,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     public function getTypes(): array
     {
         $context = Runtime::get('datahub_context');
-        /** @var $configuration Configuration */
-        $configuration = $context['configuration'];
 
         $types = [];
         $types[] = $this->getGraphQlService()->getDocumentTypeDefinition('_document_folder');

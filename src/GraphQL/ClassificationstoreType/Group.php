@@ -31,8 +31,6 @@ class Group extends ObjectType
     protected $featureType;
 
     /**
-     * Group constructor.
-     *
      * @param Service $graphQlService
      * @param Feature $featuresType
      * @param array $config

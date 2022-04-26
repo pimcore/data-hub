@@ -27,8 +27,6 @@ class LinkDataType extends ObjectType
     use ServiceTrait;
 
     /**
-     * LinkDataType constructor.
-     *
      * @param Service $graphQlService
      *
      * @throws \Exception

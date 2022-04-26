@@ -21,28 +21,31 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class Table extends AbstractTable
 {
     /**
-     * @param Data|Data\Table $fieldDefinition
+     * @param Data $fieldDefinition
      *
      * @return array
      */
     protected function getTableColumns(Data $fieldDefinition): array
     {
-        $numCols = (int) $fieldDefinition->getCols();
-        if ($numCols === 0) {
-            return [];
-        }
-
         $columns = [];
-        if ($fieldDefinition->isColumnConfigActivated()) {
-            foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
-                $columns[$columnConfig['key']] = Type::string();
+
+        if ($fieldDefinition instanceof Data\Table) {
+            $numCols = (int) $fieldDefinition->getCols();
+            if ($numCols === 0) {
+                return [];
             }
 
-            return $columns;
-        }
+            if ($fieldDefinition->isColumnConfigActivated()) {
+                foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
+                    $columns[$columnConfig['key']] = Type::string();
+                }
 
-        foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
-            $columns['col' . $i] = Type::string();
+                return $columns;
+            }
+
+            foreach (range(0, $fieldDefinition->getCols() - 1) as $i) {
+                $columns['col' . $i] = Type::string();
+            }
         }
 
         return $columns;
