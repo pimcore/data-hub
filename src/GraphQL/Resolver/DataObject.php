@@ -36,7 +36,7 @@ class DataObject extends Element
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -55,12 +55,12 @@ class DataObject extends Element
     }
 
     /**
-     * @param array            $value
-     * @param array            $args
-     * @param array            $context
+     * @param array|null $value
+     * @param array $args
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return int
+     * @return int|null
      */
     public function resolveIndex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -78,12 +78,12 @@ class DataObject extends Element
     }
 
     /**
-     * @param array            $value
-     * @param array            $args
-     * @param array            $context
+     * @param array|null $value
+     * @param array $args
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return string
+     * @return string|null
      */
     public function resolveChildrenSortBy($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -93,7 +93,7 @@ class DataObject extends Element
 
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
-        if (!$object instanceof self) {
+        if (!$object instanceof \Pimcore\Model\DataObject) {
             return null;
         }
 

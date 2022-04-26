@@ -16,6 +16,8 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Traits;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Model\Element\ElementInterface;
+use Pimcore\Model\Element\Service;
 
 trait ElementIdentificationTrait
 {
@@ -32,7 +34,7 @@ trait ElementIdentificationTrait
      *
      * @return ElementInterface|null can whether be an object, a document or an asset
      *
-     * @throws \ClientSafeException thrown if no type or neither an id nor a fullpath is provided
+     * @throws ClientSafeException thrown if no type or neither an id nor a fullpath is provided
      */
     public function getElementByTypeAndIdOrPath($value, $type = null)
     {
@@ -67,7 +69,7 @@ trait ElementIdentificationTrait
      */
     protected function getElementById($type, $id)
     {
-        return \Pimcore\Model\Element\Service::getElementById($type, $id);
+        return Service::getElementById($type, $id);
     }
 
     /**
@@ -75,7 +77,7 @@ trait ElementIdentificationTrait
      */
     protected function getElementByPath($type, $fullpath)
     {
-        return \Pimcore\Model\Element\Service::getElementByPath($type, $fullpath);
+        return Service::getElementByPath($type, $fullpath);
     }
 
     private function getType($value)

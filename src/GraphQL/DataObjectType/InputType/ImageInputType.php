@@ -20,8 +20,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class ImageInputType extends AbstractRelationInputType
 {
     /**
-     * AssetInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

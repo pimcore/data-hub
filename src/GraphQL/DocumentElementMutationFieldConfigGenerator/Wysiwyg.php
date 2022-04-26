@@ -25,8 +25,6 @@ class Wysiwyg extends Base
     public $processor;
 
     /**
-     * Wysiwyg constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor
      */

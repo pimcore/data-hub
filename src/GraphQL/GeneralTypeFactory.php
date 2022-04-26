@@ -31,8 +31,6 @@ class GeneralTypeFactory
     protected $className;
 
     /**
-     * GeneralTypeFactory constructor.
-     *
      * @param Service $graphQlService
      * @param string $className
      */

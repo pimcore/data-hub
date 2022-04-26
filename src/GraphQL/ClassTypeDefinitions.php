@@ -83,7 +83,7 @@ class ClassTypeDefinitions
     {
         if ($onlyQueryTypes) {
             $context = Runtime::get('datahub_context');
-            /** @var $configuration Configuration */
+            /** @var Configuration $configuration */
             $configuration = $context['configuration'];
             $types = array_keys($configuration->getConfiguration()['schema']['queryEntities']);
             $result = [];

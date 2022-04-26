@@ -30,8 +30,6 @@ class VideoType extends ObjectType
     protected $videoDataType;
 
     /**
-     * VideoType constructor.
-     *
      * @param Service $graphQlService
      * @param VideoTypeDataType $videoDataType
      */

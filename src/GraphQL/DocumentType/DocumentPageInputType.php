@@ -27,8 +27,6 @@ class DocumentPageInputType extends InputObjectType
     protected $processors = [];
 
     /**
-     * DocumentPageInputType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

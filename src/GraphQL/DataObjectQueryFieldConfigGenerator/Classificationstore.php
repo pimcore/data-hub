@@ -18,16 +18,17 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 
 class Classificationstore extends Base
 {
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return mixed
      */
@@ -41,7 +42,7 @@ class Classificationstore extends Base
             'resolve' => function ($value, $args, $context = [], ResolveInfo $resolveInfo = null) {
                 $fieldName = $resolveInfo->fieldName;
                 $language = isset($args['language']) ? $args['language'] : null;
-                /** @var $csField \Pimcore\Model\DataObject\Classificationstore */
+                /** @var \Pimcore\Model\DataObject\Classificationstore $csField */
                 $csField = $value[$fieldName];
 
                 $fd = new Data\Classificationstore();
@@ -73,8 +74,8 @@ class Classificationstore extends Base
 
     /**
      * @param Data $fieldDefinition
-     * @param null $class
-     * @param null $contain
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return ListOfType
      */

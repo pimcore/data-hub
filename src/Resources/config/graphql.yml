@@ -36,6 +36,7 @@ services:
   pimcore.datahub.graphql.dataobjecttype.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType'
   pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
   pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
+  pimcore.datahub.graphql.dataobjecttype.quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType'
 
   pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
   pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
@@ -728,6 +729,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video_data }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value_input }
+
   #
   # document mutation types
   #
@@ -918,6 +923,16 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyObjectRelation }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyObjectRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyObjectRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyObjectRelation }
+
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_multiselect:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect
     tags:
@@ -958,6 +973,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_wysiwyg }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_quantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\QuantityValue
+    tags:
+        - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_quantityValue }
 
   # dataobject mutation operator
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_ifempty:

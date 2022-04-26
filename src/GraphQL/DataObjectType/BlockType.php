@@ -33,21 +33,20 @@ class BlockType extends ObjectType implements ContainerAwareInterface
     /** @var ClassDefinition */
     protected $class;
 
-    /** @var Data\Block */
+    /** @var Data */
     protected $fieldDefinition;
 
     /**
-     * @param Service   $graphQlService
-     * @param Data|null $fieldDefinition
-     * @param null      $class
-     * @param array     $config
+     * @param Service $graphQlService
+     * @param Data $fieldDefinition
+     * @param ClassDefinition|null $class
+     * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition, $class = null, $config = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);
-        $name = null;
 
         $this->build($config);
 

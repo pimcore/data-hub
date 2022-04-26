@@ -189,20 +189,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     }
 
     /**
-     * get a default configuration.
-     *
-     * @return array
-     */
-    private static function defaultConfig(): array
-    {
-        return ['general' => [],
-            'schema' => [],
-            'security' => [],
-            'workspaces' => []
-        ];
-    }
-
-    /**
      * get the list of configurations.
      *
      * @return array
@@ -242,7 +228,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      * @param string $id
      * @param mixed $data
      *
-     * @return \array[][][]
+     * @return array[][][]
      */
     protected function prepareDataStructureForYaml(string $id, $data)
     {

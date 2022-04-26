@@ -24,7 +24,6 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
-use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
@@ -73,8 +72,6 @@ class MutationType extends ObjectType
     private $eventDispatcher;
 
     /**
-     * MutationType constructor.
-     *
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
@@ -153,14 +150,14 @@ class MutationType extends ObjectType
     /**
      * //TODO this is currently for document_pages
      *
-     * @param $config
+     * @param array $config
      * @param array $context
      *
      * @throws \Exception
      */
     public function buildUpdateDocumentMutation(&$config, $context, $mutationType, $documentType)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -447,7 +444,6 @@ class MutationType extends ObjectType
     public function getDocumentPageMutationInputType($context, &$processors = [])
     {
         $service = $this->getGraphQlService();
-        $configuration = $context['configuration'];
 
         $elementTypes = $service->getSupportedDocumentElementMutationDataTypes();
         $elementFields = [];
@@ -459,12 +455,12 @@ class MutationType extends ObjectType
             $processors[$elementType] = $typedef['processor'];
         }
 
-        $this->elementFields = $elementFields;
-
         $elementInputTypeList = self::$typeCache['document_pagemutationelements'] ?? null;
         if (!$elementInputTypeList) {
-            $elementInputTypeList = new InputObjectType(['name' => 'document_pagemutationelements',
-                'fields' => $elementFields]);
+            $elementInputTypeList = new InputObjectType([
+                'name' => 'document_pagemutationelements',
+                'fields' => $elementFields,
+            ]);
 
             self::$typeCache['document_pagemutationelements'] = $elementInputTypeList;
             self::$documentElementTypes = $elementInputTypeList;
@@ -508,7 +504,7 @@ class MutationType extends ObjectType
      */
     public function buildDataObjectMutations(&$config = [], $context = [])
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getMutationEntities();
 
@@ -590,7 +586,7 @@ class MutationType extends ObjectType
                             ];
                         }
 
-                        /** @var $configuration Configuration */
+                        /** @var Configuration $configuration */
                         $configuration = $context['configuration'];
                         if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
@@ -608,8 +604,8 @@ class MutationType extends ObjectType
                         $key = $args['key'];
                         $key = DataObject\Service::getValidKey($key, 'object');
 
-                        /** @var $newInstance Concrete */
                         $className = 'Pimcore\\Model\\DataObject\\' . ucfirst($entity);
+                        /** @var Concrete $newInstance */
                         $newInstance = $modelFactory->build($className);
                         $newInstance->setPublished($published);
                         $newInstance->setParent($parent);
@@ -730,7 +726,7 @@ class MutationType extends ObjectType
                         'fullpath' => ['type' => Type::string()],
                     ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
                         try {
-                            /** @var $configuration Configuration */
+                            /** @var Configuration $configuration */
                             $configuration = $context['configuration'];
 
                             $object = $me->getElementByTypeAndIdOrPath($args, 'object');
@@ -774,13 +770,12 @@ class MutationType extends ObjectType
         $processors = [];
 
         if ($context['clientname']) {
-            /** @var $configurationItem Configuration */
+            /** @var Configuration $configurationItem */
             $configurationItem = $context['configuration'];
 
             $columns = $configurationItem->getMutationColumnConfig($entity)['columns'];
 
             if ($columns) {
-                /** @var $fieldHelper DataObjectFieldHelper */
                 $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
                 foreach ($columns as $column) {
@@ -796,12 +791,12 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $processors
+     * @param array $processors
      * @param LocaleServiceInterface $localeService
-     * @param null $object
+     * @param object|null $object
      * @param bool $omitPermissionCheck
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getUpdateObjectResolver($processors, $localeService, $object = null, $omitPermissionCheck = false)
     {
@@ -842,7 +837,7 @@ class MutationType extends ObjectType
                         if (isset($processors[$key])) {
                             $processor = $processors[$key];
                             call_user_func_array($processor, [$object, $value, $args, $context, $info]);
-                        } elseif ($key == 'tags') {
+                        } elseif ($key === 'tags') {
                             $tags = $me->getTagsFromInput($value);
                             if (false === $tags) {
                                 return [
@@ -875,12 +870,12 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      * @param array $context
      */
     public function buildCreateAssetMutation(&$config, $context)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -948,8 +943,8 @@ class MutationType extends ObjectType
 
                     $type = $args['type'];
 
-                    /** @var $newInstance Concrete */
                     $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
+                    /** @var Concrete $newInstance */
                     $newInstance = new $className();
                     $newInstance->setParentId($parent->getId());
 
@@ -995,14 +990,14 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      * @param array $context
      *
      * @throws \Exception
      */
     public function buildUpdateAssetMutation(&$config, $context)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -1044,9 +1039,9 @@ class MutationType extends ObjectType
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input')
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
+                    $tags = [];
 
                     if (isset($args['input'])) {
-                        $tags = [];
                         $inputValues = $args['input'];
                         foreach ($inputValues as $key => $value) {
                             //TODO: ask pimcore/pimcore to implement something like Asset::setTags
@@ -1087,13 +1082,13 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $type
-     * @param $config
+     * @param string $type
+     * @param array $config
      * @param array $context
      */
     public function buildCreateFolderMutation($type, &$config, $context)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -1132,9 +1127,9 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $elementType
+     * @param string $elementType
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getCreateFolderResolver($elementType)
     {
@@ -1172,6 +1167,8 @@ class MutationType extends ObjectType
             } elseif ($elementType === 'document') {
                 $newInstance = new Document\Folder();
                 $newInstance->setKey($args['key']);
+            } else {
+                throw new \Exception('ElementType not supported: ' . $elementType);
             }
 
             $newInstance->setParentId($parent->getId());
@@ -1192,13 +1189,13 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $type
-     * @param $config
+     * @param string $type
+     * @param array $config
      * @param array $context
      */
     public function buildUpdateFolderMutation($type, &$config, $context)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -1239,7 +1236,7 @@ class MutationType extends ObjectType
                     'input' => ['type' => $inputType]
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
-                        /** @var $configuration Configuration */
+                        /** @var Configuration $configuration */
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
@@ -1282,7 +1279,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      * @param array $context
      */
     public function buildDeleteAssetMutation(&$config, $context)
@@ -1291,13 +1288,13 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      * @param array $context
-     * @param $type
+     * @param string $type
      */
     public function buildDeleteElementMutation(&$config, $context, $type)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -1323,7 +1320,7 @@ class MutationType extends ObjectType
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
                         $id = $args['id'];
-                        /** @var $configuration Configuration */
+                        /** @var Configuration $configuration */
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
@@ -1353,7 +1350,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $config
+     * @param array $config
      * @param array $context
      */
     public function buildDeleteDocumentMutation(&$config, $context)
@@ -1368,7 +1365,7 @@ class MutationType extends ObjectType
      */
     public function buildDeleteFolderMutation($type, &$config, $context)
     {
-        /** @var $configuration Configuration */
+        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $entities = $configuration->getSpecialEntities();
 
@@ -1394,7 +1391,7 @@ class MutationType extends ObjectType
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
                         $id = $args['id'];
-                        /** @var $configuration Configuration */
+                        /** @var Configuration $configuration */
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
@@ -1424,9 +1421,9 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param $elementType
+     * @param string $elementType
      *
-     * @return \Closure
+     * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
     public function getUpdateFolderResolver($elementType)
     {
@@ -1483,7 +1480,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param AbstractElement|Asset|DataObject|Document
+     * @param AbstractElement|Asset|DataObject|Document $element
      * @param array $options
      */
     protected function saveElement($element, $options): void

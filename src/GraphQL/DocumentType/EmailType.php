@@ -24,8 +24,6 @@ class EmailType extends AbstractDocumentType
     use ServiceTrait;
 
     /**
-     * EmailType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      * @param array $context

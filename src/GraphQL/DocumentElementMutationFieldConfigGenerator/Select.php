@@ -25,8 +25,6 @@ class Select extends Base
     public $processor;
 
     /**
-     * Select constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select $processor
      */

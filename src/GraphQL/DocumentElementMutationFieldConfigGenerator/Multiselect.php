@@ -25,8 +25,6 @@ class Multiselect extends Base
     public $processor;
 
     /**
-     * Multiselect constructor.
-     *
      * @param Service $graphQlService
      * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect $processor
      */

@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
 use GraphQL\Type\Definition\Type;
+use Pimcore\Model\DataObject\ClassDefinition;
 
 class IntBase extends Base
 {
@@ -25,9 +26,9 @@ class IntBase extends Base
     }
 
     /**
-     * @param $attributes
-     * @param null $class
-     * @param null $container
+     * @param array $attributes
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
      * @return \GraphQL\Type\Definition\ListOfType|mixed
      */

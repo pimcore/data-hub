@@ -29,8 +29,6 @@ class Base
     protected $nodeDef;
 
     /**
-     * Base constructor.
-     *
      * @param array $nodeDef
      */
     public function __construct($nodeDef)
@@ -48,7 +46,7 @@ class Base
 
     /**
      * @param Concrete|AbstractData $object
-     * @param $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
@@ -65,10 +63,10 @@ class Base
     }
 
     /**
-     * @param $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition $class
      *
-     * @return |null
+     * @return mixed
      */
     public function getParentProcessor($nodeDef, ClassDefinition $class)
     {

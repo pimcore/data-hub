@@ -31,8 +31,6 @@ abstract class Base
     protected $editableLoader;
 
     /**
-     * Block constructor.
-     *
      * @param EditableLoaderInterface $editableLoader
      * @param Service $graphQlService
      */

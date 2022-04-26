@@ -55,6 +55,8 @@ class ImageType extends ObjectType
                                 if ($value instanceof Image) {
                                     return $value->getType();
                                 }
+
+                                return null;
                             }
                         ],
                         '_editableName' => [
@@ -63,6 +65,8 @@ class ImageType extends ObjectType
                                 if ($value instanceof Image) {
                                     return $value->getName();
                                 }
+
+                                return null;
                             }
                         ],
                         'image' => [
@@ -77,19 +81,23 @@ class ImageType extends ObjectType
                                         return $result;
                                     }
                                 }
+
+                                return null;
                             }
                         ],
                         'alt' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getAlt();
                                 }
+
+                                return null;
                             }
                         ],
                         'crop' => [
                             'type' => HotspotCropType::getInstance(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return [
                                         'cropTop' => $value->getCropTop(),
@@ -99,22 +107,28 @@ class ImageType extends ObjectType
                                         'cropPercent' => $value->getCropPercent()
                                     ];
                                 }
+
+                                return null;
                             }
                         ],
                         'hotspots' => [
                             'type' => Type::listOf($hotspotHotspotType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getHotspots();
                                 }
+
+                                return null;
                             }
                         ],
                         'marker' => [
                             'type' => Type::listOf($hotspotMarkerType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getMarker();
                                 }
+
+                                return null;
                             }
                         ],
                     ]

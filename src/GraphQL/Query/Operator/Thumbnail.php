@@ -17,16 +17,15 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Element\ElementInterface;
 
 class Thumbnail extends AbstractOperator
 {
     private $thumbnailConfig;
 
     /**
-     * Thumbnail constructor.
-     *
      * @param array $config
-     * @param null $context
+     * @param mixed $context
      */
     public function __construct(array $config = [], $context = null)
     {
@@ -36,7 +35,7 @@ class Thumbnail extends AbstractOperator
     }
 
     /**
-     * @param \Pimcore\Model\Element\ElementInterface $element
+     * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
@@ -49,24 +48,23 @@ class Thumbnail extends AbstractOperator
             return $result;
         }
 
-        // Pimcore 5/6 compatibility
-        $children = method_exists($this, 'getChildren') ? $this->getChildren() : $this->getChilds();
+        $children = $this->getChildren();
 
         if (!$children) {
             return $result;
-        } else {
-            $c = $children[0];
+        }
 
-            $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+        $c = $children[0];
 
-            $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            if ($childResult) {
-                $result->value = null;
-                if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
-                    $childValue = $result->value = $childResult->value;
-                    $thumbnail = $childValue->getThumbnail($this->thumbnailConfig, false);
-                    $result->value = $thumbnail->getPath(false);
-                }
+        $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
+
+        $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
+        if ($childResult) {
+            $result->value = null;
+            if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
+                $childValue = $result->value = $childResult->value;
+                $thumbnail = $childValue->getThumbnail($this->thumbnailConfig, false);
+                $result->value = $thumbnail->getPath(false);
             }
         }
 

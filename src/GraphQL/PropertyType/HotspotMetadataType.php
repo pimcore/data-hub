@@ -46,8 +46,6 @@ class HotspotMetadataType extends UnionType
     protected $textType;
 
     /**
-     * PropertyType constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

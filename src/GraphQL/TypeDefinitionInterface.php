@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
@@ -22,10 +23,10 @@ interface TypeDefinitionInterface
 {
     /**
      * @param Data $fieldDefinition
-     * @param ClassDefinition $class
-     * @param $container
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      *
-     * @return mixed
+     * @return Type
      */
-    public function getFieldType(Data $fieldDefinition, $class, $container);
+    public function getFieldType(Data $fieldDefinition, $class = null, $container = null);
 }

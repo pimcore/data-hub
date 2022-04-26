@@ -24,8 +24,6 @@ abstract class Base
     use ServiceTrait;
 
     /**
-     * Base constructor.
-     *
      * @param Service $graphQlService
      */
     public function __construct(Service $graphQlService)
@@ -34,7 +32,7 @@ abstract class Base
     }
 
     /**
-     * @param $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition $class
      *
      * @return mixed
@@ -67,9 +65,9 @@ abstract class Base
     }
 
     /**
-     * @param $nodeDef
-     * @param null $class
-     * @param null $container
+     * @param array $nodeDef
+     * @param ClassDefinition|null $class
+     * @param object|null $container
      * @param array $params
      *
      * @return array

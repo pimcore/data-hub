@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Areablock extends Base
 {
-    /** @var InputObjectType */
+    /** @var InputObjectType|null */
     public static $itemType;
 
     /** @var AreablockDataInputType */
@@ -33,8 +33,6 @@ class Areablock extends Base
     protected $processor;
 
     /**
-     * Areablock constructor.
-     *
      * @param Service $graphQlService
      * @param AreablockDataInputType $areablockDataInputType
      */

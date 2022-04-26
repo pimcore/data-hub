@@ -31,8 +31,6 @@ class Feature extends UnionType implements ContainerAwareInterface
     use ServiceTrait;
 
     /**
-     * Feature constructor.
-     *
      * @param Service $graphQlService
      * @param array $config
      */

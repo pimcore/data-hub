@@ -26,14 +26,12 @@ use GraphQL\Type\Definition\Type;
 class ElementMetadataKeyValuePairType extends ObjectType
 {
     /**
-     * @var self
+     * @var static|null
      */
     protected static $instance;
 
     /**
-     * ElementMetadataKeyValuePairType constructor.
-     *
-     * @param $class
+     * @param array $config
      */
     public function __construct($config = [])
     {

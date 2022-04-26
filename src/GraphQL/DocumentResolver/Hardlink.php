@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
@@ -24,9 +25,6 @@ class Hardlink
 {
     use ServiceTrait;
 
-    /**
-     * Link constructor.
-     */
     public function __construct()
     {
     }
@@ -34,10 +32,10 @@ class Hardlink
     /**
      * @param array $value
      * @param array $args
-     * @param $context
+     * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */
