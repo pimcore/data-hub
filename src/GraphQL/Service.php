@@ -973,9 +973,7 @@ class Service
                     $result = $itemData->$getter();
                 }
             }
-        }
-
-        if ($descriptor instanceof BlockDescriptor) {
+        } elseif ($descriptor instanceof BlockDescriptor) {
             $descriptorData = $descriptor->getArrayCopy();
             $blockData = null;
 
