@@ -8,14 +8,14 @@ on:
             - "[0-9]+.x"
         paths-ignore:
             - 'doc/**'
-            - 'src/**/Resources/public/**'
+            - 'src/Resources/public/**'
     push:
         branches:
             - "[0-9]+.[0-9]+"
             - "[0-9]+.x"
         paths-ignore:
             - 'doc/**'
-            - 'src/**/Resources/public/**'
+            - 'src/Resources/public/**'
 
 env:
     PIMCORE_PROJECT_ROOT: ${{ github.workspace }}
