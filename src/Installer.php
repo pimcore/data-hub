@@ -49,7 +49,6 @@ class Installer extends SettingsStoreAwareInstaller
 
             $db = Db::get();
             foreach ($types as $type) {
-                // @phpstan-ignore-next-line
                 $db->query('
                     CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_' . $type . "` (
                         `cid` INT(11) UNSIGNED NOT NULL DEFAULT '0',

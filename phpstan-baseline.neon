@@ -474,3 +474,9 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/SharedType/KeyValueType.php
+
+		-
+			message: "#^Method Doctrine\\\\DBAL\\\\Driver\\\\Connection\\:\\:query\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: src/Installer.php
+
