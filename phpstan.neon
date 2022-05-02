@@ -1,6 +1,7 @@
 parameters:
     level: 4
-    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '~^Method Doctrine\\DBAL(\\.*)?Connection::query\(\) invoked with \d+ parameters?, 0 required\.\z~'
     paths:
         - src
     bootstrapFiles:
