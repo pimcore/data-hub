@@ -6,7 +6,8 @@
   "config": {
       "sort-packages": true,
       "preferred-install": {
-        "pimcore/pimcore": "source"
+        "pimcore/pimcore": "source",
+        "*": "dist"
       }
   },
   "require": {
@@ -15,7 +16,8 @@
     "webonyx/graphql-php": "^14.6"
   },
   "require-dev": {
-    "phpstan/phpstan": "^1.4",
+    "phpstan/phpstan": "^1.6.0",
+    "phpunit/phpunit": "^9.3",
     "symfony/phpunit-bridge": "^6",
     "codeception/module-symfony": "^1.6",
     "codeception/codeception": "^4.1.12",

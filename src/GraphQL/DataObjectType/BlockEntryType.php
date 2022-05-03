@@ -130,6 +130,10 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
                 return null;
             }
 
+            if (!array_key_exists($resolveInfo->fieldName, $value)) {
+                return null;
+            }
+
             $value = $value[$resolveInfo->fieldName];
 
             if (!$value instanceof BlockDescriptor) {
