@@ -3,3 +3,4 @@ modules:
     enabled:
         - \Pimcore\Tests\Helper\Pimcore:
               connect_db: true
+              cache_router: false

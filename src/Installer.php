@@ -49,7 +49,7 @@ class Installer extends SettingsStoreAwareInstaller
 
             $db = Db::get();
             foreach ($types as $type) {
-                $db->query('
+                $db->executeQuery('
                     CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_' . $type . "` (
                         `cid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
                         `cpath` VARCHAR(765) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
