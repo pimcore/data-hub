@@ -123,3 +123,20 @@ Get Link Document and resolve the target news text.
 ## Fetch Document Properties
 
 see [Element Properties](./11_Query_Samples/05_Sample_Element_Properties.md)
+
+## Fetch Document Translation links
+
+```graphql
+{
+  getDocument(id: 76) {
+    ... on document_page {
+      id
+      translations {
+        id
+        language
+      }
+    }
+  }
+}
+
+```
