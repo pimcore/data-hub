@@ -24,6 +24,11 @@ class Document
 {
     use ServiceTrait;
 
+    /**
+     * @var DocumentService
+     */
+    protected $documentService;
+
     public function __construct(DocumentService $documentService, Service $graphQlService)
     {
         $this->documentService = $documentService;
