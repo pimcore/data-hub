@@ -19,8 +19,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document\Service as DocumentService;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 
-class Document
+class Document extends Element
 {
     use ServiceTrait;
 
@@ -31,6 +32,8 @@ class Document
 
     public function __construct(DocumentService $documentService, Service $graphQlService)
     {
+        parent::__construct('document', $graphQlService);
+
         $this->documentService = $documentService;
         $this->setGraphQLService($graphQlService);
     }
@@ -60,10 +63,31 @@ class Document
                 $result[] = [
                     'id' => $transId,
                     'language' => $transLanguage,
+                    'target' => $this->resolveTranslationTarget($value, $args, $context, $resolveInfo)
                 ];
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return ElementDescriptor|null
+     *
+     * @throws \Exception
+     */
+    public function resolveTranslationTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null): ?ElementDescriptor
+    {
+        $document = \Pimcore\Model\Document::getById($value['id']);
+        if ($document instanceof \Pimcore\Model\Document) {
+            return $this->extractSingleElement($document, $args, $context, $resolveInfo);
+        }
+
+        return null;
     }
 }

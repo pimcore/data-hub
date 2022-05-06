@@ -134,6 +134,11 @@ see [Element Properties](./11_Query_Samples/05_Sample_Element_Properties.md)
       translations {
         id
         language
+        target {
+          ... on document_headlessdocument {
+            fullpath
+          }
+        }
       }
     }
   }

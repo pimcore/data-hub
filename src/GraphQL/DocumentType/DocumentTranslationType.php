@@ -41,7 +41,14 @@ class DocumentTranslationType extends ObjectType
      */
     public function build(&$config)
     {
+        $anyTargetType = $this->graphQlService->buildGeneralType('document_tree');
+        $documentResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Document(new \Pimcore\Model\Document\Service(), $this->getGraphQlService());
+
         $config['fields']['id'] = Type::int();
         $config['fields']['language'] = Type::string();
+        $config['fields']['target'] =  [
+            'type' => $anyTargetType,
+            'resolve' => [$documentResolver, 'resolveTranslationTarget'],
+        ];
     }
 }
