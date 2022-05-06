@@ -46,7 +46,7 @@ class DocumentTranslationType extends ObjectType
 
         $config['fields']['id'] = Type::int();
         $config['fields']['language'] = Type::string();
-        $config['fields']['target'] =  [
+        $config['fields']['target'] = [
             'type' => $anyTargetType,
             'resolve' => [$documentResolver, 'resolveTranslationTarget'],
         ];
