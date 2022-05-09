@@ -94,6 +94,7 @@ abstract class AbstractDocumentType extends ObjectType
                 'resolve' => [$resolver, 'resolveSiblings'],
             ],
             'translations' => [
+                'args' => ['defaultLanguage' => ['type' => Type::string()]],
                 'type' => Type::listOf($documentTranslation),
                 'resolve' => [$documentResolver, 'resolveTranslations'],
             ]

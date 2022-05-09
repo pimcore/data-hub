@@ -50,13 +50,15 @@ class Document extends Element
      */
     public function resolveTranslations($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null): array
     {
+        $languageRequested = $args['defaultLanguage'] ?? null;
+
         $document = \Pimcore\Model\Document::getById($value['id']);
         $result = [];
 
         if ($document) {
             $documentId = $document->getId();
             foreach ($this->documentService->getTranslations($document) as $transLanguage => $transId) {
-                if ($transId == $documentId) {
+                if ($transId === $documentId || ($languageRequested && $languageRequested !== $transLanguage)) {
                     continue;
                 }
 
