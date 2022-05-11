@@ -37,7 +37,9 @@ class DocumentFolderType extends FolderType
     public function build(&$config)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Element('document', $this->getGraphQLService());
+        $documentResolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Document(new \Pimcore\Model\Document\Service(), $this->getGraphQlService());
         $documentTree = $this->getGraphQlService()->buildGeneralType('document_tree');
+        $documentTranslation = $this->getGraphQlService()->buildGeneralType('document_translation');
 
         {
             $config['fields'] = [
@@ -63,6 +65,11 @@ class DocumentFolderType extends FolderType
                     'type' => Type::listOf($documentTree),
                     'resolve' => [$resolver, 'resolveSiblings'],
                 ],
+                'translations' => [
+                    'args' => ['defaultLanguage' => ['type' => Type::string()]],
+                    'type' => Type::listOf($documentTranslation),
+                    'resolve' => [$documentResolver, 'resolveTranslations'],
+                ]
             ];
         }
     }

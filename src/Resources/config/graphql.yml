@@ -136,6 +136,13 @@ services:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: element_tag }
 
 
+  pimcore.datahub.graphql.generaltype.factory.document_translation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTranslationType
+      tags:
+          - { name: pimcore.datahub.graphql.generaltype_factory, id: document_translation }
+
   pimcore.datahub.graphql.generaltype.factory.asset:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
