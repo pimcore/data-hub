@@ -55,8 +55,9 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
         $context = Runtime::get('datahub_context');
 
         $types = [];
-        $types[] = $this->getGraphQlService()->getDocumentTypeDefinition('_document_folder');
+
         $supportedTypes = [
+            '_document_folder',
             'document_email',
             'document_hardlink',
             'document_link',
