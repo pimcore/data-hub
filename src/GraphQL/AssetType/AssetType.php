@@ -20,6 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 
 class AssetType extends ObjectType
 {
@@ -39,6 +40,7 @@ class AssetType extends ObjectType
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'asset'], $context = [])
     {
+        $config['interfaces'] = [Element::getInstance()];
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);

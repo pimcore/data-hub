@@ -19,6 +19,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 
 abstract class AbstractDocumentType extends ObjectType
 {
@@ -30,6 +31,7 @@ abstract class AbstractDocumentType extends ObjectType
      */
     public function __construct(Service $graphQlService, $config = [])
     {
+        $config['interfaces'] = [Element::getInstance()];
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
