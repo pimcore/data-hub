@@ -2,6 +2,8 @@
 name: "Codeception Tests Pimcore X"
 
 on:
+    schedule:
+        - cron: '0 3 * * 1,3,5'
     pull_request:
         branches:
             - "[0-9]+.[0-9]+"
