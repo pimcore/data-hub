@@ -617,7 +617,11 @@ class MutationType extends ObjectType
 
                         $resolver = $me->getUpdateObjectResolver($processors, $localeService, $newInstance, $me->omitPermissionCheck);
 
-                        call_user_func_array($resolver, [$value, $args, $context, $info]);
+                        $returnValue = call_user_func_array($resolver, [$value, $args, $context, $info]);
+                        if (isset($returnValue['success']) === true &&
+                            $returnValue['success'] === false) {
+                            return $returnValue;
+                        }
 
                         if (isset($args['omitMandatoryCheck'])) {
                             $newInstance->setOmitMandatoryCheck($args['omitMandatoryCheck']);
