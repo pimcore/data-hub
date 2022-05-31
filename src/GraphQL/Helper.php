@@ -45,10 +45,8 @@ class Helper
                         $nameParts = explode('~', $name);
                         $brickName = $nameParts[0];
                         $brickKey = $nameParts[1];
-                        if ($brickKey === $key) {
-                            $list->addObjectbrick($brickName);
-                            $mappingTable[$brickKey] = 1;
-                        }
+                        $list->addObjectbrick($brickName);
+                        $mappingTable[$brickKey] = 1;
                     }
                 }
             }
@@ -109,7 +107,7 @@ class Helper
                 if (is_array($value)) {
                     $childParts = [];
                     foreach ($value as $arrItem) {
-                        $childParts[] = self::buildSqlCondition($defaultTable, $arrItem, $childOp);
+                        $childParts[] = self::buildSqlCondition($defaultTable, $arrItem, $childOp, $subject, $fieldMappingTable);
                     }
                     $parts[] = implode(' ' . $childOp . ' ', $childParts);
                 } else {
