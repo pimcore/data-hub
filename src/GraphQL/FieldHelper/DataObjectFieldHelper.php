@@ -32,7 +32,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 {
     /**
      * @param array $nodeDef
-     * @param ClassDefinition $class
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param object|null $container
      *
      * @return array|bool|null
@@ -123,7 +123,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param string $mode
      * @param array $nodeDef
      * @param ClassDefinition $class
-     * @param object $container
+     * @param object|null $container
      * @param array $params
      *
      * @return mixed
@@ -336,7 +336,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         if ($nodeConf['isOperator']) {
             $operatorTypeName = $attributes['class'];
-            $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType($operatorTypeName, $nodeConf, $class, $container);
+            $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType("mutation", $operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
             $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);

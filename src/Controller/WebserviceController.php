@@ -216,7 +216,7 @@ class WebserviceController extends FrontendController
                 $debug = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE;
                 $output = $result->toArray($debug);
             } else {
-                $output = $result->toArray(false);
+                $output = $result->toArray();
             }
         } catch (\Exception $e) {
             $output = [

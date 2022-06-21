@@ -44,7 +44,7 @@ class DefaultValue extends AbstractValue
             $valueParams = new ElementDescriptor($element);
 
             $resolveFn = $this->getGraphQlService()->buildDataObjectDataQueryResolver($this->attribute, $fieldDefinition, $class);
-            $args = null;
+            $args = [];
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
             if ($value) {
