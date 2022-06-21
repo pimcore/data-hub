@@ -51,7 +51,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param ArrayNodeDefinition|NodeDefinition $rootNode
      */
-    private function addConfigurationsNode(ArrayNodeDefinition|NodeDefinition $rootNode)
+    private function addConfigurationsNode(ArrayNodeDefinition | NodeDefinition $rootNode)
     {
         $rootNode
             ->children()

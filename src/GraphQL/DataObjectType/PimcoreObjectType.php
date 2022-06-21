@@ -203,7 +203,7 @@ class PimcoreObjectType extends ObjectType
             } else {
                 $fcDef = Definition::getByKey($allowedFcName);
                 $fcFields = [];
-                if($fcDef != null) {
+                if ($fcDef != null) {
                     $fcFieldDefs = $fcDef->getFieldDefinitions();
 
                     foreach ($fcFieldDefs as $key => $fieldDef) {

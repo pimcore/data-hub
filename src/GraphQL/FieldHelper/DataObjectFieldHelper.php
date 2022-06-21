@@ -336,7 +336,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
 
         if ($nodeConf['isOperator']) {
             $operatorTypeName = $attributes['class'];
-            $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType("mutation", $operatorTypeName, $nodeConf, $class, $container);
+            $type = $this->getGraphQlService()->buildDataObjectOperatorQueryType('mutation', $operatorTypeName, $nodeConf, $class, $container);
         } else {
             $key = $attributes['attribute'];
             $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key);
