@@ -867,7 +867,7 @@ class MutationType extends ObjectType
 
             return [
                 'success' => true,
-                'message' => 'hurray',
+                'message' => 'object ' . $object->getId() . ' updated',
                 'id' => $object->getId()
             ];
         };
