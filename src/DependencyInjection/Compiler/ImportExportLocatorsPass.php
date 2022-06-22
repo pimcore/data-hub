@@ -47,6 +47,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->processGeneralTypes($container);
 
         $this->processAssetTypes($container);
+        $this->processTranslationTypes($container);
 
         $this->processDataObjectQueryTypes($container);
         $this->processDataObjectMutationTypes($container);
@@ -55,6 +56,7 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->processCsFeatureQueryTypes($container);
 
         $this->registerAssetDataTypes($container);
+        $this->registerTranslationDataTypes($container);
 
         $this->registerDataObjectDataTypes($container);
 
@@ -102,6 +104,19 @@ class ImportExportLocatorsPass implements CompilerPassInterface
             'graphql asset',
             'pimcore.datahub.graphql.assettype_factory',
             '$assetTypeGeneratorFactories'
+        );
+    }
+
+    protected function processTranslationTypes(ContainerBuilder $container)
+    {
+        $graphQLServiceDefinition = $container->getDefinition(Service::class);
+
+        $this->createLocatorForTaggedServices(
+            $container,
+            $graphQLServiceDefinition,
+            'graphql translation',
+            'pimcore.datahub.graphql.translationtype_factory',
+            '$translationTypeGeneratorFactories'
         );
     }
 
@@ -460,6 +475,10 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         ContainerBuilder $container
     ) {
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.assettype', 'registerAssetDataTypes');
+    }
+
+    private function registerTranslationDataTypes(ContainerBuilder $container) {
+        $this->registerElementTypes($container, 'pimcore.datahub.graphql.translationtype', 'registerTranslationDataTypes');
     }
 
     /**

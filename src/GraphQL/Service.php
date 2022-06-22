@@ -105,6 +105,8 @@ class Service
      */
     protected $csFeatureTypeGeneratorFactories;
 
+    protected ContainerInterface $translationTypeGeneratorFactories;
+
     /**
      * @var array
      */
@@ -170,6 +172,8 @@ class Service
      */
     protected $assetDataTypes = [];
 
+    protected array $translationDataTypes = [];
+
     /**
      * @var array
      */
@@ -224,7 +228,8 @@ class Service
         ContainerInterface $documentElementMutationTypeGeneratorFactories,
         ContainerInterface $generalTypeGeneratorFactories,
         ContainerInterface $assetTypeGeneratorFactories,
-        ContainerInterface $csFeatureTypeGeneratorFactories
+        ContainerInterface $csFeatureTypeGeneratorFactories,
+        ContainerInterface $translationTypeGeneratorFactories
     ) {
         $this->assetFieldHelper = $assetFieldHelper;
         $this->documentFieldHelper = $documentFieldHelper;
@@ -241,6 +246,7 @@ class Service
         $this->generalTypeGeneratorFactories = $generalTypeGeneratorFactories;
         $this->assetTypeGeneratorFactories = $assetTypeGeneratorFactories;
         $this->csFeatureTypeGeneratorFactories = $csFeatureTypeGeneratorFactories;
+        $this->translationTypeGeneratorFactories = $translationTypeGeneratorFactories;
     }
 
     /**
@@ -459,6 +465,17 @@ class Service
     public function buildAssetType($typeName)
     {
         $factory = $this->assetTypeGeneratorFactories->get($typeName);
+        $result = $factory->build();
+
+        return $result;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function buildTranslationType(string $typeName): mixed
+    {
+        $factory = $this->translationTypeGeneratorFactories->get($typeName);
         $result = $factory->build();
 
         return $result;
@@ -691,6 +708,11 @@ class Service
     public function registerAssetDataTypes($dataTypes)
     {
         $this->assetDataTypes = $dataTypes;
+    }
+
+    public function registerTranslationDataTypes(array $dataTypes)
+    {
+        $this->translationDataTypes = $dataTypes;
     }
 
     /**
