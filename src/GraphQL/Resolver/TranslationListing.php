@@ -96,7 +96,7 @@ class TranslationListing
         return $connection;
     }
 
-    public function resolveListingTotalCount($value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): mixed
+    public function resolveListingTotalCount(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): mixed
     {
         return $value['totalCount'];
     }

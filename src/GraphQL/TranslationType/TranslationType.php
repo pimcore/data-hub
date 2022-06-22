@@ -31,7 +31,7 @@ class TranslationType extends ObjectType
     /**
      * @throws \Exception
      */
-    public function __construct(Service $graphQlService, array $config = ['name' => 'translation'], array $context = [])
+    public function __construct(Service $graphQlService, array $config = ['name' => 'translation'])
     {
         $config['interfaces'] = [Element::getInstance()];
         $this->setGraphQLService($graphQlService);

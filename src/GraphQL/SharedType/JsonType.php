@@ -25,17 +25,17 @@ class JsonType extends ScalarType
     public $description /** @lang Markdown */
         = 'Arbitrary data encoded in JavaScript Object Notation. See https://www.json.org.';
 
-    public function serialize($value): string
+    public function serialize(mixed $value): string
     {
         return \Safe\json_encode($value);
     }
 
-    public function parseValue($value)
+    public function parseValue(mixed $value)
     {
         return $this->decodeJSON($value);
     }
 
-    public function parseLiteral($valueNode, ?array $variables = null)
+    public function parseLiteral(mixed $valueNode, ?array $variables = null)
     {
         if (! property_exists($valueNode, 'value')) {
             throw new Error(
@@ -55,10 +55,9 @@ class JsonType extends ScalarType
      *
      * @return mixed The decoded value
      */
-    protected function decodeJSON($value)
+    protected function decodeJSON(mixed $value): mixed
     {
         try {
-            // @phpstan-ignore-next-line we attempt unsafe values and let it throw
             $decoded = \Safe\json_decode($value);
         } catch (JsonException $jsonException) {
             throw new Error(
