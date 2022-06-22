@@ -477,7 +477,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.assettype', 'registerAssetDataTypes');
     }
 
-    private function registerTranslationDataTypes(ContainerBuilder $container) {
+    private function registerTranslationDataTypes(ContainerBuilder $container)
+    {
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.translationtype', 'registerTranslationDataTypes');
     }
 

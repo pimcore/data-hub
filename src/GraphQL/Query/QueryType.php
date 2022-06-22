@@ -372,7 +372,6 @@ class QueryType extends ObjectType
         $listResolver = new TranslationListing($this->getGraphQlService(), $this->eventDispatcher);
         $translation = $this->getGraphQlService()->buildTranslationType('translation');
 
-
         $edgeType = new ObjectType(
             [
                 'name' => 'TranslationEdge',
@@ -421,7 +420,6 @@ class QueryType extends ObjectType
         ];
 
         $config['fields']['getTranslationListing'] = $defListing;
-
     }
 
     /**

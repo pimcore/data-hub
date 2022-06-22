@@ -40,6 +40,7 @@ class TranslationListing
         $data = new ElementDescriptor();
 
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+
         return $fieldHelper->extractData($data, $translation, $args, $context, $resolveInfo);
     }
 
