@@ -57,6 +57,12 @@ class TranslationListing
         // get list of types
         $list = new \Pimcore\Model\Translation\Listing();
 
+        if (!empty($args['keys'])) {
+            $keysArray = explode(',', $args['keys']);
+            $keysString = "'" . implode("','",$keysArray) . "'" ;
+            $list->setCondition('translations_messages.key IN (' . $keysString . ')');
+        }
+
         if (!empty($args['domain'])) {
             $list->setDomain($args['domain']);
         }
