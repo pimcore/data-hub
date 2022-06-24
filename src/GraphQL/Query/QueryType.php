@@ -405,7 +405,10 @@ class QueryType extends ObjectType
         $defListing = [
             'name' => 'getTranslationListing',
             'args' => [
-                'keys' => ['type' => Type::string()],
+                'keys' => [
+                    'type' => Type::string(),
+                    'description' => 'e.g.: "key-1,key 2,key_3"'
+                ],
                 'first' => ['type' => Type::int()],
                 'after' => ['type' => Type::int()],
                 'sortBy' => ['type' => Type::listOf(Type::string())],
@@ -413,7 +416,10 @@ class QueryType extends ObjectType
                     'type' => Type::listOf(Type::string()),
                     'description' => 'Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by',
                 ],
-                'domain' => ['type' => Type::string()],
+                'domain' => [
+                    'type' => Type::string(),
+                    'description' => 'default value: messages'
+                ],
             ],
             'type' => $listingType,
             'resolve' => [$listResolver, 'resolveListing'],
