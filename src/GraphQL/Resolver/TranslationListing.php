@@ -59,7 +59,7 @@ class TranslationListing
 
         if (!empty($args['keys'])) {
             $keysArray = explode(',', $args['keys']);
-            $keysString = "'" . implode("','",$keysArray) . "'" ;
+            $keysString = "'" . implode("','", $keysArray) . "'" ;
             $list->setCondition('translations_messages.key IN (' . $keysString . ')');
         }
 
