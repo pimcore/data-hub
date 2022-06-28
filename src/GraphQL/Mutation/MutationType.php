@@ -225,6 +225,7 @@ class MutationType extends ObjectType
                 'type' => $updateResultType,
                 'args' => $args, 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($documentType, $inputProcessorFn, $processors, $mutationType, $me) {
                     if ($mutationType == 'update') {
+                        /** @var Document $element */
                         $element = $me->getElementByTypeAndIdOrPath($args, 'document');
 
                         if (!WorkspaceHelper::checkPermission($element, 'update')) {
@@ -1042,6 +1043,7 @@ class MutationType extends ObjectType
                     'userId' => ['type' => Type::int()],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input')
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
+                    /** @var Asset $element */
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
                     $tags = [];
 

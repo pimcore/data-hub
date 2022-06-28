@@ -279,7 +279,7 @@ class QueryType
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
         $objectList->setLimit(1);
-        $objectList->setUnpublished(1);
+        $objectList->setUnpublished(true);
         $objectList = $objectList->load();
         if (!$objectList) {
             $errorMessage = $this->createArgumentErrorMessage($isFullpathSet, $isIdSet, $args);

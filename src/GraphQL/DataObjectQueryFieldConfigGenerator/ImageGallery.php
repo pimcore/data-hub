@@ -72,6 +72,7 @@ class ImageGallery extends Base
 
     public function getResolver($attribute, $fieldDefinition, $class)
     {
+        /** @var Data\ImageGallery $fieldDefinition */
         $resolver = new Helper\ImageGallery($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];

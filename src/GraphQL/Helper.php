@@ -55,7 +55,7 @@ class Helper
 
     /**
      * @param string $defaultTable
-     * @param string|array $q
+     * @param string|array|\stdClass $q
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
