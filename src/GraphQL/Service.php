@@ -841,6 +841,10 @@ class Service
         if ($fieldDefinition->isEmpty($value)) {
             $parent = \Pimcore\Model\DataObject\Service::hasInheritableParentObject($object);
             if (!empty($parent)) {
+                if (!($parent instanceof Concrete)) {
+                    $parent = Concrete::getById($parent->getId());
+                }
+
                 return self::getValueForObject($parent, $key, $brickType, $brickKey, $fieldDefinition, $context, $brickDescriptor);
             }
         }

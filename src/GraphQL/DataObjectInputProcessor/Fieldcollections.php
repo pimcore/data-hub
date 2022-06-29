@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection;
+use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
 class Fieldcollections extends Base
 {
@@ -37,7 +38,7 @@ class Fieldcollections extends Base
     }
 
     /**
-     * @param Concrete|Fieldcollection\Data\AbstractData $object
+     * @param Concrete|AbstractData $object
      * @param mixed $newValue
      * @param array $args
      * @param array $context
@@ -83,7 +84,8 @@ class Fieldcollections extends Base
                 if (!$fc || $fc->getType() != $fcKey) {
                     // either index does not exist or type does not match
                     $modelFactory = $this->getGraphQlService()->getModelFactory();
-                    $className = 'Pimcore\\Model\\DataObject\\Fieldcollection\Data\\' . ucfirst($fcKey);
+                    $className = 'Pimcore\\Model\\DataObject\\Fieldcollection\\Data\\' . ucfirst($fcKey);
+                    /** @var AbstractData $fc */
                     $fc = $modelFactory->build($className);
                 }
                 $fc->setIndex($index);
