@@ -95,8 +95,8 @@ class TranslationListing
         $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
         $list = $event->getListing();
 
-        $totalCount = $list->getTotalCount();
-        $list->load();
+        $totalCount = $list->count();
+        $list->getData();
 
         $nodes = [];
 
