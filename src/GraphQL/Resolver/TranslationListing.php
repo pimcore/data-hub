@@ -84,7 +84,7 @@ class TranslationListing
             $list->setOffset($args['after']);
         }
 
- $event = new ListingEvent(
+        $event = new ListingEvent(
             $list,
             $args,
             $context,
