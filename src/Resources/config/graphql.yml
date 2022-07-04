@@ -164,6 +164,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.assettype_factory, id: video }
 
+  pimcore.datahub.graphql.generaltype.factory.translation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\TranslationType\TranslationType
+      tags:
+          - { name: pimcore.datahub.graphql.translationtype_factory, id: translation }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType: ~
 
   Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageDataType: ~

@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\QueryEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType as QueryTypeResolver;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -359,6 +360,74 @@ class QueryType extends ObjectType
         $config['fields']['getAssetListing'] = $defListing;
     }
 
+    public function buildTranslationListingQueries(array &$config, array $context)
+    {
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+
+        if (!isset($entities['translation_listing']['read']) || !$entities['translation_listing']['read']) {
+            return;
+        }
+
+        $listResolver = new TranslationListing($this->getGraphQlService(), $this->eventDispatcher);
+        $translation = $this->getGraphQlService()->buildTranslationType('translation');
+
+        $edgeType = new ObjectType(
+            [
+                'name' => 'TranslationEdge',
+                'fields' => [
+                    'cursor' => Type::string(),
+                    'node' => [
+                        'type' => $translation,
+                        'resolve' => [$listResolver, 'resolveEdge']
+                    ],
+                ],
+            ]
+        );
+
+        $listingType = new ObjectType(
+            [
+                'name' => 'TranslationConnection',
+                'fields' => [
+                    'edges' => [
+                        'type' => Type::listOf($edgeType),
+                        'resolve' => [$listResolver, 'resolveEdges']
+                    ],
+                    'totalCount' => [
+                        'description' => 'The total count of all queryable translations for this schema listing',
+                        'resolve' => [$listResolver, 'resolveListingTotalCount'],
+                        'type' => Type::int()
+                    ]
+                ]
+            ]
+        );
+
+        $defListing = [
+            'name' => 'getTranslationListing',
+            'args' => [
+                'keys' => [
+                    'type' => Type::string(),
+                    'description' => 'e.g.: "key-1,key 2,key_3"'
+                ],
+                'first' => ['type' => Type::int()],
+                'after' => ['type' => Type::int()],
+                'sortBy' => ['type' => Type::listOf(Type::string())],
+                'sortOrder' => [
+                    'type' => Type::listOf(Type::string()),
+                    'description' => 'Sort by ASC or DESC, use the same position as the sortBy argument for each column to sort by',
+                ],
+                'domain' => [
+                    'type' => Type::string(),
+                    'description' => 'default value: messages'
+                ],
+            ],
+            'type' => $listingType,
+            'resolve' => [$listResolver, 'resolveListing'],
+        ];
+
+        $config['fields']['getTranslationListing'] = $defListing;
+    }
+
     /**
      * @param array $config
      * @param array $context
@@ -381,6 +450,7 @@ class QueryType extends ObjectType
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
         $this->buildAssetListingQueries($config, $context);
+        $this->buildTranslationListingQueries($config, $context);
         $this->buildFolderQueries('asset', $config, $context);
         $this->buildFolderQueries('document', $config, $context);
         $this->buildFolderQueries('object', $config, $context);
