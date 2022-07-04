@@ -84,6 +84,15 @@ class TranslationListing
             $list->setOffset($args['after']);
         }
 
+ $event = new ListingEvent(
+            $list,
+            $args,
+            $context,
+            $resolveInfo
+        );
+        $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
+        $list = $event->getListing();
+
         $totalCount = $list->getTotalCount();
         $list->load();
 
