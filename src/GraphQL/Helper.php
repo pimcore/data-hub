@@ -126,7 +126,7 @@ class Helper
                             if ($innerOp == 'NOT') {
                                 $valuePart = ' IS NULL';
                                 if (!is_null($objectValue)) {
-                                    $valuePart = ' =' . $db->quote($objectValue) . ')';
+                                    $valuePart = ' =' . $db->quote($objectValue);
                                 }
 
                                 if (isset($fieldMappingTable[$key])) {
