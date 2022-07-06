@@ -40,7 +40,7 @@ class CheckConsumerPermissionsService
                 $apiKey = $request->get('apikey');
             }
 
-            return $apiKey === $securityConfig['apikey'];
+            return in_array($apiKey, $configuration->getApiKeys($securityConfig));
         }
 
         return false;

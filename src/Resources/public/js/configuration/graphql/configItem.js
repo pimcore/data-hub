@@ -209,10 +209,11 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
         this.assetWorkspace = new pimcore.plugin.datahub.workspace.asset(this);
         this.objectWorkspace = new pimcore.plugin.datahub.workspace.object(this);
 
-        var apikeyField = new Ext.form.field.Text({
-            xtype: "textfield",
+        var apikeyField = new Ext.form.field.TextArea({
+            xtype: "textareafield",
             labelWidth: 200,
             width: 600,
+            height: 100,
             fieldLabel: t("plugin_pimcore_datahub_security_datahub_apikey"),
             name: "apikey",
             value: this.data.security ? this.data.security.apikey : "",
@@ -264,7 +265,9 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                             style: "margin-left: 8px",
                             iconCls: "pimcore_icon_clear_cache",
                             handler: function () {
-                                apikeyField.setValue(md5(uniqid()));
+                                let val = apikeyField.getValue();
+                                let newKey = md5(uniqid());
+                                apikeyField.setValue(val ? val + "\n" + newKey : newKey);
                             }.bind(this)
                         }
                     ]
