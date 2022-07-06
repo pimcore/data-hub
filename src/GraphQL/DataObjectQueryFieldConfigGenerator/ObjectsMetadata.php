@@ -19,6 +19,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectMetadataType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\ClassDefinition\Data\AdvancedManyToManyObjectRelation;
 
 class ObjectsMetadata extends Base
 {
@@ -32,6 +33,7 @@ class ObjectsMetadata extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
+        /** @var AdvancedManyToManyObjectRelation $fieldDefinition */
         return $this->enrichConfig($fieldDefinition, $class, $attribute,
             [
                 'name' => $fieldDefinition->getName(),
@@ -43,7 +45,7 @@ class ObjectsMetadata extends Base
     }
 
     /**
-     * @param Data\AdvancedManyToManyObjectRelation $fieldDefinition
+     * @param AdvancedManyToManyObjectRelation $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

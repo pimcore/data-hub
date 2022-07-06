@@ -55,7 +55,7 @@ class Helper
 
     /**
      * @param string $defaultTable
-     * @param string|array $q
+     * @param string|array|\stdClass $q
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
@@ -126,7 +126,7 @@ class Helper
                             if ($innerOp == 'NOT') {
                                 $valuePart = ' IS NULL';
                                 if (!is_null($objectValue)) {
-                                    $valuePart = ' =' . $db->quote($objectValue) . ')';
+                                    $valuePart = ' =' . $db->quote($objectValue);
                                 }
 
                                 if (isset($fieldMappingTable[$key])) {

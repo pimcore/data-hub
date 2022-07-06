@@ -68,6 +68,8 @@ class Hotspotimage extends Base
 
     public function getResolver($attribute, $fieldDefinition, $class)
     {
+
+        /** @var Data\Hotspotimage $fieldDefinition */
         $resolver = new Helper\Hotspotimage($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
 
         return [$resolver, 'resolve'];
