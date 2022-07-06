@@ -149,11 +149,13 @@ class Configuration extends AbstractModel
         $this->type = $type;
     }
 
-    public function getApiKeys(array $securityConfig = null): array {
-        if(!isset($securityConfig)) {
+    public function getApiKeys(array $securityConfig = null): array
+    {
+        if (!isset($securityConfig)) {
             $securityConfig = $this->getSecurityConfig();
         }
-        return explode("\n", $securityConfig['apikey'] ?? "");
+
+        return explode("\n", $securityConfig['apikey'] ?? '');
     }
 
     /**
@@ -167,8 +169,8 @@ class Configuration extends AbstractModel
         if (empty($this->getName())) {
             $this->setName($configuration['configuration']['general']['name'] ?? null);
         }
-        if(isset($configuration['security'])) {
-            $configuration['security']['apikey']  = trim($configuration['security']['apikey'] ?? "", "\n");
+        if (isset($configuration['security'])) {
+            $configuration['security']['apikey'] = trim($configuration['security']['apikey'], "\n") ?? '';
         }
         $this->configuration = $configuration;
     }
@@ -297,7 +299,7 @@ class Configuration extends AbstractModel
 
         $securityConfig = $this->getSecurityConfig();
         if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
-            foreach($this->getApiKeys($securityConfig) as $apiKey) {
+            foreach ($this->getApiKeys($securityConfig) as $apiKey) {
                 if (strlen($apiKey) < 16) {
                     throw new \Exception('API key ' . $apiKey . ' does not satisfy the minimum length of 16 characters');
                 }
