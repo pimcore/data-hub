@@ -170,7 +170,7 @@ class Configuration extends AbstractModel
             $this->setName($configuration['configuration']['general']['name'] ?? null);
         }
         if (isset($configuration['security'])) {
-            $configuration['security']['apikey'] = trim($configuration['security']['apikey'], "\n") ?? '';
+            $configuration['security']['apikey']  = trim($configuration['security']['apikey'] ?? "", "\n");
         }
         $this->configuration = $configuration;
     }
