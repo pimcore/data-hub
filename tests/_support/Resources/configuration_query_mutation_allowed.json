@@ -79,7 +79,7 @@
     },
     "security":{
         "method":"datahub_apikey",
-        "apikey":"ac0155a5f86f64c1f65baa42c52d0e25",
+        "apikey":["ac0155a5f86f64c1f65baa42c52d0e25"],
         "skipPermissionCheck":true
     },
     "workspaces":{
