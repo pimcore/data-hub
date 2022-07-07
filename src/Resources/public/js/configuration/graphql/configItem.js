@@ -216,7 +216,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             height: 100,
             fieldLabel: t("plugin_pimcore_datahub_security_datahub_apikey"),
             name: "apikey",
-            value: this.data.security ? this.data.security.apikey : "",
+            value: this.data.security ? Array.isArray(this.data.security.apikey) ? this.data.security.apikey.join("\n") : this.data.security.apikey : "",
             minLength: 16
         });
 
