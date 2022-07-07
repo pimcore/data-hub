@@ -422,9 +422,10 @@ class QueryType
             $conditionParts[] = '(' . $sqlListCondition . ')';
         }
 
-        // check permissions
-        $workspacesTableName = 'plugin_datahub_workspaces_object';
-        $conditionParts[] = ' (
+        if (!$configuration->skipPermisssionCheck()) {
+            // check permissions
+            $workspacesTableName = 'plugin_datahub_workspaces_object';
+            $conditionParts[] = ' (
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
@@ -440,7 +441,8 @@ class QueryType
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
-        )';
+            )';
+        }
 
         if (isset($args['filter'])) {
             $filter = json_decode($args['filter'], false);

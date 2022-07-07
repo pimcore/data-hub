@@ -143,8 +143,10 @@ class AssetListing
 
         // check permissions
         $tableName = 'assets';
-        $workspacesTableName = 'plugin_datahub_workspaces_asset';
-        $conditionParts[] = ' (
+
+        if (!$configuration->skipPermisssionCheck()) {
+            $workspacesTableName = 'plugin_datahub_workspaces_asset';
+            $conditionParts[] = ' (
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
@@ -160,7 +162,8 @@ class AssetListing
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
-        )';
+            )';
+        }
 
         if (isset($args['filter'])) {
             $filter = \json_decode($args['filter'], false);
