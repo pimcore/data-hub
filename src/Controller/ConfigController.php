@@ -448,7 +448,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 }
             }
 
-            if(isset($dataDecoded['security'])) {
+            if (isset($dataDecoded['security'])) {
                 $dataDecoded['security']['apikey'] = explode("\n", trim($dataDecoded['security']['apikey'] ?? '', "\n"));
             }
 
