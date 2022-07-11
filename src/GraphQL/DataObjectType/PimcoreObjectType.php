@@ -203,22 +203,23 @@ class PimcoreObjectType extends ObjectType
             } else {
                 $fcDef = Definition::getByKey($allowedFcName);
                 $fcFields = [];
+                if ($fcDef != null) {
+                    $fcFieldDefs = $fcDef->getFieldDefinitions();
 
-                $fcFieldDefs = $fcDef->getFieldDefinitions();
-
-                foreach ($fcFieldDefs as $key => $fieldDef) {
-                    $attrName = $fieldDef->getName();
-                    $columnDesc = [
-                        'isOperator' => false,
-                        'attributes' => [
-                            'attribute' => $attrName,
-                            'label' => $fieldDef->getName(),
-                            'dataType' => $fieldDef->getFieldtype()
-                        ]
-                    ];
-                    $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
-                    if ($fcResult) {
-                        $fcFields[$fcResult['key']] = $fcResult['config'];
+                    foreach ($fcFieldDefs as $key => $fieldDef) {
+                        $attrName = $fieldDef->getName();
+                        $columnDesc = [
+                            'isOperator' => false,
+                            'attributes' => [
+                                'attribute' => $attrName,
+                                'label' => $fieldDef->getName(),
+                                'dataType' => $fieldDef->getFieldtype()
+                            ]
+                        ];
+                        $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
+                        if ($fcResult) {
+                            $fcFields[$fcResult['key']] = $fcResult['config'];
+                        }
                     }
                 }
 

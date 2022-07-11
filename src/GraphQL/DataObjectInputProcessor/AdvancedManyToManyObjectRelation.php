@@ -52,7 +52,8 @@ class AdvancedManyToManyObjectRelation extends Base
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
-                        $item = new ObjectMetadata($attribute, $columns ?? [], $element);
+                        $concrete = Concrete::getById($element->getId());
+                        $item = new ObjectMetadata($attribute, $columns ?? [], $concrete);
                         if (isset($data) === true) {
                             $item->setData($data);
                         }

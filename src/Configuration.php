@@ -69,8 +69,8 @@ class Configuration extends AbstractModel
     protected $modificationDate;
 
     /**
-     * @param string $type
-     * @param string $path
+     * @param string|null $type
+     * @param string|null $path
      * @param string|null $name
      * @param array|null $configuration
      */
@@ -231,7 +231,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @param string $path
+     * @param string|null $path
      */
     public function setPath($path): void
     {

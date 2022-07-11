@@ -50,7 +50,8 @@ pimcore.plugin.datahub.mutationoperator.localecollector = Class.create(pimcore.p
                 "select",
                 "slider",
                 "textarea",
-                "time"
+                "time",
+                "wysiwyg"
             ])
         );
     }

@@ -32,6 +32,7 @@ class ReverseManyToManyObjectRelation extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
+        /** @var Data\ReverseManyToManyObjectRelation $fieldDefinition */
         return $this->enrichConfig(
             $fieldDefinition,
             $class,
