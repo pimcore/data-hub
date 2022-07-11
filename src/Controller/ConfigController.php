@@ -448,6 +448,10 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 }
             }
 
+            if (isset($dataDecoded['security'])) {
+                $dataDecoded['security']['apikey'] = explode("\n", trim($dataDecoded['security']['apikey'] ?? '', "\n"));
+            }
+
             $config->setConfiguration($dataDecoded);
 
             if ($config->isAllowed('read') && $config->isAllowed('update')) {

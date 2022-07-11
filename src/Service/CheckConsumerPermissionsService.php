@@ -39,8 +39,11 @@ class CheckConsumerPermissionsService
             if (empty($apiKey)) {
                 $apiKey = $request->get('apikey');
             }
-
-            return $apiKey === $securityConfig['apikey'];
+            if (is_array($securityConfig['apikey'])) {
+                return in_array($apiKey, $securityConfig['apikey']);
+            } else {
+                return $apiKey === $securityConfig['apikey'];
+            }
         }
 
         return false;
