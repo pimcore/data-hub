@@ -100,7 +100,7 @@ abstract class AbstractFieldHelper
         for ($i = 0; $i < $count; $i++) {
             /** @var ArgumentNode $argumentNode */
             $argumentNode = $nodeList[$i];
-            $value = $argumentNode->value->kind === "ListValue" ? $argumentNode->value->values : $argumentNode->value->value;
+            $value = $argumentNode->value->kind === 'ListValue' ? $argumentNode->value->values : $argumentNode->value->value;
             $result[$argumentNode->name->value] = $value;
         }
 
