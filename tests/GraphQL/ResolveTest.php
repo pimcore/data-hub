@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
+use PHPUnit\Framework\Warning;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -143,7 +144,7 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
 
     public function testGraphQLResolveTranslationGetter()
     {
-        $this->expectWarning();
+        $this->expectException(\Exception::class);
         $queryTypeResolver = new QueryType(new EventDispatcher());
         $queryTypeResolver->resolveTranslationGetter();
     }
