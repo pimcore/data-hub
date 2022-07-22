@@ -233,7 +233,7 @@ class QueryType
     public function resolveTranslationGetter(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): array
     {
         $domain = 'messages';
-        if(!empty($args['domain'])) {
+        if (!empty($args['domain'])) {
             $domain = $args['domain'];
         }
 
@@ -249,6 +249,7 @@ class QueryType
         }
 
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
+
         return $fieldHelper->extractData($data, $translation, $args, $context, $resolveInfo);
     }
 
