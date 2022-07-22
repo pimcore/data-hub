@@ -228,10 +228,14 @@ class QueryType
     }
 
     /**
-     * @throws ClientSafeException
+     * @throws \Exception
      */
     public function resolveTranslationGetter(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): array
     {
+        if (empty($args['key'])) {
+            throw new \Exception("Argument key is mandatory");
+        }
+
         $domain = 'messages';
         if (!empty($args['domain'])) {
             $domain = $args['domain'];
