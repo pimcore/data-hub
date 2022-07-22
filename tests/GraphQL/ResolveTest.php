@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Translation;
@@ -138,6 +139,13 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey("en", $translations);
             $this->assertArrayHasKey("de", $translations);
         }
+    }
+
+    public function testGraphQLResolveTranslationGetter()
+    {
+        $this->expectWarning();
+        $queryTypeResolver = new QueryType(new EventDispatcher());
+        $queryTypeResolver->resolveTranslationGetter();
     }
 
     private function addTranslations(): void {

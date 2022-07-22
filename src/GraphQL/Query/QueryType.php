@@ -360,6 +360,39 @@ class QueryType extends ObjectType
         $config['fields']['getAssetListing'] = $defListing;
     }
 
+    public function buildTranslationQueries(array &$config = [], array $context = [])
+    {
+        /** @var Configuration $configuration */
+        $configuration = $context['configuration'];
+        $entities = $configuration->getSpecialEntities();
+        $service = $this->getGraphQlService();
+        $translationType = $service->buildTranslationType('translation');
+
+        if ($entities['translation']['read'] ?? false) {
+            $resolver = $this->getResolver();
+
+            // GETTER DEFINITION
+            $defGet = [
+                'name' => 'getTranslation',
+                'args' => [
+                    'key' => ['type' => Type::string()],
+                    'languages' => [
+                        'type' => Type::string(),
+                        'description' => 'e.g.: "en,de,fr ..."'
+                    ],
+                    'domain' => [
+                        'type' => Type::string(),
+                        'description' => 'default value: messages'
+                    ],
+                ],
+                'type' => $translationType,
+                'resolve' => [$resolver, 'resolveTranslationGetter']
+            ];
+
+            $config['fields']['getTranslation'] = $defGet;
+        }
+    }
+
     public function buildTranslationListingQueries(array &$config, array $context)
     {
         $configuration = $context['configuration'];
@@ -451,6 +484,7 @@ class QueryType extends ObjectType
         $context = $event->getContext();
 
         $this->buildAssetQueries($config, $context);
+        $this->buildTranslationQueries($config, $context);
         $this->buildDocumentQueries($config, $context);
         $this->buildDataObjectQueries($config, $context);
         $this->buildAssetListingQueries($config, $context);
