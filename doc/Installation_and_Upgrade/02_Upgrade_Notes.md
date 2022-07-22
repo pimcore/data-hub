@@ -4,3 +4,4 @@
 - It is possible to add more than one API-key per configuration now. Therefore, the API-key gets stored as an array
 in the configuration. Configurations from previous versions are still supported, but they get converted to the new format
 as soon as they get saved.
+- Added "Translation Listing" and "Translation" to the Generic Types
