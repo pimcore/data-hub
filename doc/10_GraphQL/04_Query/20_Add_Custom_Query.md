@@ -31,7 +31,7 @@ if you need more information on Pimcore's event mechanism.
 
         $operation = [
             'type' => $outputType,
-            'args' => ['itemId' => ['type' => Type::nonNull(Type::int())]],
+            'args' => ['itemId' => ['type' => \GraphQL\Type\Definition\Type::nonNull(Type::int())]],
             'resolve' => function ($source, $args, $context, \GraphQL\Type\Definition\ResolveInfo $info) {
                 // resolve the item using the input parameters. Result will be passed
                 // to the field-level resolvers
