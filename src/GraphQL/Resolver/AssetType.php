@@ -116,9 +116,10 @@ class AssetType
         $thumbNailFormat = $args['format'] ?? null;
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-        if(!isset($thumbNailConfig)) {
+        if (!isset($thumbNailConfig)) {
             return $asset->getFullPath();
         }
+
         return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
     }
 
@@ -139,10 +140,11 @@ class AssetType
         $thumbNailFormat = $args['format'] ?? null;
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-        if(!isset($thumbNailConfig)) {
+        if (!isset($thumbNailConfig)) {
             return $asset->getStream();
         }
         $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+
         return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
     }
 
@@ -229,7 +231,7 @@ class AssetType
             /** @var Asset\Image $asset */
             $asset = $this->getAssetFromValue($value, $context);
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
-            if(isset($thumbnail)) {
+            if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
                 foreach ($types as $type) {
                     $thumbConfigRes = clone $thumbnailConfig;

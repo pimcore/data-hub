@@ -23,8 +23,9 @@ use Pimcore\Model\Asset\Video;
 
 class AssetFieldHelper extends AbstractFieldHelper
 {
-    public function getVideoThumbnail(Asset\Video $asset, string|Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed {
-        if (isset($thumbNailFormat) && $thumbNailFormat !== "image") {
+    public function getVideoThumbnail(Asset\Video $asset, string | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
+        if (isset($thumbNailFormat) && $thumbNailFormat !== 'image') {
             $value = $asset->getThumbnail($thumbNailConfig);
             if ($value) {
                 $formats = $value['formats'] ?? [];
@@ -36,29 +37,29 @@ class AssetFieldHelper extends AbstractFieldHelper
         } else {
             return $asset->getImageThumbnail($thumbNailConfig);
         }
+
         return null;
     }
 
-    public function getImageDocumentThumbnail(Asset $asset, string|Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    public function getImageDocumentThumbnail(Asset $asset, string | Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
     {
-        if($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
+        if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
             $thumb = $asset->getImageThumbnail($thumbNailConfig);
-        }
-        else {
+        } else {
             $thumb = $asset->getThumbnail($thumbNailConfig, false);
         }
-        if(isset($thumbNailFormat) && method_exists($thumb, "getAsFormat") && !($asset instanceof Asset\Video)) {
+        if (isset($thumbNailFormat) && method_exists($thumb, 'getAsFormat') && !($asset instanceof Asset\Video)) {
             $thumb = $thumb->getAsFormat($thumbNailFormat);
         }
+
         return $thumb;
     }
 
-    public function getAssetThumbnail(Asset $asset, string|Image\Thumbnail\Config|Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    public function getAssetThumbnail(Asset $asset, string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
     {
-        if(($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
+        if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
             return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
-        }
-        else {
+        } else {
             return $this->getImageDocumentThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         }
     }
@@ -108,7 +109,7 @@ class AssetFieldHelper extends AbstractFieldHelper
                     $data[$realName] = $container->getThumbnail($thumbnailArgument);
                 } elseif ($realName == 'data') {
                     $thumb = $this->getAssetThumbnail($container, $thumbnailArgument, $thumbnailFormat);
-                    if($thumb) {
+                    if ($thumb) {
                         $data[$realName] = stream_get_contents($thumb->getStream());
                     }
                 }
