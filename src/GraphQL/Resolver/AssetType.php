@@ -112,33 +112,14 @@ class AssetType
     public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        $thumbNailConfig = $args['thumbnail'] ?? null;
+        $thumbNailFormat = $args['format'] ?? null;
+        $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-        if ($asset instanceof Asset\Image) {
-            return isset($args['thumbnail']) ? $asset->getThumbnail($args['thumbnail'], false) : $asset->getFullPath();
-        } elseif ($asset instanceof Asset\Video) {
-            if (isset($args['format'])) {
-                if ($args['format'] == 'image') {
-                    return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
-                } else {
-                    $value = $asset->getThumbnail($args['thumbnail']);
-                    if ($value) {
-                        $formats = $value['formats'] ?? [];
-                        $format = $formats[$args['format']] ?? null;
-                        if ($format) {
-                            return $format;
-                        }
-                    }
-                }
-            } else {
-                return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
-            }
-        } elseif ($asset instanceof Asset\Document) {
-            return isset($args['thumbnail']) ? $asset->getImageThumbnail($args['thumbnail']) : $asset->getFullPath();
-        } elseif ($asset instanceof Asset) {
+        if(!isset($thumbNailConfig)) {
             return $asset->getFullPath();
         }
-
-        return null;
+        return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
     }
 
     /**
@@ -154,23 +135,15 @@ class AssetType
     public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        $thumbNailConfig = $args['thumbnail'] ?? null;
+        $thumbNailFormat = $args['format'] ?? null;
+        $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-        if ($asset instanceof Asset\Image || $asset instanceof Asset\Video) {
-            $data = stream_get_contents($asset->getStream());
-
-            return isset($args['thumbnail'])
-                ? base64_encode(stream_get_contents($asset->getThumbnail($args['thumbnail'],
-                    false)->getStream()))
-                : base64_encode(stream_get_contents($asset->getStream()));
-        } elseif ($asset instanceof Asset\Document) {
-            return isset($args['thumbnail'])
-                ? base64_encode(stream_get_contents($asset->getImageThumbnail($args['thumbnail'])->getStream()))
-                : base64_encode(stream_get_contents($asset->getStream()));
-        } elseif ($asset instanceof Asset) {
-            return base64_encode(stream_get_contents($asset->getStream()));
+        if(!isset($thumbNailConfig)) {
+            return $asset->getStream();
         }
-
-        return null;
+        $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+        return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
     }
 
     /**
@@ -186,10 +159,13 @@ class AssetType
     public function resolveSrcSet($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        $thumbNailConfig = $args['thumbnail'] ?? null;
+        $thumbNailFormat = $args['format'] ?? null;
+        $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if ($asset instanceof Asset\Image) {
             $mediaQueries = [];
-            $thumbnail = $asset->getThumbnail($args['thumbnail'], false);
+            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
             $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
             if ($thumbnailConfig) {
                 foreach ($thumbnailConfig->getMedias() as $key => $val) {
@@ -245,20 +221,25 @@ class AssetType
         }
 
         if ($value instanceof ElementDescriptor) {
+            $resolutions = [];
             $thumbnailName = $args['thumbnail'];
+            $thumbnailFormat = $args['format'] ?? null;
+            $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
+
             /** @var Asset\Image $asset */
             $asset = $this->getAssetFromValue($value, $context);
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
-            $thumbnailConfig = $thumbnail->getConfig();
-            $resolutions = [];
-            foreach ($types as $type) {
-                $thumbConfigRes = clone $thumbnailConfig;
-                $thumbConfigRes->setHighResolution($type);
-                $thumbConfigRes->setMedias([]);
-                $resolutions[] = [
-                    'url' => $asset->getThumbnail($thumbConfigRes, false),
-                    'resolution' => $type,
-                ];
+            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
+            if(isset($thumbnail)) {
+                $thumbnailConfig = $thumbnail->getConfig();
+                foreach ($types as $type) {
+                    $thumbConfigRes = clone $thumbnailConfig;
+                    $thumbConfigRes->setHighResolution($type);
+                    $thumbConfigRes->setMedias([]);
+                    $resolutions[] = [
+                        'url' => $assetFieldHelper->getAssetThumbnail($asset, $thumbConfigRes, $thumbnailFormat),
+                        'resolution' => $type,
+                    ];
+                }
             }
 
             return $resolutions;
