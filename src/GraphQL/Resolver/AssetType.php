@@ -140,7 +140,7 @@ class AssetType
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if(!isset($thumbNailConfig)) {
-            return $asset->getStream();
+            return base64_encode(stream_get_contents($asset->getStream()));
         }
         $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
