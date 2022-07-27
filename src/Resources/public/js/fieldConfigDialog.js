@@ -242,7 +242,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                     child = child[0];
                 } else {
                     var attributes = nodeConf.attributes;
-                    let text = ts(attributes.label) ? ts(attributes.label) : `(${attributes.attribute})`;
+                    let text = attributes.label ? t(attributes.label) : `(${attributes.attribute})`;
 
                     if (attributes.dataType !== "system" && this.showFieldname && attributes.key) {
                         text = text + " (" + attributes.key.replace("~", ".") + ")";
