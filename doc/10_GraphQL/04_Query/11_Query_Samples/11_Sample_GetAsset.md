@@ -8,7 +8,7 @@ Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image
 ### Request
 
 Note that for the fullpath and the base64 encoded data you can specify a thumbnail config.
-You can you the `format` argument to retrieve the values for a specific format like `webp`.
+You can use the `format` argument to retrieve the values for a specific format like `webp`.
 
 ```
 {
