@@ -65,6 +65,11 @@ class TranslationListing
             $list->setCondition('translations_messages.key IN (' . $keysString . ')');
         }
 
+        if (!empty($args['languages'])) {
+            $languages = str_replace(' ', '', $args['languages']);
+            $list->setLanguages(explode(',', $languages));
+        }
+
         if (!empty($args['domain'])) {
             $list->setDomain($args['domain']);
         }

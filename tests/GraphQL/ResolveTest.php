@@ -15,7 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Translation;
 use Pimcore\Tool;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -23,15 +25,17 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class ResolveTest extends \PHPUnit_Framework_TestCase
 {
+    private Service|null $service;
+
     protected function setUp(): void
     {
+        $this->service = \Pimcore::getContainer()->get("Pimcore\Bundle\DataHubBundle\GraphQL\Service");
         $this->addTranslations();
     }
 
     public function testGraphQLTranslationListingResolveListing()
     {
-        $service = \Pimcore::getContainer()->get("Pimcore\Bundle\DataHubBundle\GraphQL\Service");
-        $translationListing = new TranslationListing($service, new EventDispatcher());
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], []);
 
         for($i = 0; $i < 4; $i++) {
@@ -46,8 +50,7 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
 
     public function testGraphQLTranslationListingResolveListingWithDomain()
     {
-        $service = \Pimcore::getContainer()->get("Pimcore\Bundle\DataHubBundle\GraphQL\Service");
-        $translationListing = new TranslationListing($service, new EventDispatcher());
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ["domain" => "admin"]);
 
         for($i = 0; $i < 2; $i++) {
@@ -64,8 +67,7 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
     {
         $key = "k2";
 
-        $service = \Pimcore::getContainer()->get("Pimcore\Bundle\DataHubBundle\GraphQL\Service");
-        $translationListing = new TranslationListing($service, new EventDispatcher());
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ["keys" => $key]);
 
         $this->assertEquals('translation-' . $key, $listRes['edges'][0]['cursor']);
@@ -80,8 +82,7 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
     {
         $keys = "k1,k2,k3";
 
-        $service = \Pimcore::getContainer()->get("Pimcore\Bundle\DataHubBundle\GraphQL\Service");
-        $translationListing = new TranslationListing($service, new EventDispatcher());
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ["keys" => $keys]);
 
 
@@ -93,6 +94,58 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('dek' . $i + 1, $translation->getTranslations()['de']);
             $this->assertEquals('enk' . $i + 1, $translation->getTranslations()['en']);
         }
+    }
+
+    public function testGraphQLTranslationListingResolveListingWithLanguage()
+    {
+        $languages = "en";
+
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
+        $listRes = $translationListing->resolveListing([], ["languages" => $languages]);
+
+        $translations = $listRes['edges'][0]['node']->getTranslations();
+        $this->assertCount(1, $translations);
+        $this->assertArrayHasKey("en", $translations);
+    }
+
+    public function testGraphQLTranslationListingResolveListingWithLanguages()
+    {
+        $languages = "en, de";
+
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
+        $listRes = $translationListing->resolveListing([], ["languages" => $languages]);
+
+        $translations = $listRes['edges'][0]['node']->getTranslations();
+        $this->assertCount(2, $translations);
+        $this->assertArrayHasKey("en", $translations);
+        $this->assertArrayHasKey("de", $translations);
+    }
+
+    public function testGraphQLTranslationListingResolveListingWithLanguagesAndKeys()
+    {
+        $languages = "en, de";
+        $keys = "k1,k2,k3";
+
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
+        $listRes = $translationListing->resolveListing([], ["languages" => $languages, "keys" => $keys]);
+
+        for($i = 0; $i < 2; $i++) {
+            $translation = $listRes['edges'][$i]['node'];
+            $translations = $translation->getTranslations();
+
+            $this->assertEquals('k' . $i + 1, $translation->getKey());
+
+            $this->assertCount(2, $translations);
+            $this->assertArrayHasKey("en", $translations);
+            $this->assertArrayHasKey("de", $translations);
+        }
+    }
+
+    public function testGraphQLResolveTranslationGetter()
+    {
+        $this->expectException(\Exception::class);
+        $queryTypeResolver = new QueryType(new EventDispatcher());
+        $queryTypeResolver->resolveTranslationGetter();
     }
 
     private function addTranslations(): void {
