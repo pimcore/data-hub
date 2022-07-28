@@ -90,6 +90,7 @@ class RelationType extends ObjectType
                                     if ($target) {
                                         $desc = new ElementDescriptor($target);
                                         $graphQlService->extractData($desc, $target, $args, $context, $resolveInfo);
+
                                         return $desc;
                                     }
                                 }
