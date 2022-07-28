@@ -84,12 +84,12 @@ class RelationType extends ObjectType
                         ],
                         'relation' => [
                             'type' => $anyTargetType,
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Relation) {
                                     $target = $value->getElement();
                                     if ($target) {
                                         $desc = new ElementDescriptor($target);
-
+                                        $graphQlService->extractData($desc, $target, $args, $context, $resolveInfo);
                                         return $desc;
                                     }
                                 }
