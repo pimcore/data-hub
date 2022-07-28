@@ -459,3 +459,8 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/SharedType/KeyValueType.php
+
+		-
+			message: "#^Call to an undefined method Pimcore\\\\Model\\\\Asset\\:\\:getThumbnail\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/FieldHelper/AssetFieldHelper.php
