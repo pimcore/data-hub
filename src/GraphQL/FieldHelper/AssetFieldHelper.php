@@ -45,7 +45,7 @@ class AssetFieldHelper extends AbstractFieldHelper
     {
         if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
             $thumb = $asset->getImageThumbnail($thumbNailConfig);
-        } elseif ($asset instanceof Asset\Image) {
+        } else {
             $thumb = $asset->getThumbnail($thumbNailConfig, false);
         }
         if (isset($thumbNailFormat) && method_exists($thumb, 'getAsFormat') && !($asset instanceof Asset\Video)) {
