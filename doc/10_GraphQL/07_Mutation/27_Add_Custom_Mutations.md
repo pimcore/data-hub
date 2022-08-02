@@ -24,7 +24,7 @@ if you need more information on Pimcore's event mechanism.
         $operation = [
             'type' => Type::string(),           // the result type
             'args' => [
-                'id' => ['type' => Type::nonNull(Type::int())],
+                'id' => ['type' => Type::nonNull(\GraphQL\Type\Definition\Type::int())],
                 'input' => ['type' => $inputType],
             ], 'resolve' => function ($source, $args, $context, \GraphQL\Type\Definition\ResolveInfo $info) {
                 // do something here
