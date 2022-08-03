@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -52,7 +52,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes(): array
     {
-        $context = Runtime::get('datahub_context');
+        $context = RuntimeCache::get('datahub_context');
 
         $types = [];
 

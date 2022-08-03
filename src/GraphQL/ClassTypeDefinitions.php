@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition;
 
@@ -82,7 +82,7 @@ class ClassTypeDefinitions
     public static function getAll($onlyQueryTypes = false)
     {
         if ($onlyQueryTypes) {
-            $context = Runtime::get('datahub_context');
+            $context = RuntimeCache::get('datahub_context');
             /** @var Configuration $configuration */
             $configuration = $context['configuration'];
             $types = array_keys($configuration->getConfiguration()['schema']['queryEntities']);
