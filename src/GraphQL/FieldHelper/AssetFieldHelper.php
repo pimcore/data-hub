@@ -23,6 +23,47 @@ use Pimcore\Model\Asset\Video;
 
 class AssetFieldHelper extends AbstractFieldHelper
 {
+    public function getVideoThumbnail(Asset\Video $asset, string | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
+        if (isset($thumbNailFormat) && $thumbNailFormat !== 'image') {
+            $value = $asset->getThumbnail($thumbNailConfig);
+            if ($value) {
+                $formats = $value['formats'] ?? [];
+                $format = $formats[$thumbNailFormat] ?? null;
+                if ($format) {
+                    return $format;
+                }
+            }
+        } else {
+            return $asset->getImageThumbnail($thumbNailConfig);
+        }
+
+        return null;
+    }
+
+    public function getImageDocumentThumbnail(Asset $asset, string | Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
+        if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
+            $thumb = $asset->getImageThumbnail($thumbNailConfig);
+        } else {
+            $thumb = $asset->getThumbnail($thumbNailConfig, false);
+        }
+        if (isset($thumbNailFormat) && method_exists($thumb, 'getAsFormat') && !($asset instanceof Asset\Video)) {
+            $thumb = $thumb->getAsFormat($thumbNailFormat);
+        }
+
+        return $thumb;
+    }
+
+    public function getAssetThumbnail(Asset $asset, string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
+        if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
+            return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+        } else {
+            return $this->getImageDocumentThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+        }
+    }
+
     /**
      * @param FieldNode $ast
      * @param array $data
@@ -43,6 +84,7 @@ class AssetFieldHelper extends AbstractFieldHelper
         $arguments = $this->getArguments($ast);
         $languageArgument = isset($arguments['language']) ? $arguments['language'] : null;
         $thumbnailArgument = isset($arguments['thumbnail']) ? $arguments['thumbnail'] : null;
+        $thumbnailFormat = $arguments['format'] ?? null;
 
         $realName = $astName;
 
@@ -66,8 +108,10 @@ class AssetFieldHelper extends AbstractFieldHelper
                 if ($realName == 'fullpath') {
                     $data[$realName] = $container->getThumbnail($thumbnailArgument);
                 } elseif ($realName == 'data') {
-                    $thumb = $container->getThumbnail($thumbnailArgument, false);
-                    $data[$realName] = stream_get_contents($thumb->getStream());
+                    $thumb = $this->getAssetThumbnail($container, $thumbnailArgument, $thumbnailFormat);
+                    if ($thumb) {
+                        $data[$realName] = stream_get_contents($thumb->getStream());
+                    }
                 }
             }
         } else {
