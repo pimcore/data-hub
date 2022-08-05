@@ -306,11 +306,6 @@ parameters:
 			path: src/GraphQL/DocumentElementType/TextareaType.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: src/GraphQL/DocumentElementType/VideoType.php
-
-		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/DocumentElementType/VideoType.php

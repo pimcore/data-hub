@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Editable\Video;
+use Pimcore\Model\Element\ElementInterface;
 
 class VideoType extends ObjectType
 {
@@ -85,6 +86,7 @@ class VideoType extends ObjectType
                             'type' => $assetType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Video) {
+                                    /** @var ElementInterface|null $relation */
                                     $relation = $value->getPosterAsset();
                                     if ($relation) {
                                         $data = RelationHelper::processRelation($relation, $graphQlService, $args, $context, $resolveInfo);
