@@ -85,7 +85,7 @@ class VideoType extends ObjectType
                             'type' => $assetType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Video) {
-                                    /** Image|null $relation */
+                                    /** @var Image|null $relation */
                                     $relation = $value->getPosterAsset();
                                     if ($relation) {
                                         $data = RelationHelper::processRelation($relation, $graphQlService, $args, $context, $resolveInfo);
