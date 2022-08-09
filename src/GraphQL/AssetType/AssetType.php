@@ -105,6 +105,7 @@ class AssetType extends ObjectType
                 'type' => $resolutionsType,
                 'args' => [
                     'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                    'format' => ['type' => Type::string()],
                     'types' => $resolutionsArgumentsType
                 ],
                 'resolve' => [$resolver, 'resolveResolutions'],
@@ -112,7 +113,8 @@ class AssetType extends ObjectType
             'dimensions' => [
                 'type' => $dimensionsType,
                 'args' => [
-                    'thumbnail' => ['type' => Type::string()]
+                    'thumbnail' => ['type' => Type::string()],
+                    'format' => ['type' => Type::string()]
                 ],
                 'resolve' => [$resolver, 'resolveDimensions'],
             ],
@@ -133,6 +135,7 @@ class AssetType extends ObjectType
                 ])),
                 'args' => [
                     'thumbnail' => ['type' => Type::nonNull(Type::string())],
+                    'format' => ['type' => Type::string()]
                 ],
                 'resolve' => [$resolver, 'resolveSrcSet'],
             ],
@@ -143,7 +146,8 @@ class AssetType extends ObjectType
             'data' => [
                 'type' => Type::string(),
                 'args' => [
-                    'thumbnail' => ['type' => Type::string()]
+                    'thumbnail' => ['type' => Type::string()],
+                    'format' => ['type' => Type::string()]
                 ],
                 'resolve' => [$resolver, 'resolveData'],
             ],

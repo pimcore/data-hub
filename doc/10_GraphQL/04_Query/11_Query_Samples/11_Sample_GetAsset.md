@@ -8,6 +8,7 @@ Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image
 ### Request
 
 Note that for the fullpath and the base64 encoded data you can specify a thumbnail config.
+You can use the `format` argument to retrieve the values for a specific format like `webp`.
 
 ```
 {
@@ -18,7 +19,7 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
     # thumbnail URL for exampleCover config
     assetThumb: fullpath(thumbnail: "exampleCover")
     # thumbnail URL for content config
-    assetThumb2: fullpath(thumbnail: "content")
+    assetThumb2: fullpath(thumbnail: "content", format: "webp")
     resolutions(thumbnail: "content", types: [2,5]) {
         resolution
         url
@@ -54,15 +55,15 @@ Note that for the fullpath and the base64 encoded data you can specify a thumbna
             "getAsset": {
               "id": "4",
               "fullpath": "/Car%20Images/jaguar/auto-automobile-automotive-192499.jpg",
-              "assetThumb": "/Car%20Images/jaguar/image-thumb__4__exampleCover/auto-automobile-automotive-192499.webp",
-              "assetThumb2": "/Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499.webp",
+              "assetThumb": "/Car%20Images/jaguar/4/image-thumb__4__exampleCover/auto-automobile-automotive-192499.jpg",
+              "assetThumb2": "/Car%20Images/jaguar/4/image-thumb__4__content/auto-automobile-automotive-192499.webp",
               "resolutions": [
                 {
-                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@2x.webp",
+                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@2x.jpg",
                   "resolution": 2
                 },
                 {
-                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@5x.webp",
+                  "url": "//Car%20Images/jaguar/image-thumb__4__content/auto-automobile-automotive-192499~-~768w@5x.jpg",
                   "resolution": 5
                 }
               ]
