@@ -25,7 +25,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -198,8 +198,8 @@ class PimcoreObjectType extends ObjectType
 
         foreach ($allowedFcs as $allowedFcName) {
             $fcKey = 'graphql_fieldcollection_' . $allowedFcName;
-            if (Runtime::isRegistered($fcKey)) {
-                $itemFcType = Runtime::get($fcKey);
+            if (RuntimeCache::isRegistered($fcKey)) {
+                $itemFcType = RuntimeCache::get($fcKey);
             } else {
                 $fcDef = Definition::getByKey($allowedFcName);
                 $fcFields = [];
@@ -252,7 +252,7 @@ class PimcoreObjectType extends ObjectType
                     'fields' => $fcFields
                 ]);
 
-                Runtime::save($itemFcType, $fcKey);
+                RuntimeCache::save($itemFcType, $fcKey);
             }
 
             $unionTypes[] = $itemFcType;

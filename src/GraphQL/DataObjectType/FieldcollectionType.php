@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -62,7 +62,7 @@ class FieldcollectionType extends UnionType implements ContainerAwareInterface
         if ($element instanceof FieldcollectionDescriptor) {
             $fcName = $element['__fcType'];
             $fcKey = 'graphql_fieldcollection_' . $fcName;
-            $type = Runtime::get($fcKey);
+            $type = RuntimeCache::get($fcKey);
 
             return $type;
         }

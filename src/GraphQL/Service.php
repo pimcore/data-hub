@@ -38,7 +38,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryInterface;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\Asset;
@@ -414,7 +414,7 @@ class Service
 
         // $factory = $this->mutationTypeGeneratorFactories->get('typegenerator_mutationoperator_' . $typeName);
         $factory = $this->dataObjectMutationOperatorFactories->get($typeName);
-        $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         $configGenerator = $factory->build($nodeDef['attributes'], $context);
         $result = $configGenerator->getGraphQlMutationOperatorConfig($nodeDef, $class, $container, $params);
 
@@ -496,7 +496,7 @@ class Service
         /** @var OperatorFactoryInterface $factory */
         $factory = $this->dataObjectQueryOperatorFactories->get($typeName);
 
-        $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         $result = $factory->build($attributes, $context);
 
         return $result;
@@ -518,7 +518,7 @@ class Service
 
             return $operatorImpl;
         } else {
-            $context = Runtime::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+            $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
             $operatorImpl = new DefaultValue($attributes, $context);
             $operatorImpl->setGraphQlService($this);
 
@@ -1206,7 +1206,7 @@ class Service
      */
     public function querySchemaEnabled(string $type)
     {
-        $context = Runtime::get('datahub_context');
+        $context = RuntimeCache::get('datahub_context');
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         if ($type === 'object') {

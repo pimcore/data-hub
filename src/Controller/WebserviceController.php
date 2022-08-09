@@ -32,7 +32,7 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Helper\LongRunningHelper;
 use Pimcore\Localization\LocaleServiceInterface;
@@ -127,7 +127,7 @@ class WebserviceController extends FrontendController
         }
 
         $longRunningHelper->addPimcoreRuntimeCacheProtectedItems(['datahub_context']);
-        Runtime::set('datahub_context', $context);
+        RuntimeCache::set('datahub_context', $context);
 
         ClassTypeDefinitions::build($service, $context);
 

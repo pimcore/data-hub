@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\PermissionEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\PermissionEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
-use Pimcore\Cache\Runtime;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
@@ -229,7 +229,7 @@ class WorkspaceHelper
      */
     public static function checkPermission($element, $type)
     {
-        $context = Runtime::get('datahub_context');
+        $context = RuntimeCache::get('datahub_context');
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 
