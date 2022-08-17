@@ -923,6 +923,7 @@ class Service
                 $def = $brickClass->getFieldDefinition($brickKey);
                 if (!$def) {
                     $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                    /** @var Data\Localizedfields $localizedFields */
                     $localizedFields = $brickClass->getFieldDefinition($innerContainer);
                     $def = $localizedFields->getFieldDefinition($brickDescriptor['brickfield']);
                 }
@@ -933,7 +934,9 @@ class Service
             if (!empty($key)) {
                 // if the definition is not set try to get the definition from localized fields
                 if (!$def) {
-                    if ($locFields = $object->getClass()->getFieldDefinition('localizedfields')) {
+                    /** @var Data\Localizedfields|null $locFields */
+                    $locFields = $object->getClass()->getFieldDefinition('localizedfields');
+                    if ($locFields) {
                         $def = $locFields->getFieldDefinition($key, $context);
                     }
                 }
@@ -1083,6 +1086,7 @@ class Service
 
             if ($brickDescriptor) {
                 $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                /** @var Data\Localizedfields $localizedFields */
                 $localizedFields = $brickClass->getFieldDefinition($innerContainer);
                 $def = $localizedFields->getFieldDefinition($brickDescriptor['brickfield']);
             } else {
@@ -1092,7 +1096,9 @@ class Service
             if (!empty($key)) {
                 // if the definition is not set try to get the definition from localized fields
                 if (!$def) {
-                    if ($locFields = $object->getClass()->getFieldDefinition('localizedfields')) {
+                    /** @var Data\Localizedfields|null $locFields */
+                    $locFields = $object->getClass()->getFieldDefinition('localizedfields');
+                    if ($locFields) {
                         $def = $locFields->getFieldDefinition($key, $context);
                     }
                 }
@@ -1127,10 +1133,10 @@ class Service
         }
 
         if ($containerDefinition) {
-            if ($lfDefs = $containerDefinition->getFieldDefinition('localizedfields')) {
-                if ($lfDefs->getFieldDefinition($fieldName)) {
-                    return true;
-                }
+            /** @var Data\Localizedfields|null $lfDefs */
+            $lfDefs = $containerDefinition->getFieldDefinition('localizedfields');
+            if ($lfDefs?->getFieldDefinition($fieldName)) {
+                return true;
             }
         }
 

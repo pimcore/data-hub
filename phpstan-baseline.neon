@@ -401,11 +401,6 @@ parameters:
 			path: src/GraphQL/Service.php
 
 		-
-			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\\\ClassDefinition\\\\Data\\:\\:getFieldDefinition\\(\\)\\.$#"
-			count: 5
-			path: src/GraphQL/Service.php
-
-		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/SharedType/HotspotCropType.php
