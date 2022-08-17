@@ -1,0 +1,10 @@
+<?php
+
+namespace Pimcore\Model\Asset\Thumbnail;
+
+/**
+ * @method static getAsFormat(string $format)
+ */
+trait ImageThumbnailTrait
+{
+}
