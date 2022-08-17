@@ -101,7 +101,7 @@ class AssetListing
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = Asset\Listing::class;
 
-        /** @var AbstractListing $objectList */
+        /** @var Asset\Listing $objectList */
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
         if (isset($args['ids'])) {
@@ -184,6 +184,7 @@ class AssetListing
             $resolveInfo
         );
         $this->eventDispatcher->dispatch($event, ListingEvents::PRE_LOAD);
+        /** @var Asset\Listing $objectList */
         $objectList = $event->getListing();
 
         $totalCount = $objectList->getTotalCount();

@@ -342,9 +342,10 @@ class QueryType
     public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $object = $value['node'];
+        $nodeData = [];
 
-        $data = new ElementDescriptor();
         if ($this->omitPermissionCheck || WorkspaceHelper::checkPermission($object, 'read')) {
+            $data = new ElementDescriptor();
             $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
             $nodeData = $fieldHelper->extractData($data, $object, $args, $context, $resolveInfo);
         }
@@ -397,8 +398,9 @@ class QueryType
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
-        /** @var Listing $objectList */
+        /** @var Listing\Concrete $objectList */
         $objectList = $modelFactory->build($listClass);
+        $tableName = $objectList->getDao()->getTableName();
 
         $conditionParts = [];
         $db = Db::get();
@@ -460,7 +462,7 @@ class QueryType
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
+                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.o_path,' . $db->quoteIdentifier($tableName) . '.o_key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
@@ -468,7 +470,7 @@ class QueryType
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($objectList->getTableName()) . '.o_path,' . $db->quoteIdentifier($objectList->getTableName()) . '.o_key))=1
+                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.o_path,' . $db->quoteIdentifier($tableName) . '.o_key))=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
@@ -486,7 +488,7 @@ class QueryType
 
             Helper::addJoins($objectList, $filter, $columns, $mappingTable);
 
-            $filterCondition = Helper::buildSqlCondition($objectList->getTableName(), $filter, null, null, $mappingTable);
+            $filterCondition = Helper::buildSqlCondition($tableName, $filter, null, null, $mappingTable);
             $conditionParts[] = $filterCondition;
         }
 

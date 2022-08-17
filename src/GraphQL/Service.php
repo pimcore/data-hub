@@ -841,6 +841,7 @@ class Service
                     $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
                     $localizedFields = $value->{'get' . ucfirst($innerContainer)}();
                     $brickDefinition = Definition::getByKey($brickType);
+                    /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
                     $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
                     $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
                     $value = $localizedFields->getLocalizedValue($brickDescriptor['brickfield'], isset($args['language']) ? $args['language'] : null);
@@ -1121,7 +1122,7 @@ class Service
 
         if ($container instanceof Concrete) {
             $containerDefinition = $container->getClass();
-        } elseif ($container instanceof AbstractData || $container instanceof \Pimcore\Model\DataObject\Objectbrick\Data\AbstractData) {
+        } elseif ($container instanceof AbstractData) {
             $containerDefinition = $container->getDefinition();
         }
 

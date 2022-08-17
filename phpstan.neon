@@ -4,9 +4,5 @@ parameters:
         - src
     bootstrapFiles:
         - phpstan-bootstrap.php
-    stubFiles:
-        - stubs/Asset.stub
-        - stubs/ImageThumbnailTrait.stub
-        - stubs/Pdf.stub
 includes:
     - phpstan-baseline.neon
