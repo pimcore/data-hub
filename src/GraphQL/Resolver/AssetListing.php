@@ -28,7 +28,6 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Element\ElementInterface;
-use Pimcore\Model\Listing\AbstractListing;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AssetListing
