@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
