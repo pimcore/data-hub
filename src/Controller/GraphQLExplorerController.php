@@ -34,14 +34,8 @@ class GraphQLExplorerController extends AbstractController
      *
      * @throws \Exception
      */
-    public function explorerAction(RouterInterface $routingService, Request $request, Service $service)
+    public function explorerAction(RouterInterface $routingService, Request $request)
     {
-        $tagManagerListener = $service->getTagManagerListener();
-        // disable Tag & Snippet Management
-        if ($tagManagerListener) {
-            $tagManagerListener->disable();
-        }
-
         $urlParams = array_merge($request->request->all(), $request->query->all());
 
         $clientName = $request->get('clientname');

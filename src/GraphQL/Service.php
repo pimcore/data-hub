@@ -195,8 +195,6 @@ class Service
      */
     protected $dataObjectDataTypes = [];
 
-    protected $tagManagerListener;
-
     /**
      * @param AssetFieldHelper $assetFieldHelper
      * @param DocumentFieldHelper $documentFieldHelper
@@ -1224,18 +1222,5 @@ class Service
         }
 
         return $enabled;
-    }
-
-    public function setTagManagerListener($tagManagerListener)
-    {
-        $this->tagManagerListener = $tagManagerListener;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTagManagerListener()
-    {
-        return $this->tagManagerListener;
     }
 }
