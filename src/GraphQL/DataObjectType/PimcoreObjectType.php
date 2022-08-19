@@ -79,10 +79,10 @@ class PimcoreObjectType extends ObjectType
 
         // these are the system fields that are always available, maybe move some of them to FieldHelper so that they
         // are only visible if explicitly configured by the user
-        $fields = ['id' =>
-            [
-                'type' => Type::id(),
-            ],
+        $fields = [
+            'id' => Type::id(),
+            'creationDate' => Type::int(),
+            'modificationDate' => Type::int(),
             'objectType' => [
                 'type' => Type::string(),
                 'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
