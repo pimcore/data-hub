@@ -52,7 +52,7 @@ class OutputCacheService
     {
         $this->eventDispatcher = $eventDispatcher;
 
-        if($dataHubConfig === null) {
+        if ($dataHubConfig === null) {
             trigger_deprecation(
                 'pimcore/data-hub',
                 '1.6.0',
