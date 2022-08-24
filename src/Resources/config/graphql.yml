@@ -49,8 +49,6 @@ services:
 
   Pimcore\Bundle\DataHubBundle\GraphQL\Service:
     public: true
-    calls:
-      - [setTagManagerListener, ['@?pimcore.event_listener.frontend.tag_manager']]
 
   # Field helper
   Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper:
@@ -1189,7 +1187,7 @@ services:
     tags:
         - { name: pimcore.datahub.graphql.propertytype, id: property_select }
 
-  # element tags 
+  # element tags
 
   Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag:
     tags:

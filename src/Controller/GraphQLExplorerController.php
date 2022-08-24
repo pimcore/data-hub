@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,14 +33,8 @@ class GraphQLExplorerController extends AbstractController
      *
      * @throws \Exception
      */
-    public function explorerAction(RouterInterface $routingService, Request $request, Service $service)
+    public function explorerAction(RouterInterface $routingService, Request $request)
     {
-        $tagManagerListener = $service->getTagManagerListener();
-        // disable Tag & Snippet Management
-        if ($tagManagerListener) {
-            $tagManagerListener->disable();
-        }
-
         $urlParams = array_merge($request->request->all(), $request->query->all());
 
         $clientName = $request->get('clientname');

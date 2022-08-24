@@ -35,9 +35,7 @@ class Geopoint
      */
     public function resolveLongitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        // cannot be changed to GeoCoordinates due to BC reasons
-        @class_alias(GeoCoordinates::class, 'Pimcore\Model\DataObject\Data\Geopoint');
-        if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
+        if ($value instanceof GeoCoordinates) {
             return $value->getLongitude();
         }
 
@@ -56,9 +54,7 @@ class Geopoint
      */
     public function resolveLatitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        // cannot be changed to GeoCoordinates due to BC reasons
-        @class_alias(GeoCoordinates::class, 'Pimcore\Model\DataObject\Data\Geopoint');
-        if ($value instanceof \Pimcore\Model\DataObject\Data\Geopoint) {
+        if ($value instanceof GeoCoordinates) {
             return $value->getLatitude();
         }
 
