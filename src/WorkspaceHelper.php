@@ -185,8 +185,6 @@ class WorkspaceHelper
     public static function loadWorkspaces(Configuration $configuration)
     {
         $workspaces = [];
-        $types = ['asset', 'object', 'document'];
-
         $types = ['document', 'asset', 'object'];
         $db = Db::get();
 
@@ -194,7 +192,7 @@ class WorkspaceHelper
             $workspaces[$type] = [];
 
             $className = '\\Pimcore\\Bundle\\DataHubBundle\\Configuration\\Workspace\\' . \Pimcore\Model\Element\Service::getBaseClassNameForElement($type);
-            $result = $db->fetchAll('SELECT * FROM plugin_datahub_workspaces_' . $type . ' WHERE configuration = ?', [$configuration->getName()]);
+            $result = $db->fetchAllAssociative('SELECT * FROM plugin_datahub_workspaces_' . $type . ' WHERE configuration = ?', [$configuration->getName()]);
             foreach ($result as $row) {
                 $workspace = new $className();
                 $workspace->setValues($row);
