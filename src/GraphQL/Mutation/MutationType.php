@@ -40,6 +40,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\AbstractElement;
+use Pimcore\Model\Element\DuplicateFullPathException;
 use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
@@ -900,10 +901,11 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args['id'] = $value['id'] ?? null;
-                            $value = $queryResolver($value, $args, $context, $info);
+                            if($args['id'] = $value['id'] ?? null) {
+                                $value = $queryResolver($value, $args, $context, $info);
 
-                            return $value;
+                                return $value;
+                            }
                         }
                     ]
                 ],
@@ -976,7 +978,19 @@ class MutationType extends ObjectType
                         }
                     }
 
-                    $me->saveElement($newInstance, $args);
+                    try {
+                        $me->saveElement($newInstance, $args);
+                    } catch (DuplicateFullPathException $e) {
+                        return [
+                            'success' => false,
+                            'message' => 'saving failed: Duplicate path'
+                        ];
+                    } catch (\Exception $e) {
+                        return [
+                            'success' => false,
+                            'message' => 'saving failed'
+                        ];
+                    }
 
                     if ($tags) {
                         $me->setTags('asset', $newInstance->getId(), $tags);
