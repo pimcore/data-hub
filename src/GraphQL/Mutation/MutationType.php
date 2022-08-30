@@ -901,7 +901,7 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            if($args['id'] = $value['id'] ?? null) {
+                            if ($args['id'] = $value['id'] ?? null) {
                                 $value = $queryResolver($value, $args, $context, $info);
 
                                 return $value;
