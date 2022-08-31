@@ -36,7 +36,7 @@ class ClassTypeDefinitions
     public static function build(Service $graphQlService, $context = [])
     {
         $db = Db::get();
-        $listing = $db->fetchAll('select id, name from classes');
+        $listing = $db->fetchAllAssociative('SELECT id, name FROM classes');
 
         foreach ($listing as $class) {
             $id = $class['id'];
