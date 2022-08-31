@@ -51,7 +51,7 @@ class ObjectFolderType extends FolderType
                 'type' => Type::string()
             ],
             'creationDate' => Type::int(),
-            'modificationDateDate' => Type::int(),
+            'modificationDate' => Type::int(),
             'parent' => [
                 'type' => $objectTreeType,
                 'resolve' => [$resolver, 'resolveParent'],

@@ -53,7 +53,7 @@ class AssetFolderType extends FolderType
                 ]
             ],
             'creationDate' => Type::int(),
-            'modificationDateDate' => Type::int(),
+            'modificationDate' => Type::int(),
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
