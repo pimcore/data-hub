@@ -46,20 +46,27 @@ class OutputCacheService
     /**
      * @param ContainerInterface $container
      * @param EventDispatcherInterface $eventDispatcher
+     * @param array|null $dataHubConfig
      */
-    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
+    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher, array $dataHubConfig = null)
     {
         $this->eventDispatcher = $eventDispatcher;
 
-        $config = $container->getParameter('pimcore_data_hub');
-
-        if (isset($config['graphql'])) {
-            if (isset($config['graphql']['output_cache_enabled'])) {
-                $this->cacheEnabled = filter_var($config['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
+        if ($dataHubConfig === null) {
+            trigger_deprecation(
+                'pimcore/data-hub',
+                '1.6.0',
+                'Argument $container is deprecated and will be removed with data-hub 1.7.0. Please use $dataHubConfig instead.'
+            );
+            $dataHubConfig = $container->getParameter('pimcore_data_hub');
+        }
+        if (isset($dataHubConfig['graphql'])) {
+            if (isset($dataHubConfig['graphql']['output_cache_enabled'])) {
+                $this->cacheEnabled = filter_var($dataHubConfig['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
             }
 
-            if (isset($config['graphql']['output_cache_lifetime'])) {
-                $this->lifetime = intval($config['graphql']['output_cache_lifetime']);
+            if (isset($dataHubConfig['graphql']['output_cache_lifetime'])) {
+                $this->lifetime = intval($dataHubConfig['graphql']['output_cache_lifetime']);
             }
         }
     }

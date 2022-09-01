@@ -31,3 +31,7 @@ services:
         public: true
         arguments:
             $bundle: "@=service('kernel').getBundle('PimcoreDataHubBundle')"
+
+    Pimcore\Bundle\DataHubBundle\Service\OutputCacheService:
+        arguments:
+            $dataHubConfig: "%pimcore_data_hub%"
