@@ -51,6 +51,10 @@ class SpecialEntitySetting implements \JsonSerializable
         $this->deleteAllowed = $deleteAllowed;
     }
 
+    /**
+     * @return array
+     */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return [
