@@ -566,6 +566,7 @@ class MutationType extends ObjectType
                         'key' => ['type' => Type::nonNull(Type::string())],
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
+                        'defaultLanguage' => ['type' => Type::string()],
                         'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
