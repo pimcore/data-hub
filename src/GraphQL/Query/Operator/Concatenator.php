@@ -58,8 +58,10 @@ class Concatenator extends AbstractOperator
             if (is_array($childValues)) {
                 foreach ($childValues as $value) {
                     if (!$hasValue) {
-                        if (!empty($value) || ((method_exists($value, 'isEmpty') && !$value->isEmpty()))) {
-                            $hasValue = true;
+                        if (is_object($value) && method_exists($value, 'isEmpty')) {
+                            $hasValue = !$value->isEmpty();
+                        } else {
+                            $hasValue = !empty($value);
                         }
                     }
 
