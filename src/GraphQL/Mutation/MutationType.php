@@ -814,7 +814,7 @@ class MutationType extends ObjectType
             try {
                 if (!$object) {
                     $object = $me->getElementByTypeAndIdOrPath($args, 'object');
-                    
+
                     $parent = null;
                     if (isset($args['parentId'])) {
                         $parent = DataObject::getById($args['parentId']);
