@@ -300,7 +300,7 @@ class WorkspaceHelper
                     $path = '/';
                 }
 
-                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()) . ' AND ' . $type . ' = 1 LIMIT 1', $path . '%');
+                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()) . ' AND ' . $type . ' = 1 LIMIT 1', [$path . '%']);
                 if ($permissionsChildren) {
                     return true;
                 }
