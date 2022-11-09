@@ -43,7 +43,7 @@ class Merge extends AbstractOperator
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
             $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-            if($childResult === null) {
+            if ($childResult === null) {
                 continue;
             }
             $childValues = $childResult->value;
