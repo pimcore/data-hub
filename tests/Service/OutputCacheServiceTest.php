@@ -15,7 +15,7 @@
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use PHPUnit_Framework_TestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +30,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('getParameter')
             ->willReturn(array(
                 'graphql' => array(
@@ -99,7 +99,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     public function testIgnoreSaveWhenCacheIsDisabled()
     {
         // Arrange
-        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('getParameter')
             ->willReturn(array(
                 'graphql' => array(
@@ -126,7 +126,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     public function testIgnoreLoadWhenCacheIsDisabled()
     {
         // Arrange
-        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('getParameter')
         ->willReturn(array(
             'graphql' => array(
