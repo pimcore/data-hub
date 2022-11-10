@@ -31,7 +31,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     protected function setUp(): void
     {
         $this->container = $this->createMock(ContainerBagInterface::class);
-        $this->container->method('getParameter')
+        $this->container->method('get')
             ->willReturn(array(
                 'graphql' => array(
                     'output_cache_enabled' => true,
@@ -100,7 +100,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     {
         // Arrange
         $this->container = $this->createMock(ContainerBagInterface::class);
-        $this->container->method('getParameter')
+        $this->container->method('get')
             ->willReturn(array(
                 'graphql' => array(
                     'output_cache_enabled' => false
@@ -127,7 +127,7 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     {
         // Arrange
         $this->container = $this->createMock(ContainerBagInterface::class);
-        $this->container->method('getParameter')
+        $this->container->method('get')
         ->willReturn(array(
             'graphql' => array(
                 'output_cache_enabled' => false
