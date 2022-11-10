@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
 use Pimcore\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,23 +44,11 @@ class OutputCacheService
      */
     public $eventDispatcher;
 
-    /**
-     * @param ContainerInterface $container
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param array|null $dataHubConfig
-     */
-    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher, array $dataHubConfig = null)
+    public function __construct(ContainerBagInterface $container, EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
 
-        if ($dataHubConfig === null) {
-            trigger_deprecation(
-                'pimcore/data-hub',
-                '1.6.0',
-                'Argument $container is deprecated and will be removed with data-hub 1.7.0. Please use $dataHubConfig instead.'
-            );
-            $dataHubConfig = $container->getParameter('pimcore_data_hub');
-        }
+        $dataHubConfig = $container->get('pimcore_data_hub');
         if (isset($dataHubConfig['graphql'])) {
             if (isset($dataHubConfig['graphql']['output_cache_enabled'])) {
                 $this->cacheEnabled = filter_var($dataHubConfig['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
