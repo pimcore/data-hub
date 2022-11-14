@@ -174,10 +174,9 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
             $data = $this->getDataByName($name);
             if ($this->dataSource !== Config\LocationAwareConfigRepository::LOCATION_SETTINGS_STORE
                 && $this->dataSource !== Config\LocationAwareConfigRepository::LOCATION_SYMFONY_CONFIG) {
-                if($name === 'folders') {
+                if ($name === 'folders') {
                     unset($data[$name]);
-                }
-                else {
+                } else {
                     foreach ($data as $key => $legacyItem) {
                         $config[$key] = $legacyItem;
                     }
