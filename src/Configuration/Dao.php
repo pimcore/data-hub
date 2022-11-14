@@ -172,11 +172,15 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         $list = $this->loadIdList();
         foreach ($list as $name) {
             $data = $this->getDataByName($name);
-            if ($name === 'folders' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
-                unset($data[$name]);
-            } elseif ($name === 'list' and $this->dataSource === Config\LocationAwareConfigRepository::LOCATION_LEGACY) {
-                foreach ($data as $key => $legacyItem) {
-                    $config[$key] = $legacyItem;
+            if ($this->dataSource !== Config\LocationAwareConfigRepository::LOCATION_SETTINGS_STORE
+                && $this->dataSource !== Config\LocationAwareConfigRepository::LOCATION_SYMFONY_CONFIG) {
+                if($name === 'folders') {
+                    unset($data[$name]);
+                }
+                else {
+                    foreach ($data as $key => $legacyItem) {
+                        $config[$key] = $legacyItem;
+                    }
                 }
             } else {
                 $config[$name] = $data;
