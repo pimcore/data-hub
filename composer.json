@@ -16,13 +16,11 @@
     "webonyx/graphql-php": "^14.6"
   },
   "require-dev": {
-    "phpstan/phpstan": "^1.6.0",
+    "phpstan/phpstan": "^1.9",
     "phpunit/phpunit": "^9.3",
     "symfony/phpunit-bridge": "^6",
-    "codeception/module-symfony": "^1.6",
     "codeception/codeception": "^4.1.12",
-    "codeception/phpunit-wrapper": "^9",
-    "codeception/module-asserts": "^2"
+    "codeception/phpunit-wrapper": "^9"
   },
   "autoload": {
     "psr-4": {
