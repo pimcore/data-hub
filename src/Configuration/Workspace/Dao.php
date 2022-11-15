@@ -46,7 +46,9 @@ class Dao extends Model\Dao\AbstractDao
                 if (is_bool($value)) {
                     $value = (int) $value;
                 }
-
+                if (!class_exists("\Pimcore\Db\Connection")) {
+                    $key = $this->db->quoteIdentifier($key);
+                }
                 $data[$key] = $value;
             }
         }
