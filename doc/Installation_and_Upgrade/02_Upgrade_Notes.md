@@ -1,7 +1,5 @@
 # Upgrade Notes
 
-## 1.6.0
-- Deprecated "ContainerInterface $container" argument in OutputCacheService
 ## 1.5.0
 - When "Skip Permission Check" is active in a GraphQL configuration, the "Workspaces" settings are also skipped 
 - It is possible to add more than one API-key per configuration now. Therefore, the API-key gets stored as an array

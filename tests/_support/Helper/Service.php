@@ -6,13 +6,13 @@ use Pimcore\Model\DataObject\Unittest;
 use Pimcore\Tests\Helper\ClassManager;
 use Pimcore\Tests\Helper\DataType\TestDataHelper;
 use Pimcore\Tests\Helper\Model;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class Service extends Model
 {
 
     /**
-     * @var null|ContainerInterface
+     * @var null|ContainerBagInterface
      */
     protected static $container = null;
 
