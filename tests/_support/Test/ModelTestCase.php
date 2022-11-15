@@ -15,13 +15,14 @@
 
 namespace Pimcore\Tests\Test;
 
-use Pimcore\Tests\Helper\DataType\Calculator;
-use Pimcore\Tests\ModelTester;
+use Pimcore\Tests\Support\Helper\DataType\Calculator;
+use Pimcore\Tests\Support\ModelTester;
+use Codeception\Test\Unit;
 
 /**
  * @property ModelTester $tester
  */
-abstract class ModelTestCase extends TestCase
+abstract class ModelTestCase extends Unit
 {
     /**
      * {@inheritdoc}
