@@ -16,7 +16,7 @@
 namespace DataHubBundle\Tests\Test;
 
 use Codeception\TestCase\Test;
-use Pimcore\Tests\Util\TestHelper;
+use Pimcore\Tests\Support\Util\TestHelper;
 
 abstract class TestCase extends Test
 {

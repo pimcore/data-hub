@@ -16,8 +16,8 @@
 namespace Pimcore\Tests\Model\DataObject;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Tests\Helper\DataType\TestDataHelper;
-use Pimcore\Tests\Test\ModelTestCase;
+use Pimcore\Tests\Support\Helper\DataType\TestDataHelper;
+use Pimcore\Tests\Support\Test\ModelTestCase;
 use Pimcore\Model\DataObject\DataHubTestEntity;
 
 /**

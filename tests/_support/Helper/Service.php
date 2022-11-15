@@ -3,9 +3,9 @@ namespace Pimcore\Bundle\PimcoreDataHubBundle\Tests\Helper;
 
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Unittest;
-use Pimcore\Tests\Helper\ClassManager;
-use Pimcore\Tests\Helper\DataType\TestDataHelper;
-use Pimcore\Tests\Helper\Model;
+use Pimcore\Tests\Support\Helper\ClassManager;
+use Pimcore\Tests\Support\Helper\DataType\TestDataHelper;
+use Pimcore\Tests\Support\Helper\Model;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class Service extends Model

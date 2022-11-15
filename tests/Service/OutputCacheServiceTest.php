@@ -14,13 +14,13 @@
  */
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
-use PHPUnit_Framework_TestCase;
+use Codeception\Test\Unit;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
+class OutputCacheServiceTest extends Unit
 {
 
     protected $container;
