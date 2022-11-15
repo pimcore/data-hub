@@ -15,56 +15,27 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\SharedType;
 
-use GraphQL\Error\Error;
 use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Utils\Utils as GraphQLUtils;
-use Safe\Exceptions\JsonException;
 
 class JsonType extends ScalarType
 {
-    public $description /** @lang Markdown */
-        = 'Arbitrary data encoded in JavaScript Object Notation. See https://www.json.org.';
-
     public function serialize(mixed $value): string
     {
-        return \Safe\json_encode($value);
+        return json_encode($value);
     }
 
-    public function parseValue(mixed $value)
+    public function parseValue(mixed $value): mixed
     {
-        return $this->decodeJSON($value);
+        return json_decode($value);
     }
 
-    public function parseLiteral(mixed $valueNode, ?array $variables = null)
+    public function parseLiteral(mixed $valueNode, ?array $variables = null): mixed
     {
         if (! property_exists($valueNode, 'value')) {
-            throw new Error(
-                'Can only parse literals that contain a value, got ' . GraphQLUtils::printSafeJson($valueNode)
-            );
+            throw new \Exception('Can only parse objects with a value property. Input: ' . GraphQLUtils::printSafeJson($valueNode));
         }
 
-        return $this->decodeJSON($valueNode->value);
-    }
-
-    /**
-     * Try to decode a user-given JSON value.
-     *
-     * @param mixed $value A user given JSON
-     *
-     * @throws Error
-     *
-     * @return mixed The decoded value
-     */
-    protected function decodeJSON(mixed $value): mixed
-    {
-        try {
-            $decoded = \Safe\json_decode($value);
-        } catch (JsonException $jsonException) {
-            throw new Error(
-                $jsonException->getMessage()
-            );
-        }
-
-        return $decoded;
+        return json_decode($valueNode->value);
     }
 }
