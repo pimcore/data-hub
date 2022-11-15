@@ -1,6 +1,6 @@
 actor: ServiceTester
 modules:
     enabled:
-        - \Pimcore\Tests\Helper\Pimcore:
+        - \Pimcore\Tests\Support\Helper\Pimcore:
             connect_db: true
             cache_router: false

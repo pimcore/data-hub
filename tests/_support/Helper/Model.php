@@ -5,11 +5,12 @@ namespace DataHubBundle\Tests\Helper;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
-use Pimcore\Bundle\DataHubBundle\Installer;
-use Pimcore\Tests\Helper\AbstractDefinitionHelper;
-use Pimcore\Tests\Helper\Pimcore;
-use Pimcore\Tests\Util\Autoloader;
-use Pimcore\Model\DataObject;
+use \Pimcore\Bundle\DataHubBundle\Installer;
+use Pimcore\Model\DataObject\Customer;
+use Pimcore\Tests\Support\Helper\AbstractDefinitionHelper;
+use Pimcore\Tests\Support\Helper\ClassManager;
+use Pimcore\Tests\Support\Helper\Pimcore;
+use Pimcore\Tests\Support\Util\Autoloader;
 
 class Model extends AbstractDefinitionHelper
 {
@@ -45,7 +46,7 @@ class Model extends AbstractDefinitionHelper
 
     public function initializeDefinitions()
     {
-        $cm = $this->getClassManager();
+        $cm = $this->getModule('\\' . ClassManager::class);
         $class = $cm->setupClass('DataHubTestEntity', __DIR__ . '/../Resources/class_DataHubTestEntity_import.json');
         $this->prepareData($class);
     }
