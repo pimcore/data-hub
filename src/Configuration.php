@@ -83,7 +83,7 @@ class Configuration extends AbstractModel
         $this->setConfiguration($configuration ?? []);
     }
 
-    public function getObjectVars()
+    public function getObjectVars(): array
     {
         $data = parent::getObjectVars();
 
