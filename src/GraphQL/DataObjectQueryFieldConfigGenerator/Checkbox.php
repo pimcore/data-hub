@@ -27,7 +27,7 @@ class Checkbox extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -42,7 +42,7 @@ class Checkbox extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return \GraphQL\Type\Definition\ScalarType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

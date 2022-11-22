@@ -35,7 +35,7 @@ class Block extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -51,13 +51,19 @@ class Block extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return \GraphQL\Type\Definition\ListOfType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         return Type::listOf(new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     * @return \Closure
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         return function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use (

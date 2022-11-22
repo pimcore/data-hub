@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\Warning;
 use GraphQL\GraphQL;
+use GraphQL\Server\RequestError;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules\DisableIntrospection;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -66,9 +67,6 @@ class WebserviceController extends FrontendController
      */
     private $uploadService;
 
-    /**
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         CheckConsumerPermissionsService $permissionsService,
@@ -86,10 +84,10 @@ class WebserviceController extends FrontendController
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
      * @param Request $request
-     *
+     * @param LongRunningHelper $longRunningHelper
      * @return JsonResponse
      *
-     * @throws \Exception
+     * @throws RequestError
      */
     public function webonyxAction(
         Service $service,

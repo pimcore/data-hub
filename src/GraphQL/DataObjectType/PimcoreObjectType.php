@@ -186,6 +186,13 @@ class PimcoreObjectType extends ObjectType
         $this->config['fields'] = $fields;
     }
 
+    /**
+     * @param array $column
+     * @param ClassDefinition $class
+     * @param array $fields
+     * @return void
+     * @throws \Exception
+     */
     public function addFieldCollectionDefs($column, ClassDefinition $class, &$fields)
     {
         $fieldname = $column['attributes']['attribute'];

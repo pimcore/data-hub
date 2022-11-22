@@ -20,11 +20,15 @@ use Pimcore\Model\Document\PageSnippet;
 
 trait EditablesTrait
 {
+    /**
+     * @param PageSnippet $document
+     * @param string $editableName
+     * @return void
+     */
     public function cleanEditables(PageSnippet $document, $editableName)
     {
         $editables = $document->getEditables();
 
-        /** @var Editable $editable */
         foreach ($editables as $editable) {
             $name = $editable->getName();
             if ($name === $editableName || strpos($name, $editableName . '.') === 0) {

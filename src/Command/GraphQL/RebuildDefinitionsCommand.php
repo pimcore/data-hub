@@ -42,14 +42,14 @@ class RebuildDefinitionsCommand extends AbstractCommand
 
     /**
      *
-     * @deprecated Use Pimcore\Bundle\DataHubBundle\Command\Configuration\RebuildWorkspacesCommand instead.
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
      *
-     * @return int|void|null
+     * @return int
      *
      * @throws \Exception
+     *@deprecated Use Pimcore\Bundle\DataHubBundle\Command\Configuration\RebuildWorkspacesCommand instead.
+     *
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {

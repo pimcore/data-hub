@@ -16,9 +16,16 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Alias extends AbstractOperator
 {
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     * @return \stdClass
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

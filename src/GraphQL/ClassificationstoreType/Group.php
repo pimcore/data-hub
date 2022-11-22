@@ -80,7 +80,6 @@ class Group extends ObjectType
                     $service = $this->getGraphQlService();
                     $supportedFeatureTypeNames = $service->getSupportedCsFeatureQueryDataTypes();
 
-                    /** @var Classificationstore\KeyGroupRelation $keyRelation */
                     foreach ($keyRelations as $keyRelation) {
                         $keyDataType = $keyRelation->getType();
                         if (in_array($keyDataType, $supportedFeatureTypeNames)) {

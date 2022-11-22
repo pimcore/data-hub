@@ -24,16 +24,15 @@ class Multiselect extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect */
     public $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect $processor
-     */
     public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect $processor)
     {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         return [

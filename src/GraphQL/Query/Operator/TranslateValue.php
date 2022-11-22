@@ -16,11 +16,16 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class TranslateValue extends AbstractOperator
 {
     private $prefix;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config = [], $context = null)
     {
         //TODO use translator factory from grid config
@@ -29,6 +34,12 @@ class TranslateValue extends AbstractOperator
         $this->prefix = $config['prefix'];
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     * @return \stdClass|null
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

@@ -70,6 +70,9 @@ class DocumentPageInputType extends InputObjectType
         ];
     }
 
+    /**
+     * @return array|mixed
+     */
     public function getProcessors()
     {
         return $this->processors;

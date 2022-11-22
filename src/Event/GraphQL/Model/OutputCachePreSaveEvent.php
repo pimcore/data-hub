@@ -52,18 +52,11 @@ class OutputCachePreSaveEvent extends Event
         return $this->response;
     }
 
-    /**
-     * @param Response $response
-     */
     public function setResponse(Response $response)
     {
         $this->response = $response;
     }
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     */
     public function __construct(Request $request, Response $response)
     {
         $this->request = $request;

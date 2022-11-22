@@ -395,6 +395,16 @@ class MutationType extends ObjectType
         }
     }
 
+    /**
+     * @param mixed $value
+     * @param array $args
+     * @param mixed $context
+     * @param ResolveInfo $info
+     * @param Document\Page|Document\Email $element
+     * @param array $processors
+     *
+     * @return void
+     */
     public function processDocumentEmailMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
     {
         self::processDocumentPageMutationInput($value, $args, $context, $info, $element, $processors);
@@ -770,6 +780,14 @@ class MutationType extends ObjectType
         }
     }
 
+    /**
+     * @param array $inputFields
+     * @param array $processors
+     * @param array $context
+     * @param string $entity
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     * @return void
+     */
     public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
     {
         $inputFields = [];

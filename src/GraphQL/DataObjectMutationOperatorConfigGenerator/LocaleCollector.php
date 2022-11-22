@@ -26,7 +26,7 @@ class LocaleCollector extends Base
      * @param object|null $container
      * @param array $params
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlMutationOperatorConfig($nodeDef, $class = null, $container = null, $params = [])
     {

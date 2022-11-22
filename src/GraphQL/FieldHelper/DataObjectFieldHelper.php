@@ -144,7 +144,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param string $key
      * @param object|null $container
      *
-     * @return mixed
+     * @return Data|null
      */
     public function getFieldDefinitionFromKey($class, $key, &$container = null)
     {
@@ -314,7 +314,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param object $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container)
     {
@@ -351,7 +351,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
      * @param array $data
      * @param object $container
      * @param array $args
-     * @param ResolveInfo|null $resolveInfo
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
     {

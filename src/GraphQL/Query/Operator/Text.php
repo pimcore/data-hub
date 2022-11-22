@@ -16,14 +16,24 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Text extends AbstractOperator
 {
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config, $context = null)
     {
         parent::__construct($config, $context);
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     * @return \stdClass
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

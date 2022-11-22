@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject;
+use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -62,6 +63,9 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if (!$element) {

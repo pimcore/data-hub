@@ -27,7 +27,7 @@ class Link extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -43,7 +43,7 @@ class Link extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return LinkType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

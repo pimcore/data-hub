@@ -34,9 +34,9 @@ class Hotspotimage extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @throws \Exception
+     * @return array
+     *@throws \Exception
      *
-     * @return mixed
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -66,6 +66,12 @@ class Hotspotimage extends Base
         return $hotspotType;
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     * @return array
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
 

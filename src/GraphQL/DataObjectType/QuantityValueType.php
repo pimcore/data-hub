@@ -55,6 +55,11 @@ class QuantityValueType extends ObjectType
         $config['fields'] = self::getFieldConfig($this->getGraphQlService(), $valueType);
     }
 
+    /**
+     * @param Service $graphQlService
+     * @param string $valueType
+     * @return array[]
+     */
     public static function getFieldConfig(Service $graphQlService, $valueType)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QuantityValue();

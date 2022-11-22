@@ -183,6 +183,11 @@ class Helper
         return $subCondition;
     }
 
+    /**
+     * @param string $defaultTable
+     * @param string $columnName
+     * @return string
+     */
     protected static function quoteAbsoluteColumnName($defaultTable, $columnName)
     {
         $db = Db::get();

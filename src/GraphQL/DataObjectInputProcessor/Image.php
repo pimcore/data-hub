@@ -32,6 +32,7 @@ class Image extends Base
      * @param array $context
      * @param ResolveInfo $info
      *
+     * @return void|null
      * @throws \Exception
      */
     public function process($object, $newValue, $args, $context, ResolveInfo $info)

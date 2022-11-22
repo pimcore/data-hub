@@ -27,10 +27,6 @@ class Fieldcollections extends Base
      */
     protected $processors;
 
-    /**
-     * @param array $nodeDef
-     * @param array $processors
-     */
     public function __construct(array $nodeDef, array $processors)
     {
         parent::__construct($nodeDef);

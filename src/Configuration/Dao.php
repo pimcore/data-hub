@@ -88,6 +88,10 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         $this->deleteData($this->model->getName());
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function setVariables($data)
     {
         $this->model->setConfiguration($data);
@@ -146,12 +150,12 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 
     /**
      *
-     * @deprecated will be removed with pimcore 11
+     * @return int
+     *@deprecated will be removed with pimcore 11
      *
      * get latest modification date of configuration file.
      *
-     * @return bool|int
-     */
+          */
     public static function getConfigModificationDate()
     {
         return 0;
@@ -160,7 +164,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     /**
      * get the whole configuration file content.
      *
-     * @return array|mixed|null
+     * @return array
      */
     private function &getConfig()
     {

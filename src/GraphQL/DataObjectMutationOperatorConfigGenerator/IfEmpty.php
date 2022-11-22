@@ -24,7 +24,7 @@ class IfEmpty extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlMutationOperatorConfig($nodeDef, $class = null, $container = null, $params = [])
     {

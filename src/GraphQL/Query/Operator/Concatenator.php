@@ -16,12 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Concatenator extends AbstractOperator
 {
     private $glue;
     private $forceValue;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config, $context = null)
     {
         parent::__construct($config, $context);
@@ -30,6 +35,12 @@ class Concatenator extends AbstractOperator
         $this->forceValue = $config['forceValue'] ?? false;
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     * @return \stdClass
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

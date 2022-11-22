@@ -71,6 +71,9 @@ class SpecialEntitySetting implements \JsonSerializable
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;

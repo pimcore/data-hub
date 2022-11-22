@@ -24,6 +24,10 @@ class ScheduledblockType extends ObjectType
 {
     protected static $instance;
 
+    /**
+     * @param ScheduledblockDataType $scheduledblockDataType
+     * @return static
+     */
     public static function getInstance(ScheduledblockDataType $scheduledblockDataType)
     {
         if (!self::$instance) {

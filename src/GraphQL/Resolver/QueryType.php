@@ -526,6 +526,12 @@ class QueryType
         return $value['totalCount']();
     }
 
+    /**
+     * @param bool $isFullpathSet
+     * @param bool $isIdSet
+     * @param array $args
+     * @return string
+     */
     private function createArgumentErrorMessage($isFullpathSet, $isIdSet, $args)
     {
         if ($isIdSet && $isFullpathSet) {

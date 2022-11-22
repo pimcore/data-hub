@@ -16,12 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Merge extends AbstractOperator
 {
     private $flatten = true;
     private $unique;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config, $context = null)
     {
         parent::__construct($config, $context);
@@ -29,6 +34,12 @@ class Merge extends AbstractOperator
         $this->unique = $config['unique'];
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     * @return \stdClass
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();
@@ -74,7 +85,7 @@ class Merge extends AbstractOperator
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getFlatten()
     {

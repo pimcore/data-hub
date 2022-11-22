@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
+use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -80,6 +81,12 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
+    /**
+     * @param ElementInterface $element
+     * @param array $context
+     * @param ResolveInfo $info
+     * @return callable|mixed|null
+     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         $rawElement = $element;
