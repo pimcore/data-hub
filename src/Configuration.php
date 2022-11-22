@@ -423,7 +423,7 @@ class Configuration extends AbstractModel
      */
     public function getMutationColumnConfig($entityName)
     {
-        return $this->getMutationEntityConfig($entityName)['columnConfig'];
+        return $this->getMutationEntityConfig($entityName)['columnConfig'] ?? [];
     }
 
     /**
