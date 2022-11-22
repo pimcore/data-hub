@@ -47,6 +47,7 @@ class KeyValueType extends InputObjectType
 
     /**
      * @param array|null $value
+     *
      * @return array
      */
     public static function resolveAssociativeArray(?array $value)

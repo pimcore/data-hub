@@ -48,6 +48,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
      * @return int
      *
      * @throws \Exception
+     *
      *@deprecated Use Pimcore\Bundle\DataHubBundle\Command\Configuration\RebuildWorkspacesCommand instead.
      *
      */

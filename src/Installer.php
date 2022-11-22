@@ -77,6 +77,7 @@ class Installer extends SettingsStoreAwareInstaller
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     public function isInstalled()

@@ -40,7 +40,9 @@ class DateFormatter extends AbstractOperator
     /**
      * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass
+     *
      * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
@@ -69,6 +71,7 @@ class DateFormatter extends AbstractOperator
 
     /**
      * @param int|Carbon $theValue
+     *
      * @return Carbon|int|string
      */
     public function format($theValue)

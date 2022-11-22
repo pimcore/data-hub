@@ -25,6 +25,7 @@ class Merge extends StringBase
 {
     /**
      * @param array $attributes
+     *
      * @return array|string|string[]|null
      */
     protected function getFieldname($attributes)
@@ -90,6 +91,7 @@ class Merge extends StringBase
      * @param $class
      * @param $container
      * @param $params
+     *
      * @return ListOfType|Type
      */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])

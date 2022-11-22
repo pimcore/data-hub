@@ -26,6 +26,7 @@ class AreablockType extends ObjectType
 
     /**
      * @param AreablockDataType $areablockDataType
+     *
      * @return static
      */
     public static function getInstance(AreablockDataType $areablockDataType)

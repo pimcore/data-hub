@@ -40,7 +40,9 @@ class Trimmer extends AbstractOperator
     /**
      * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass
+     *
      * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

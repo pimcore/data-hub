@@ -28,6 +28,7 @@ class IntBase extends Base
      * @param object|null $container
      * @param array $params
 
+     *
      * @return ScalarType|Type
      */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])

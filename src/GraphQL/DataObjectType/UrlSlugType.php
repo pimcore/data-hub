@@ -52,6 +52,7 @@ class UrlSlugType extends ObjectType
 
     /**
      * @param Service $graphQlService
+     *
      * @return array[]
      */
     public static function getFieldConfig(Service $graphQlService)

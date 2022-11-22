@@ -786,6 +786,7 @@ class MutationType extends ObjectType
      * @param array $context
      * @param string $entity
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     *
      * @return void
      */
     public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)

@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Link extends Base

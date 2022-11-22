@@ -30,6 +30,7 @@ class QuantityValueType extends ObjectType
      * @param string $name
      * @param string $innerType
      * @param string $fieldname
+     *
      * @return mixed
      *
      * @throws \Exception

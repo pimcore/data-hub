@@ -82,7 +82,9 @@ trait ElementIdentificationTrait
 
     /**
      * @param array $value
+     *
      * @return mixed
+     *
      * @throws ClientSafeException
      */
     private function getType($value)

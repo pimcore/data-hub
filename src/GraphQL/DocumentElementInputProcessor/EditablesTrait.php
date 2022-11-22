@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
-use Pimcore\Model\Document\Editable;
 use Pimcore\Model\Document\PageSnippet;
 
 trait EditablesTrait
@@ -23,6 +22,7 @@ trait EditablesTrait
     /**
      * @param PageSnippet $document
      * @param string $editableName
+     *
      * @return void
      */
     public function cleanEditables(PageSnippet $document, $editableName)

@@ -91,6 +91,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
+     *
      * @return array|callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
      */
     public function getResolver($attribute, $fieldDefinition, $class)

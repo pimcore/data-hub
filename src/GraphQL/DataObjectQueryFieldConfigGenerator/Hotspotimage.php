@@ -35,6 +35,7 @@ class Hotspotimage extends Base
      * @param object|null $container
      *
      * @return array
+     *
      *@throws \Exception
      *
      */
@@ -70,6 +71,7 @@ class Hotspotimage extends Base
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
+     *
      * @return array
      */
     public function getResolver($attribute, $fieldDefinition, $class)

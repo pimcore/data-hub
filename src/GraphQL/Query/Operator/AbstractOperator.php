@@ -74,6 +74,7 @@ abstract class AbstractOperator implements OperatorInterface
 
     /**
      * @param array $context
+     *
      * @return void
      */
     public function setContext($context)
@@ -91,6 +92,7 @@ abstract class AbstractOperator implements OperatorInterface
 
     /**
      * @param string $label
+     *
      * @return void
      */
     public function setLabel($label)

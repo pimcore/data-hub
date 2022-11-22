@@ -30,6 +30,7 @@ class MultiselectType extends ObjectType
      * @param Service $service
      * @param string $name
      * @param string $fieldname
+     *
      * @return MultiselectType
      *
      */

@@ -66,6 +66,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
      * @param Service $graphQlService
      * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
+     *
      * @return static|null
      */
     public static function getInstance($type, Service $graphQlService, Data $fieldDefinition, $class)
@@ -118,6 +119,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     /**
      * @param Data $fieldDef
      * @param bool $localized
+     *
      * @return mixed
      */
     protected function prepareField(Data $fieldDef, bool $localized = false)

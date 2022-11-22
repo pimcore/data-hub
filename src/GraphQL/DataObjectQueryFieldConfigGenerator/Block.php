@@ -62,6 +62,7 @@ class Block extends Base
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
+     *
      * @return \Closure
      */
     public function getResolver($attribute, $fieldDefinition, $class)

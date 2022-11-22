@@ -22,6 +22,7 @@ class QuantityValue extends Base
 {
     /**
      * @return Type|mixed
+     *
      * @throws \Exception
      */
     public function getFieldType()

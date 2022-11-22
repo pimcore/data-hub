@@ -58,6 +58,7 @@ class QuantityValueType extends ObjectType
     /**
      * @param Service $graphQlService
      * @param string $valueType
+     *
      * @return array[]
      */
     public static function getFieldConfig(Service $graphQlService, $valueType)

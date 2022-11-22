@@ -32,6 +32,7 @@ class Text extends AbstractOperator
     /**
      * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

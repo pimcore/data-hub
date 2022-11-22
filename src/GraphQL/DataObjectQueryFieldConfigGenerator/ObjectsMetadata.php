@@ -62,6 +62,7 @@ class ObjectsMetadata extends Base
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
+     *
      * @return array
      */
     public function getResolver($attribute, $fieldDefinition, $class)

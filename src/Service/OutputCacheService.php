@@ -62,6 +62,7 @@ class OutputCacheService
 
     /**
      * @param Request $request
+     *
      * @return mixed|null
      */
     public function load(Request $request)
@@ -75,11 +76,11 @@ class OutputCacheService
         return $this->loadFromCache($cacheKey);
     }
 
-
     /**
      * @param Request $request
      * @param JsonResponse $response
      * @param array $extraTags
+     *
      * @return void
      */
     public function save(Request $request, JsonResponse $response, $extraTags = []): void
@@ -98,6 +99,7 @@ class OutputCacheService
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     protected function loadFromCache($key)
@@ -109,6 +111,7 @@ class OutputCacheService
      * @param string $key
      * @param mixed $item
      * @param array $tags
+     *
      * @return void
      */
     protected function saveToCache($key, $item, $tags = []): void

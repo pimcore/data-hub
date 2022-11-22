@@ -26,6 +26,7 @@ class ScheduledblockType extends ObjectType
 
     /**
      * @param ScheduledblockDataType $scheduledblockDataType
+     *
      * @return static
      */
     public static function getInstance(ScheduledblockDataType $scheduledblockDataType)

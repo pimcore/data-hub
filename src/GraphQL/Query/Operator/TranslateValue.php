@@ -37,7 +37,9 @@ class TranslateValue extends AbstractOperator
     /**
      * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass|null
+     *
      * @throws \Exception
      */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)

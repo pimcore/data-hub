@@ -28,6 +28,7 @@ class StringType extends ObjectType
     /**
      * @param string $name
      * @param string $valueField
+     *
      * @return StringType
      */
     public static function getInstance(string $name, string $valueField)

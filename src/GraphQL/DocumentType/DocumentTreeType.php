@@ -85,6 +85,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
      * @param ElementInterface $element
      * @param array $context
      * @param ResolveInfo $info
+     *
      * @return callable|mixed|null
      */
     public function resolveType($element, $context, ResolveInfo $info)

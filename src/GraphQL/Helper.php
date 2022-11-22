@@ -186,6 +186,7 @@ class Helper
     /**
      * @param string $defaultTable
      * @param string $columnName
+     *
      * @return string
      */
     protected static function quoteAbsoluteColumnName($defaultTable, $columnName)

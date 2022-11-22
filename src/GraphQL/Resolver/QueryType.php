@@ -530,6 +530,7 @@ class QueryType
      * @param bool $isFullpathSet
      * @param bool $isIdSet
      * @param array $args
+     *
      * @return string
      */
     private function createArgumentErrorMessage($isFullpathSet, $isIdSet, $args)

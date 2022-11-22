@@ -55,6 +55,7 @@ class Base
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return \stdClass
      */
     public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)

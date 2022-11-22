@@ -163,6 +163,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param Request $request
      *
      * @return JsonResponse|null
+     *
      * @throws ConfigWriteException
      */
     public function addAction(Request $request): ?JsonResponse
@@ -241,7 +242,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param Request $request
      * @param Service $graphQlService
      * @param EventDispatcherInterface $eventDispatcher
+     *
      * @return JsonResponse
+     *
      * @throws \Exception
      */
     public function getAction(Request $request, Service $graphQlService, EventDispatcherInterface $eventDispatcher): JsonResponse
@@ -478,6 +481,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param Request $request
      *
      * @return JsonResponse|null
+     *
      * @throws \Exception
      */
     public function getExplorerUrlAction(RouterInterface $routingService, Request $request): ?JsonResponse

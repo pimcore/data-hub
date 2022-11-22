@@ -90,6 +90,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 
     /**
      * @param array $data
+     *
      * @return void
      */
     public function setVariables($data)
@@ -151,11 +152,12 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     /**
      *
      * @return int
+     *
      *@deprecated will be removed with pimcore 11
      *
      * get latest modification date of configuration file.
      *
-          */
+     */
     public static function getConfigModificationDate()
     {
         return 0;

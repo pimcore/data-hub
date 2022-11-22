@@ -85,6 +85,7 @@ class WebserviceController extends FrontendController
      * @param Factory $modelFactory
      * @param Request $request
      * @param LongRunningHelper $longRunningHelper
+     *
      * @return JsonResponse
      *
      * @throws RequestError
