@@ -86,11 +86,11 @@ class Merge extends StringBase
     }
 
     /**
-     * @param $typeName
-     * @param $nodeDef
-     * @param $class
-     * @param $container
-     * @param $params
+     * @param string $typeName
+     * @param array $nodeDef
+     * @param ClassDefinition|null $class
+     * @param object|null $container
+     * @param array $params
      *
      * @return ListOfType|Type
      */

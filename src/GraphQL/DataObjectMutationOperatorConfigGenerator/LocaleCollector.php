@@ -21,7 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LocalizedType;
 class LocaleCollector extends Base
 {
     /**
-     * @param mixed $nodeDef
+     * @param array $nodeDef
      * @param \Pimcore\Model\DataObject\ClassDefinition|null $class
      * @param object|null $container
      * @param array $params

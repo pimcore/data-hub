@@ -23,6 +23,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
@@ -364,7 +365,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
      * @param ResolveInfo $info
@@ -396,7 +397,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
      * @param ResolveInfo $info
@@ -411,7 +412,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
      * @param ResolveInfo $info

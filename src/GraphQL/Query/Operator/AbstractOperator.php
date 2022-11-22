@@ -83,7 +83,7 @@ abstract class AbstractOperator implements OperatorInterface
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getLabel()
     {

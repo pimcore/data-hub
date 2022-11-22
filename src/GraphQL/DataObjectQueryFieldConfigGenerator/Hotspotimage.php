@@ -56,7 +56,7 @@ class Hotspotimage extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return mixed
      *
      * @throws \Exception
      */

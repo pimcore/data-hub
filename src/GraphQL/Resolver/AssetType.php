@@ -27,7 +27,7 @@ class AssetType
     use ServiceTrait, ElementTagTrait;
 
     /**
-     * @param array|null $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -51,7 +51,7 @@ class AssetType
     }
 
     /**
-     * @param array|null $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -100,7 +100,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -124,7 +124,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -149,7 +149,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -185,7 +185,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -251,7 +251,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -292,7 +292,7 @@ class AssetType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $context
      *
      * @return Asset|null

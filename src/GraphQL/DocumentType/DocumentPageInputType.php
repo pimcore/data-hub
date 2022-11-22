@@ -71,7 +71,7 @@ class DocumentPageInputType extends InputObjectType
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
     public function getProcessors()
     {

@@ -33,7 +33,7 @@ class HotspotType
     use ServiceTrait;
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -61,7 +61,7 @@ class HotspotType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -76,7 +76,7 @@ class HotspotType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -91,7 +91,7 @@ class HotspotType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -106,7 +106,7 @@ class HotspotType
     }
 
     /**
-     * @param mixed $value
+     * @param array $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo

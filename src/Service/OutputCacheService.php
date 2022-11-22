@@ -63,7 +63,7 @@ class OutputCacheService
     /**
      * @param Request $request
      *
-     * @return mixed|null
+     * @return mixed
      */
     public function load(Request $request)
     {

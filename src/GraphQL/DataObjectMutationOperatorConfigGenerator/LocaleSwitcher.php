@@ -20,7 +20,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 class LocaleSwitcher extends Base
 {
     /**
-     * @param mixed $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

@@ -20,7 +20,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 class IfEmpty extends Base
 {
     /**
-     * @param mixed $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

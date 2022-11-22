@@ -21,7 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Quantity
 class InputQuantityValue extends Base
 {
     /**
-     * @return Type|mixed
+     * @return mixed
      *
      * @throws \Exception
      */

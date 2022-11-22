@@ -45,7 +45,7 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -58,7 +58,7 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -205,7 +205,7 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
