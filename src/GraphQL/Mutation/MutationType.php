@@ -781,7 +781,7 @@ class MutationType extends ObjectType
             /** @var Configuration $configurationItem */
             $configurationItem = $context['configuration'];
 
-            $columns = $configurationItem->getMutationColumnConfig($entity)['columns'];
+            $columns = $configurationItem->getMutationColumnConfig($entity)['columns'] ?? [];
 
             if ($columns) {
                 $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
