@@ -29,7 +29,7 @@ class Version20210305134111 extends BundleAwareMigration
         return 'PimcoreDataHubBundle';
     }
 
-    protected function checkBundleInstalled()
+    protected function checkBundleInstalled(): bool
     {
         //need to always return true here, as the migration is setting the bundle installed
         return true;
