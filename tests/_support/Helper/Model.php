@@ -60,7 +60,6 @@ class Model extends AbstractDefinitionHelper
             $object = new $entity();
             $object->setParentId(1);
             $object->setKey('DataHubTest_' . $key);
-            $object->setText('text' . $seed);
             $object->setPublished(true);
 
             $object->save();

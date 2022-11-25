@@ -165,7 +165,6 @@ class ResolveTest extends Unit
         $t->setKey($key);
         $t->setCreationDate(time());
         $t->setModificationDate(time());
-        $t->setType($data['type'] ?? null);
 
         foreach (Tool::getValidLanguages() as $lang) {
             $t->addTranslation($lang, $lang . $key);
