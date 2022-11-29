@@ -27,7 +27,7 @@ class ManyToManyRelation extends Base
 
     /**
      * @param Concrete|AbstractData $object
-     * @param mixed $newValue
+     * @param array $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info

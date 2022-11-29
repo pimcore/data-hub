@@ -23,6 +23,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
@@ -364,7 +365,7 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
      * @param ResolveInfo $info
@@ -395,13 +396,23 @@ class MutationType extends ObjectType
         }
     }
 
+    /**
+     * @param ElementDescriptor|null $value
+     * @param array $args
+     * @param mixed $context
+     * @param ResolveInfo $info
+     * @param Document\Page|Document\Email $element
+     * @param array $processors
+     *
+     * @return void
+     */
     public function processDocumentEmailMutationInput($value, $args, $context, ResolveInfo $info, $element, $processors)
     {
         self::processDocumentPageMutationInput($value, $args, $context, $info, $element, $processors);
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
      * @param ResolveInfo $info
@@ -770,6 +781,15 @@ class MutationType extends ObjectType
         }
     }
 
+    /**
+     * @param array $inputFields
+     * @param array $processors
+     * @param array $context
+     * @param string $entity
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     *
+     * @return void
+     */
     public function generateInputFieldsAndProcessors(&$inputFields, &$processors, $context, $entity, $class)
     {
         $inputFields = [];

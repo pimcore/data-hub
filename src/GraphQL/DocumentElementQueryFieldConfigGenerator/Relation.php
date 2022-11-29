@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\RelationType;
 class Relation extends Base
 {
     /**
-     * @return \GraphQL\Type\Definition\StringType|RelationType
+     * @return RelationType
      *
      * @throws \Exception
      */

@@ -43,10 +43,6 @@ class OutputCacheService
      */
     public $eventDispatcher;
 
-    /**
-     * @param ContainerInterface $container
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
@@ -64,6 +60,11 @@ class OutputCacheService
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function load(Request $request)
     {
         if (!$this->useCache($request)) {
@@ -75,6 +76,13 @@ class OutputCacheService
         return $this->loadFromCache($cacheKey);
     }
 
+    /**
+     * @param Request $request
+     * @param JsonResponse $response
+     * @param array $extraTags
+     *
+     * @return void
+     */
     public function save(Request $request, JsonResponse $response, $extraTags = []): void
     {
         if ($this->useCache($request)) {
@@ -89,11 +97,23 @@ class OutputCacheService
         }
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
     protected function loadFromCache($key)
     {
         return \Pimcore\Cache::load($key);
     }
 
+    /**
+     * @param string $key
+     * @param mixed $item
+     * @param array $tags
+     *
+     * @return void
+     */
     protected function saveToCache($key, $item, $tags = []): void
     {
         \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);

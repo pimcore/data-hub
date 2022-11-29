@@ -121,9 +121,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return JsonResponse|null
      *
-     * @throws \Exception
+     * @throws ConfigWriteException
      */
     public function deleteAction(Request $request): ?JsonResponse
     {
@@ -162,9 +162,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      *
-     * @throws \Exception
+     * @return JsonResponse|null
      *
-     * @return JsonResponse
+     * @throws ConfigWriteException
      */
     public function addAction(Request $request): ?JsonResponse
     {
@@ -200,9 +200,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      *
-     * @throws \Exception
-     *
-     * @return JsonResponse
+     * @return JsonResponse|null
      */
     public function cloneAction(Request $request): ?JsonResponse
     {
@@ -243,10 +241,11 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      * @param Service $graphQlService
-     *
-     * @throws \Exception
+     * @param EventDispatcherInterface $eventDispatcher
      *
      * @return JsonResponse
+     *
+     * @throws \Exception
      */
     public function getAction(Request $request, Service $graphQlService, EventDispatcherInterface $eventDispatcher): JsonResponse
     {
@@ -397,9 +396,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      *
-     * @throws \Exception
-     *
-     * @return JsonResponse
+     * @return JsonResponse|null
      */
     public function saveAction(Request $request): ?JsonResponse
     {
@@ -483,9 +480,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param RouterInterface $routingService
      * @param Request $request
      *
-     * @throws \Exception
+     * @return JsonResponse|null
      *
-     * @return JsonResponse
+     * @throws \Exception
      */
     public function getExplorerUrlAction(RouterInterface $routingService, Request $request): ?JsonResponse
     {

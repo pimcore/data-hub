@@ -29,7 +29,7 @@ class ObjectsMetadata extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -49,7 +49,7 @@ class ObjectsMetadata extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return \GraphQL\Type\Definition\ListOfType
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
@@ -58,6 +58,13 @@ class ObjectsMetadata extends Base
         return Type::listOf($type);
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     *
+     * @return array
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\ObjectsMetadata($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

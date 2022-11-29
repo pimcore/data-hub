@@ -52,33 +52,21 @@ class PermissionEvent extends Event
         $this->element = $element;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return bool
-     */
     public function isGranted(): bool
     {
         return $this->isGranted;
     }
 
-    /**
-     * @param bool $isGranted
-     */
     public function setIsGranted(bool $isGranted): void
     {
         $this->isGranted = $isGranted;

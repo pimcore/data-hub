@@ -30,9 +30,6 @@ trait PermissionInfoTrait
         return $this->omitPermissionCheck;
     }
 
-    /**
-     * @param bool $omitPermissionCheck
-     */
     public function setOmitPermissionCheck(bool $omitPermissionCheck)
     {
         $this->omitPermissionCheck = $omitPermissionCheck;

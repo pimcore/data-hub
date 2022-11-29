@@ -26,7 +26,7 @@ class Video extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -41,7 +41,7 @@ class Video extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return mixed
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

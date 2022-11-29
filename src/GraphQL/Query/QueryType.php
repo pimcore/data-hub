@@ -57,6 +57,7 @@ class QueryType extends ObjectType
      * @param Service $graphQlService
      * @param LocaleServiceInterface $localeService
      * @param Factory $modelFactory
+     * @param EventDispatcherInterface $eventDispatcher
      * @param array $config
      * @param array $context
      *

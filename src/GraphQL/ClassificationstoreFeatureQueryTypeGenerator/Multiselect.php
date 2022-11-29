@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Multisel
 class Multiselect extends Base
 {
     /**
-     * @return \GraphQL\Type\Definition\StringType|MultiselectType
+     * @return MultiselectType
      *
      * @throws \Exception
      */

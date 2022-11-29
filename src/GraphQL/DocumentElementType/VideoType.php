@@ -31,6 +31,8 @@ class VideoType extends ObjectType
     /**
      * @param Service $graphQlService
      * @param AssetType $assetType
+     *
+     * @return static
      */
     public static function getInstance(Service $graphQlService, AssetType $assetType)
     {

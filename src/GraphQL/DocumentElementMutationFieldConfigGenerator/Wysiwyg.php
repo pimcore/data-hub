@@ -24,16 +24,15 @@ class Wysiwyg extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input */
     public $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor
-     */
     public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input $processor)
     {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         return [

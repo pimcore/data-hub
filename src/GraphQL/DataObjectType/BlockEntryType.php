@@ -61,6 +61,14 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         parent::__construct($config);
     }
 
+    /**
+     * @param string $type
+     * @param Service $graphQlService
+     * @param Data $fieldDefinition
+     * @param ClassDefinition|null $class
+     *
+     * @return static|null
+     */
     public static function getInstance($type, Service $graphQlService, Data $fieldDefinition, $class)
     {
         if (!isset(self::$instance[$type])) {
@@ -108,6 +116,12 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         $config['fields'] = $fields;
     }
 
+    /**
+     * @param Data $fieldDef
+     * @param bool $localized
+     *
+     * @return mixed
+     */
     protected function prepareField(Data $fieldDef, bool $localized = false)
     {
         $field = $this->getGraphQlService()->getObjectFieldHelper()->getGraphQlQueryFieldConfig(

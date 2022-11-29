@@ -30,9 +30,6 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
      */
     protected $className;
 
-    /**
-     * @param string $className
-     */
     public function __construct(Service $graphQlService, string $className)
     {
         $this->className = $className;
@@ -41,7 +38,7 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
 
     /**
      * @param array $configElement
-     * @param mixed $context
+     * @param array|null $context
      *
      * @return OperatorInterface
      */

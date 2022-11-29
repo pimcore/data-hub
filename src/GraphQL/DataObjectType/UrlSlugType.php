@@ -50,6 +50,11 @@ class UrlSlugType extends ObjectType
         $config['fields'] = self::getFieldConfig($this->getGraphQlService());
     }
 
+    /**
+     * @param Service $graphQlService
+     *
+     * @return array[]
+     */
     public static function getFieldConfig(Service $graphQlService)
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\UrlSlug();

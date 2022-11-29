@@ -21,6 +21,9 @@ class GeoboundsType extends ObjectType
 {
     protected static $instance;
 
+    /**
+     * @return static
+     */
     public static function getInstance()
     {
         $resolver = new \Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\Geobounds();

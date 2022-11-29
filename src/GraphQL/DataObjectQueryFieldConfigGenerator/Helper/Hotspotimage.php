@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\BaseDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -68,7 +69,7 @@ class Hotspotimage
     }
 
     /**
-     * @param mixed $value
+     * @param BaseDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo

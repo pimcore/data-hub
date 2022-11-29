@@ -110,7 +110,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public static function getNotAllowedPolicy()
     {
