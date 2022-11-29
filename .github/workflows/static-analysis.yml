@@ -47,7 +47,7 @@ jobs:
                   PIMCORE_VERSION: "${{ matrix.pimcore_version }}"
               run: |
                   if [ ! -z "$PIMCORE_VERSION" ]; then
-                        composer require --no-update pimcore/pimcore:"${PIMCORE_VERSION} as 10.99.9"
+                        composer require --no-update pimcore/pimcore:"${PIMCORE_VERSION}"
                   fi  
 
             - name: "Install dependencies with Composer"
