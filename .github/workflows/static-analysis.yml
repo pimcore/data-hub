@@ -27,7 +27,7 @@ jobs:
                 include:
                     - { php-version: "8.0", dependencies: "lowest" }
                     - { php-version: "8.1", dependencies: "highest" }
-                    - { php-version: "8.1", dependencies: "highest", pimcore_version: "11.x-dev", phpstan_args: "", experimental: true }
+                    - { php-version: "8.1", dependencies: "highest", pimcore_version: "11.x-dev as 11.0.0", phpstan_args: "", experimental: true }
         steps:
             - name: "Checkout code"
               uses: "actions/checkout@v2"
@@ -47,7 +47,7 @@ jobs:
                   PIMCORE_VERSION: "${{ matrix.pimcore_version }}"
               run: |
                   if [ ! -z "$PIMCORE_VERSION" ]; then
-                        composer require --no-update pimcore/pimcore:"${PIMCORE_VERSION} as 10.99.9"
+                        composer require --no-update pimcore/pimcore:"${PIMCORE_VERSION}"
                   fi  
 
             - name: "Install dependencies with Composer"
