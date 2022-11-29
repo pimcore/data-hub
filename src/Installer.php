@@ -74,7 +74,7 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    public function isInstalled()
+    public function isInstalled(): bool
     {
         // When switching to SettingsStoreAwareInstaller, we need to explicitly mark this bundle installed, if Settingstore entry doesn't exists and datahub permission is installed
         // e.g. updating from 1.0.* to 1.1.*

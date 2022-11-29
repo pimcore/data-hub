@@ -24,11 +24,6 @@ class OutputCachePreLoadEvent extends Event
     use RequestAwareTrait;
 
     /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * @var bool
      */
     protected $useCache;

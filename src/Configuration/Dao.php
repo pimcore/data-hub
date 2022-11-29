@@ -233,7 +233,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      *
      * @return array[][][]
      */
-    protected function prepareDataStructureForYaml(string $id, $data)
+    protected function prepareDataStructureForYaml(string $id, $data): mixed
     {
         return [
             'pimcore_data_hub' => [
