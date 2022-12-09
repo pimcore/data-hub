@@ -183,9 +183,10 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $graphQlDocumentType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args['id'] = $value['id'];
-                            $value = $queryResolver($value, $args, $context, $info);
-
+                            if($value['success'] === true) {
+                                $args['id'] = $value['id'];
+                                $value = $queryResolver($value, $args, $context, $info);
+                            }
                             return $value;
                         }
                     ]
@@ -546,9 +547,10 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                $args['id'] = $value['id'];
-                                $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
-
+                                if($value['success'] === true) {
+                                    $args['id'] = $value['id'];
+                                    $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+                                }
                                 return $value;
                             }
                         ]
@@ -688,9 +690,10 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                $args['id'] = $value['id'];
-                                $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
-
+                                if($value['success'] === true) {
+                                    $args['id'] = $value['id'];
+                                    $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
+                                }
                                 return $value;
                             }
                         ]
@@ -856,20 +859,22 @@ class MutationType extends ObjectType
                     $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
                 }
 
-                $dataIn = $args['input'];
                 $tags = [];
-                if (is_array($dataIn)) {
-                    foreach ($dataIn as $key => $value) {
-                        if (isset($processors[$key])) {
-                            $processor = $processors[$key];
-                            call_user_func_array($processor, [$object, $value, $args, $context, $info]);
-                        } elseif ($key === 'tags') {
-                            $tags = $me->getTagsFromInput($value);
-                            if (false === $tags) {
-                                return [
-                                    'success' => false,
-                                    'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
-                                ];
+                if(isset($args['input'])) {
+                    $dataIn = $args['input'];
+                    if (is_array($dataIn)) {
+                        foreach ($dataIn as $key => $value) {
+                            if (isset($processors[$key])) {
+                                $processor = $processors[$key];
+                                call_user_func_array($processor, [$object, $value, $args, $context, $info]);
+                            } elseif ($key === 'tags') {
+                                $tags = $me->getTagsFromInput($value);
+                                if (false === $tags) {
+                                    return [
+                                        'success' => false,
+                                        'message' => 'no "id" nor "path" tag data defined for tag, or tag not found',
+                                    ];
+                                }
                             }
                         }
                     }
@@ -923,9 +928,8 @@ class MutationType extends ObjectType
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                             if ($args['id'] = $value['id'] ?? null) {
                                 $value = $queryResolver($value, $args, $context, $info);
-
-                                return $value;
                             }
+                            return $value;
                         }
                     ]
                 ],
@@ -1056,9 +1060,10 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            $args['id'] = $value['id'];
-                            $value = $queryResolver($value, $args, $context, $info);
-
+                            if($value['success'] === true) {
+                                $args['id'] = $value['id'];
+                                $value = $queryResolver($value, $args, $context, $info);
+                            }
                             return $value;
                         }
                     ]
