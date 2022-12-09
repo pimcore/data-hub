@@ -183,10 +183,11 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $graphQlDocumentType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            if($value['success'] === true) {
+                            if ($value['success'] === true) {
                                 $args['id'] = $value['id'];
                                 $value = $queryResolver($value, $args, $context, $info);
                             }
+
                             return $value;
                         }
                     ]
@@ -547,10 +548,11 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                if($value['success'] === true) {
+                                if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
                                     $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
                                 }
+
                                 return $value;
                             }
                         ]
@@ -690,10 +692,11 @@ class MutationType extends ObjectType
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
                             'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                                if($value['success'] === true) {
+                                if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
                                     $value = $queryResolver->resolveObjectGetter($value, $args, $context, $info);
                                 }
+
                                 return $value;
                             }
                         ]
@@ -860,7 +863,7 @@ class MutationType extends ObjectType
                 }
 
                 $tags = [];
-                if(isset($args['input'])) {
+                if (isset($args['input'])) {
                     $dataIn = $args['input'];
                     if (is_array($dataIn)) {
                         foreach ($dataIn as $key => $value) {
@@ -929,6 +932,7 @@ class MutationType extends ObjectType
                             if ($args['id'] = $value['id'] ?? null) {
                                 $value = $queryResolver($value, $args, $context, $info);
                             }
+
                             return $value;
                         }
                     ]
@@ -1060,10 +1064,11 @@ class MutationType extends ObjectType
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
                         'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
-                            if($value['success'] === true) {
+                            if ($value['success'] === true) {
                                 $args['id'] = $value['id'];
                                 $value = $queryResolver($value, $args, $context, $info);
                             }
+
                             return $value;
                         }
                     ]
