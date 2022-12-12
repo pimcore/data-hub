@@ -23,7 +23,8 @@
     "symfony/phpunit-bridge": "^6",
     "codeception/codeception": "^4.1.12 || ^5.0.3",
     "codeception/phpunit-wrapper": "^9",
-    "codeception/module-asserts": "^2"
+    "codeception/module-asserts": "^2",
+    "codeception/module-symfony": "^1.6"
   },
   "autoload": {
     "psr-4": {
