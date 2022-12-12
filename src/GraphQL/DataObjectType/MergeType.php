@@ -82,8 +82,8 @@ class MergeType extends UnionType implements ContainerAwareInterface
         $attributes = $nodeDef['attributes'];
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
-        if ($attributes['childs']) {
-            foreach ($attributes['childs'] as $childDef) {
+        if ($attributes['children']) {
+            foreach ($attributes['children'] as $childDef) {
                 $type = $fieldHelper->getGraphQlTypeFromNodeConf($childDef, $this->class, $this->container);
                 $childTypes[] = $type;
             }
