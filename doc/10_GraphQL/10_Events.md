@@ -187,6 +187,7 @@ class GraphQlSubscriber implements EventSubscriberInterface
 <?php
 
 namespace AppBundle\EventListener;
+use Pimcore\Model\DataObject\Service;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -211,7 +212,11 @@ class GraphQlSubscriber implements EventSubscriberInterface
         $listing = $event->getListing();
 
         if ($listing->getClassName() === 'Product') {
-          $listing->setCondition('(o_parentId IN (SELECT o_id FROM objects WHERE o_type=\'object\') AND o_type = \'variant\')');
+          $listing->setCondition(sprintf('(%s IN (SELECT %s FROM objects WHERE %s=\'object\') AND %s = \'variant\')',
+          Service::getVersionDependentDatabaseColumnName('o_parentid'),
+          Service::getVersionDependentDatabaseColumnName('o_id'),
+          Service::getVersionDependentDatabaseColumnName('o_type'),
+          Service::getVersionDependentDatabaseColumnName('o_type')));
         }
 
         $event->setListing($listing);
