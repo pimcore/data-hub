@@ -1,1194 +1,1195 @@
 services:
 
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-
-    # asset
-    pimcore.datahub.graphql.assettype._asset_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetFolderType'
-    pimcore.datahub.graphql.assettype.asset_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType'
-    pimcore.datahub.graphql.assettype.asset_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType'
-
-
-    # document
-    pimcore.datahub.graphql.documenttype.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType'
-    pimcore.datahub.graphql.documenttype.document_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType'
-    pimcore.datahub.graphql.documenttype.document_element: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType'
-    pimcore.datahub.graphql.documenttype.document_email: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType'
-    pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
-    pimcore.datahub.graphql.documenttype.document_link: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType'
-    pimcore.datahub.graphql.documenttype.document_link_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType'
-    pimcore.datahub.graphql.documenttype.document_areablock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType'
-    pimcore.datahub.graphql.documenttype.document_scheduledblock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType'
-    pimcore.datahub.graphql.documenttype.document_areablock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType'
-    pimcore.datahub.graphql.documenttype.document_scheduledblock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType'
-    pimcore.datahub.graphql.documenttype.document_link_inputtype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType'
-
-
-    pimcore.datahub.graphql.documenttype.document_page: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType'
-    pimcore.datahub.graphql.documenttype.document_snippet: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType'
-    pimcore.datahub.graphql.documenttype._document_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType'
-
-    pimcore.datahub.graphql.documenttype.document_page_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType'
-
-    # data object
-    pimcore.datahub.graphql.dataobjecttype.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType'
-    pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
-    pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
-    pimcore.datahub.graphql.dataobjecttype.quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType'
-
-    pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
-    pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
-    pimcore.datahub.graphql.dataobjecttype.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType'
-
-    # helpers
-    pimcore.datahub.graphql.fieldhelper.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper'
-    pimcore.datahub.graphql.fieldhelper.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper'
-    pimcore.datahub.graphql.fieldhelper.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper'
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\Service:
-        public: true
-        calls:
-            - [setTagManagerListener, ['@?pimcore.event_listener.frontend.tag_manager']]
-
-    # Field helper
-    Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper:
-        public: false
-        calls:
-            - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper:
-        public: false
-        calls:
-            - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper:
-        public: false
-        calls:
-            - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
-
-
-    #
-    # other stuff
-    #
-    pimcore.datahub.graphql.generaltype.factory.anytargettype:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyTargetType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: anytarget }
-
-    pimcore.datahub.graphql.generaltype.factory.document_tree:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: document_tree }
-
-    pimcore.datahub.graphql.generaltype.factory.object_tree:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: object_tree }
-
-    pimcore.datahub.graphql.generaltype.factory.asset_tree:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: asset_tree }
-
-    pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotMarkerType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspotmarker }
-
-    pimcore.datahub.graphql.generaltype.factory.hotspothotspottype:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotHotspotType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspothotspot }
-
-    pimcore.datahub.graphql.generaltype.factory.hotspot_metadata:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspot_metadata }
-
-    pimcore.datahub.graphql.generaltype.factory.element_property_property:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: element_property }
-
-    pimcore.datahub.graphql.generaltype.factory.element_tag:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: element_tag }
-
-
-    pimcore.datahub.graphql.generaltype.factory.document_translation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTranslationType
-        tags:
-            - { name: pimcore.datahub.graphql.generaltype_factory, id: document_translation }
-
-    pimcore.datahub.graphql.generaltype.factory.asset:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType
-        tags:
-            - { name: pimcore.datahub.graphql.assettype_factory, id: asset }
-
-    pimcore.datahub.graphql.generaltype.factory.asset_metadataitem:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem
-        tags:
-            - { name: pimcore.datahub.graphql.assettype_factory, id: asset_metadataitem }
-
-    pimcore.datahub.graphql.generaltype.factory.video:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType
-        tags:
-            - { name: pimcore.datahub.graphql.assettype_factory, id: video }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageDataType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType: ~
-
-    #
-    # built-in document-elements query datatypes type generator
-    #
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_areablock:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Areablock
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_areablock }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_block:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Block
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_block }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_checkbox }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_date:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Date
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_date }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_embed:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Embed
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_embed }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_input:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_input }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_image:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Image
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_image }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_link:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Link
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_link }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_multiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_multiselect }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_numeric:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Numeric
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_numeric }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_pdf:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Pdf
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_pdf }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_relation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relation
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relation }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_relations:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relations
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relations }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_scheduledblock:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Scheduledblock
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_scheduledblock }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_select:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Select
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_select }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_table:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Table
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_table }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_textarea:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Textarea
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_textarea }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_wysiwyg:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Wysiwyg
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_wysiwyg }
-
-    pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_video:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Video
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_video }
-
-    #
-    # built-in dataobject query datatypes type generator
-    #
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_checkbox:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_booleanSelect }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_checkbox }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterActive }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterConfirmed }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_classificationstore:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Classificationstore
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_classificationstore }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_date:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_date }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_datetime:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Datetime
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_datetime }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_email:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_email }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_href:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Href
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_href }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToOneRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_fieldcollections:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_fieldcollections }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_firstname:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_firstname }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geobounds:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geobounds
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geobounds }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopolygon:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopolygon
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopolygon }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopoint:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopoint
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopoint }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_hotspotimage:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Hotspotimage
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_hotspotimage }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_image:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Image
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_image }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_imageGallery:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ImageGallery
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_imageGallery }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_link:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Link
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_link }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_input:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_externalImage }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_input }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_rgbaColor }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_time }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_calculatedvalue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\CalculatedValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_calculatedValue }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_lastname:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_lastname }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multihref:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Multihref
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multihref }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToManyRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_objects:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Objects
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToManyObjectRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_reverseManyToManyObjectRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ReverseManyToManyObjectRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseManyToManyObjectRelation } # deprecated since 6.9, removed in 10
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseObjectRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multihrefMetadata:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\MultihrefMetadata
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multihrefMetadata }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_advancedManyToManyRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_objectsMetadata:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ObjectsMetadata
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_advancedManyToManyObjectRelation }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_languagemultiselect }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multiselect }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_countrymultiselect }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_numeric:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Numeric
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_numeric }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_quantityvalue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\QuantityValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_quantityValue }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_inputquantityvalue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\InputQuantityValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_inputQuantityValue }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_select:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Select
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_country }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_gender }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_language }
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_select }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_slider:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Slider
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_slider }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_textarea:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_textarea }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_urlSlug:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\UrlSlug
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_urlSlug }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_video:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Video
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_video }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_wysiwyg:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_wysiwyg }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_table:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Table
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_table }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_structuredTable:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\StructuredTable
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_structuredTable }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_block:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Block
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_block }
-
-    #
-    # type generators for dataobject query operators
-    #
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_alias:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Alias
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_alias }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_concatenator:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Concatenator
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_concatenator }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_dateformatter:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\DateFormatter
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_dateformatter }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_elementcounter:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ElementCounter
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_elementcounter }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_merge:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Merge
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_merge }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_substring:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Substring
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_substring }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_text:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\StringBase
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_text }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnail:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Thumbnail
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnail }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnailhtml:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ThumbnailHtml
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnailhtml }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_translatevalue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\TranslateValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_translatevalue }
-
-    pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_trimmer:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Trimmer
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_trimmer }
-
-
-    #
-    # dataobject query operator factory definitions
-    #
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.alias:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Alias
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: alias }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.concatenator:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Concatenator
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: concatenator }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.dateformatter:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\DateFormatter
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: dateformatter }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.elementcounter:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ElementCounter
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: elementcounter }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.substring:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Substring
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: substring }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.thumbnail:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Thumbnail
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: thumbnail }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.thumbnailhtml:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: thumbnailhtml }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.merge:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Merge
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: merge }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.text:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Text
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: text }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.translatevalue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\TranslateValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: translatevalue }
-
-    pimcore.datahub.graphql.dataobjectqueryoperator.factory.trimmer:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Trimmer
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: trimmer }
-
-
-    #
-    # asset type definitions
-    #
-    Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem:
-        tags:
-            - { name: pimcore.datahub.graphql.assettype, id: asset_metadata_item }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.assettype, id: asset_input }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.assettype, id: _asset_folder }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType:
-        tags:
-            - { name: pimcore.datahub.graphql.assettype, id: asset_tree }
-
-    #
-    # classification store type definitions
-    #
-    Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group:
-        tags:
-            - { name: pimcore.datahub.graphql.cstype, id: cs_group }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature:
-        tags:
-            - { name: pimcore.datahub.graphql.cstype, id: cs_feature }
-
-
-    #
-    # dataobject type definitions
-    #
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_tree }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_element }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_email }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_hardlink }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_link }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_page }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_snippet }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: _document_folder }
-
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.documenttype, id: document_link_input }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: elementdescriptor_input }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: geopoint_input }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: object_tree }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: _object_folder }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_hotspotimage }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: manytoone }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputQuantityValueType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: input_quantity_value }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\UrlSlugType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: url_slug }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoTypeDataType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video_data }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value_input }
-
-    #
-    # document mutation types
-    #
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.document_inputtype, id: document_page_input }
-
-    #
-    # input type definitions
-    #
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType:
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjecttype, id: image_input }
-
-    # document element mutation data types
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_areablock:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Areablock
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_areablock }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_block:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Block
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_block }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_embed:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Embed
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_embed }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_image:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Image
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_image }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_input:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_input }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_multiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_multiselect }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_scheduledblock:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Scheduledblock
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_scheduledblock }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_select:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Select
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_select }
-
-    pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_wysiwyg:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Wysiwyg
-        tags:
-            - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_wysiwyg }
-
-    # document element input processors
-    pimcore.datahub.graphql.documentmutationelementprocessor: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock'
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Embed: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Wysiwyg: ~
-
-
-    Pimcore\Model\Document\Editable\Loader\EditableLoaderInterface: '@Pimcore\Model\Document\Editable\Loader\EditableLoader'
-
-    #
-    # built-in dataobject mutation datatypes type generator
-    #
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_booleanSelect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\BooleanSelect
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_booleanSelect }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_checkbox:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_checkbox }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_country:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_country }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_countrymultiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_countrymultiselect }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_date:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Date
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_date }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_datetime:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Date
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_datetime }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_email:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_email }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_externalImage:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ExternalImage
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_externalImage }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_fieldcollections:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Fieldcollections
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_fieldcollections }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_geopoint:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Geopoint
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_geopoint }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_firstname:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_firstname }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_gender:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_gender }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_input:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_input }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_image:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Image
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_image }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_language:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_language }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_lastname:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_lastname }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_newsletterActive:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_newsletterActive }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToOneRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToOneRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToOneRelation }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToManyRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyRelation }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToManyObjectRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyObjectRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyObjectRelation }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyRelation }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyObjectRelation:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyObjectRelation
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyObjectRelation }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_multiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_multiselect }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_newsletterConfirmed:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_newsletterConfirmed }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_numeric:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Numeric
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_numeric }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_select:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_select }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_slider:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Numeric
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_slider }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_textarea:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_textarea }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_time:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_time }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_wysiwyg:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_wysiwyg }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_quantityValue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\QuantityValue
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_quantityValue }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_table:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Table
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_table }
-
-    # dataobject mutation operator
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_ifempty:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_ifempty }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_localeswitcher:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localeswitcher }
-
-    pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_localecollector:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localecollector }
-
-    #
-    # dataobject mutation operator factory definitions
-    #
-
-    pimcore.datahub.graphql.dataobjectmutationoperator.factory.ifempty:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: ifempty }
-
-    pimcore.datahub.graphql.dataobjectmutationoperator.factory.localeswitcher:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localeswitcher }
-
-    pimcore.datahub.graphql.dataobjectmutationoperator.factory.localecollector:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
-        arguments:
-            $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
-        tags:
-            - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localecollector }
-
-    # classification store
-    #
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_booleanSelect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\BooleanSelect
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_booleanSelect }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_calculatedValue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\CalculatedValue
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_calculatedValue }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_checkbox:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Checkbox
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_checkbox }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_country:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Country
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_country }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_countrymultiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Countrymultiselect
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_countrymultiselect }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_date:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Date
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_date }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_datetime:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Datetime
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_datetime }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_input:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Input
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_input }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_inputQuantityValue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\InputQuantityValue
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_inputQuantityValue }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_language:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Language
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_language }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_languagemultiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Languagemultiselect
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_languagemultiselect }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_multiselect:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Multiselect
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_multiselect }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_numeric:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Numeric
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_numeric }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_rgbaColor:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\RgbaColor
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_rgbaColor }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_select:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Select
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_select }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_slider:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Slider
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_slider }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_textarea:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Textarea
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_textarea }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_time:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Time
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_time }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_quantityValue:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\QuantityValue
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_quantityValue }
-
-    pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_wysiwyg:
-        class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Wysiwyg
-        tags:
-            - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_wysiwyg }
-
-    # properties
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectsType: ~
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: elementproperty }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: hotspotmetadata }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_asset }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_document }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_assetfolder }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_documentfolder }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectFolderType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_objectfolder }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DataObjectType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_object }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\CheckboxType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_checkbox }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextareaType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_textarea }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_text }
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\SelectType:
-        tags:
-            - { name: pimcore.datahub.graphql.propertytype, id: property_select }
-
-    # element tags
-
-    Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag:
-        tags:
-            - { name: pimcore.datahub.graphql.elementtag, id: element_tag }
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  # asset
+  pimcore.datahub.graphql.assettype._asset_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetFolderType'
+  pimcore.datahub.graphql.assettype.asset_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType'
+  pimcore.datahub.graphql.assettype.asset_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType'
+
+
+ # document
+  pimcore.datahub.graphql.documenttype.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType'
+  pimcore.datahub.graphql.documenttype.document_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType'
+  pimcore.datahub.graphql.documenttype.document_element: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType'
+  pimcore.datahub.graphql.documenttype.document_email: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType'
+  pimcore.datahub.graphql.documenttype.document_hardlink: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType'
+  pimcore.datahub.graphql.documenttype.document_link: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType'
+  pimcore.datahub.graphql.documenttype.document_link_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType'
+  pimcore.datahub.graphql.documenttype.document_areablock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType'
+  pimcore.datahub.graphql.documenttype.document_scheduledblock_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType'
+  pimcore.datahub.graphql.documenttype.document_areablock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType'
+  pimcore.datahub.graphql.documenttype.document_scheduledblock_input_datatype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType'
+  pimcore.datahub.graphql.documenttype.document_link_inputtype: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType'
+
+
+  pimcore.datahub.graphql.documenttype.document_page: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType'
+  pimcore.datahub.graphql.documenttype.document_snippet: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType'
+  pimcore.datahub.graphql.documenttype._document_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType'
+
+  pimcore.datahub.graphql.documenttype.document_page_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType'
+
+ # data object
+  pimcore.datahub.graphql.dataobjecttype.image_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType'
+  pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
+  pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
+  pimcore.datahub.graphql.dataobjecttype.quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType'
+
+  pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
+  pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
+  pimcore.datahub.graphql.dataobjecttype.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType'
+
+ # helpers
+  pimcore.datahub.graphql.fieldhelper.asset: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper'
+  pimcore.datahub.graphql.fieldhelper.document: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper'
+  pimcore.datahub.graphql.fieldhelper.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper'
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\Service:
+    public: true
+
+  # Field helper
+  Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper:
+    public: false
+    calls:
+      - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper:
+    public: false
+    calls:
+      - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper:
+    public: false
+    calls:
+      - [setGraphQlService, ['@Pimcore\Bundle\DataHubBundle\GraphQL\Service']]
+
+
+  #
+  # other stuff
+  #
+  pimcore.datahub.graphql.generaltype.factory.anytargettype:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyTargetType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: anytarget }
+
+  pimcore.datahub.graphql.generaltype.factory.document_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: document_tree }
+
+  pimcore.datahub.graphql.generaltype.factory.object_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: object_tree }
+
+  pimcore.datahub.graphql.generaltype.factory.asset_tree:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+     $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: asset_tree }
+
+  pimcore.datahub.graphql.generaltype.factory.hotspotmarkertype:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotMarkerType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspotmarker }
+
+  pimcore.datahub.graphql.generaltype.factory.hotspothotspottype:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotHotspotType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspothotspot }
+
+  pimcore.datahub.graphql.generaltype.factory.hotspot_metadata:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: hotspot_metadata }
+
+  pimcore.datahub.graphql.generaltype.factory.element_property_property:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: element_property }
+
+  pimcore.datahub.graphql.generaltype.factory.element_tag:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: element_tag }
+
+
+  pimcore.datahub.graphql.generaltype.factory.document_translation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTranslationType
+      tags:
+          - { name: pimcore.datahub.graphql.generaltype_factory, id: document_translation }
+
+  pimcore.datahub.graphql.generaltype.factory.asset:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetType
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: asset }
+
+  pimcore.datahub.graphql.generaltype.factory.asset_metadataitem:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: asset_metadataitem }
+
+  pimcore.datahub.graphql.generaltype.factory.video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType
+    tags:
+      - { name: pimcore.datahub.graphql.assettype_factory, id: video }
+
+  pimcore.datahub.graphql.generaltype.factory.translation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\TranslationType\TranslationType
+      tags:
+          - { name: pimcore.datahub.graphql.translationtype_factory, id: translation }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ImageDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataInputType: ~
+
+  #
+  # built-in document-elements query datatypes type generator
+  #
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_areablock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Areablock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_areablock }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_block:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Block
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_block }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_checkbox }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_date:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Date
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_date }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_embed:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Embed
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_embed }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_input }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_image }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_link:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Link
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_link }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_multiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_multiselect }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_numeric:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_numeric }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_pdf:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Pdf
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_pdf }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_relation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relation
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relation }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_relations:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Relations
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relations }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_scheduledblock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Scheduledblock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_scheduledblock }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_select:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Select
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_select }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_table:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Table
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_table }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_textarea:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Textarea
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_textarea }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_wysiwyg:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Wysiwyg
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_wysiwyg }
+
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Video
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_video }
+
+  #
+  # built-in dataobject query datatypes type generator
+  #
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_booleanSelect }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_checkbox }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterActive }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_newsletterConfirmed }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_classificationstore:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Classificationstore
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_classificationstore }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_date:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_date }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_datetime:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Datetime
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_datetime }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_email:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_email }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_href:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Href
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_href }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToOneRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_fieldcollections:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_fieldcollections }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_firstname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_firstname }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geobounds:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geobounds
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geobounds }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopolygon:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopolygon
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopolygon }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopoint:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopoint
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopoint }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_hotspotimage:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Hotspotimage
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_hotspotimage }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_image }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_imageGallery:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ImageGallery
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_imageGallery }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_link:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Link
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_link }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_externalImage }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_input }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_rgbaColor }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_time }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_calculatedvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\CalculatedValue
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_calculatedValue }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_lastname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_lastname }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multihref:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Multihref
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multihref }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_objects:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Objects
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_manyToManyObjectRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_reverseManyToManyObjectRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ReverseManyToManyObjectRelation
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseManyToManyObjectRelation } # deprecated since 6.9, removed in 10
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_reverseObjectRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multihrefMetadata:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\MultihrefMetadata
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multihrefMetadata }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_advancedManyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_objectsMetadata:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\ObjectsMetadata
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_advancedManyToManyObjectRelation }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_multiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_languagemultiselect }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_multiselect }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_countrymultiselect }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_numeric:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_numeric }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_quantityvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\QuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_quantityValue }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_inputquantityvalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\InputQuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_inputQuantityValue }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_select:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Select
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_country }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_gender }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_language }
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_select }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_slider:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Slider
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_slider }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_textarea:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_textarea }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_urlSlug:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\UrlSlug
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_urlSlug }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Video
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_video }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_wysiwyg:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_wysiwyg }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_table:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Table
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_table }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_structuredTable:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\StructuredTable
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_structuredTable }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_block:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Block
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_block }
+
+  #
+  # type generators for dataobject query operators
+  #
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_alias:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Alias
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_alias }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_concatenator:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Concatenator
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_concatenator }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_dateformatter:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\DateFormatter
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_dateformatter }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_elementcounter:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ElementCounter
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_elementcounter }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_merge:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Merge
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_merge }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_substring:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Substring
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_substring }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_text:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\StringBase
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_text }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnail:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Thumbnail
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnail }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_thumbnailhtml:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\ThumbnailHtml
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_thumbnailhtml }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_translatevalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\TranslateValue
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_translatevalue }
+
+  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_trimmer:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Trimmer
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_trimmer }
+
+
+  #
+  # dataobject query operator factory definitions
+  #
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.alias:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Alias
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: alias }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.concatenator:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Concatenator
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: concatenator }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.dateformatter:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\DateFormatter
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: dateformatter }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.elementcounter:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ElementCounter
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: elementcounter }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.substring:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Substring
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: substring }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.thumbnail:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Thumbnail
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: thumbnail }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.thumbnailhtml:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: thumbnailhtml }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.merge:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Merge
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: merge }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.text:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Text
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: text }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.translatevalue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\TranslateValue
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: translatevalue }
+
+  pimcore.datahub.graphql.dataobjectqueryoperator.factory.trimmer:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Trimmer
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: trimmer }
+
+
+  #
+  # asset type definitions
+  #
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetMetadataItem:
+    tags:
+      - { name: pimcore.datahub.graphql.assettype, id: asset_metadata_item }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetInputType:
+    tags:
+      - { name: pimcore.datahub.graphql.assettype, id: asset_input }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.assettype, id: _asset_folder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetTreeType:
+      tags:
+      - { name: pimcore.datahub.graphql.assettype, id: asset_tree }
+
+  #
+  # classification store type definitions
+  #
+  Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group:
+    tags:
+      - { name: pimcore.datahub.graphql.cstype, id: cs_group }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature:
+    tags:
+      - { name: pimcore.datahub.graphql.cstype, id: cs_feature }
+
+
+  #
+  # dataobject type definitions
+  #
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_tree }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentElementType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_element }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\EmailType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_email }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\HardlinkType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_hardlink }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_link }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\PageType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_page }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\SnippetType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: document_snippet }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.documenttype, id: _document_folder }
+
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentLinkInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.documenttype, id: document_link_input }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: elementdescriptor_input }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: geopoint_input }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_tree }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: _object_folder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HotspotType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_hotspotimage }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: manytoone }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputQuantityValueType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: input_quantity_value }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\UrlSlugType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: url_slug }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\VideoTypeDataType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: object_datatype_video_data }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value_input }
+
+  #
+  # document mutation types
+  #
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentPageInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.document_inputtype, id: document_page_input }
+
+  #
+  # input type definitions
+  #
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType\ImageInputType:
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjecttype, id: image_input }
+
+  # document element mutation data types
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_areablock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Areablock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_areablock }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_block:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Block
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_block }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_embed:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Embed
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_embed }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_image:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Image
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_image }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Input
+    tags:
+        - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_input }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_multiselect:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Multiselect
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_multiselect }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_scheduledblock:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Scheduledblock
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_scheduledblock }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_select:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Select
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_select }
+
+  pimcore.datahub.graphql.documentelementmutationtypegenerator_datatype_wysiwyg:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementMutationFieldConfigGenerator\Wysiwyg
+      tags:
+          - { name: pimcore.datahub.graphql.documentelementmutationtypegenerator, id: typegenerator_documentelementmutationdatatype_wysiwyg }
+
+  # document element input processors
+  pimcore.datahub.graphql.documentmutationelementprocessor: '@Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock'
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Embed: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Multiselect: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Wysiwyg: ~
+
+
+  Pimcore\Model\Document\Editable\Loader\EditableLoaderInterface: '@Pimcore\Model\Document\Editable\Loader\EditableLoader'
+
+  #
+  # built-in dataobject mutation datatypes type generator
+  #
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_booleanSelect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\BooleanSelect
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_booleanSelect }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_checkbox }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_country:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_country }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_countrymultiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_countrymultiselect }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_date:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Date
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_date }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_datetime:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Date
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_datetime }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_email:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_email }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_externalImage:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ExternalImage
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_externalImage }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_fieldcollections:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Fieldcollections
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_fieldcollections }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_geopoint:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Geopoint
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_geopoint }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_firstname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_firstname }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_gender:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_gender }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_input }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_image }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_language:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_language }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_lastname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_lastname }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_newsletterActive:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_newsletterActive }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToOneRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToOneRelation
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToOneRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToManyRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyRelation
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_manyToManyObjectRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ManyToManyObjectRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_manyToManyObjectRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_advancedManyToManyObjectRelation:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\AdvancedManyToManyObjectRelation
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_advancedManyToManyObjectRelation }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_multiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_multiselect }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_newsletterConfirmed:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_newsletterConfirmed }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_numeric:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_numeric }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_select:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_select }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_slider:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_slider }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_textarea:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_textarea }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_time:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_time }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_wysiwyg:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_wysiwyg }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_quantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\QuantityValue
+    tags:
+        - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_quantityValue }
+
+  # dataobject mutation operator
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_ifempty:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_ifempty }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_localeswitcher:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localeswitcher }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_localecollector:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localecollector }
+
+  #
+  # dataobject mutation operator factory definitions
+  #
+
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.ifempty:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: ifempty }
+
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.localeswitcher:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleSwitcher
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localeswitcher }
+
+  pimcore.datahub.graphql.dataobjectmutationoperator.factory.localecollector:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory\DefaultMutationOperatorFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\LocaleCollector
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationoperator_factory, id: localecollector }
+
+  # classification store
+  #
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_booleanSelect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\BooleanSelect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_booleanSelect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_calculatedValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\CalculatedValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_calculatedValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_checkbox:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Checkbox
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_checkbox }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_country:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Country
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_country }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_countrymultiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Countrymultiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_countrymultiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_date:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Date
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_date }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_datetime:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Datetime
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_datetime }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_input:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Input
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_input }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_inputQuantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\InputQuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_inputQuantityValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_language:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Language
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_language }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_languagemultiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Languagemultiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_languagemultiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_multiselect:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Multiselect
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_multiselect }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_numeric:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Numeric
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_numeric }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_rgbaColor:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\RgbaColor
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_rgbaColor }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_select:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Select
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_select }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_slider:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Slider
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_slider }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_textarea:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Textarea
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_textarea }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_time:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Time
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_time }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_quantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\QuantityValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_quantityValue }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_wysiwyg:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Wysiwyg
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_wysiwyg }
+
+
+  # properties
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectsType: ~
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: elementproperty }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\HotspotMetadataType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: hotspotmetadata }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_asset }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_document }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\AssetFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_assetfolder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DocumentFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_documentfolder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ObjectFolderType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_objectfolder }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\DataObjectType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_object }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\CheckboxType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_checkbox }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextareaType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_textarea }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\TextType:
+    tags:
+      - { name: pimcore.datahub.graphql.propertytype, id: property_text }
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\SelectType:
+    tags:
+        - { name: pimcore.datahub.graphql.propertytype, id: property_select }
+
+  # element tags
+
+  Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag:
+    tags:
+      - { name: pimcore.datahub.graphql.elementtag, id: element_tag }
 

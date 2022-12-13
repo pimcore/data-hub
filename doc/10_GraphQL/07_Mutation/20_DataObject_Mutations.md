@@ -48,7 +48,6 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Quantity Value
 * Select
 * Slider
-* Table
 * Textarea
 * Time
 * Wysiwyg
