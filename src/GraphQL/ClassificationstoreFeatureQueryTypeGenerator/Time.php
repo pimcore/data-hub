@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringTy
 class Time extends Base
 {
     /**
-     * @return \GraphQL\Type\Definition\StringType|StringType
+     * @return StringType
      */
     public function getFieldType()
     {

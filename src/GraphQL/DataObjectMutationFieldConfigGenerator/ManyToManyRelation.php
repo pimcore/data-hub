@@ -23,10 +23,6 @@ class ManyToManyRelation extends Base
 {
     protected $elementInputType;
 
-    /**
-     * @param Service $graphQlService
-     * @param ElementDescriptorInputType $elementInputType
-     */
     public function __construct(Service $graphQlService, ElementDescriptorInputType $elementInputType)
     {
         $this->elementInputType = $elementInputType;

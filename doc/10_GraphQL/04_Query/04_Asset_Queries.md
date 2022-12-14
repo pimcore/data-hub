@@ -39,7 +39,7 @@ Base structure for getting a list of assets, restricted by IDs:
 
 ```graphql
 {
-  getAssets(ids: "4,5") {
+  getAssetListing(ids: "4,5") {
     edges {
     ...
 ```
@@ -55,7 +55,7 @@ Pagination can be applied as query parameters.
 {
   # 'first' is the limit
   # 'after' the offset
-  getAssets(first: 3, after: 1) {
+  getAssetListing(first: 3, after: 1) {
     edges {
       ...
     }

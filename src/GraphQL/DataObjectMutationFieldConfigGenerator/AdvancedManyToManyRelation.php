@@ -24,10 +24,6 @@ class AdvancedManyToManyRelation extends Base
     protected $elementInputType;
     protected $fieldDefinition;
 
-    /**
-     * @param Service $graphQlService
-     * @param ElementDescriptorInputType $elementInputType
-     */
     public function __construct(Service $graphQlService, ElementDescriptorInputType $elementInputType)
     {
         $this->elementInputType = $elementInputType;

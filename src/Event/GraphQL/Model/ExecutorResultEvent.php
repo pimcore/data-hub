@@ -39,18 +39,11 @@ class ExecutorResultEvent extends Event
         return $this->result;
     }
 
-    /**
-     * @param ExecutionResult $result
-     */
     public function setResult(ExecutionResult $result)
     {
         $this->result = $result;
     }
 
-    /**
-     * @param Request $request
-     * @param ExecutionResult $result
-     */
     public function __construct(Request $request, ExecutionResult $result)
     {
         $this->request = $request;

@@ -20,11 +20,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class StructuredTable extends AbstractTable
 {
-    /**
-     * @param Data $fieldDefinition
-     *
-     * @return array
-     */
     protected function getTableColumns(Data $fieldDefinition): array
     {
         $cols = [];

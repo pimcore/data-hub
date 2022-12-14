@@ -28,9 +28,6 @@ abstract class Base implements OperatorTypeDefinitionInterface
      */
     protected $graphQlService;
 
-    /**
-     * @param Service $graphQlService
-     */
     public function __construct(Service $graphQlService)
     {
         $this->graphQlService = $graphQlService;
@@ -102,7 +99,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return \GraphQL\Type\Definition\ScalarType
      */
     public function getFieldType($attributes, $class = null, $container = null)
     {

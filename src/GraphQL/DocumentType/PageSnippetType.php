@@ -27,6 +27,7 @@ class PageSnippetType extends AbstractDocumentType
 
     /**
      * @param Service $graphQlService
+     * @param DocumentElementType $documentElementType
      * @param array $config
      * @param array $context
      */

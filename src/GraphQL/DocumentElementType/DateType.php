@@ -25,6 +25,9 @@ class DateType extends ObjectType
 {
     protected static $instance;
 
+    /**
+     * @return static
+     */
     public static function getInstance()
     {
         if (!self::$instance) {

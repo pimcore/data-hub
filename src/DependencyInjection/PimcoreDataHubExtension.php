@@ -40,9 +40,6 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
         $loader->load('config.yml');
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function prepend(ContainerBuilder $container)
     {
         if ($container->hasExtension('doctrine_migrations')) {

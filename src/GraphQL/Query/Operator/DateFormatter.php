@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class DateFormatter extends AbstractOperator
 {
@@ -25,6 +26,10 @@ class DateFormatter extends AbstractOperator
      */
     private $format;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config, $context = null)
     {
         parent::__construct($config, $context);
@@ -32,6 +37,14 @@ class DateFormatter extends AbstractOperator
         $this->format = ($config['format'] ? $config['format'] : null);
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return \stdClass
+     *
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();
@@ -56,6 +69,11 @@ class DateFormatter extends AbstractOperator
         return $result;
     }
 
+    /**
+     * @param int|Carbon $theValue
+     *
+     * @return Carbon|int|string
+     */
     public function format($theValue)
     {
         if ($theValue) {

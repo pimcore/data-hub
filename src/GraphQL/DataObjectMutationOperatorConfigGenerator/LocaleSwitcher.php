@@ -20,11 +20,11 @@ use Pimcore\Model\DataObject\ClassDefinition;
 class LocaleSwitcher extends Base
 {
     /**
-     * @param mixed $nodeDef
+     * @param array $nodeDef
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlMutationOperatorConfig($nodeDef, $class = null, $container = null, $params = [])
     {
