@@ -284,6 +284,7 @@ class QueryType
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing $objectList */
         $objectList = $modelFactory->build($listClass);
+        /** @var array $conditionParts */
         $conditionParts = [];
 
         if ($isIdSet) {
