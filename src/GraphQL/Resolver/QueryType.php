@@ -303,10 +303,8 @@ class QueryType
             $conditionParts[] = '(' . $sqlGetCondition . ')';
         }
 
-        if ($conditionParts) {
-            $condition = implode(' AND ', $conditionParts);
-            $objectList->setCondition($condition);
-        }
+        $condition = implode(' AND ', $conditionParts);
+        $objectList->setCondition($condition);
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
         $objectList->setLimit(1);
