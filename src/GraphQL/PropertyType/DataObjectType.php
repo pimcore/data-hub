@@ -29,10 +29,6 @@ class DataObjectType extends ObjectType
 {
     use ServiceTrait;
 
-    /**
-     * @param Service $graphQlService
-     * @param ObjectsType $objectUnionType
-     */
     public function __construct(Service $graphQlService, ObjectsType $objectUnionType)
     {
         $this->graphQlService = $graphQlService;

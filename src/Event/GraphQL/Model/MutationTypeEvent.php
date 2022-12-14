@@ -38,41 +38,26 @@ class MutationTypeEvent extends Event
         return $this->mutationType;
     }
 
-    /**
-     * @param MutationType $mutationType
-     */
     public function setMutationType(MutationType $mutationType)
     {
         $this->mutationType = $mutationType;
     }
 
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * @param array $config
-     */
     public function setConfig(array $config): void
     {
         $this->config = $config;
     }
 
-    /**
-     * @return array
-     */
     public function getContext(): array
     {
         return $this->context;
     }
 
-    /**
-     * @param array $context
-     */
     public function setContext(array $context): void
     {
         $this->context = $context;

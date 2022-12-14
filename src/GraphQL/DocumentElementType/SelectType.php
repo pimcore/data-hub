@@ -19,6 +19,9 @@ class SelectType extends SimpleTextType
 {
     protected static $instance;
 
+    /**
+     * @return static
+     */
     public static function getInstance()
     {
         if (!self::$instance) {

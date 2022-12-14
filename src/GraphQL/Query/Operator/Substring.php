@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Substring extends AbstractOperator
 {
@@ -25,6 +26,10 @@ class Substring extends AbstractOperator
 
     private $ellipses;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config = [], $context = null)
     {
         parent::__construct($config, $context);
@@ -34,6 +39,14 @@ class Substring extends AbstractOperator
         $this->ellipses = $config['ellipses'];
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return \stdClass
+     *
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

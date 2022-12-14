@@ -29,7 +29,7 @@ class LocalizedType extends InputObjectType
     /**
      * @param mixed $determinedType
      *
-     * @return mixed|LocalizedType|\GraphQL\Type\Definition\Type
+     * @return mixed
      */
     public static function getInstance($determinedType)
     {

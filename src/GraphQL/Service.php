@@ -195,23 +195,6 @@ class Service
      */
     protected $dataObjectDataTypes = [];
 
-    /**
-     * @param AssetFieldHelper $assetFieldHelper
-     * @param DocumentFieldHelper $documentFieldHelper
-     * @param DataObjectFieldHelper $objectFieldHelper
-     * @param LocaleServiceInterface $localeService
-     * @param Factory $modelFactory
-     * @param Translator $translator
-     * @param ContainerInterface $dataObjectQueryTypeGeneratorFactories
-     * @param ContainerInterface $dataObjectQueryOperatorFactories
-     * @param ContainerInterface $dataObjectMutationTypeGeneratorFactories
-     * @param ContainerInterface $dataObjectMutationOperatorFactories
-     * @param ContainerInterface $documentElementQueryTypeGeneratorFactories
-     * @param ContainerInterface $documentElementMutationTypeGeneratorFactories
-     * @param ContainerInterface $generalTypeGeneratorFactories
-     * @param ContainerInterface $assetTypeGeneratorFactories
-     * @param ContainerInterface $csFeatureTypeGeneratorFactories
-     */
     public function __construct(
         AssetFieldHelper $assetFieldHelper,
         DocumentFieldHelper $documentFieldHelper,
@@ -271,7 +254,7 @@ class Service
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function buildDataObjectMutationDataConfig($nodeDef, $class = null, $container = null)
     {
@@ -486,7 +469,7 @@ class Service
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return Query\Operator\OperatorInterface
      */
     public function buildQueryOperator($typeName, $attributes = null, ClassDefinition $class = null, $container = null)
     {
@@ -503,7 +486,7 @@ class Service
     /**
      * @param ConfigElementInterface $nodeConfig
      *
-     * @return mixed|DefaultValue
+     * @return DefaultValue|Query\Operator\OperatorInterface
      *
      * @throws \Exception
      */
@@ -596,17 +579,11 @@ class Service
         $this->supportedDataObjectQueryDataTypes = $supportedDataObjectQueryDataTypes;
     }
 
-    /**
-     * @return array
-     */
     public function getSupportedDataObjectMutationDataTypes(): array
     {
         return $this->supportedDataObjectMutationDataTypes;
     }
 
-    /**
-     * @param array $supportedDataObjectMutationDataTypes
-     */
     public function setSupportedDataObjectMutationDataTypes(array $supportedDataObjectMutationDataTypes): void
     {
         $this->supportedDataObjectMutationDataTypes = $supportedDataObjectMutationDataTypes;
@@ -653,33 +630,21 @@ class Service
         return $this->objectFieldHelper;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getQueryTypeGeneratorFactories(): ContainerInterface
     {
         return $this->dataObjectQueryTypeGeneratorFactories;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getQueryOperatorFactories(): ContainerInterface
     {
         return $this->dataObjectQueryOperatorFactories;
     }
 
-    /**
-     * @return LocaleServiceInterface
-     */
     public function getLocaleService(): LocaleServiceInterface
     {
         return $this->localeService;
     }
 
-    /**
-     * @return Factory
-     */
     public function getModelFactory(): Factory
     {
         return $this->modelFactory;
@@ -1141,41 +1106,26 @@ class Service
         return false;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getDataObjectMutationTypeGeneratorFactories(): ContainerInterface
     {
         return $this->dataObjectMutationTypeGeneratorFactories;
     }
 
-    /**
-     * @param ContainerInterface $dataObjectMutationTypeGeneratorFactories
-     */
     public function setDataObjectMutationTypeGeneratorFactories(ContainerInterface $dataObjectMutationTypeGeneratorFactories): void
     {
         $this->dataObjectMutationTypeGeneratorFactories = $dataObjectMutationTypeGeneratorFactories;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getDataObjectMutationOperatorFactories(): ContainerInterface
     {
         return $this->dataObjectMutationOperatorFactories;
     }
 
-    /**
-     * @param ContainerInterface $dataObjectMutationOperatorFactories
-     */
     public function setDataObjectMutationOperatorFactories(ContainerInterface $dataObjectMutationOperatorFactories): void
     {
         $this->dataObjectMutationOperatorFactories = $dataObjectMutationOperatorFactories;
     }
 
-    /**
-     * @return array
-     */
     public function getDataObjectDataTypes(): array
     {
         return $this->dataObjectDataTypes;

@@ -41,65 +41,41 @@ class ListingEvent extends Event
      */
     protected $resolveInfo;
 
-    /**
-     * @return AbstractListing
-     */
     public function getListing(): AbstractListing
     {
         return $this->listing;
     }
 
-    /**
-     * @param AbstractListing $listing
-     */
     public function setListing(AbstractListing $listing)
     {
         $this->listing = $listing;
     }
 
-    /**
-     * @return array
-     */
     public function getArgs(): array
     {
         return $this->args;
     }
 
-    /**
-     * @param array $args
-     */
     public function setArgs(array $args): void
     {
         $this->args = $args;
     }
 
-    /**
-     * @return array
-     */
     public function getContext(): array
     {
         return $this->context;
     }
 
-    /**
-     * @param array $context
-     */
     public function setContext(array $context): void
     {
         $this->context = $context;
     }
 
-    /**
-     * @return ResolveInfo
-     */
     public function getResolveInfo(): ResolveInfo
     {
         return $this->resolveInfo;
     }
 
-    /**
-     * @param ResolveInfo $resolveInfo
-     */
     public function setResolveInfo(ResolveInfo $resolveInfo): void
     {
         $this->resolveInfo = $resolveInfo;

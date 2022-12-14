@@ -27,11 +27,19 @@ class TestTrait
     const BY_ID = "ById";
     const BY_PATH = "ByPath";
 
+    /**
+     * @param string $elementType
+     * @return string
+     */
     protected function getElementById($elementType)
     {
         return $elementType . self::BY_ID;
     }
 
+    /**
+     * @param string $elementType
+     * @return string
+     */
     protected function getElementByPath($elementType)
     {
         return $elementType . self::BY_PATH;

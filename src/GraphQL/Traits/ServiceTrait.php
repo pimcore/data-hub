@@ -34,9 +34,6 @@ trait ServiceTrait
         return $this->graphQlService;
     }
 
-    /**
-     * @param Service $graphQlService
-     */
     public function setGraphQLService(Service $graphQlService)
     {
         $this->graphQlService = $graphQlService;

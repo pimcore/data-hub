@@ -22,12 +22,6 @@ class CheckConsumerPermissionsService
 {
     public const TOKEN_HEADER = 'X-API-Key';
 
-    /**
-     * @param Request $request
-     * @param Configuration $configuration
-     *
-     * @return bool
-     */
     public function performSecurityCheck(Request $request, Configuration $configuration): bool
     {
         $securityConfig = $configuration->getSecurityConfig();

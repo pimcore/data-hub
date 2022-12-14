@@ -23,6 +23,11 @@ use Pimcore\Model\DataObject\Localizedfield;
 
 class Merge extends StringBase
 {
+    /**
+     * @param array $attributes
+     *
+     * @return array|string|string[]|null
+     */
     protected function getFieldname($attributes)
     {
         $label = ($attributes['label'] ? $attributes['label'] : '#'.uniqid());
@@ -39,7 +44,7 @@ class Merge extends StringBase
      * @param object|null $container
      * @param array $params
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlQueryOperatorConfig($typeName, $nodeConfig, $class = null, $container = null, $params = [])
     {
@@ -80,6 +85,15 @@ class Merge extends StringBase
         return $config;
     }
 
+    /**
+     * @param string $typeName
+     * @param array $nodeDef
+     * @param ClassDefinition|null $class
+     * @param object|null $container
+     * @param array $params
+     *
+     * @return ListOfType|Type
+     */
     public function getGraphQlType($typeName, $nodeDef, $class = null, $container = null, $params = [])
     {
         $attributes = $nodeDef['attributes'];

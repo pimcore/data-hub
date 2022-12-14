@@ -28,7 +28,7 @@ abstract class AbstractOperator implements OperatorInterface
     protected $label;
 
     /**
-     * @var mixed
+     * @var array
      */
     protected $context;
 
@@ -37,6 +37,10 @@ abstract class AbstractOperator implements OperatorInterface
      */
     protected $children;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config = [], $context = null)
     {
         $this->label = $config['label'];
@@ -60,21 +64,37 @@ abstract class AbstractOperator implements OperatorInterface
         return false;
     }
 
+    /**
+     * @return array|null
+     */
     public function getContext()
     {
         return $this->context;
     }
 
+    /**
+     * @param array $context
+     *
+     * @return void
+     */
     public function setContext($context)
     {
         $this->context = $context;
     }
 
+    /**
+     * @return string
+     */
     public function getLabel()
     {
         return $this->label;
     }
 
+    /**
+     * @param string $label
+     *
+     * @return void
+     */
     public function setLabel($label)
     {
         $this->label = $label;

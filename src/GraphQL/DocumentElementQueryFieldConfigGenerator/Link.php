@@ -16,17 +16,12 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkDataType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\LinkType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 class Link extends Base
 {
     protected $linkDataType;
 
-    /**
-     * @param Service $graphQlService
-     * @param LinkDataType $linkDataType
-     */
     public function __construct(Service $graphQlService, LinkDataType $linkDataType)
     {
         $this->linkDataType = $linkDataType;
@@ -34,7 +29,7 @@ class Link extends Base
     }
 
     /**
-     * @return LinkType
+     * @return \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\LinkType
      */
     public function getFieldType()
     {

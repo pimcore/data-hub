@@ -23,10 +23,6 @@ class Areablock extends Base
 {
     protected $areablockDataType;
 
-    /**
-     * @param Service $graphQlService
-     * @param AreablockDataType $areablockDataType
-     */
     public function __construct(Service $graphQlService, AreablockDataType $areablockDataType)
     {
         $this->areablockDataType = $areablockDataType;

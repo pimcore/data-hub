@@ -29,10 +29,6 @@ class VideoType extends ObjectType
      */
     protected $videoDataType;
 
-    /**
-     * @param Service $graphQlService
-     * @param VideoTypeDataType $videoDataType
-     */
     public function __construct(Service $graphQlService, VideoTypeDataType $videoDataType)
     {
         $this->setGraphQLService($graphQlService);

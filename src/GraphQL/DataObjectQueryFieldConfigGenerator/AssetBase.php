@@ -26,7 +26,7 @@ class AssetBase extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      *
      * @throws \Exception
      */
@@ -50,7 +50,7 @@ class AssetBase extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return mixed
      *
      * @throws \Exception
      */
@@ -59,6 +59,13 @@ class AssetBase extends Base
         return $this->getGraphQlService()->buildAssetType('asset');
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     *
+     * @return array
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\AssetBase($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

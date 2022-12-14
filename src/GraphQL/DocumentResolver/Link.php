@@ -27,9 +27,6 @@ class Link
 {
     use ServiceTrait;
 
-    /**
-     * @param GraphQLService $graphQlService
-     */
     public function __construct(GraphQLService $graphQlService)
     {
         $this->graphQlService = $graphQlService;

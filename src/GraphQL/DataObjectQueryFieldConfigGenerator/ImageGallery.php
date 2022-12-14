@@ -35,9 +35,10 @@ class ImageGallery extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @throws \Exception
+     * @return array
      *
-     * @return mixed
+     *@throws \Exception
+     *
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -59,7 +60,7 @@ class ImageGallery extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return \GraphQL\Type\Definition\ListOfType|mixed
+     * @return \GraphQL\Type\Definition\ListOfType
      *
      * @throws \Exception
      */
@@ -70,6 +71,13 @@ class ImageGallery extends Base
         return Type::listOf($hotspotType);
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     *
+     * @return array
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         /** @var Data\ImageGallery $fieldDefinition */

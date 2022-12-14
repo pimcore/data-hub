@@ -25,6 +25,8 @@ class LinkType extends ObjectType
 
     /**
      * @param LinkDataType $linkDataType
+     *
+     * @return static
      */
     public static function getInstance(LinkDataType $linkDataType)
     {

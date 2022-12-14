@@ -24,6 +24,11 @@ class AreablockType extends ObjectType
 {
     protected static $instance;
 
+    /**
+     * @param AreablockDataType $areablockDataType
+     *
+     * @return static
+     */
     public static function getInstance(AreablockDataType $areablockDataType)
     {
         if (!self::$instance) {
