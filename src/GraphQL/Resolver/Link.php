@@ -52,12 +52,12 @@ class Link
         return $this->resolveLinkValue($value, 'path');
     }
 
-
     /**
      * @param $value
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -70,6 +70,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveAnchor($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -82,6 +83,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveTitle($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -94,6 +96,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveAccesskey($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -106,6 +109,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveRel($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -118,6 +122,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveClass($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -130,6 +135,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveAttributes($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -142,6 +148,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveTabindex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -154,6 +161,7 @@ class Link
      * @param $args
      * @param $context
      * @param ResolveInfo|null $resolveInfo
+     *
      * @return null
      */
     public function resolveParameters($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
@@ -164,12 +172,14 @@ class Link
     /**
      * @param \Pimcore\Model\DataObject\Data\Link|null $value
      * @param string $property
+     *
      * @return null
      */
-    protected function resolveLinkValue(?\Pimcore\Model\DataObject\Data\Link $value, string $property) {
-
+    protected function resolveLinkValue(?\Pimcore\Model\DataObject\Data\Link $value, string $property)
+    {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
             $getter = 'get' . ucfirst($property);
+
             return $value->{$getter}();
         }
 

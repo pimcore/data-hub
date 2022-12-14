@@ -35,15 +35,14 @@ class Link extends Base
     {
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
-
-            if($newValue === null) {
+            if ($newValue === null) {
                 return $container->$setter(null);
             }
 
             if (is_array($newValue)) {
                 $tmpLink = new \Pimcore\Model\DataObject\Data\Link();
 
-                foreach($newValue as $fieldName => $fieldValue) {
+                foreach ($newValue as $fieldName => $fieldValue) {
                     $linkSetter = 'set' . ucfirst($fieldName);
                     $tmpLink->{$linkSetter}($fieldValue);
                 }

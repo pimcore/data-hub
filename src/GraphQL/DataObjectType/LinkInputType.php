@@ -51,11 +51,11 @@ class LinkInputType extends InputObjectType
                 'name' => 'target',
                 'description' => 'Valid Link targets: "empty", "_blank", "_self", "_top", "_parent"',
                 'values' => [
-                    "empty" => ['value' => null],
-                    "_blank",
-                    "_self",
-                    "_top",
-                    "_parent"
+                    'empty' => ['value' => null],
+                    '_blank',
+                    '_self',
+                    '_top',
+                    '_parent'
                 ]
             ]),
             'anchor' => Type::string(),
