@@ -72,9 +72,6 @@ class MergeType extends UnionType implements ContainerAwareInterface
         $this->class = $class;
     }
 
-    /**
-     * @return array
-     */
     public function getTypes(): array
     {
         $nodeDef = $this->nodeDef;

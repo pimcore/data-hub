@@ -65,7 +65,6 @@ class FileUploadService
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @throws \GraphQL\Server\RequestError
      */
     protected function validateParsedBody(Request $request): void
     {

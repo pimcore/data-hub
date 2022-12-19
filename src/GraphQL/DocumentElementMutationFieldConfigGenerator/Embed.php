@@ -26,16 +26,15 @@ class Embed extends Base
      */
     public $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Embed $processor
-     */
     public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Embed $processor)
     {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         return [

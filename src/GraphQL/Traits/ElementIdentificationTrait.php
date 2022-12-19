@@ -80,6 +80,13 @@ trait ElementIdentificationTrait
         return Service::getElementByPath($type, $fullpath);
     }
 
+    /**
+     * @param array $value
+     *
+     * @return mixed
+     *
+     * @throws ClientSafeException
+     */
     private function getType($value)
     {
         if (!isset($value[$this->typeKey])) {

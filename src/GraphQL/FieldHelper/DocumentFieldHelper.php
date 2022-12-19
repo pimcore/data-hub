@@ -27,7 +27,8 @@ class DocumentFieldHelper extends AbstractFieldHelper
      * @param array $data
      * @param Asset $container
      * @param array $args
-     * @param ResolveInfo|null $resolveInfo
+     * @param array $context
+     * @param ResolveInfo $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
     {

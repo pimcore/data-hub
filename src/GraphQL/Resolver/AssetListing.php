@@ -37,10 +37,6 @@ class AssetListing
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
-    /**
-     * @param Service $graphQlService
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(Service $graphQlService, EventDispatcherInterface $eventDispatcher)
     {
         $this->setGraphQLService($graphQlService);
@@ -49,7 +45,7 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -62,12 +58,12 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return mixed
+     * @return ElementDescriptor|null
      */
     public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -209,7 +205,7 @@ class AssetListing
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -249,7 +245,7 @@ class AssetListing
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
-     * @return array|null
+     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */

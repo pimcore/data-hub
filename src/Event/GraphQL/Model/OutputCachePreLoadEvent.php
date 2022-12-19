@@ -44,18 +44,11 @@ class OutputCachePreLoadEvent extends Event
         return $this->useCache;
     }
 
-    /**
-     * @param bool $useCache
-     */
     public function setUseCache(bool $useCache)
     {
         $this->useCache = $useCache;
     }
 
-    /**
-     * @param Request $request
-     * @param bool $useCache
-     */
     public function __construct(Request $request, bool $useCache)
     {
         $this->request = $request;

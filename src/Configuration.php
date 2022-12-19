@@ -133,24 +133,18 @@ class Configuration extends AbstractModel
         return $this->modificationDate;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
     }
 
     /**
-     * @param mixed $configuration
+     * @param array|null $configuration
      */
     public function setConfiguration($configuration): void
     {
@@ -164,7 +158,7 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getConfiguration()
     {
@@ -182,33 +176,21 @@ class Configuration extends AbstractModel
         $this->name = $name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getGroup(): ?string
     {
         return $this->group;
     }
 
-    /**
-     * @param string|null $group
-     */
     public function setGroup(?string $group): void
     {
         $this->group = $group;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSqlObjectCondition(): ?string
     {
         return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] ?? null : null;
@@ -238,9 +220,6 @@ class Configuration extends AbstractModel
         $this->path = $path;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPath(): ?string
     {
         return $this->path;
@@ -306,9 +285,6 @@ class Configuration extends AbstractModel
         \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_POST_SAVE);
     }
 
-    /**
-     * @return void
-     */
     public function delete(): void
     {
         if (!$this->isAllowed('delete')) {
@@ -349,9 +325,6 @@ class Configuration extends AbstractModel
         }
     }
 
-    /**
-     * @return array
-     */
     public function getQueryEntities(): array
     {
         $schema = $this->configuration['schema'] ?? null;
@@ -361,9 +334,6 @@ class Configuration extends AbstractModel
         return $entities;
     }
 
-    /**
-     * @return array
-     */
     public function getSpecialEntities(): array
     {
         $schema = $this->configuration['schema'] ?? null;
@@ -372,9 +342,6 @@ class Configuration extends AbstractModel
         return $entities;
     }
 
-    /**
-     * @return array
-     */
     public function getMutationEntities(): array
     {
         $schema = $this->configuration['schema'] ?? null;

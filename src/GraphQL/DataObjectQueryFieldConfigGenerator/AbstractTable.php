@@ -33,7 +33,7 @@ abstract class AbstractTable extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -105,10 +105,5 @@ abstract class AbstractTable extends Base
         return Type::listOf($type);
     }
 
-    /**
-     * @param Data $fieldDefinition
-     *
-     * @return array
-     */
     abstract protected function getTableColumns(Data $fieldDefinition): array;
 }

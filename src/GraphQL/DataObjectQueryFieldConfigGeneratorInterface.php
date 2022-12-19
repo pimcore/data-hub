@@ -44,7 +44,7 @@ interface DataObjectQueryFieldConfigGeneratorInterface
      * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class
      *
-     * @return callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
+     * @return array|callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
      */
     public function getResolver($attribute, $fieldDefinition, $class);
 }

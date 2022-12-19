@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Element\ElementInterface;
 
 /**
  * Class ThumbnailHtml
@@ -33,7 +34,7 @@ class ThumbnailHtml extends AbstractOperator
 
     /**
      * @param array $config
-     * @param mixed $context
+     * @param array|null $context
      */
     public function __construct(array $config = [], $context = null)
     {
@@ -43,7 +44,7 @@ class ThumbnailHtml extends AbstractOperator
     }
 
     /**
-     * @param \Pimcore\Model\Element\ElementInterface $element
+     * @param ElementInterface|null $element
      * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
