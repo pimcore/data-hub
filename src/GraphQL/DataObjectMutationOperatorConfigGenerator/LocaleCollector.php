@@ -21,12 +21,12 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LocalizedType;
 class LocaleCollector extends Base
 {
     /**
-     * @param mixed $nodeDef
+     * @param array $nodeDef
      * @param \Pimcore\Model\DataObject\ClassDefinition|null $class
      * @param object|null $container
      * @param array $params
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlMutationOperatorConfig($nodeDef, $class = null, $container = null, $params = [])
     {

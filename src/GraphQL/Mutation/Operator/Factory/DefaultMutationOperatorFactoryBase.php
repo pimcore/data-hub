@@ -30,10 +30,6 @@ abstract class DefaultMutationOperatorFactoryBase
      */
     protected $className;
 
-    /**
-     * @param Service $graphQlService
-     * @param string $className
-     */
     public function __construct(Service $graphQlService, string $className)
     {
         $this->className = $className;
@@ -42,7 +38,7 @@ abstract class DefaultMutationOperatorFactoryBase
 
     /**
      * @param array $configElement
-     * @param mixed $context
+     * @param array|null $context
      *
      * @return OperatorInterface
      */

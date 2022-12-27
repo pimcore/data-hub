@@ -30,10 +30,6 @@ class GeneralTypeFactory
      */
     protected $className;
 
-    /**
-     * @param Service $graphQlService
-     * @param string $className
-     */
     public function __construct(Service $graphQlService, string $className)
     {
         $this->className = $className;

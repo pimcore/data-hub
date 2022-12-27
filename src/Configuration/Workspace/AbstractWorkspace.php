@@ -58,65 +58,41 @@ abstract class AbstractWorkspace extends AbstractModel
      */
     public $delete = false;
 
-    /**
-     * @return string
-     */
     public function getConfiguration(): string
     {
         return $this->configuration;
     }
 
-    /**
-     * @param string $configuration
-     */
     public function setConfiguration(string $configuration): void
     {
         $this->configuration = $configuration;
     }
 
-    /**
-     * @return int
-     */
     public function getCid(): int
     {
         return $this->cid;
     }
 
-    /**
-     * @param int $cid
-     */
     public function setCid(int $cid): void
     {
         $this->cid = $cid;
     }
 
-    /**
-     * @return string
-     */
     public function getCpath(): string
     {
         return $this->cpath;
     }
 
-    /**
-     * @param string $cpath
-     */
     public function setCpath(string $cpath): void
     {
         $this->cpath = $cpath;
     }
 
-    /**
-     * @return bool
-     */
     public function isCreate(): bool
     {
         return $this->create;
     }
 
-    /**
-     * @param bool $create
-     */
     public function setCreate(bool $create): void
     {
         $this->create = $create;
@@ -130,41 +106,26 @@ abstract class AbstractWorkspace extends AbstractModel
         return $this->read;
     }
 
-    /**
-     * @param bool $read
-     */
     public function setRead(bool $read): void
     {
         $this->read = $read;
     }
 
-    /**
-     * @return bool
-     */
     public function isUpdate(): bool
     {
         return $this->update;
     }
 
-    /**
-     * @param bool $update
-     */
     public function setUpdate(bool $update): void
     {
         $this->update = $update;
     }
 
-    /**
-     * @return bool
-     */
     public function isDelete(): bool
     {
         return $this->delete;
     }
 
-    /**
-     * @param bool $delete
-     */
     public function setDelete(bool $delete): void
     {
         $this->delete = $delete;

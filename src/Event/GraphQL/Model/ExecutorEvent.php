@@ -66,9 +66,6 @@ class ExecutorEvent extends Event
         return $this->schema;
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function setSchema(Schema $schema)
     {
         $this->schema = $schema;
@@ -82,9 +79,6 @@ class ExecutorEvent extends Event
         return $this->context;
     }
 
-    /**
-     * @param array $context
-     */
     public function setContext(array $context)
     {
         $this->context = $context;

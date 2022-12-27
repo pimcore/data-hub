@@ -69,7 +69,7 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
     }
 
     /**
-     * @return mixed
+     * @return ClassDefinition|Definition|null
      */
     public function getClass()
     {
@@ -159,9 +159,6 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         return null;
     }
 
-    /**
-     * @return Data
-     */
     public function getFieldDefinition(): Data
     {
         return $this->fieldDefinition;

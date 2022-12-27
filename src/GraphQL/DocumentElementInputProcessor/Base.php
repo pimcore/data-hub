@@ -30,10 +30,6 @@ abstract class Base
      */
     protected $editableLoader;
 
-    /**
-     * @param EditableLoaderInterface $editableLoader
-     * @param Service $graphQlService
-     */
     public function __construct(EditableLoaderInterface $editableLoader, Service $graphQlService)
     {
         $this->editableLoader = $editableLoader;

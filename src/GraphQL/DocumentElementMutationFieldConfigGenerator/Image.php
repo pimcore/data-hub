@@ -26,16 +26,15 @@ class Image extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image */
     protected $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image $processor
-     */
     public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Image $processor)
     {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         return [

@@ -25,7 +25,7 @@ class Thumbnail extends AbstractOperator
 
     /**
      * @param array $config
-     * @param mixed $context
+     * @param array|null $context
      */
     public function __construct(array $config = [], $context = null)
     {

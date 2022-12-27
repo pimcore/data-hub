@@ -19,6 +19,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Quantity
 
 class InputQuantityValue extends Base
 {
+    /**
+     * @return mixed
+     *
+     * @throws \Exception
+     */
     public function getFieldType()
     {
         return QuantityValueType::getInstance($this->getGraphQlService(), 'csFeatureInputQuantityValue', 'input_quantity_value', 'inputquantityvalue');

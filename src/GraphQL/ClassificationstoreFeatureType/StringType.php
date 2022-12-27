@@ -27,6 +27,7 @@ class StringType extends ObjectType
 
     /**
      * @param string $name
+     * @param string $valueField
      *
      * @return StringType
      */

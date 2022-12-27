@@ -22,9 +22,6 @@ class Base
 {
     use ServiceTrait;
 
-    /**
-     * @param Service $graphQlService
-     */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);

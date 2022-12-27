@@ -45,6 +45,11 @@ class KeyValueType extends InputObjectType
         return self::$instance;
     }
 
+    /**
+     * @param array|null $value
+     *
+     * @return array
+     */
     public static function resolveAssociativeArray(?array $value)
     {
         if (null === $value) {

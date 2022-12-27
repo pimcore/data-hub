@@ -22,6 +22,9 @@ class Property
 {
     public static $instance;
 
+    /**
+     * @return InterfaceType
+     */
     public static function getInstance()
     {
         if (!self::$instance) {

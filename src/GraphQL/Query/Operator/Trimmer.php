@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Model\Element\ElementInterface;
 
 class Trimmer extends AbstractOperator
 {
@@ -25,6 +26,10 @@ class Trimmer extends AbstractOperator
 
     private $trim;
 
+    /**
+     * @param array $config
+     * @param array|null $context
+     */
     public function __construct(array $config, $context = null)
     {
         parent::__construct($config, $context);
@@ -32,6 +37,14 @@ class Trimmer extends AbstractOperator
         $this->trim = $config['trim'];
     }
 
+    /**
+     * @param ElementInterface|null $element
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return \stdClass
+     *
+     * @throws \Exception
+     */
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();

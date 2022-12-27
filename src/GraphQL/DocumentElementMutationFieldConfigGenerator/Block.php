@@ -28,16 +28,15 @@ class Block extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block */
     public $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor
-     */
     public function __construct(Service $graphQlService, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Block $processor)
     {
         parent::__construct($graphQlService);
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         if (!self::$itemType) {

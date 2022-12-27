@@ -15,50 +15,42 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
-use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class Image extends Base
+class Link extends Base
 {
     /**
      * @param Concrete|AbstractData $object
-     * @param array $newValue
+     * @param mixed $newValue
      * @param array $args
      * @param array $context
      * @param ResolveInfo $info
-     *
-     * @return void|null
      *
      * @throws \Exception
      */
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
+        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
+            if ($newValue === null) {
+                return $container->$setter(null);
+            }
 
-        if (!array_key_exists('id', $newValue)) {
-            if (PimcoreDataHubBundle::getNotAllowedPolicy() == PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new UserError("Field {$attribute}.id was not provided.");
+            if (is_array($newValue)) {
+                $tmpLink = new \Pimcore\Model\DataObject\Data\Link();
+
+                foreach ($newValue as $fieldName => $fieldValue) {
+                    $linkSetter = 'set' . ucfirst($fieldName);
+                    $tmpLink->{$linkSetter}($fieldValue);
+                }
+
+                return $container->$setter($tmpLink);
             }
 
             return null;
-        }
-
-        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
-            $image = null;
-
-            if (isset($newValue['id'])) {
-                $asset = Asset::getById($newValue['id']);
-                if ($asset instanceof Asset\Image) {
-                    $image = $asset;
-                }
-            }
-
-            return $container->$setter($image);
         });
     }
 }

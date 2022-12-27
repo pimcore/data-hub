@@ -16,6 +16,10 @@ class Service extends Model
      */
     protected static $container = null;
 
+    /**
+     * @param string $serviceId
+     * @return object|null
+     */
     public function grabService(string $serviceId) {
 
         //TODO change this as soon as Pimcore helper as grabService method and requirement is bumped to pimcore/pimcore:10.4

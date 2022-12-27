@@ -71,7 +71,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -107,7 +107,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -122,7 +122,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -137,7 +137,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -154,7 +154,7 @@ class QueryType
     /**
      * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      *
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -195,7 +195,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -258,7 +258,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -305,10 +305,8 @@ class QueryType
             $conditionParts[] = '(' . $sqlGetCondition . ')';
         }
 
-        if ($conditionParts) {
-            $condition = implode(' AND ', $conditionParts);
-            $objectList->setCondition($condition);
-        }
+        $condition = implode(' AND ', $conditionParts);
+        $objectList->setCondition($condition);
 
         $objectList->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_FOLDER, AbstractObject::OBJECT_TYPE_VARIANT]);
         $objectList->setLimit(1);
@@ -383,7 +381,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -523,7 +521,7 @@ class QueryType
     }
 
     /**
-     * @param mixed $value
+     * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
@@ -535,6 +533,13 @@ class QueryType
         return $value['totalCount']();
     }
 
+    /**
+     * @param bool $isFullpathSet
+     * @param bool $isIdSet
+     * @param array $args
+     *
+     * @return string
+     */
     private function createArgumentErrorMessage($isFullpathSet, $isIdSet, $args)
     {
         if ($isIdSet && $isFullpathSet) {
