@@ -49,7 +49,8 @@ abstract class AbstractFieldHelper
      * @param array $data
      * @param object $container
      * @param array $args
-     * @param ResolveInfo|null $resolveInfo
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo $resolveInfo
      */
     public function doExtractData(FieldNode $ast, &$data, $container, $args, $context, $resolveInfo = null)
     {
@@ -94,7 +95,6 @@ abstract class AbstractFieldHelper
     public function getArguments(FieldNode $ast)
     {
         $result = [];
-        /** @var NodeList $nodeList */
         $nodeList = $ast->arguments;
         $count = $nodeList->count();
         for ($i = 0; $i < $count; $i++) {
@@ -166,7 +166,7 @@ abstract class AbstractFieldHelper
                 for ($i = 0; $i < $count; $i++) {
                     $inlineNode = $inlineSelections[$i];
                     if ($inlineNode instanceof FieldNode) {
-                        $this->doExtractData($inlineNode, $data, $container, $args, $resolveInfo);
+                        $this->doExtractData($inlineNode, $data, $container, $args, $context, $resolveInfo);
                     }
                 }
             } elseif ($selectionNode instanceof FragmentSpreadNode) {

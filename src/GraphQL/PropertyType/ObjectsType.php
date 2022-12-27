@@ -30,9 +30,6 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
 
     use ServiceTrait;
 
-    /**
-     * @param Service $graphQlService
-     */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);

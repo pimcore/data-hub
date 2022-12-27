@@ -45,7 +45,7 @@ class MySafeException extends \Exception implements ClientAware
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getCategory()
     {

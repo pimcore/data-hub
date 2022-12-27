@@ -35,9 +35,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class CustomDocumentTypePass implements CompilerPassInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
         $documentTypeService = $container->getDefinition(DocumentType::class);

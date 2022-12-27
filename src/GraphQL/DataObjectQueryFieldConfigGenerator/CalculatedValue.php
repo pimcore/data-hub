@@ -31,7 +31,7 @@ class CalculatedValue extends Base
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {

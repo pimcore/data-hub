@@ -15,30 +15,16 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
 
-use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-
-class ManyToManyObjectRelation extends Base
+class Link extends Base
 {
-    protected $elementInputType;
-
-    public function __construct(Service $graphQlService, ElementDescriptorInputType $elementInputType)
-    {
-        $this->elementInputType = $elementInputType;
-        parent::__construct($graphQlService);
-    }
-
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
-        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\ManyToManyObjectRelation($nodeDef);
+        $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Link($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        $inputType = $this->getGraphQlService()->getDataObjectTypeDefinition('elementdescriptor_input');
-
         return [
-            'arg' => ['type' => Type::listOf($inputType)],
+            'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('link_input'),
             'processor' => [$processor, 'process']
         ];
     }

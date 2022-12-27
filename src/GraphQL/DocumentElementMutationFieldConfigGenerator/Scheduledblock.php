@@ -32,11 +32,6 @@ class Scheduledblock extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock */
     protected $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param ScheduledblockDataInputType $scheduledblockDataInputType
-     * @param \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock $processor
-     */
     public function __construct(Service $graphQlService, ScheduledblockDataInputType $scheduledblockDataInputType, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Scheduledblock $processor)
     {
         $this->setGraphQLService($graphQlService);
@@ -44,6 +39,9 @@ class Scheduledblock extends Base
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         if (!self::$itemType) {

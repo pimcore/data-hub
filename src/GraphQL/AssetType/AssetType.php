@@ -191,17 +191,11 @@ class AssetType extends ObjectType
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getFieldname(): string
     {
         return $this->fieldname;
     }
 
-    /**
-     * @param string $fieldname
-     */
     public function setFieldname(string $fieldname): void
     {
         $this->fieldname = $fieldname;

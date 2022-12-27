@@ -29,10 +29,10 @@ class MultiselectType extends ObjectType
     /**
      * @param Service $service
      * @param string $name
+     * @param string $fieldname
      *
      * @return MultiselectType
      *
-     * @throws \Exception
      */
     public static function getInstance(Service $service, string $name, $fieldname = 'selections')
     {

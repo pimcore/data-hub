@@ -35,17 +35,11 @@ class Version20210305134111 extends BundleAwareMigration
         return true;
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function up(Schema $schema): void
     {
         SettingsStore::set('BUNDLE_INSTALLED__Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle', true, 'bool', 'pimcore');
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function down(Schema $schema): void
     {
         // nothing to do

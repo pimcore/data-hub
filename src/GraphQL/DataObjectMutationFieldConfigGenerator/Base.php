@@ -25,9 +25,6 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
 {
     use ServiceTrait;
 
-    /**
-     * @param Service $graphQlService
-     */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);

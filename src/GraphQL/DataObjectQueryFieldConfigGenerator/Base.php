@@ -27,9 +27,6 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
 {
     use ServiceTrait;
 
-    /**
-     * @param Service $graphQlService
-     */
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);
@@ -41,7 +38,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
@@ -58,7 +55,7 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
      * @param array $grapQLConfig
      * @param object|null $container
      *
-     * @return mixed
+     * @return array
      */
     public function enrichConfig($fieldDefinition, $class, $attribute, $grapQLConfig, $container = null)
     {
@@ -90,6 +87,13 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
         return Type::string();
     }
 
+    /**
+     * @param string $attribute
+     * @param Data $fieldDefinition
+     * @param ClassDefinition $class
+     *
+     * @return array|callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
+     */
     public function getResolver($attribute, $fieldDefinition, $class)
     {
         $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);

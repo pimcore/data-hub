@@ -39,9 +39,6 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class ImportExportLocatorsPass implements CompilerPassInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
         $this->processGeneralTypes($container);
@@ -67,9 +64,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $this->registerPropertyDataTypes($container);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processGeneralTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -91,9 +85,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processAssetTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -120,13 +111,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
-    /**
-     * @param ContainerBuilder $container
-     * @param Definition $definition
-     * @param string $type
-     * @param string $tag
-     * @param string $argument
-     */
     private function createLocatorForTaggedServices(
         ContainerBuilder $container,
         Definition $definition,
@@ -203,9 +187,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $definition->addMethodCall('setSupportedGeneralTypes', [array_keys($mapping)]);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processDataObjectQueryTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -278,9 +259,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $definition->addMethodCall('setSupportedDataObject' . ucfirst($operationType) . 'DataTypes', [array_keys($mapping)]);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processDataObjectMutationTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -310,9 +288,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processDocumentElementMutationTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -334,9 +309,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         );
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processDocumentElementQueryTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -401,9 +373,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $definition->addMethodCall('setSupportedDocumentElement' . ucfirst($operationType) . 'DataTypes', [array_keys($mapping)]);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     protected function processCsFeatureQueryTypes(ContainerBuilder $container)
     {
         $graphQLServiceDefinition = $container->getDefinition(Service::class);
@@ -468,9 +437,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $definition->addMethodCall('setSupportedCsFeature' . ucfirst($operationType) . 'DataTypes', [array_keys($mapping)]);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function registerAssetDataTypes(
         ContainerBuilder $container
     ) {
@@ -508,36 +474,24 @@ class ImportExportLocatorsPass implements CompilerPassInterface
         $graphQLServiceDefinition->addMethodCall($methodCall, [$dataTypes]);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function registerDataObjectDataTypes(
         ContainerBuilder $container
     ) {
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.dataobjecttype', 'registerDataObjectDataTypes');
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function registerDocumentDataTypes(
         ContainerBuilder $container
     ) {
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.documenttype', 'registerDocumentDataTypes');
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function registerClassificationStoreDataTypes(
         ContainerBuilder $container
     ) {
         $this->registerElementTypes($container, 'pimcore.datahub.graphql.cstype', 'registerClassificationStoreDataTypes');
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function registerPropertyDataTypes(
         ContainerBuilder $container
     ) {

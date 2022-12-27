@@ -32,10 +32,6 @@ class Areablock extends Base
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock */
     protected $processor;
 
-    /**
-     * @param Service $graphQlService
-     * @param AreablockDataInputType $areablockDataInputType
-     */
     public function __construct(Service $graphQlService, AreablockDataInputType $areablockDataInputType, \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Areablock $processor)
     {
         $this->setGraphQLService($graphQlService);
@@ -43,6 +39,9 @@ class Areablock extends Base
         $this->processor = $processor;
     }
 
+    /**
+     * @return array
+     */
     public function getDocumentElementMutationFieldConfig()
     {
         if (!self::$itemType) {

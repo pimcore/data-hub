@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\InputType;
 class Input extends Base
 {
     /**
-     * @return \GraphQL\Type\Definition\StringType|InputType
+     * @return InputType
      */
     public function getFieldType()
     {
