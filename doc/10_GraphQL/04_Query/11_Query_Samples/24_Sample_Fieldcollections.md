@@ -43,7 +43,7 @@ Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_767_object
 
 and make sure that the `/News` folder is readable.
 
-![Workspace](../../img/graphql/news_workspace.png)
+![Workspace](../../../img/graphql/news_workspace.png)
 
 ### Response
 
