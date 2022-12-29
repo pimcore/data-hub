@@ -47,7 +47,7 @@ class IfEmptyOperator extends BaseOperator
 
         $nodeDef = $this->nodeDef;
         $nodeDefAttributes = $nodeDef['attributes'];
-        $children = $nodeDefAttributes['childs'];
+        $children = $nodeDefAttributes['children'];
         if (!$children) {
             return null;
         }

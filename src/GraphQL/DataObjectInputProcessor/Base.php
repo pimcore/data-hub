@@ -71,7 +71,7 @@ class Base
     public function getParentProcessor($nodeDef, ClassDefinition $class)
     {
         $nodeDefAttributes = $nodeDef['attributes'];
-        $children = $nodeDefAttributes['childs'];
+        $children = $nodeDefAttributes['children'];
         if (!$children) {
             return null;
         }
