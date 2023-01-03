@@ -707,23 +707,19 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         });
 
         tree.addListener("itemdblclick", function (tree, record, item, index, e, eOpts) {
-            var copy = Ext.apply({}, record.data);
-            delete copy.id;
-            var addedNode = this.selectionPanel.getRootNode().appendChild(copy);
-
             var attr = record.data;
             if (record.data.configAttributes) {
                 attr = record.data.configAttributes;
             }
-
             var elementConfig = {
                 "isOperator": true,
                 "attributes": attr
             }
 
             var element = this.getConfigElement(elementConfig);
+            var copy = element.getCopyNode(record);
+            var addedNode = this.selectionPanel.getRootNode().appendChild(copy);
             this.openConfigDialog(element, addedNode);
-
         }.bind(this));
 
         return tree;
