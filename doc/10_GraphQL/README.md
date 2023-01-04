@@ -1,3 +1,7 @@
+---
+title: GraphQL
+---
+
 # ![GraphQL Icon](../img/graphql/logo_small.png) GraphQL 
 
 With [GraphQL](https://graphql.org/) endpoints, Datahub allows integrating Pimcore to other systems 
