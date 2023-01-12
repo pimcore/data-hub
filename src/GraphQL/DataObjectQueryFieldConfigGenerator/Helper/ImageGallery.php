@@ -106,7 +106,7 @@ class ImageGallery
                     $data['marker'] = $relation->getMarker();
                     $data['img'] = $image;
                     $data['image'] = $image->getType();
-                    $data['__elementType'] = Service::getType($image);
+                    $data['__elementType'] = Service::getElementType($image);
                     $data['__elementSubtype'] = $image->getType();
                 } else {
                     continue;
