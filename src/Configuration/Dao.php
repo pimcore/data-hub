@@ -48,7 +48,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 
     public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
 
-    public function configure()
+    public function configure(): void
     {
         $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
 

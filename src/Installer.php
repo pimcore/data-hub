@@ -37,7 +37,7 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function install()
+    public function install(): void
     {
         // create backend permission
         Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
@@ -70,8 +70,6 @@ class Installer extends SettingsStoreAwareInstaller
         }
 
         parent::install();
-
-        return true;
     }
 
     public function isInstalled(): bool
