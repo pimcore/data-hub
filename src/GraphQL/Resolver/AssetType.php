@@ -268,7 +268,6 @@ class AssetType
             $asset = $this->getAssetFromValue($value, $context);
 
             if ($asset instanceof Asset\Video) {
-
                 $width = $asset->getCustomSetting('videoWidth');
                 $height = $asset->getCustomSetting('videoHeight');
 
@@ -283,7 +282,6 @@ class AssetType
                     'height' => $height,
                 ];
             }
-
 
             if (!$asset instanceof Asset\Image) {
                 return null;
@@ -310,12 +308,11 @@ class AssetType
         return [];
     }
 
-
     /**
      *
      * @throws Exception
      */
-    public function resolveDuration(ElementDescriptor|null $value = null, array $context = []): ?float
+    public function resolveDuration(ElementDescriptor | null $value = null, array $context = []): ?float
     {
         if (!$value instanceof ElementDescriptor) {
             return null;
@@ -323,7 +320,9 @@ class AssetType
 
         $asset = $this->getAssetFromValue($value, $context);
 
-        if (!$asset instanceof Asset\Video) return null;
+        if (!$asset instanceof Asset\Video) {
+            return null;
+        }
 
         return $asset->getDuration();
     }
