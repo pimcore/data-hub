@@ -105,6 +105,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
         if ($element) {
             if ($element instanceof DataObject) {
                 $concrete = ($element instanceof DataObject\Concrete) ? $element : DataObject\Concrete::getById($element->getId());
+
                 return ClassTypeDefinitions::get($concrete->getClassName());
             }
             if ($element instanceof Asset) {
