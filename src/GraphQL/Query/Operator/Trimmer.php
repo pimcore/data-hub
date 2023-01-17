@@ -60,7 +60,9 @@ class Trimmer extends AbstractOperator
         $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-        if (!$childResult) return $result;
+        if (!$childResult) {
+            return $result;
+        }
 
         if ($childValue = $childResult->value) {
             /** @var string $childValue */

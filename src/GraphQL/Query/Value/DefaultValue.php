@@ -50,9 +50,12 @@ class DefaultValue extends AbstractValue
             $args = [];
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
-            if (!$value) return null;
+            if (!$value) {
+                return null;
+            }
 
             $result->value = $this->getGraphQlService()->getElementFromArrayObject($value);
+
             return $result;
         }
 
