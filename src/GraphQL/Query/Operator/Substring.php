@@ -60,44 +60,26 @@ class Substring extends AbstractOperator
 
         $c = $children[0];
 
-        $valueArray = [];
         $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-        $isArrayType = $childResult->isArrayType;
-        $childValues = $childResult->value;
-        if ($childValues && !$isArrayType) {
-            $childValues = [$childValues];
-        }
+        if (!$childResult) return $result;
 
-        if (is_array($childValues)) {
-            foreach ($childValues as $childValue) {
-                $showEllipses = false;
-                if ($childValue && $this->getEllipses()) {
-                    $start = $this->getStart() ? $this->getStart() : 0;
-                    $length = $this->getLength() ? $this->getLength() : 0;
-                    if (strlen($childValue) > $start + $length) {
-                        $showEllipses = true;
-                    }
-                }
-
-                $childValue = substr($childValue, $this->getStart(), $this->getLength());
-                if ($showEllipses) {
-                    $childValue .= '...';
-                }
-
-                $valueArray[] = $childValue;
+        $childValue = $childResult->value;
+        $showEllipses = false;
+        if ($childValue && $this->getEllipses()) {
+            $start = $this->getStart() ? : 0;
+            $length = $this->getLength() ? : 0;
+            if (strlen($childValue) > $start + $length) {
+                $showEllipses = true;
             }
-        } else {
-            $valueArray[] = $childResult->value;
         }
 
-        $result->isArrayType = $isArrayType;
-        if ($isArrayType) {
-            $result->value = $valueArray;
-        } else {
-            $result->value = $valueArray[0];
+        $childValue = substr($childValue, $this->getStart(), $this->getLength());
+        if ($showEllipses) {
+            $childValue .= '...';
         }
+        $result->value = $childValue;
 
         return $result;
     }

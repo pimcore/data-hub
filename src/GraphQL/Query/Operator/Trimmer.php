@@ -57,37 +57,26 @@ class Trimmer extends AbstractOperator
 
         $c = $children[0];
 
-        $valueArray = [];
-
         $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-        $isArrayType = $childResult->isArrayType;
-        $childValues = $childResult->value;
-        if ($childValues && !$isArrayType) {
-            $childValues = [$childValues];
-        }
+        if (!$childResult) return $result;
 
-        if ($childValues) {
+        if ($childValue = $childResult->value) {
             /** @var string $childValue */
-            foreach ($childValues as $childValue) {
-                if ($this->trim == self::LEFT) {
+            switch ($this->trim) {
+                case self::LEFT:
                     $childValue = ltrim($childValue);
-                } elseif ($this->trim == self::RIGHT) {
+                    break;
+                case self::RIGHT:
                     $childValue = rtrim($childValue);
-                } elseif ($this->trim == self::BOTH) {
+                    break;
+                case self::BOTH:
                     $childValue = trim($childValue);
-                }
-                $valueArray[] = $childValue;
+                    break;
             }
         }
-
-        $result->isArrayType = $isArrayType;
-        if ($isArrayType) {
-            $result->value = $valueArray;
-        } else {
-            $result->value = $valueArray[0];
-        }
+        $result->value = $childValue;
 
         return $result;
     }

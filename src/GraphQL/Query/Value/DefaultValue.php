@@ -31,10 +31,13 @@ class DefaultValue extends AbstractValue
     public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
     {
         if ($element instanceof Concrete) {
+            $result = new \stdClass();
+
             if ($this->dataType == 'system') {
                 $getter = 'get' . ucfirst($this->attribute);
+                $result->value = $element->$getter();
 
-                return $element->$getter();
+                return $result;
             }
 
             $class = $element->getClass();
@@ -47,14 +50,10 @@ class DefaultValue extends AbstractValue
             $args = [];
 
             $value = $resolveFn($valueParams, $args, $this->context, $resolveInfo);
-            if ($value) {
-                $value = $this->getGraphQlService()->getElementFromArrayObject($value);
+            if (!$value) return null;
 
-                $result = new \stdClass();
-                $result->value = $value;
-
-                return $result;
-            }
+            $result->value = $this->getGraphQlService()->getElementFromArrayObject($value);
+            return $result;
         }
 
         return null;
