@@ -104,7 +104,8 @@ class MergeType extends UnionType implements ContainerAwareInterface
     {
         if ($element) {
             if ($element instanceof DataObject) {
-                return ClassTypeDefinitions::get($element->getClass());
+                $concrete = ($element instanceof DataObject\Concrete) ? $element : DataObject\Concrete::getById($element->getId());
+                return ClassTypeDefinitions::get($concrete->getClassName());
             }
             if ($element instanceof Asset) {
                 return $this->getGraphQlService()->buildAssetType('asset');

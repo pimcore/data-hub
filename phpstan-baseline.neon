@@ -409,8 +409,3 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/SharedType/KeyValueType.php
-
-		-
-			message: "#^Call to an undefined method Pimcore\\\\Model\\\\DataObject\\:\\:getClass\\(\\)\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectType/MergeType.php
