@@ -58,7 +58,9 @@ class Concatenator extends AbstractOperator
 
         foreach ($children as $c) {
             $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
-            if (!$childResult = $valueResolver->getLabeledValue($element, $resolveInfo)) continue;
+            if (!$childResult = $valueResolver->getLabeledValue($element, $resolveInfo)) {
+                continue;
+            }
 
             $childValues = $childResult->value;
             if ($childValues && !is_array($childValues)) {

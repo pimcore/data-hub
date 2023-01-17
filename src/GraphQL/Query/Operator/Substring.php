@@ -63,13 +63,15 @@ class Substring extends AbstractOperator
         $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-        if (!$childResult) return $result;
+        if (!$childResult) {
+            return $result;
+        }
 
         $childValue = $childResult->value;
         $showEllipses = false;
         if ($childValue && $this->getEllipses()) {
-            $start = $this->getStart() ? : 0;
-            $length = $this->getLength() ? : 0;
+            $start = $this->getStart() ?: 0;
+            $length = $this->getLength() ?: 0;
             if (strlen($childValue) > $start + $length) {
                 $showEllipses = true;
             }
