@@ -272,7 +272,8 @@ class AssetType
                 $width = $asset->getCustomSetting('videoWidth');
                 $height = $asset->getCustomSetting('videoHeight');
 
-                if ($thumbnailName && ($thumbnail = $asset->getImageThumbnail($thumbnailName))) {
+                if ($thumbnailName) {
+                    $thumbnail = $asset->getImageThumbnail($thumbnailName);
                     $width = $thumbnail->getWidth();
                     $height = $thumbnail->getHeight();
                 }
