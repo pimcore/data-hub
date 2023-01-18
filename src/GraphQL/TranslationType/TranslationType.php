@@ -20,7 +20,6 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\JsonType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 
 class TranslationType extends ObjectType
 {
@@ -33,7 +32,6 @@ class TranslationType extends ObjectType
      */
     public function __construct(Service $graphQlService, array $config = ['name' => 'translation'])
     {
-        $config['interfaces'] = [Element::getInstance()];
         $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
