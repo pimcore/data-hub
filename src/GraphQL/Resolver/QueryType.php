@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -152,8 +152,6 @@ class QueryType
     }
 
     /**
-     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
-     *
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
@@ -162,6 +160,8 @@ class QueryType
      * @return array|null
      *
      * @throws ClientSafeException
+     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
+     *
      */
     public function resolveDocumentGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -271,6 +271,7 @@ class QueryType
     {
         $isIdSet = $args['id'] ?? false;
         $isFullpathSet = $args['fullpath'] ?? false;
+        $isTagsSet = $args['tags'] ?? false;
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath expected');
@@ -295,6 +296,17 @@ class QueryType
             $conditionParts[] = sprintf('(concat(%s, %s) =' . Db::get()->quote($fullpath) . ')',
                 Service::getVersionDependentDatabaseColumnName('o_path'),
                 Service::getVersionDependentDatabaseColumnName('o_key'));
+        }
+
+        if ($isTagsSet) {
+            $tags = is_array($args['tags']) ? $args['tags'] : explode(',', $args['tags']);
+            if ($tags) {
+                foreach ($tags as $tagName) {
+                    $conditionParts[] = "id IN (
+                        SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
+                    WHERE ctype = 'object' AND name = " . $tagName . ")";
+                }
+            }
         }
 
         /** @var Configuration $configuration */
@@ -480,8 +492,7 @@ class QueryType
                 Service::getVersionDependentDatabaseColumnName('o_path'),
                 Service::getVersionDependentDatabaseColumnName('o_key'),
                 Service::getVersionDependentDatabaseColumnName('o_path'),
-                Service::getVersionDependentDatabaseColumnName('o_key'))
-            ;
+                Service::getVersionDependentDatabaseColumnName('o_key'));
         }
 
         if (isset($args['filter'])) {
