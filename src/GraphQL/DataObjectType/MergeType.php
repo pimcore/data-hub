@@ -25,6 +25,9 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class MergeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

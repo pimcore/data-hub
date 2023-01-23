@@ -18,6 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class Merge extends AbstractOperator
 {
     private $flatten = true;

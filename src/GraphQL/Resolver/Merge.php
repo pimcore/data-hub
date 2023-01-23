@@ -20,6 +20,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class Merge
 {
     use ServiceTrait;

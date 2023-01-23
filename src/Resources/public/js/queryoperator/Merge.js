@@ -12,6 +12,8 @@
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *
+ * @deprecated will be removed in Data Hub 2
  */
 
 
@@ -21,7 +23,7 @@ pimcore.plugin.datahub.queryoperator.merge = Class.create(pimcore.plugin.datahub
     type: "operator",
     class: "Merge",
     iconCls: "pimcore_icon_operator_merge",
-    defaultText: "Merge",
+    defaultText: "Merge (deprecated)",
     group: "other",
 
     getConfigTreeNode: function(configAttributes) {
