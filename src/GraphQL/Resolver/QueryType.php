@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
@@ -160,6 +160,7 @@ class QueryType
      * @return array|null
      *
      * @throws ClientSafeException
+     *
      * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      *
      */
@@ -428,18 +429,19 @@ class QueryType
         }
 
         if (isset($args['tags'])) {
-            if (!is_array($args['tags'])){
+            if (!is_array($args['tags'])) {
                 $args['tags'] = explode(',', $args['tags']);
             }
-            $tags = strtolower(implode(', ', array_map(static function ($tag) use ($db){
+            $tags = strtolower(implode(', ', array_map(static function ($tag) use ($db) {
                 $tag = trim($tag);
-                return $db->quote($tag);
-                }, $args['tags'])));
 
-            $conditionParts[] =  "o_id IN (
+                return $db->quote($tag);
+            }, $args['tags'])));
+
+            $conditionParts[] = "o_id IN (
                             SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
                             WHERE
-                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . "))";
+                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . '))';
         }
 
         // paging
