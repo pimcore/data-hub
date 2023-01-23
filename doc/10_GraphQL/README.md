@@ -29,7 +29,7 @@ So if your configuration name is blogdemo and your apikey 123456 then your endpo
 ```
 /pimcore-graphql-webservices/blogdemo?apikey=12345
 ```
-Here is a configuration how to [override the standard endpoint](./Configuration/Customize_Endpoint_URL.html)
+Here is a configuration how to [override the standard endpoint](./01_Configuration/Customize_Endpoint_URL.md)
 
 ## Queries
 Depending on the configuration, the endpoint provides several queries to fetch data from Pimcore. As 
