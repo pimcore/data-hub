@@ -15,6 +15,8 @@ pimcore.registerNS("pimcore.plugin.datahub.configuration.graphql.configItem");
 pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.element.abstract, {
 
     saveUrl: "/admin/pimcoredatahub/config/save",
+    exportRoute: "/admin/pimcoredatahub/config/export",
+    importRoute: "/admin/pimcoredatahub/config/import",
 
     initialize: function (data, parent) {
         this.parent = parent;
@@ -104,6 +106,34 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 this.openExplorer(function (explorerUrl) {
                     window.open(explorerUrl, '_blank');
                 }.bind(this));
+            }.bind(this)
+        });
+
+        footer.add({
+            xtype: 'button',
+            text: t('plugin_pimcore_datahub_import'),
+            iconCls: 'pimcore_icon_upload',
+            handler: function () {
+                pimcore.helpers.uploadDialog(
+                    this.getUploadUrl(),
+                    "Filedata",
+                    function () {
+                        this.tab.destroy();
+                        this.parent.openConfiguration(this.data.general.name);
+                    }.bind(this),
+                    function () {
+                        Ext.MessageBox.alert(t("error"), t("error"));
+                    }
+                );
+            }.bind(this)
+        });
+
+        footer.add({
+            xtype: 'button',
+            text: t('plugin_pimcore_datahub_export'),
+            iconCls: 'pimcore_icon_download',
+            handler: function () {
+                pimcore.helpers.download(this.getExportUrl());
             }.bind(this)
         });
 
@@ -941,6 +971,13 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                 }
             }.bind(this)
         );
-    }
+    },
 
+    getExportUrl: function () {
+        return (this.exportRoute + '?name=' + this.data.general.name);
+    },
+
+    getUploadUrl: function () {
+        return (this.importRoute + '?name=' + this.data.general.name);
+    }
 });
