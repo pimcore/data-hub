@@ -21,7 +21,7 @@ class Model extends AbstractDefinitionHelper
      * @return void
      * @throws Exception
      */
-    public function _beforeSuite($settings = [])
+    public function _beforeSuite($settings = []): void
     {
         /** @var Pimcore $pimcoreModule */
         $pimcoreModule = $this->getModule('\\' . Pimcore::class);
