@@ -50,7 +50,7 @@ class Model extends AbstractDefinitionHelper
         Autoloader::load(DataHubTestEntity::class);
     }
 
-    public function initializeDefinitions()
+    public function initializeDefinitions(): void
     {
         $cm = $this->getModule('\\' . ClassManager::class);
         $class = $cm->setupClass('DataHubTestEntity', __DIR__ . '/../Resources/class_DataHubTestEntity_import.json');
