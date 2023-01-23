@@ -88,7 +88,7 @@ class WebserviceController extends FrontendController
      *
      * @return JsonResponse
      *
-     * @throws RequestError
+     * @throws RequestError|\Exception
      */
     public function webonyxAction(
         Service $service,

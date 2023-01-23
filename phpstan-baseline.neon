@@ -409,4 +409,3 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/GraphQL/SharedType/KeyValueType.php
-
