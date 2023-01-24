@@ -1,3 +1,7 @@
+.pimcore_main_nav_icon_mind_map {
+    background: url(/bundles/pimcoreadmin/img/flat-white-icons/mind_map.svg) center center no-repeat;
+}
+
 .plugin_pimcore_datahub_icon  {
     background: url(/bundles/pimcoreadmin/img/twemoji/2728.svg) center center no-repeat !important;
 }
