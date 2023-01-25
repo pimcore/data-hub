@@ -22,11 +22,10 @@ pimcore.plugin.datahub = Class.create({
     initialize: function () {
         // if the new event exists, we use this
         if (pimcore.events.preMenuBuild) {
-           // document.addEventListener(pimcore.events.preMenuBuild, this.preMenuBuild.bind(this));
+            document.addEventListener(pimcore.events.preMenuBuild, this.preMenuBuild.bind(this));
         } else {
-
+            document.addEventListener(pimcore.events.pimcoreReady, this.pimcoreReady.bind(this));
         }
-        document.addEventListener(pimcore.events.pimcoreReady, this.pimcoreReady.bind(this));
 
         document.addEventListener("pimcore.perspectiveEditor.permissions.structure.load", (e) => {
             if (e.detail.context === 'toolbar') {
@@ -54,8 +53,8 @@ pimcore.plugin.datahub = Class.create({
         let menu = e.detail.menu;
 
         menu.datahub = {
-            label: 'plugin_pimcore_datahub_toolbar',
-            iconCls: 'mind_map',
+            label: t('plugin_pimcore_datahub_toolbar'),
+            iconCls: 'pimcore_main_nav_icon_mind_map',
             priority: 55,
             shadow: false,
             handler: this.openDataHub,
