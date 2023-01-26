@@ -33,6 +33,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Gender
 * Geopoint
 * Image
+* ImageGallery
 * Input
 * Language
 * Lastname
