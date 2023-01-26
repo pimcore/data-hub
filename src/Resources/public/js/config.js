@@ -14,6 +14,9 @@
 pimcore.registerNS("pimcore.plugin.datahub.config");
 pimcore.plugin.datahub.config = Class.create({
 
+    importRoute: "/admin/pimcoredatahub/config/import",
+    exportRoute: "/admin/pimcoredatahub/config/export",
+
     initialize: function () {
         this.getTabPanel();
     },
@@ -103,6 +106,30 @@ pimcore.plugin.datahub.config = Class.create({
                 menu: menuItems,
             });
 
+            const importButton = new Ext.Button({
+                tooltip: t('plugin_pimcore_datahub_import'),
+                iconCls: 'pimcore_icon_upload',
+                handler: function () {
+                    pimcore.helpers.uploadDialog(
+                        this.importRoute,
+                        "Filedata",
+                        function (response) {
+                            response = response.response;
+                            const data = Ext.decode(response.responseText);
+
+                            if(data){
+                                const editPanel = new pimcore.plugin.datahub.adapter[data.type](this);
+                                editPanel.openConfiguration(data.name)
+                            }
+                            this.refreshTree();
+
+                        }.bind(this),
+                        function () {
+                            Ext.MessageBox.alert(t("error"), t("error"));
+                        }
+                    );
+                }.bind(this)
+            });
 
             this.tree = new Ext.tree.TreePanel({
                 store: store,
@@ -111,7 +138,7 @@ pimcore.plugin.datahub.config = Class.create({
                 animate: true,
                 containerScroll: true,
                 border: true,
-                width: 200,
+                width: 230,
                 split: true,
                 root: {
                     id: '0',
@@ -121,7 +148,8 @@ pimcore.plugin.datahub.config = Class.create({
                 rootVisible: false,
                 tbar: {
                     items: [
-                        addConfigButton
+                        addConfigButton,
+                        importButton
                     ]
                 },
                 listeners: {
@@ -181,6 +209,15 @@ pimcore.plugin.datahub.config = Class.create({
             iconCls: "pimcore_icon_clone",
             disabled: !record.data['writeable'] || !this.userIsAllowedToCreate(record.data.adapter),
             handler: this.cloneConfiguration.bind(this, tree, record)
+        }));
+
+        menu.add(new Ext.menu.Item({
+            text: t('plugin_pimcore_datahub_export'),
+            iconCls: 'pimcore_icon_download',
+            handler: function () {
+                const recordName = record.data.id;
+                pimcore.helpers.download(this.exportRoute + '?name=' + recordName);
+            }.bind(this, tree, record)
         }));
 
         menu.showAt(e.pageX, e.pageY);

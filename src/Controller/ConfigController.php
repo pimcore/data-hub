@@ -33,6 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 /**
  * @Route("/admin/pimcoredatahub/config")
@@ -562,11 +563,9 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     /**
      * @Route("/export", methods={"GET"})
      *
-     * TODO: add name as required param
-     *
      * @param Request $request
      */
-    public function exportConfiguration(Request $request, ExportService $exportService)
+    public function exportConfiguration(Request $request, ExportService $exportService, ContainerBagInterface $params)
     {
         $this->checkPermission(self::CONFIG_NAME);
 
@@ -599,32 +598,55 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * TODO: add name as required param
      *
      * @param Request $request
+     * @param ImportService $importService
      */
     public function importConfiguration(Request $request, ImportService $importService)
     {
         $this->checkPermission(self::CONFIG_NAME);
-
-        $name = $request->get('name');
-        $configuration = Configuration::getByName($name);
-        if (!$configuration) {
-            throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
-        }
-        if (!$configuration->isAllowed('write')) {
-            throw $this->createAccessDeniedHttpException();
-        }
-
         $json = file_get_contents($_FILES['Filedata']['tmp_name']);
-        //$json = file_get_contents('./datahub_graphql_shop_export.json'); //TODO: remove after testing
-
-        $success = $importService->importConfigurationJson($configuration, $json, false, true);
+        $configuration = $importService->importConfigurationJson($json, $this->getAllowedVars());
 
         $response = $this->adminJson([
-            'success' => $success,
+            'success' => true,
+            'type' => $configuration->getType(),
+            'name' => $configuration->getName()
         ]);
         // set content-type to text/html, otherwise (when application/json is sent) chrome will complain in
         // Ext.form.Action.Submit and mark the submission as failed
         $response->headers->set('Content-Type', 'text/html');
 
         return $response;
+    }
+
+    private function getAllowedVars()
+    {
+        return [
+            'general' => [
+                'description',
+                'group',
+                'sqlObjectCondition',
+                'path',
+            ],
+            'schema' => [
+                'queryEntities',
+                'mutationEntities',
+                'specialEntities'
+            ],
+            'security' => [
+                'method',
+                'apikey',
+                'skipPermissionCheck',
+                'disableIntrospection'
+            ],
+            'workspaces' => [
+                'asset',
+                'document',
+                'object'
+            ],
+            'permissions' => [
+                'user',
+                'role'
+            ]
+        ];
     }
 }
