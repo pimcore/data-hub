@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
+use Exception;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
@@ -34,7 +35,7 @@ class AssetType
      *
      * @return array|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -58,7 +59,7 @@ class AssetType
      *
      * @return array|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -107,7 +108,7 @@ class AssetType
      *
      * @return string|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -131,7 +132,7 @@ class AssetType
      *
      * @return string|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -156,7 +157,7 @@ class AssetType
      *
      * @return array|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolveSrcSet($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -192,7 +193,7 @@ class AssetType
      *
      * @return array|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolveResolutions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -266,6 +267,22 @@ class AssetType
             $thumbnailName = $args['thumbnail'] ?? null;
             $asset = $this->getAssetFromValue($value, $context);
 
+            if ($asset instanceof Asset\Video) {
+                $width = $asset->getCustomSetting('videoWidth');
+                $height = $asset->getCustomSetting('videoHeight');
+
+                if ($thumbnailName) {
+                    $thumbnail = $asset->getImageThumbnail($thumbnailName);
+                    $width = $thumbnail->getWidth();
+                    $height = $thumbnail->getHeight();
+                }
+
+                return [
+                    'width' => $width,
+                    'height' => $height,
+                ];
+            }
+
             if (!$asset instanceof Asset\Image) {
                 return null;
             }
@@ -289,6 +306,25 @@ class AssetType
         }
 
         return [];
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    public function resolveDuration(ElementDescriptor | null $value = null, array $context = []): ?float
+    {
+        if (!$value instanceof ElementDescriptor) {
+            return null;
+        }
+
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if (!$asset instanceof Asset\Video) {
+            return null;
+        }
+
+        return $asset->getDuration();
     }
 
     /**

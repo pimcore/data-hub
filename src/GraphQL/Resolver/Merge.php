@@ -20,6 +20,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class Merge
 {
     use ServiceTrait;
@@ -67,10 +70,7 @@ class Merge
 
         $element = AbstractObject::getById($value['id']);
         $valueFromOperator = $operatorImpl->getLabeledValue($element, $resolveInfo);
-        if ($valueFromOperator) {
-            return $valueFromOperator->value;
-        }
 
-        return null;
+        return $valueFromOperator?->value;
     }
 }

@@ -15,16 +15,22 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
+use Exception;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class MergeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
@@ -79,8 +85,8 @@ class MergeType extends UnionType implements ContainerAwareInterface
         $attributes = $nodeDef['attributes'];
         $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
 
-        if ($attributes['childs']) {
-            foreach ($attributes['childs'] as $childDef) {
+        if ($attributes['children']) {
+            foreach ($attributes['children'] as $childDef) {
                 $type = $fieldHelper->getGraphQlTypeFromNodeConf($childDef, $this->class, $this->container);
                 $childTypes[] = $type;
             }
@@ -94,14 +100,18 @@ class MergeType extends UnionType implements ContainerAwareInterface
 
     /**
      * @inheritdoc
+     *
+     * @throws Exception
      */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element) {
-            if ($element['__elementType'] === 'object') {
-                return ClassTypeDefinitions::get($element['__elementSubtype']);
+            if ($element instanceof DataObject) {
+                $concrete = ($element instanceof DataObject\Concrete) ? $element : DataObject\Concrete::getById($element->getId());
+
+                return ClassTypeDefinitions::get($concrete->getClassName());
             }
-            if ($element['__elementType'] === 'asset') {
+            if ($element instanceof Asset) {
                 return $this->getGraphQlService()->buildAssetType('asset');
             }
         }

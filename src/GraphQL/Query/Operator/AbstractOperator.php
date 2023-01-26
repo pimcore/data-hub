@@ -44,7 +44,7 @@ abstract class AbstractOperator implements OperatorInterface
     public function __construct(array $config = [], $context = null)
     {
         $this->label = $config['label'];
-        $this->children = $config['childs'];
+        $this->children = $config['children'];
         $this->context = $context;
     }
 

@@ -118,6 +118,10 @@ class AssetType extends ObjectType
                 ],
                 'resolve' => [$resolver, 'resolveDimensions'],
             ],
+            'duration' => [
+                'type' => Type::float(),
+                'resolve' => [$resolver, 'resolveDuration'],
+            ],
             'srcset' => [
                 'type' => Type::listOf(new ObjectType([
                     'name' => 'srcset',
