@@ -48,12 +48,12 @@ class ImageGallery extends Base
             $hotspotImages = [];
             $newGallery = [];
 
-            if($newValue === null) {
+            if ($newValue === null) {
                 return $container->$setter($newGallery);
             }
 
             if (! ($newValue['replace'] ?? false)) {
-                foreach($currentItems as $currentItem) {
+                foreach ($currentItems as $currentItem) {
                     if ($currentItem instanceof Hotspotimage) {
                         $hotspotImages[] = $currentItem;
                     }
@@ -61,10 +61,10 @@ class ImageGallery extends Base
             }
 
             if (is_array($newValue['images'])) {
-                foreach($newValue['images'] as $imageValue) {
+                foreach ($newValue['images'] as $imageValue) {
                     $hotspotImage = new Hotspotimage($imageValue['id']);
 
-                    if($hotspotImage instanceof Hotspotimage) {
+                    if ($hotspotImage instanceof Hotspotimage) {
                         $hotspotImages[] = $hotspotImage;
                     }
                 }

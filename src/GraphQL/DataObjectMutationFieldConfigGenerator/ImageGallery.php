@@ -15,8 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
 
-use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\Type;
 
 class ImageGallery extends Base
 {
