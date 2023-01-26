@@ -26,6 +26,7 @@ use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +34,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 /**
  * @Route("/admin/pimcoredatahub/config")
