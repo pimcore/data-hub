@@ -281,7 +281,7 @@ class Configuration extends AbstractModel
             }
         }
 
-        if(empty($this->namespace)){
+        if (empty($this->namespace)) {
             throw new \Exception('Property "namespace" is missing in configuration.');
         }
 

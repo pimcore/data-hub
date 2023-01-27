@@ -22,8 +22,8 @@ class ImportService
 {
     public function __construct(
         protected PimcoreBundleManager $bundleManager
-    )
-    {}
+    ) {
+    }
 
     public function importConfigurationJson(string $json, array $allowedVars): Configuration
     {
@@ -66,7 +66,7 @@ class ImportService
         }
 
         $namespace = $configuration['namespace'];
-        if(!$this->isBundleInstalled($namespace)){
+        if (!$this->isBundleInstalled($namespace)) {
             throw new \Exception(sprintf(
                 'Required bundle with namespace "%s" is not installed',
                 $namespace
@@ -82,7 +82,7 @@ class ImportService
     protected function isBundleInstalled($namespace): bool
     {
         $result = array_filter($this->bundleManager->getActiveBundles(), static function ($entry) use ($namespace) {
-           return $entry->getNamespace() === $namespace;
+            return $entry->getNamespace() === $namespace;
         });
 
         return !empty($result);
