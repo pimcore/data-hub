@@ -184,7 +184,7 @@ class Element
     }
 
     /**
-     * @param array $elements
+     * @param Pimcore\Model\Asset\Listing|Pimcore\Model\DataObject\Listing|Pimcore\Model\Document\Listing|array $elements
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
