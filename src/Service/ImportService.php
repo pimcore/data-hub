@@ -71,6 +71,7 @@ class ImportService
     protected function isBundleInstalled(?string $type): bool
     {
         $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
+
         return array_key_exists($type, $registeredBundles['supported_types']);
     }
 }
