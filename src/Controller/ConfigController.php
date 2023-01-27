@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
  * @Route("/admin/pimcoredatahub/config")
@@ -182,6 +183,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $path = $request->get('path');
             $name = $request->get('name');
             $type = $request->get('type');
+            $namespace = str_replace('\Controller', '', __NAMESPACE__);
             $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $type]);
 
             $config = Configuration::getByName($name);
@@ -190,7 +192,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 throw new \Exception('Name already exists.');
             }
 
-            $config = new Configuration($type, $path, $name);
+            $config = new Configuration($type, $path, $name, $namespace);
             $config->save();
 
             return $this->json(['success' => true, 'name' => $name]);

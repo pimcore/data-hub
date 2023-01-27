@@ -16,9 +16,15 @@
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Extension\Bundle\PimcoreBundleManager;
 
 class ImportService
 {
+    public function __construct(
+        protected PimcoreBundleManager $bundleManager
+    )
+    {}
+
     public function importConfigurationJson(string $json, array $allowedVars): Configuration
     {
         $importData = json_decode($json, true);
@@ -28,6 +34,7 @@ class ImportService
             $importData['type'],
             $importData['path'],
             $importData['name'],
+            $importData['namespace']
         );
         $configuration->setModificationDate(time());
 
@@ -53,13 +60,31 @@ class ImportService
     {
         if (!array_key_exists('type', $configuration) ||
             !array_key_exists('path', $configuration) ||
-            !array_key_exists('name', $configuration)) {
-            throw new \Exception('Required configuration keys ("type", "path" or "name") not found!');
+            !array_key_exists('name', $configuration) ||
+            !array_key_exists('namespace', $configuration)) {
+            throw new \Exception('Required configuration keys ("type", "path", "name" or "namespace") not found!');
+        }
+
+        $namespace = $configuration['namespace'];
+        if(!$this->isBundleInstalled($namespace)){
+            throw new \Exception(sprintf(
+                'Required bundle with namespace "%s" is not installed',
+                $namespace
+            ));
         }
 
         $configuration = Configuration::getByName($configuration['name']);
         if ($configuration instanceof Configuration) {
             throw new \Exception('Name already exists.');
         }
+    }
+
+    protected function isBundleInstalled($namespace): bool
+    {
+        $result = array_filter($this->bundleManager->getActiveBundles(), static function ($entry) use ($namespace) {
+           return $entry->getNamespace() === $namespace;
+        });
+
+        return !empty($result);
     }
 }
