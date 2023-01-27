@@ -16,7 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle;
 
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
-use Pimcore\Bundle\DataHubBundle\Migrations\Version20230127073614;
+use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20210305134111;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Logger;
@@ -92,6 +92,6 @@ class Installer extends SettingsStoreAwareInstaller
 
     public function getLastMigrationVersionClassName(): ?string
     {
-        return Version20230127073614::class;
+        return Version20210305134111::class;
     }
 }
