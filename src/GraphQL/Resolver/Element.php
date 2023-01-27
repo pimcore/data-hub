@@ -24,6 +24,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
+use Pimcore\Model\Document;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service as ElementService;
@@ -184,7 +187,7 @@ class Element
     }
 
     /**
-     * @param Pimcore\Model\Asset\Listing|Pimcore\Model\DataObject\Listing|Pimcore\Model\Document\Listing|array $elements
+     * @param Asset\Listing|DataObject\Listing|Document\Listing|array $elements
      * @param array $args
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
