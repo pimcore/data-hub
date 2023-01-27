@@ -266,7 +266,7 @@ class Configuration extends AbstractModel
 
         $securityConfig = $this->getSecurityConfig();
         if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
-            if(!is_array($securityConfig['apikey'])){
+            if (!is_array($securityConfig['apikey'])) {
                 $securityConfig['apikey'] = [$securityConfig['apikey']];
             }
 
