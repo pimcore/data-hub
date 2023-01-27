@@ -26,7 +26,6 @@ use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -566,7 +565,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      */
-    public function exportConfiguration(Request $request, ExportService $exportService, ContainerBagInterface $params)
+    public function exportConfiguration(Request $request, ExportService $exportService)
     {
         $this->checkPermission(self::CONFIG_NAME);
 

@@ -53,10 +53,7 @@ class Configuration extends AbstractModel
      */
     public $group;
 
-    /**
-     * @var string
-     */
-    public $namespace;
+    public ?string $namespace;
 
     /**
      * @var array|null
@@ -80,7 +77,7 @@ class Configuration extends AbstractModel
      * @param string|null $namespace
      * @param array|null $configuration
      */
-    public function __construct($type, $path, $name = null, $namespace = null, $configuration = null)
+    public function __construct($type, $path, $name = null, ?string $namespace = null, $configuration = null)
     {
         $type = $type ?: 'graphql';
         $this->setType($type);
@@ -421,17 +418,12 @@ class Configuration extends AbstractModel
         return $this->configuration['permissions'] ?? [];
     }
 
-    /**
-     * @return string|null
-     */
+
     public function getNamespace(): ?string
     {
         return $this->namespace;
     }
 
-    /**
-     * @param string|null $namespace
-     */
     public function setNamespace(?string $namespace): void
     {
         $this->namespace = $namespace;
