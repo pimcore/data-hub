@@ -53,8 +53,6 @@ class Configuration extends AbstractModel
      */
     public $group;
 
-    public ?string $namespace;
-
     /**
      * @var array|null
      */
@@ -74,15 +72,13 @@ class Configuration extends AbstractModel
      * @param string|null $type
      * @param string|null $path
      * @param string|null $name
-     * @param string|null $namespace
      * @param array|null $configuration
      */
-    public function __construct($type, $path, $name = null, ?string $namespace = null, $configuration = null)
+    public function __construct($type, $path, $name = null, $configuration = null)
     {
         $type = $type ?: 'graphql';
         $this->setType($type);
         $this->setPath($path);
-        $this->setNamespace($namespace);
         $this->setName($name);
         $this->setConfiguration($configuration ?? []);
     }
@@ -267,7 +263,6 @@ class Configuration extends AbstractModel
         $this->configuration['general']['type'] = $this->type;
         $this->configuration['general']['path'] = $this->path;
         $this->configuration['general']['name'] = $this->name;
-        $this->configuration['general']['namespace'] = $this->namespace;
 
         $securityConfig = $this->getSecurityConfig();
         if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
@@ -276,10 +271,6 @@ class Configuration extends AbstractModel
                     throw new \Exception('API key ' . $apiKey . ' does not satisfy the minimum length of 16 characters');
                 }
             }
-        }
-
-        if (empty($this->namespace)) {
-            throw new \Exception('Property "namespace" is missing in configuration.');
         }
 
         $this->configuration['workspaces'] = WorkspaceHelper::cleanupWorkspaces($this->configuration['workspaces']);
@@ -416,16 +407,6 @@ class Configuration extends AbstractModel
     public function getPermissionsConfig()
     {
         return $this->configuration['permissions'] ?? [];
-    }
-
-    public function getNamespace(): ?string
-    {
-        return $this->namespace;
-    }
-
-    public function setNamespace(?string $namespace): void
-    {
-        $this->namespace = $namespace;
     }
 
     public function __clone()

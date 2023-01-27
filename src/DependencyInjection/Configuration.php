@@ -44,6 +44,7 @@ class Configuration implements ConfigurationInterface
         ->end();
 
         $this->addConfigurationsNode($rootNode);
+        $this->addSupportedTypes($rootNode);
 
         return $treeBuilder;
     }
@@ -54,6 +55,16 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('configurations')
                     ->normalizeKeys(false)
+                    ->variablePrototype()->end()
+                ->end()
+            ->end();
+    }
+
+    private function addSupportedTypes(ArrayNodeDefinition | NodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('supported_types')
                     ->variablePrototype()->end()
                 ->end()
             ->end();

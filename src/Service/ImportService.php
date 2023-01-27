@@ -17,15 +17,17 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Extension\Bundle\PimcoreBundleManager;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class ImportService
 {
     public function __construct(
-        protected PimcoreBundleManager $bundleManager
+        protected PimcoreBundleManager $bundleManager,
+        protected ContainerBagInterface $parameterBag
     ) {
     }
 
-    public function importConfigurationJson(string $json, array $allowedVars): Configuration
+    public function importConfigurationJson(string $json): Configuration
     {
         $importData = json_decode($json, true);
         $this->checkValidity($importData);
@@ -33,21 +35,10 @@ class ImportService
         $configuration = new Configuration(
             $importData['type'],
             $importData['path'],
-            $importData['name'],
-            $importData['namespace']
+            $importData['name']
         );
         $configuration->setModificationDate(time());
-
-        $configurationToImport = [];
-        foreach ($allowedVars as $category => $categoryProperty) {
-            foreach ($categoryProperty as $property) {
-                if (isset($importData['configuration'][$category][$property])) {
-                    $configurationToImport[$category][$property] = $importData['configuration'][$category][$property];
-                }
-            }
-        }
-
-        $configuration->setConfiguration($configurationToImport);
+        $configuration->setConfiguration($importData['configuration']);
         $configuration->save();
 
         return $configuration;
@@ -60,16 +51,14 @@ class ImportService
     {
         if (!array_key_exists('type', $configuration) ||
             !array_key_exists('path', $configuration) ||
-            !array_key_exists('name', $configuration) ||
-            !array_key_exists('namespace', $configuration)) {
-            throw new \Exception('Required configuration keys ("type", "path", "name" or "namespace") not found!');
+            !array_key_exists('name', $configuration)) {
+            throw new \Exception('Required configuration keys ("type", "path" or "name") not found!');
         }
 
-        $namespace = $configuration['namespace'];
-        if (!$this->isBundleInstalled($namespace)) {
+        if (!$this->isBundleInstalled($configuration['type'])) {
             throw new \Exception(sprintf(
-                'Required bundle with namespace "%s" is not installed',
-                $namespace
+                'Cant handle type "%s". Seems that the according bundle is not installed!',
+                $configuration['type']
             ));
         }
 
@@ -79,12 +68,9 @@ class ImportService
         }
     }
 
-    protected function isBundleInstalled(?string $namespace): bool
+    protected function isBundleInstalled(?string $type): bool
     {
-        $result = array_filter($this->bundleManager->getActiveBundles(), static function ($entry) use ($namespace) {
-            return $entry->getNamespace() === $namespace;
-        });
-
-        return !empty($result);
+        $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
+        return array_key_exists($type, $registeredBundles['supported_types']);
     }
 }

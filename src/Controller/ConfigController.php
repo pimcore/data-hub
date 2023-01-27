@@ -181,7 +181,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             $path = $request->get('path');
             $name = $request->get('name');
             $type = $request->get('type');
-            $namespace = str_replace('\Controller', '', __NAMESPACE__);
             $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $type]);
 
             $config = Configuration::getByName($name);
@@ -190,7 +189,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
                 throw new \Exception('Name already exists.');
             }
 
-            $config = new Configuration($type, $path, $name, $namespace);
+            $config = new Configuration($type, $path, $name);
             $config->save();
 
             return $this->json(['success' => true, 'name' => $name]);
@@ -565,7 +564,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      *
      * @param Request $request
      */
-    public function exportConfiguration(Request $request, ExportService $exportService)
+    public function exportConfiguration(Request $request, ExportService $exportService): Response
     {
         $this->checkPermission(self::CONFIG_NAME);
 
@@ -579,7 +578,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         $json = $exportService->exportConfigurationJson($configuration);
-
         $filename = sprintf(
             'datahub_%s_%s_export.json',
             $configuration->getType(),
@@ -600,11 +598,11 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
      * @param Request $request
      * @param ImportService $importService
      */
-    public function importConfiguration(Request $request, ImportService $importService)
+    public function importConfiguration(Request $request, ImportService $importService): JsonResponse
     {
         $this->checkPermission(self::CONFIG_NAME);
         $json = file_get_contents($_FILES['Filedata']['tmp_name']);
-        $configuration = $importService->importConfigurationJson($json, $this->getAllowedVars());
+        $configuration = $importService->importConfigurationJson($json);
 
         $response = $this->adminJson([
             'success' => true,
@@ -616,37 +614,5 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $response->headers->set('Content-Type', 'text/html');
 
         return $response;
-    }
-
-    private function getAllowedVars()
-    {
-        return [
-            'general' => [
-                'description',
-                'group',
-                'sqlObjectCondition',
-                'path',
-            ],
-            'schema' => [
-                'queryEntities',
-                'mutationEntities',
-                'specialEntities'
-            ],
-            'security' => [
-                'method',
-                'apikey',
-                'skipPermissionCheck',
-                'disableIntrospection'
-            ],
-            'workspaces' => [
-                'asset',
-                'document',
-                'object'
-            ],
-            'permissions' => [
-                'user',
-                'role'
-            ]
-        ];
     }
 }
