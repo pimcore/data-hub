@@ -79,7 +79,7 @@ class ImportService
         }
     }
 
-    protected function isBundleInstalled($namespace): bool
+    protected function isBundleInstalled(?string $namespace): bool
     {
         $result = array_filter($this->bundleManager->getActiveBundles(), static function ($entry) use ($namespace) {
             return $entry->getNamespace() === $namespace;
