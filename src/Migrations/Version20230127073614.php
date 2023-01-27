@@ -13,9 +13,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20230127073614 extends AbstractMigration
 {
-    protected $typeNamespaceMap = [
+    protected array $typeNamespaceMap = [
         'graphql' => 'Pimcore\Bundle\DataHubBundle',
-        'simpleRest' => 'Pimcore\Bundle\DataHubSimpleRestBundle'
+        'ciHub' => 'Pimcore\Bundle\DataHubCiHubBundle',
+        'fileExport' => 'Pimcore\Bundle\DataHubFileExportBundle',
+        'simpleRest' => 'Pimcore\Bundle\DataHubSimpleRestBundle',
+        'productsup' => 'Pimcore\Bundle\DataHubProductsupBundle',
+        'webhooks' => 'Pimcore\Bundle\DataHubWebhooksBundle'
     ];
 
     public function getDescription(): string
