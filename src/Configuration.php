@@ -418,7 +418,6 @@ class Configuration extends AbstractModel
         return $this->configuration['permissions'] ?? [];
     }
 
-
     public function getNamespace(): ?string
     {
         return $this->namespace;
