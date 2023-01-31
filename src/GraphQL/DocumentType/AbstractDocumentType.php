@@ -62,7 +62,10 @@ abstract class AbstractDocumentType extends ObjectType
             'fullpath' => [
                 'type' => Type::string()],
             'modificationDate' => Type::int(),
-            'type' => Type::string(),
+            'published' => ['name' => 'published',
+                'type' => Type::boolean()
+            ],
+             'type' => Type::string(),
             'controller' => Type::string(),
             'action' => Type::string(),
             'template' => Type::string(),
