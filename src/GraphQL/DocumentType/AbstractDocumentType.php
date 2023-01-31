@@ -65,7 +65,7 @@ abstract class AbstractDocumentType extends ObjectType
             'published' => ['name' => 'published',
                 'type' => Type::boolean()
             ],
-             'type' => Type::string(),
+            'type' => Type::string(),
             'controller' => Type::string(),
             'action' => Type::string(),
             'template' => Type::string(),
