@@ -64,7 +64,7 @@ class Substring extends AbstractOperator
         $valueResolver = $this->getGraphQlService()->buildValueResolverFromAttributes($c);
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
-        $isArrayType = $childResult->isArrayType;
+        $isArrayType = $childResult->isArrayType ?? false;
         $childValues = $childResult->value;
         if ($childValues && !$isArrayType) {
             $childValues = [$childValues];
