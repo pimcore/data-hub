@@ -593,8 +593,6 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
     /**
      * @Route("/import", methods={"POST"})
      *
-     * TODO: add name as required param
-     *
      * @param Request $request
      * @param ImportService $importService
      */
