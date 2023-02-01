@@ -27,7 +27,7 @@ class Helper
 {
     /**
      * @param Listing\Concrete $list
-     * @param \stdClass $filter
+     * @param \stdClass | array $filter
      * @param array $columns
      * @param array $mappingTable
      */
