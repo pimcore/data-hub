@@ -9,8 +9,8 @@
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ * @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
@@ -33,20 +33,25 @@ class Helper
      */
     public static function addJoins(&$list, $filter, $columns, &$mappingTable = [])
     {
-        $parts = get_object_vars($filter);
-        foreach ($parts as $key => $value) {
-            foreach ($columns as $column) {
-                $attributes = $column['attributes'];
+        $filterEntries = is_array($filter) ? $filter : [$filter];
 
-                if (isset($attributes['attribute'])) {
-                    $name = $attributes['attribute'];
+        foreach ($filterEntries as $entry) {
+            $parts = get_object_vars($entry);
 
-                    if (strpos($name, '~') !== false) {
-                        $nameParts = explode('~', $name);
-                        $brickName = $nameParts[0];
-                        $brickKey = $nameParts[1];
-                        $list->addObjectbrick($brickName);
-                        $mappingTable[$brickKey] = 1;
+            foreach ($parts as $key => $value) {
+                foreach ($columns as $column) {
+                    $attributes = $column['attributes'];
+
+                    if (isset($attributes['attribute'])) {
+                        $name = $attributes['attribute'];
+
+                        if (strpos($name, '~') !== false) {
+                            $nameParts = explode('~', $name);
+                            $brickName = $nameParts[0];
+                            $brickKey = $nameParts[1];
+                            $list->addObjectbrick($brickName);
+                            $mappingTable[$brickKey] = 1;
+                        }
                     }
                 }
             }
@@ -64,7 +69,6 @@ class Helper
      */
     public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null, $fieldMappingTable = [])
     {
-
         // Examples:
         //
         //q={"o_modificationDate" : {"$gt" : "1000"}}
@@ -89,8 +93,16 @@ class Helper
         if (!$op) {
             $op = 'AND';
         }
-        $mappingTable = ['$gt' => '>', '$gte' => '>=', '$lt' => '<', '$lte' => '<=', '$like' => 'LIKE', '$notlike' => 'NOT LIKE', '$notnull' => 'IS NOT NULL',
-                '$not' => 'NOT'];
+        $mappingTable = [
+            '$gt' => '>',
+            '$gte' => '>=',
+            '$lt' => '<',
+            '$lte' => '<=',
+            '$like' => 'LIKE',
+            '$notlike' => 'NOT LIKE',
+            '$notnull' => 'IS NOT NULL',
+            '$not' => 'NOT'
+        ];
         $ops = array_keys($mappingTable);
 
         $db = Db::get();
@@ -107,7 +119,13 @@ class Helper
                 if (is_array($value)) {
                     $childParts = [];
                     foreach ($value as $arrItem) {
-                        $childParts[] = self::buildSqlCondition($defaultTable, $arrItem, $childOp, $subject, $fieldMappingTable);
+                        $childParts[] = self::buildSqlCondition(
+                            $defaultTable,
+                            $arrItem,
+                            $childOp,
+                            $subject,
+                            $fieldMappingTable
+                        );
                     }
                     $parts[] = implode(' ' . $childOp . ' ', $childParts);
                 } else {
@@ -132,19 +150,31 @@ class Helper
                                 if (isset($fieldMappingTable[$key])) {
                                     $parts[] = '( NOT ' . $db->quoteIdentifier($key) . $valuePart . ')';
                                 } else {
-                                    $parts[] = '( NOT ' . self::quoteAbsoluteColumnName($defaultTable, $key) . $valuePart . ')';
+                                    $parts[] = '( NOT ' . self::quoteAbsoluteColumnName(
+                                            $defaultTable,
+                                            $key
+                                        ) . $valuePart . ')';
                                 }
                             } else {
-                                $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
+                                $parts[] = '(' . self::quoteAbsoluteColumnName(
+                                        $defaultTable,
+                                        $key
+                                    ) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
                             }
                         } else {
                             if ($objectValue instanceof \stdClass) {
                                 $parts[] = self::buildSqlCondition($defaultTable, $objectValue, null, $objectVar);
                             } else {
                                 if (is_null($objectValue)) {
-                                    $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $objectVar) . ' IS NULL)';
+                                    $parts[] = '(' . self::quoteAbsoluteColumnName(
+                                            $defaultTable,
+                                            $objectVar
+                                        ) . ' IS NULL)';
                                 } else {
-                                    $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $objectVar) . ' = ' . $db->quote($objectValue) . ')';
+                                    $parts[] = '(' . self::quoteAbsoluteColumnName(
+                                            $defaultTable,
+                                            $objectVar
+                                        ) . ' = ' . $db->quote($objectValue) . ')';
                                 }
                             }
                         }
@@ -155,9 +185,15 @@ class Helper
                     if (array_search(strtolower($key), $ops) !== false) {
                         $innerOp = $mappingTable[strtolower($key)];
                         if ($innerOp == 'NOT') {
-                            $parts[] = '(NOT' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' = ' . $db->quote($value) . ')';
+                            $parts[] = '(NOT' . self::quoteAbsoluteColumnName(
+                                    $defaultTable,
+                                    $subject
+                                ) . ' = ' . $db->quote($value) . ')';
                         } else {
-                            $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $subject) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
+                            $parts[] = '(' . self::quoteAbsoluteColumnName(
+                                    $defaultTable,
+                                    $subject
+                                ) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
                         if (isset($fieldMappingTable[$key])) {
@@ -170,7 +206,10 @@ class Helper
                             if (is_null($value)) {
                                 $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' IS NULL)';
                             } else {
-                                $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' = ' . $db->quote($value) . ')';
+                                $parts[] = '(' . self::quoteAbsoluteColumnName(
+                                        $defaultTable,
+                                        $key
+                                    ) . ' = ' . $db->quote($value) . ')';
                             }
                         }
                     }
