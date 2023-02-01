@@ -50,17 +50,25 @@ pimcore.plugin.datahub = Class.create({
     },
 
     preMenuBuild: function (e) {
-        let menu = e.detail.menu;
+        const perspectiveCfg = pimcore.globalmanager.get("perspective");
 
-        menu.datahub = {
-            label: t('plugin_pimcore_datahub_toolbar'),
-            iconCls: 'pimcore_main_nav_icon_mind_map',
-            priority: 55,
-            shadow: false,
-            handler: this.openDataHub,
-            cls: "pimcore_navigation_flyout",
-            noSubmenus: true
-        };
+        if (perspectiveCfg.inToolbar("datahub") === false) {
+            return
+        }
+
+        if (user.admin || user.isAllowed("plugin_datahub_config")) {
+            let menu = e.detail.menu;
+
+            menu.datahub = {
+                label: t('plugin_pimcore_datahub_toolbar'),
+                iconCls: 'pimcore_main_nav_icon_mind_map',
+                priority: 55,
+                shadow: false,
+                handler: this.openDataHub,
+                cls: "pimcore_navigation_flyout",
+                noSubmenus: true
+            };
+        }
     },
 
     openDataHub: function(e) {
