@@ -23,7 +23,7 @@ pimcore.plugin.datahub.queryoperator.merge = Class.create(pimcore.plugin.datahub
     type: "operator",
     class: "Merge",
     iconCls: "pimcore_icon_operator_merge",
-    defaultText: "Merge (deprecated)",
+    defaultText: "Merge",
     group: "other",
 
     getConfigTreeNode: function(configAttributes) {
