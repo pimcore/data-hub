@@ -65,7 +65,7 @@ class Substring extends AbstractOperator
 
         $childResult = $valueResolver->getLabeledValue($element, $resolveInfo);
         $isArrayType = $childResult->isArrayType ?? false;
-        $childValues = $childResult->value;
+        $childValues = $childResult->value ?? null;
         if ($childValues && !$isArrayType) {
             $childValues = [$childValues];
         }
@@ -89,7 +89,7 @@ class Substring extends AbstractOperator
                 $valueArray[] = $childValue;
             }
         } else {
-            $valueArray[] = $childResult->value;
+            $valueArray[] = $childValues;
         }
 
         $result->isArrayType = $isArrayType;
