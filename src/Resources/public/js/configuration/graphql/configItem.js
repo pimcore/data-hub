@@ -942,5 +942,4 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             }.bind(this)
         );
     }
-
 });
