@@ -56,6 +56,7 @@ pimcore.plugin.datahub = Class.create({
             return
         }
 
+        const user = pimcore.globalmanager.get("user");
         if (user.admin || user.isAllowed("plugin_datahub_config")) {
             let menu = e.detail.menu;
 
