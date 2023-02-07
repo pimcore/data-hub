@@ -18,7 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\Controller;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\RouterInterface;
 
 class GraphQLExplorerController extends AbstractController
@@ -31,7 +30,6 @@ class GraphQLExplorerController extends AbstractController
      *
      * @throws \Exception
      */
-    #[Cache(expires: 'tomorrow', public: true)]
     public function explorerAction(RouterInterface $routingService, Request $request)
     {
         $urlParams = array_merge($request->request->all(), $request->query->all());
@@ -48,9 +46,14 @@ class GraphQLExplorerController extends AbstractController
             $url = $url . '?' . http_build_query($urlParams);
         }
 
-        return $this->render('@PimcoreDataHub/Feature/explorer.html.twig', [
+        $response = $this->render('@PimcoreDataHub/Feature/explorer.html.twig', [
             'graphQLUrl' => $url,
             'tokenHeader' => CheckConsumerPermissionsService::TOKEN_HEADER
         ]);
+
+        $response->setPublic();
+        $response->setExpires(new \DateTime('tomorrow'));
+
+        return $response;
     }
 }
