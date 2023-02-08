@@ -1,5 +1,5 @@
 
-name: "Codeception Tests Pimcore X"
+name: "Codeception Tests"
 
 on:
     schedule:
