@@ -5,10 +5,10 @@ set -eu
 mkdir -p var/config
 mkdir -p bin
 
-cp .github/ci/pimcore_x/files/.env .
-cp -r .github/ci/pimcore_x/files/config/. config
-cp -r .github/ci/pimcore_x/files/templates/. templates
-cp -r .github/ci/pimcore_x/files/bin/console bin/console
+cp .github/ci/files/.env .
+cp -r .github/ci/files/config/. config
+cp -r .github/ci/files/templates/. templates
+cp -r .github/ci/files/bin/console bin/console
 chmod 755 bin/console
-cp -r .github/ci/pimcore_x/files/kernel/. kernel
-cp -r .github/ci/pimcore_x/files/public/. public
+cp -r .github/ci/files/kernel/. kernel
+cp -r .github/ci/files/public/. public

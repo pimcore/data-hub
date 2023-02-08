@@ -65,7 +65,7 @@ jobs:
 
             - name: Verify MariaDB connection
               run: |
-                  cp .github/ci/pimcore_x/files/.my.cnf ~/.my.cnf
+                  cp .github/ci/files/.my.cnf ~/.my.cnf
                   while ! mysqladmin ping --silent; do
                     sleep 1
                   done
