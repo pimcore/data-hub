@@ -46,13 +46,18 @@ class PageSnippet
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
+
+            //TODO: Remove method_exists call as soon as we require pimcore 10.6 or higher
             if (method_exists(Document\PageSnippet::class, 'getGetInheritedValues')) {
                 $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
                 $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
                 Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
             }
+
             $elements = $document->getEditables();
             $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables() ?? []);
+
+            //TODO: Remove method_exists call as soon as we require pimcore 10.6 or higher
             if (method_exists(Document\PageSnippet::class, 'setGetInheritedValues')) {
                 Document\PageSnippet::setGetInheritedValues($getInheritedValues);
             }
