@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputObjectType;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Table extends Base
 {
@@ -26,7 +27,11 @@ class Table extends Base
         $fieldName = $nodeDef['attributes']['attribute'];
         $tableDef = $class->getFieldDefinition($fieldName);
         $inputItems = [];
-        $numCols = (int) $tableDef->getCols();
+        $numCols = 0;
+
+        if ($tableDef instanceof Data\Table) {
+            $numCols = (int) $tableDef->getCols();
+        }
 
         $this->getProcessors($processors, $tableDef);
 

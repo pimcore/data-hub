@@ -29,7 +29,7 @@ class Table extends Base
 
     /**
      * @param array $nodeDef
-     * @param array $tableDef
+     * @param array $processors
      */
     public function __construct(array $nodeDef, array $processors)
     {
