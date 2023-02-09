@@ -120,6 +120,7 @@ class AssetType
         foreach ($asset->getCustomSetting('embeddedMetaData') ?? [] as $key => $value) {
             $result[] = ['name' => $key, 'value' => $value];
         }
+
         return $result;
     }
 
