@@ -46,14 +46,14 @@ class PageSnippet
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
-            if(method_exists(Document\PageSnippet::class, 'getGetInheritedValues' )) {
+            if (method_exists(Document\PageSnippet::class, 'getGetInheritedValues')) {
                 $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
                 $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
                 Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
             }
             $elements = $document->getEditables();
             $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables() ?? []);
-            if(method_exists(Document\PageSnippet::class, 'setGetInheritedValues' )) {
+            if (method_exists(Document\PageSnippet::class, 'setGetInheritedValues')) {
                 Document\PageSnippet::setGetInheritedValues($getInheritedValues);
             }
 
