@@ -44,7 +44,12 @@ class PageSnippet
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
+            $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
+            $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
+            Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
             $elements = $document->getEditables();
+            $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables());
+            Document\PageSnippet::setGetInheritedValues($getInheritedValues);
 
             $service = $this->getGraphQlService();
             $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();
