@@ -48,7 +48,8 @@ class PageSnippet
             $sortBy = [];
 
             //TODO: Remove method_exists call as soon as we require pimcore 10.6 or higher
-            if (method_exists(Document\PageSnippet::class, 'getGetInheritedValues')) {
+            if (method_exists(Document\PageSnippet::class, 'getGetInheritedValues')
+                && method_exists(Document\PageSnippet::class, 'setGetInheritedValues')) {
                 $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
                 $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
                 Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
