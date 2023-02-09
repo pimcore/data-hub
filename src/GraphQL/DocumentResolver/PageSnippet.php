@@ -40,16 +40,22 @@ class PageSnippet
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);
+        $getInheritedValues = false;
+        $getInheritedValuesInput = false;
 
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
-            $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
-            $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
-            Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
+            if(method_exists(Document\PageSnippet::class, 'getGetInheritedValues' )) {
+                $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
+                $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
+                Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
+            }
             $elements = $document->getEditables();
-            $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables());
-            Document\PageSnippet::setGetInheritedValues($getInheritedValues);
+            $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables() ?? []);
+            if(method_exists(Document\PageSnippet::class, 'setGetInheritedValues' )) {
+                Document\PageSnippet::setGetInheritedValues($getInheritedValues);
+            }
 
             $service = $this->getGraphQlService();
             $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();
