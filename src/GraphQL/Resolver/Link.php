@@ -34,11 +34,7 @@ class Link
      */
     public function resolveText($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
-        if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
-            return $value->getText();
-        }
-
-        return null;
+        return $this->resolveLinkValue($value, 'text');
     }
 
     /**
@@ -53,8 +49,138 @@ class Link
      */
     public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
+        return $this->resolveLinkValue($value, 'path');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'target');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveAnchor($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'anchor');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveTitle($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'title');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveAccesskey($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'accesskey');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveRel($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'rel');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveClass($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'class');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveAttributes($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'attributes');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveTabindex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'tabindex');
+    }
+
+    /**
+     * @param $value
+     * @param $args
+     * @param $context
+     * @param ResolveInfo|null $resolveInfo
+     *
+     * @return null
+     */
+    public function resolveParameters($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        return $this->resolveLinkValue($value, 'parameters');
+    }
+
+    /**
+     * @param \Pimcore\Model\DataObject\Data\Link|null $value
+     * @param string $property
+     *
+     * @return null
+     */
+    protected function resolveLinkValue(?\Pimcore\Model\DataObject\Data\Link $value, string $property)
+    {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Link) {
-            return $value->getPath();
+            $getter = 'get' . ucfirst($property);
+
+            return $value->{$getter}();
         }
 
         return null;

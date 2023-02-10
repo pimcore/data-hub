@@ -581,6 +581,7 @@ class MutationType extends ObjectType
                         'key' => ['type' => Type::nonNull(Type::string())],
                         'path' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
+                        'defaultLanguage' => ['type' => Type::string()],
                         'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
@@ -719,6 +720,7 @@ class MutationType extends ObjectType
                     'args' => [
                         'id' => ['type' => Type::int()],
                         'fullpath' => ['type' => Type::string()],
+                        'parentId' => ['type' => Type::int()],
                         'defaultLanguage' => ['type' => Type::string()],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'omitVersionCreate' => ['type' => Type::boolean()],
@@ -838,6 +840,17 @@ class MutationType extends ObjectType
             try {
                 if (!$object) {
                     $object = $me->getElementByTypeAndIdOrPath($args, 'object');
+
+                    $parent = null;
+                    if (isset($args['parentId'])) {
+                        $parent = DataObject::getById($args['parentId']);
+                    } elseif (isset($args['path'])) {
+                        $parent = DataObject::getByPath($args['path']);
+                    }
+
+                    if ($parent) {
+                        $object->setParent($parent);
+                    }
                 }
 
                 if (!$object) {

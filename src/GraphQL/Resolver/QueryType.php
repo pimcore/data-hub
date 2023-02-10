@@ -152,8 +152,6 @@ class QueryType
     }
 
     /**
-     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
-     *
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
@@ -162,6 +160,9 @@ class QueryType
      * @return array|null
      *
      * @throws ClientSafeException
+     *
+     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
+     *
      */
     public function resolveDocumentGetter($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -287,12 +288,14 @@ class QueryType
         $conditionParts = [];
 
         if ($isIdSet) {
-            $conditionParts[] = '(o_id =' . $args['id'] . ')';
+            $conditionParts[] = sprintf('(%s =' . $args['id'] . ')', Service::getVersionDependentDatabaseColumnName('o_id'));
         }
 
         if ($isFullpathSet) {
             $fullpath = Service::correctPath($args['fullpath']);
-            $conditionParts[] = '(concat(o_path, o_key) =' . Db::get()->quote($fullpath) . ')';
+            $conditionParts[] = sprintf('(concat(%s, %s) =' . Db::get()->quote($fullpath) . ')',
+                Service::getVersionDependentDatabaseColumnName('o_path'),
+                Service::getVersionDependentDatabaseColumnName('o_key'));
         }
 
         /** @var Configuration $configuration */
@@ -408,7 +411,7 @@ class QueryType
                 $args['ids'] = explode(',', $args['ids']);
             }
             $ids = implode(', ', array_map([$db, 'quote'], $args['ids']));
-            $conditionParts[] = '(o_id IN (' . $ids . '))';
+            $conditionParts[] = sprintf('(%s IN (' . $ids . '))', Service::getVersionDependentDatabaseColumnName('o_id'));
         }
         if (isset($args['fullpaths'])) {
             $quotedFullpaths = array_map(
@@ -420,7 +423,25 @@ class QueryType
                 },
                 str_getcsv($args['fullpaths'], ',', "'")
             );
-            $conditionParts[] = '(concat(o_path, o_key) IN (' . implode(',', $quotedFullpaths) . '))';
+            $conditionParts[] = sprintf('(concat(%s, %s) IN (' . implode(',', $quotedFullpaths) . '))',
+                Service::getVersionDependentDatabaseColumnName('o_path'),
+                Service::getVersionDependentDatabaseColumnName('o_key'));
+        }
+
+        if (isset($args['tags'])) {
+            if (!is_array($args['tags'])) {
+                $args['tags'] = explode(',', $args['tags']);
+            }
+            $tags = strtolower(implode(', ', array_map(static function ($tag) use ($db) {
+                $tag = trim($tag);
+
+                return $db->quote($tag);
+            }, $args['tags'])));
+
+            $conditionParts[] = "o_id IN (
+                            SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
+                            WHERE
+                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . '))';
         }
 
         // paging
@@ -456,11 +477,11 @@ class QueryType
         if (!$configuration->skipPermisssionCheck()) {
             // check permissions
             $workspacesTableName = 'plugin_datahub_workspaces_object';
-            $conditionParts[] = ' (
+            $conditionParts[] = sprintf(' (
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.o_path,' . $db->quoteIdentifier($tableName) . '.o_key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
+                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.%s,' . $db->quoteIdentifier($tableName) . '.%s),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
@@ -468,11 +489,15 @@ class QueryType
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.o_path,' . $db->quoteIdentifier($tableName) . '.o_key))=1
+                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.%s,' . $db->quoteIdentifier($tableName) . '.%s))=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
-            )';
+            )',
+                Service::getVersionDependentDatabaseColumnName('o_path'),
+                Service::getVersionDependentDatabaseColumnName('o_key'),
+                Service::getVersionDependentDatabaseColumnName('o_path'),
+                Service::getVersionDependentDatabaseColumnName('o_key'));
         }
 
         if (isset($args['filter'])) {

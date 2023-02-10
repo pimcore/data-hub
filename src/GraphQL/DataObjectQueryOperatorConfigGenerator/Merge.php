@@ -21,6 +21,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\MergeType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Localizedfield;
 
+/**
+ * @deprecated will be removed in Data Hub 2
+ */
 class Merge extends StringBase
 {
     /**

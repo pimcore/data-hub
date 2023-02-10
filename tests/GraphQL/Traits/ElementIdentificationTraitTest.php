@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits;
 
-use PHPUnit_Framework_TestCase;
+use Codeception\Test\Unit;
 use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -46,7 +46,7 @@ class TestTrait
     }
 }
 
-class ElementIdentificationTraitTest extends PHPUnit_Framework_TestCase
+class ElementIdentificationTraitTest extends Unit
 {
     const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait';
     const TEST_TYPE = 'object';

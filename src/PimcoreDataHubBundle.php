@@ -55,7 +55,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getCssPaths()
+    public function getCssPaths(): array
     {
         return [
             '/bundles/pimcoredatahub/css/icons.css',
@@ -66,7 +66,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getJsPaths()
+    public function getJsPaths(): array
     {
         return [
             '/bundles/pimcoredatahub/js/datahub.js',
@@ -104,7 +104,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle
      *
      * @return InstallerInterface|null
      */
-    public function getInstaller()
+    public function getInstaller(): ?InstallerInterface
     {
         return $this->container->get(Installer::class);
     }

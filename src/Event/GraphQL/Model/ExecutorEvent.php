@@ -27,11 +27,6 @@ class ExecutorEvent extends Event
     use ResponseAwareTrait;
 
     /**
-     * @var mixed
-     */
-    protected $request;
-
-    /**
      * @var string
      */
     protected $query;

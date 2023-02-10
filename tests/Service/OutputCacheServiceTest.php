@@ -14,13 +14,13 @@
  */
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
-use PHPUnit_Framework_TestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Codeception\Test\Unit;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
+class OutputCacheServiceTest extends Unit
 {
 
     protected $container;
@@ -30,8 +30,8 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->container->method('getParameter')
+        $this->container = $this->createMock(ContainerBagInterface::class);
+        $this->container->method('get')
             ->willReturn(array(
                 'graphql' => array(
                     'output_cache_enabled' => true,
@@ -99,8 +99,8 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     public function testIgnoreSaveWhenCacheIsDisabled()
     {
         // Arrange
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->container->method('getParameter')
+        $this->container = $this->createMock(ContainerBagInterface::class);
+        $this->container->method('get')
             ->willReturn(array(
                 'graphql' => array(
                     'output_cache_enabled' => false
@@ -126,8 +126,8 @@ class OutputCacheServiceTest extends PHPUnit_Framework_TestCase
     public function testIgnoreLoadWhenCacheIsDisabled()
     {
         // Arrange
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->container->method('getParameter')
+        $this->container = $this->createMock(ContainerBagInterface::class);
+        $this->container->method('get')
         ->willReturn(array(
             'graphql' => array(
                 'output_cache_enabled' => false

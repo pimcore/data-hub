@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Doctrine\DBAL\Exception;
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20210305134111;
 use Pimcore\Db;
@@ -38,7 +37,7 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function install()
+    public function install(): void
     {
         // create backend permission
         Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
@@ -71,16 +70,9 @@ class Installer extends SettingsStoreAwareInstaller
         }
 
         parent::install();
-
-        return true;
     }
 
-    /**
-     * @return bool
-     *
-     * @throws Exception
-     */
-    public function isInstalled()
+    public function isInstalled(): bool
     {
         // When switching to SettingsStoreAwareInstaller, we need to explicitly mark this bundle installed, if Settingstore entry doesn't exists and datahub permission is installed
         // e.g. updating from 1.0.* to 1.1.*

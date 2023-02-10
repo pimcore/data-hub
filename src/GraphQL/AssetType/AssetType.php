@@ -59,6 +59,7 @@ class AssetType extends ObjectType
         $service = $this->getGraphQlService();
         $assetTree = $service->buildGeneralType('asset_tree');
         $assetMetadataItemType = $service->buildAssetType('asset_metadataitem');
+        $assetEmbeddedMetaInfoItemType = $service->buildAssetType('asset_embeddedmetainfoitem');
         $elementTagType = $service->buildGeneralType('element_tag');
 
         $propertyType = $this->getGraphQlService()->buildGeneralType('element_property');
@@ -118,6 +119,10 @@ class AssetType extends ObjectType
                 ],
                 'resolve' => [$resolver, 'resolveDimensions'],
             ],
+            'duration' => [
+                'type' => Type::float(),
+                'resolve' => [$resolver, 'resolveDuration'],
+            ],
             'srcset' => [
                 'type' => Type::listOf(new ObjectType([
                     'name' => 'srcset',
@@ -165,6 +170,10 @@ class AssetType extends ObjectType
                     'ignore_language' => ['type' => Type::boolean()]
                 ],
                 'resolve' => [$resolver, 'resolveMetadata']
+            ],
+            'embeddedMetaInfo' => [
+                'type' => Type::listOf($assetEmbeddedMetaInfoItemType),
+                'resolve' => [$resolver, 'resolveEmbeddedMetaInfo']
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),

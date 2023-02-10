@@ -2,7 +2,7 @@ actor: ModelTester
 modules:
     enabled:
         - \DataHubBundle\Tests\Helper\Model
-        - \Pimcore\Tests\Helper\Pimcore:
+        - \Pimcore\Tests\Support\Helper\Pimcore:
               connect_db: true
               cache_router: false
-        - \Pimcore\Tests\Helper\ClassManager
+        - \Pimcore\Tests\Support\Helper\ClassManager

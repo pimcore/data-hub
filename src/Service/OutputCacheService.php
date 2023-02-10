@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreLoadEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\OutputCachePreSaveEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\OutputCacheEvents;
 use Pimcore\Logger;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,19 +43,18 @@ class OutputCacheService
      */
     public $eventDispatcher;
 
-    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
+    public function __construct(ContainerBagInterface $container, EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
 
-        $config = $container->getParameter('pimcore_data_hub');
-
-        if (isset($config['graphql'])) {
-            if (isset($config['graphql']['output_cache_enabled'])) {
-                $this->cacheEnabled = filter_var($config['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
+        $dataHubConfig = $container->get('pimcore_data_hub');
+        if (isset($dataHubConfig['graphql'])) {
+            if (isset($dataHubConfig['graphql']['output_cache_enabled'])) {
+                $this->cacheEnabled = filter_var($dataHubConfig['graphql']['output_cache_enabled'], FILTER_VALIDATE_BOOLEAN);
             }
 
-            if (isset($config['graphql']['output_cache_lifetime'])) {
-                $this->lifetime = intval($config['graphql']['output_cache_lifetime']);
+            if (isset($dataHubConfig['graphql']['output_cache_lifetime'])) {
+                $this->lifetime = intval($dataHubConfig['graphql']['output_cache_lifetime']);
             }
         }
     }

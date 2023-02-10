@@ -155,6 +155,13 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.assettype_factory, id: asset_metadataitem }
 
+  pimcore.datahub.graphql.generaltype.factory.asset_embeddedmetainfoitem:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
+      arguments:
+          $className: Pimcore\Bundle\DataHubBundle\GraphQL\AssetType\AssetEmbeddedMetaInfoItem
+      tags:
+          - { name: pimcore.datahub.graphql.assettype_factory, id: asset_embeddedmetainfoitem }
+
   pimcore.datahub.graphql.generaltype.factory.video:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory
     arguments:
@@ -745,6 +752,9 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value_input }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LinkInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: link_input }
   #
   # document mutation types
   #
@@ -990,6 +1000,11 @@ services:
     tags:
         - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_quantityValue }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_imageGallery:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\ImageGallery
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_imageGallery }
+
   # dataobject mutation operator
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_ifempty:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\IfEmpty
@@ -1006,6 +1021,10 @@ services:
       tags:
           - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationoperator_localecollector }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_link:
+      class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Link
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_link }
   #
   # dataobject mutation operator factory definitions
   #

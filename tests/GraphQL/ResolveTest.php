@@ -21,9 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Translation;
 use Pimcore\Tool;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Codeception\Test\Unit;
 
 
-class ResolveTest extends \PHPUnit_Framework_TestCase
+class ResolveTest extends Unit
 {
     private Service|null $service;
 
@@ -164,7 +165,6 @@ class ResolveTest extends \PHPUnit_Framework_TestCase
         $t->setKey($key);
         $t->setCreationDate(time());
         $t->setModificationDate(time());
-        $t->setType($data['type'] ?? null);
 
         foreach (Tool::getValidLanguages() as $lang) {
             $t->addTranslation($lang, $lang . $key);

@@ -11,7 +11,6 @@ pimcore:
             de: ''
         default_language: ''
         disable_usage_statistics: false
-        instance_identifier: ''
     documents:
         versions:
             days: null
@@ -79,4 +78,3 @@ pimcore_admin:
         color_login_screen: ''
         color_admin_interface: ''
         login_screen_custom_image: ''
-

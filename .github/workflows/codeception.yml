@@ -1,5 +1,5 @@
 
-name: "Codeception Tests Pimcore X"
+name: "Codeception Tests"
 
 on:
     schedule:
@@ -23,7 +23,7 @@ env:
     PIMCORE_PROJECT_ROOT: ${{ github.workspace }}
     APP_ENV: test
     PIMCORE_TEST: 1
-    PIMCORE_TEST_DB_DSN: "mysql://root@127.0.0.1:33006/pimcore_test"
+    #PIMCORE_TEST_DB_DSN: "mysql://root@127.0.0.1:33006/pimcore_test"
     PIMCORE_TEST_REDIS_DSN: "redis://127.0.0.1:63379"
 
 jobs:
@@ -31,12 +31,14 @@ jobs:
         name: "Codeception tests"
         runs-on: "ubuntu-20.04"
         continue-on-error: ${{ matrix.experimental }}
+        env:
+            PIMCORE_TEST_DB_DSN: "mysql://root@127.0.0.1:33006/pimcore_test?serverVersion=${{ matrix.server_version }}"
         strategy:
             matrix:
                 include:
-                    - { php-version: 8.0, database: "mariadb:10.7", dependencies: highest, experimental: false }
-                    - { php-version: 8.0, database: "mariadb:10.7", dependencies: lowest, experimental: false }
-                    - { php-version: 8.1, database: "mariadb:10.7", dependencies: highest, experimental: false }
+                    - { php-version: 8.0, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: lowest, experimental: false }
+                    - { php-version: 8.1, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, experimental: false }
+                    - { php-version: 8.1, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, pimcore_version: "11.x-dev as 11.0.0", experimental: false }
         services:
             redis:
                 image: redis
@@ -63,7 +65,7 @@ jobs:
 
             - name: Verify MariaDB connection
               run: |
-                  cp .github/ci/pimcore_x/files/.my.cnf ~/.my.cnf
+                  cp .github/ci/files/.my.cnf ~/.my.cnf
                   while ! mysqladmin ping --silent; do
                     sleep 1
                   done
@@ -71,23 +73,31 @@ jobs:
             - name: "Setup Pimcore environment"
               run: |
                   mysql -e "CREATE DATABASE pimcore_test CHARSET=utf8mb4;"
-                  chmod 755 .github/ci/scripts/setup-pimcore-x-environment.sh
-                  .github/ci/scripts/setup-pimcore-x-environment.sh
+                  chmod 755 .github/ci/scripts/setup-environment.sh
+                  .github/ci/scripts/setup-environment.sh
+
+            - name: "Update Pimcore version"
+              env:
+                  PIMCORE_VERSION: "${{ matrix.pimcore_version }}"
+              run: |
+                  if [ ! -z "$PIMCORE_VERSION" ]; then
+                        composer require --no-update pimcore/pimcore:"${PIMCORE_VERSION}"
+                  fi    
 
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v2"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
-
-            - name: "Test environment infos"
-              run: |
-                  mysql -e "SELECT VERSION();"
-                  php -i
-                  ./bin/console pimcore:system:requirements:check
+#
+#            - name: "Test environment infos"
+#              run: |
+#                  mysql -e "SELECT VERSION();"
+#                  php -i
+#                  ./bin/console pimcore:system:requirements:check
 
             - name: "Sync Metadata Storage"
               run: |
                   bin/console doctrine:migrations:sync-metadata-storage -vvv
 
             - name: "Run Codeception"
-              run: "vendor/bin/codecept run -c . -vvv --json"
+              run: "vendor/bin/codecept run -c . -vvv --xml"

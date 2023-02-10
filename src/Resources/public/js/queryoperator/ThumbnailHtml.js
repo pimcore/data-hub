@@ -98,7 +98,7 @@ pimcore.plugin.datahub.queryoperator.thumbnailhtml = Class.create(pimcore.plugin
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: '/admin/settings/thumbnail-tree',
+                    url: '/admin/pimcoredatahub/config/thumbnail-tree',
                     reader: {
                         type: 'json'
                     }

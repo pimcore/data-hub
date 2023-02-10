@@ -6,11 +6,12 @@ namespace DataHubBundle\Tests\Helper;
 // all public methods declared in helper class will be available in $I
 
 use Doctrine\DBAL\Exception;
-use Pimcore\Bundle\DataHubBundle\Installer;
-use Pimcore\Tests\Helper\AbstractDefinitionHelper;
-use Pimcore\Tests\Helper\Pimcore;
-use Pimcore\Tests\Util\Autoloader;
-use Pimcore\Model\DataObject;
+use \Pimcore\Bundle\DataHubBundle\Installer;
+use Pimcore\Model\DataObject\Customer;
+use Pimcore\Tests\Support\Helper\AbstractDefinitionHelper;
+use Pimcore\Tests\Support\Helper\ClassManager;
+use Pimcore\Tests\Support\Helper\Pimcore;
+use Pimcore\Tests\Support\Util\Autoloader;
 
 class Model extends AbstractDefinitionHelper
 {
@@ -20,7 +21,7 @@ class Model extends AbstractDefinitionHelper
      * @return void
      * @throws Exception
      */
-    public function _beforeSuite($settings = [])
+    public function _beforeSuite($settings = []): void
     {
         /** @var Pimcore $pimcoreModule */
         $pimcoreModule = $this->getModule('\\' . Pimcore::class);
@@ -49,9 +50,9 @@ class Model extends AbstractDefinitionHelper
         Autoloader::load(DataHubTestEntity::class);
     }
 
-    public function initializeDefinitions()
+    public function initializeDefinitions(): void
     {
-        $cm = $this->getClassManager();
+        $cm = $this->getModule('\\' . ClassManager::class);
         $class = $cm->setupClass('DataHubTestEntity', __DIR__ . '/../Resources/class_DataHubTestEntity_import.json');
         $this->prepareData($class);
     }
@@ -69,7 +70,6 @@ class Model extends AbstractDefinitionHelper
             $object = new $entity();
             $object->setParentId(1);
             $object->setKey('DataHubTest_' . $key);
-            $object->setText('text' . $seed);
             $object->setPublished(true);
 
             $object->save();

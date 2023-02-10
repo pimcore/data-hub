@@ -15,10 +15,10 @@
 
 namespace DataHubBundle\Tests\Test;
 
-use Codeception\TestCase\Test;
-use Pimcore\Tests\Util\TestHelper;
+use Codeception\Test\Unit;
+use Pimcore\Tests\Support\Util\TestHelper;
 
-abstract class TestCase extends Test
+abstract class TestCase extends Unit
 {
     /**
      * @var bool

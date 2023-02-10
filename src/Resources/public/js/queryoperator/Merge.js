@@ -12,6 +12,8 @@
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  * @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *
+ * @deprecated will be removed in Data Hub 2
  */
 
 

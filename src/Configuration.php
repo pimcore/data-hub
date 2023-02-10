@@ -83,10 +83,7 @@ class Configuration extends AbstractModel
         $this->setConfiguration($configuration ?? []);
     }
 
-    /**
-     * @return array
-     */
-    public function getObjectVars()
+    public function getObjectVars(): array
     {
         $data = parent::getObjectVars();
 
@@ -269,6 +266,10 @@ class Configuration extends AbstractModel
 
         $securityConfig = $this->getSecurityConfig();
         if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
+            if (!is_array($securityConfig['apikey'])) {
+                $securityConfig['apikey'] = [$securityConfig['apikey']];
+            }
+
             foreach ($securityConfig['apikey'] as $apiKey) {
                 if (strlen($apiKey) < 16) {
                     throw new \Exception('API key ' . $apiKey . ' does not satisfy the minimum length of 16 characters');
