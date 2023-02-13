@@ -57,7 +57,7 @@ class PageSnippetType extends AbstractDocumentType
                 'getInheritedValues' => [
                     'type' => Type::boolean(),
                     'description' => 'Whether inherited editables should be fetched or not.',
-                    'defaultValue' => [false]
+                    'defaultValue' => false
                 ],
             ],
             'resolve' => [$resolver, 'resolveElements']
