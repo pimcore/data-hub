@@ -39,18 +39,17 @@ class PageSnippet
     public function resolveElements($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
-        $document = Document::getById($documentId);
+        $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
+        $document = Document::getById($documentId, ['force' => $getInheritedValuesInput]);
 
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
 
-            $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
             $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
             Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
 
             $elements = $document->getEditables();
-            $elements = array_merge($elements, $document->getContentMasterDocument()?->getDao()->getEditables() ?? []);
 
             Document\PageSnippet::setGetInheritedValues($getInheritedValues);
 
