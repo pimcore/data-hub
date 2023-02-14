@@ -19,6 +19,7 @@ use Doctrine\DBAL\Exception;
 use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20210305134111;
 use Pimcore\Db;
+use Pimcore\Extension\Bundle\Installer\Exception\InstallationException;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Logger;
 use Pimcore\Model\Tool\SettingsStore;
@@ -40,12 +41,12 @@ class Installer extends SettingsStoreAwareInstaller
      */
     public function install()
     {
-        // create backend permission
-        Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
-        Definition::create(self::DATAHUB_ADAPTER_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
-        Definition::create(self::DATAHUB_ADMIN_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
-
         try {
+            // create backend permission
+            Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+            Definition::create(self::DATAHUB_ADAPTER_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+            Definition::create(self::DATAHUB_ADMIN_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+
             $types = ['document', 'asset', 'object'];
 
             $db = Db::get();
@@ -68,11 +69,10 @@ class Installer extends SettingsStoreAwareInstaller
             }
         } catch (\Exception $e) {
             Logger::warn($e);
+            throw new InstallationException($e->getMessage());
         }
 
         parent::install();
-
-        return true;
     }
 
     /**
