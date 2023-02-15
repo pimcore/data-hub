@@ -42,7 +42,7 @@ Any combination of `variant`, `object`, `folder` is possible as a value for the 
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getCar": {

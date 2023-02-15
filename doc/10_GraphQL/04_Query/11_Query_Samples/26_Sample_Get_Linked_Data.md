@@ -34,7 +34,7 @@ will generated using the [Thumbnail Operator](../06_Operators.md).
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getCar": {
