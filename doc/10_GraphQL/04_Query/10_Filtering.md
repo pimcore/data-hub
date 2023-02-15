@@ -27,7 +27,7 @@ Get all `Manufacturer` objects which have 'ca' in their name field.
 ```
 
 #### Response
-```graphql
+```json
 {
   "data": {
     "getManufacturerListing": {

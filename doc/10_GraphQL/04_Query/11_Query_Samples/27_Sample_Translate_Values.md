@@ -32,7 +32,7 @@ the value of the select field into a human-readable representation.
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getAccessoryPart": {
