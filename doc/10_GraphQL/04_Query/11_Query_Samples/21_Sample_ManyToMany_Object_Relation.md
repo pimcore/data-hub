@@ -22,7 +22,7 @@ Get the associated categories.
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getCar": {

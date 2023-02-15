@@ -61,7 +61,7 @@ be returned by default.
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getDocument": {

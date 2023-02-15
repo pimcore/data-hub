@@ -77,7 +77,7 @@
 
 ## Response Example
 
-```graphql
+```json
 {
   "data": {
     "getCstest": {

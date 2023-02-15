@@ -28,7 +28,7 @@ Get the custom asset metadata for language `de`
 
 ### Response
 
-```graphql
+```json
 {
   "data": {
     "getAsset": {
