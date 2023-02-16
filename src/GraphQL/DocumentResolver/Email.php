@@ -41,7 +41,7 @@ class Email
         $document = Document::getById($documentId);
 
         if ($document instanceof Document\Link) {
-            $relation = $document->getObject();
+            $relation = $document->getElement();
             if ($relation) {
                 return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
             }

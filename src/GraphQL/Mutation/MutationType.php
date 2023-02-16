@@ -384,7 +384,7 @@ class MutationType extends ObjectType
                 $type = $value['type'];
                 $id = $value['id'];
                 $target = \Pimcore\Model\Element\Service::getElementById($type, $id);
-                $element->setObject($target);
+                $element->setElement($target);
             } elseif ($key == 'tags') {
                 //skip it to process in callee method
             } elseif ($key == 'href') {
