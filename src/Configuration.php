@@ -413,7 +413,7 @@ class Configuration extends AbstractModel
         return $this->configuration['permissions'] ?? [];
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         if ($this->dao) {
             $this->dao = clone $this->dao;
