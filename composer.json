@@ -19,7 +19,7 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^1.9",
-    "phpunit/phpunit": "^9.3",
+    "phpunit/phpunit": "^9.6",
     "symfony/phpunit-bridge": "^6",
     "codeception/codeception": "^4.1.12 || ^5.0.3",
     "codeception/phpunit-wrapper": "^9",
