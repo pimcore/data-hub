@@ -1013,7 +1013,11 @@ class Service
             } else {
                 $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);
                 $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
-                $blockData = $object->$blockGetter($isLocalizedField && isset($descriptorData['args']['language']) ? $descriptorData['args']['language'] : null);
+                if ($isLocalizedField) {
+                    $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
+                } else {
+                    $blockData = $object->$blockGetter();
+                }
             }
 
             if ($blockData) {
@@ -1071,7 +1075,11 @@ class Service
             }
         } elseif (method_exists($container, $getter)) {
             $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
-            $result = $container->$getter($isLocalizedField && isset($args['language']) ? $args['language'] : null);
+            if ($isLocalizedField) {
+                $result = $container->$getter($args['language'] ?? null);
+            } else {
+                $result = $container->$getter();
+            }
         }
 
         return $result;
