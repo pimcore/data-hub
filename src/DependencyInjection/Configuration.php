@@ -49,7 +49,7 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function addConfigurationsNode(ArrayNodeDefinition | NodeDefinition $rootNode)
+    private function addConfigurationsNode(ArrayNodeDefinition | NodeDefinition $rootNode): void
     {
         $rootNode
             ->children()
@@ -60,7 +60,7 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    private function addSupportedTypes(ArrayNodeDefinition | NodeDefinition $rootNode)
+    private function addSupportedTypes(ArrayNodeDefinition | NodeDefinition $rootNode): void
     {
         $rootNode
             ->children()
