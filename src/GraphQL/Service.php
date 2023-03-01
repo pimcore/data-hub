@@ -801,7 +801,7 @@ class Service
             $value = $value->$getBrickType();
             if (!empty($value) && !empty($brickKey)) {
                 if ($brickDescriptor) {
-                    $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                    $innerContainer = $brickDescriptor['innerContainer'] ?? 'localizedfields';
                     $localizedFields = $value->{'get' . ucfirst($innerContainer)}();
                     $brickDefinition = Definition::getByKey($brickType);
                     /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
@@ -885,7 +885,7 @@ class Service
             if ($brickDescriptor) {
                 $def = $brickClass->getFieldDefinition($brickKey);
                 if (!$def) {
-                    $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                    $innerContainer = $brickDescriptor['innerContainer'] ?? 'localizedfields';
                     /** @var Data\Localizedfields $localizedFields */
                     $localizedFields = $brickClass->getFieldDefinition($innerContainer);
                     $def = $localizedFields->getFieldDefinition($brickDescriptor['brickfield']);
@@ -1048,7 +1048,7 @@ class Service
             $context['outerFieldname'] = $key;
 
             if ($brickDescriptor) {
-                $innerContainer = $brickDescriptor['innerContainer'] ? $brickDescriptor['innerContainer'] : 'localizedfields';
+                $innerContainer = $brickDescriptor['innerContainer'] ?? 'localizedfields';
                 /** @var Data\Localizedfields $localizedFields */
                 $localizedFields = $brickClass->getFieldDefinition($innerContainer);
                 $def = $localizedFields->getFieldDefinition($brickDescriptor['brickfield']);
