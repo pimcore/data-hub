@@ -25,7 +25,7 @@
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony":"^1.6.0 || ^3.1.0",
-    "symfony/dotenv": "^6.1 || ^5.2.0"
+    "symfony/dotenv": "^6.2 || ^5.4.21"
   },
   "autoload": {
     "psr-4": {
