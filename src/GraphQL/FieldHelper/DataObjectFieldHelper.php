@@ -168,12 +168,12 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $brickDefinition = Definition::getByKey($brickType);
 
             if ($brickDescriptor) {
-                $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
-                if (!$fieldDefinition) {
-                    /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
-                    $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                /** @var Data\Localizedfields|null $fieldDefinitionLocalizedFields */
+                $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                if ($fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey)) {
                     $container = $fieldDefinitionLocalizedFields;
-                    $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
+                } else {
+                    $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
                 }
             } else {
                 $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
