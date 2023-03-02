@@ -1,3 +1,6 @@
+---
+title: Datahub
+---
 # Pimcore Datahub
 
 Pimcore Datahub is Pimcore’s data delivery & consumption platform. It integrates different input & output channel
