@@ -13,7 +13,7 @@
   "prefer-stable": true,
   "minimum-stability": "dev",
   "require": {
-    "php": "^8.0 || ^8.1",
+    "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
     "pimcore/pimcore": "^10.6 || ^11.0",
     "webonyx/graphql-php": "^14.6"
   },
@@ -25,7 +25,7 @@
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony":"^1.6.0 || ^3.1.0",
-    "symfony/dotenv": "^6.1 || ^5.2.0"
+    "symfony/dotenv": "^6.2 || ^5.4.21"
   },
   "autoload": {
     "psr-4": {

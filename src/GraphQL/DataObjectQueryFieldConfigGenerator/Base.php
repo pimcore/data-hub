@@ -52,27 +52,27 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
      * @param string $attribute
-     * @param array $grapQLConfig
+     * @param array $graphQLConfig
      * @param object|null $container
      *
      * @return array
      */
-    public function enrichConfig($fieldDefinition, $class, $attribute, $grapQLConfig, $container = null)
+    public function enrichConfig($fieldDefinition, $class, $attribute, $graphQLConfig, $container = null)
     {
         if ($container instanceof Data\Localizedfields) {
-            $grapQLConfig['args'] = isset($grapQLConfig['args']) ? $grapQLConfig['args'] : [];
-            $grapQLConfig['args'] = array_merge($grapQLConfig['args'],
+            $graphQLConfig['args'] = $graphQLConfig['args'] ?? [];
+            $graphQLConfig['args'] = array_merge($graphQLConfig['args'],
                 ['language' => ['type' => Type::string()]
             ]);
         }
 
         // for non-standard getters we provide a resolve which takes care of the composed x~y~z key. not needed for standard getters.
-        if (strpos($attribute, '~') !== false && !isset($grapQLConfig['resolve'])) {
+        if (strpos($attribute, '~') !== false && !isset($graphQLConfig['resolve'])) {
             $resolver = new Helper\Base($this->getGraphQlService(), $attribute, $fieldDefinition, $class);
-            $grapQLConfig['resolve'] = [$resolver, 'resolve'];
+            $graphQLConfig['resolve'] = [$resolver, 'resolve'];
         }
 
-        return $grapQLConfig;
+        return $graphQLConfig;
     }
 
     /**
