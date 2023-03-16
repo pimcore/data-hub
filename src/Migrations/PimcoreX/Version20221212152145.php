@@ -29,11 +29,11 @@ final class Version20221212152145 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('UPDATE pimcore.settings_store SET data=REPLACE(data, \'"childs":\', \'"children":\') WHERE scope=\'pimcore_data_hub\';');
+        $this->addSql('UPDATE settings_store SET data=REPLACE(data, \'"childs":\', \'"children":\') WHERE scope=\'pimcore_data_hub\';');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('UPDATE pimcore.settings_store SET data=REPLACE(data, \'"children":\', \'"childs":\') WHERE scope=\'pimcore_data_hub\';');
+        $this->addSql('UPDATE settings_store SET data=REPLACE(data, \'"children":\', \'"childs":\') WHERE scope=\'pimcore_data_hub\';');
     }
 }
