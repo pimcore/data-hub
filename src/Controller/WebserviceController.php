@@ -195,7 +195,6 @@ class WebserviceController extends FrontendController
 
             DocumentValidator::addRule(new DisableIntrospection($disableIntrospection));
 
-
             $result = GraphQL::executeQuery(
                 $event->getSchema(),
                 $event->getQuery(),

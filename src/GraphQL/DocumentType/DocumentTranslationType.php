@@ -31,7 +31,6 @@ class DocumentTranslationType extends ObjectType
         parent::__construct($config);
     }
 
-
     /**
      * @param array $config
      */
