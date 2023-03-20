@@ -24,13 +24,13 @@ class DocumentTranslationType extends ObjectType
 {
     use ServiceTrait;
 
-    public function __construct(Service $graphQlService, array $config = [])
+    public function __construct(Service $graphQlService, array $config = ['name' => 'document_translation', 'fields' => []])
     {
-        $this->graphQlService = $graphQlService;
-        $config['name'] = 'document_translation';
+        $this->setGraphQLService($graphQlService);
         $this->build($config);
         parent::__construct($config);
     }
+
 
     /**
      * @param array $config

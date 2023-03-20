@@ -192,9 +192,9 @@ class WebserviceController extends FrontendController
             }
 
             $disableIntrospection = $configuration->getSecurityConfig()['disableIntrospection'] ?? false;
-            if ($disableIntrospection === true) {
-                DocumentValidator::addRule(new DisableIntrospection());
-            }
+
+            DocumentValidator::addRule(new DisableIntrospection($disableIntrospection));
+
 
             $result = GraphQL::executeQuery(
                 $event->getSchema(),
