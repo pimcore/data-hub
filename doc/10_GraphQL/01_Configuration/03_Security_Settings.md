@@ -9,6 +9,15 @@ Defines how users are authenticated when accessing the endpoint.
 * API Key: needs to be sent with every request.
 * ... more to come
 
+## Introspection settings
+
+Introspection provides an information about queries which are supported by GraphQl schema. This is currently enabled by default. It can be disabled via security settings or in the symfony configuration tree:
+```
+pimcore_data_hub:
+    graphql:
+        allow_introspection: false
+```
+
 ## Workspace Settings
 
 Defines workspaces for data that should be accessible via the endpoint. 

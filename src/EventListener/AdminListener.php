@@ -19,6 +19,13 @@ use Pimcore\Event\Admin\IndexActionSettingsEvent;
 
 class AdminListener
 {
+    private array $config;
+
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+    }
+
     /**
      * Handles INDEX_ACTION_SETTINGS event and adds custom admin UI settings
      *
@@ -27,5 +34,10 @@ class AdminListener
     public function addIndexSettings(IndexActionSettingsEvent $event)
     {
         $event->addSetting('data-hub-writeable', (new \Pimcore\Bundle\DataHubBundle\Configuration(null, null))->isWriteable());
+        $allowIntrospection = true;
+        if (isset($this->config['graphql']) && isset($this->config['graphql']['allow_introspection'])) {
+            $allowIntrospection = $this->config['graphql']['allow_introspection'];
+        }
+        $event->addSetting('allow_introspection', $allowIntrospection);
     }
 }
