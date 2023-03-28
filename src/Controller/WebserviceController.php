@@ -192,11 +192,11 @@ class WebserviceController extends FrontendController
             }
 
             $configAllowIntrospection = true;
-            if (isset($this->config['graphql']) && isset($this->config['graphql']['allow_introspection'])) {
-                $configAllowIntrospection = $this->config['graphql']['allow_introspection'];
+            if (isset($config['graphql']) && isset($config['graphql']['allow_introspection'])) {
+                $configAllowIntrospection = $config['graphql']['allow_introspection'];
             }
 
-            $disableIntrospection = (!$configAllowIntrospection || $configuration->getSecurityConfig()['disableIntrospection']) ?? false;
+            $disableIntrospection = !$configAllowIntrospection || (isset($configuration->getSecurityConfig()['disableIntrospection']) && $configuration->getSecurityConfig()['disableIntrospection']);
             if ($disableIntrospection === true) {
                 DocumentValidator::addRule(new DisableIntrospection());
             }
