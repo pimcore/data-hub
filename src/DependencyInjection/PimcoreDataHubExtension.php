@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -51,16 +52,30 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             $loader->load('doctrine_migrations.yml');
         }
 
-        $configDir = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
+        $configDir = PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub';
+
+        if (\Pimcore\Version::getMajorVersion() >= 11) {
+            $containerConfig = ConfigurationHelper::getConfigNodeFromSymfonyTree($container, 'pimcore_data_hub');
+            $configDir = $containerConfig['config_location']['data_hub']['options']['directory'];
+        }
+
         $configLoader = new YamlFileLoader(
             $container,
             new FileLocator($configDir)
         );
 
         //load datahub configs
-        $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
-        foreach ($configLocator->locate('config') as $config) {
-            $configLoader->load($config);
+        if (\Pimcore\Version::getMajorVersion() >= 11) {
+            $configs = ConfigurationHelper::getSymfonyConfigFiles($configDir);
+            foreach ($configs as $config) {
+                $configLoader->load($config);
+            }
+        }
+        else {
+            $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
+            foreach ($configLocator->locate('config') as $config) {
+                $configLoader->load($config);
+            }
         }
     }
 }

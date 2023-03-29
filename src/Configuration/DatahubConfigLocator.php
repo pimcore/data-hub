@@ -20,6 +20,7 @@ namespace Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\Finder\Finder;
 
 /**
+ * @deprecated will be removed in Pimcore 11
  * Locates data hub configs
  */
 class DatahubConfigLocator
