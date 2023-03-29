@@ -55,7 +55,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     {
         $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
 
-        if(\Pimcore\Version::getMajorVersion() >= 11) {
+        if (\Pimcore\Version::getMajorVersion() >= 11) {
             $storageConfig = $config['config_location']['data_hub'];
 
             parent::configure([
