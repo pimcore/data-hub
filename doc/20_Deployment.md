@@ -27,8 +27,7 @@ for specific definitions.
 
 ### Configuration Storage
 
-The configuration user interface utilizes the `LocationAwareConfigRepository` for storing the configuration. With
-the environment variable `PIMCORE_WRITE_TARGET_DATA_HUB` the storage location can be configured, possible values are
+The configuration user interface utilizes the `LocationAwareConfigRepository` for storing the configuration. In the symfony tree the storage location can be configured, possible values are
 - `symfony-config` - write configs as Symfony Config as YAML files to `/var/config/data-hub/<name>.yaml`
 - `settings-store` - write configs to the SettingsStore
 - `disabled` - do not allow to edit/write configs at all
@@ -40,8 +39,13 @@ won't see any update, because these configs are read only.
 Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/current/Development_Documentation/Deployment/Configuration_Environments.html#page_Configuration-Storage-Locations-Fallbacks).
 
 #### Example
-```env 
-PIMCORE_WRITE_TARGET_DATA_HUB=symfony-config
+```yaml
+pimcore_data_hub:
+    config_location: 
+        data_hub:
+            target: 'symfony-config'
+            options:
+              directory: '/var/www/html/var/config/data_hub'
 ```
 
 Additionally, it is also possible to define the configuration directly in a symfony configuration file without using

@@ -72,3 +72,8 @@ pimcore_admin:
         color_login_screen: ''
         color_admin_interface: ''
         login_screen_custom_image: ''
+pimcore_data_hub:
+    config_location:
+        data_hub:
+            target: 'settings-store'
+

@@ -64,12 +64,18 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
                 'storageConfig' => $storageConfig,
             ]);
         } else {
+            $storageConfig = Config\LocationAwareConfigRepository::getStorageConfigurationCompatibilityLayer(
+                $config,
+                'data_hub',
+                'PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB',
+                'PIMCORE_WRITE_TARGET_DATA_HUB'
+            );
+
             parent::configure([
                 'containerConfig' => $config['configurations'] ?? [],
                 'settingsStoreScope' => 'pimcore_data_hub',
-                'storageDirectory' => self::CONFIG_PATH,
+                'storageDirectory' => $storageConfig,
                 'legacyConfigFile' => self::LEGACY_FILE,
-                'writeTargetEnvVariableName' => 'PIMCORE_WRITE_TARGET_DATA_HUB'
             ]);
         }
     }
