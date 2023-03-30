@@ -6,17 +6,17 @@ parameters:
 			path: src/DependencyInjection/Configuration.php
 
 		-
-			message: "#^Call to static method addConfigLocationWithWriteTargetNodes\\(\\) on an unknown class\\.$#"
+			message: "#^Call to static method addConfigLocationWithWriteTargetNodes\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/Configuration.php
 
 		-
-			message: "#^Call to static method getConfigNodeFromSymfonyTree\\(\\) on an unknown class\\.$#"
+			message: "#^Call to static method getConfigNodeFromSymfonyTree\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/PimcoreDataHubExtension.php
 
 		-
-			message: "#^Call to static method getSymfonyConfigFiles\\(\\) on an unknown class\\.$#"
+			message: "#^Call to static method getSymfonyConfigFiles\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/PimcoreDataHubExtension.php
 
