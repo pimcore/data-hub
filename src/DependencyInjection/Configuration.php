@@ -47,7 +47,9 @@ class Configuration implements ConfigurationInterface
         $this->addConfigurationsNode($rootNode);
         $this->addSupportedTypes($rootNode);
 
-        ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub']);
+        if(\Pimcore\Version::getMajorVersion() >= 11) {
+            ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub']);
+        }
 
         return $treeBuilder;
     }

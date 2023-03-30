@@ -64,7 +64,7 @@ class Thumbnail extends AbstractOperator
             if ($childResult->value instanceof Asset\Image || $childResult->value instanceof Asset\Video) {
                 $childValue = $result->value = $childResult->value;
                 $thumbnail = $childValue->getThumbnail($this->thumbnailConfig, false);
-                $result->value = $thumbnail->getPath(false);
+                $result->value = $thumbnail->getPath();
             }
         }
 
