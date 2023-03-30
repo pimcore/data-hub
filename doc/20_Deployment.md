@@ -28,7 +28,7 @@ for specific definitions.
 ### Configuration Storage
 
 The configuration user interface utilizes the `LocationAwareConfigRepository` for storing the configuration. In the symfony tree the storage location can be configured, possible values are
-- `symfony-config` - write configs as Symfony Config as YAML files to `/var/config/data-hub/<name>.yaml`
+- `symfony-config` - write configs as Symfony Config as YAML files to `/var/config/data_hub/<name>.yaml`
 - `settings-store` - write configs to the SettingsStore
 - `disabled` - do not allow to edit/write configs at all
 
