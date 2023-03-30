@@ -47,7 +47,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     private const LEGACY_FILE = 'datahub-configurations.php';
 
     /**
-     * @deprecated Will be removed in Pimcore 11
+     * @deprecated Will be removed as soon as Pimcore 10.6 isn´t supported anymore.
      */
     public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
 
