@@ -60,7 +60,7 @@ class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->enumNode('target')
-                                ->values(['symfony-config', 'settings-store'])
+                                ->values(['symfony-config', 'settings-store', 'disabled'])
                                 ->defaultValue('symfony-config')
                             ->end()
                             ->arrayNode('options')
