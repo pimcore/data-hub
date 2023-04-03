@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -45,6 +46,31 @@ class Configuration implements ConfigurationInterface
 
         $this->addConfigurationsNode($rootNode);
         $this->addSupportedTypes($rootNode);
+
+        if (\Pimcore\Version::getMajorVersion() >= 11) {
+            /** @var ArrayNodeDefinition $rootNode */
+            ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub']);
+        } else {
+            $rootNode
+                ->children()
+                    ->arrayNode('config_location')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('data_hub')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->enumNode('target')
+                                ->values(['symfony-config', 'settings-store', 'disabled'])
+                                ->defaultValue('symfony-config')
+                            ->end()
+                            ->arrayNode('options')
+                                ->defaultValue(['directory' => '%kernel.project_dir%data_hub'])
+                                ->variablePrototype()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end();
+        }
 
         return $treeBuilder;
     }

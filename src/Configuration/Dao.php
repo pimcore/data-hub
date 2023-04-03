@@ -46,19 +46,38 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     private const LEGACY_FILE = 'datahub-configurations.php';
 
+    /**
+     * @deprecated Will be removed as soon as Pimcore 10.6 isn´t supported anymore.
+     */
     public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
 
     public function configure(): void
     {
         $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
 
-        parent::configure([
-            'containerConfig' => $config['configurations'] ?? [],
-            'settingsStoreScope' => 'pimcore_data_hub',
-            'storageDirectory' => self::CONFIG_PATH,
-            'legacyConfigFile' => self::LEGACY_FILE,
-            'writeTargetEnvVariableName' => 'PIMCORE_WRITE_TARGET_DATA_HUB'
-        ]);
+        if (\Pimcore\Version::getMajorVersion() >= 11) {
+            $storageConfig = $config['config_location']['data_hub'];
+
+            parent::configure([
+                'containerConfig' => $config['configurations'] ?? [],
+                'settingsStoreScope' => 'pimcore_data_hub',
+                'storageConfig' => $storageConfig,
+            ]);
+        } else {
+            $storageConfig = Config\LocationAwareConfigRepository::getStorageConfigurationCompatibilityLayer(
+                $config,
+                'data_hub',
+                'PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB',
+                'PIMCORE_WRITE_TARGET_DATA_HUB'
+            );
+
+            parent::configure([
+                'containerConfig' => $config['configurations'] ?? [],
+                'settingsStoreScope' => 'pimcore_data_hub',
+                'storageDirectory' => $storageConfig,
+                'legacyConfigFile' => self::LEGACY_FILE,
+            ]);
+        }
     }
 
     /**

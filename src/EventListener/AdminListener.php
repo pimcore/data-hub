@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\EventListener;
 
-use Pimcore\Event\Admin\IndexActionSettingsEvent;
+use Pimcore\Bundle\AdminBundle\Event\IndexActionSettingsEvent;
 
 class AdminListener
 {
