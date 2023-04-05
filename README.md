@@ -13,7 +13,7 @@ The basic configuration of Datahub comes with a GraphQL API, which is described 
 
 A short introduction video of an output channel based on the GraphQL query language can be found [here](./doc/img/graphql/intro.mp4).
 
-## Features in a nutshell
+## Features in a Nutshell
 - Easy-to-configure interface layer for data delivery and consumption
 - Tool of choice to connect Pimcore to any other systems and applications besides internal PHP API - whether they are backend applications like ERP systems or frontend applications like your storefront
 - Multiple endpoints definition for different use cases and target/source systems
