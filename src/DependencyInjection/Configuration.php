@@ -49,7 +49,7 @@ class Configuration implements ConfigurationInterface
 
         if (\Pimcore\Version::getMajorVersion() >= 11) {
             /** @var ArrayNodeDefinition $rootNode */
-            ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub']);
+            ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub' => '/var/config/data_hub']);
         } else {
             $rootNode
                 ->children()

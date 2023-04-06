@@ -56,7 +56,7 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
 
         if (\Pimcore\Version::getMajorVersion() >= 11) {
             $containerConfig = ConfigurationHelper::getConfigNodeFromSymfonyTree($container, 'pimcore_data_hub');
-            $configDir = $containerConfig['config_location']['data_hub']['options']['directory'];
+            $configDir = $containerConfig['config_location']['data_hub']['write_target']['options']['directory'];
         }
 
         $configLoader = new YamlFileLoader(
