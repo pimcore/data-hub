@@ -18,6 +18,9 @@
     "pimcore/compatibility-bridge-v10": "1.x-dev",
     "webonyx/graphql-php": "^15.2.3"
   },
+  "conflict": {
+    "pimcore/pimcore": "v11.0.0-ALPHA8 || v11.0.0-ALPHA7 || v11.0.0-ALPHA6 || v11.0.0-ALPHA5 || v11.0.0-ALPHA4 || v11.0.0-ALPHA3 || v11.0.0-ALPHA2 || v11.0.0-ALPHA1"
+  },
   "require-dev": {
     "phpstan/phpstan": "^1.9",
     "phpunit/phpunit": "^9.6",
