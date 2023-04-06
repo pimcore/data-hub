@@ -75,5 +75,6 @@ pimcore_admin:
 pimcore_data_hub:
     config_location:
         data_hub:
-            target: 'settings-store'
+            write_target:
+                type: 'settings-store'
 
