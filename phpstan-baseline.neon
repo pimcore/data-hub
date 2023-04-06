@@ -11,12 +11,12 @@ parameters:
 			path: src/DependencyInjection/Configuration.php
 
 		-
-			message: "#^Call to static method getConfigNodeFromSymfonyTree\\(\\)\\ on an unknown class Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper.$#"
+			message: "#^Call to an undefined static method Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper\\:\\:getConfigNodeFromSymfonyTree\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/PimcoreDataHubExtension.php
 
 		-
-			message: "#^Call to static method getSymfonyConfigFiles\\(\\)\\ on an unknown class Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper.$#"
+			message: "#^Call to an undefined static method Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper\\:\\:getSymfonyConfigFiles\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/PimcoreDataHubExtension.php
 
