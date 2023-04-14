@@ -1,7 +1,7 @@
 # Installation
 
 ## Bundle Installation
-### For Pimcore 10.5+
+### For Pimcore >= 10.5
 To install Pimcore Datahub for Pimcore 10.5 or higher, follow the three steps below:
 
 1. Install the required dependencies:
