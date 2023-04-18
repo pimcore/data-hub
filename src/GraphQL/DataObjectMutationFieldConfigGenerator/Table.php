@@ -42,9 +42,22 @@ class Table extends Base
             $inputItems['col' . $i] = Type::string();
         }
 
+        $rowInput = new InputObjectType([
+            'name' => 'RowInput',
+            'fields' => $inputItems
+        ]);
+
         $inputType = new InputObjectType([
             'name' => 'TableInput',
-            'fields' => $inputItems
+            'fields' => [
+                'replace' => [
+                    'type' => Type::boolean(),
+                    'description' => 'if true then the entire table will be overwritten'
+                ],
+                'rows' => [
+                    'type' => Type::listOf($rowInput)
+                ]
+            ]
         ]);
 
         return [
