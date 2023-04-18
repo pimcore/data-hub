@@ -27,6 +27,7 @@ pimcore.plugin.datahub = Class.create({
             document.addEventListener(pimcore.events.pimcoreReady, this.pimcoreReady.bind(this));
         }
 
+
         document.addEventListener("pimcore.perspectiveEditor.permissions.structure.load", (e) => {
             if (e.detail.context === 'toolbar') {
                 e.detail.structure['datahub'] = {};

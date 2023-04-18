@@ -2,8 +2,28 @@ parameters:
 	ignoreErrors:
 		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
-			count: 3
+			count: 4
 			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Call to static method addConfigLocationWithWriteTargetNodes\\(\\)\\ on an unknown class Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper.$#"
+			count: 1
+			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Call to an undefined static method Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper\\:\\:getConfigNodeFromSymfonyTree\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/PimcoreDataHubExtension.php
+
+		-
+			message: "#^Call to an undefined static method Pimcore\\\\Bundle\\\\CoreBundle\\\\DependencyInjection\\\\ConfigurationHelper\\:\\:getSymfonyConfigFiles\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/PimcoreDataHubExtension.php
+
+		-
+			message: "#^Call to an undefined static method Pimcore\\\\Config\\\\LocationAwareConfigRepository\\:\\:getStorageConfigurationCompatibilityLayer\\(\\)\\.$#"
+			count: 1
+			path: src/Configuration/Dao.php
 
 		-
 			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\AssetType\\\\AssetFolderType has an unused parameter \\$config\\.$#"

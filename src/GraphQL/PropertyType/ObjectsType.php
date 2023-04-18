@@ -33,6 +33,8 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
     public function __construct(Service $graphQlService)
     {
         $this->setGraphQLService($graphQlService);
+
+        // @phpstan-ignore-next-line - We can't define the types in the constructor because the `getTypes` method is overwritten
         parent::__construct(['name' => 'hotspot_metadata_object']);
     }
 
