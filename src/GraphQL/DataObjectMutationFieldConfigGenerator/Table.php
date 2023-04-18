@@ -15,8 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
 
-use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Table extends Base
@@ -38,7 +38,7 @@ class Table extends Base
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Table($nodeDef, $processors);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        foreach(range(0, $numCols - 1) as $i) {
+        foreach (range(0, $numCols - 1) as $i) {
             $inputItems['col' . $i] = Type::string();
         }
 
@@ -53,7 +53,8 @@ class Table extends Base
         ];
     }
 
-    public function getProcessors(&$processors, $tableDef) {
+    public function getProcessors(&$processors, $tableDef)
+    {
         $tableHeaderStr = $tableDef->getData();
         $tableHeader = [];
 

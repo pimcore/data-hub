@@ -49,7 +49,7 @@ and make sure that the `/News` folder is readable.
 
 Here you also see the use of aliases.
 
-```graphql
+```json
 {
   "data": {
     "getNews": {

@@ -27,9 +27,12 @@ Thumbs.db
 /kernel
 /public
 /templates
+/tests/_output
+/tests/_support/_generated
 /var
 /vendor
 /.env
+/.env.test
 /.htaccess
 /auth.json
 /config.json

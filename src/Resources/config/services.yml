@@ -9,7 +9,6 @@ services:
         autoconfigure: true
         public: false
 
-
     # auto-register all commands as services
     Pimcore\Bundle\DataHubBundle\Command\:
         resource: '../../Command'

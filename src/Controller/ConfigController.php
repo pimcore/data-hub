@@ -21,6 +21,8 @@ use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
+use Pimcore\Bundle\DataHubBundle\Service\ExportService;
+use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
@@ -28,6 +30,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -554,5 +557,60 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         }
 
         return $this->adminJson($users);
+    }
+
+    /**
+     * @Route("/export", methods={"GET"})
+     *
+     * @param Request $request
+     */
+    public function exportConfiguration(Request $request, ExportService $exportService): Response
+    {
+        $this->checkPermission(self::CONFIG_NAME);
+
+        $name = $request->get('name');
+        $configuration = Configuration::getByName($name);
+        if (!$configuration) {
+            throw new \Exception('Datahub configuration ' . $name . ' does not exist.');
+        }
+        if (!$configuration->isAllowed('read')) {
+            throw $this->createAccessDeniedHttpException();
+        }
+
+        $json = $exportService->exportConfigurationJson($configuration);
+        $filename = sprintf(
+            'datahub_%s_%s_export.json',
+            $configuration->getType(),
+            $configuration->getName()
+        );
+        $response = new Response($json);
+        $response->headers->set('Content-type', 'application/json');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/import", methods={"POST"})
+     *
+     * @param Request $request
+     * @param ImportService $importService
+     */
+    public function importConfiguration(Request $request, ImportService $importService): JsonResponse
+    {
+        $this->checkPermission(self::CONFIG_NAME);
+        $json = file_get_contents($_FILES['Filedata']['tmp_name']);
+        $configuration = $importService->importConfigurationJson($json);
+
+        $response = $this->adminJson([
+            'success' => true,
+            'type' => $configuration->getType(),
+            'name' => $configuration->getName()
+        ]);
+        // set content-type to text/html, otherwise (when application/json is sent) chrome will complain in
+        // Ext.form.Action.Submit and mark the submission as failed
+        $response->headers->set('Content-Type', 'text/html');
+
+        return $response;
     }
 }

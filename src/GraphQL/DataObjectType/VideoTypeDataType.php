@@ -33,9 +33,10 @@ class VideoTypeDataType extends UnionType
 
     public function __construct(Service $graphQlService)
     {
-        $config['name'] = 'VideoData';
         $this->setGraphQLService($graphQlService);
-        parent::__construct($config);
+
+        // @phpstan-ignore-next-line - We can't define the types in the constructor because the `getTypes` method is overwritten
+        parent::__construct(['name' => 'VideoData']);
     }
 
     /**
@@ -52,8 +53,8 @@ class VideoTypeDataType extends UnionType
 
         return [
             new ObjectType([
-                'name' => 'VideoDataDescriptor',
-                'fields' => [
+                    'name' => 'VideoDataDescriptor',
+                    'fields' => [
                         'id' => ['type' => Type::string(), 'description' => 'external ID']
                     ]
                 ]

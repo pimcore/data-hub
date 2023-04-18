@@ -36,6 +36,7 @@ class Table extends Base
         parent::__construct($nodeDef);
         $this->processors = $processors;
     }
+
     /**
      * @param Concrete|AbstractData $object
      * @param mixed $newValue
@@ -54,13 +55,13 @@ class Table extends Base
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $currentTable) {
             $newTable = [];
 
-            if($newValue === null) {
+            if ($newValue === null) {
                 return $container->$setter($currentTable);
             }
 
             if (is_array($newValue)) {
                 if (count($currentTable) > 0) {
-                    foreach($currentTable as $row) {
+                    foreach ($currentTable as $row) {
                         $newTable[] = $row;
                     }
                 } elseif ($tableHeader = $this->processors['tableHeader']) {

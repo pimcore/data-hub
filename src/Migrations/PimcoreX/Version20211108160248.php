@@ -27,7 +27,7 @@ use Pimcore\Bundle\DataHubBundle\Installer;
  */
 final class Version20211108160248 extends AbstractMigration
 {
-    private function migrateUsers(bool $up)
+    private function migrateUsers(bool $up): void
     {
         $listing = new \Pimcore\Model\User\Listing();
         $listing->setCondition('`type` = ? or `type` = ?', ['role', 'user']);

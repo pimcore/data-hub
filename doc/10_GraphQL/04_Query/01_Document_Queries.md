@@ -53,6 +53,22 @@
 }
 ```
 
+
+### Fetch Document Page and get all editables, including the inherited editables
+
+```graphql
+{
+  getDocument(id: 207) {    
+    ... on document_page {
+      id,
+      editables(getInheritedValues: true ){
+        __typename
+      }
+    }
+  }
+}
+```
+
 ## Fetch Document Page via data object relation and get more editable data
 
 * get data object ID 61

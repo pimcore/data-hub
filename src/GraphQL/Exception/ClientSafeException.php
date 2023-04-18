@@ -22,7 +22,7 @@ class ClientSafeException extends \Exception implements ClientAware
     /**
      * @return bool
      */
-    public function isClientSafe()
+    public function isClientSafe(): bool
     {
         return true;
     }

@@ -168,26 +168,24 @@ class DataObjectFieldHelper extends AbstractFieldHelper
             $brickDefinition = Definition::getByKey($brickType);
 
             if ($brickDescriptor) {
-                $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
-                if (!$fieldDefinition) {
-                    /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
-                    $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                /** @var Data\Localizedfields|null $fieldDefinitionLocalizedFields */
+                $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
+                if ($fieldDefinition = $fieldDefinitionLocalizedFields?->getFieldDefinition($brickKey)) {
                     $container = $fieldDefinitionLocalizedFields;
-                    $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
                 }
-            } else {
+            }
+
+            if (!$fieldDefinition) {
                 $fieldDefinition = $brickDefinition->getFieldDefinition($brickKey);
             }
         } else {
-            $fieldDefinition = $class->getFieldDefinition($key);
-        }
-
-        if (!$fieldDefinition) {
-            /** @var Data\Localizedfields|null $container */
-            $container = $class->getFieldDefinition('localizedfields');
-            $lfDefs = $container;
-            if ($lfDefs) {
-                $fieldDefinition = $lfDefs->getFieldDefinition($key);
+            /** @var Data\Localizedfields|null $fieldDefinitionLocalizedFields */
+            $fieldDefinitionLocalizedFields = $class->getFieldDefinition('localizedfields');
+            if ($fieldDefinition = $fieldDefinitionLocalizedFields?->getFieldDefinition($key)) {
+                $container = $fieldDefinitionLocalizedFields;
+            }
+            if (!$fieldDefinition) {
+                $fieldDefinition = $class->getFieldDefinition($key);
             }
         }
 

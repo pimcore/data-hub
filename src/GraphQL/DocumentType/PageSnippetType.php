@@ -53,6 +53,13 @@ class PageSnippetType extends AbstractDocumentType
 
         $config['fields']['editables'] = [
             'type' => Type::listOf($this->documentElementType),
+            'args' => [
+                'getInheritedValues' => [
+                    'type' => Type::boolean(),
+                    'description' => 'Whether inherited editables should be fetched or not.',
+                    'defaultValue' => false
+                ],
+            ],
             'resolve' => [$resolver, 'resolveElements']
         ];
 

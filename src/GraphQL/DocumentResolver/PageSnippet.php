@@ -39,12 +39,19 @@ class PageSnippet
     public function resolveElements($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
-        $document = Document::getById($documentId);
+        $getInheritedValuesInput = $args['getInheritedValues'] ?? false;
+        $document = Document::getById($documentId, ['force' => $getInheritedValuesInput]);
 
         if ($document instanceof Document\PageSnippet) {
             $result = [];
             $sortBy = [];
+
+            $getInheritedValues = Document\PageSnippet::getGetInheritedValues();
+            Document\PageSnippet::setGetInheritedValues($getInheritedValuesInput);
+
             $elements = $document->getEditables();
+
+            Document\PageSnippet::setGetInheritedValues($getInheritedValues);
 
             $service = $this->getGraphQlService();
             $supportedTypeNames = $service->getSupportedDocumentElementQueryDataTypes();

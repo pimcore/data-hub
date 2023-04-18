@@ -106,6 +106,30 @@ class AssetType
      * @param array $context
      * @param ResolveInfo|null $resolveInfo
      *
+     * @return array|null
+     *
+     * @throws Exception
+     */
+    public function resolveEmbeddedMetaInfo($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
+        $result = [];
+        foreach ($asset->getCustomSetting('embeddedMetaData') ?? [] as $key => $value) {
+            $result[] = ['name' => $key, 'value' => $value];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param ElementDescriptor|null $value
+     * @param array $args
+     * @param array $context
+     * @param ResolveInfo|null $resolveInfo
+     *
      * @return string|null
      *
      * @throws Exception

@@ -266,6 +266,10 @@ class Configuration extends AbstractModel
 
         $securityConfig = $this->getSecurityConfig();
         if (($this->configuration['general']['active'] ?? false) && isset($securityConfig['method']) && $securityConfig['method'] === self::SECURITYCONFIG_AUTH_APIKEY) {
+            if (!is_array($securityConfig['apikey'])) {
+                $securityConfig['apikey'] = [$securityConfig['apikey']];
+            }
+
             foreach ($securityConfig['apikey'] as $apiKey) {
                 if (strlen($apiKey) < 16) {
                     throw new \Exception('API key ' . $apiKey . ' does not satisfy the minimum length of 16 characters');
@@ -409,7 +413,7 @@ class Configuration extends AbstractModel
         return $this->configuration['permissions'] ?? [];
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         if ($this->dao) {
             $this->dao = clone $this->dao;
