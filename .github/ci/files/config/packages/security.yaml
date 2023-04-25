@@ -16,6 +16,9 @@ security:
             provider: pimcore_admin
             http_basic: ~
 
+        # Pimcore Admin Bundle firewall
+        pimcore_admin: '%pimcore_admin_bundle.firewall_settings%'
+
     access_control:
         # Pimcore admin ACl  // DO NOT CHANGE!
         - { path: ^/admin/settings/display-custom-logo, roles: PUBLIC_ACCESS }
