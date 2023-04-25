@@ -32,7 +32,7 @@
     "symfony/dotenv": "^6.2 || ^5.4.21"
   },
   "suggest": {
-    "pimcore/admin-ui-classic-bundle": "Only needed if you are using Pimcore 11."
+    "pimcore/admin-ui-classic-bundle": "Required for Pimcore 11"
   },
   "autoload": {
     "psr-4": {

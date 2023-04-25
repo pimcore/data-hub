@@ -56,8 +56,3 @@ pimcore:
             mail_receiver: ''
         archive_treshold: '30'
         archive_alternative_database: ''
-pimcore_admin:
-    branding:
-        color_login_screen: ''
-        color_admin_interface: ''
-        login_screen_custom_image: ''
