@@ -36,10 +36,10 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - { php-version: 8.0, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: lowest, experimental: false, require_admin_bundle: false}
-                    - { php-version: 8.1, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, experimental: false, require_admin_bundle: true}
-                    - { php-version: 8.2, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, experimental: false, require_admin_bundle: true}
-                    - { php-version: 8.2, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, pimcore_version: "11.x-dev as 11.0.0", experimental: true, require_admin_bundle: true}
+                    - { php-version: 8.0, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: lowest, experimental: false, require_admin_bundle: false }
+                    - { php-version: 8.1, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, experimental: false, require_admin_bundle: true }
+                    - { php-version: 8.2, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, experimental: false, require_admin_bundle: true }
+                    - { php-version: 8.2, database: "mariadb:10.7.7", server_version: "10.7.7-MariaDB-1:10.7.7+maria~ubu2004", dependencies: highest, pimcore_version: "11.x-dev as 11.0.0", experimental: true, require_admin_bundle: true }
         services:
             redis:
                 image: redis
