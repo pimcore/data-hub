@@ -14,8 +14,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-    "pimcore/pimcore": "^11.0",
-    "pimcore/admin-ui-classic-bundle": "^1.0",
+    "pimcore/pimcore": "^10.6 || ^11.0",
     "pimcore/compatibility-bridge-v10": "^1.0",
     "webonyx/graphql-php": "^15.2.3"
   },
@@ -31,6 +30,9 @@
     "codeception/module-asserts": "^2",
     "codeception/module-symfony": "^1.6.0 || ^3.1.0",
     "symfony/dotenv": "^6.2 || ^5.4.21"
+  },
+  "suggest": {
+    "pimcore/admin-ui-classic-bundle": "Only needed if you are using Pimcore 11."
   },
   "autoload": {
     "psr-4": {
