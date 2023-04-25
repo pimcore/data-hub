@@ -14,12 +14,13 @@
   "minimum-stability": "dev",
   "require": {
     "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-    "pimcore/pimcore": "10.6 || dev-decouple_admin_bundle_11 as 11.0.0",
-    "pimcore/compatibility-bridge-v10": "1.x-dev",
+    "pimcore/pimcore": "^11.0",
+    "pimcore/admin-ui-classic-bundle": "^1.0",
+    "pimcore/compatibility-bridge-v10": "^1.0",
     "webonyx/graphql-php": "^15.2.3"
   },
   "conflict": {
-    "pimcore/pimcore": "v11.0.0-ALPHA8 || v11.0.0-ALPHA7 || v11.0.0-ALPHA6 || v11.0.0-ALPHA5 || v11.0.0-ALPHA4 || v11.0.0-ALPHA3 || v11.0.0-ALPHA2 || v11.0.0-ALPHA1"
+    "pimcore/pimcore": "v11.0.0-BETA1 || v11.0.0-ALPHA8 || v11.0.0-ALPHA7 || v11.0.0-ALPHA6 || v11.0.0-ALPHA5 || v11.0.0-ALPHA4 || v11.0.0-ALPHA3 || v11.0.0-ALPHA2 || v11.0.0-ALPHA1"
   },
   "require-dev": {
     "phpstan/phpstan": "^1.9",
