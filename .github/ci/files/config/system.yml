@@ -49,15 +49,6 @@ pimcore:
             email: pimcore@example.com
         debug:
             email_addresses: ''
-    newsletter:
-        sender:
-            name: ''
-            email: ''
-        return:
-            name: ''
-            email: ''
-        debug: null
-        use_specific: true
     applicationlog:
         mail_notification:
             send_log_summary: false
