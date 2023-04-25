@@ -15,18 +15,18 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\AdminBundle\Support\BundleAdminSupportTrait;
-use Pimcore\Bundle\AdminBundle\Support\PimcoreBundleAdminSupportInterface;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\CustomDocumentTypePass;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
+use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminSupportInterface
+class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
-    use BundleAdminSupportTrait;
+    use BundleAdminClassicTrait;
     use PackageVersionTrait;
 
     const RUNTIME_CONTEXT_KEY = 'datahub_context';

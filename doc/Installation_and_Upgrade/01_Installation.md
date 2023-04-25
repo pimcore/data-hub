@@ -1,8 +1,8 @@
 # Installation
 
 ## Bundle Installation
-### For Pimcore >= 10.5
-To install Pimcore Datahub for Pimcore 10.5 or higher, follow the three steps below:
+### For Pimcore >= 10.6
+To install Pimcore Datahub for Pimcore 10.6 or higher, follow the three steps below:
 
 1. Install the required dependencies:
 ```bash
@@ -26,6 +26,14 @@ return [
 
 ```bash
 bin/console pimcore:bundle:install PimcoreDataHubBundle
+```
+
+### For Pimcore 11
+
+You need to follow the steps mentioned above and additionally run the following command:
+
+```bash
+composer require pimcore/admin-ui-classic-bundle
 ```
 
 ### For Older Versions
