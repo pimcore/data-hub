@@ -49,6 +49,21 @@ class ResolveTest extends Unit
         }
     }
 
+    public function testGraphQLTranslationListingResolveListingWithDomain()
+    {
+        $translationListing = new TranslationListing($this->service, new EventDispatcher());
+        $listRes = $translationListing->resolveListing([], ["domain" => "admin"]);
+
+        for($i = 0; $i < 2; $i++) {
+            $this->assertEquals('translation-ka' .$i, $listRes['edges'][$i]['cursor']);
+
+            $translation = $listRes['edges'][$i]['node'];
+            $this->assertEquals('ka' .$i, $translation->getKey());
+            $this->assertEquals('deka' .$i, $translation->getTranslations()['de']);
+            $this->assertEquals('enka' .$i, $translation->getTranslations()['en']);
+        }
+    }
+
     public function testGraphQLTranslationListingResolveListingWithKey()
     {
         $key = "k2";
