@@ -1,5 +1,6 @@
 imports:
     - { resource: services.yaml }
+    - { resource: system.yml }
 
 pimcore_data_hub:
     config_location:
