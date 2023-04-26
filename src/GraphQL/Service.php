@@ -986,7 +986,7 @@ class Service
                 }
             } elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
                 $context = ['object' => $object];
-                $brickDescriptor = null;
+                $brickDescriptor = $descriptorData['__brickDescriptor'] ?? null;
 
                 $brickType = $descriptorData['__brickType'];
                 $brickKey = $descriptorData['__brickKey'];
@@ -1008,7 +1008,7 @@ class Service
                 }
 
                 if (!empty($key)) {
-                    $blockData = self::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $args);
+                    $blockData = self::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $descriptorData['args'] ?? []);
                 }
             } else {
                 $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);

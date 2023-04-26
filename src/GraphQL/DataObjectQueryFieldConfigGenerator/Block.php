@@ -75,6 +75,7 @@ class Block extends Base
             $isBrick = false;
             $attributeParts = explode('~', $attribute);
             $fieldname = $fieldDefinition->getName();
+            $brickDescriptor = null;
             $brickType = null;
             $brickKey = null;
 
@@ -87,7 +88,6 @@ class Block extends Base
                 }
 
                 $context = ['object' => $object];
-                $brickDescriptor = null;
 
                 $brickType = $attributeParts[0];
                 if (strpos($brickType, '?') !== false) {
@@ -159,6 +159,7 @@ class Block extends Base
                                 $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                                 $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                             } elseif ($isBrick) {
+                                $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
                                 $blockDescriptor['__brickType'] = $brickType;
                                 $blockDescriptor['__brickKey'] = $brickKey;
                             }
@@ -181,6 +182,7 @@ class Block extends Base
                         $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                         $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                     } elseif ($isBrick) {
+                        $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
                         $blockDescriptor['__brickType'] = $brickType;
                         $blockDescriptor['__brickKey'] = $brickKey;
                     }
