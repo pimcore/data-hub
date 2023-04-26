@@ -14,7 +14,7 @@ cp -r .github/ci/files/kernel/. kernel
 cp -r .github/ci/files/public/. public
 
 if [ ${REQUIRE_ADMIN_BUNDLE} = true ]; then
-    composer require -n pimcore/admin-ui-classic-bundle
+    composer require -n --no-update pimcore/admin-ui-classic-bundle:^1.0
 else
     ## Todo Remove when dropping support for Pimcore 10
     rm config/packages/security.yaml
