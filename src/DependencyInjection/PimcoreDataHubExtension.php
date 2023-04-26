@@ -15,17 +15,14 @@
 
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
-use Pimcore\Bundle\AdminBundle\PimcoreAdminBundle;
 use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
-use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
-use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface, DependentBundleInterface
+class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * {@inheritdoc}
@@ -42,11 +39,6 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
         );
 
         $loader->load('config.yml');
-    }
-
-    public static function registerDependentBundles(BundleCollection $collection): void
-    {
-        $collection->addBundle(new PimcoreAdminBundle(), 60);
     }
 
     public function prepend(ContainerBuilder $container)
