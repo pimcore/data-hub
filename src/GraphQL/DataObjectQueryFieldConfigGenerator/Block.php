@@ -75,6 +75,8 @@ class Block extends Base
             $isBrick = false;
             $attributeParts = explode('~', $attribute);
             $fieldname = $fieldDefinition->getName();
+            $brickType = null;
+            $brickKey = null;
 
             if (count($attributeParts) > 1) {
                 $id = $value['id'];
