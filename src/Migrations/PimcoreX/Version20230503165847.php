@@ -41,14 +41,14 @@ final class Version20230503165847 extends AbstractMigration
 
     private function replaceStringInFiles(string $search, string $replace): void
     {
-    if(is_dir(self::CONFIG_DIR)){
-        $files = scandir(self::CONFIG_DIR, 0);
-        for ($i = 2; $i < count($files); $i++) {
-            $file = self::CONFIG_DIR . '/' . $files[$i];
-            $fileContent = file_get_contents($file);
-            $fileContent = str_replace($search, $replace, $fileContent);
-            file_put_contents($file, $fileContent);
+        if (is_dir(self::CONFIG_DIR)) {
+            $files = scandir(self::CONFIG_DIR, 0);
+            for ($i = 2; $i < count($files); $i++) {
+                $file = self::CONFIG_DIR . '/' . $files[$i];
+                $fileContent = file_get_contents($file);
+                $fileContent = str_replace($search, $replace, $fileContent);
+                file_put_contents($file, $fileContent);
+            }
         }
-    }
     }
 }
