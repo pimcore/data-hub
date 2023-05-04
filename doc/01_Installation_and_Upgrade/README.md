@@ -1,4 +1,4 @@
-# Installation
+# Installation 
 
 ## Bundle Installation
 ### For Pimcore >= 10.6
