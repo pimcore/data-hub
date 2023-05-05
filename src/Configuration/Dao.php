@@ -49,7 +49,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     /**
      * @deprecated Will be removed as soon as Pimcore 10.6 isn´t supported anymore.
      */
-    public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data-hub';
+    public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub';
 
     public function configure(): void
     {
