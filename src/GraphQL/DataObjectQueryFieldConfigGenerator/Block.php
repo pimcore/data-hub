@@ -75,6 +75,9 @@ class Block extends Base
             $isBrick = false;
             $attributeParts = explode('~', $attribute);
             $fieldname = $fieldDefinition->getName();
+            $brickDescriptor = null;
+            $brickType = null;
+            $brickKey = null;
 
             if (count($attributeParts) > 1) {
                 $id = $value['id'];
@@ -85,9 +88,13 @@ class Block extends Base
                 }
 
                 $context = ['object' => $object];
-                $brickDescriptor = null;
 
                 $brickType = $attributeParts[0];
+                if (strpos($brickType, '?') !== false) {
+                    $brickDescriptor = substr($brickType, 1);
+                    $brickDescriptor = json_decode($brickDescriptor, true);
+                    $brickType = $brickDescriptor['containerKey'];
+                }
                 $brickKey = $attributeParts[1];
 
                 $key = Service::getFieldForBrickType($object->getclass(), $brickType);
@@ -152,8 +159,9 @@ class Block extends Base
                                 $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                                 $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                             } elseif ($isBrick) {
-                                $blockDescriptor['__brickType'] = $attributeParts[0];
-                                $blockDescriptor['__brickKey'] = $attributeParts[1];
+                                $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
+                                $blockDescriptor['__brickType'] = $brickType;
+                                $blockDescriptor['__brickKey'] = $brickKey;
                             }
 
                             $result[$blockIndex][$localizedDef->getName()] = $blockDescriptor;
@@ -174,8 +182,9 @@ class Block extends Base
                         $blockDescriptor['__fcType'] = $originalValue['__fcType'];
                         $blockDescriptor['__itemIdx'] = $originalValue['__itemIdx'];
                     } elseif ($isBrick) {
-                        $blockDescriptor['__brickType'] = $attributeParts[0];
-                        $blockDescriptor['__brickKey'] = $attributeParts[1];
+                        $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
+                        $blockDescriptor['__brickType'] = $brickType;
+                        $blockDescriptor['__brickKey'] = $brickKey;
                     }
 
                     $result[$blockIndex][$key] = $blockDescriptor;
