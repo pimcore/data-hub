@@ -227,13 +227,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             value: this.data.security ? this.data.security.skipPermissionCheck : ""
         });
 
-        var disableIntrospection = new Ext.form.Checkbox({
-            fieldLabel: t('plugin_pimcore_datahub_disable_introspection'),
-            labelWidth: 200,
-            name: "disableIntrospection",
-            value: this.data.security ? this.data.security.disableIntrospection : ""
-        });
-
         this.securityForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
             autoScroll: true,
@@ -281,29 +274,42 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
                     readOnly: true,
                     disabled: true
                 },
-                skipPermissionCheck,
-                disableIntrospection,
-                {
-                    xtype: 'displayfield',
-                    hideLabel: true,
-                    value: t("plugin_pimcore_datahub_security_introspection_description"),
-                    cls: "pimcore_extra_label_bottom",
-                    style: "padding-bottom: 0px",
-                    readOnly: true,
-                    disabled: true
-                },
-                {
-                    xtype: 'fieldset',
-                    width: 800,
-                    title: t("workspaces"),
-                    items: [
-                        this.documentWorkspace.getPanel(),
-                        this.assetWorkspace.getPanel(),
-                        this.objectWorkspace.getPanel()
-                    ]
-                }
+                skipPermissionCheck
             ]
         });
+
+        if (pimcore.settings.allow_introspection) {
+            let disableIntrospection = new Ext.form.Checkbox({
+                fieldLabel: t('plugin_pimcore_datahub_disable_introspection'),
+                labelWidth: 200,
+                name: "disableIntrospection",
+                value: this.data.security ? this.data.security.disableIntrospection : ""
+            });
+            let introspectionDescription = {
+                xtype: 'displayfield',
+                hideLabel: true,
+                value: t("plugin_pimcore_datahub_security_introspection_description"),
+                cls: "pimcore_extra_label_bottom",
+                style: "padding-bottom: 0px",
+                readOnly: true,
+                disabled: true
+            };
+
+            this.securityForm.add(disableIntrospection, introspectionDescription);
+        }
+
+        let workspaces = {
+            xtype: 'fieldset',
+            width: 800,
+            title: t("workspaces"),
+            items: [
+                this.documentWorkspace.getPanel(),
+                this.assetWorkspace.getPanel(),
+                this.objectWorkspace.getPanel()
+            ]
+        };
+
+        this.securityForm.add(workspaces);
 
         return this.securityForm;
     },
