@@ -29,7 +29,7 @@ The standard endpoint is
 ```
 So if your configuration name is blogdemo and your apikey 123456 then your endpoint would be
 ```
-/pimcore-graphql-webservices/blogdemo?apikey=12345
+/pimcore-graphql-webservices/blogdemo?apikey=123456
 ```
 Here is a configuration how to [override the standard endpoint](./01_Configuration/15_Customize_Endpoint_URL.md)
 
