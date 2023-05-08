@@ -61,7 +61,7 @@ class Table extends Base
 
             if (! ($newValue['replace'] ?? false)) {
                 if (count($currentTable) > 0) {
-                    foreach($currentTable as $row) {
+                    foreach ($currentTable as $row) {
                         $newTable[] = $row;
                     }
                 } elseif ($tableHeader = $this->processors['tableHeader']) {
@@ -72,7 +72,7 @@ class Table extends Base
             }
 
             if (is_array($newValue['rows'])) {
-                foreach($newValue['rows'] as $row) {
+                foreach ($newValue['rows'] as $row) {
                     $values = array_values($row);
                     $newTable[] = $values;
                 }
