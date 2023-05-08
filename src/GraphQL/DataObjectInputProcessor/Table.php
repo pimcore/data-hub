@@ -59,18 +59,23 @@ class Table extends Base
                 return $container->$setter($currentTable);
             }
 
-            if (is_array($newValue)) {
+            if (! ($newValue['replace'] ?? false)) {
                 if (count($currentTable) > 0) {
-                    foreach ($currentTable as $row) {
+                    foreach($currentTable as $row) {
                         $newTable[] = $row;
                     }
                 } elseif ($tableHeader = $this->processors['tableHeader']) {
                     $newTable[] = $tableHeader;
                 }
+            } elseif ($tableHeader = $this->processors['tableHeader']) {
+                $newTable[] = $tableHeader;
+            }
 
-                $values = array_values($newValue);
-
-                $newTable[] = $values;
+            if (is_array($newValue['rows'])) {
+                foreach($newValue['rows'] as $row) {
+                    $values = array_values($row);
+                    $newTable[] = $values;
+                }
 
                 return $container->$setter($newTable);
             }
