@@ -43,9 +43,10 @@ Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/current/Develop
 pimcore_data_hub:
     config_location: 
         data_hub:
-            target: 'symfony-config'
-            options:
-              directory: '/var/www/html/var/config/data_hub'
+            write_target:
+                type: 'symfony-config'
+                options:
+                     directory: '/var/www/html/var/config/data_hub'
 ```
 
 Additionally, it is also possible to define the configuration directly in a symfony configuration file without using
