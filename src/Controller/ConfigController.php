@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Service\ExportService;
 use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -37,8 +38,10 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @Route("/admin/pimcoredatahub/config")
  */
-class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
+class ConfigController extends \Pimcore\Controller\UserAwareController
 {
+    use JsonHelperTrait;
+
     public const CONFIG_NAME = 'plugin_datahub_config';
 
     /**
@@ -522,7 +525,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             ];
         }
 
-        return $this->adminJson($thumbnails);
+        return $this->jsonResponse($thumbnails);
     }
 
     /**
@@ -556,7 +559,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
             }
         }
 
-        return $this->adminJson($users);
+        return $this->jsonResponse($users);
     }
 
     /**
@@ -602,7 +605,7 @@ class ConfigController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContr
         $json = file_get_contents($_FILES['Filedata']['tmp_name']);
         $configuration = $importService->importConfigurationJson($json);
 
-        $response = $this->adminJson([
+        $response = $this->jsonResponse([
             'success' => true,
             'type' => $configuration->getType(),
             'name' => $configuration->getName()

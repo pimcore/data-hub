@@ -191,9 +191,14 @@ class WebserviceController extends FrontendController
                 $variableValues = $event->getRequest()->get('variables', $variableValues);
             }
 
-            $disableIntrospection = $configuration->getSecurityConfig()['disableIntrospection'] ?? false;
+            $configAllowIntrospection = true;
+            if (isset($config['graphql']) && isset($config['graphql']['allow_introspection'])) {
+                $configAllowIntrospection = $config['graphql']['allow_introspection'];
+            }
 
-            DocumentValidator::addRule(new DisableIntrospection($disableIntrospection));
+            $disableIntrospection = !$configAllowIntrospection || (isset($configuration->getSecurityConfig()['disableIntrospection']) && $configuration->getSecurityConfig()['disableIntrospection']);
+
+            DocumentValidator::addRule(new DisableIntrospection((int)$disableIntrospection));
 
             $result = GraphQL::executeQuery(
                 $event->getSchema(),

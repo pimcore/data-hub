@@ -29,8 +29,6 @@ pimcore:
             steps: 10
         icc_rgb_profile: ''
         icc_cmyk_profile: ''
-        hide_edit_image: false
-        disable_tree_preview: false
     full_page_cache:
         enabled: false
         lifetime: null
@@ -51,15 +49,6 @@ pimcore:
             email: pimcore@example.com
         debug:
             email_addresses: ''
-    newsletter:
-        sender:
-            name: ''
-            email: ''
-        return:
-            name: ''
-            email: ''
-        debug: null
-        use_specific: true
     applicationlog:
         mail_notification:
             send_log_summary: false
@@ -67,14 +56,3 @@ pimcore:
             mail_receiver: ''
         archive_treshold: '30'
         archive_alternative_database: ''
-pimcore_admin:
-    branding:
-        color_login_screen: ''
-        color_admin_interface: ''
-        login_screen_custom_image: ''
-pimcore_data_hub:
-    config_location:
-        data_hub:
-            write_target:
-                type: 'settings-store'
-

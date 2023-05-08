@@ -10,5 +10,7 @@ services:
             - { name: kernel.event_subscriber }
 
     Pimcore\Bundle\DataHubBundle\EventListener\AdminListener:
+        bind:
+            $config: '%pimcore_data_hub%'
         tags:
             - { name: kernel.event_listener, event: pimcore.admin.indexAction.settings, method: addIndexSettings }
