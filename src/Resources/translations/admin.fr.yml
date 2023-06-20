@@ -1,37 +1,38 @@
 ---
 plugin_pimcore_datahub_toolbar: Datahub
-plugin_pimcore_datahub_configpanel_add: Add Configuration
-plugin_pimcore_datahub_configpanel_enterkey_title: Add a new configuration
-plugin_pimcore_datahub_configpanel_enterkey_prompt: Unique Identifier
+plugin_pimcore_datahub_configpanel_add: Ajouter une configuration
+plugin_pimcore_datahub_configpanel_enterkey_title: Ajouter une nouvelle configuration
+plugin_pimcore_datahub_configpanel_enterkey_prompt: Identifieur unique
 plugin_pimcore_datahub_configpanel_error_adding_config: Error adding configuration
 plugin_pimcore_datahub_configpanel: Configuration
-plugin_pimcore_datahub_configpanel_invalid_name: Invalid name
+plugin_pimcore_datahub_configpanel_invalid_name: Nom non valide
 plugin_pimcore_datahub_configpanel_invalid_length: Exceeded maximum configuration
   name length 80 of characters
 plugin_pimcore_datahub_configpanel_error_cloning_config: Error cloning configuration
-plugin_pimcore_datahub_configpanel_enterclonekey_title: Clone
-plugin_pimcore_datahub_configpanel_enterclonekey_enterclonekey_prompt: Name of clone
-plugin_pimcore_datahub_configpanel_item_save_success: Configuration saved
-plugin_pimcore_datahub_configpanel_item_saveerror: Configuration could not be saved
+plugin_pimcore_datahub_configpanel_enterclonekey_title: Dupliquer
+plugin_pimcore_datahub_configpanel_enterclonekey_enterclonekey_prompt: Nom de la copie
+plugin_pimcore_datahub_configpanel_item_save_success: "Configuration sauvegard\xE9e"
+plugin_pimcore_datahub_configpanel_item_saveerror: "La configuration n'a pas pu \xEAtre
+  sauvegard\xE9e"
 plugin_pimcore_datahub_configpanel_item_saveerror_permissions: Configuration cannot
   be saved because it would deprive your update permissions. Please check the permissions
   tab.
-plugin_pimcore_datahub_configpanel_item_general: General
+plugin_pimcore_datahub_configpanel_item_general: "G\xE9n\xE9ral"
 plugin_pimcore_datahub_configpanel_sqlObjectCondition: SQL Condition
-plugin_pimcore_datahub_configpanel_schema: Schema Definition
+plugin_pimcore_datahub_configpanel_schema: "D\xE9finition de sch\xE9ma"
 plugin_pimcore_datahub_configpanel_schema_fields: Schema Fields
 plugin_pimcore_datahub_configpanel_security: Security Definition
-plugin_pimcore_datahub_configpanel_security_method: Method
-plugin_pimcore_datahub_configpanel_security_method_apikey: API Key
-plugin_pimcore_datahub_configpanel_fields: Fields
-plugin_pimcore_datahub_configpanel_entity: Entity
+plugin_pimcore_datahub_configpanel_security_method: "M\xE9thode"
+plugin_pimcore_datahub_configpanel_security_method_apikey: "Cl\xE9 API"
+plugin_pimcore_datahub_configpanel_fields: Champs
+plugin_pimcore_datahub_configpanel_entity: "Entit\xE9"
 plugin_pimcore_datahub_configpanel_root: Root Node
-plugin_pimcore_datahub_fieldName: Field Name
+plugin_pimcore_datahub_fieldName: Nom du champ
 plugin_pimcore_datahub_configpanel_condition_hint: This is a global SQL condition
   in addition to the workspace settings that will be added to all queries
-plugin_pimcore_datahub_configpanel_available_fields: Available Fields
+plugin_pimcore_datahub_configpanel_available_fields: Champs disponibles
 plugin_pimcore_datahub_operator_thumbnail_config: Configuration
-plugin_pimcore_datahub_operator_select_entity: Select Entity
+plugin_pimcore_datahub_operator_select_entity: "S\xE9lectionner l'entit\xE9"
 plugin_pimcore_datahub_security_datahub_apikey: Datahub API Keys
 plugin_pimcore_datahub_security_definition: Security Definition
 plugin_pimcore_datahub_security_apikey_description: API key required for web service
@@ -42,58 +43,59 @@ plugin_datahub_config: Datahub Config
 plugin_datahub_adapter_graphql: Datahub Adapter - GraphQL
 plugin_datahub_admin: Datahub Admin
 plugin_pimcore_datahub_type_graphql: GraphQL
-plugin_pimcore_datahub_workspace_permission_create: Create
-plugin_pimcore_datahub_workspace_permission_read: Read
-plugin_pimcore_datahub_workspace_permission_update: Update
-plugin_pimcore_datahub_workspace_permission_delete: Delete
-plugin_pimcore_datahub_graphql_open_explorer_in_iframe: Open in Iframe
-plugin_pimcore_datahub_graphql_open_explorer_in_tab: Open in Tab
-plugin_pimcore_datahub_graphql_query_schema: Query Schema
-plugin_pimcore_datahub_graphql_mutation_schema: Mutation Schema
+plugin_pimcore_datahub_workspace_permission_create: "Cr\xE9er"
+plugin_pimcore_datahub_workspace_permission_read: Lire
+plugin_pimcore_datahub_workspace_permission_update: "Mettre \xE0 jour"
+plugin_pimcore_datahub_workspace_permission_delete: Supprimer
+plugin_pimcore_datahub_graphql_open_explorer_in_iframe: Ouvrir dans Iframe
+plugin_pimcore_datahub_graphql_open_explorer_in_tab: Ouvrir dans un tableau
+plugin_pimcore_datahub_graphql_query_schema: "Sch\xE9ma de requ\xEAte"
+plugin_pimcore_datahub_graphql_mutation_schema: "Sch\xE9ma de mutation"
 plugin_pimcore_datahub_graphql_iexplorer: iExplorer
 plugin_pimcore_datahub_datatype_not_supported_yet: datatype '%s' not supported yet
 operator_alias: Alias
-operator_concatenator: Concatenator
+operator_concatenator: Operator Concatenator
 operator_dateformatter: Date Formatter
 operator_element_counter: Element Counter
-operator_text: text
+operator_text: Operator Text
 operator_merge: Merge (deprecated)
-operator_substring: Substring
-operator_thumbnail: Thumbnail
-operator_thumbnail_html: Thumbnail HTML
-operator_translate_value: Translate Value
+operator_substring: "Sous-cha\xEEne"
+operator_thumbnail: Miniature
+operator_thumbnail_html: Miniature HTML
+operator_translate_value: Operator Translate Value
 operator_trimmer: Trimmer
 mutationoperator_locale_switcher: Locale Switcher
 mutationoperator_ifempty: IfEmpty
 mutationoperator_locale_collector: Locale Collector
-mutationoperator_locale_switcher_description: Switches to different language other
-  than the default language.
-mutationoperator_ifempty_description: Only sets the value if current one is empty.
-mutationoperator_locale_collector_description: Allows editing all languages for a
-  single field.
-plugin_pimcore_datahub_query: Query
+mutationoperator_locale_switcher_description: "Passe \xE0 une autre langue que celle
+  par d\xE9faut."
+mutationoperator_ifempty_description: "Ne d\xE9finir une valeur que si la valeur actuelle
+  est vide."
+mutationoperator_locale_collector_description: "Permet d'\xE9diter toutes les langues
+  pour un seul champ."
+plugin_pimcore_datahub_query: "Requ\xEAte"
 plugin_pimcore_datahub_mutation: Mutation
-plugin_pimcore_datahub_graphql_special_schema: Generic Types
+plugin_pimcore_datahub_graphql_special_schema: "Types g\xE9n\xE9riques"
 plugin_pimcore_datahub_graphql_special_document: Document
 plugin_pimcore_datahub_graphql_special_document_folder: Document Folder
-plugin_pimcore_datahub_graphql_special_asset: Asset
-plugin_pimcore_datahub_graphql_special_asset_folder: Asset Folder
-plugin_pimcore_datahub_graphql_special_object_folder: Object Folder
-plugin_pimcore_datahub_graphql_special_asset_listing: Asset Listing
-plugin_pimcore_datahub_graphql_special_translation_listing: Translation Listing
-plugin_pimcore_datahub_graphql_special_translation: Translation
-read: Read
+plugin_pimcore_datahub_graphql_special_asset: Actif
+plugin_pimcore_datahub_graphql_special_asset_folder: Dossier des actifs
+plugin_pimcore_datahub_graphql_special_object_folder: Dossier des objets
+plugin_pimcore_datahub_graphql_special_asset_listing: Listage des actifs
+plugin_pimcore_datahub_graphql_special_translation_listing: Liste de traduction
+plugin_pimcore_datahub_graphql_special_translation: Traduction
+read: Lire
 plugin_pimcore_datahub_skip_permission_check: Skip Permission Check
 plugin_pimcore_datahub_configpanel_permissions: Permissions
 plugin_pimcore_datahub_graphql_permissions_roles: Role Permissions
-plugin_pimcore_datahub_graphql_permissions_users: User Permissions
-plugin_pimcore_datahub_operator_select_user: Select User
-plugin_pimcore_datahub_operator_select_role: Select Role
-plugin_pimcore_datahub_configpanel_user: User
-plugin_pimcore_datahub_configpanel_role: Role
+plugin_pimcore_datahub_graphql_permissions_users: Permissions des utilisateurs
+plugin_pimcore_datahub_operator_select_user: "S\xE9lectionner un utilisateur"
+plugin_pimcore_datahub_operator_select_role: "S\xE9lectionner un r\xF4le"
+plugin_pimcore_datahub_configpanel_user: Utilisateur
+plugin_pimcore_datahub_configpanel_role: "R\xF4le"
 plugin_pimcore_datahub_disable_introspection: Disable Introspection
 plugin_pimcore_datahub_security_introspection_description: 'Please note: When introspection
   is disabled, the autocomplete feature will not work.'
-plugin_pimcore_datahub_import: Import
-plugin_pimcore_datahub_export: Export
+plugin_pimcore_datahub_import: Importer
+plugin_pimcore_datahub_export: Exporter
 ...
