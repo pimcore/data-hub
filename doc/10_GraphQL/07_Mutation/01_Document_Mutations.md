@@ -1,13 +1,13 @@
-## Document Mutations
+# Document Mutations
 
-## Supported Document types
+## Supported Document Types
 
 * Email
 * Link
 * Page
 * ...
 
-## Supported Page Element types
+## Supported Page Element Types
 
 * Areablock
 * Block
@@ -32,7 +32,7 @@ creating and updating documents.
 
 Update or add single or multiple editables by defining their exact name and their content.
 
-##### Sample (Update existing document)
+##### Sample (Update Existing Document)
 
 
 ```graphql
@@ -74,7 +74,7 @@ See following list for more examples with the free-form API approach:
 If you are not familiar with Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html)
 you can also use the nested approach.
 
-### Sample (Update a page with an areablock using the nested approach)
+### Sample (Update a Page With an Areablock Using the Nested Approach)
 
 ```graphql
 mutation {

@@ -1,4 +1,4 @@
-## [TreeAPI] Create document with areablocks and nested block with images 
+# [TreeAPI] Create Document With Areablocks and Nested Block With Images 
 
 Note that this produces the same result as [this example](./01_FreeformAPI_Create_Document_with_Areablocks.md) 
 but uses the nested API instead of the free-form approach

@@ -1,4 +1,4 @@
-## Translate Values
+# Translate Values
 
 The following example translates the `AccessoryPart` condition value.
 

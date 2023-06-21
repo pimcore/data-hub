@@ -1,8 +1,6 @@
 # Schema Settings
 
-Schema settings define which data entities (data object classes, assets, documents) should be exposed 
-via the endpoint. For assets and documents, default schemas are provided, for data object classes the
-schema can be defined in the field configuration. 
+Schema settings define which data entities (Data Object classes, Assets, Documents) should be exposed via the endpoint. For Assets and Documents, default schemas are provided, for Data Object classes the schema can be defined in the field configuration. 
 
 ![Add](../../img/graphql/schema_add.png)
 

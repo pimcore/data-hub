@@ -6,7 +6,7 @@ TODO add sample
 
 ## Update Asset
 
-This will rename the asset + update the data.
+This will rename the Asset and update the data.
 Request:
 ```
 mutation {

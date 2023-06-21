@@ -10,7 +10,7 @@ All Datahub events are defined as a constant on component classes:
 - [Listing](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ListingEvents.php)
 - [Ouput cache](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/OutputCacheEvents.php)
 
-## Event Subscriber examples
+## Event Subscriber Examples
 
 With Symfony, you can listen to events using either [Event Listeners or Event Subscribers](https://symfony.com/doc/current/event_dispatcher.html).
 Event Subscribers are used in the examples below.

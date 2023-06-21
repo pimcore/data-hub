@@ -1,4 +1,4 @@
-## Advanced Many-to-Many Object Relation + Metadata
+# Advanced Many-to-Many Object Relation and Metadata
 
 >TODO: Align this with the new demo as soon as reasonable content is available. 
 

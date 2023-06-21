@@ -1,4 +1,4 @@
-## DataObject Mutations
+# DataObject Mutations
 
 >TODO: Align this with the new demo as soon as reasonable content is available.
  
@@ -14,7 +14,7 @@ In addition, you can turn on mutations to modify assets, create object folders a
 Note that for `Create` and `Update` operate you can query the updated data using the same request.
 Keep in mind that for all kinds of mutations you need the `Write` permission.
 
-## Supported mutation datatypes
+## Supported Mutation Datatypes
 
 ![Mutation grid](../../img/graphql/mutation_grid.png)
 
@@ -55,7 +55,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Time
 * Wysiwyg
 
-## Supported mutation operators
+## Supported Mutation Operators
 
 * IfEmpty
 * Locale Switcher
@@ -158,7 +158,7 @@ Response:
 
 
 
-## Extend Data Object mutations
+## Extend Data Object Mutations
 It is possible to add custom mutation data types and mutation operators. For details see detail documentation
 pages: 
 * [Add a custom mutation datatype](./25_Add_Custom_Mutation_Datatype.md)

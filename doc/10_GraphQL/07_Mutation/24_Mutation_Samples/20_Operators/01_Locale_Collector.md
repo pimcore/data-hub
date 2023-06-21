@@ -1,4 +1,8 @@
-## Sample for mutation operator "Locale Collector"
+---
+title: Locale Collector
+---
+
+# Sample for Mutation Operator "Locale Collector"
 
 ```graphql
 mutation {
