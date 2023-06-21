@@ -61,7 +61,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::boolean(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['internal'] : null;
+                                return $value->getData()['internal'] ?? null;
                             }
                         }
                     ],
@@ -69,7 +69,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['internalType'] : null;
+                                return $value->getData()['internalType'] ?? null;
                             }
                         }
                     ],
@@ -77,7 +77,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::int(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['internalId'] : null;
+                                return $value->getData()['internalId'] ?? null;
                             }
                         }
                     ],
@@ -85,7 +85,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['path'] : null;
+                                return $value->getData()['path'] ?? null;
                             }
                         }
                     ],
@@ -93,7 +93,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['text'] : null;
+                                return $value->getData()['text'] ?? null;
                             }
                         }
                     ],
@@ -105,7 +105,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['target'] : null;
+                                return $value->getData()['target'] ?? null;
                             }
                         }
                     ],
@@ -113,7 +113,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['parameters'] : null;
+                                return $value->getData()['parameters'] ?? null;
                             }
                         }
                     ],
@@ -121,7 +121,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['anchor'] : null;
+                                return $value->getData()['anchor'] ?? null;
                             }
                         }
                     ],
@@ -129,7 +129,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['title'] : null;
+                                return $value->getData()['title'] ?? null;
                             }
                         }
                     ],
@@ -137,7 +137,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['accesskey'] : null;
+                                return $value->getData()['accesskey'] ?? null;
                             }
                         }
                     ],
@@ -145,7 +145,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['rel'] : null;
+                                return $value->getData()['rel'] ?? null;
                             }
                         }
                     ],
@@ -153,7 +153,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['tabindex'] : null;
+                                return $value->getData()['tabindex'] ?? null;
                             }
                         }
                     ],
@@ -161,7 +161,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['class'] : null;
+                                return $value->getData()['class'] ?? null;
                             }
                         }
                     ],
@@ -169,7 +169,7 @@ class LinkDataType extends ObjectType
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
-                                return $value->getData() ? $value->getData()['attributes'] : null;
+                                return $value->getData()['attributes'] ?? null;
                             }
                         }
                     ],

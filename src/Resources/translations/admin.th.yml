@@ -53,15 +53,15 @@ plugin_pimcore_datahub_graphql_mutation_schema: Mutation Schema
 plugin_pimcore_datahub_graphql_iexplorer: iExplorer
 plugin_pimcore_datahub_datatype_not_supported_yet: datatype '%s' not supported yet
 operator_alias: Alias
-operator_concatenator: Concatenator
+operator_concatenator: Operator Concatenator
 operator_dateformatter: Date Formatter
 operator_element_counter: Element Counter
-operator_text: text
+operator_text: Operator Text
 operator_merge: Merge (deprecated)
 operator_substring: Substring
 operator_thumbnail: Thumbnail
 operator_thumbnail_html: Thumbnail HTML
-operator_translate_value: Translate Value
+operator_translate_value: Operator Translate Value
 operator_trimmer: Trimmer
 mutationoperator_locale_switcher: Locale Switcher
 mutationoperator_ifempty: IfEmpty
