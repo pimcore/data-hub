@@ -1,4 +1,4 @@
-## Many-to-Many Object Relation
+# Many-to-Many Object Relation
 
 ![Data](../../../img/graphql/many_to_many_object_relation.png)
 

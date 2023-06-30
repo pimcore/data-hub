@@ -4,7 +4,7 @@ For adding a new mutation operator two steps are necessary:
 - add a type definition
 - add the operator implementation
 
-### Type definition
+### Type Definition
 Add a section similar to this one to your `services.yml` file.
 
 ```

@@ -1,4 +1,4 @@
-## Get Asset Metadata
+# Get Asset Metadata
 
 ![Metadata](../../../img/graphql/asset_metadata.png)
 

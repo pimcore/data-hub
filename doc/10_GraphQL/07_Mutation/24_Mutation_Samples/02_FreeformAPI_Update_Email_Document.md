@@ -1,4 +1,4 @@
-## [FreeForm] Update email document
+# [FreeForm] Update Email Document
 
 See demo document 144 for reference.
 

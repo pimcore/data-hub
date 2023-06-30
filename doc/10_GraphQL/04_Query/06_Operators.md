@@ -1,4 +1,4 @@
-## Query Operators
+# Query Operators
 
 Operators allow to modify and transform the data before it is delivered to the endpoint. 
 

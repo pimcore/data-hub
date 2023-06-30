@@ -1,6 +1,6 @@
 # DataObject Queries
 
-## Supported data types
+## Supported Data Types
 
 Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
@@ -51,7 +51,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Video
 * Wysiwyg
 
-## Available query operators
+## Available Query Operators
 
 Check out the [Operators](./06_Operators.md) page for more information.
 
@@ -79,7 +79,7 @@ Base structure for getting single data object:
     
 ```
 
-## Get list of Data Objects 
+## Get List of Data Objects 
 
 Base structure for getting a list of data objects, restricted by IDs: 
 
@@ -169,7 +169,7 @@ For details see [filtering documentation page](./10_Filtering.md)
 Queries can be localized For details see the [localization documentation page](./08_Localization.md).
 
 
-## Extend Data Object queries
+## Extend Data Object Queries
 It is possible to add custom query data types and query operators. For details see detail documentation
 pages: 
 * [Add a custom query datatype](./15_Add_Custom_Query_Datatype.md)

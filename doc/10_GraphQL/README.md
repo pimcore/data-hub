@@ -22,7 +22,7 @@ Configuration takes place in the endpoint configuration and offers following pos
 - [Security Settings](./01_Configuration/03_Security_Settings.md)
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
 
-## External access
+## External Access
 The standard endpoint is
 ```
 /pimcore-graphql-webservices/{configurationname}?apikey={yourApiKey}
@@ -57,7 +57,7 @@ See following pages for a general overview of possible mutations:
 - For details on how to add custom mutations see [Add Custom Mutations Documentation](./07_Mutation/27_Add_Custom_Mutations.md).
 
 
-## Hands-on-testing using GraphiQL explorer
+## Hands-On-Testing Using GraphiQL Explorer
 [GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) can be opened
 for an endpoint in an iframe within Pimcore or as an additional browser tab. 
 
@@ -69,7 +69,7 @@ It is possible to customize default behavior of graphQL endpoint with event list
 see [Events Documentation](./10_Events.md). 
 
 
-## Output cache
+## Output Cache
 It is possible to keep a cache of the responses delivered by the endpoint, using the same default cache backend configured for Pimcore (Doctrine, Redis,...). This is specially useful to speed up the endpoint replies when it produces complex responses with many dependencies.
 
 The cache can be enabled and configured with a configuration entry like this in your `config.yml` file:
@@ -82,14 +82,14 @@ pimcore_data_hub:
 ```
 By default the cache is disabled but if it is enabled and you don't specify a value for `output_cache_lifetime`, its default value is set to 30 seconds.
 
-### Disable Output Cache for a Single Request (only in DEBUG MODE)
+### Disable Output Cache for a Single Request (Only in DEBUG MODE)
 Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://pimcore.com/docs/pimcore/current/Development_Documentation/Development_Tools_and_Details/Cache/Full_Page_Cache.html).
 
 ### Customize the Cache Behaviour
 It is possible to customize some behavior of output cache with event listeners. For details 
 see [Events Documentation](./10_Events.md).
 
-### Note on Debugging with iGraplQL playground
+### Note on Debugging With iGraplQL Playground
 
 Open the settings and change `request.credentials` to `include`. Otherwise the 
 `XDEBUG_SESSION` cookie header will get removed by default.

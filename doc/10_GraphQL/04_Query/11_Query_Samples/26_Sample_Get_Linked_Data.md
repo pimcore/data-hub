@@ -1,4 +1,6 @@
-## Get Car with referenced Manufacturer + Manufacturer Logo image thumbnail
+# Get Linked Data
+
+## Get Car With Referenced Manufacturer and Manufacturer Logo Image Thumbnail
 
 ### Configuration
 

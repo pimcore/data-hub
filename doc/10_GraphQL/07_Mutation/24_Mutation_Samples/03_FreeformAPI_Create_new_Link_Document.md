@@ -1,4 +1,4 @@
-## [FreeForm] Create a new link document
+# [FreeForm] Create a New Link Document
 
 ```graphql
 mutation {
