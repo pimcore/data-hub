@@ -1,4 +1,4 @@
-# Basic Principle
+# Basic Principle some change
 
 Pimcore Datahub allows defining multiple endpoints that allow data delivery and consumption. These 
 endpoints are configured via so called configurations that can be added in Pimcore admin user interface: 
