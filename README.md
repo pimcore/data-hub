@@ -21,7 +21,7 @@ A short introduction video of an output channel based on the GraphQL query langu
 - To-be-exposed data restriction to endpoints by defining workspaces and schemas.
 
 ## Documentation Overview
-- [Installation](./doc/01_Installation_and_Upgrade/README.md)
+- [Installation](./doc/01_Installation_and_Upgrade/README1.md)
 - [Basic principle](./doc/02_Basic_Principle.md) for configuring an endpoint
 - [GraphQL](./doc/10_GraphQL/README.md) [*default and recommended endpoint*]
 - [Configuration & Deployment](./doc/20_Deployment.md)
