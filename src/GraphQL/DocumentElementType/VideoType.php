@@ -58,7 +58,12 @@ class VideoType extends ObjectType
                             }
                         ],
                         'id' => [
-                            'type' => Type::int()
+                            'type' => Type::string(),
+                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                                if ($value instanceof Video) {
+                                    return $value->getId();
+                                }
+                            }
                         ],
                         'type' => [
                             'type' => Type::string(),
