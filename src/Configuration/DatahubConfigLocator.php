@@ -43,6 +43,17 @@ class DatahubConfigLocator
             array_push($dirs, Dao::CONFIG_PATH);
         }
 
+        $confDir = (string) ($_SERVER['PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB'] ?? '');
+        if (!empty($confDir)) {
+            $dirs = [... $dirs, $confDir];
+        }
+
+        $symfonyConf = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
+        $symfonyConfDir = $symfonyConf['config_location']['data_hub']['write_target']['options']['directory'];
+        if (!empty($symfonyConfDir)) {
+            $dirs = [... $dirs, $symfonyConfDir];
+        }
+
         if (empty($dirs)) {
             return [];
         }
