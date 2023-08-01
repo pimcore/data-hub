@@ -293,7 +293,7 @@ class QueryType
 
         if ($isFullpathSet) {
             $fullpath = Service::correctPath($args['fullpath']);
-            $conditionParts[] = sprintf('(concat(%s, %s) =' . Db::get()->quote($fullpath) . ')',
+            $conditionParts[] = sprintf('(CONCAT(`%s`,`%s`) =' . Db::get()->quote($fullpath) . ')',
                 Service::getVersionDependentDatabaseColumnName('o_path'),
                 Service::getVersionDependentDatabaseColumnName('o_key'));
         }
@@ -423,7 +423,7 @@ class QueryType
                 },
                 str_getcsv($args['fullpaths'], ',', "'")
             );
-            $conditionParts[] = sprintf('(concat(%s, %s) IN (' . implode(',', $quotedFullpaths) . '))',
+            $conditionParts[] = sprintf('(CONCAT(`%s`,`%s`) IN (' . implode(',', $quotedFullpaths) . '))',
                 Service::getVersionDependentDatabaseColumnName('o_path'),
                 Service::getVersionDependentDatabaseColumnName('o_key'));
         }
