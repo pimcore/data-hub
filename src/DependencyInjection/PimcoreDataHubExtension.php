@@ -72,7 +72,7 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             }
         } else {
             $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
-            foreach ($configLocator->locate('config') as $config) {
+            foreach ($configLocator->locate('config', ['defaultConfigDir' => $configDir]) as $config) {
                 $configLoader->load($config);
             }
         }
