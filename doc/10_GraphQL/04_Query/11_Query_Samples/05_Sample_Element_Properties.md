@@ -1,11 +1,10 @@
-## Get Element Properties
+# Get Element Properties
 
 ![Sample Document Properties](../../../img/graphql/element_properties.png)
 
 ### Request
 
-Properties can be filtered by providing the `keys` argument. All properties will
-be returned by default.
+Properties can be filtered by providing the `keys` argument. All properties will be returned by default.
 
 ```graphql
 {

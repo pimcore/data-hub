@@ -1,6 +1,6 @@
-## Get Asset By Id
+# Get Asset By Id
 
-If you want to access a asset directly.
+If you want to access an Asset directly.
 Note that the data will be base64 encoded and quite time-consuming to deliver.
 
 Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image)

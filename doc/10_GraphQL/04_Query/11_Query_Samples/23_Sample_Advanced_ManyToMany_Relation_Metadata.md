@@ -1,4 +1,4 @@
-## Get Advanced Many-to-Many Relation Metadata
+# Get Advanced Many-to-Many Relation Metadata
 
 ![Metadata](../../../img/graphql/many2many.png)
 

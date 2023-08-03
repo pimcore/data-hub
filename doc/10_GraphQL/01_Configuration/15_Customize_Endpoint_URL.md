@@ -1,4 +1,4 @@
-## Customizing the endpoint
+# Customizing the Endpoint
 
 The standard endpoint is
 ```

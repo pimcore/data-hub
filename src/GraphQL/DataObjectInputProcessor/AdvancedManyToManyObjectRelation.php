@@ -38,7 +38,7 @@ class AdvancedManyToManyObjectRelation extends Base
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
-        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $attribute) {
+        Service::setValue($object, $attribute, function ($container, $setter, $fieldName) use ($newValue) {
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
@@ -53,7 +53,7 @@ class AdvancedManyToManyObjectRelation extends Base
                             }
                         }
                         $concrete = Concrete::getById($element->getId());
-                        $item = new ObjectMetadata($attribute, $columns ?? [], $concrete);
+                        $item = new ObjectMetadata($fieldName, $columns ?? [], $concrete);
                         if (isset($data) === true) {
                             $item->setData($data);
                         }

@@ -1,4 +1,4 @@
-## Add Custom Query
+# Add a Custom Query
 
 You can extend the query schema and add your custom query in the following way.
 

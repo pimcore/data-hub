@@ -1,4 +1,4 @@
-## Get Manufacturer Listing
+# Get Manufacturer Listing
 
 ![Grid](../../../img/graphql/manufacturer_listing.png)
 

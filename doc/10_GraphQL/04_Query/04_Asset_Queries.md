@@ -2,7 +2,7 @@
 
 Asset queries support getting single assets, single asset folders and asset listings. 
 
-## Get single Asset
+## Get Single Asset
 
 Base structure for getting single asset: 
 
@@ -20,7 +20,7 @@ See also following examples:
 - [Sample Asset Metadata](./11_Query_Samples/12_Sample_Asset_Metadata.md)
 
 
-## Get single AssetFolder
+## Get Single Asset Folder
 
 Base structure for getting single asset folder (same as for assets): 
 
@@ -33,7 +33,7 @@ Base structure for getting single asset folder (same as for assets):
     
 ```
 
-## Get list of Assets
+## Get List of Assets
 
 Base structure for getting a list of assets, restricted by IDs: 
 

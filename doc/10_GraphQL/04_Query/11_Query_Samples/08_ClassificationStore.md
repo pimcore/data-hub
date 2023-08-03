@@ -1,6 +1,6 @@
 # Classification Store
 
-## Supported data types
+## Supported Data Types
 
 * BooleanSelect
 * Calculated Value
@@ -24,7 +24,7 @@
 * Wysiwyg
 
 
-## Request example
+## Request Example
 
 `csfield` is the classification store field.
 

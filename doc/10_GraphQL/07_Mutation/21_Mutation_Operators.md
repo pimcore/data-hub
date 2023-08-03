@@ -1,4 +1,4 @@
-## Mutation Operators
+# Mutation Operators
 
 Operators allow to modify and transform the data before it is stored in Pimcore.
 

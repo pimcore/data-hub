@@ -1,4 +1,4 @@
-## Add a Custom Mutation Datatype
+# Add a Custom Mutation Datatype
 
 For adding a new mutation data type two steps are necessary: 
 - add an input type definition

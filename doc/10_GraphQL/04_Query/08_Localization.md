@@ -1,4 +1,4 @@
-## Localization
+# Localization
 
 ### Default Language
 
@@ -13,7 +13,7 @@ for single and listing queries.
 }
 ```
 
-### Define language on field level
+### Define Language on Field Level
 
 However, you can always provide an alternative language for a specific field.
 

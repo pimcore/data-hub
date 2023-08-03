@@ -919,14 +919,14 @@ class Service
                 }
 
                 $innerSetter = 'set' . ucfirst($def->getName());
-                $result = $callback($subBrickType, $innerSetter);
+                $result = $callback($subBrickType, $innerSetter, $def->getName());
 
                 $brickContainer->$subBrickSetter($subBrickType);
 
                 return $result;
             }
         } elseif (method_exists($container, $setter)) {
-            $result = $callback($container, $setter);
+            $result = $callback($container, $setter, $attribute);
         }
 
         return $result;

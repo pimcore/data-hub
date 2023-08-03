@@ -45,10 +45,14 @@ class Hardlink
         $document = Document::getById($documentId);
 
         if ($document instanceof Document\Hardlink) {
-            $sourceId = $document->getSourceId();
-            $relation = Document::getById($sourceId);
-            if ($relation) {
-                return RelationHelper::processRelation($relation, $this->getGraphQlService(), $args, $context, $resolveInfo);
+            if ($relation = $document->getSourceDocument()) {
+                return RelationHelper::processRelation(
+                    $relation,
+                    $this->getGraphQlService(),
+                    $args,
+                    $context,
+                    $resolveInfo
+                );
             }
         }
 

@@ -1,4 +1,4 @@
-## Sample Add Relations
+# Sample Add Relations
 This will add relations to categories relation field of Car object. Type can be omitted for 
 mutations only allowing one type, e.g. many-to-many-objects .
 
