@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
+use GraphQL\Type\Definition\Type;
+use Pimcore\Model\Document\Editable\Wysiwyg;
+
 class WysiwygType extends SimpleTextType
 {
     protected static $instance;
@@ -26,6 +29,12 @@ class WysiwygType extends SimpleTextType
     {
         if (!self::$instance) {
             $config = self::getStandardConfig('document_editableWysiwyg');
+
+            $config['fields']['frontend'] = [
+                'type' => Type::string(),
+                'resolve' => static fn (Wysiwyg $value) => $value->frontend(),
+            ];
+
             self::$instance = new static($config);
         }
 
