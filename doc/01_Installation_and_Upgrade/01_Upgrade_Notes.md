@@ -11,7 +11,7 @@ Be sure to include the `supported_types` configuration in any custom implementat
 
 ## 1.5.0
 - When "Skip Permission Check" is active in a GraphQL configuration, the "Workspaces" settings are also skipped 
-- It is possible to add more than one API-key per configuration now. Therefore, the API keys get stored as an array
+- It is possible to add more than one API key per configuration now. Therefore, the API keys get stored as an array
 in the configuration. Configurations from previous versions are still supported, but they get converted to the new format
 as soon as they get saved.
 - Added "Translation Listing" and "Translation" to the Generic Types
