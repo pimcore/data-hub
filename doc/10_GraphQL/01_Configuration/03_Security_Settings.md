@@ -2,7 +2,7 @@
 
 ## Authentication
 
-Defines how users are authenticated when accessing the endpoint.
+Here you can define how users are authenticated when accessing the endpoint.
 
 #### Supported Methods
 
