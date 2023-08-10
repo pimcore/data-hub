@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
-use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -65,10 +64,11 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
         $configs = ConfigurationHelper::getSymfonyConfigFiles($configDir);
 
         //TODO: remove as soon as Pimcore 10.6 isn´t supported anymore.
+        $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
         $configs =
             [
                 ...$configs,
-                ...ConfigurationHelper::getSymfonyConfigFiles(Dao::CONFIG_PATH)
+                ...$configLocator->locate('config')
             ];
 
         foreach ($configs as $config) {
