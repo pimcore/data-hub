@@ -58,7 +58,7 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
 
         $configLoader = new YamlFileLoader(
             $container,
-            new FileLocator($configDir)
+            new FileLocator([$configDir, Dao::CONFIG_PATH])
         );
 
         //load datahub configs
