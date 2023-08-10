@@ -61,7 +61,6 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             new FileLocator([$configDir, Dao::CONFIG_PATH])
         );
 
-
         //TODO: remove as soon as Pimcore 10.6 isn´t supported anymore.
         $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
         $configs =
