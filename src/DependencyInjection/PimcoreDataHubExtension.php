@@ -65,10 +65,11 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
         $configs = ConfigurationHelper::getSymfonyConfigFiles($configDir);
 
         //TODO: remove as soon as Pimcore 10.6 isn´t supported anymore.
+        $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
         $configs =
             [
                 ...$configs,
-                ...ConfigurationHelper::getSymfonyConfigFiles(Dao::CONFIG_PATH)
+                ...$configLocator->locate('config')
             ];
 
         foreach ($configs as $config) {
