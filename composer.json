@@ -14,7 +14,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-    "pimcore/pimcore": "^10.6.8 || ^11.0",
+    "pimcore/pimcore": "^10.6.8 || ^11.0.7",
     "pimcore/compatibility-bridge-v10": "^1.0",
     "webonyx/graphql-php": "^15.2.3"
   },

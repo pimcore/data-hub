@@ -49,7 +49,10 @@ class Configuration implements ConfigurationInterface
         $this->addSupportedTypes($rootNode);
 
         /** @var ArrayNodeDefinition $rootNode */
-        ConfigurationHelper::addConfigLocationWithWriteTargetNodes($rootNode, ['data_hub' => '/var/config/data_hub']);
+        ConfigurationHelper::addConfigLocationWithWriteTargetNodes(
+            $rootNode,
+            ['data_hub' => PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub']
+        );
 
         return $treeBuilder;
     }
