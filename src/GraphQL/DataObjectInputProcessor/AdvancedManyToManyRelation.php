@@ -38,7 +38,7 @@ class AdvancedManyToManyRelation extends Base
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
-        Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $attribute) {
+        Service::setValue($object, $attribute, function ($container, $setter, $fieldName) use ($newValue) {
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
@@ -52,7 +52,7 @@ class AdvancedManyToManyRelation extends Base
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
-                        $item = new ElementMetadata($attribute, $columns ?? [], $element);
+                        $item = new ElementMetadata($fieldName, $columns ?? [], $element);
                         if (isset($data) === true) {
                             $item->setData($data);
                         }

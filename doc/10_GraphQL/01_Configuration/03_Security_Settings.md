@@ -1,15 +1,15 @@
-## Security Settings
+# Security Settings
 
 ## Authentication
 
-Defines how users are authenticated when accessing the endpoint.
+Here you can define how users are authenticated when accessing the endpoint.
 
 #### Supported Methods
 
 * API Key: needs to be sent with every request.
 * ... more to come
 
-## Introspection settings
+## Introspection Settings
 
 Introspection provides an information about queries which are supported by GraphQl schema. This is currently enabled by default. It can be disabled via security settings or in the symfony configuration tree:
 ```

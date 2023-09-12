@@ -1,4 +1,4 @@
-## [FreeForm] Create document with areablocks and nested block with images
+# [FreeForm] Create Document With Areablocks and Nested Block With Images
 
 See demo document 99 for reference.
 

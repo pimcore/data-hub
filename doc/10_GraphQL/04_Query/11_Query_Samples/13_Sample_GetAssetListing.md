@@ -1,4 +1,4 @@
-## Get Asset Listing
+# Get Asset Listing
 
 ### Request
 

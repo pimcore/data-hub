@@ -1,4 +1,4 @@
-## Get Translation Listing
+# Get Translation Listing
 
 ### Request
 

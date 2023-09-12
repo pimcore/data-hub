@@ -1,4 +1,4 @@
-## Get Translation By Key
+# Get Translation By Key
 
 If you want to access one translation.
 

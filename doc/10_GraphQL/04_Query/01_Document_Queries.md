@@ -1,6 +1,6 @@
 # Document Queries
 
-## Supported Document types
+## Supported Document Types
 
 * Email
 * Hardlink
@@ -8,7 +8,7 @@
 * Page
 * Snippet
 
-## Supported Page Element types
+## Supported Page Element Types
 
 * Areablock
 * Checkbox
@@ -32,7 +32,7 @@
 
 ## Document Query Samples
 
-### Fetch Document Page and get date editable
+### Fetch Document Page and Get Date Editable
 
 ```graphql
 {
@@ -54,7 +54,7 @@
 ```
 
 
-### Fetch Document Page and get all editables, including the inherited editables
+### Fetch Document Page and Get All Editables, Including the Inherited Editables
 
 ```graphql
 {
@@ -69,7 +69,7 @@
 }
 ```
 
-## Fetch Document Page via data object relation and get more editable data
+## Fetch Document Page via Data Object Relation and Get More Editable Data
 
 * get data object ID 61
 * get many-to-one relation
@@ -140,7 +140,7 @@ Get Link Document and resolve the target news text.
 
 see [Element Properties](./11_Query_Samples/05_Sample_Element_Properties.md)
 
-## Fetch Document Translation links
+## Fetch Document Translation Links
 
 ```graphql
 {
@@ -162,7 +162,7 @@ see [Element Properties](./11_Query_Samples/05_Sample_Element_Properties.md)
 
 ```
 
-### Fetch Language specific Document Translation Link
+### Fetch Language Specific Document Translation Link
 
 ```graphql
 {

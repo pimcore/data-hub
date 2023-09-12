@@ -11,11 +11,11 @@ When deploying configurations following steps are necessary:
 - Rebuild workspaces by running `datahub:configuration:rebuild-workspaces`  
 
 
-Either call 
+Either call: 
 ```bash
 datahub:configuration:rebuild-workspaces
 ``` 
-to do that for all definitions, or
+to do that for all definitions, or:
 
 
 ```bash
