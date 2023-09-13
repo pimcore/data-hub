@@ -990,11 +990,13 @@ class MutationType extends ObjectType
                     }
 
                     $type = $args['type'];
+                    $filename = $args['filename'];
 
                     $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
-                    /** @var Concrete $newInstance */
+                    /** @var Asset $newInstance */
                     $newInstance = new $className();
                     $newInstance->setParentId($parent->getId());
+                    $newInstance->setFilename($filename);
 
                     $tags = [];
                     if (isset($args['input'])) {
@@ -1029,7 +1031,7 @@ class MutationType extends ObjectType
                     } catch (\Exception $e) {
                         return [
                             'success' => false,
-                            'message' => 'saving failed'
+                            'message' => 'saving failed: ' . $e->getMessage()
                         ];
                     }
 
