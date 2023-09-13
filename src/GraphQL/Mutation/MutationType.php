@@ -1383,37 +1383,36 @@ class MutationType extends ObjectType
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                 ],
-                'resolve' => static function ($value, $args)
-                    use ($type, $omitPermissionCheck, $me) {
-                        try {
-                            $idOrPath = $args['id'] ?? ($args['fullpath'] ?? null);
-                            if (!$idOrPath) {
-                                return [
+                'resolve' => static function ($value, $args) use ($type, $omitPermissionCheck, $me) {
+                    try {
+                        $idOrPath = $args['id'] ?? ($args['fullpath'] ?? null);
+                        if (!$idOrPath) {
+                            return [
                                     'success' => false,
                                     'message' => 'Missing required field id or fullpath to delete the asset.'
                                 ];
-                            }
+                        }
 
-                            $element = $me->getElementByTypeAndIdOrPath($args, $type);
+                        $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                            if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
-                                return [
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
+                            return [
                                     'success' => false,
                                     'message' => 'delete ' . $type . ' permission denied.'
                                 ];
-                            }
-                            $result = ['success' => false];
-                            $element->delete();
+                        }
+                        $result = ['success' => false];
+                        $element->delete();
 
-                            $result = [
+                        $result = [
                                 'success' => true,
                                 'message' => $type . ' ' . $idOrPath . ' deleted'
                             ];
-                        } catch (\Exception $e) {
-                            $result['message'] = $e->getMessage();
-                        }
+                    } catch (\Exception $e) {
+                        $result['message'] = $e->getMessage();
+                    }
 
-                        return $result;
+                    return $result;
                 }
             ];
 
