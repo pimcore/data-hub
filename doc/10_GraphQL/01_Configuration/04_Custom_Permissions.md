@@ -1,8 +1,6 @@
 # Custom Permissions
 
-When creating custom queries or creating other custom extensions to Datahub, it might be useful to 
-add additional permissions to define access rules for certain data entities (like it is possible to
-define access for documents, assets, etc.). 
+When creating custom queries or creating other custom extensions to Datahub, it might be useful to add additional permissions to define access rules for certain data entities (like it is possible to define access for Documents, Assets, etc.). 
 
 ## Adding Custom Permissions 
 

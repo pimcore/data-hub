@@ -64,12 +64,12 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             url: '/admin/pimcoredatahub/config/get-explorer-url?name=' + this.data.general.name,
 
             success: function (callbackFn, response, opts) {
-
-                var data = Ext.decode(response.responseText);
-                var securityValues = this.securityForm.getForm().getFieldValues();
-                var explorerUrl = window.location.origin + data.explorerUrl;
+                let data = Ext.decode(response.responseText);
+                let securityValues = this.securityForm.getForm().getFieldValues();
+                let explorerUrl = window.location.origin + data.explorerUrl;
                 if (securityValues && securityValues["method"] == "datahub_apikey") {
-                    explorerUrl = explorerUrl + "?apikey=" + securityValues["apikey"];
+                    let apiKeys = securityValues["apikey"].split("\n");
+                    explorerUrl = explorerUrl + "?apikey=" + apiKeys[0];
                 }
                 callbackFn(explorerUrl);
             }.bind(this, callbackFn)
