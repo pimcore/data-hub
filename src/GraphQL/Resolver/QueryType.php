@@ -438,10 +438,21 @@ class QueryType
                 return $db->quote($tag);
             }, $args['tags'])));
 
-            $conditionParts[] = "o_id IN (
+            $field = "name";
+            if (isset($args['useTagIdPath']) && $args['useTagIdPath']) {
+                $field = "idPath";
+            }
+
+            $statement = "o_id IN (
                             SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
                             WHERE
-                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . '))';
+                                ctype = 'object' AND LOWER(tags." . $field . ") IN (" . $tags . ')';
+
+            if (isset($args['hasAllTags']) && $args['hasAllTags']) {
+                $statement .= " GROUP BY cId HAVING COUNT(DISTINCT  tags." . $field . ") = " . count($args['tags']);
+            }
+
+            $conditionParts[] = $statement . ")";
         }
 
         // paging
