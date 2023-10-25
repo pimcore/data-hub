@@ -70,7 +70,7 @@ trait ElementTagTrait
         $tags = [];
         foreach ($input as $tag_input) {
             if (isset($tag_input['id']) && $tag_input['id']) {
-                $tag = Tag::getById($tag_input['id']);
+                $tag = Tag::getById((int)$tag_input['id']);
             } elseif (isset($tag_input['path']) && $tag_input['path']) {
                 $tag = Tag::getByPath($tag_input['path']);
             } else {
