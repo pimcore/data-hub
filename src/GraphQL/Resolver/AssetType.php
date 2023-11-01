@@ -193,7 +193,7 @@ class AssetType
         if ($asset instanceof Asset\Image) {
             $mediaQueries = [];
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
-            $thumbnailConfig = $asset->getThumbnailConfig($args['thumbnail']);
+            $thumbnailConfig = $asset->getThumbnail($args['thumbnail'])->getConfig();
             if ($thumbnailConfig) {
                 foreach ($thumbnailConfig->getMedias() as $key => $val) {
                     $mediaQueries[] = [
