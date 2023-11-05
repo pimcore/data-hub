@@ -35,6 +35,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Image
 * ImageGallery
 * Input
+* Input Quantity Value
 * Language
 * Lastname
 * Link
