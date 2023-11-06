@@ -80,7 +80,7 @@ class Configuration extends AbstractModel
         $this->setType($type);
         $this->setPath($path);
         $this->setName($name);
-        $this->setConfiguration($configuration ?? []);
+        $this->setConfiguration($configuration);
     }
 
     public function getObjectVars(): array
@@ -148,12 +148,10 @@ class Configuration extends AbstractModel
      */
     public function setConfiguration($configuration): void
     {
-        if (is_array($configuration)) {
-            $configuration = json_decode(json_encode($configuration), true);
-        }
-        if (empty($this->getName())) {
+        if ($configuration && empty($this->getName())) {
             $this->setName($configuration['configuration']['general']['name'] ?? null);
         }
+
         $this->configuration = $configuration;
     }
 
