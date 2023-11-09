@@ -1,5 +1,5 @@
 ---
-plugin_pimcore_datahub_toolbar: Datahub
+plugin_pimcore_datahub_toolbar: Datahub Config
 plugin_pimcore_datahub_configpanel_add: Add Configuration
 plugin_pimcore_datahub_configpanel_enterkey_title: Add a new configuration
 plugin_pimcore_datahub_configpanel_enterkey_prompt: Unique Identifier
