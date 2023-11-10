@@ -75,7 +75,7 @@ class AssetType
         //"object_154,asset_489"
         $event = new AssetEvent($asset, [
             'metadata' => $metadata,
-            'context' =>$context
+            'context' => $context
         ]);
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
