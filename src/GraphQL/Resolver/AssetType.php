@@ -17,11 +17,14 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use Exception;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\AssetMetadataEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Model\Asset;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class AssetType
 {
@@ -64,37 +67,46 @@ class AssetType
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        $metadata = $asset?->getMetadata(raw: true);
+        if (!$metadata) {
+            return null;
+        }
 
-        if ($asset) {
-            $metadata = $asset->getObjectVar('metadata');
-            if ($metadata) {
-                if (isset($args['ignore_language']) && $args['ignore_language']) {
-                    return $metadata;
-                }
+        //"object_154,asset_489"
+        $event = new AssetEvent($asset, [
+            'metadata' => $metadata,
+            'context' =>$context
+        ]);
+        /** @var EventDispatcher $eventDispatcher */
+        $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
+        $eventDispatcher->dispatch($event, AssetMetadataEvents::PRE_RESOLVE);
+        $metadata = $event->getArgument('metadata');
 
-                $map = [];
-                $keys = [];
-                $language = isset($args['language']) ? $args['language'] : $this->getGraphQlService()->getLocaleService()->findLocale();
+        if (isset($args['ignore_language']) && $args['ignore_language']) {
+            return $metadata;
+        }
 
-                foreach ($metadata as $item) {
-                    $keys[$item['name']] = 1;
-                    $l = $item['language'] ? $item['language'] : 'default';
-                    $map[$l][$item['name']] = $item;
-                }
-                $result = [];
+        $map = [];
+        $keys = [];
+        $language = $args['language'] ?? $this->getGraphQlService()->getLocaleService()->findLocale();
 
-                foreach ($keys as $key => $found) {
-                    if (isset($map[$language][$key])) {
-                        $result[] = $map[$language][$key];
-                    } elseif (isset($map['default'][$key])) {
-                        $result[] = $map['default'][$key];
-                    }
-                }
+        foreach ($metadata as $item) {
+            $keys[$item['name']] = 1;
+            $l = $item['language'] ?: 'default';
+            $map[$l][$item['name']] = $item;
+        }
+        $result = [];
 
-                if ($result) {
-                    return $result;
-                }
+        foreach ($keys as $key => $found) {
+            if (isset($map[$language][$key])) {
+                $result[] = $map[$language][$key];
+            } elseif (isset($map['default'][$key])) {
+                $result[] = $map['default'][$key];
             }
+        }
+
+        if ($result) {
+            return $result;
         }
 
         return null;
