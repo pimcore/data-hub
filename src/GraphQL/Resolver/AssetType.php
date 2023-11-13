@@ -72,7 +72,7 @@ class AssetType
             return null;
         }
 
-        //"object_154,asset_489"
+        //Relational data would return as a comma separated list. each element type and id by `_`, eg. "object_154,asset_489"
         $event = new AssetEvent($asset, [
             'metadata' => $metadata,
             'context' => $context
