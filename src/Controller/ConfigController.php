@@ -122,17 +122,14 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             });
         }
 
-        //sort groups
-        usort($groups, function ($a, $b) {
-            return $a['text'] <=> $b['text'];
-        });
+        //sort items
+        $tree = array_merge($tree, $groups);
 
-        //sort ungrouped items
         usort($tree, function ($a, $b) {
             return $a['text'] <=> $b['text'];
         });
 
-        return $this->json(array_merge($groups, $tree));
+        return $this->json($tree);
     }
 
     /**
