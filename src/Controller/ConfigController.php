@@ -115,10 +115,10 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             }
         }
 
-        $sortFunc = fn($a, $b)  =>  strtolower($a['text']) <=> strtolower($b['text']);
+        $sortFunc = fn ($a, $b) => strtolower($a['text']) <=> strtolower($b['text']);
 
         //sort group children
-        foreach($groups as &$group){
+        foreach ($groups as &$group) {
             usort($group['children'], $sortFunc);
         }
 
