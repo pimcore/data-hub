@@ -115,9 +115,17 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             }
         }
 
-        foreach ($groups as $group) {
-            $tree[] = $group;
+        $sortFunc = fn($a, $b)  =>  strtolower($a['text']) <=> strtolower($b['text']);
+
+        //sort group children
+        foreach($groups as &$group){
+            usort($group['children'], $sortFunc);
         }
+
+        //sort items
+        $tree = array_merge($tree, $groups);
+
+        usort($tree, $sortFunc);
 
         return $this->json($tree);
     }
