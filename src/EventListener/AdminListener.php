@@ -34,10 +34,16 @@ class AdminListener
     public function addIndexSettings(IndexActionSettingsEvent $event)
     {
         $event->addSetting('data-hub-writeable', (new \Pimcore\Bundle\DataHubBundle\Configuration(null, null))->isWriteable());
-        $allowIntrospection = true;
-        if (isset($this->config['graphql']) && isset($this->config['graphql']['allow_introspection'])) {
-            $allowIntrospection = $this->config['graphql']['allow_introspection'];
-        }
-        $event->addSetting('allow_introspection', $allowIntrospection);
+        $this->addEventSetting('allow_introspection', $event);
+        $this->addEventSetting('allow_sqlObjectCondition', $event);
+    }
+
+    private function addEventSetting(
+        string $key,
+        IndexActionSettingsEvent $event
+    ): void
+    {
+        $value = $this->config['graphql'][$key] ?? true;
+        $event->addSetting($key, $value);
     }
 }

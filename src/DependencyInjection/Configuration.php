@@ -40,6 +40,14 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('output_cache_enabled')->info('enables output cache for graphql responses. It is disabled by default')->defaultValue(false)->end()
                         ->integerNode('output_cache_lifetime')->info('output cache in seconds. Default is 30 seconds')->defaultValue(30)->end()
                         ->booleanNode('allow_introspection')->info('enables introspection for graphql. It is enabled by default')->defaultValue(true)->end()
+                        ->booleanNode('allow_sqlObjectCondition')
+                            ->setDeprecated(
+                                'pimcore/data-hub',
+                                '2.0.0'
+                            )
+                            ->info('enables SQL Condition for graphql. It is enabled by default')
+                            ->defaultValue(true)
+                        ->end()
                     ->end()
                 ->end()
             ->end()
