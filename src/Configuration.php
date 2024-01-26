@@ -189,6 +189,9 @@ class Configuration extends AbstractModel
         $this->group = $group;
     }
 
+    /**
+     * @deprecated property sqlObjectCondition will be removed in the next major release
+     */
     public function getSqlObjectCondition(): ?string
     {
         return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] ?? null : null;

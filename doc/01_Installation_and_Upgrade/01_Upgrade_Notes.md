@@ -1,5 +1,9 @@
 # Upgrade Notes
 
+## 1.7.0
+- [GraphQL] Deprecated SQL Condition.
+- [GraphQL] Added the possibility to disable deprecated SQL Condition.
+
 ## 1.6.0
 - [General] If you want to use Datahub 1.6 and Pimcore 11, please make sure to require the `pimcore/admin-ui-classic-bundle`.
 - [Config Location] Change default directory for configurations to `var/config/data_hub`
