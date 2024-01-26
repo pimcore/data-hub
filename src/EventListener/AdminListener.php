@@ -41,8 +41,7 @@ class AdminListener
     private function addEventSetting(
         string $key,
         IndexActionSettingsEvent $event
-    ): void
-    {
+    ): void {
         $value = $this->config['graphql'][$key] ?? true;
         $event->addSetting($key, $value);
     }
