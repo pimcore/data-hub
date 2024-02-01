@@ -37,6 +37,7 @@ services:
   pimcore.datahub.graphql.dataobjecttype.elementdescriptor_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType'
   pimcore.datahub.graphql.dataobjecttype.geopoint_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointInputType'
   pimcore.datahub.graphql.dataobjecttype.quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType'
+  pimcore.datahub.graphql.dataobjecttype.input_quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputQuantityValueInputType'
 
   pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
   pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
@@ -732,6 +733,10 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: input_quantity_value }
 
+  Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputQuantityValueInputType:
+      tags:
+          - { name: pimcore.datahub.graphql.dataobjecttype, id: input_quantity_value_input }
+
   Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueType:
     tags:
       - { name: pimcore.datahub.graphql.dataobjecttype, id: quantity_value }
@@ -999,6 +1004,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\QuantityValue
     tags:
         - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_quantityValue }
+
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_inputQuantityValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\InputQuantityValue
+    tags:
+        - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_inputQuantityValue }
 
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_table:
       class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Table
