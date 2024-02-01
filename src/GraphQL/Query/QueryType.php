@@ -263,7 +263,18 @@ class QueryType extends ObjectType
                         'type' => Type::string(),
                         'description' => 'Comma separated list of fullpath'
                     ],
-                    'tags' => ['type' => Type::string(),  'description' => 'Comma separated list of tag names'],
+                    'tags' => [
+                        'type' => Type::string(),  
+                        'description' => 'Comma separated list of tag names (or idPath if useTagIdPath is true)'
+                    ],
+                    'useTagIdPath' => [
+                        'type' => Type::boolean(), 
+                        'description' => 'Use idPath instead of name for tags in the tags argument'
+                    ],
+                    'hasAllTags' => [
+                        'type' => Type::boolean(), 
+                        'description' => 'Results must match all tags in the tags argument'
+                    ],
                     'defaultLanguage' => ['type' => Type::string()],
                     'first' => ['type' => Type::int()],
                     'after' => ['type' => Type::int()],
