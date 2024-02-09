@@ -46,6 +46,7 @@ class QuantityValueInputType extends InputObjectType
         $config['fields'] = [
             'value' => Type::float(),
             'unit' => Type::string(),
+            'unitId' => Type::string()
         ];
     }
 }
