@@ -46,6 +46,7 @@ class InputQuantityValueInputType extends InputObjectType
         $config['fields'] = [
             'value' => Type::string(),
             'unit' => Type::string(),
+            'unitId' => Type::string()
         ];
     }
 }
