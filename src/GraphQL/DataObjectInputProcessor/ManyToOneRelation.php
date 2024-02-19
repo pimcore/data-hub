@@ -44,15 +44,15 @@ class ManyToOneRelation extends Base
 
             if (is_array($newValue)) {
                 $element = $this->getElementByTypeAndIdOrPath($newValue);
-            }
-
-            if (!$element) {
-                throw new NotFoundException(
-                    sprintf('Element with id %s or fullpath %s not found',
-                        $newValue['id'],
-                        $newValue['fullpath']
-                    )
-                );
+                    
+                if (!$element) {
+                    throw new NotFoundException(
+                        sprintf('Element with id %s or fullpath %s not found',
+                            $newValue['id'],
+                            $newValue['fullpath']
+                        )
+                    );
+                }
             }
 
             return $container->$setter($element);
