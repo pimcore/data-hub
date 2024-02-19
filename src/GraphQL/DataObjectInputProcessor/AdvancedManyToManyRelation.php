@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
+use Pimcore\Model\Exception\NotFoundException;
 
 class AdvancedManyToManyRelation extends Base
 {
@@ -57,6 +58,13 @@ class AdvancedManyToManyRelation extends Base
                             $item->setData($data);
                         }
                         $result[] = $item;
+                    } else {
+                        throw new NotFoundException(
+                            sprintf('Element with id %s or fullpath %s not found',
+                                $newValueItemValue['id'],
+                                $newValueItemValue['fullpath']
+                            )
+                        );
                     }
                 }
             }

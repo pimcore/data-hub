@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
+use Pimcore\Model\Exception\NotFoundException;
 
 class ManyToOneRelation extends Base
 {
@@ -40,8 +41,18 @@ class ManyToOneRelation extends Base
         $me = $this;
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
             $element = null;
+
             if (is_array($newValue)) {
                 $element = $this->getElementByTypeAndIdOrPath($newValue);
+            }
+
+            if (!$element) {
+                throw new NotFoundException(
+                    sprintf('Element with id %s or fullpath %s not found',
+                        $newValue['id'],
+                        $newValue['fullpath']
+                    )
+                );
             }
 
             return $container->$setter($element);
