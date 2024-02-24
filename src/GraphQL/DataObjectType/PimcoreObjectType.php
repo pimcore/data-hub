@@ -83,6 +83,19 @@ class PimcoreObjectType extends ObjectType
             'id' => Type::id(),
             'creationDate' => Type::int(),
             'modificationDate' => Type::int(),
+            'version' => [
+                'type' => Type::int(),
+                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    $object = \Pimcore\Model\DataObject::getById($value['id']);
+                    if ($object) {
+                        $version = $object->getVersions()[count($object->getVersions())-1]->getId();
+                        if ($version) {
+                            return $version;
+                        }
+                    }
+                    return null;
+                }
+            ],
             'objectType' => [
                 'type' => Type::string(),
                 'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
