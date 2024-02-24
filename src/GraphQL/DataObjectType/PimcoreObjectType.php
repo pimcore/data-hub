@@ -88,9 +88,10 @@ class PimcoreObjectType extends ObjectType
                 'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     $object = \Pimcore\Model\DataObject::getById($value['id']);
                     if ($object) {
-                        $version = $object->getVersions()[count($object->getVersions()) - 1]->getId();
-                        if ($version) {
-                            return $version;
+                        foreach (array_reverse($object->getVersions()) as $version) {
+                            if ($object->getModificationDate() === $version->getDate()) {
+                                return $version->getId();
+                            }
                         }
                     }
 
