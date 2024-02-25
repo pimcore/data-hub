@@ -373,6 +373,7 @@ class AssetType
                 }
             }
         }
+
         return null;
     }
 
