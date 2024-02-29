@@ -1581,7 +1581,7 @@ class MutationType extends ObjectType
             Version::disable();
         }
 
-        $element->save(['versionNote' => isset($args['versionNote']) ? $args['versionNote'] : null]);
+        $element->save(["versionNote" => isset($options['versionNote']) ? $options['versionNote'] : null]);
 
         if (isset($options['omitVersionCreate']) && $options['omitVersionCreate'] && !$omitVersionCreateBefore) {
             Version::enable();
