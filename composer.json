@@ -8,6 +8,9 @@
     "preferred-install": {
       "pimcore/pimcore": "source",
       "*": "dist"
+    },
+    "allow-plugins": {
+      "symfony/runtime": true
     }
   },
   "prefer-stable": true,
@@ -26,7 +29,8 @@
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony": "^1.6.0 || ^3.1.0",
-    "symfony/dotenv": "^6.2 || ^5.4.21"
+    "symfony/dotenv": "^6.2 || ^5.4.21",
+    "symfony/runtime": "^6.4 || ^5.4"
   },
   "suggest": {
     "pimcore/admin-ui-classic-bundle": "Required for Pimcore 11"
