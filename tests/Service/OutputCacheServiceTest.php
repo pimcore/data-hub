@@ -156,12 +156,12 @@ class OutputCacheServiceTest extends Unit
         $response = new JsonResponse(['data' => 123]);
         $this->sut->method('loadFromCache')->willReturn($response);
         $this->request->query->set('pimcore_nocache', 'true');
-        \Pimcore::inDebugMode(true);
 
         // Act
         $cacheItem = $this->sut->load($this->request);
 
         // Assert
+        $this->assertTrue(\Pimcore::inDebugMode());
         $this->assertEquals(null, $cacheItem);
     }
 }
