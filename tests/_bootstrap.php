@@ -19,6 +19,9 @@ if (file_exists(__DIR__ . '/../vendor/autoload_runtime.php')) {
     throw new \Exception('Unknown configuration! Pimcore project root not found, please set env variable PIMCORE_PROJECT_ROOT.');
 }
 
+$_ENV['APP_ENV'] = 'test';
+$_ENV['APP_DEBUG'] = true;
+
 
 $pimcoreTestsSupportDir = $pimcoreTestDir . '/Support';
 
