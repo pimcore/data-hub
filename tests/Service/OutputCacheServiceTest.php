@@ -161,7 +161,7 @@ class OutputCacheServiceTest extends Unit
         $cacheItem = $this->sut->load($this->request);
 
         // Assert
-        $this->assertEquals(true, \Pimcore::inDebugMode());
+        $this->assertTrue(\Pimcore::inDebugMode());
         $this->assertEquals(null, $cacheItem);
     }
 }
