@@ -28,7 +28,7 @@ jobs:
                     - { php-version: "8.0", dependencies: "lowest", require_admin_bundle: false }
                     - { php-version: "8.1", dependencies: "highest", require_admin_bundle: true }
                     - { php-version: "8.2", dependencies: "highest", require_admin_bundle: true }
-                    - { php-version: "8.2", dependencies: "highest", pimcore_version: "11.x-dev as 11.0.0", phpstan_args: "", experimental: true, require_admin_bundle: true }
+                    - { php-version: "8.3", dependencies: "highest", pimcore_version: "11.x-dev as 11.0.0", phpstan_args: "", experimental: true, require_admin_bundle: true }
         steps:
             - name: "Checkout code"
               uses: "actions/checkout@v2"
