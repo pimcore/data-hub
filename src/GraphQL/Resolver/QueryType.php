@@ -444,10 +444,10 @@ class QueryType
                 return $db->quote($tag);
             }, $args['tags'])));
 
-            $conditionParts[] = "o_id IN (
+            $conditionParts[] = sprintf("%s IN (
                             SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
                             WHERE
-                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . '))';
+                                ctype = 'object' AND LOWER(tags.name) IN (", Service::getVersionDependentDatabaseColumnName('o_id')) . $tags . '))';
         }
 
         // paging
