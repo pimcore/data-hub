@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
+use Doctrine\DBAL\ParameterType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -438,16 +439,35 @@ class QueryType
             if (!is_array($args['tags'])) {
                 $args['tags'] = explode(',', $args['tags']);
             }
-            $tags = strtolower(implode(', ', array_map(static function ($tag) use ($db) {
-                $tag = trim($tag);
 
-                return $db->quote($tag);
-            }, $args['tags'])));
+            $tags = "";
+            $tagIds = "";
+            $tagCondition = sprintf("%s IN (", Service::getVersionDependentDatabaseColumnName('o_id'));
+            $tagCondition .= "SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid";
+            if (isset($args['useTagIdPath']) && $args['useTagIdPath']) {
+                foreach ($args['tags'] as $i => $tag) {
+                    $tagParts = explode('/', $tag);
+                    if ($tagParts[count($tagParts) - 1] == '') {
+                        $tagId = $tagParts[count($tagParts) - 2];
+                        $tagParts = array_slice($tagParts, 0, count($tagParts) - 2);
+                    } else {
+                        $tagId = $tagParts[count($tagParts) - 1];
+                        $tagParts = array_slice($tagParts, 0, count($tagParts) - 1);
+                    }
+                    $tagIds .= $db->quote($tagId, ParameterType::INTEGER) . ($i < count($args['tags']) - 1 ? ', ' : '');
+                    $tags .= $db->quote(implode("/", $tagParts) . "/") . ($i < count($args['tags']) - 1 ? ', ' : '');
+                }
+                $tagCondition .= " WHERE ctype = 'object' AND LOWER(tags.idPath) IN (" . $tags . ") AND tags.id IN (" . $tagIds . ")";
+            } else {
+                $tags = strtolower(implode(', ', array_map(static function ($tag) use ($db) {
+                    $tag = trim($tag);
+                    return $db->quote($tag);
+                }, $args['tags'])));
+                $tagCondition .= " WHERE ctype = 'object' AND LOWER(tags.name) IN (" . $tags . ")";
+            }
+            $tagCondition .= ")";
 
-            $conditionParts[] = sprintf("%s IN (
-                            SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
-                            WHERE
-                                ctype = 'object' AND LOWER(tags.name) IN (", Service::getVersionDependentDatabaseColumnName('o_id')) . $tags . '))';
+            $conditionParts[] = $tagCondition;
         }
 
         // paging
