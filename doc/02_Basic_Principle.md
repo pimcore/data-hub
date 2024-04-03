@@ -1,23 +1,22 @@
 # Basic Principle
 
-Pimcore Datahub allows defining multiple endpoints that allow data delivery and consumption. These 
-endpoints are configured via so called configurations that can be added in Pimcore admin user interface: 
+Pimcore Datahub allows defining multiple endpoints that allow data delivery and consumption. These endpoints are configured via so called configurations that can be added in the Pimcore admin user interface: 
 
-## Adding a new configuration
+## Adding a New Configuration
 
-Open Datahub configuration panel
+1. Open the Datahub configuration panel:
 
 ![Configuration Overview](./img/graphql/configuration3.png)
 
 
-Choose endpoint technology 
+2. Choose an endpoint technology: 
 
 ![Add Configuration](./img/add_config.png)
 
-And get the configuration done by defining 
-- general settings
-- schema configuration
-- security definitions
-- and additional settings
+3. Get the configuration done by defining the followings:
+- General settings
+- Schema configuration
+- Security definitions
+- Additional settings
 
-Example for [GraphQL](./10_GraphQL/README.md)
+Here you can find an example for [GraphQL](./10_GraphQL/README.md).

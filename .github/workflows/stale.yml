@@ -1,0 +1,10 @@
+name: Handle stale issues
+
+on:
+  workflow_dispatch:
+  schedule:
+      - cron: '37 7 * * *'
+
+jobs:
+  call-stale-workflow:
+    uses: pimcore/workflows-collection-public/.github/workflows/stale.yml@v1.1.0

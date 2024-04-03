@@ -17,15 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
-use Pimcore\Model\Exception\NotFoundException;
 
-class ManyToManyRelation extends Base
+class InputQuantityValue extends Base
 {
-    use ElementIdentificationTrait;
-
     /**
      * @param Concrete|AbstractData $object
      * @param array $newValue
@@ -39,25 +35,19 @@ class ManyToManyRelation extends Base
     {
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
-            $result = [];
-            if (is_array($newValue)) {
-                foreach ($newValue as $newValueItemKey => $newValueItemValue) {
-                    $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);
-
-                    if ($element) {
-                        $result[] = $element;
-                    } else {
-                        throw new NotFoundException(
-                            sprintf('Element with id %s or fullpath %s not found',
-                                $newValueItemValue['id'],
-                                $newValueItemValue['fullpath']
-                            )
-                        );
-                    }
+            if ($newValue) {
+                $unit = null;
+                if (isset($newValue['unitId'])) {
+                    $unit = \Pimcore\Model\DataObject\QuantityValue\Unit::getById($newValue['unitId']);
+                } elseif (isset($newValue['unit'])) {
+                    $unit = \Pimcore\Model\DataObject\QuantityValue\Unit::getByAbbreviation($newValue['unit']);
                 }
+                $inputQuantityValue = new \Pimcore\Model\DataObject\Data\InputQuantityValue($newValue['value'], $unit);
+
+                return $container->$setter($inputQuantityValue);
             }
 
-            return $container->$setter($result);
+            return null;
         });
     }
 }

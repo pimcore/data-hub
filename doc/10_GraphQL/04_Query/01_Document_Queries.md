@@ -69,6 +69,51 @@
 }
 ```
 
+### Fetch Document Page and get processed Wysiwyg editable content
+
+* Field `text` contains the HTML as it is stored in Pimcore for this Wysiwyg editable.
+* Field `frontend` contain the processed HTML where Pimcore Element links are rewritten where necessary.
+
+```graphql
+{
+  getDocument(id: 207) {    
+    ... on document_page {
+      id,
+      editables(getInheritedValues: true){
+        __typename
+        ...on document_editableWysiwyg {
+          text
+          frontend
+        }
+      }
+    }
+  }
+}
+```
+
+### Fetch Full Rendered Document Page
+
+The `rendered` field can be used to retrieve a rendered version of the page. Available options:
+* `attributes`: Attributes passed into the controller/action
+* `query`: Query Params passed into the controller/action
+* `options`: Options passed into the renderer
+* `use_layout`: Enable/disable Layout Rendering
+
+```graphql
+{
+  getDocument(id: 207) {    
+    ... on document_page {
+      id,
+      rendered(
+        attributes: [{key: "myControllerAttributeName", value: "Hello World!"}],
+        use_layout: true,
+        options: [{key: "ignore_errors", value: "1"}]
+      )
+    }
+  }
+}
+```
+
 ## Fetch Document Page via Data Object Relation and Get More Editable Data
 
 * get data object ID 61
