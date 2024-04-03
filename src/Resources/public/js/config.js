@@ -83,7 +83,7 @@ pimcore.plugin.datahub.config = Class.create({
             let firstHandler;
 
             for (let key in pimcore.plugin.datahub.adapter) {
-                if( pimcore.plugin.datahub.adapter.hasOwnProperty( key ) && this.userIsAllowedToCreate(key)) {
+                if( key !== 'abstract' && pimcore.plugin.datahub.adapter.hasOwnProperty( key ) && this.userIsAllowedToCreate(key)) {
                     let adapter = new pimcore.plugin.datahub.adapter[key](this);
 
                     if (!firstHandler) {

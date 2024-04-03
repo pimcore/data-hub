@@ -990,11 +990,13 @@ class MutationType extends ObjectType
                     }
 
                     $type = $args['type'];
+                    $filename = $args['filename'];
 
                     $className = 'Pimcore\\Model\\Asset\\' . ucfirst($type);
-                    /** @var Concrete $newInstance */
+                    /** @var Asset $newInstance */
                     $newInstance = new $className();
                     $newInstance->setParentId($parent->getId());
+                    $newInstance->setFilename($filename);
 
                     $tags = [];
                     if (isset($args['input'])) {
@@ -1029,7 +1031,7 @@ class MutationType extends ObjectType
                     } catch (\Exception $e) {
                         return [
                             'success' => false,
-                            'message' => 'saving failed'
+                            'message' => 'saving failed: ' . $e->getMessage()
                         ];
                     }
 
@@ -1380,31 +1382,37 @@ class MutationType extends ObjectType
                 'args' => [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
+                ],
+                'resolve' => static function ($value, $args) use ($type, $omitPermissionCheck, $me) {
                     try {
-                        $id = $args['id'];
-                        /** @var Configuration $configuration */
-                        $configuration = $context['configuration'];
+                        $idOrPath = $args['id'] ?? ($args['fullpath'] ?? null);
+                        if (!$idOrPath) {
+                            return [
+                                    'success' => false,
+                                    'message' => 'Missing required field id or fullpath to delete the asset.'
+                                ];
+                        }
+
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
-                                'success' => false,
-                                'message' => 'delete ' . $type . ' permission denied.'
-                            ];
+                                    'success' => false,
+                                    'message' => 'delete ' . $type . ' permission denied.'
+                                ];
                         }
+                        $result = ['success' => false];
                         $element->delete();
 
-                        return [
-                            'success' => true,
-                            'message' => $type . ' ' . $id . ' deleted'
-                        ];
+                        $result = [
+                                'success' => true,
+                                'message' => $type . ' ' . $idOrPath . ' deleted'
+                            ];
                     } catch (\Exception $e) {
-                        return [
-                            'success' => false,
-                            'message' => $e->getMessage()
-                        ];
+                        $result['message'] = $e->getMessage();
                     }
+
+                    return $result;
                 }
             ];
 

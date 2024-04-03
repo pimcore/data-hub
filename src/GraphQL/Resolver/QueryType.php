@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
@@ -301,6 +302,11 @@ class QueryType
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         $sqlGetCondition = $configuration->getSqlObjectCondition();
+        $dataHubConfig = Pimcore::getContainer()?->getParameter('pimcore_data_hub');
+        if ($dataHubConfig && isset($dataHubConfig['graphql']['allow_sqlObjectCondition']) &&
+            !$dataHubConfig['graphql']['allow_sqlObjectCondition']) {
+            $sqlGetCondition = null;
+        }
 
         if ($sqlGetCondition) {
             $conditionParts[] = '(' . $sqlGetCondition . ')';
@@ -438,21 +444,10 @@ class QueryType
                 return $db->quote($tag);
             }, $args['tags'])));
 
-            $field = "name";
-            if (isset($args['useTagIdPath']) && $args['useTagIdPath']) {
-                $field = "idPath";
-            }
-
-            $statement = "o_id IN (
+            $conditionParts[] = sprintf("%s IN (
                             SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
                             WHERE
-                                ctype = 'object' AND LOWER(tags." . $field . ") IN (" . $tags . ')';
-
-            if (isset($args['hasAllTags']) && $args['hasAllTags']) {
-                $statement .= " GROUP BY cId HAVING COUNT(DISTINCT  tags." . $field . ") = " . count($args['tags']);
-            }
-
-            $conditionParts[] = $statement . ")";
+                                ctype = 'object' AND LOWER(tags.name) IN (", Service::getVersionDependentDatabaseColumnName('o_id')) . $tags . '))';
         }
 
         // paging

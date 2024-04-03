@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
+use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -52,29 +53,25 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             $loader->load('doctrine_migrations.yml');
         }
 
-        $configDir = PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub';
-
-        if (\Pimcore\Version::getMajorVersion() >= 11) {
-            $containerConfig = ConfigurationHelper::getConfigNodeFromSymfonyTree($container, 'pimcore_data_hub');
-            $configDir = $containerConfig['config_location']['data_hub']['write_target']['options']['directory'];
-        }
+        $containerConfig = ConfigurationHelper::getConfigNodeFromSymfonyTree($container, 'pimcore_data_hub');
+        $configDir = $containerConfig['config_location']['data_hub']['write_target']['options']['directory'];
 
         $configLoader = new YamlFileLoader(
             $container,
-            new FileLocator($configDir)
+            new FileLocator([$configDir, Dao::CONFIG_PATH])
         );
 
-        //load datahub configs
-        if (\Pimcore\Version::getMajorVersion() >= 11) {
-            $configs = ConfigurationHelper::getSymfonyConfigFiles($configDir);
-            foreach ($configs as $config) {
-                $configLoader->load($config);
-            }
-        } else {
-            $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
-            foreach ($configLocator->locate('config') as $config) {
-                $configLoader->load($config);
-            }
+        //TODO: remove as soon as Pimcore 10.6 isn´t supported anymore.
+        $configLocator = new \Pimcore\Bundle\DataHubBundle\Configuration\DatahubConfigLocator();
+        $configs =
+            [
+                ...ConfigurationHelper::getSymfonyConfigFiles($configDir),
+                ...ConfigurationHelper::getSymfonyConfigFiles($_SERVER['PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB'] ?? ''),
+                ...$configLocator->locate('config')
+            ];
+
+        foreach ($configs as $config) {
+            $configLoader->load($config);
         }
     }
 }

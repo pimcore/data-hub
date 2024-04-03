@@ -64,12 +64,12 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             url: '/admin/pimcoredatahub/config/get-explorer-url?name=' + this.data.general.name,
 
             success: function (callbackFn, response, opts) {
-
-                var data = Ext.decode(response.responseText);
-                var securityValues = this.securityForm.getForm().getFieldValues();
-                var explorerUrl = window.location.origin + data.explorerUrl;
+                let data = Ext.decode(response.responseText);
+                let securityValues = this.securityForm.getForm().getFieldValues();
+                let explorerUrl = window.location.origin + data.explorerUrl;
                 if (securityValues && securityValues["method"] == "datahub_apikey") {
-                    explorerUrl = explorerUrl + "?apikey=" + securityValues["apikey"];
+                    let apiKeys = securityValues["apikey"].split("\n");
+                    explorerUrl = explorerUrl + "?apikey=" + apiKeys[0];
                 }
                 callbackFn(explorerUrl);
             }.bind(this, callbackFn)
@@ -128,7 +128,64 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
     },
 
     getGeneral: function () {
+        const generalItems = [
+            {
+                xtype: "checkbox",
+                fieldLabel: t("active"),
+                name: "active",
+                value: this.data.general && this.data.general.hasOwnProperty("active") ? this.data.general.active : true
+            },
+            {
+                xtype: "textfield",
+                fieldLabel: t("type"),
+                name: "type",
+                value: t("plugin_pimcore_datahub_type_" + this.data.general.type),
+                readOnly: true
+            },
+            {
+                xtype: "textfield",
+                fieldLabel: t("name"),
+                name: "name",
+                value: this.data.general.name,
+                readOnly: true
+            },
+            {
+                name: "description",
+                fieldLabel: t("description"),
+                xtype: "textarea",
+                height: 100,
+                value: this.data.general.description
+            },
+            {
+                xtype: "textfield",
+                fieldLabel: t("group"),
+                name: "group",
+                value: this.data.general.group
+            }
+        ];
 
+        if (pimcore.settings.allow_sqlObjectCondition) {
+            generalItems.push({
+                    xtype: "displayfield",
+                    hideLabel: true,
+                    value: t("plugin_pimcore_datahub_configpanel_condition_hint"),
+                    readOnly: true,
+                    disabled: true
+                },{
+                    xtype: "displayfield",
+                    hideLabel: true,
+                    value: t("plugin_pimcore_datahub_configpanel_condition_deprecated"),
+                    readOnly: true,
+                    disabled: true
+                },
+                {
+                    name: "sqlObjectCondition",
+                    fieldLabel: t("plugin_pimcore_datahub_configpanel_sqlObjectCondition") + ' (' + t("deprecated") + ')',
+                    xtype: "textarea",
+                    height: 100,
+                    value: this.data.general.sqlObjectCondition
+                });
+        }
 
         this.generalForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
@@ -139,55 +196,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             },
             border: false,
             title: t("plugin_pimcore_datahub_configpanel_item_general"),
-            items: [
-                {
-                    xtype: "checkbox",
-                    fieldLabel: t("active"),
-                    name: "active",
-                    value: this.data.general && this.data.general.hasOwnProperty("active") ? this.data.general.active : true
-                },
-                {
-                    xtype: "textfield",
-                    fieldLabel: t("type"),
-                    name: "type",
-                    value: t("plugin_pimcore_datahub_type_" + this.data.general.type),
-                    readOnly: true
-                },
-                {
-                    xtype: "textfield",
-                    fieldLabel: t("name"),
-                    name: "name",
-                    value: this.data.general.name,
-                    readOnly: true
-                },
-                {
-                    name: "description",
-                    fieldLabel: t("description"),
-                    xtype: "textarea",
-                    height: 100,
-                    value: this.data.general.description
-                },
-                {
-                    xtype: "textfield",
-                    fieldLabel: t("group"),
-                    name: "group",
-                    value: this.data.general.group
-                },
-                {
-                    xtype: "displayfield",
-                    hideLabel: true,
-                    value: t("plugin_pimcore_datahub_configpanel_condition_hint"),
-                    readOnly: true,
-                    disabled: true
-                },
-                {
-                    name: "sqlObjectCondition",
-                    fieldLabel: t("plugin_pimcore_datahub_configpanel_sqlObjectCondition"),
-                    xtype: "textarea",
-                    height: 100,
-                    value: this.data.general.sqlObjectCondition
-                }
-            ]
+            items: generalItems
         });
 
         return this.generalForm;

@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class QuantityValueInputType extends InputObjectType
+class InputQuantityValueInputType extends InputObjectType
 {
     use ServiceTrait;
 
@@ -28,7 +28,7 @@ class QuantityValueInputType extends InputObjectType
      * @param Service $graphQlService
      * @param array $config
      */
-    public function __construct(Service $graphQlService, $config = ['name' => 'QuantityValueInput'])
+    public function __construct(Service $graphQlService, $config = ['name' => 'InputQuantityValueInput'])
     {
         $this->setGraphQLService($graphQlService);
         $this->build($config);
@@ -44,7 +44,7 @@ class QuantityValueInputType extends InputObjectType
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $config['fields'] = [
-            'value' => Type::float(),
+            'value' => Type::string(),
             'unit' => Type::string(),
             'unitId' => Type::string()
         ];
