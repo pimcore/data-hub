@@ -465,6 +465,11 @@ class QueryType
                 }, $args['tags'])));
                 $tagCondition .= " WHERE ctype = 'object' AND LOWER(tags.name) IN (" . $tags . ")";
             }
+
+            if (isset($args['hasAllTags']) && $args['hasAllTags']) {
+                $tagCondition .= " GROUP BY cId HAVING COUNT(DISTINCT tags.id) = " . count($args['tags']);
+            }
+
             $tagCondition .= ")";
 
             $conditionParts[] = $tagCondition;
