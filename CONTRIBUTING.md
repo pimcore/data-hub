@@ -18,7 +18,7 @@ There are a few necessary steps before we can accept a pull request:
 
 * [Fork us!](https://help.github.com/articles/fork-a-repo/)
 * Select the right branch. main(e.g. 1.x) for features and improvements or latest maintenance branch for bug fixes (e.g. 1.0)
-* Code! Follow the coding standards defined [here](https://github.com/pimcore/data-hub/blob/master/.php_cs.dist).
+* Code! Follow the coding standards defined [here](https://github.com/pimcore/data-hub/blob/1.x/.php-cs-fixer.dist.php).
 * [Send a pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our `master` branch.
 * [Sign the CLA](https://cla-assistant.io/pimcore/data-hub) - see also below.
 
