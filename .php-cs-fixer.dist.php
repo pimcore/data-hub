@@ -2,20 +2,14 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in([
-        __DIR__ . '/bundles',
-        __DIR__ . '/config',
-        __DIR__ . '/lib',
-        __DIR__ . '/models',
-        __DIR__ . '/tests'
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
     ])
 
     ->exclude([
         __DIR__ . '/tests/_output',
-        __DIR__ . '/tests/Support/_generated',
+        __DIR__ . '/tests/_support/_generated',
     ])
-
-    // do not fix views
-    ->notName('*.html.php')
 ;
 
 // do not enable self_accessor as it breaks pimcore models relying on get_called_class()
