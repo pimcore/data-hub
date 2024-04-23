@@ -10,9 +10,6 @@ $finder = PhpCsFixer\Finder::create()
         __DIR__ . '/tests/_output',
         __DIR__ . '/tests/_support/_generated',
     ])
-
-    // do not fix views
-    ->notName('*.html.php')
 ;
 
 // do not enable self_accessor as it breaks pimcore models relying on get_called_class()
