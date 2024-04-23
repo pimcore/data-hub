@@ -27,20 +27,6 @@ use Pimcore\Model\DataObject\Localizedfield;
 class Merge extends StringBase
 {
     /**
-     * @param array $attributes
-     *
-     * @return array|string|string[]|null
-     */
-    protected function getFieldname($attributes)
-    {
-        $label = ($attributes['label'] ? $attributes['label'] : '#'.uniqid());
-        $label = lcfirst($label);
-        $fieldname = preg_replace('/[^A-Za-z0-9\-\.~_]+/', '_', $label);
-
-        return $fieldname;
-    }
-
-    /**
      * @param string $typeName
      * @param array $nodeConfig
      * @param ClassDefinition|null $class
