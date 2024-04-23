@@ -104,7 +104,7 @@ abstract class Base implements OperatorTypeDefinitionInterface
     }
 
     /**
-     * @param array $attributes
+     * @param array{label?: string} $attributes
      *
      * @return string|null
      */
