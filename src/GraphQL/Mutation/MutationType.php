@@ -50,7 +50,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class MutationType extends ObjectType
 {
     use ServiceTrait;
-
     use PermissionInfoTrait;
     use ElementIdentificationTrait;
     use ElementTagTrait;
@@ -62,22 +61,20 @@ class MutationType extends ObjectType
      * @var LocaleServiceInterface
      */
     protected $localeService;
+
     /**
      * @var Factory
      */
     protected $modelFactory;
 
     public static $typeCache = [];
+
     /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
     /**
-     * @param Service $graphQlService
-     * @param LocaleServiceInterface $localeService
-     * @param Factory $modelFactory
-     * @param EventDispatcherInterface $eventDispatcher
      * @param array $config
      * @param array $context
      *
@@ -189,8 +186,8 @@ class MutationType extends ObjectType
                             }
 
                             return $value;
-                        }
-                    ]
+                        },
+                    ],
                 ],
             ]);
 
@@ -200,14 +197,14 @@ class MutationType extends ObjectType
                     'path' => ['type' => Type::string()],
                     'parentId' => ['type' => Type::int()],
                     'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
-                    'userId' => ['type' => Type::int()]
+                    'userId' => ['type' => Type::int()],
                 ];
             } else {
                 $args = [
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                     'omitVersionCreate' => ['type' => Type::boolean()],
-                    'userId' => ['type' => Type::int()]
+                    'userId' => ['type' => Type::int()],
                 ];
             }
 
@@ -221,7 +218,7 @@ class MutationType extends ObjectType
             self::$typeCache[$inputTypeName] = $inputType;
 
             $args = array_merge($args, [
-                'input' => $inputType
+                'input' => $inputType,
             ]);
 
             $me = $this;
@@ -235,7 +232,7 @@ class MutationType extends ObjectType
                         if (!WorkspaceHelper::checkPermission($element, 'update')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to update document'
+                                'message' => 'not allowed to update document',
                             ];
                         }
                     } else {
@@ -250,14 +247,14 @@ class MutationType extends ObjectType
                         if (!$parent) {
                             return [
                                 'success' => false,
-                                'message' => 'unable to resolve parent'
+                                'message' => 'unable to resolve parent',
                             ];
                         }
 
                         if (!WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create document'
+                                'message' => 'not allowed to create document',
                             ];
                         }
 
@@ -294,9 +291,9 @@ class MutationType extends ObjectType
                     return [
                         'success' => true,
                         'message' => 'document updated: ' . $element->getId(),
-                        'id' => $element->getId()
+                        'id' => $element->getId(),
                     ];
-                }
+                },
             ];
 
             $config['fields'][$opName] = $updateField;
@@ -325,7 +322,7 @@ class MutationType extends ObjectType
 
         $elementInputTypeList = new InputObjectType([
             'name' => 'document_emailmutationelements',
-            'fields' => $elementFields
+            'fields' => $elementFields,
         ]);
 
         $inputTypeName = 'document_email_input';
@@ -347,7 +344,7 @@ class MutationType extends ObjectType
                     'cc' => Type::string(),
                     'bcc' => Type::string(),
                     'tags' => ElementTag::getElementTagInputTypeDefinition(),
-                ]
+                ],
             ]);
 
         return $inputType;
@@ -370,7 +367,6 @@ class MutationType extends ObjectType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      * @param Document\Link $element
      * @param array $processors
      */
@@ -402,7 +398,6 @@ class MutationType extends ObjectType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      * @param Document\Page|Document\Email $element
      * @param array $processors
      *
@@ -417,7 +412,6 @@ class MutationType extends ObjectType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      * @param Document\Page|Document\Email $element
      * @param array $processors
      */
@@ -486,8 +480,8 @@ class MutationType extends ObjectType
                 'name' => 'overwrite_strategy',
                 'values' => [
                     'overwrite',
-                    'update'
-                ]
+                    'update',
+                ],
             ]);
         }
 
@@ -505,7 +499,7 @@ class MutationType extends ObjectType
                     'editableUpdateStrategy' => self::$typeCache['overwrite_strategy'],
                     'editables' => $elementInputTypeList,
                     'tags' => ElementTag::getElementTagInputTypeDefinition(),
-                ]
+                ],
             ]);
 
         return $inputType;
@@ -527,6 +521,7 @@ class MutationType extends ObjectType
             $class = ClassDefinition::getByName($entity);
             if (!$class) {
                 Logger::error('class ' . $entity . ' not found');
+
                 continue;
             }
             $entityConfig = $configuration->getMutationEntityConfig($entity);
@@ -554,8 +549,8 @@ class MutationType extends ObjectType
                                 }
 
                                 return $value;
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ]);
 
@@ -568,7 +563,7 @@ class MutationType extends ObjectType
                 $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
                 $inputType = self::$typeCache[$inputTypeName] ?? new InputObjectType([
                         'name' => $inputTypeName,
-                        'fields' => $inputFields
+                        'fields' => $inputFields,
                     ]);
                 self::$typeCache[$inputTypeName] = $inputType;
 
@@ -600,7 +595,7 @@ class MutationType extends ObjectType
                         if (!$parent) {
                             return [
                                 'success' => false,
-                                'message' => 'unable to resolve parent'
+                                'message' => 'unable to resolve parent',
                             ];
                         }
 
@@ -609,7 +604,7 @@ class MutationType extends ObjectType
                         if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create object ' . $entity
+                                'message' => 'not allowed to create object ' . $entity,
                             ];
                         }
 
@@ -671,9 +666,9 @@ class MutationType extends ObjectType
                         return [
                             'success' => true,
                             'message' => 'object created: ' . $newInstance->getId(),
-                            'id' => $newInstance->getId()
+                            'id' => $newInstance->getId(),
                         ];
-                    }
+                    },
                 ];
 
                 $config['fields'][$opName] = $createField;
@@ -699,8 +694,8 @@ class MutationType extends ObjectType
                                 }
 
                                 return $value;
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ]);
 
@@ -711,7 +706,7 @@ class MutationType extends ObjectType
                 $inputTypeName = 'Update' . ucfirst($entity) . 'Input';
                 $inputType = isset(self::$typeCache[$inputTypeName]) ? self::$typeCache[$inputTypeName] : new InputObjectType([
                     'name' => $inputTypeName,
-                    'fields' => $inputFields
+                    'fields' => $inputFields,
                 ]);
                 self::$typeCache[$inputTypeName] = $inputType;
 
@@ -726,7 +721,7 @@ class MutationType extends ObjectType
                         'omitVersionCreate' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
                         'input' => ['type' => $inputType],
-                    ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck)
+                    ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck),
                 ];
 
                 $config['fields'][$opName] = $updateField;
@@ -739,7 +734,7 @@ class MutationType extends ObjectType
                     'name' => 'Delete' . ucfirst($entity) . 'Result',
                     'fields' => [
                         'success' => ['type' => Type::boolean()],
-                        'message' => ['type' => Type::string()]
+                        'message' => ['type' => Type::string()],
                     ],
                 ]);
 
@@ -759,29 +754,29 @@ class MutationType extends ObjectType
                             if (!$object) {
                                 return [
                                     'success' => false,
-                                    'message' => 'unable to delete object. Unknown id or fullpath'
+                                    'message' => 'unable to delete object. Unknown id or fullpath',
                                 ];
                             }
 
                             if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'delete')) {
                                 return [
                                     'success' => false,
-                                    'message' => 'permission denied.'
+                                    'message' => 'permission denied.',
                                 ];
                             }
                             $object->delete();
 
                             return [
                                 'success' => true,
-                                'message' => ''
+                                'message' => '',
                             ];
                         } catch (\Exception $e) {
                             return [
                                 'success' => false,
-                                'message' => $e->getMessage()
+                                'message' => $e->getMessage(),
                             ];
                         }
-                    }
+                    },
                 ];
 
                 $config['fields'][$opName] = $deleteField;
@@ -856,14 +851,14 @@ class MutationType extends ObjectType
                 if (!$object) {
                     return [
                         'success' => false,
-                        'message' => 'unable to update object. Unknown id or fullpath'
+                        'message' => 'unable to update object. Unknown id or fullpath',
                     ];
                 }
 
                 if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($object, 'update')) {
                     return [
                         'success' => false,
-                        'message' => 'permission denied.'
+                        'message' => 'permission denied.',
                     ];
                 }
 
@@ -904,14 +899,14 @@ class MutationType extends ObjectType
             } catch (\Exception $e) {
                 return [
                     'success' => false,
-                    'message' => $e->getMessage()
+                    'message' => $e->getMessage(),
                 ];
             }
 
             return [
                 'success' => true,
                 'message' => 'object ' . $object->getId() . ' updated',
-                'id' => $object->getId()
+                'id' => $object->getId(),
             ];
         };
     }
@@ -947,8 +942,8 @@ class MutationType extends ObjectType
                             }
 
                             return $value;
-                        }
-                    ]
+                        },
+                    ],
                 ],
             ]);
 
@@ -978,14 +973,14 @@ class MutationType extends ObjectType
                     if (!$parent) {
                         return [
                             'success' => false,
-                            'message' => 'unable to resolve parent'
+                            'message' => 'unable to resolve parent',
                         ];
                     }
 
                     if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                         return [
                             'success' => false,
-                            'message' => 'not allowed to create asset'
+                            'message' => 'not allowed to create asset',
                         ];
                     }
 
@@ -1026,12 +1021,12 @@ class MutationType extends ObjectType
                     } catch (DuplicateFullPathException $e) {
                         return [
                             'success' => false,
-                            'message' => 'saving failed: Duplicate path'
+                            'message' => 'saving failed: Duplicate path',
                         ];
                     } catch (\Exception $e) {
                         return [
                             'success' => false,
-                            'message' => 'saving failed: ' . $e->getMessage()
+                            'message' => 'saving failed: ' . $e->getMessage(),
                         ];
                     }
 
@@ -1042,9 +1037,9 @@ class MutationType extends ObjectType
                     return [
                         'success' => true,
                         'message' => 'asset created: ' . $newInstance->getId(),
-                        'id' => $newInstance->getId()
+                        'id' => $newInstance->getId(),
                     ];
-                }
+                },
             ];
 
             $config['fields'][$opName] = $createField;
@@ -1085,8 +1080,8 @@ class MutationType extends ObjectType
                             }
 
                             return $value;
-                        }
-                    ]
+                        },
+                    ],
                 ],
             ]);
 
@@ -1100,7 +1095,7 @@ class MutationType extends ObjectType
                     'fullpath' => ['type' => Type::string()],
                     'omitVersionCreate' => ['type' => Type::boolean()],
                     'userId' => ['type' => Type::int()],
-                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input')
+                    'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
                     /** @var Asset $element */
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
@@ -1137,9 +1132,9 @@ class MutationType extends ObjectType
                     return [
                         'success' => true,
                         'message' => 'asset updated: ' . $element->getId(),
-                        'id' => $element->getId()
+                        'id' => $element->getId(),
                     ];
-                }
+                },
             ];
 
             $config['fields'][$opName] = $updateField;
@@ -1164,14 +1159,14 @@ class MutationType extends ObjectType
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
-                    'id' => ['type' => Type::int()]
+                    'id' => ['type' => Type::int()],
                 ],
             ]);
 
             $args = [
                 'path' => ['type' => Type::string()],
                 'parentId' => ['type' => Type::int()],
-                'userId' => ['type' => Type::int()]
+                'userId' => ['type' => Type::int()],
             ];
 
             if ($type === 'asset') {
@@ -1184,7 +1179,7 @@ class MutationType extends ObjectType
             $createField = [
                 'type' => $createResultType,
                 'args' => $args,
-                'resolve' => $resolverFn
+                'resolve' => $resolverFn,
             ];
 
             $config['fields'][$opName] = $createField;
@@ -1212,14 +1207,14 @@ class MutationType extends ObjectType
             if (!$parent) {
                 return [
                     'success' => false,
-                    'message' => 'unable to resolve parent'
+                    'message' => 'unable to resolve parent',
                 ];
             }
 
             if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                 return [
                     'success' => false,
-                    'message' => 'not allowed to create ' . $elementType . 'folder '
+                    'message' => 'not allowed to create ' . $elementType . 'folder ',
                 ];
             }
 
@@ -1248,7 +1243,7 @@ class MutationType extends ObjectType
             return [
                 'success' => true,
                 'message' => 'folder created: ' . $newInstance->getId(),
-                'id' => $newInstance->getId()
+                'id' => $newInstance->getId(),
             ];
         };
     }
@@ -1269,7 +1264,7 @@ class MutationType extends ObjectType
             $opName = 'update' . ucfirst($type) . 'Folder';
 
             $inputFields = [
-                'parentId' => ['type' => Type::int()]
+                'parentId' => ['type' => Type::int()],
             ];
             if ($type === 'asset') {
                 $inputFields['filename'] = ['type' => Type::string()];
@@ -1278,14 +1273,14 @@ class MutationType extends ObjectType
             }
             $inputType = new InputObjectType([
                 'name' => 'Update' . ucfirst($type) . 'FolderInput',
-                'fields' => $inputFields
+                'fields' => $inputFields,
             ]);
 
             $updateResultType = new ObjectType([
                 'name' => 'Update' . ucfirst($type) . 'FolderResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()]
+                    'message' => ['type' => Type::string()],
                 ],
             ]);
 
@@ -1298,7 +1293,7 @@ class MutationType extends ObjectType
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                     'userId' => ['type' => Type::int()],
-                    'input' => ['type' => $inputType]
+                    'input' => ['type' => $inputType],
                 ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($type, $omitPermissionCheck, $me) {
                     try {
                         /** @var Configuration $configuration */
@@ -1308,7 +1303,7 @@ class MutationType extends ObjectType
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'update')) {
                             return [
                                 'success' => false,
-                                'message' => 'permission denied.'
+                                'message' => 'permission denied.',
                             ];
                         }
 
@@ -1327,16 +1322,16 @@ class MutationType extends ObjectType
                     } catch (\Exception $e) {
                         return [
                             'success' => false,
-                            'message' => $e->getMessage()
+                            'message' => $e->getMessage(),
                         ];
                     }
 
                     return [
                         'success' => true,
                         'message' => 'hurray',
-                        'id' => $element->getId()
+                        'id' => $element->getId(),
                     ];
-                }
+                },
             ];
 
             $config['fields'][$opName] = $updateField;
@@ -1370,7 +1365,7 @@ class MutationType extends ObjectType
                 'name' => 'Delete' . ucfirst($type) . 'Result',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()]
+                    'message' => ['type' => Type::string()],
                 ],
             ]);
 
@@ -1389,7 +1384,7 @@ class MutationType extends ObjectType
                         if (!$idOrPath) {
                             return [
                                     'success' => false,
-                                    'message' => 'Missing required field id or fullpath to delete the asset.'
+                                    'message' => 'Missing required field id or fullpath to delete the asset.',
                                 ];
                         }
 
@@ -1398,7 +1393,7 @@ class MutationType extends ObjectType
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
                                     'success' => false,
-                                    'message' => 'delete ' . $type . ' permission denied.'
+                                    'message' => 'delete ' . $type . ' permission denied.',
                                 ];
                         }
                         $result = ['success' => false];
@@ -1406,14 +1401,14 @@ class MutationType extends ObjectType
 
                         $result = [
                                 'success' => true,
-                                'message' => $type . ' ' . $idOrPath . ' deleted'
+                                'message' => $type . ' ' . $idOrPath . ' deleted',
                             ];
                     } catch (\Exception $e) {
                         $result['message'] = $e->getMessage();
                     }
 
                     return $result;
-                }
+                },
             ];
 
             $config['fields'][$opName] = $deleteField;
@@ -1447,7 +1442,7 @@ class MutationType extends ObjectType
                 'name' => 'Delete' . ucfirst($type) . 'FolderResult',
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
-                    'message' => ['type' => Type::string()]
+                    'message' => ['type' => Type::string()],
                 ],
             ]);
 
@@ -1469,22 +1464,22 @@ class MutationType extends ObjectType
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
                                 'success' => false,
-                                'message' => 'delete ' . $type . ' permission denied.'
+                                'message' => 'delete ' . $type . ' permission denied.',
                             ];
                         }
                         $element->delete();
 
                         return [
                             'success' => true,
-                            'message' => ''
+                            'message' => '',
                         ];
                     } catch (\Exception $e) {
                         return [
                             'success' => false,
-                            'message' => $e->getMessage()
+                            'message' => $e->getMessage(),
                         ];
                     }
-                }
+                },
             ];
 
             $config['fields'][$opName] = $deleteField;
@@ -1512,14 +1507,14 @@ class MutationType extends ObjectType
             if (!$parent) {
                 return [
                     'success' => false,
-                    'message' => 'unable to resolve parent'
+                    'message' => 'unable to resolve parent',
                 ];
             }
 
             if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'update')) {
                 return [
                     'success' => false,
-                    'message' => 'not allowed to create ' . $elementType . 'folder '
+                    'message' => 'not allowed to create ' . $elementType . 'folder ',
                 ];
             }
 
@@ -1537,7 +1532,7 @@ class MutationType extends ObjectType
             return [
                 'success' => true,
                 'message' => 'folder created: ' . $newInstance->getId(),
-                'id' => $newInstance->getId()
+                'id' => $newInstance->getId(),
             ];
         };
     }

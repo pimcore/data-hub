@@ -27,8 +27,6 @@ class HardlinkType extends AbstractDocumentType
     protected $anyDocumentTargetType;
 
     /**
-     * @param Service $graphQlService
-     * @param AnyDocumentTargetType $anyDocumentTargetType
      * @param array $config
      * @param array $context
      */
@@ -53,8 +51,8 @@ class HardlinkType extends AbstractDocumentType
                 'childrenFromSource' => Type::boolean(),
                 'target' => [
                     'type' => $this->anyDocumentTargetType,
-                    'resolve' => [$resolver, 'resolveTarget']
-                ]
+                    'resolve' => [$resolver, 'resolveTarget'],
+                ],
             ]
         );
     }

@@ -28,7 +28,6 @@ class DatahubConfigLocator
     /**
      * Find config files for the given name (e.g. config)
      *
-     * @param string $name
      * @param array $params
      *
      * @return array

@@ -36,7 +36,6 @@ class Link
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *
@@ -61,7 +60,6 @@ class Link
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *

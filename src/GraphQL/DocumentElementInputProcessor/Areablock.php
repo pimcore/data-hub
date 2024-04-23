@@ -28,7 +28,6 @@ class Areablock extends Base
      * @param mixed $newValue
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
@@ -62,7 +61,7 @@ class Areablock extends Base
                 $indices[$idx] = [
                     'key' => $idx + 1,
                     'type' => $blockType,
-                    'hidden' => $hidden
+                    'hidden' => $hidden,
                 ];
 
                 foreach ($editables as $editableType => $listByType) {

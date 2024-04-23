@@ -19,9 +19,6 @@ use GraphQL\Error\ClientAware;
 
 class ClientSafeException extends \Exception implements ClientAware
 {
-    /**
-     * @return bool
-     */
     public function isClientSafe(): bool
     {
         return true;

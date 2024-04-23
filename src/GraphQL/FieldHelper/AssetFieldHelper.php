@@ -67,7 +67,6 @@ class AssetFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param FieldNode $ast
      * @param array $data
      * @param Asset $container
      * @param array $args

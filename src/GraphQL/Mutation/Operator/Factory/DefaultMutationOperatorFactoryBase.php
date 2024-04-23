@@ -37,7 +37,6 @@ abstract class DefaultMutationOperatorFactoryBase
     }
 
     /**
-     * @param array $configElement
      * @param array|null $context
      *
      * @return OperatorInterface

@@ -25,7 +25,6 @@ class QuantityValueInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'QuantityValueInput'])
@@ -46,7 +45,7 @@ class QuantityValueInputType extends InputObjectType
         $config['fields'] = [
             'value' => Type::float(),
             'unit' => Type::string(),
-            'unitId' => Type::string()
+            'unitId' => Type::string(),
         ];
     }
 }

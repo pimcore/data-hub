@@ -31,8 +31,6 @@ class Group extends ObjectType
     protected $featureType;
 
     /**
-     * @param Service $graphQlService
-     * @param Feature $featuresType
      * @param array $config
      * @param array $context
      */
@@ -97,8 +95,8 @@ class Group extends ObjectType
                     }
 
                     return $result;
-                }
-            ]
+                },
+            ],
         ];
     }
 }

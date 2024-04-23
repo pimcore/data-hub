@@ -22,9 +22,6 @@ use Pimcore\Model\Element\ElementInterface;
 
 class ElementDescriptor extends BaseDescriptor
 {
-    /**
-     * @param ElementInterface|null $element
-     */
     public function __construct(ElementInterface $element = null)
     {
         parent::__construct();

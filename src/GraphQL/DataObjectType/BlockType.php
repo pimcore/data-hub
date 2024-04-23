@@ -27,7 +27,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class BlockType extends ObjectType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     /** @var ClassDefinition */
@@ -37,8 +36,6 @@ class BlockType extends ObjectType implements ContainerAwareInterface
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param array $config
      */
@@ -63,7 +60,7 @@ class BlockType extends ObjectType implements ContainerAwareInterface
 
         $config['name'] = 'block_'.$this->class->getName().'_'.$this->fieldDefinition->getName();
         $config['fields'] = [
-            'entries' => Type::listOf($type)
+            'entries' => Type::listOf($type),
         ];
     }
 }

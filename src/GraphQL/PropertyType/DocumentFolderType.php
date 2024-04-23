@@ -30,7 +30,6 @@ class DocumentFolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      *
      * @throws \Exception
      */
@@ -48,7 +47,7 @@ class DocumentFolderType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -56,7 +55,7 @@ class DocumentFolderType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'document' => [
                     'type' => $documentFolderType,
@@ -79,7 +78,7 @@ class DocumentFolderType extends ObjectType
                         }
 
                         return null;
-                    }
+                    },
 
                 ]]];
 

@@ -25,7 +25,6 @@ class AssetEmbeddedMetaInfoItem extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])

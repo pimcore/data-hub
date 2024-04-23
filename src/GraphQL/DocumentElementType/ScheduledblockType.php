@@ -25,7 +25,6 @@ class ScheduledblockType extends ObjectType
     protected static $instance;
 
     /**
-     * @param ScheduledblockDataType $scheduledblockDataType
      *
      * @return static
      */
@@ -42,7 +41,7 @@ class ScheduledblockType extends ObjectType
                                 if ($value) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -50,7 +49,7 @@ class ScheduledblockType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'data' => [
                             'type' => Type::listOf($scheduledblockDataType),
@@ -58,7 +57,7 @@ class ScheduledblockType extends ObjectType
                                 if ($value instanceof Scheduledblock) {
                                     return $value->getData();
                                 }
-                            }
+                            },
                         ],
 
                     ],

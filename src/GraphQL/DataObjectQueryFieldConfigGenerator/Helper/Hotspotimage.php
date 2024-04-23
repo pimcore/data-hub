@@ -51,9 +51,7 @@ class Hotspotimage
     public $attribute;
 
     /**
-     * @param Service $graphQlService
      * @param string $attribute
-     * @param ClassDefinition\Data\Hotspotimage $fieldDefinition
      * @param ClassDefinition|Fieldcollection\Definition $class
      */
     public function __construct(
@@ -72,7 +70,6 @@ class Hotspotimage
      * @param BaseDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *

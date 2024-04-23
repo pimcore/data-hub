@@ -34,7 +34,7 @@ class QuantityValueUnitType extends ObjectType
                     'id' => Type::id(),
                     'abbreviation' => Type::string(),
                     'longname' => Type::string(),
-                ]
+                ],
             ];
             self::$instance = new static($config);
         }

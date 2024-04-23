@@ -15,18 +15,15 @@
 
 namespace Pimcore\Tests\Test;
 
+use Codeception\Test\Unit;
 use Pimcore\Tests\Support\Helper\DataType\Calculator;
 use Pimcore\Tests\Support\ModelTester;
-use Codeception\Test\Unit;
 
 /**
  * @property ModelTester $tester
  */
 abstract class ModelTestCase extends Unit
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -45,9 +42,6 @@ abstract class ModelTestCase extends Unit
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function needsDb()
     {
         return true;

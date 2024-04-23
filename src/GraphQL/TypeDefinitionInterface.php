@@ -22,7 +22,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 interface TypeDefinitionInterface
 {
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

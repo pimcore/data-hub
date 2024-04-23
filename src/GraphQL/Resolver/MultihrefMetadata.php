@@ -51,7 +51,6 @@ class MultihrefMetadata
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -89,7 +88,6 @@ class MultihrefMetadata
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *

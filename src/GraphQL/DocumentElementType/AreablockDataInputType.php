@@ -25,7 +25,6 @@ class AreablockDataInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -44,7 +43,7 @@ class AreablockDataInputType extends InputObjectType
         $config['fields'] = [
             'key' => Type::string(),
             'type' => Type::string(),
-            'hidden' => Type::boolean()
+            'hidden' => Type::boolean(),
         ];
     }
 }

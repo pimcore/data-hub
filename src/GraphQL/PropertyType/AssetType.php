@@ -30,7 +30,6 @@ class AssetType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      *
      * @throws \Exception
      */
@@ -48,7 +47,7 @@ class AssetType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -56,7 +55,7 @@ class AssetType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'asset' => [
                     'type' => $assetType,
@@ -81,9 +80,9 @@ class AssetType extends ObjectType
                         }
 
                         return null;
-                    }
-                ]
-            ]
+                    },
+                ],
+            ],
         ];
 
         parent::__construct($config);

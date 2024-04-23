@@ -58,7 +58,6 @@ class QueryType
     protected $configuration;
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
      * @param ClassDefinition|null $class
      * @param object $configuration
      * @param bool $omitPermissionCheck
@@ -75,7 +74,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      * @param string|null $elementType
      *
      * @return array|null
@@ -111,7 +109,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -126,7 +123,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -141,7 +137,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -156,7 +151,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -200,7 +194,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *
@@ -263,7 +256,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor
      *
@@ -321,6 +313,7 @@ class QueryType
         $objectList = $objectList->load();
         if (!$objectList) {
             $errorMessage = $this->createArgumentErrorMessage($isFullpathSet, $isIdSet, $args);
+
             throw new ClientSafeException($errorMessage);
         }
         $object = $objectList[0];
@@ -342,7 +335,6 @@ class QueryType
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      */
@@ -364,7 +356,6 @@ class QueryType
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      */
@@ -391,7 +382,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -546,7 +536,6 @@ class QueryType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return mixed
      */

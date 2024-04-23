@@ -29,7 +29,6 @@ abstract class AbstractTable extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -69,12 +68,11 @@ abstract class AbstractTable extends Base
                 }
 
                 return $rows;
-            }
+            },
         ], $container);
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|FieldcollectionDefinition|null $class
      * @param object|null $container
      *
@@ -98,7 +96,7 @@ abstract class AbstractTable extends Base
         $type = new ObjectType(
             [
                 'name' => $name,
-                'fields' => $columns
+                'fields' => $columns,
             ]
         );
 

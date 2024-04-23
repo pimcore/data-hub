@@ -27,7 +27,6 @@ class DocumentPageInputType extends InputObjectType
     protected $processors = [];
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -58,7 +57,7 @@ class DocumentPageInputType extends InputObjectType
 
         $elementInputTypeList = new InputObjectType([ //TODO this is document_page specific
             'name' => 'document_pagemutationelements',
-            'fields' => $elementFields
+            'fields' => $elementFields,
         ]);
 
         $config['fields'] = [
@@ -66,7 +65,7 @@ class DocumentPageInputType extends InputObjectType
             'controller' => Type::string(),
             'action' => Type::string(),
             'template' => Type::string(),
-            'elements' => $elementInputTypeList
+            'elements' => $elementInputTypeList,
         ];
     }
 

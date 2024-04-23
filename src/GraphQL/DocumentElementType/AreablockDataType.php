@@ -39,7 +39,7 @@ class AreablockDataType extends ObjectType
                             if ($value) {
                                 return $value->getType();
                             }
-                        }
+                        },
                     ],
                     '_editableName' => [
                         'type' => Type::string(),
@@ -47,7 +47,7 @@ class AreablockDataType extends ObjectType
                             if ($value) {
                                 return $value->getName();
                             }
-                        }
+                        },
                     ],
                     'key' => [
                         'type' => Type::string(),
@@ -57,7 +57,7 @@ class AreablockDataType extends ObjectType
                             }
 
                             return null;
-                        }
+                        },
                     ],
                     'type' => [
                         'type' => Type::string(),
@@ -67,7 +67,7 @@ class AreablockDataType extends ObjectType
                             }
 
                             return null;
-                        }
+                        },
                     ],
                     'hidden' => [
                         'type' => Type::boolean(),
@@ -75,7 +75,7 @@ class AreablockDataType extends ObjectType
                             if (is_array($value)) {
                                 return $value['hidden'];
                             }
-                        }
+                        },
                     ],
                 ],
             ];

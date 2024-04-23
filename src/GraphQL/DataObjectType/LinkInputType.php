@@ -26,7 +26,6 @@ class LinkInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'LinkInput'])
@@ -55,8 +54,8 @@ class LinkInputType extends InputObjectType
                     '_blank',
                     '_self',
                     '_top',
-                    '_parent'
-                ]
+                    '_parent',
+                ],
             ]),
             'anchor' => Type::string(),
             'title' => Type::string(),

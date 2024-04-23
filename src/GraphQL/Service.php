@@ -56,14 +56,10 @@ use Psr\Container\ContainerInterface;
 
 class Service
 {
-    /***
-     * @var ContainerInterface
-     */
+    // @var ContainerInterface
     protected $dataObjectQueryTypeGeneratorFactories;
 
-    /***
-     * @var ContainerInterface
-     */
+    // @var ContainerInterface
     protected $dataObjectMutationTypeGeneratorFactories;
 
     /**
@@ -268,8 +264,6 @@ class Service
 
     /**
      * @param string $attribute
-     * @param Data|null $fieldDefinition
-     * @param ClassDefinition|null $class
      *
      * @return callable(mixed $value, array $args, array $context, \GraphQL\Type\Definition\ResolveInfo $info): mixed
      */
@@ -284,8 +278,6 @@ class Service
     }
 
     /**
-     * @param Data|null $fieldDefinition
-     * @param ClassDefinition|null $class
      * @param object|null $container
      *
      * @return mixed
@@ -362,7 +354,6 @@ class Service
     /**
      * @param string $typeName
      * @param array $nodeDef
-     * @param ClassDefinition|null $class
      * @param object|null $container
      * @param array $params
      *
@@ -381,7 +372,6 @@ class Service
     /**
      * @param string $typeName
      * @param array $nodeDef
-     * @param ClassDefinition|null $class
      * @param object|null $container
      * @param array $params
      *
@@ -406,7 +396,6 @@ class Service
      * @param string $mode
      * @param string $typeName
      * @param array $nodeDef
-     * @param ClassDefinition|null $class
      * @param object|null $container
      * @param array $params
      *
@@ -466,7 +455,6 @@ class Service
     /**
      * @param string $typeName
      * @param array|null $attributes
-     * @param ClassDefinition|null $class
      * @param object|null $container
      *
      * @return Query\Operator\OperatorInterface
@@ -715,6 +703,7 @@ class Service
         if (isset($this->assetDataTypes[$typeName])) {
             return $this->assetDataTypes[$typeName];
         }
+
         throw new ClientSafeException('unknown asset type: ' . $typeName);
     }
 
@@ -730,6 +719,7 @@ class Service
         if (isset($this->classificationStoreDataTypes[$typeName])) {
             return $this->classificationStoreDataTypes[$typeName];
         }
+
         throw new ClientSafeException('unknown classificationstore type: ' . $typeName);
     }
 
@@ -745,6 +735,7 @@ class Service
         if (isset($this->dataObjectDataTypes[$typeName])) {
             return $this->dataObjectDataTypes[$typeName];
         }
+
         throw new ClientSafeException('unknown dataobject type: ' . $typeName);
     }
 
@@ -760,6 +751,7 @@ class Service
         if (isset($this->documentDataTypes[$typeName])) {
             return $this->documentDataTypes[$typeName];
         }
+
         throw new ClientSafeException('unknown document type: ' . $typeName);
     }
 
@@ -775,6 +767,7 @@ class Service
         if (isset($this->propertyDataTypes[$typeName])) {
             return $this->propertyDataTypes[$typeName];
         }
+
         throw new ClientSafeException('unknown property type: ' . $typeName);
     }
 
@@ -933,8 +926,6 @@ class Service
     }
 
     /**
-     * @param BaseDescriptor $descriptor
-     * @param Data $fieldDefinition
      * @param string $attribute
      * @param array $args
      *
@@ -1091,7 +1082,6 @@ class Service
      * @param object $container
      * @param string $fieldName
      *
-     * @return bool
      */
     private static function isLocalizedField($container, $fieldName): bool
     {
@@ -1144,7 +1134,6 @@ class Service
      * @param ElementInterface $target
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      */
     public function extractData($data, $target, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
@@ -1163,7 +1152,6 @@ class Service
     }
 
     /**
-     * @param string $type
      *
      * @return bool
      */

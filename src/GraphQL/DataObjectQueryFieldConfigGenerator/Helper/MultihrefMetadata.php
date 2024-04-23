@@ -45,7 +45,6 @@ class MultihrefMetadata
     public $attribute;
 
     /**
-     * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
@@ -62,7 +61,6 @@ class MultihrefMetadata
      * @param BaseDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *

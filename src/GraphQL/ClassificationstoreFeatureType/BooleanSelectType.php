@@ -38,14 +38,14 @@ class BooleanSelectType extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
-                }
+                },
             ];
 
             $config =
                 [
                     'name' => 'csFeatureBooleanSelect',
                     'interfaces' => [CsFeature::getInstance()],
-                    'fields' => $fields
+                    'fields' => $fields,
 
                 ];
             self::$instance = new static($config);

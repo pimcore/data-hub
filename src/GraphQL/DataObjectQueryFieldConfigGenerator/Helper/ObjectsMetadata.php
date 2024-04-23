@@ -44,7 +44,6 @@ class ObjectsMetadata
     public $attribute;
 
     /**
-     * @param Service $graphQlService
      * @param string $attribute
      * @param ClassDefinition\Data $fieldDefinition
      * @param ClassDefinition $class
@@ -61,7 +60,6 @@ class ObjectsMetadata
      * @param BaseDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *

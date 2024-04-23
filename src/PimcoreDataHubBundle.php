@@ -41,9 +41,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
     //TODO decide whether we want to return null here or throw an exception (maybe make this configurable?)
     public static $notAllowedPolicy = self::NOT_ALLOWED_POLICY_NULL;
 
-    /**
-     * @inheritDoc
-     */
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new ImportExportLocatorsPass());
@@ -55,28 +52,19 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
         $collection->addBundle(new PimcoreAdminBundle(), 60);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getComposerPackageName(): string
     {
         return 'pimcore/data-hub';
     }
 
-    /**
-     * @return array
-     */
     public function getCssPaths(): array
     {
         return [
             '/bundles/pimcoredatahub/css/icons.css',
-            '/bundles/pimcoredatahub/css/style.css'
+            '/bundles/pimcoredatahub/css/style.css',
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getJsPaths(): array
     {
         return [
@@ -107,14 +95,13 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
             '/bundles/pimcoredatahub/js/workspace/abstract.js',
             '/bundles/pimcoredatahub/js/workspace/document.js',
             '/bundles/pimcoredatahub/js/workspace/asset.js',
-            '/bundles/pimcoredatahub/js/workspace/object.js'
+            '/bundles/pimcoredatahub/js/workspace/object.js',
         ];
     }
 
     /**
      * If the bundle has an installation routine, an installer is responsible of handling installation related tasks
      *
-     * @return InstallerInterface|null
      */
     public function getInstaller(): ?InstallerInterface
     {

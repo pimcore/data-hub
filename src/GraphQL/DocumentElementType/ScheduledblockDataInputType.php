@@ -25,7 +25,6 @@ class ScheduledblockDataInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -43,7 +42,7 @@ class ScheduledblockDataInputType extends InputObjectType
     {
         $config['fields'] = [
             'key' => Type::string(),
-            'date' => Type::int()
+            'date' => Type::int(),
         ];
     }
 }

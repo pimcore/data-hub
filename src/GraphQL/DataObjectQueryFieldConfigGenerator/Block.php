@@ -31,7 +31,6 @@ class Block extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -47,7 +46,6 @@ class Block extends Base
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

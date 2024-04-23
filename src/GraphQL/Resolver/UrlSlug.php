@@ -26,7 +26,6 @@ class UrlSlug
      * @param \Pimcore\Model\DataObject\Data\UrlSlug|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -45,7 +44,6 @@ class UrlSlug
      * @param \Pimcore\Model\DataObject\Data\UrlSlug|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return int|null
      *

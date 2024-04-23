@@ -23,7 +23,6 @@ class Href extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -34,12 +33,11 @@ class Href extends Base
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
-            'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
+            'resolve' => $this->getResolver($attribute, $fieldDefinition, $class),
         ], $container);
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

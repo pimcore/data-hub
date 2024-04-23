@@ -28,9 +28,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataChangeListener implements EventSubscriberInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function getSubscribedEvents()
     {
         return [
@@ -44,7 +41,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param DataObjectEvent $e
      *
      * @throws ValidationException
      */
@@ -61,7 +57,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param DataObjectEvent $e
      *
      * @throws ValidationException
      */
@@ -73,7 +68,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param DocumentEvent $e
      *
      * @throws ValidationException
      */
@@ -90,7 +84,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param DocumentEvent $e
      *
      * @throws ValidationException
      */
@@ -102,7 +95,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param AssetEvent $e
      *
      * @throws ValidationException
      */
@@ -119,7 +111,6 @@ class DataChangeListener implements EventSubscriberInterface
     }
 
     /**
-     * @param AssetEvent $e
      *
      * @throws ValidationException
      */

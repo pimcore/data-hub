@@ -39,7 +39,7 @@ class IfEmpty extends Base
 
         return [
             'arg' => $determinedType,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

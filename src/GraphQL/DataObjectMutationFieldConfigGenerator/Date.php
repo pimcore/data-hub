@@ -28,7 +28,7 @@ class Date extends Base
         return [
             'arg' => Type::string(),
             'processor' => [$processor, 'process'],
-            'description' => 'Either as unix timestamp (as string) or date string'
+            'description' => 'Either as unix timestamp (as string) or date string',
         ];
     }
 }

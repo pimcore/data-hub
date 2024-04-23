@@ -27,10 +27,6 @@ class Table extends Base
      */
     protected $processors;
 
-    /**
-     * @param array $nodeDef
-     * @param array $processors
-     */
     public function __construct(array $nodeDef, array $processors)
     {
         parent::__construct($nodeDef);
@@ -42,7 +38,6 @@ class Table extends Base
      * @param mixed $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @throws \Exception
      */

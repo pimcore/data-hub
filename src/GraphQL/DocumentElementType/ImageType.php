@@ -29,7 +29,6 @@ class ImageType extends ObjectType
     protected static $instance;
 
     /**
-     * @param Service $graphQlService
      *
      * @return ImageType
      *
@@ -57,7 +56,7 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -67,7 +66,7 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'image' => [
                             'type' => $assetType,
@@ -83,7 +82,7 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'alt' => [
                             'type' => Type::string(),
@@ -93,7 +92,7 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'crop' => [
                             'type' => HotspotCropType::getInstance(),
@@ -104,12 +103,12 @@ class ImageType extends ObjectType
                                         'cropLeft' => $value->getCropLeft(),
                                         'cropHeight' => $value->getCropHeight(),
                                         'cropWidth' => $value->getCropWidth(),
-                                        'cropPercent' => $value->getCropPercent()
+                                        'cropPercent' => $value->getCropPercent(),
                                     ];
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'hotspots' => [
                             'type' => Type::listOf($hotspotHotspotType),
@@ -119,7 +118,7 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'marker' => [
                             'type' => Type::listOf($hotspotMarkerType),
@@ -129,9 +128,9 @@ class ImageType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
-                    ]
+                    ],
                 ];
             self::$instance = new static($config);
         }

@@ -28,7 +28,6 @@ class RelationsType extends ObjectType
     protected static $instance;
 
     /**
-     * @param Service $graphQlService
      *
      * @return static
      *
@@ -49,7 +48,7 @@ class RelationsType extends ObjectType
                                 if ($value instanceof Relations) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -57,7 +56,7 @@ class RelationsType extends ObjectType
                                 if ($value instanceof Relations) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'relations' => [
                             'type' => Type::listOf($anyTargetType),
@@ -75,9 +74,9 @@ class RelationsType extends ObjectType
                                         return $result;
                                     }
                                 }
-                            }
-                        ]
-                    ]
+                            },
+                        ],
+                    ],
                 ];
             self::$instance = new static($config);
         }

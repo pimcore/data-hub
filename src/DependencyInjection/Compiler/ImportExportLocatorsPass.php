@@ -146,10 +146,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param string $operationType
-     * @param ContainerBuilder $container
-     * @param Definition $definition
-     * @param string $type
-     * @param string $tag
      */
     private function buildSupportedGeneralTypes(
         $operationType,
@@ -218,10 +214,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param string $operationType
-     * @param ContainerBuilder $container
-     * @param Definition $definition
-     * @param string $type
-     * @param string $tag
      */
     private function buildSupportedDataObjectDataTypes(
         $operationType,
@@ -332,10 +324,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param string $operationType
-     * @param ContainerBuilder $container
-     * @param Definition $definition
-     * @param string $type
-     * @param string $tag
      */
     private function buildSupportedDocumentElementDataTypes(
         $operationType,
@@ -396,10 +384,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
     /**
      * @param string $operationType
-     * @param ContainerBuilder $container
-     * @param Definition $definition
-     * @param string $type
-     * @param string $tag
      */
     private function buildSupportedCsFeatureDataTypes(
         $operationType,
@@ -449,7 +433,6 @@ class ImportExportLocatorsPass implements CompilerPassInterface
     }
 
     /**
-     * @param ContainerBuilder $container
      * @param string $tag
      * @param string $methodCall
      */

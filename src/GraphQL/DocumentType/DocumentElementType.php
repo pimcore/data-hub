@@ -25,13 +25,11 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class DocumentElementType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     protected $container;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -53,9 +51,6 @@ class DocumentElementType extends UnionType implements ContainerAwareInterface
         return $supportedTypes;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         $type = $element->getType();

@@ -21,13 +21,14 @@ use Pimcore\Model\Element\ElementInterface;
 class Trimmer extends AbstractOperator
 {
     const LEFT = 1;
+
     const RIGHT = 2;
+
     const BOTH = 3;
 
     private $trim;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -39,7 +40,6 @@ class Trimmer extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      *
@@ -69,12 +69,15 @@ class Trimmer extends AbstractOperator
             switch ($this->trim) {
                 case self::LEFT:
                     $childValue = ltrim($childValue);
+
                     break;
                 case self::RIGHT:
                     $childValue = rtrim($childValue);
+
                     break;
                 case self::BOTH:
                     $childValue = trim($childValue);
+
                     break;
             }
         }

@@ -30,7 +30,6 @@ class ClassTypeDefinitions
     public static $definitions = [];
 
     /**
-     * @param Service $graphQlService
      * @param array $context
      */
     public static function build(Service $graphQlService, $context = [])

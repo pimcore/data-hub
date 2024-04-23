@@ -31,7 +31,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 abstract class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     /** @var ClassDefinition */
@@ -41,8 +40,6 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param ClassDefinition|Definition|null $class
      * @param array $config
      */
@@ -85,7 +82,6 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -131,9 +127,6 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         return $types;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element) {

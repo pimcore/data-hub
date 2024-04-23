@@ -44,11 +44,11 @@ class Image extends Base
                     'fields' => [
                         '_editableName' => Type::nonNull(Type::string()),
                         'id' => Type::int(),               // the target asset
-                        'alt' => Type::string()
-                    ]
+                        'alt' => Type::string(),
+                    ],
                 ]
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

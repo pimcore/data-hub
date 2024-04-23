@@ -30,7 +30,6 @@ abstract class Base
 
     /**
      * @param array $nodeDef
-     * @param ClassDefinition $class
      *
      * @return mixed
      */
@@ -82,7 +81,7 @@ abstract class Base
 
         return [
             'arg' => $determinedType,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

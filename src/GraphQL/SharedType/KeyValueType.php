@@ -36,7 +36,7 @@ class KeyValueType extends InputObjectType
                 'name' => 'KeyValue',
                 'fields' => [
                     'key' => Type::string(),
-                    'value' => Type::string()
+                    'value' => Type::string(),
                 ],
             ];
             self::$instance = new static($config);
@@ -46,7 +46,6 @@ class KeyValueType extends InputObjectType
     }
 
     /**
-     * @param array|null $value
      *
      * @return array
      */

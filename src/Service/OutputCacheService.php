@@ -60,7 +60,6 @@ class OutputCacheService
     }
 
     /**
-     * @param Request $request
      *
      * @return mixed
      */
@@ -76,11 +75,8 @@ class OutputCacheService
     }
 
     /**
-     * @param Request $request
-     * @param JsonResponse $response
      * @param array $extraTags
      *
-     * @return void
      */
     public function save(Request $request, JsonResponse $response, $extraTags = []): void
     {
@@ -111,7 +107,6 @@ class OutputCacheService
      * @param mixed $item
      * @param array $tags
      *
-     * @return void
      */
     protected function saveToCache($key, $item, $tags = []): void
     {

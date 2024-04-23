@@ -22,8 +22,6 @@ use Pimcore\Model\Element\Tag;
 trait ElementTagTrait
 {
     /**
-     * @param string $element_type
-     * @param int $id
      *
      * @return array
      */
@@ -46,8 +44,6 @@ trait ElementTagTrait
     }
 
     /**
-     * @param string $element_type
-     * @param int $id
      * @param array $tags
      *
      * @return bool
@@ -61,7 +57,6 @@ trait ElementTagTrait
     }
 
     /**
-     * @param array $input
      *
      * @return array|bool
      */

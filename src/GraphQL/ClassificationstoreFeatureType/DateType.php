@@ -39,8 +39,8 @@ class DateType extends ObjectType
                 'args' => [
                     ['name' => 'format',
                         'type' => Type::string(),
-                        'description' => 'see Carbon::format'
-                    ]
+                        'description' => 'see Carbon::format',
+                    ],
                 ],
                 'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
@@ -56,14 +56,14 @@ class DateType extends ObjectType
                             return $formattedValue;
                         }
                     }
-                }
+                },
             ];
 
             $config =
                 [
                     'name' => 'csFeatureDate',
                     'interfaces' => [CsFeature::getInstance()],
-                    'fields' => $fields
+                    'fields' => $fields,
 
                 ];
             self::$instance = new static($config);

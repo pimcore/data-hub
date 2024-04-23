@@ -29,8 +29,6 @@ class UrlSlugType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param array $config
      * @param array $context
      */
@@ -51,7 +49,6 @@ class UrlSlugType extends ObjectType
     }
 
     /**
-     * @param Service $graphQlService
      *
      * @return array[]
      */
@@ -62,12 +59,12 @@ class UrlSlugType extends ObjectType
         $fields = [
             'slug' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveSlug']
+                'resolve' => [$resolver, 'resolveSlug'],
             ],
             'siteId' => [
                 'type' => Type::int(),
-                'resolve' => [$resolver, 'resolveSiteId']
-            ]
+                'resolve' => [$resolver, 'resolveSiteId'],
+            ],
         ];
 
         return $fields;

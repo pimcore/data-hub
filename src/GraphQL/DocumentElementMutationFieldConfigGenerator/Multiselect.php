@@ -42,10 +42,10 @@ class Multiselect extends Base
                     'fields' => [
                         '_editableName' => Type::nonNull(Type::string()),
                         'selections' => Type::listOf(Type::string()),
-                    ]
+                    ],
                 ]
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

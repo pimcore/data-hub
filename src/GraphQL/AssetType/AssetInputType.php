@@ -26,7 +26,6 @@ class AssetInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -56,10 +55,10 @@ class AssetInputType extends InputObjectType
                         'name' => Type::nonNull(Type::string()),
                         'type' => Type::nonNull(Type::string()),
                         'data' => Type::string(),
-                        'language' => Type::string()
-                    ]
-                ]))
-            ]
+                        'language' => Type::string(),
+                    ],
+                ])),
+            ],
         ];
     }
 }

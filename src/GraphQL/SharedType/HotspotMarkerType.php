@@ -31,7 +31,6 @@ class HotspotMarkerType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -58,10 +57,10 @@ class HotspotMarkerType extends ObjectType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
-                    ]
+                        'description' => 'comma seperated list of key names',
+                    ],
                 ],
-                'resolve' => [$resolver, 'resolveMetadata']
+                'resolve' => [$resolver, 'resolveMetadata'],
             ],
             'name' => Type::string(),
         ];

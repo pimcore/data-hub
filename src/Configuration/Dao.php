@@ -219,7 +219,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     /**
      * get the list of configurations.
      *
-     * @return array
      */
     public function loadList(): array
     {
@@ -242,7 +241,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      *
      * TODO: remove this static function and rename "loadList" to "getList"
      *
-     * @return array
      *
      */
     public static function getList(): array
@@ -253,7 +251,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
     }
 
     /**
-     * @param string $id
      * @param mixed $data
      *
      * @return array[][][]

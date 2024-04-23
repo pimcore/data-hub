@@ -25,7 +25,7 @@ class ManyToOneRelation extends Base
 
         return [
             'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('elementdescriptor_input'),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

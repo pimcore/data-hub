@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
+
 use Pimcore\Tests\Support\Util\Autoloader;
 
 define('PIMCORE_TEST', true);
@@ -22,7 +35,6 @@ if (file_exists(__DIR__ . '/../vendor/autoload_runtime.php')) {
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['APP_DEBUG'] = true;
 
-
 $pimcoreTestsSupportDir = $pimcoreTestDir . '/Support';
 
 //Pimcore 10 BC layer
@@ -42,7 +54,6 @@ Autoloader::addNamespace('Pimcore\Tests\Support', $pimcoreTestsSupportDir);
 Autoloader::addNamespace('Pimcore\Model\DataObject', PIMCORE_CLASS_DIRECTORY . '/DataObject');
 Autoloader::addNamespace('DataHubBundle\Tests', __DIR__);
 Autoloader::addNamespace('DataHubBundle\Tests', __DIR__ . '/_support');
-
 
 echo __DIR__ . '/_support';
 

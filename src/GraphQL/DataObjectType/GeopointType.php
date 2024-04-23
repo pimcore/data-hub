@@ -34,11 +34,11 @@ class GeopointType extends ObjectType
                     'fields' => [
                         'longitude' => [
                             'type' => Type::float(),
-                            'resolve' => [$resolver, 'resolveLongitude']
+                            'resolve' => [$resolver, 'resolveLongitude'],
                         ],
                         'latitude' => [
                             'type' => Type::float(),
-                            'resolve' => [$resolver, 'resolveLatitude']
+                            'resolve' => [$resolver, 'resolveLatitude'],
                         ],
 
                     ],

@@ -40,7 +40,7 @@ class NumericType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -48,7 +48,7 @@ class NumericType extends ObjectType
                                 if ($value instanceof Numeric) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'number' => [
                             'type' => Type::string(),
@@ -56,8 +56,8 @@ class NumericType extends ObjectType
                                 if ($value instanceof Numeric) {
                                     return $value->getData();
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

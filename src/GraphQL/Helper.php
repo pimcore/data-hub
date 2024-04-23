@@ -101,7 +101,7 @@ class Helper
             '$like' => 'LIKE',
             '$notlike' => 'NOT LIKE',
             '$notnull' => 'IS NOT NULL',
-            '$not' => 'NOT'
+            '$not' => 'NOT',
         ];
         $ops = array_keys($mappingTable);
 
@@ -151,15 +151,15 @@ class Helper
                                     $parts[] = '( NOT ' . $db->quoteIdentifier($key) . $valuePart . ')';
                                 } else {
                                     $parts[] = '( NOT ' . self::quoteAbsoluteColumnName(
-                                            $defaultTable,
-                                            $key
-                                        ) . $valuePart . ')';
+                                        $defaultTable,
+                                        $key
+                                    ) . $valuePart . ')';
                                 }
                             } else {
                                 $parts[] = '(' . self::quoteAbsoluteColumnName(
-                                        $defaultTable,
-                                        $key
-                                    ) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
+                                    $defaultTable,
+                                    $key
+                                ) . ' ' . $innerOp . ' ' . $db->quote($objectValue) . ')';
                             }
                         } else {
                             if ($objectValue instanceof \stdClass) {
@@ -167,14 +167,14 @@ class Helper
                             } else {
                                 if (is_null($objectValue)) {
                                     $parts[] = '(' . self::quoteAbsoluteColumnName(
-                                            $defaultTable,
-                                            $objectVar
-                                        ) . ' IS NULL)';
+                                        $defaultTable,
+                                        $objectVar
+                                    ) . ' IS NULL)';
                                 } else {
                                     $parts[] = '(' . self::quoteAbsoluteColumnName(
-                                            $defaultTable,
-                                            $objectVar
-                                        ) . ' = ' . $db->quote($objectValue) . ')';
+                                        $defaultTable,
+                                        $objectVar
+                                    ) . ' = ' . $db->quote($objectValue) . ')';
                                 }
                             }
                         }
@@ -186,14 +186,14 @@ class Helper
                         $innerOp = $mappingTable[strtolower($key)];
                         if ($innerOp == 'NOT') {
                             $parts[] = '(NOT' . self::quoteAbsoluteColumnName(
-                                    $defaultTable,
-                                    $subject
-                                ) . ' = ' . $db->quote($value) . ')';
+                                $defaultTable,
+                                $subject
+                            ) . ' = ' . $db->quote($value) . ')';
                         } else {
                             $parts[] = '(' . self::quoteAbsoluteColumnName(
-                                    $defaultTable,
-                                    $subject
-                                ) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
+                                $defaultTable,
+                                $subject
+                            ) . ' ' . $innerOp . ' ' . $db->quote($value) . ')';
                         }
                     } else {
                         if (isset($fieldMappingTable[$key])) {
@@ -207,9 +207,9 @@ class Helper
                                 $parts[] = '(' . self::quoteAbsoluteColumnName($defaultTable, $key) . ' IS NULL)';
                             } else {
                                 $parts[] = '(' . self::quoteAbsoluteColumnName(
-                                        $defaultTable,
-                                        $key
-                                    ) . ' = ' . $db->quote($value) . ')';
+                                    $defaultTable,
+                                    $key
+                                ) . ' = ' . $db->quote($value) . ')';
                             }
                         }
                     }

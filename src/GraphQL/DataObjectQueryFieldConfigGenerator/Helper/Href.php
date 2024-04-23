@@ -44,7 +44,6 @@ class Href
     public $attribute;
 
     /**
-     * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
@@ -62,7 +61,6 @@ class Href
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *

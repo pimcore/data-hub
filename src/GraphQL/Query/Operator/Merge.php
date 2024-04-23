@@ -24,10 +24,10 @@ use Pimcore\Model\Element\ElementInterface;
 class Merge extends AbstractOperator
 {
     private $flatten = true;
+
     private $unique;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -39,7 +39,6 @@ class Merge extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      *

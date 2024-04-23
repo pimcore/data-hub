@@ -34,7 +34,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class MergeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     /** @var array */
@@ -47,7 +46,6 @@ class MergeType extends UnionType implements ContainerAwareInterface
     protected $container;
 
     /**
-     * @param Service $graphQlService
      * @param array $nodeDef
      * @param ClassDefinition|null $class
      * @param object|null $container
@@ -99,7 +97,7 @@ class MergeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @inheritdoc
+     *
      *
      * @throws Exception
      */

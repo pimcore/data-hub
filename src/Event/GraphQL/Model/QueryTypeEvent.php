@@ -74,7 +74,6 @@ class QueryTypeEvent extends Event
     }
 
     /**
-     * @param QueryType $queryType
      * @param array $config
      * @param array $context
      */

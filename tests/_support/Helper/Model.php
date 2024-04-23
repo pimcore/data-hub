@@ -1,13 +1,25 @@
 <?php
 
+/**
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ */
+
 namespace DataHubBundle\Tests\Helper;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
 use Doctrine\DBAL\Exception;
-use \Pimcore\Bundle\DataHubBundle\Installer;
-use Pimcore\Model\DataObject\Customer;
+use Pimcore\Bundle\DataHubBundle\Installer;
 use Pimcore\Tests\Support\Helper\AbstractDefinitionHelper;
 use Pimcore\Tests\Support\Helper\ClassManager;
 use Pimcore\Tests\Support\Helper\Pimcore;
@@ -15,10 +27,9 @@ use Pimcore\Tests\Support\Util\Autoloader;
 
 class Model extends AbstractDefinitionHelper
 {
-
     /**
      * @param array $settings
-     * @return void
+     *
      * @throws Exception
      */
     public function _beforeSuite($settings = []): void
@@ -27,7 +38,6 @@ class Model extends AbstractDefinitionHelper
         $pimcoreModule = $this->getModule('\\' . Pimcore::class);
 
         $this->debug('[DataHub] Running datahub installer');
-
 
         //create migrations table in order to allow installation - needed for SettingsStoreAware Installer
         \Pimcore\Db::get()->exec('
@@ -59,6 +69,7 @@ class Model extends AbstractDefinitionHelper
 
     /**
      * @param \stdClass $class
+     *
      * @return void
      */
     public function prepareData($class)
@@ -75,5 +86,4 @@ class Model extends AbstractDefinitionHelper
             $object->save();
         }
     }
-
 }

@@ -27,7 +27,7 @@ class BooleanSelect extends Base
 
         return [
             'arg' => Type::boolean(),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

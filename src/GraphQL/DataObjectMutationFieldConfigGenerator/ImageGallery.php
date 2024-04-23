@@ -29,8 +29,8 @@ class ImageGallery extends Base
         $imageInput = new InputObjectType([
             'name' => 'GalleryImageInput',
             'fields' => [
-                'id' => Type::int()
-            ]
+                'id' => Type::int(),
+            ],
         ]);
 
         $inputType = new InputObjectType([
@@ -38,17 +38,17 @@ class ImageGallery extends Base
             'fields' => [
                 'replace' => [
                     'type' => Type::boolean(),
-                    'description' => 'if true then the entire gallery list will be overwritten'
+                    'description' => 'if true then the entire gallery list will be overwritten',
                 ],
                 'images' => [
-                    'type' => Type::listOf($imageInput)
-                ]
-            ]
+                    'type' => Type::listOf($imageInput),
+                ],
+            ],
         ]);
 
         return [
             'arg' => $inputType,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

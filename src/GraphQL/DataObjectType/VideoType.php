@@ -51,23 +51,23 @@ class VideoType extends ObjectType
             [
                 'type' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, 'resolveType']
+                    'resolve' => [$resolver, 'resolveType'],
                 ],
                 'data' => [
                     'type' => $this->videoDataType,
-                    'resolve' => [$resolver, 'resolveData']
+                    'resolve' => [$resolver, 'resolveData'],
                 ],
                 'poster' => [
                     'type' => $assetType,
-                    'resolve' => [$resolver, 'resolvePoster']
+                    'resolve' => [$resolver, 'resolvePoster'],
                 ],
                 'title' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, 'resolveTitle']
+                    'resolve' => [$resolver, 'resolveTitle'],
                 ],
                 'description' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, 'resolveDescription']
+                    'resolve' => [$resolver, 'resolveDescription'],
                 ],
 
             ];

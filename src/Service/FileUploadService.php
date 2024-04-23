@@ -22,9 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 class FileUploadService
 {
     /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @return array
      *
      * @throws RequestError
      */
@@ -63,7 +61,6 @@ class FileUploadService
     /**
      * Validates that the request meet our expectations
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      */
     protected function validateParsedBody(Request $request): void

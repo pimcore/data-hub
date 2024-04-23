@@ -25,7 +25,6 @@ class AssetMetadataItem extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -45,7 +44,7 @@ class AssetMetadataItem extends ObjectType
             'name' => Type::string(),
             'type' => Type::string(),
             'data' => Type::string(),
-            'language' => Type::string()
+            'language' => Type::string(),
         ];
     }
 }

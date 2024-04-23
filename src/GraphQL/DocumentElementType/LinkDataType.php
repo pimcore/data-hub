@@ -27,7 +27,6 @@ class LinkDataType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      *
      * @throws \Exception
      */
@@ -47,7 +46,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getType();
                             }
-                        }
+                        },
                     ],
                     '_editableName' => [
                         'type' => Type::string(),
@@ -55,7 +54,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getName();
                             }
-                        }
+                        },
                     ],
                     'internal' => [
                         'type' => Type::boolean(),
@@ -63,7 +62,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['internal'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'internalType' => [
                         'type' => Type::string(),
@@ -71,7 +70,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['internalType'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'internalId' => [
                         'type' => Type::int(),
@@ -79,7 +78,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['internalId'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'path' => [
                         'type' => Type::string(),
@@ -87,7 +86,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['path'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'text' => [
                         'type' => Type::string(),
@@ -95,11 +94,11 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['text'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'target' => [
                         'type' => $anyTargetType,
-                        'resolve' => [new Link($this->getGraphQlService()), 'resolveTarget']
+                        'resolve' => [new Link($this->getGraphQlService()), 'resolveTarget'],
                     ],
                     'windowTarget' => [ // Target is already in use.
                         'type' => Type::string(),
@@ -107,7 +106,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['target'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'parameters' => [
                         'type' => Type::string(),
@@ -115,7 +114,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['parameters'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'anchor' => [
                         'type' => Type::string(),
@@ -123,7 +122,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['anchor'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'title' => [
                         'type' => Type::string(),
@@ -131,7 +130,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['title'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'accesskey' => [
                         'type' => Type::string(),
@@ -139,7 +138,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['accesskey'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'relation' => [
                         'type' => Type::string(),
@@ -147,7 +146,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['rel'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'tabindex' => [
                         'type' => Type::string(),
@@ -155,7 +154,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['tabindex'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'class' => [
                         'type' => Type::string(),
@@ -163,7 +162,7 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['class'] ?? null;
                             }
-                        }
+                        },
                     ],
                     'attributes' => [
                         'type' => Type::string(),
@@ -171,9 +170,9 @@ class LinkDataType extends ObjectType
                             if ($value instanceof \Pimcore\Model\Document\Editable\Link) {
                                 return $value->getData()['attributes'] ?? null;
                             }
-                        }
+                        },
                     ],
-                ]
+                ],
             ];
         parent::__construct($config);
     }

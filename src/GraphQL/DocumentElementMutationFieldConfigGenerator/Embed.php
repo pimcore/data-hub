@@ -44,10 +44,10 @@ class Embed extends Base
                     'fields' => [
                         '_editableName' => Type::nonNull(Type::string()),
                         'url' => Type::string(),
-                    ]
+                    ],
                 ]
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

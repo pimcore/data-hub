@@ -39,7 +39,7 @@ class MultiselectType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -47,7 +47,7 @@ class MultiselectType extends ObjectType
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'selections' => [
                             'type' => Type::listOf(Type::string()),
@@ -55,8 +55,8 @@ class MultiselectType extends ObjectType
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Multiselect) {
                                     return $value->getData();
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

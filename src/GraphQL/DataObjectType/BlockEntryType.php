@@ -35,7 +35,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     protected static $instance;
 
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     /** @var ClassDefinition */
@@ -45,8 +44,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param array $config
      */
@@ -63,8 +60,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
 
     /**
      * @param string $type
-     * @param Service $graphQlService
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      *
      * @return static|null
@@ -73,7 +68,7 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     {
         if (!isset(self::$instance[$type])) {
             $config = [
-                'name' => $type
+                'name' => $type,
             ];
             self::$instance = new static($graphQlService, $fieldDefinition, $class, $config);
         }
@@ -117,8 +112,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
     }
 
     /**
-     * @param Data $fieldDef
-     * @param bool $localized
      *
      * @return mixed
      */

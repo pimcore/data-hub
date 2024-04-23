@@ -82,10 +82,8 @@ class ListingEvent extends Event
     }
 
     /**
-     * @param AbstractListing $listing
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      */
     public function __construct(AbstractListing $listing, $args, $context = [], ResolveInfo $resolveInfo = null)
     {

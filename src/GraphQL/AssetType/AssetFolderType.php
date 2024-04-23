@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class AssetFolderType extends FolderType
 {
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -48,9 +47,9 @@ class AssetFolderType extends FolderType
             'fullpath' => [
                 'type' => Type::string(),
                 'args' => [
-                    'thumbnail' => ['type' => Type::string()]
+                    'thumbnail' => ['type' => Type::string()],
 
-                ]
+                ],
             ],
             'creationDate' => Type::int(),
             'modificationDate' => Type::int(),
@@ -59,10 +58,10 @@ class AssetFolderType extends FolderType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
-                    ]
+                        'description' => 'comma seperated list of key names',
+                    ],
                 ],
-                'resolve' => [$elementResolver, 'resolveProperties']
+                'resolve' => [$elementResolver, 'resolveProperties'],
             ],
             'parent' => [
                 'type' => $this,

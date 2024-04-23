@@ -34,7 +34,6 @@ class DataObject extends Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -58,7 +57,6 @@ class DataObject extends Element
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return int|null
      */
@@ -81,7 +79,6 @@ class DataObject extends Element
      * @param array|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      */

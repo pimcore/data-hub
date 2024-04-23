@@ -15,14 +15,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
+use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Translation;
 use Pimcore\Tool;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Codeception\Test\Unit;
-
 
 class ResolveTest extends Unit
 {
@@ -52,7 +51,7 @@ class ResolveTest extends Unit
     public function testGraphQLTranslationListingResolveListingWithDomain()
     {
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["domain" => "admin"]);
+        $listRes = $translationListing->resolveListing([], ['domain' => 'admin']);
 
         for($i = 0; $i < 2; $i++) {
             $this->assertEquals('translation-ka' .$i, $listRes['edges'][$i]['cursor']);
@@ -66,10 +65,10 @@ class ResolveTest extends Unit
 
     public function testGraphQLTranslationListingResolveListingWithKey()
     {
-        $key = "k2";
+        $key = 'k2';
 
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["keys" => $key]);
+        $listRes = $translationListing->resolveListing([], ['keys' => $key]);
 
         $this->assertEquals('translation-' . $key, $listRes['edges'][0]['cursor']);
 
@@ -81,11 +80,10 @@ class ResolveTest extends Unit
 
     public function testGraphQLTranslationListingResolveListingWithKeys()
     {
-        $keys = "k1,k2,k3";
+        $keys = 'k1,k2,k3';
 
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["keys" => $keys]);
-
+        $listRes = $translationListing->resolveListing([], ['keys' => $keys]);
 
         for($i = 0; $i < 2; $i++) {
             $this->assertEquals('translation-k' .$i + 1, $listRes['edges'][$i]['cursor']);
@@ -99,36 +97,36 @@ class ResolveTest extends Unit
 
     public function testGraphQLTranslationListingResolveListingWithLanguage()
     {
-        $languages = "en";
+        $languages = 'en';
 
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["languages" => $languages]);
+        $listRes = $translationListing->resolveListing([], ['languages' => $languages]);
 
         $translations = $listRes['edges'][0]['node']->getTranslations();
         $this->assertCount(1, $translations);
-        $this->assertArrayHasKey("en", $translations);
+        $this->assertArrayHasKey('en', $translations);
     }
 
     public function testGraphQLTranslationListingResolveListingWithLanguages()
     {
-        $languages = "en, de";
+        $languages = 'en, de';
 
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["languages" => $languages]);
+        $listRes = $translationListing->resolveListing([], ['languages' => $languages]);
 
         $translations = $listRes['edges'][0]['node']->getTranslations();
         $this->assertCount(2, $translations);
-        $this->assertArrayHasKey("en", $translations);
-        $this->assertArrayHasKey("de", $translations);
+        $this->assertArrayHasKey('en', $translations);
+        $this->assertArrayHasKey('de', $translations);
     }
 
     public function testGraphQLTranslationListingResolveListingWithLanguagesAndKeys()
     {
-        $languages = "en, de";
-        $keys = "k1,k2,k3";
+        $languages = 'en, de';
+        $keys = 'k1,k2,k3';
 
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
-        $listRes = $translationListing->resolveListing([], ["languages" => $languages, "keys" => $keys]);
+        $listRes = $translationListing->resolveListing([], ['languages' => $languages, 'keys' => $keys]);
 
         for($i = 0; $i < 2; $i++) {
             $translation = $listRes['edges'][$i]['node'];
@@ -137,8 +135,8 @@ class ResolveTest extends Unit
             $this->assertEquals('k' . $i + 1, $translation->getKey());
 
             $this->assertCount(2, $translations);
-            $this->assertArrayHasKey("en", $translations);
-            $this->assertArrayHasKey("de", $translations);
+            $this->assertArrayHasKey('en', $translations);
+            $this->assertArrayHasKey('de', $translations);
         }
     }
 
@@ -149,7 +147,8 @@ class ResolveTest extends Unit
         $queryTypeResolver->resolveTranslationGetter();
     }
 
-    private function addTranslations(): void {
+    private function addTranslations(): void
+    {
         for($i = 0; $i < 4; $i++) {
             $this->addTranslation('k' . $i);
         }
@@ -159,7 +158,8 @@ class ResolveTest extends Unit
         }
     }
 
-    private function addTranslation(string $key, string $domain = "messages"): void {
+    private function addTranslation(string $key, string $domain = 'messages'): void
+    {
         $t = new Translation();
         $t->setDomain($domain);
         $t->setKey($key);
@@ -173,4 +173,3 @@ class ResolveTest extends Unit
 
     }
 }
-

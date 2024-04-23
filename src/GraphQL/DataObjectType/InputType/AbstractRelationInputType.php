@@ -25,7 +25,6 @@ abstract class AbstractRelationInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -43,8 +42,8 @@ abstract class AbstractRelationInputType extends InputObjectType
     {
         $config['fields'] = [
             'id' => [
-                'type' => Type::int()
-            ]
+                'type' => Type::int(),
+            ],
         ];
     }
 }

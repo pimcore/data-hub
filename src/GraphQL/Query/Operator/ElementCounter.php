@@ -23,7 +23,6 @@ class ElementCounter extends AbstractOperator
     private $countEmpty;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -35,7 +34,6 @@ class ElementCounter extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      *

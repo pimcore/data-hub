@@ -49,7 +49,6 @@ class Base
      * @param mixed $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @throws \Exception
      */
@@ -64,7 +63,6 @@ class Base
 
     /**
      * @param array $nodeDef
-     * @param ClassDefinition $class
      *
      * @return mixed
      */

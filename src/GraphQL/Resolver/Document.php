@@ -42,9 +42,6 @@ class Document extends Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
-     *
-     * @return array
      *
      * @throws \Exception
      */
@@ -65,7 +62,7 @@ class Document extends Element
                 $result[] = [
                     'id' => $transId,
                     'language' => $transLanguage,
-                    'target' => $this->resolveTranslationTarget($value, $args, $context, $resolveInfo)
+                    'target' => $this->resolveTranslationTarget($value, $args, $context, $resolveInfo),
                 ];
             }
         }
@@ -77,9 +74,6 @@ class Document extends Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
-     *
-     * @return ElementDescriptor|null
      *
      * @throws \Exception
      */

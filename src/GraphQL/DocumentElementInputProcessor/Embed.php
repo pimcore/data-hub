@@ -25,7 +25,6 @@ class Embed extends Base
      * @param mixed $newValue
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {

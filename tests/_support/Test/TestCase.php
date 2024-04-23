@@ -37,9 +37,6 @@ abstract class TestCase extends Unit
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         parent::setUp();

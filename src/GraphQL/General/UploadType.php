@@ -31,17 +31,11 @@ class UploadType extends ScalarType
         'The `Upload` special type represents a file to be uploaded in the same HTTP request as specified by
  [graphql-multipart-request-spec](https://github.com/jaydenseric/graphql-multipart-request-spec).';
 
-    /**
-     * @inheritDoc
-     */
     public function serialize($value)
     {
         throw new InvariantViolation('`Upload` cannot be serialized');
     }
 
-    /**
-     * @inheritDoc
-     */
     public function parseValue($value)
     {
         if (!$value instanceof UploadedFile) {
@@ -55,9 +49,6 @@ class UploadType extends ScalarType
         return $value;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function parseLiteral(Node $valueNode, ?array $variables = null)
     {
         throw new Error(

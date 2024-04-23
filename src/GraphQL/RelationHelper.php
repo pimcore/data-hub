@@ -21,11 +21,8 @@ use Pimcore\Model\Element\ElementInterface;
 class RelationHelper
 {
     /**
-     * @param ElementInterface $relation
-     * @param Service $graphQlService
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
      *
      * @return ElementDescriptor
      */

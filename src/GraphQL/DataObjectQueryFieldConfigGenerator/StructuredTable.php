@@ -30,9 +30,11 @@ class StructuredTable extends AbstractTable
                 switch ($columnConfig['type']) {
                     case 'number':
                         $type = Type::float();
+
                         break;
                     case 'bool':
                         $type = Type::boolean();
+
                         break;
                     case 'text':
                     default:

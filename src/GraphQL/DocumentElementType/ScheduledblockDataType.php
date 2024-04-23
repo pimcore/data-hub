@@ -39,7 +39,7 @@ class ScheduledblockDataType extends ObjectType
                             if ($value) {
                                 return $value->getType();
                             }
-                        }
+                        },
                     ],
                     '_editableName' => [
                         'type' => Type::string(),
@@ -47,7 +47,7 @@ class ScheduledblockDataType extends ObjectType
                             if ($value) {
                                 return $value->getName();
                             }
-                        }
+                        },
                     ],
                     'key' => [
                         'type' => Type::string(),
@@ -57,7 +57,7 @@ class ScheduledblockDataType extends ObjectType
                             }
 
                             return null;
-                        }
+                        },
                     ],
                     'date' => [
                         'type' => Type::int(),
@@ -67,7 +67,7 @@ class ScheduledblockDataType extends ObjectType
                             }
 
                             return null;
-                        }
+                        },
                     ],
                 ],
             ];

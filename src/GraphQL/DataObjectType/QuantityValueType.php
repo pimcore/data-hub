@@ -29,8 +29,6 @@ class QuantityValueType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param array $config
      * @param array $context
      */
@@ -56,7 +54,6 @@ class QuantityValueType extends ObjectType
     }
 
     /**
-     * @param Service $graphQlService
      * @param string $valueType
      *
      * @return array[]
@@ -68,17 +65,17 @@ class QuantityValueType extends ObjectType
         $fields = [
             'unit' => [
                 'type' => QuantityValueUnitType::getInstance(),
-                'resolve' => [$resolver, 'resolveUnit']
+                'resolve' => [$resolver, 'resolveUnit'],
             ],
             'value' => [
                 'type' => $valueType,
-                'resolve' => [$resolver, 'resolveValue']
+                'resolve' => [$resolver, 'resolveValue'],
             ],
             'toString' => [
                 'type' => Type::string(),
                 'resolve' => [$resolver, 'resolveToString'],
-                'args' => ['language' => ['type' => Type::string()]]
-            ]
+                'args' => ['language' => ['type' => Type::string()]],
+            ],
         ];
 
         return $fields;

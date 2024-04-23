@@ -69,8 +69,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'key' => $key,
                             'config' => [
                                 'name' => $key,
-                                'type' => Type::int()
-                            ]
+                                'type' => Type::int(),
+                            ],
                         ];
                     case 'filename':
                     case 'fullpath':
@@ -79,8 +79,8 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'key' => $key,
                             'config' => [
                                 'name' => $key,
-                                'type' => Type::string()
-                            ]
+                                'type' => Type::string(),
+                            ],
                         ];
                     case 'published':
                         return [
@@ -88,7 +88,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'config' => [
                                 'name' => $key,
                                 'type' => Type::boolean(),
-                            ]
+                            ],
                         ];
                     default:
                         return null;
@@ -193,8 +193,6 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param Data $fieldDefinition
-     * @param string $operationType
      *
      * @return bool
      *
@@ -268,7 +266,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'arg' => ['type' => Type::string()],
                             'processor' => function ($object, $newValue, $args) {
                                 $object->setKey($newValue);
-                            }
+                            },
 
                         ];
                     case 'published':
@@ -277,7 +275,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                             'arg' => ['type' => Type::boolean()],
                             'processor' => function ($object, $newValue, $args) {
                                 $object->setPublished($newValue);
-                            }
+                            },
                         ];
                     default:
                         return null;
@@ -345,7 +343,6 @@ class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * @param FieldNode $ast
      * @param array $data
      * @param object $container
      * @param array $args
@@ -362,7 +359,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         // example for http://webonyx.github.io/graphql-php/error-handling/
-//         throw new MySafeException("fieldhelper", "TBD customized error message");
+        //         throw new MySafeException("fieldhelper", "TBD customized error message");
 
         $getter = 'get' . ucfirst($astName);
 

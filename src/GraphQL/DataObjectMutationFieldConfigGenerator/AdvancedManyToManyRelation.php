@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class AdvancedManyToManyRelation extends Base
 {
     protected $elementInputType;
+
     protected $fieldDefinition;
 
     public function __construct(Service $graphQlService, ElementDescriptorInputType $elementInputType)
@@ -40,7 +41,7 @@ class AdvancedManyToManyRelation extends Base
 
         return [
             'arg' => ['type' => Type::listOf($inputType)],
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

@@ -37,8 +37,8 @@ class Element
                         'fields' => [
                             'id' => [
                                 'type' => Type::id(),
-                            ]
-                        ]
+                            ],
+                        ],
                     ]
                 );
         }

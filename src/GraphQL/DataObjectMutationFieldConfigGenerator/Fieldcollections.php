@@ -64,7 +64,7 @@ class Fieldcollections extends Base
             // groups
             $listItemType = new InputObjectType([
                 'name' => $listInputTypeName,
-                'fields' => $inputFields
+                'fields' => $inputFields,
             ]);
             $groupsInputFields[$allowedFcType] = Type::listOf($listItemType);
             $fieldProcessors[$allowedFcType] = $processors;
@@ -72,7 +72,7 @@ class Fieldcollections extends Base
 
         $groupsInputType = new InputObjectType([
             'name' => $groupsInputTypeName,
-            'fields' => $groupsInputFields
+            'fields' => $groupsInputFields,
         ]);
 
         $inputTypeName = 'fieldcollections_' . $fieldName . '_input';
@@ -85,10 +85,10 @@ class Fieldcollections extends Base
                 'fields' => [
                     'replace' => [
                         'type' => Type::boolean(),
-                        'description' => 'if true then the entire item list will be overwritten'
+                        'description' => 'if true then the entire item list will be overwritten',
                     ],
-                    'items' => $groupsInputType
-                ]
+                    'items' => $groupsInputType,
+                ],
             ]);
             self::$typeCache[$inputTypeName] = $inputType;
         }
@@ -98,14 +98,13 @@ class Fieldcollections extends Base
 
         return [
             'arg' => $inputType,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 
     /**
      * @param array $inputFields
      * @param array $processors
-     * @param Definition $fcDef
      */
     public function generateInputFieldsAndProcessors(&$inputFields, &$processors, Definition $fcDef)
     {
@@ -121,8 +120,8 @@ class Fieldcollections extends Base
                             'attribute' => $localizedDef->getName(),
                             'label' => $localizedDef->getTitle() ?? $localizedDef->getName(),
                             'dataType' => $localizedDef->getFieldtype(),
-                            'layout' => $localizedDef
-                        ]
+                            'layout' => $localizedDef,
+                        ],
                     ];
                     $result = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $fcDef);
                     if ($result) {
@@ -137,8 +136,8 @@ class Fieldcollections extends Base
                         'attribute' => $fcFieldDef->getName(),
                         'label' => $fcFieldDef->getTitle() ?? $fcFieldDef->getName(),
                         'dataType' => $fcFieldDef->getFieldtype(),
-                        'layout' => $fcFieldDef
-                    ]
+                        'layout' => $fcFieldDef,
+                    ],
                 ];
 
                 $result = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $fcDef);

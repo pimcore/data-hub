@@ -27,7 +27,7 @@ class Multiselect extends Base
 
         return [
             'arg' => Type::listOf(Type::string()),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

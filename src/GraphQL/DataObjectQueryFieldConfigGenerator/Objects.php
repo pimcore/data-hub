@@ -30,7 +30,6 @@ class Objects extends Base implements TypeDefinitionInterface
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -45,14 +44,13 @@ class Objects extends Base implements TypeDefinitionInterface
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
-                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
+                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class),
             ],
             $container
         );
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

@@ -25,7 +25,6 @@ class Geopolygon extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -35,12 +34,11 @@ class Geopolygon extends Base
     {
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $class, $container)
+            'type' => $this->getFieldType($fieldDefinition, $class, $container),
         ], $container);
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

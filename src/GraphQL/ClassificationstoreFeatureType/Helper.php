@@ -35,7 +35,7 @@ class Helper extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getId();
                     }
-                }
+                },
             ],
             'name' => [
                 'type' => Type::string(),
@@ -46,7 +46,7 @@ class Helper extends ObjectType
                             return $keyConfig->getName();
                         }
                     }
-                }
+                },
             ],
             'description' => [
                 'type' => Type::string(),
@@ -57,7 +57,7 @@ class Helper extends ObjectType
                             return $keyConfig->getDescription();
                         }
                     }
-                }
+                },
             ],
             'type' => [
                 'type' => Type::string(),
@@ -65,8 +65,8 @@ class Helper extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getType();
                     }
-                }
-            ]
+                },
+            ],
         ];
 
         return $fields;

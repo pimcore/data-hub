@@ -34,7 +34,6 @@ class BaseOperator extends Base
      * @param array $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      */
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {

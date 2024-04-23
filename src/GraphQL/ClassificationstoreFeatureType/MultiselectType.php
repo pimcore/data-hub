@@ -27,8 +27,6 @@ class MultiselectType extends ObjectType
     protected static $instance = [];
 
     /**
-     * @param Service $service
-     * @param string $name
      * @param string $fieldname
      *
      * @return MultiselectType
@@ -44,14 +42,14 @@ class MultiselectType extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
-                }
+                },
             ];
 
             $config =
                 [
                     'name' => $name,
                     'interfaces' => [CsFeature::getInstance()],
-                    'fields' => $fields
+                    'fields' => $fields,
                 ];
             self::$instance[$name] = new static($config);
         }

@@ -21,14 +21,13 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class Video extends Base
 {
     /**
-     * @param Service $graphQlService
      *
      * @throws \Exception
      */
     public function __construct(Service $graphQlService)
     {
 
-//        $this->assetType = $assetType;
+        //        $this->assetType = $assetType;
         parent::__construct($graphQlService);
     }
 

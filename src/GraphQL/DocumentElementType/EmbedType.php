@@ -41,7 +41,7 @@ class EmbedType extends ObjectType
                                 if ($value instanceof Date) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -49,7 +49,7 @@ class EmbedType extends ObjectType
                                 if ($value instanceof Date) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'url' => [
                             'type' => Type::string(),
@@ -57,8 +57,8 @@ class EmbedType extends ObjectType
                                 if ($value instanceof Embed) {
                                     return $value->getUrl();
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

@@ -29,7 +29,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class DocumentTreeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     private $types;
@@ -37,7 +36,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     private $customTypes = [];
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'document_tree'])
@@ -47,7 +45,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -63,7 +60,7 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
             'document_hardlink',
             'document_link',
             'document_page',
-            'document_snippet'
+            'document_snippet',
         ];
         foreach ($supportedTypes as $supportedType) {
             $this->types[$supportedType] = $this->getGraphQlService()->getDocumentTypeDefinition($supportedType);
@@ -84,7 +81,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
     /**
      * @param ElementInterface $element
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @return mixed
      */
