@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class DocumentFolderType extends FolderType
 {
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -49,7 +48,7 @@ class DocumentFolderType extends FolderType
                 ],
                 'filename' => Type::string(),
                 'fullpath' => [
-                    'type' => Type::string()
+                    'type' => Type::string(),
                 ],
                 'creationDate' => Type::int(),
                 'modificationDate' => Type::int(),
@@ -69,7 +68,7 @@ class DocumentFolderType extends FolderType
                     'args' => ['defaultLanguage' => ['type' => Type::string()]],
                     'type' => Type::listOf($documentTranslation),
                     'resolve' => [$documentResolver, 'resolveTranslations'],
-                ]
+                ],
             ];
         }
     }

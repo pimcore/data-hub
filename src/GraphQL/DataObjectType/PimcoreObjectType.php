@@ -50,8 +50,6 @@ class PimcoreObjectType extends ObjectType
     protected $fields;
 
     /**
-     * @param Service $graphQlService
-     * @param string $className
      * @param string $classId
      * @param array $config
      * @param array $context
@@ -97,15 +95,15 @@ class PimcoreObjectType extends ObjectType
                     }
 
                     return null;
-                }
+                },
             ],
             'index' => [
                 'type' => Type::int(),
-                'resolve' => [$resolver, 'resolveIndex']
+                'resolve' => [$resolver, 'resolveIndex'],
             ],
             'childrenSortBy' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveChildrenSortBy']
+                'resolve' => [$resolver, 'resolveChildrenSortBy'],
             ],
             'classname' => [
                 'type' => Type::string(),
@@ -115,17 +113,17 @@ class PimcoreObjectType extends ObjectType
                 'args' => [
                     'name' => ['type' => Type::string()],
                 ],
-                'resolve' => [$resolver, 'resolveTag']
+                'resolve' => [$resolver, 'resolveTag'],
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma separated list of key names'
-                    ]
+                        'description' => 'comma separated list of key names',
+                    ],
                 ],
-                'resolve' => [$resolver, 'resolveProperties']
+                'resolve' => [$resolver, 'resolveProperties'],
             ],
             'parent' => [
                 'type' => $objectTreeType,
@@ -136,7 +134,7 @@ class PimcoreObjectType extends ObjectType
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'list of object types (object, variant, folder)'
+                        'description' => 'list of object types (object, variant, folder)',
                     ],
                 ],
                 'resolve' => [$resolver, 'resolveChildren'],
@@ -146,7 +144,7 @@ class PimcoreObjectType extends ObjectType
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'list of object types (object, variant, folder)'
+                        'description' => 'list of object types (object, variant, folder)',
                     ],
                 ],
                 'resolve' => [$resolver, 'resolveSiblings'],
@@ -188,7 +186,6 @@ class PimcoreObjectType extends ObjectType
 
     /**
      * @param array $column
-     * @param ClassDefinition $class
      * @param array $fields
      *
      * @return void
@@ -222,8 +219,8 @@ class PimcoreObjectType extends ObjectType
                             'attributes' => [
                                 'attribute' => $attrName,
                                 'label' => $fieldDef->getName(),
-                                'dataType' => $fieldDef->getFieldtype()
-                            ]
+                                'dataType' => $fieldDef->getFieldtype(),
+                            ],
                         ];
                         $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef);
                         if ($fcResult) {
@@ -244,8 +241,8 @@ class PimcoreObjectType extends ObjectType
                             'attributes' => [
                                 'attribute' => $attrName,
                                 'label' => $fieldDef->getName(),
-                                'dataType' => $fieldDef->getFieldtype()
-                            ]
+                                'dataType' => $fieldDef->getFieldtype(),
+                            ],
                         ];
                         $fcResult = $fieldHelper->getQueryFieldConfigFromConfig($columnDesc, $fcDef, $fcLocalizedFields);
                         if ($fcResult) {
@@ -258,7 +255,7 @@ class PimcoreObjectType extends ObjectType
 
                 $itemFcType = new ObjectType([
                     'name' => $typename,
-                    'fields' => $fcFields
+                    'fields' => $fcFields,
                 ]);
 
                 RuntimeCache::save($itemFcType, $fcKey);
@@ -271,7 +268,7 @@ class PimcoreObjectType extends ObjectType
 
         $unionTypesConfig = [
             'name' => $unionname,
-            'types' => $unionTypes
+            'types' => $unionTypes,
         ];
 
         $union = new FieldcollectionType($this->getGraphQlService(), $unionTypesConfig);
@@ -308,7 +305,7 @@ class PimcoreObjectType extends ObjectType
                     }
 
                     return null;
-                }
+                },
 
             ];
     }

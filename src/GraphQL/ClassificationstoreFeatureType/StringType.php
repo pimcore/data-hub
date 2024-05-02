@@ -26,8 +26,6 @@ class StringType extends ObjectType
     protected static $instance = [];
 
     /**
-     * @param string $name
-     * @param string $valueField
      *
      * @return StringType
      */
@@ -41,14 +39,14 @@ class StringType extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
-                }
+                },
             ];
 
             $config =
                 [
                     'name' => $name,
                     'interfaces' => [CsFeature::getInstance()],
-                    'fields' => $fields
+                    'fields' => $fields,
 
                 ];
             self::$instance[$name] = new static($config);

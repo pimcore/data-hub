@@ -44,7 +44,7 @@ class Table extends Base
 
         $rowInput = new InputObjectType([
             'name' => 'RowInput',
-            'fields' => $inputItems
+            'fields' => $inputItems,
         ]);
 
         $inputType = new InputObjectType([
@@ -52,17 +52,17 @@ class Table extends Base
             'fields' => [
                 'replace' => [
                     'type' => Type::boolean(),
-                    'description' => 'if true then the entire table will be overwritten'
+                    'description' => 'if true then the entire table will be overwritten',
                 ],
                 'rows' => [
-                    'type' => Type::listOf($rowInput)
-                ]
-            ]
+                    'type' => Type::listOf($rowInput),
+                ],
+            ],
         ]);
 
         return [
             'arg' => $inputType,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 

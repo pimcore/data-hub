@@ -36,8 +36,6 @@ class ObjectMetadataType extends ObjectType
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param ClassDefinition|null $class
      * @param array $config
      */
@@ -75,11 +73,11 @@ class ObjectMetadataType extends ObjectType
         $fields = ['element' =>
             [
                 'type' => $elementTypeDefinition,
-                'resolve' => [$resolver, 'resolveElement']
+                'resolve' => [$resolver, 'resolveElement'],
             ],
             'metadata' => [
                 'type' => Type::listOf(new ElementMetadataKeyValuePairType()),
-                'resolve' => [$resolver, 'resolveMetadata']
+                'resolve' => [$resolver, 'resolveMetadata'],
 
             ]];
 

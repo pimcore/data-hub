@@ -20,7 +20,6 @@ use Pimcore\Model\Document\PageSnippet;
 trait EditablesTrait
 {
     /**
-     * @param PageSnippet $document
      * @param string $editableName
      *
      * @return void

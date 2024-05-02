@@ -40,7 +40,7 @@ class CheckboxType extends ObjectType
                                 if ($value instanceof Checkbox) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -48,7 +48,7 @@ class CheckboxType extends ObjectType
                                 if ($value instanceof Checkbox) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'checked' => [
                             'type' => Type::boolean(),
@@ -56,8 +56,8 @@ class CheckboxType extends ObjectType
                                 if ($value instanceof Checkbox) {
                                     return $value->getData();
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

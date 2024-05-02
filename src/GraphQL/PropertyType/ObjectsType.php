@@ -27,7 +27,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class ObjectsType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     public function __construct(Service $graphQlService)
@@ -39,7 +38,6 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -71,9 +69,6 @@ class ObjectsType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element) {

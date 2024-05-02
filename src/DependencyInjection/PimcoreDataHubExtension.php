@@ -25,9 +25,6 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
@@ -67,7 +64,7 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
             [
                 ...ConfigurationHelper::getSymfonyConfigFiles($configDir),
                 ...ConfigurationHelper::getSymfonyConfigFiles($_SERVER['PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB'] ?? ''),
-                ...$configLocator->locate('config')
+                ...$configLocator->locate('config'),
             ];
 
         foreach ($configs as $config) {

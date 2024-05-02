@@ -29,8 +29,6 @@ class VideoType extends ObjectType
     protected static $instance;
 
     /**
-     * @param Service $graphQlService
-     * @param AssetType $assetType
      *
      * @return static
      */
@@ -47,7 +45,7 @@ class VideoType extends ObjectType
                                 if ($value) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -55,7 +53,7 @@ class VideoType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'id' => [
                             'type' => Type::string(),
@@ -63,7 +61,7 @@ class VideoType extends ObjectType
                                 if ($value instanceof Video) {
                                     return $value->getId();
                                 }
-                            }
+                            },
                         ],
                         'type' => [
                             'type' => Type::string(),
@@ -71,7 +69,7 @@ class VideoType extends ObjectType
                                 if ($value) {
                                     return $value->getVideoType();
                                 }
-                            }
+                            },
                         ],
                         'title' => [
                             'type' => Type::string(),
@@ -79,7 +77,7 @@ class VideoType extends ObjectType
                                 if ($value instanceof Video) {
                                     return $value->getTitle();
                                 }
-                            }
+                            },
                         ],
                         'description' => [
                             'type' => Type::string(),
@@ -87,7 +85,7 @@ class VideoType extends ObjectType
                                 if ($value instanceof Video) {
                                     return $value->getDescription();
                                 }
-                            }
+                            },
                         ],
                         'posterAsset' => [
                             'type' => $assetType,
@@ -103,7 +101,7 @@ class VideoType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                         'videoAsset' => [
                             'type' => $assetType,
@@ -118,7 +116,7 @@ class VideoType extends ObjectType
                                 }
 
                                 return null;
-                            }
+                            },
                         ],
                     ],
                 ];

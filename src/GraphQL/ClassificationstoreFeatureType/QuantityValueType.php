@@ -26,10 +26,6 @@ class QuantityValueType extends ObjectType
     protected static $instance = [];
 
     /**
-     * @param Service $service
-     * @param string $name
-     * @param string $innerType
-     * @param string $fieldname
      *
      * @return mixed
      *
@@ -47,14 +43,14 @@ class QuantityValueType extends ObjectType
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
-                }
+                },
             ];
 
             $config =
                 [
                     'name' => $name,
                     'interfaces' => [CsFeature::getInstance()],
-                    'fields' => $fields
+                    'fields' => $fields,
                 ];
             self::$instance[$name] = new static($config);
         }

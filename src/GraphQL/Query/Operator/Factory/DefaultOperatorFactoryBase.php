@@ -37,10 +37,8 @@ abstract class DefaultOperatorFactoryBase implements OperatorFactoryInterface
     }
 
     /**
-     * @param array $configElement
      * @param array|null $context
      *
-     * @return OperatorInterface
      */
     public function build(array $configElement = [], $context = null): OperatorInterface
     {

@@ -24,9 +24,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RebuildDefinitionsCommand extends AbstractCommand
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function configure()
     {
         $this
@@ -42,8 +39,6 @@ class RebuildDefinitionsCommand extends AbstractCommand
 
     /**
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int
      *
@@ -70,6 +65,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
             $config = Configuration::getByName($endpoint);
             if (!$config) {
                 $this->output->writeln('<error>Could not find config: ' . $endpoint . '</error>');
+
                 continue;
             }
 

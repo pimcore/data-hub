@@ -27,7 +27,9 @@ use Pimcore\Model\User\Permission\Definition;
 class Installer extends SettingsStoreAwareInstaller
 {
     const DATAHUB_PERMISSION_CATEGORY = 'Datahub';
+
     const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
+
     const DATAHUB_ADMIN_PERMISSION = 'plugin_datahub_admin';
 
     public function needsReloadAfterInstall(): bool
@@ -35,9 +37,6 @@ class Installer extends SettingsStoreAwareInstaller
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function install(): void
     {
         try {
@@ -68,6 +67,7 @@ class Installer extends SettingsStoreAwareInstaller
             }
         } catch (\Exception $e) {
             Logger::warn($e);
+
             throw new InstallationException($e->getMessage());
         }
 

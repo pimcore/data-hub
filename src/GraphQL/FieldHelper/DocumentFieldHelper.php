@@ -23,7 +23,6 @@ use Pimcore\Model\Asset;
 class DocumentFieldHelper extends AbstractFieldHelper
 {
     /**
-     * @param FieldNode $ast
      * @param array $data
      * @param Asset $container
      * @param array $args

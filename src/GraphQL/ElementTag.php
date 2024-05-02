@@ -40,8 +40,8 @@ class ElementTag extends ObjectType
                     'fields' => [
                         'id' => Type::id(),
                         'path' => Type::string(),
-                    ]
-                ]))
+                    ],
+                ])),
             ];
         }
 
@@ -49,7 +49,6 @@ class ElementTag extends ObjectType
     }
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -68,7 +67,7 @@ class ElementTag extends ObjectType
         $config['fields'] = [
             'id' => Type::id(),
             'name' => Type::string(),
-            'path' => Type::string()
+            'path' => Type::string(),
         ];
     }
 }

@@ -25,9 +25,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RebuildWorkspacesCommand extends AbstractCommand
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function configure()
     {
         $this
@@ -43,8 +40,6 @@ class RebuildWorkspacesCommand extends AbstractCommand
 
     /**
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int|null
      *

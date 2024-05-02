@@ -27,7 +27,6 @@ class QuantityValue
      * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -46,7 +45,6 @@ class QuantityValue
      * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return float|string|null
      *
@@ -65,7 +63,6 @@ class QuantityValue
      * @param AbstractQuantityValue|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *

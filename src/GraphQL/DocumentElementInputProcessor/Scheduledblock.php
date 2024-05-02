@@ -28,7 +28,6 @@ class Scheduledblock extends Base
      * @param mixed $newValue
      * @param array $args
      * @param mixed $context
-     * @param ResolveInfo $info
      */
     public function process($document, $newValue, $args, $context, ResolveInfo $info)
     {
@@ -60,7 +59,7 @@ class Scheduledblock extends Base
 
                 $indices[$idx] = [
                     'key' => $idx,
-                    'date' => $date
+                    'date' => $date,
                 ];
 
                 foreach ($editables as $editableType => $listByType) {

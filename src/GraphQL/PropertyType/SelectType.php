@@ -39,7 +39,7 @@ class SelectType extends ObjectType
                         if ($value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -47,7 +47,7 @@ class SelectType extends ObjectType
                         if ($value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'text' => [
                     'type' => Type::string(),
@@ -55,9 +55,9 @@ class SelectType extends ObjectType
                         if ($value instanceof Property) {
                             return $value->getData();
                         }
-                    }
-                ]
-            ]
+                    },
+                ],
+            ],
         ];
 
         parent::__construct($config);

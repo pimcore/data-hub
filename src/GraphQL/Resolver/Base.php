@@ -54,7 +54,6 @@ class Base
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      */
@@ -74,9 +73,7 @@ class Base
     /**
      * Helper method that allows dynamic inspection into the resolver attributes.
      *
-     * @param string $type
      *
-     * @return string|null
      */
     public function getResolverAttribute(string $type): ?string
     {

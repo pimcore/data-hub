@@ -42,7 +42,6 @@ class Base
     public $attribute;
 
     /**
-     * @param Service $graphQlService
      * @param string $attribute
      * @param Data $fieldDefinition
      * @param ClassDefinition $class
@@ -59,7 +58,6 @@ class Base
      * @param BaseDescriptor $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return mixed
      *

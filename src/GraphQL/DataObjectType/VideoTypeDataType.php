@@ -40,7 +40,6 @@ class VideoTypeDataType extends UnionType
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -55,17 +54,14 @@ class VideoTypeDataType extends UnionType
             new ObjectType([
                     'name' => 'VideoDataDescriptor',
                     'fields' => [
-                        'id' => ['type' => Type::string(), 'description' => 'external ID']
-                    ]
+                        'id' => ['type' => Type::string(), 'description' => 'external ID'],
+                    ],
                 ]
             ),
-            $this->assetType
+            $this->assetType,
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element instanceof ElementDescriptor) {

@@ -35,17 +35,15 @@ class ElementDescriptorInputType extends InputObjectType
     protected $fieldDefinition;
 
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param null $class
      * @param array $config
      * @param array $context
      */
     public function __construct(Service $graphQlService,
-                                Data $fieldDefinition = null,
-                                $class = null,
-                                $config = ['name' => 'ElementDescriptorInput'],
-                                $context = [])
+        Data $fieldDefinition = null,
+        $class = null,
+        $config = ['name' => 'ElementDescriptorInput'],
+        $context = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
@@ -68,8 +66,8 @@ class ElementDescriptorInputType extends InputObjectType
             'fullpath' => Type::string(),
             'metadata' => [
                 'type' => Type::listOf(new ElementMetadataKeyValuePairInputType()),
-                'resolve' => [$resolver, 'resolveMetadata']
-            ]
+                'resolve' => [$resolver, 'resolveMetadata'],
+            ],
         ];
         $config['description'] = 'type can be omitted for mutations only allowing one type, e.g. many-to-many-objects.';
     }

@@ -28,7 +28,6 @@ class Date extends Base
      * @param int|string $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @throws \Exception
      */

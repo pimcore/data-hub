@@ -22,10 +22,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\OperatorInterface;
 interface OperatorFactoryInterface
 {
     /**
-     * @param array $configElement
      * @param array|null $context
      *
-     * @return OperatorInterface
      */
     public function build(array $configElement, $context = null): OperatorInterface;
 }

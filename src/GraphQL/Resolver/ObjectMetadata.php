@@ -52,7 +52,6 @@ class ObjectMetadata
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -88,7 +87,6 @@ class ObjectMetadata
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *

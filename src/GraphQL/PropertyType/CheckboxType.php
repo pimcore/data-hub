@@ -40,7 +40,7 @@ class CheckboxType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -48,7 +48,7 @@ class CheckboxType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'checked' => [
                     'type' => Type::boolean(),
@@ -58,9 +58,9 @@ class CheckboxType extends ObjectType
                         } elseif ($value instanceof Property) {
                             return $value->getData();
                         }
-                    }
-                ]
-            ]
+                    },
+                ],
+            ],
         ];
 
         parent::__construct($config);

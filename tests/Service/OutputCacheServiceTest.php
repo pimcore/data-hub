@@ -12,32 +12,35 @@
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
+
 namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use Codeception\Test\Unit;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class OutputCacheServiceTest extends Unit
 {
-
     protected $container;
+
     protected $eventDispatcher;
+
     protected $request;
+
     protected $sut;
 
     protected function setUp(): void
     {
         $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('get')
-            ->willReturn(array(
-                'graphql' => array(
+            ->willReturn([
+                'graphql' => [
                     'output_cache_enabled' => true,
-                    'output_cache_lifetime' => 25
-                )
-            ));
+                    'output_cache_lifetime' => 25,
+                ],
+            ]);
 
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->eventDispatcher->method('dispatch')
@@ -49,11 +52,10 @@ class OutputCacheServiceTest extends Unit
             ->getMock();
 
         $payload = '{"query":"{\n  getProductCategoryListing {\n    edges {\n      node {\n        fullpath\n      }\n    }\n  }\n}","variables":null,"operationName":null}';
-        $this->request = Request::create('/api', 'POST', array("apikey" => "super_secret_api_key"), [], [], [], $payload);
-        $this->request->headers->set("Content-Type", "application/json");
+        $this->request = Request::create('/api', 'POST', ['apikey' => 'super_secret_api_key'], [], [], [], $payload);
+        $this->request->headers->set('Content-Type', 'application/json');
         $this->request->request->set('clientname', 'test-datahub-config');
     }
-
 
     public function testReturnNullWhenItemIsNotCached()
     {
@@ -66,7 +68,6 @@ class OutputCacheServiceTest extends Unit
         // Assert
         $this->assertEquals(null, $cacheItem);
     }
-
 
     public function testReturnItemWhenItIsCached()
     {
@@ -81,7 +82,6 @@ class OutputCacheServiceTest extends Unit
         $this->assertEquals($response, $cacheItem);
     }
 
-
     public function testSaveItemWhenCacheIsEnabled()
     {
         // Arrange
@@ -95,17 +95,16 @@ class OutputCacheServiceTest extends Unit
         $this->sut->save($this->request, $response);
     }
 
-
     public function testIgnoreSaveWhenCacheIsDisabled()
     {
         // Arrange
         $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('get')
-            ->willReturn(array(
-                'graphql' => array(
-                    'output_cache_enabled' => false
-                )
-            ));
+            ->willReturn([
+                'graphql' => [
+                    'output_cache_enabled' => false,
+                ],
+            ]);
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
@@ -122,17 +121,16 @@ class OutputCacheServiceTest extends Unit
         $this->sut->save($this->request, $response);
     }
 
-
     public function testIgnoreLoadWhenCacheIsDisabled()
     {
         // Arrange
         $this->container = $this->createMock(ContainerBagInterface::class);
         $this->container->method('get')
-        ->willReturn(array(
-            'graphql' => array(
-                'output_cache_enabled' => false
-            )
-        ));
+        ->willReturn([
+            'graphql' => [
+                'output_cache_enabled' => false,
+            ],
+        ]);
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
@@ -148,7 +146,6 @@ class OutputCacheServiceTest extends Unit
         // Act
         $this->sut->save($this->request, $response);
     }
-
 
     public function testIgnoreCacheWhenRequestParameterIsPassed()
     {

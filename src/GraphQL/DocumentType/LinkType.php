@@ -24,7 +24,6 @@ class LinkType extends AbstractDocumentType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -50,11 +49,11 @@ class LinkType extends AbstractDocumentType
             'internalType' => Type::string(),
             'object' => [
                 'type' => $anyTargetType,
-                'resolve' => [$resolver, 'resolveObject']
+                'resolve' => [$resolver, 'resolveObject'],
                 ],
             'direct' => Type::string(),
             'linktype' => Type::string(),
-            'href' => Type::string()
+            'href' => Type::string(),
             ]
         );
     }

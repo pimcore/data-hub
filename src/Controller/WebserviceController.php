@@ -80,11 +80,6 @@ class WebserviceController extends FrontendController
     }
 
     /**
-     * @param Service $service
-     * @param LocaleServiceInterface $localeService
-     * @param Factory $modelFactory
-     * @param Request $request
-     * @param LongRunningHelper $longRunningHelper
      *
      * @return JsonResponse
      *
@@ -135,7 +130,7 @@ class WebserviceController extends FrontendController
 
         try {
             $schemaConfig = [
-                'query' => $queryType
+                'query' => $queryType,
             ];
             if (!$mutationType->isEmpty()) {
                 $schemaConfig['mutation'] = $mutationType;
@@ -148,11 +143,12 @@ class WebserviceController extends FrontendController
             $schema = new \GraphQL\Type\Schema(
                 [
                     'query' => $queryType,
-                    'mutation' => $mutationType
+                    'mutation' => $mutationType,
                 ]
             );
             $schema->assertValid();
             Logger::error($e);
+
             throw $e;
         }
 

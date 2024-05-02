@@ -24,7 +24,6 @@ class EmailType extends AbstractDocumentType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -48,7 +47,7 @@ class EmailType extends AbstractDocumentType
                 'replyTo' => Type::string(),
                 'to' => Type::string(),
                 'cc' => Type::string(),
-                'bcc' => Type::string()
+                'bcc' => Type::string(),
             ]
         );
     }

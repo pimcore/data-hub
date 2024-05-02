@@ -1,9 +1,18 @@
-name: PHP Style
+name: "PHP-CS-Fixer"
 
-on: [push]
+on:
+    push:
+        branches:
+            - "[0-9]+.[0-9]+"
+            - "[0-9]+.x"
+
+permissions:
+  contents: read
 
 jobs:
     php-cs-fixer:
+        permissions:
+          contents: write  # for stefanzweifel/git-auto-commit-action to push code in repo
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -11,9 +20,7 @@ jobs:
                   ref: ${{ github.head_ref }}
 
             - name: PHP-CS-Fixer
-              uses: docker://oskarstark/php-cs-fixer-ga:2.19.0
-              with:
-                args: --config=.php_cs.dist --allow-risky yes
+              uses: docker://oskarstark/php-cs-fixer-ga:latest
 
             - uses: stefanzweifel/git-auto-commit-action@v4
               with:

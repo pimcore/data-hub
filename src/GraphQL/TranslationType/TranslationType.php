@@ -50,7 +50,7 @@ class TranslationType extends ObjectType
             'type' => Type::string(),
             'translations' => [
                 'type' => new JsonType(),
-            ]
+            ],
         ];
     }
 }

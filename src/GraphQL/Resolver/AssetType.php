@@ -34,7 +34,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -58,7 +57,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -75,7 +73,7 @@ class AssetType
         //Relational data would return as a comma separated list. each element type and id by `_`, eg. "object_154,asset_489"
         $event = new AssetEvent($asset, [
             'metadata' => $metadata,
-            'context' => $context
+            'context' => $context,
         ]);
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
@@ -116,7 +114,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -140,7 +137,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -164,7 +160,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -189,7 +184,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -225,7 +219,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -291,7 +284,6 @@ class AssetType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -337,7 +329,7 @@ class AssetType
 
             return [
                 'width' => $width,
-                'height' => $height
+                'height' => $height,
             ];
         }
 

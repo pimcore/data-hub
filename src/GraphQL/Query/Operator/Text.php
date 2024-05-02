@@ -21,7 +21,6 @@ use Pimcore\Model\Element\ElementInterface;
 class Text extends AbstractOperator
 {
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -31,7 +30,6 @@ class Text extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      */

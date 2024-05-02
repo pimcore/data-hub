@@ -25,7 +25,7 @@ class Link extends Base
 
         return [
             'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('link_input'),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

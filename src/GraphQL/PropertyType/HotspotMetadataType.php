@@ -46,7 +46,6 @@ class HotspotMetadataType extends UnionType
     protected $textType;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -57,7 +56,6 @@ class HotspotMetadataType extends UnionType
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -77,9 +75,6 @@ class HotspotMetadataType extends UnionType
         return $supportedTypes;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element instanceof MarkerHotspotItem) {

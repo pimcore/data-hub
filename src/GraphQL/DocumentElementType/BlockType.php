@@ -40,7 +40,7 @@ class BlockType extends ObjectType
                                 if ($value instanceof Block) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -48,7 +48,7 @@ class BlockType extends ObjectType
                                 if ($value instanceof Block) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'indices' => [
                             'type' => Type::listOf(Type::int()),
@@ -56,8 +56,8 @@ class BlockType extends ObjectType
                                 if ($value instanceof Block) {
                                     return $value->getData();
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

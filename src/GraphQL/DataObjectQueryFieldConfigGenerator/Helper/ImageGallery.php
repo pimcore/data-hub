@@ -53,9 +53,7 @@ class ImageGallery
     public $attribute;
 
     /**
-     * @param GraphQlService $graphQlService
      * @param string $attribute
-     * @param ClassDefinition\Data\ImageGallery $fieldDefinition
      * @param ClassDefinition|Fieldcollection\Definition $class
      */
     public function __construct(
@@ -74,7 +72,6 @@ class ImageGallery
      * @param BaseDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor[]|null
      *

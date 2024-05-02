@@ -101,9 +101,7 @@ class ExecutorEvent extends Event
     }
 
     /**
-     * @param Request $request
      * @param string $query
-     * @param Schema $schema
      * @param array $context
      */
     public function __construct(Request $request, $query, Schema $schema, $context)

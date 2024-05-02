@@ -41,7 +41,6 @@ class WorkspaceHelper
     const MODIFY_TYPE_DELETE = 'delete';
 
     /**
-     * @param array $workspaces
      *
      * @return array
      */
@@ -68,7 +67,6 @@ class WorkspaceHelper
     }
 
     /**
-     * @param Configuration $configurationEntity
      * @param string        $spaceType
      * @param string        $modificationType
      * @param string        $searchValue
@@ -143,7 +141,6 @@ class WorkspaceHelper
     }
 
     /**
-     * @param Configuration $config
      * @param array         $workspaces
      *
      * @throws \Exception
@@ -176,7 +173,6 @@ class WorkspaceHelper
     }
 
     /**
-     * @param Configuration $configuration
      *
      * @return array
      *
@@ -204,7 +200,6 @@ class WorkspaceHelper
     }
 
     /**
-     * @param Configuration $config
      *
      * @throws \Exception
      */
@@ -246,6 +241,7 @@ class WorkspaceHelper
         $isAllowed = self::isAllowed($element, $configuration, $type);
         if (!$isAllowed && PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
             $elementType = Service::getElementType($element);
+
             throw new ClientSafeException($type . ' access for ' . $elementType . ' ' . $element->getFullPath() . ' denied');
         }
 
@@ -256,8 +252,6 @@ class WorkspaceHelper
      * @internal
      *
      * @param ElementInterface|OwnerAwareFieldInterface|null $element
-     * @param Configuration $configuration
-     * @param string $type
      *
      * @return bool
      */

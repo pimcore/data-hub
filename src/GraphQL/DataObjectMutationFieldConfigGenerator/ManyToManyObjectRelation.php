@@ -39,7 +39,7 @@ class ManyToManyObjectRelation extends Base
 
         return [
             'arg' => ['type' => Type::listOf($inputType)],
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

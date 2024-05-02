@@ -62,7 +62,7 @@ class Merge extends StringBase
             [
                 'name' => $fieldname,
                 'type' => $type,
-                'resolve' => [$resolver, 'resolve']
+                'resolve' => [$resolver, 'resolve'],
             ],
             $container
         );

@@ -32,7 +32,6 @@ class AssetType extends ObjectType
     protected $fieldname;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      *
@@ -84,7 +83,7 @@ class AssetType extends ObjectType
         $resolutionsArgumentsType = [
             'type' => Type::listOf(Type::float()),
             'description' => 'List of resolution types [2, 5, ...]',
-            'defaultValue' => [2]
+            'defaultValue' => [2],
         ];
 
         $config['fields'] = [
@@ -98,7 +97,7 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()],
-                    'format' => ['type' => Type::string()]
+                    'format' => ['type' => Type::string()],
                 ],
                 'resolve' => [$resolver, 'resolvePath'],
             ],
@@ -107,7 +106,7 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::nonNull(Type::string())],
                     'format' => ['type' => Type::string()],
-                    'types' => $resolutionsArgumentsType
+                    'types' => $resolutionsArgumentsType,
                 ],
                 'resolve' => [$resolver, 'resolveResolutions'],
             ],
@@ -115,7 +114,7 @@ class AssetType extends ObjectType
                 'type' => $dimensionsType,
                 'args' => [
                     'thumbnail' => ['type' => Type::string()],
-                    'format' => ['type' => Type::string()]
+                    'format' => ['type' => Type::string()],
                 ],
                 'resolve' => [$resolver, 'resolveDimensions'],
             ],
@@ -136,11 +135,11 @@ class AssetType extends ObjectType
                             ],
                             'resolve' => [$resolver, 'resolveResolutions'],
                         ],
-                    ]
+                    ],
                 ])),
                 'args' => [
                     'thumbnail' => ['type' => Type::nonNull(Type::string())],
-                    'format' => ['type' => Type::string()]
+                    'format' => ['type' => Type::string()],
                 ],
                 'resolve' => [$resolver, 'resolveSrcSet'],
             ],
@@ -152,7 +151,7 @@ class AssetType extends ObjectType
                 'type' => Type::string(),
                 'args' => [
                     'thumbnail' => ['type' => Type::string()],
-                    'format' => ['type' => Type::string()]
+                    'format' => ['type' => Type::string()],
                 ],
                 'resolve' => [$resolver, 'resolveData'],
             ],
@@ -161,29 +160,29 @@ class AssetType extends ObjectType
                 'args' => [
                     'name' => ['type' => Type::string()],
                 ],
-                'resolve' => [$resolver, 'resolveTag']
+                'resolve' => [$resolver, 'resolveTag'],
             ],
             'metadata' => [
                 'type' => Type::listOf($assetMetadataItemType),
                 'args' => [
                     'language' => ['type' => Type::string()],
-                    'ignore_language' => ['type' => Type::boolean()]
+                    'ignore_language' => ['type' => Type::boolean()],
                 ],
-                'resolve' => [$resolver, 'resolveMetadata']
+                'resolve' => [$resolver, 'resolveMetadata'],
             ],
             'embeddedMetaInfo' => [
                 'type' => Type::listOf($assetEmbeddedMetaInfoItemType),
-                'resolve' => [$resolver, 'resolveEmbeddedMetaInfo']
+                'resolve' => [$resolver, 'resolveEmbeddedMetaInfo'],
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma separated list of key names'
-                    ]
+                        'description' => 'comma separated list of key names',
+                    ],
                 ],
-                'resolve' => [$elementResolver, 'resolveProperties']
+                'resolve' => [$elementResolver, 'resolveProperties'],
             ],
             'parent' => [
                 'type' => $assetTree,

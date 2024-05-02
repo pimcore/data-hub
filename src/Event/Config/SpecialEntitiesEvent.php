@@ -21,6 +21,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class SpecialEntitiesEvent extends Event
 {
     protected $specialSettings;
+
     protected $config;
 
     public function __construct(array $specialSettings, array $config)

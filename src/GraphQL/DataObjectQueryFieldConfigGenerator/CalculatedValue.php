@@ -27,7 +27,6 @@ class CalculatedValue extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -42,7 +41,7 @@ class CalculatedValue extends Base
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
-                'description' => $fieldDefinition->getTooltip()
+                'description' => $fieldDefinition->getTooltip(),
             ],
             $container
         );

@@ -26,7 +26,6 @@ class Classificationstore extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -62,18 +61,17 @@ class Classificationstore extends Base
                                 'name' => $groupConfig->getName(),
                                 'description' => $groupConfig->getDescription(),
                                 '_csValue' => $csField,
-                                '_language' => $language
+                                '_language' => $language,
                             ];
                     }
                 }
 
                 return $result;
-            }
+            },
         ], $container);
     }
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

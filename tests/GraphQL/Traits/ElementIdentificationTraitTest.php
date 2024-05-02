@@ -16,19 +16,19 @@
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Traits;
 
 use Codeception\Test\Unit;
-use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
-
-use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
 
 class TestTrait
 {
     use ElementIdentificationTrait;
 
-    const BY_ID = "ById";
-    const BY_PATH = "ByPath";
+    const BY_ID = 'ById';
+
+    const BY_PATH = 'ByPath';
 
     /**
      * @param string $elementType
+     *
      * @return string
      */
     protected function getElementById($elementType)
@@ -38,6 +38,7 @@ class TestTrait
 
     /**
      * @param string $elementType
+     *
      * @return string
      */
     protected function getElementByPath($elementType)
@@ -49,13 +50,14 @@ class TestTrait
 class ElementIdentificationTraitTest extends Unit
 {
     const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait';
+
     const TEST_TYPE = 'object';
 
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
     {
         // Arrange
         $this->expectExceptionMessageMatches('/type expected/');
-        $newValueItemValue = array();
+        $newValueItemValue = [];
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
         // Act + Assert
@@ -66,7 +68,7 @@ class ElementIdentificationTraitTest extends Unit
     {
         // Arrange
         $this->expectExceptionMessageMatches('/The type .* is not supported/');
-        $newValueItemValue = array("type" => "wrong");
+        $newValueItemValue = ['type' => 'wrong'];
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
         // Act + Assert
@@ -77,7 +79,7 @@ class ElementIdentificationTraitTest extends Unit
     {
         // Arrange
         $this->expectExceptionMessageMatches('/either .* or .* expected/');
-        $newValueItemValue = array("type" => self::TEST_TYPE);
+        $newValueItemValue = ['type' => self::TEST_TYPE];
         // System under Test
         $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
         // Act + Assert
@@ -88,11 +90,11 @@ class ElementIdentificationTraitTest extends Unit
     {
         // Arrange
         $this->expectExceptionMessage('either id or fullpath expected but not both');
-        $newValueItemValue = array(
-            "type" => self::TEST_TYPE,
-            "id" => 4,
-            "fullpath" => "/some/path/withKey"
-        );
+        $newValueItemValue = [
+            'type' => self::TEST_TYPE,
+            'id' => 4,
+            'fullpath' => '/some/path/withKey',
+        ];
         // System under Test
         $sut = new TestTrait();
         // Act & Assert
@@ -102,10 +104,10 @@ class ElementIdentificationTraitTest extends Unit
     public function testElementIdentificationGetElementByFullPath()
     {
         // Arrange
-        $newValueItemValue = array(
-            "type" => self::TEST_TYPE,
-            "fullpath" => "/some/path/withKey"
-        );
+        $newValueItemValue = [
+            'type' => self::TEST_TYPE,
+            'fullpath' => '/some/path/withKey',
+        ];
         // System under Test
         $sut = new TestTrait();
         // Act
@@ -117,9 +119,9 @@ class ElementIdentificationTraitTest extends Unit
     public function testElementIdentificationIfTypeCanBePassedAsSeparateArgument()
     {
         // Arrange
-        $newValueItemValue = array(
-            "fullpath" => "/some/path/withKey"
-        );
+        $newValueItemValue = [
+            'fullpath' => '/some/path/withKey',
+        ];
         // System under Test
         $sut = new TestTrait();
         // Act

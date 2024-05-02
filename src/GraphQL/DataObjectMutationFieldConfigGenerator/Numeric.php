@@ -38,7 +38,7 @@ class Numeric extends Base
 
         return [
             'arg' => $type,
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

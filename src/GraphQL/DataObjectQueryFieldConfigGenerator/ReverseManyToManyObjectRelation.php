@@ -24,7 +24,6 @@ class ReverseManyToManyObjectRelation extends Base
 {
     /**
      * @param string $attribute
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *
@@ -40,7 +39,7 @@ class ReverseManyToManyObjectRelation extends Base
             [
                 'name' => $fieldDefinition->getName(),
                 'type' => $this->getFieldType($fieldDefinition, $class, $container),
-                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class)
+                'resolve' => $this->getResolver($attribute, $fieldDefinition, $class),
             ],
             $container
         );

@@ -23,9 +23,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateLegacyConfig extends AbstractCommand
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function configure()
     {
         $this
@@ -67,8 +64,6 @@ class MigrateLegacyConfig extends AbstractCommand
 
     /**
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int|null
      *

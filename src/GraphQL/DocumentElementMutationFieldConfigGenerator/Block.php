@@ -47,11 +47,11 @@ class Block extends Base
                         return [
                             'replace' => [
                                 'type' => Type::boolean(),
-                                'description' => 'if true (default), all elements inside the block will be replaced'
+                                'description' => 'if true (default), all elements inside the block will be replaced',
                                 ],
-                            'editables' => MutationType::$documentElementTypes
+                            'editables' => MutationType::$documentElementTypes,
                         ];
-                    }
+                    },
                 ]
             );
         }
@@ -66,12 +66,12 @@ class Block extends Base
                             'indices' => Type::listOf(Type::int()),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
-                            ]
+                            ],
                         ];
-                    }
+                    },
                 ]
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

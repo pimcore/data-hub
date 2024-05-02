@@ -316,7 +316,6 @@ class Configuration extends AbstractModel
     /**
      * @param string $name
      *
-     * @return Configuration|null
      */
     public static function getByName($name): ?self
     {
@@ -425,7 +424,6 @@ class Configuration extends AbstractModel
     /**
      * @internal
      *
-     * @param string $type
      * @param ?User $user
      *
      * @return bool

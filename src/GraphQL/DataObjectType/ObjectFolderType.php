@@ -22,7 +22,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class ObjectFolderType extends FolderType
 {
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */
@@ -48,7 +47,7 @@ class ObjectFolderType extends FolderType
             ],
             'key' => Type::string(),
             'fullpath' => [
-                'type' => Type::string()
+                'type' => Type::string(),
             ],
             'creationDate' => Type::int(),
             'modificationDate' => Type::int(),
@@ -58,18 +57,18 @@ class ObjectFolderType extends FolderType
             ],
             'index' => [
                 'type' => Type::int(),
-                'resolve' => [$resolver, 'resolveIndex']
+                'resolve' => [$resolver, 'resolveIndex'],
             ],
             'childrenSortBy' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveChildrenSortBy']
+                'resolve' => [$resolver, 'resolveChildrenSortBy'],
             ],
             'children' => [
                 'type' => Type::listOf($objectTreeType),
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'list of object types (object, variant, folder)'
+                        'description' => 'list of object types (object, variant, folder)',
                     ],
                 ],
                 'resolve' => [$resolver, 'resolveChildren'],
@@ -79,17 +78,17 @@ class ObjectFolderType extends FolderType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma separated list of key names'
-                    ]
+                        'description' => 'comma separated list of key names',
+                    ],
                 ],
-                'resolve' => [$resolver, 'resolveProperties']
+                'resolve' => [$resolver, 'resolveProperties'],
             ],
             '_siblings' => [
                 'type' => Type::listOf($objectTreeType),
                 'args' => [
                     'objectTypes' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'list of object types (object, variant, folder)'
+                        'description' => 'list of object types (object, variant, folder)',
                     ],
                 ],
                 'resolve' => [$resolver, 'resolveSiblings'],

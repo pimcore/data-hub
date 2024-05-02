@@ -25,7 +25,7 @@ class InputQuantityValue extends Base
 
         return [
             'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('input_quantity_value_input'),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

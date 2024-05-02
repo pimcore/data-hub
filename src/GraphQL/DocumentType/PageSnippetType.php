@@ -26,8 +26,6 @@ class PageSnippetType extends AbstractDocumentType
     protected $documentElementType;
 
     /**
-     * @param Service $graphQlService
-     * @param DocumentElementType $documentElementType
      * @param array $config
      * @param array $context
      */
@@ -48,7 +46,7 @@ class PageSnippetType extends AbstractDocumentType
         $this->buildBaseFields($config);
         $config['fields']['elements'] = [
             'type' => Type::listOf($this->documentElementType),
-            'resolve' => [$resolver, 'resolveElements']
+            'resolve' => [$resolver, 'resolveElements'],
         ];
 
         $config['fields']['editables'] = [
@@ -57,18 +55,18 @@ class PageSnippetType extends AbstractDocumentType
                 'getInheritedValues' => [
                     'type' => Type::boolean(),
                     'description' => 'Whether inherited editables should be fetched or not.',
-                    'defaultValue' => false
+                    'defaultValue' => false,
                 ],
             ],
-            'resolve' => [$resolver, 'resolveElements']
+            'resolve' => [$resolver, 'resolveElements'],
         ];
 
         $config['fields']['title'] = [
-            'type' => Type::string()
+            'type' => Type::string(),
         ];
 
         $config['fields']['description'] = [
-            'type' => Type::string()
+            'type' => Type::string(),
         ];
 
         $keyValue = new ListOfType(KeyValueType::getInstance());
@@ -79,22 +77,22 @@ class PageSnippetType extends AbstractDocumentType
                 'attributes' => [
                     'type' => $keyValue,
                     'description' => 'Attributes passed into the controller/action',
-                    'defaultValue' => []
+                    'defaultValue' => [],
                 ],
                 'query' => [
                     'type' => $keyValue,
                     'description' => 'Query Params passed into the controller/action',
-                    'defaultValue' => []
+                    'defaultValue' => [],
                 ],
                 'options' => [
                     'type' => $keyValue,
                     'description' => 'Options passed into the controller/action',
-                    'defaultValue' => []
+                    'defaultValue' => [],
                 ],
                 'use_layout' => [
                     'type' => Type::boolean(),
-                    'description' => 'Disable Layout Rendering'
-                ]
+                    'description' => 'Disable Layout Rendering',
+                ],
             ],
             'resolve' => static function ($value, $args) {
                 $documentId = $value['id'];
@@ -115,7 +113,7 @@ class PageSnippetType extends AbstractDocumentType
                 }
 
                 return null;
-            }
+            },
         ];
     }
 }

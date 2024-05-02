@@ -54,11 +54,11 @@ class Areablock extends Base
                             'hidden' => Type::boolean(),
                             'replace' => [
                                 'type' => Type::boolean(),
-                                'description' => 'if true (default), all elements inside the block will be replaced'
+                                'description' => 'if true (default), all elements inside the block will be replaced',
                             ],
-                            'editables' => MutationType::$documentElementTypes
+                            'editables' => MutationType::$documentElementTypes,
                         ];
-                    }
+                    },
                 ]
             );
         }
@@ -73,13 +73,13 @@ class Areablock extends Base
                             'indices' => Type::listOf($this->areablockDataInputType),
                             'items' => [
                                 'type' => Type::listOf(self::$itemType),
-                            ]
+                            ],
                         ];
-                    }
+                    },
                 ]
 
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

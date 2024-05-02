@@ -22,7 +22,6 @@ interface DataObjectQueryFieldConfigGeneratorInterface
 {
     /**
      * @param string $columnConfig
-     * @param Data $fieldDefinition
      * @param ClassDefinition $class
      * @param object $container
      *
@@ -31,7 +30,6 @@ interface DataObjectQueryFieldConfigGeneratorInterface
     public function getGraphQlFieldConfig($columnConfig, Data $fieldDefinition, $class, $container);
 
     /**
-     * @param Data $fieldDefinition
      * @param ClassDefinition|null $class
      * @param object|null $container
      *

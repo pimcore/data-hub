@@ -36,7 +36,6 @@ class HotspotType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *
@@ -64,7 +63,6 @@ class HotspotType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -79,7 +77,6 @@ class HotspotType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -94,7 +91,6 @@ class HotspotType
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -109,7 +105,6 @@ class HotspotType
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {

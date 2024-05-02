@@ -26,7 +26,7 @@ class Image extends Base
         return [
             'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('image_input'),
             'processor' => [$processor, 'process'],
-            'description' => 'Asset ID'
+            'description' => 'Asset ID',
         ];
     }
 }

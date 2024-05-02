@@ -28,7 +28,7 @@ class ExternalImage extends Base
         return [
             'arg' => Type::string(),
             'processor' => [$processor, 'process'],
-            'description' => 'External Image URL'
+            'description' => 'External Image URL',
         ];
     }
 }

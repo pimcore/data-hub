@@ -45,7 +45,6 @@ abstract class AbstractFieldHelper
     }
 
     /**
-     * @param FieldNode $ast
      * @param array $data
      * @param object $container
      * @param array $args
@@ -62,7 +61,7 @@ abstract class AbstractFieldHelper
         }
 
         // example for http://webonyx.github.io/graphql-php/error-handling/
-//         throw new MySafeException("fieldhelper", "TBD customized error message");
+        //         throw new MySafeException("fieldhelper", "TBD customized error message");
 
         $getter = 'get' . ucfirst($astName);
         $arguments = $this->getArguments($ast);
@@ -88,7 +87,6 @@ abstract class AbstractFieldHelper
     }
 
     /**
-     * @param FieldNode $ast
      *
      * @return array
      */
@@ -112,7 +110,6 @@ abstract class AbstractFieldHelper
      * @param object $container
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      */
@@ -147,7 +144,6 @@ abstract class AbstractFieldHelper
      * @param object $container
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $resolveInfo
      */
     public function processSelections(&$data, $selections, $container, $args, $context, ResolveInfo $resolveInfo)
     {

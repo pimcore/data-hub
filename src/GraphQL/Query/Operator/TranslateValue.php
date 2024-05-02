@@ -23,7 +23,6 @@ class TranslateValue extends AbstractOperator
     private $prefix;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config = [], $context = null)
@@ -36,7 +35,6 @@ class TranslateValue extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
      *

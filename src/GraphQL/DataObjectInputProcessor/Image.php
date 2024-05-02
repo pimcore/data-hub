@@ -30,7 +30,6 @@ class Image extends Base
      * @param array $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @return void|null
      *

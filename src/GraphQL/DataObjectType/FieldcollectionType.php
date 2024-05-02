@@ -27,13 +27,11 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class FieldcollectionType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     protected $types;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -45,7 +43,6 @@ class FieldcollectionType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -54,9 +51,6 @@ class FieldcollectionType extends UnionType implements ContainerAwareInterface
         return $this->types;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element instanceof FieldcollectionDescriptor) {

@@ -38,7 +38,6 @@ abstract class AbstractOperator implements OperatorInterface
     protected $children;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config = [], $context = null)

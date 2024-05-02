@@ -47,7 +47,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @param Configuration $configuration
      *
-     * @return array
      */
     private function buildItem($configuration): array
     {
@@ -65,17 +64,15 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             'writeable' => $configuration->isWriteable(),
             'permissions' => [
                 'delete' => $configuration->isAllowed('delete'),
-                'update' => $configuration->isAllowed('update')
-            ]
+                'update' => $configuration->isAllowed('update'),
+            ],
         ];
     }
 
     /**
      * @Route("/list")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function listAction(Request $request): JsonResponse
     {
@@ -105,7 +102,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                             'allowChildren' => true,
                             'iconCls' => 'pimcore_icon_folder',
                             'group' => $item->getGroup(),
-                            'children' => []
+                            'children' => [],
                         ];
                     }
                     $groups[$item->getGroup()]['children'][] = $this->buildItem($item);
@@ -132,10 +129,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
 
     /**
      * @Route("/delete")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse|null
      *
      * @throws ConfigWriteException
      */
@@ -174,10 +167,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/add")
      *
-     * @param Request $request
-     *
-     * @return JsonResponse|null
-     *
      * @throws ConfigWriteException
      */
     public function addAction(Request $request): ?JsonResponse
@@ -212,9 +201,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/clone")
      *
-     * @param Request $request
      *
-     * @return JsonResponse|null
      */
     public function cloneAction(Request $request): ?JsonResponse
     {
@@ -252,12 +239,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
 
     /**
      * @Route("/get")
-     *
-     * @param Request $request
-     * @param Service $graphQlService
-     * @param EventDispatcherInterface $eventDispatcher
-     *
-     * @return JsonResponse
      *
      * @throws \Exception
      */
@@ -372,7 +353,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                 $config['schema']['specialEntities']['translation_listing']['create'] ?? false,
                 $config['schema']['specialEntities']['translation_listing']['update'] ?? false,
                 $config['schema']['specialEntities']['translation_listing']['delete'] ?? false
-            )
+            ),
         ];
 
         $specialSettingsEvent = new SpecialEntitiesEvent($coreSettings, $config);
@@ -396,11 +377,11 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                 'configuration' => $config,
                 'userPermissions' => [
                     'update' => $configuration->isAllowed('update'),
-                    'delete' => $configuration->isAllowed('delete')
+                    'delete' => $configuration->isAllowed('delete'),
                 ],
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
-                'modificationDate' => $config['general']['modificationDate']
+                'modificationDate' => $config['general']['modificationDate'],
             ]
         );
     }
@@ -408,9 +389,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/save")
      *
-     * @param Request $request
      *
-     * @return JsonResponse|null
      */
     public function saveAction(Request $request): ?JsonResponse
     {
@@ -491,11 +470,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/get-explorer-url")
      *
-     * @param RouterInterface $routingService
-     * @param Request $request
-     *
-     * @return JsonResponse|null
-     *
      * @throws \Exception
      */
     public function getExplorerUrlAction(RouterInterface $routingService, Request $request): ?JsonResponse
@@ -513,8 +487,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/thumbnail-tree")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function thumbnailTreeAction(Request $request)
@@ -529,7 +501,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         foreach ($items as $item) {
             $thumbnails[] = [
                 'id' => $item->getName(),
-                'text' => $item->getName()
+                'text' => $item->getName(),
             ];
         }
 
@@ -538,8 +510,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
 
     /**
      * @Route("/permissions-users", methods={"GET"})
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -573,7 +543,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/export", methods={"GET"})
      *
-     * @param Request $request
      */
     public function exportConfiguration(Request $request, ExportService $exportService): Response
     {
@@ -604,8 +573,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     /**
      * @Route("/import", methods={"POST"})
      *
-     * @param Request $request
-     * @param ImportService $importService
      */
     public function importConfiguration(Request $request, ImportService $importService): JsonResponse
     {
@@ -616,7 +583,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         $response = $this->jsonResponse([
             'success' => true,
             'type' => $configuration->getType(),
-            'name' => $configuration->getName()
+            'name' => $configuration->getName(),
         ]);
         // set content-type to text/html, otherwise (when application/json is sent) chrome will complain in
         // Ext.form.Action.Submit and mark the submission as failed

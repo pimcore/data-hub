@@ -45,7 +45,7 @@ class Base implements DataObjectMutationFieldConfigGeneratorInterface
 
         return [
             'arg' => Type::string(),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

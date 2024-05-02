@@ -20,8 +20,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 class SnippetType extends PageSnippetType
 {
     /**
-     * @param Service $graphQlService
-     * @param DocumentElementType $documentElementType
      * @param array $config
      * @param array $context
      */

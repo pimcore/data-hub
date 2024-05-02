@@ -27,7 +27,6 @@ class Geopoint
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return float|null
      *
@@ -46,7 +45,6 @@ class Geopoint
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return float|null
      *

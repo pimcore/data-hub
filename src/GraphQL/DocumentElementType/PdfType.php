@@ -27,7 +27,6 @@ class PdfType extends ObjectType
     protected static $instance;
 
     /**
-     * @param Service $service
      *
      * @return PdfType
      *
@@ -48,7 +47,7 @@ class PdfType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -56,7 +55,7 @@ class PdfType extends ObjectType
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'pdf' => [
                             'type' => $assetType,
@@ -72,8 +71,8 @@ class PdfType extends ObjectType
                                 }
 
                                 return  null;
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

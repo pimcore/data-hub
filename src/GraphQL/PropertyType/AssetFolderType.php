@@ -30,7 +30,6 @@ class AssetFolderType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      *
      * @throws \Exception
      */
@@ -48,7 +47,7 @@ class AssetFolderType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -56,7 +55,7 @@ class AssetFolderType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'asset' => [
                     'type' => $assetFolderType,
@@ -78,7 +77,7 @@ class AssetFolderType extends ObjectType
                         }
 
                         return null;
-                    }
+                    },
 
                 ]]];
 

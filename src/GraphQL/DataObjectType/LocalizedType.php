@@ -48,7 +48,7 @@ class LocalizedType extends InputObjectType
 
             foreach (Tool::getValidLanguages() as $language) {
                 $config['fields'][$language] = [
-                    'type' => $determinedType
+                    'type' => $determinedType,
                 ];
             }
 

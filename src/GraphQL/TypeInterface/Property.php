@@ -34,12 +34,12 @@ class Property
                         'name' => 'property',
                         'fields' => [
                             'name' => [
-                                'type' => Type::string()        // name of property
+                                'type' => Type::string(),        // name of property
                             ],
                             'type' => [
-                                'type' => Type::string()        // property type
-                            ]
-                        ]
+                                'type' => Type::string(),        // property type
+                            ],
+                        ],
                     ]
 
                 );

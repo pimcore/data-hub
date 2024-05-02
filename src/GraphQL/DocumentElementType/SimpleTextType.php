@@ -40,7 +40,7 @@ class SimpleTextType extends ObjectType
                         if ($value) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 '_editableType' => [
                     'type' => Type::string(),
@@ -48,7 +48,7 @@ class SimpleTextType extends ObjectType
                         if ($value) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'text' => [
                     'type' => Type::string(),
@@ -62,7 +62,7 @@ class SimpleTextType extends ObjectType
                                 return $value->getData();
                             }
                         }
-                    }
+                    },
                 ],
             ],
         ];

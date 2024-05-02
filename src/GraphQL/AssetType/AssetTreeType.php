@@ -27,11 +27,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class AssetTreeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = ['name' => 'asset_tree'])
@@ -41,7 +39,6 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -54,9 +51,6 @@ class AssetTreeType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if (!$element) {

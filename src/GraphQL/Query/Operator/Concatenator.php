@@ -21,10 +21,10 @@ use Pimcore\Model\Element\ElementInterface;
 class Concatenator extends AbstractOperator
 {
     private $glue;
+
     private $forceValue;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -37,7 +37,6 @@ class Concatenator extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      *

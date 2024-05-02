@@ -44,10 +44,10 @@ class Input extends Base
                     'fields' => [
                         '_editableName' => Type::nonNull(Type::string()),
                         'text' => Type::string(),
-                    ]
+                    ],
                 ]
             ),
-            'processor' => [$this->processor, 'process']
+            'processor' => [$this->processor, 'process'],
         ];
     }
 }

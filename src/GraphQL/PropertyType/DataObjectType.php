@@ -42,7 +42,7 @@ class DataObjectType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
-                    }
+                    },
                 ],
                 'type' => [
                     'type' => Type::string(),
@@ -50,7 +50,7 @@ class DataObjectType extends ObjectType
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
-                    }
+                    },
                 ],
                 'object' => [
                     'type' => $objectUnionType,
@@ -75,9 +75,9 @@ class DataObjectType extends ObjectType
                         }
 
                         return null;
-                    }
-                ]
-            ]
+                    },
+                ],
+            ],
         ];
 
         parent::__construct($config);

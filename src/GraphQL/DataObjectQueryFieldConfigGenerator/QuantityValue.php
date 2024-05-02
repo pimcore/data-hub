@@ -19,10 +19,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class QuantityValue extends Base
 {
-    /**
-     * @inheritdoc
-     *
-     */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         return $this->getGraphQlService()->getDataObjectTypeDefinition('quantity_value');

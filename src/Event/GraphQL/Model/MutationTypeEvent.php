@@ -74,7 +74,6 @@ class MutationTypeEvent extends Event
     protected $context;
 
     /**
-     * @param MutationType $mutationType
      * @param array $config
      * @param array $context
      */

@@ -57,7 +57,6 @@ class ElementPropertyType extends UnionType
     protected $selectType;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -68,7 +67,6 @@ class ElementPropertyType extends UnionType
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -83,7 +81,7 @@ class ElementPropertyType extends UnionType
         $supportedTypes = [
             $this->checkboxType,
             $this->textType,
-            $this->selectType
+            $this->selectType,
         ];
 
         if ($this->getGraphQlService()->querySchemaEnabled('asset')) {
@@ -119,9 +117,6 @@ class ElementPropertyType extends UnionType
         return $supportedTypes;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         if ($element instanceof \Pimcore\Model\Property) {

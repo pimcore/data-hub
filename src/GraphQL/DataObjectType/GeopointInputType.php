@@ -25,7 +25,6 @@ class GeopointInputType extends InputObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      * @param array $context
      */

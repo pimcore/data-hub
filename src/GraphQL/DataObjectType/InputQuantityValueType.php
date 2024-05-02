@@ -22,8 +22,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 class InputQuantityValueType extends QuantityValueType
 {
     /**
-     * @param Service $graphQlService
-     * @param Data|null $fieldDefinition
      * @param array $config
      * @param array $context
      */
@@ -31,8 +29,8 @@ class InputQuantityValueType extends QuantityValueType
     {
         $config['fields'] = [
             'value' => [
-                'type' => Type::string()
-            ]
+                'type' => Type::string(),
+            ],
         ];
         parent::__construct($graphQlService, $fieldDefinition, $config, $context);
     }

@@ -20,13 +20,19 @@ class SpecialEntitySetting implements \JsonSerializable
     protected $name;
 
     protected $readPossible = false;
+
     protected $createPossible = false;
+
     protected $updatePossible = false;
+
     protected $deletePossible = false;
 
     protected $readAllowed = false;
+
     protected $createAllowed = false;
+
     protected $updateAllowed = false;
+
     protected $deleteAllowed = false;
 
     public function __construct(

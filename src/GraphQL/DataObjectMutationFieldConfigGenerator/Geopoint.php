@@ -25,7 +25,7 @@ class Geopoint extends Base
 
         return [
             'arg' => $this->getGraphQlService()->getDataObjectTypeDefinition('geopoint_input'),
-            'processor' => [$processor, 'process']
+            'processor' => [$processor, 'process'],
         ];
     }
 }

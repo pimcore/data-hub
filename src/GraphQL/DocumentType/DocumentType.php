@@ -26,7 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class DocumentType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
     use ServiceTrait;
 
     protected $types;
@@ -62,12 +61,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     protected $customTypes;
 
     /**
-     * @param Service $graphQlService
-     * @param PageType $pageType
-     * @param LinkType $linkType
-     * @param EmailType $emailType
-     * @param HardlinkType $hardlinkType
-     * @param SnippetType $snippetType
      * @param array $config
      */
     public function __construct(Service $graphQlService, PageType $pageType, LinkType $linkType, EmailType $emailType, HardlinkType $hardlinkType, SnippetType $snippetType, $config = [])
@@ -85,7 +78,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
     }
 
     /**
-     * @return array
      *
      * @throws \Exception
      */
@@ -110,9 +102,6 @@ class DocumentType extends UnionType implements ContainerAwareInterface
         return $this->customTypes;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolveType($element, $context, ResolveInfo $info)
     {
         $element = Document::getById($element['id']);

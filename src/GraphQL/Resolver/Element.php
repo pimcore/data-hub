@@ -49,7 +49,6 @@ class Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|null
      *
@@ -71,9 +70,6 @@ class Element
 
     /**
      * @param array            $value
-     * @param array            $args
-     * @param array            $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array|Property[]|null
      *
@@ -108,7 +104,6 @@ class Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return ElementDescriptor|null
      *
@@ -131,7 +126,6 @@ class Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *
@@ -153,7 +147,6 @@ class Element
      * @param array $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return array
      *

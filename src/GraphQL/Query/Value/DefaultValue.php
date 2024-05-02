@@ -24,7 +24,6 @@ class DefaultValue extends AbstractValue
 {
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
      */

@@ -28,7 +28,6 @@ class ImageGallery extends Base
      * @param mixed $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @throws \Exception
      */

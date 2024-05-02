@@ -27,7 +27,6 @@ class RelationType extends ObjectType
     protected static $instance;
 
     /**
-     * @param Service $graphQlService
      *
      * @return RelationType
      *
@@ -48,7 +47,7 @@ class RelationType extends ObjectType
                                 if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -56,7 +55,7 @@ class RelationType extends ObjectType
                                 if ($value instanceof Relation) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'id' => [
                             'type' => Type::int(),
@@ -64,7 +63,7 @@ class RelationType extends ObjectType
                                 if ($value instanceof Relation) {
                                     return $value->getId();
                                 }
-                            }
+                            },
                         ],
                         'type' => [
                             'type' => Type::string(),
@@ -72,7 +71,7 @@ class RelationType extends ObjectType
                                 if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'subtype' => [
                             'type' => Type::string(),
@@ -80,7 +79,7 @@ class RelationType extends ObjectType
                                 if ($value instanceof Relation) {
                                     return $value->getSubtype();
                                 }
-                            }
+                            },
                         ],
                         'relation' => [
                             'type' => $anyTargetType,
@@ -94,9 +93,9 @@ class RelationType extends ObjectType
                                         return $desc;
                                     }
                                 }
-                            }
-                        ]
-                    ]
+                            },
+                        ],
+                    ],
                 ];
             self::$instance = new static($config);
         }

@@ -24,7 +24,6 @@ class LinkType extends ObjectType
     protected static $instance;
 
     /**
-     * @param LinkDataType $linkDataType
      *
      * @return static
      */
@@ -41,7 +40,7 @@ class LinkType extends ObjectType
                                 if ($value) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -49,13 +48,13 @@ class LinkType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'data' => [
                             'type' => $linkDataType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
                                 return $value;
-                            }
+                            },
                         ],
                     ],
                 ];

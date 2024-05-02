@@ -54,10 +54,6 @@ class QueryType extends ObjectType
     protected $modelFactory;
 
     /**
-     * @param Service $graphQlService
-     * @param LocaleServiceInterface $localeService
-     * @param Factory $modelFactory
-     * @param EventDispatcherInterface $eventDispatcher
      * @param array $config
      * @param array $context
      *
@@ -107,7 +103,7 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $graphQlType,
-                'resolve' => [$resolver, 'resolve' . ucfirst($type) . 'FolderGetter']
+                'resolve' => [$resolver, 'resolve' . ucfirst($type) . 'FolderGetter'],
             ];
 
             $config['fields']['get' . ucfirst($type) . 'Folder'] = $defGet;
@@ -138,7 +134,7 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $assetType,
-                'resolve' => [$resolver, 'resolveAssetGetter']
+                'resolve' => [$resolver, 'resolveAssetGetter'],
             ];
 
             $config['fields']['getAsset'] = $defGet;
@@ -168,7 +164,7 @@ class QueryType extends ObjectType
                     'defaultLanguage' => ['type' => Type::string()],
                 ],
                 'type' => $this->getGraphQlService()->getDocumentTypeDefinition('document'),
-                'resolve' => [$resolver, 'resolveDocumentGetter']
+                'resolve' => [$resolver, 'resolveDocumentGetter'],
             ];
 
             $config['fields']['getDocument'] = $defGet;
@@ -205,6 +201,7 @@ class QueryType extends ObjectType
             $class = ClassDefinition::getByName($entity);
             if (!$class) {
                 Logger::error('class ' . $entity . ' not found');
+
                 continue;
             }
 
@@ -231,7 +228,7 @@ class QueryType extends ObjectType
                         'cursor' => Type::string(),
                         'node' => [
                             'type' => ClassTypeDefinitions::get($class),
-                            'resolve' => [$resolver, 'resolveEdge']
+                            'resolve' => [$resolver, 'resolveEdge'],
                         ],
                     ],
                 ]
@@ -244,14 +241,14 @@ class QueryType extends ObjectType
 
                         'edges' => [
                             'type' => Type::listOf($edgeType),
-                            'resolve' => [$resolver, 'resolveEdges']
+                            'resolve' => [$resolver, 'resolveEdges'],
                         ],
                         'totalCount' => [
                             'description' => 'The total count of all queryable objects for this schema listing',
                             'resolve' => [$resolver, 'resolveListingTotalCount'],
-                            'type' => Type::int()
-                        ]
-                    ]
+                            'type' => Type::int(),
+                        ],
+                    ],
                 ]
             );
 
@@ -261,7 +258,7 @@ class QueryType extends ObjectType
                     'ids' => ['type' => Type::string()],
                     'fullpaths' => [
                         'type' => Type::string(),
-                        'description' => 'Comma separated list of fullpath'
+                        'description' => 'Comma separated list of fullpath',
                     ],
                     'tags' => ['type' => Type::string(),  'description' => 'Comma separated list of tag names'],
                     'defaultLanguage' => ['type' => Type::string()],
@@ -313,7 +310,7 @@ class QueryType extends ObjectType
                     'cursor' => Type::string(),
                     'node' => [
                         'type' => $assetTree,
-                        'resolve' => [$listResolver, 'resolveEdge']
+                        'resolve' => [$listResolver, 'resolveEdge'],
                     ],
                 ],
             ]
@@ -325,14 +322,14 @@ class QueryType extends ObjectType
                 'fields' => [
                     'edges' => [
                         'type' => Type::listOf($edgeType),
-                        'resolve' => [$listResolver, 'resolveEdges']
+                        'resolve' => [$listResolver, 'resolveEdges'],
                     ],
                     'totalCount' => [
                         'description' => 'The total count of all queryable assets for this schema listing',
                         'resolve' => [$listResolver, 'resolveListingTotalCount'],
-                        'type' => Type::int()
-                    ]
-                ]
+                        'type' => Type::int(),
+                    ],
+                ],
             ]
         );
 
@@ -342,7 +339,7 @@ class QueryType extends ObjectType
                 'ids' => ['type' => Type::string()],
                 'fullpaths' => [
                     'type' => Type::string(),
-                    'description' => 'Comma separated list of fullpath'
+                    'description' => 'Comma separated list of fullpath',
                 ],
                 'defaultLanguage' => ['type' => Type::string()],
                 'first' => ['type' => Type::int()],
@@ -380,15 +377,15 @@ class QueryType extends ObjectType
                     'key' => ['type' => Type::string()],
                     'languages' => [
                         'type' => Type::string(),
-                        'description' => 'e.g.: "en,de,fr ..."'
+                        'description' => 'e.g.: "en,de,fr ..."',
                     ],
                     'domain' => [
                         'type' => Type::string(),
-                        'description' => 'default value: messages'
+                        'description' => 'default value: messages',
                     ],
                 ],
                 'type' => $translationType,
-                'resolve' => [$resolver, 'resolveTranslationGetter']
+                'resolve' => [$resolver, 'resolveTranslationGetter'],
             ];
 
             $config['fields']['getTranslation'] = $defGet;
@@ -414,7 +411,7 @@ class QueryType extends ObjectType
                     'cursor' => Type::string(),
                     'node' => [
                         'type' => $translation,
-                        'resolve' => [$listResolver, 'resolveEdge']
+                        'resolve' => [$listResolver, 'resolveEdge'],
                     ],
                 ],
             ]
@@ -426,14 +423,14 @@ class QueryType extends ObjectType
                 'fields' => [
                     'edges' => [
                         'type' => Type::listOf($edgeType),
-                        'resolve' => [$listResolver, 'resolveEdges']
+                        'resolve' => [$listResolver, 'resolveEdges'],
                     ],
                     'totalCount' => [
                         'description' => 'The total count of all queryable translations for this schema listing',
                         'resolve' => [$listResolver, 'resolveListingTotalCount'],
-                        'type' => Type::int()
-                    ]
-                ]
+                        'type' => Type::int(),
+                    ],
+                ],
             ]
         );
 
@@ -442,11 +439,11 @@ class QueryType extends ObjectType
             'args' => [
                 'keys' => [
                     'type' => Type::string(),
-                    'description' => 'e.g.: "key-1,key 2,key_3"'
+                    'description' => 'e.g.: "key-1,key 2,key_3"',
                 ],
                 'languages' => [
                     'type' => Type::string(),
-                    'description' => 'e.g.: "en,de,fr ..."'
+                    'description' => 'e.g.: "en,de,fr ..."',
                 ],
                 'first' => ['type' => Type::int()],
                 'after' => ['type' => Type::int()],
@@ -457,7 +454,7 @@ class QueryType extends ObjectType
                 ],
                 'domain' => [
                     'type' => Type::string(),
-                    'description' => 'default value: messages'
+                    'description' => 'default value: messages',
                 ],
             ],
             'type' => $listingType,

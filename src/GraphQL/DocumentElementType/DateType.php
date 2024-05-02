@@ -41,7 +41,7 @@ class DateType extends ObjectType
                                 if ($value instanceof Date) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
@@ -49,7 +49,7 @@ class DateType extends ObjectType
                                 if ($value instanceof Date) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         'timestamp' => [
                             'type' => Type::int(),
@@ -60,7 +60,7 @@ class DateType extends ObjectType
                                         return $data->getTimestamp();
                                     }
                                 }
-                            }
+                            },
                         ],
                         'formatted' => [
                             'type' => Type::string(),
@@ -75,8 +75,8 @@ class DateType extends ObjectType
                                         return $formattedValue;
                                     }
                                 }
-                            }
-                        ]
+                            },
+                        ],
                     ],
                 ];
             self::$instance = new static($config);

@@ -27,7 +27,6 @@ class DateFormatter extends AbstractOperator
     private $format;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config, $context = null)
@@ -39,7 +38,6 @@ class DateFormatter extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass
      *

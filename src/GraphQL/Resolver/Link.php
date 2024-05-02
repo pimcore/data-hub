@@ -26,7 +26,6 @@ class Link
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -41,7 +40,6 @@ class Link
      * @param mixed $value
      * @param array $args
      * @param array $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return string|null
      *
@@ -53,10 +51,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -66,10 +60,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -79,10 +69,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -92,10 +78,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -105,10 +87,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -118,10 +96,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -131,10 +105,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -144,10 +114,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -157,10 +123,6 @@ class Link
     }
 
     /**
-     * @param $value
-     * @param $args
-     * @param $context
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return null
      */
@@ -170,8 +132,6 @@ class Link
     }
 
     /**
-     * @param \Pimcore\Model\DataObject\Data\Link|null $value
-     * @param string $property
      *
      * @return null
      */

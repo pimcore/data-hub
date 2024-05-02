@@ -34,47 +34,47 @@ class LinkType extends ObjectType
                     'fields' => [
                         'text' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveText']
+                            'resolve' => [$resolver, 'resolveText'],
                         ],
                         'path' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolvePath']
+                            'resolve' => [$resolver, 'resolvePath'],
                         ],
                         'target' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveTarget']
+                            'resolve' => [$resolver, 'resolveTarget'],
                         ],
                         'anchor' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveAnchor']
+                            'resolve' => [$resolver, 'resolveAnchor'],
                         ],
                         'title' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveTitle']
+                            'resolve' => [$resolver, 'resolveTitle'],
                         ],
                         'accesskey' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveAccesskey']
+                            'resolve' => [$resolver, 'resolveAccesskey'],
                         ],
                         'rel' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveRel']
+                            'resolve' => [$resolver, 'resolveRel'],
                         ],
                         'class' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveClass']
+                            'resolve' => [$resolver, 'resolveClass'],
                         ],
                         'attributes' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveAttributes']
+                            'resolve' => [$resolver, 'resolveAttributes'],
                         ],
                         'tabindex' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveTabindex']
+                            'resolve' => [$resolver, 'resolveTabindex'],
                         ],
                         'parameters' => [
                             'type' => Type::string(),
-                            'resolve' => [$resolver, 'resolveParameters']
+                            'resolve' => [$resolver, 'resolveParameters'],
                         ],
                     ],
                 ];

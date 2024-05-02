@@ -36,18 +36,18 @@ class CsFeature
                         'name' => 'csFeatureInterface',
                         'fields' => [
                             'id' => [
-                                'type' => Type::int()
+                                'type' => Type::int(),
                             ],
                             'name' => [
-                                'type' => Type::string()
+                                'type' => Type::string(),
                             ],
                             'type' => [
-                                'type' => Type::string()
+                                'type' => Type::string(),
                             ],
                             'description' => [
-                                'type' => Type::string()
-                            ]
-                        ]
+                                'type' => Type::string(),
+                            ],
+                        ],
                     ]
 
                 );

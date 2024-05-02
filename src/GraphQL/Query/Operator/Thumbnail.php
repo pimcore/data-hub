@@ -24,7 +24,6 @@ class Thumbnail extends AbstractOperator
     private $thumbnailConfig;
 
     /**
-     * @param array $config
      * @param array|null $context
      */
     public function __construct(array $config = [], $context = null)
@@ -36,7 +35,6 @@ class Thumbnail extends AbstractOperator
 
     /**
      * @param ElementInterface|null $element
-     * @param ResolveInfo|null $resolveInfo
      *
      * @return \stdClass|null
      */

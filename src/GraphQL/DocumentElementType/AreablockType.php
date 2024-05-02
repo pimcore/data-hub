@@ -25,7 +25,6 @@ class AreablockType extends ObjectType
     protected static $instance;
 
     /**
-     * @param AreablockDataType $areablockDataType
      *
      * @return static
      */
@@ -42,7 +41,7 @@ class AreablockType extends ObjectType
                                 if ($value) {
                                     return $value->getType();
                                 }
-                            }
+                            },
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
@@ -50,7 +49,7 @@ class AreablockType extends ObjectType
                                 if ($value) {
                                     return $value->getName();
                                 }
-                            }
+                            },
                         ],
                         'data' => [
                             'type' => Type::listOf($areablockDataType),
@@ -58,7 +57,7 @@ class AreablockType extends ObjectType
                                 if ($value instanceof Areablock) {
                                     return $value->getData();
                                 }
-                            }
+                            },
                         ],
 
                     ],

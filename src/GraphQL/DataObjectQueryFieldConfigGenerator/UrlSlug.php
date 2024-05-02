@@ -20,10 +20,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class UrlSlug extends Base
 {
-    /**
-     * @inheritdoc
-     *
-     */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         return Type::listOf($this->getGraphQlService()->getDataObjectTypeDefinition('url_slug'));

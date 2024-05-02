@@ -23,8 +23,6 @@ use Symfony\Component\Routing\RouterInterface;
 class GraphQLExplorerController extends AbstractController
 {
     /**
-     * @param RouterInterface $routingService
-     * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *
@@ -48,7 +46,7 @@ class GraphQLExplorerController extends AbstractController
 
         $response = $this->render('@PimcoreDataHub/Feature/explorer.html.twig', [
             'graphQLUrl' => $url,
-            'tokenHeader' => CheckConsumerPermissionsService::TOKEN_HEADER
+            'tokenHeader' => CheckConsumerPermissionsService::TOKEN_HEADER,
         ]);
 
         $response->setPublic();

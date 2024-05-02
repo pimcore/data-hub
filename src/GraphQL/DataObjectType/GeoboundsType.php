@@ -33,11 +33,11 @@ class GeoboundsType extends ObjectType
                     'fields' => [
                         'northEast' => [
                             'type' => GeopointType::getInstance(),
-                            'resolve' => [$resolver, 'resolveNorthEast']
+                            'resolve' => [$resolver, 'resolveNorthEast'],
                         ],
                         'southWest' => [
                             'type' => GeopointType::getInstance(),
-                            'resolve' => [$resolver, 'resolveSouthWest']
+                            'resolve' => [$resolver, 'resolveSouthWest'],
                         ],
 
                     ],

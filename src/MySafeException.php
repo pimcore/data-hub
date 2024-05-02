@@ -28,7 +28,6 @@ class MySafeException extends \Exception implements ClientAware
      * @param string|null $category
      * @param string $message
      * @param int $code
-     * @param \Throwable|null $previous
      */
     public function __construct($category = null, $message = '', $code = 0, \Throwable $previous = null)
     {
@@ -36,9 +35,6 @@ class MySafeException extends \Exception implements ClientAware
         parent::__construct($message, $code, $previous);
     }
 
-    /**
-     * @return bool
-     */
     public function isClientSafe(): bool
     {
         return true;

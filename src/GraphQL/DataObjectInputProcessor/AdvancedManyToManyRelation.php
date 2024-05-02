@@ -32,7 +32,6 @@ class AdvancedManyToManyRelation extends Base
      * @param array $newValue
      * @param array $args
      * @param array $context
-     * @param ResolveInfo $info
      *
      * @throws \Exception
      */

@@ -22,8 +22,11 @@ use Pimcore\Model\Element\Service;
 trait ElementIdentificationTrait
 {
     private $typeKey = 'type';
+
     private $idKey = 'id';
+
     private $fullpathKey = 'fullpath';
+
     private $supportedTypes = ['object', 'asset', 'document'];
 
     /**

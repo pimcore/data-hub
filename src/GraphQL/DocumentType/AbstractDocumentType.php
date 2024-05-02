@@ -26,7 +26,6 @@ abstract class AbstractDocumentType extends ObjectType
     use ServiceTrait;
 
     /**
-     * @param Service $graphQlService
      * @param array $config
      */
     public function __construct(Service $graphQlService, $config = [])
@@ -57,13 +56,13 @@ abstract class AbstractDocumentType extends ObjectType
         $config['fields'] = [
             'creationDate' => Type::int(),
             'id' => ['name' => 'id',
-                'type' => Type::id()
+                'type' => Type::id(),
             ],
             'fullpath' => [
                 'type' => Type::string()],
             'modificationDate' => Type::int(),
             'published' => ['name' => 'published',
-                'type' => Type::boolean()
+                'type' => Type::boolean(),
             ],
             'type' => Type::string(),
             'controller' => Type::string(),
@@ -74,17 +73,17 @@ abstract class AbstractDocumentType extends ObjectType
                 'args' => [
                     'name' => ['type' => Type::string()],
                 ],
-                'resolve' => [$resolver, 'resolveTag']
+                'resolve' => [$resolver, 'resolveTag'],
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names'
-                    ]
+                        'description' => 'comma seperated list of key names',
+                    ],
                 ],
-                'resolve' => [$resolver, 'resolveProperties']
+                'resolve' => [$resolver, 'resolveProperties'],
             ],
             'parent' => [
                 'type' => $documentTree,
@@ -102,7 +101,7 @@ abstract class AbstractDocumentType extends ObjectType
                 'args' => ['defaultLanguage' => ['type' => Type::string()]],
                 'type' => Type::listOf($documentTranslation),
                 'resolve' => [$documentResolver, 'resolveTranslations'],
-            ]
+            ],
         ];
     }
 }
