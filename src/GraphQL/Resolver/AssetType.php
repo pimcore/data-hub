@@ -363,6 +363,9 @@ class AssetType
         return $asset->getDuration();
     }
 
+     /**
+     * @throws Exception
+     */
     public function resolveVersion($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
