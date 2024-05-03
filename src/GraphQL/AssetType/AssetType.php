@@ -147,6 +147,10 @@ class AssetType extends ObjectType
             'modificationDate' => Type::int(),
             'type' => Type::string(),
             'filesize' => Type::int(),
+            'version' => [
+                'type' => Type::int(),
+                'resolve' => [$resolver, 'resolveVersion'],
+            ],
             'data' => [
                 'type' => Type::string(),
                 'args' => [

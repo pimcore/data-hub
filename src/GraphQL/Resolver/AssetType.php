@@ -356,6 +356,23 @@ class AssetType
     }
 
     /**
+     * @throws Exception
+     */
+    public function resolveVersion($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+        if ($asset) {
+            foreach (array_reverse($asset->getVersions()) as $version) {
+                if ($asset->getModificationDate() === $version->getDate()) {
+                    return $version->getId();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param ElementDescriptor $value
      * @param array $context
      *
