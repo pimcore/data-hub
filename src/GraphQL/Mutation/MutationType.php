@@ -662,12 +662,12 @@ class MutationType extends ObjectType
                         } catch (DuplicateFullPathException $e) {
                             return [
                                 'success' => false,
-                                'message' => 'saving failed: Duplicate path',
+                                'message' => 'creating failed: Duplicate path',
                             ];
                         } catch (\Exception $e) {
                             return [
                                 'success' => false,
-                                'message' => 'saving failed: ' . $e->getMessage(),
+                                'message' => 'creating failed: ' . $e->getMessage(),
                             ];
                         }
 
