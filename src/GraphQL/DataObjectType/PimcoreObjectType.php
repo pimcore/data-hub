@@ -94,7 +94,7 @@ class PimcoreObjectType extends ObjectType
                     }
 
                     return null;
-                }
+                },
             ],
             'objectType' => [
                 'type' => Type::string(),
