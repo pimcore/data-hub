@@ -17,9 +17,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     showFieldname: true,
     data: {},
     brickKeys: [],
+    selectedItems: [],
 
     initialize: function (type, generalConfig, columnConfig, callback, settings) {
-
         this.type = type;
         this.generalConfig = generalConfig || {};
         this.columnConfig = columnConfig || {};
@@ -29,19 +29,20 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         this.settings = settings || {};
 
         if (!this.callback) {
-            this.callback = function () {
-            };
+            this.callback = function () {};
         }
+
+        this.selectedItems = [];
+        this.selectedConfigItems = [];
 
         this.configPanel = new Ext.Panel({
             layout: "border",
             iconCls: "pimcore_icon_table",
             title: t("plugin_pimcore_datahub_configpanel_fields"),
             items: [
-                this.getSelectionPanel(), this.getLeftPanel()]
-
+                this.getSelectionPanel(), this.getLeftPanel()
+            ]
         });
-
 
         var tabs = [this.configPanel];
 
@@ -54,13 +55,20 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         buttons = [];
 
         buttons.push({
-                text: t("apply"),
-                iconCls: "pimcore_icon_apply",
-                handler: function () {
-                    this.commitData();
-                }.bind(this)
-            }
-        );
+            text: t("plugin_pimcore_datahub_add_all_definitions"),
+            iconCls: "pimcore_icon_add",
+            handler: function () {
+                this.addAllDefinitions();
+            }.bind(this)
+        });
+
+        buttons.push({
+            text: t("apply"),
+            iconCls: "pimcore_icon_apply",
+            handler: function () {
+                this.commitData();
+            }.bind(this)
+        });
 
         this.window = new Ext.Window({
             width: 950,
@@ -92,8 +100,6 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                         }
                     }
                     elements.push(treenode);
-                } else {
-                    console.log("config element not found");
                 }
             }
         }
@@ -215,6 +221,36 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
     },
 
+    addAllDefinitions: function () {
+        var addNode = function (node) {
+            if (!node.data.root && node.data.type != "layout" && node.data.dataType != 'localizedfields' && node.data.dataType != 'system') {
+                if (!this.selectionPanel.getRootNode().findChild("key", node.data.key)) {
+                    var copy = Ext.apply({}, node.data);
+                    delete copy.id;
+                    var addedNode = this.selectionPanel.getRootNode().appendChild(copy);
+                    var viewNode = this.selectionPanel.getView().getNode(addedNode);
+                    if (viewNode) {
+                        viewNode.style.backgroundColor = '';
+                    }
+                }
+            }
+        }.bind(this);
+
+        var processNode = function (node) {
+            addNode(node);
+            if (node.hasChildNodes()) {
+                node.eachChild(function (child) {
+                    processNode(child);
+                });
+            }
+        };
+
+        var classDefinitionTree = this.classDefinitionTreePanel.getRootNode();
+        classDefinitionTree.eachChild(function (child) {
+            processNode(child);
+        });
+    },
+
     openConfigDialog: function (element, copy) {
         var window = element.getConfigDialog(copy, null);
 
@@ -226,9 +262,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
     },
 
-
     getSelectionPanel: function () {
         if (!this.selectionPanel) {
+            this.selectedConfigItems = [];
 
             var children = [];
             for (var i = 0; i < this.columnConfig.columns.length; i++) {
@@ -271,8 +307,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
             var store = new Ext.data.TreeStore({
                 fields: [{
                     name: "text"
-                }
-                ],
+                }],
                 root: {
                     id: "0",
                     root: true,
@@ -298,137 +333,28 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                             var target = overModel.getOwnerTree().getView();
                             var source = data.view;
 
-                            if (target != source) {
-                                var record = data.records[0];
-                                var isOperator = record.data.isOperator;
-                                var realOverModel = overModel;
-                                if (dropPosition == "before" || dropPosition == "after") {
-                                    realOverModel = overModel.parentNode;
+                            var records = this.selectedItems.length > 0 ? this.selectedItems : data.records;
+
+                            var dragData = [];
+                            records.forEach(function (record) {
+                                if (!this.selectionPanel.getRootNode().findChild("key", record.data.key)) {
+                                    var copy = Ext.apply({}, record.data);
+                                    delete copy.id;
+                                    copy = record.createNode(copy);
+                                    dragData.push(copy);
                                 }
+                            }.bind(this));
 
-                                if (isOperator || this.parentIsOperator(realOverModel)) {
-                                    var attr = record.data;
-                                    if (record.data.configAttributes) {
-                                        attr = record.data.configAttributes;
-                                    }
-                                    var elementConfig = {
-                                        "isOperator": true,
-                                        "attributes": attr
-                                    }
-
-                                    var element = this.getConfigElement(elementConfig);
-                                    var copy = element.getCopyNode(record);
-                                    data.records = [copy]; // assign the copy as the new dropNode
-                                    this.openConfigDialog(element, copy);
-                                } else {
-
-                                    if (!this.checkSupported(record)) {
-                                        dropHandlers.cancelDrop();
-                                        return false;
-                                    }
-
-
-                                    if (this.selectionPanel.getRootNode().findChild("key", record.data.key)) {
-                                        dropHandlers.cancelDrop();
-                                    } else {
-                                        var copy = Ext.apply({}, record.data);
-                                        delete copy.id;
-                                        copy = record.createNode(copy);
-
-                                        var ownerTree = this.selectionPanel;
-
-
-                                        //TODO in case this ever get's reintegrated in to the core,
-                                        // we don't support this on key level !
-                                        // if (record.data.dataType == "classificationstore") {
-                                        //     setTimeout(function () {
-                                        //         var ccd = new pimcore.object.classificationstore.columnConfigDialog();
-                                        //         ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
-                                        //     }.bind(this), 100);
-                                        // }
-                                        data.records = [copy]; // assign the copy as the new dropNode
-                                    }
-                                }
-                            } else {
-                                // node has been moved inside right selection panel
-                                var record = data.records[0];
-                                var isOperator = record.data.isOperator;
-                                var realOverModel = overModel;
-                                if (dropPosition == "before" || dropPosition == "after") {
-                                    realOverModel = overModel.parentNode;
-                                }
-
-                                if (isOperator || this.parentIsOperator(realOverModel)) {
-                                    var attr = record.data;
-                                    if (record.data.configAttributes) {
-                                        // there is nothing to do, this guy has been configured already
-                                        return;
-                                        // attr = record.data.configAttributes;
-                                    }
-                                    var element = this.getConfigElement(attr);
-
-                                    var copy = element.getCopyNode(record);
-                                    data.records = [copy]; // assign the copy as the new dropNode
-
-                                    this.openConfigDialog(element, copy);
-
-                                    record.parentNode.removeChild(record);
-                                }
+                            if (dragData.length === 0) {
+                                dropHandlers.cancelDrop();
+                                return false;
                             }
+
+                            data.records = dragData;
                         }.bind(this),
-                        drop: function (node, data, overModel) {
-                            overModel.set('expandable', true);
-
-                        }.bind(this),
-                        nodedragover: function (targetNode, dropPosition, dragData, e, eOpts) {
-                            var sourceNode = dragData.records[0];
-
-                            if (sourceNode.data.isOperator) {
-                                var realOverModel = targetNode;
-                                if (dropPosition == "before" || dropPosition == "after") {
-                                    realOverModel = realOverModel.parentNode;
-                                }
-
-                                var sourceType = this.getNodeTypeAndClass(sourceNode);
-                                var targetType = this.getNodeTypeAndClass(realOverModel);
-                                var allowed = true;
-
-
-                                if (typeof realOverModel.data.isChildAllowed == "function") {
-                                    allowed = allowed && realOverModel.data.isChildAllowed(realOverModel, sourceNode);
-                                }
-
-                                if (typeof sourceNode.data.isParentAllowed == "function") {
-                                    allowed = allowed && sourceNode.data.isParentAllowed(realOverModel, sourceNode);
-                                }
-
-
-                                return allowed;
-                            } else {
-                                var targetNode = targetNode;
-
-                                var allowed = true;
-                                if (this.parentIsOperator(targetNode)) {
-                                    if (dropPosition == "before" || dropPosition == "after") {
-                                        targetNode = targetNode.parentNode;
-                                    }
-
-                                    if (typeof targetNode.data.isChildAllowed == "function") {
-                                        allowed = allowed && targetNode.data.isChildAllowed(targetNode, sourceNode);
-                                    }
-
-                                    if (typeof sourceNode.data.isParentAllowed == "function") {
-                                        allowed = allowed && sourceNode.data.isParentAllowed(targetNode, sourceNode);
-                                    }
-
-                                }
-
-                                return allowed;
-                            }
-                        }.bind(this),
-                        options: {
-                            target: this.selectionPanel
-                        }
+                        afteritemexpand: function (node) {
+                            this.reapplySelectionStyles();
+                        }.bind(this)
                     }
                 },
                 id: 'tree',
@@ -441,11 +367,35 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                 rowLines: true,
                 columnLines: true,
                 listeners: {
-                    itemcontextmenu: this.onTreeNodeContextmenu.bind(this)
+                    itemcontextmenu: this.onTreeNodeContextmenu.bind(this),
+                    itemclick: function (view, record, item, index, event, eOpts) {
+                        if (!record.data.root && record.data.type != "layout" && record.data.dataType != 'localizedfields') {
+                            if (event.ctrlKey || event.metaKey) {
+                                var isSelected = this.selectedConfigItems.some(function (selected) {
+                                    return selected.id === record.id;
+                                });
+                                if (isSelected) {
+                                    item.style.backgroundColor = '';
+                                    this.selectedConfigItems = this.selectedConfigItems.filter(function (selected) {
+                                        return selected.id !== record.id;
+                                    });
+                                } else {
+                                    item.style.backgroundColor = 'rgb(242, 227, 178)';
+                                    this.selectedConfigItems.push(record);
+                                }
+                            } else {
+                                var items = view.getNodes();
+                                items.forEach(function (node) {
+                                    node.style.backgroundColor = '';
+                                });
+                                this.selectedConfigItems = [];
+                            }
+                        }
+                    }.bind(this)
                 },
                 columns: [
                     {
-                        xtype: 'treecolumn',                    //this is so we know which column will show the tree
+                        xtype: 'treecolumn',
                         text: t('configuration'),
                         dataIndex: 'text',
                         flex: 90
@@ -460,6 +410,16 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
 
         return this.selectionPanel;
+    },
+
+    reapplySelectionStyles: function () {
+        var view = this.selectionPanel.getView();
+        this.selectedConfigItems.forEach(function (record) {
+            var viewNode = view.getNode(record);
+            if (viewNode) {
+                viewNode.style.backgroundColor = 'rgb(242, 227, 178)';
+            }
+        });
     },
 
     parentIsOperator: function (record) {
@@ -495,9 +455,21 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
             menu.add(new Ext.menu.Item({
                 text: t('delete'),
                 iconCls: "pimcore_icon_delete",
-                handler: function (node) {
-                    record.parentNode.removeChild(record, true);
-                }.bind(this, record)
+                handler: function () {
+                    var selectedNodes = this.selectedConfigItems.length > 0 ? this.selectedConfigItems : [record];
+                    selectedNodes.forEach(function (node) {
+                        if (node.parentNode) {
+                            node.remove(true);
+                        }
+                    });
+                    this.selectedConfigItems = this.selectedConfigItems.filter(function (selected) {
+                        return selectedNodes.indexOf(selected) === -1;
+                    });
+
+                    if (record.data.root) {
+                        record.removeAll(true);
+                    }
+                }.bind(this)
             }));
 
             if (record.data.children && record.data.children.length > 0) {
@@ -526,13 +498,12 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                         var nodeConfig = {
                             "isOperator": node.data.isOperator,
                             "attributes": node.data.configAttributes
-                        }
-                        this.getConfigElement(nodeConfig).getConfigDialog(node,
-                            {
-                                callback: function () {
-                                    console.log("callback not needed for now");
-                                }.bind(this)
-                            });
+                        };
+                        this.getConfigElement(nodeConfig).getConfigDialog(node, {
+                            callback: function () {
+                                console.log("callback not needed for now");
+                            }.bind(this)
+                        });
                     }.bind(this, record)
                 }));
             }
@@ -541,30 +512,99 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         menu.showAt(e.pageX, e.pageY);
     },
 
-
     getClassDefinitionTreePanel: function () {
         if (!this.classDefinitionTreePanel) {
-
-            var items = [];
-
             this.brickKeys = [];
-            this.classDefinitionTreePanel = this.getClassTree("/admin/class/get-class-definition-for-column-config",
-                this.generalConfig.classId, this.generalConfig.objectId);
+            this.classDefinitionTreePanel = this.getClassTree("/admin/class/get-class-definition-for-column-config", this.generalConfig.classId, this.generalConfig.objectId);
+
+            this.classDefinitionTreePanel.on('itemclick', function (view, record, item, index, event, eOpts) {
+                if (event.ctrlKey || event.metaKey) {
+                    if (record.data.root) {
+                        if (this.isNodeFullySelected(record)) {
+                            this.deselectNode(record);
+                        } else {
+                            this.selectNode(record);
+                        }
+                    } else if (record.data.type === 'layout' || record.data.dataType === 'localizedfields') {
+                        if (this.isNodeFullySelected(record)) {
+                            this.deselectNode(record);
+                        } else {
+                            this.selectNode(record);
+                        }
+                    } else {
+                        if (this.isNodeSelected(record)) {
+                            this.deselectNode(record);
+                        } else {
+                            this.selectNode(record);
+                        }
+                    }
+                } else {
+                    if (record.data.type !== 'layout' && record.data.dataType !== 'localizedfields') {
+                        this.clearSelection();
+                    }
+                }
+            }.bind(this));
+
+            this.classDefinitionTreePanel.on('afteritemexpand', function (node) {
+                this.reapplyClassTreeSelectionStyles();
+            }.bind(this));
         }
 
         return this.classDefinitionTreePanel;
     },
 
     getClassTree: function (url, classId, objectId) {
-
         var classTreeHelper = new pimcore.object.helpers.classTree(this.showFieldname, {
             showInvisible: true
         });
         var tree = classTreeHelper.getClassTree(url, classId, objectId);
 
-        tree.addListener("itemdblclick", function (tree, record, item, index, e, eOpts) {
-            if (!record.data.root && record.data.type != "layout" && record.data.dataType != 'localizedfields') {
+        Ext.apply(tree, {
+            multiSelect: true,
+            viewConfig: {
+                plugins: {
+                    ptype: 'treeviewdragdrop',
+                    ddGroup: "columnconfigelement",
+                    enableDrag: true,
+                    enableDrop: true
+                },
+                listeners: {
+                    itemclick: function(view, record, item, index, event, eOpts) {
+                        if (event.ctrlKey || event.metaKey) {
+                            if (record.data.root) {
+                                if (this.isNodeFullySelected(record)) {
+                                    this.deselectNode(record);
+                                } else {
+                                    this.selectNode(record);
+                                }
+                            } else if (record.data.type === 'layout' || record.data.dataType === 'localizedfields') {
+                                if (this.isNodeFullySelected(record)) {
+                                    this.deselectNode(record);
+                                } else {
+                                    this.selectNode(record);
+                                }
+                            } else {
+                                if (this.isNodeSelected(record)) {
+                                    this.deselectNode(record);
+                                } else {
+                                    this.selectNode(record);
+                                }
+                            }
+                        } else {
+                            if (record.data.type !== 'layout' && record.data.dataType !== 'localizedfields') {
+                                this.clearSelection();
+                            }
+                        }
+                    }.bind(this),
+                    afteritemexpand: function (node) {
+                        this.reapplyClassTreeSelectionStyles();
+                    }.bind(this)
+                }
+            }
+        });
 
+        tree.addListener("itemdblclick", function(tree, record, item, index, e, eOpts) {
+            if (!record.data.root && record.data.type != "layout" && record.data.dataType != 'localizedfields') {
                 if (!this.checkSupported(record)) {
                     return;
                 }
@@ -573,21 +613,104 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                 if (this.selectionPanel && !this.selectionPanel.getRootNode().findChild("key", record.data.key)) {
                     delete copy.id;
-                    copy = this.selectionPanel.getRootNode().appendChild(copy);
-
-                    var ownerTree = this.selectionPanel;
-
-                    // TODO same as above regarding the core
-                    // classificaton is stored on field level but on key level
-                    // if (record.data.dataType == "classificationstore") {
-                    //     var ccd = new pimcore.object.classificationstore.columnConfigDialog();
-                    //     ccd.getConfigDialog(ownerTree, copy, this.selectionPanel);
-                    // }
+                    this.selectionPanel.getRootNode().appendChild(copy);
                 }
             }
         }.bind(this));
 
         return tree;
+    },
+
+    isNodeSelected: function (node) {
+        return this.selectedItems.some(function (selected) {
+            return selected.id === node.id;
+        });
+    },
+
+    isNodeFullySelected: function (node) {
+        var allSelected = true;
+        var processNode = function (node) {
+            if (!node.data.root && node.data.type != "layout" && node.data.dataType != 'localizedfields') {
+                if (!this.isNodeSelected(node)) {
+                    allSelected = false;
+                    return;
+                }
+            }
+            if (node.hasChildNodes()) {
+                node.eachChild(function (child) {
+                    processNode(child);
+                });
+            }
+        }.bind(this);
+
+        processNode(node);
+        return allSelected;
+    },
+
+    selectNode: function (node) {
+        var processNode = function (node) {
+            if (!node.data.root && node.data.type != "layout" && node.data.dataType != 'localizedfields') {
+                if (!this.isNodeSelected(node)) {
+                    this.selectedItems.push(node);
+                    var viewNode = this.classDefinitionTreePanel.getView().getNode(node);
+                    if (viewNode) {
+                        viewNode.style.backgroundColor = 'rgb(242, 227, 178)';
+                    }
+                }
+            }
+            if (node.hasChildNodes()) {
+                node.eachChild(function (child) {
+                    processNode(child);
+                });
+            }
+        }.bind(this);
+
+        processNode(node);
+    },
+
+    deselectNode: function (node) {
+        var processNode = function (node) {
+            if (!node.data.root && node.data.type != "layout" && node.data.dataType != 'localizedfields') {
+                var index = this.selectedItems.findIndex(function (selected) {
+                    return selected.id === node.id;
+                });
+                if (index > -1) {
+                    this.selectedItems.splice(index, 1);
+                    var viewNode = this.classDefinitionTreePanel.getView().getNode(node);
+                    if (viewNode) {
+                        viewNode.style.backgroundColor = '';
+                    }
+                }
+            }
+            if (node.hasChildNodes()) {
+                node.eachChild(function (child) {
+                    processNode(child);
+                });
+            }
+        }.bind(this);
+
+        processNode(node);
+    },
+
+    clearSelection: function () {
+        var view = this.classDefinitionTreePanel.getView();
+        this.selectedItems.forEach(function (record) {
+            var viewNode = view.getNode(record);
+            if (viewNode) {
+                viewNode.style.backgroundColor = '';
+            }
+        });
+        this.selectedItems = [];
+    },
+
+    reapplyClassTreeSelectionStyles: function () {
+        var view = this.classDefinitionTreePanel.getView();
+        this.selectedItems.forEach(function (record) {
+            var viewNode = view.getNode(record);
+            if (viewNode) {
+                viewNode.style.backgroundColor = 'rgb(242, 227, 178)';
+            }
+        });
     },
 
     getOperatorTrees: function () {
