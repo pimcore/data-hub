@@ -55,7 +55,7 @@ class MigrateLegacyConfig extends AbstractCommand
     private function migrateConfiguration(string $fileName, string $scope): void
     {
         $configs = $this->loadLegacyConfigs($fileName);
-        $configs = $configs['list'];
+        $configs = $configs['list'] ?? [];
         foreach ($configs as $key => $config) {
             $id = $config['general']['name'];
             $this->migrateToSettingsStore((string)$id, $scope, $config);
@@ -63,8 +63,6 @@ class MigrateLegacyConfig extends AbstractCommand
     }
 
     /**
-     *
-     *
      * @return int|null
      *
      * @throws \Exception
