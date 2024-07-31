@@ -671,7 +671,6 @@ class MutationType extends ObjectType
                             ];
                         }
 
-
                         if ($tags) {
                             $me->setTags('object', $newInstance->getId(), $tags);
                         }
