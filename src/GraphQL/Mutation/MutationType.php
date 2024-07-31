@@ -657,7 +657,20 @@ class MutationType extends ObjectType
                             }
                         }
 
-                        $me->saveElement($newInstance, $args);
+                        try {
+                            $me->saveElement($newInstance, $args);
+                        } catch (DuplicateFullPathException $e) {
+                            return [
+                                'success' => false,
+                                'message' => 'creating failed: Duplicate path',
+                            ];
+                        } catch (\Exception $e) {
+                            return [
+                                'success' => false,
+                                'message' => 'creating failed: ' . $e->getMessage(),
+                            ];
+                        }
+
 
                         if ($tags) {
                             $me->setTags('object', $newInstance->getId(), $tags);
