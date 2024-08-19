@@ -1,8 +1,8 @@
 # Upgrade Notes
 
 ## 1.8.0
-- [General] Dropped support of Pimcore 10
-- [General] Replaced Request::get() with explicit input sources
+- [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
+- [General] Replaced Request::get() with explicit input sources.
 
 ## 1.7.0
 - [GraphQL] Deprecated SQL Condition.
