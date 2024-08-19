@@ -82,7 +82,7 @@ class OutputCacheService
     {
         if ($this->useCache($request)) {
             $cacheKey = $this->computeKey($request);
-            $clientname = $request->get('clientname');
+            $clientname = $request->attributes->getString('clientname');
             $extraTags = array_merge(['output', 'datahub', $clientname], $extraTags);
 
             $event = new OutputCachePreSaveEvent($request, $response);
@@ -115,7 +115,7 @@ class OutputCacheService
 
     private function computeKey(Request $request): string
     {
-        $clientname = $request->get('clientname');
+        $clientname = $request->attributes->getString('clientname');
 
         $input = json_decode($request->getContent(), true);
         $input = print_r($input, true);
