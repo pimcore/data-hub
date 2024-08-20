@@ -424,8 +424,6 @@ class Configuration extends AbstractModel
     /**
      * @internal
      *
-     * @param ?User $user
-     *
      * @return bool
      */
     public function isAllowed(string $type, ?User $user = null)

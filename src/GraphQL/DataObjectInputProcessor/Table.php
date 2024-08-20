@@ -91,7 +91,7 @@ class Table extends Base
             }
             $classDefinition = array_filter(
                 $brickDefinition->getClassDefinitions(),
-                static fn($classDefinition) => $classDefinition['classname'] === $object->getClassName()
+                static fn ($classDefinition) => $classDefinition['classname'] === $object->getClassName()
             );
             if (count($classDefinition) !== 1) {
                 throw new RuntimeException('Object brick class definition not found');
@@ -104,6 +104,7 @@ class Table extends Base
         }
 
         $getter = 'get' . ucfirst($attribute);
+
         return $object->$getter();
     }
 }
