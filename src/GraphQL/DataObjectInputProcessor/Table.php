@@ -19,8 +19,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
-use Pimcore\Model\DataObject\Objectbrick\Definition;
-use RuntimeException;
 
 class Table extends Base
 {
@@ -46,7 +44,19 @@ class Table extends Base
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
-        $currentTable = $this->getValueFromObject($object, $attribute);
+        $objectBrickParts = Service::parseObjectBrickFieldName($attribute);
+
+        if(empty($objectBrickParts)) {
+            $getter = 'get' . ucfirst($attribute);
+            $currentTable = $object->$getter();
+        } else {
+            $currentTable = Service::getValueFromObjectBrick(
+                $object,
+                $objectBrickParts['brickType'],
+                $objectBrickParts['brickKey'],
+                $objectBrickParts['brickDescriptor'] ?? null
+            );
+        }
 
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $currentTable) {
             $newTable = [];
@@ -78,33 +88,5 @@ class Table extends Base
 
             return null;
         });
-    }
-
-    private function getValueFromObject(Concrete|AbstractData $object, string $attribute): array
-    {
-        $parts = explode('~', $attribute);
-        if (count($parts) > 1) {
-            $brickType = $parts[0];
-            $brickDefinition = Definition::getByKey($brickType);
-            if(!$brickDefinition) {
-                throw new RuntimeException('Object brick definition not found');
-            }
-            $classDefinition = array_filter(
-                $brickDefinition->getClassDefinitions(),
-                static fn ($classDefinition) => $classDefinition['classname'] === $object->getClassName()
-            );
-            if (count($classDefinition) !== 1) {
-                throw new RuntimeException('Object brick class definition not found');
-            }
-            $key = $classDefinition[0]['fieldname'];
-            $brickGetter = 'get' . ucfirst($key);
-            $brickTableGetter = 'get' . $brickDefinition->getKey();
-
-            return $object->$brickGetter()->$brickTableGetter()->$brickTableGetter();
-        }
-
-        $getter = 'get' . ucfirst($attribute);
-
-        return $object->$getter();
     }
 }
