@@ -1211,7 +1211,7 @@ class Service
             return [
                 'brickType' => $brickType,
                 'brickKey' => $brickKey,
-                'brickDescriptor' => $brickDescriptor
+                'brickDescriptor' => $brickDescriptor,
             ];
         }
 
