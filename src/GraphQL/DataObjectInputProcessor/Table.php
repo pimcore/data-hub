@@ -44,8 +44,19 @@ class Table extends Base
     public function process($object, $newValue, $args, $context, ResolveInfo $info)
     {
         $attribute = $this->getAttribute();
-        $getter = 'get' . ucfirst($attribute);
-        $currentTable = $object->$getter();
+        $objectBrickParts = Service::parseObjectBrickFieldName($attribute);
+
+        if(empty($objectBrickParts)) {
+            $getter = 'get' . ucfirst($attribute);
+            $currentTable = $object->$getter();
+        } else {
+            $currentTable = Service::getValueFromObjectBrick(
+                $object,
+                $objectBrickParts['brickType'],
+                $objectBrickParts['brickKey'],
+                $objectBrickParts['brickDescriptor'] ?? null
+            );
+        }
 
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue, $currentTable) {
             $newTable = [];
