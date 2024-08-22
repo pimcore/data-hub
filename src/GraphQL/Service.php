@@ -53,6 +53,7 @@ use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
+use stdClass;
 
 class Service
 {
@@ -782,7 +783,7 @@ class Service
      * @param string|null $brickKey
      * @param Data|null $fieldDefinition
      *
-     * @return \stdclass, value and objectid where the value comes from
+     * @return stdclass, value and objectid where the value comes from
      */
     public static function getValueForObject($object, $key, $brickType = null, $brickKey = null, $fieldDefinition = null, $context = [], $brickDescriptor = null, $args = [])
     {
@@ -837,7 +838,7 @@ class Service
      * @param string $attribute
      * @param \Closure $callback
      *
-     * @return \stdclass|null
+     * @return stdclass|null
      *
      * @throws \Exception
      */
@@ -976,31 +977,18 @@ class Service
                     $blockData = call_user_func_array([$itemData, $blockGetter], $descriptorData['args'] ?? []);
                 }
             } elseif (isset($descriptorData['__brickType']) && $descriptorData['__brickType']) {
-                $context = ['object' => $object];
                 $brickDescriptor = $descriptorData['__brickDescriptor'] ?? null;
 
                 $brickType = $descriptorData['__brickType'];
                 $brickKey = $descriptorData['__brickKey'];
 
-                $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
-
-                $brickClass = Definition::getByKey($brickType);
-
-                if (!$brickClass) {
-                    return null;
-                }
-
-                $context['outerFieldname'] = $key;
-
-                $def = $brickClass->getFieldDefinition($brickKey, $context);
-
-                if (!$def) {
-                    return null;
-                }
-
-                if (!empty($key)) {
-                    $blockData = self::getValueForObject($object, $key, $brickType, $brickKey, $def, $context, $brickDescriptor, $descriptorData['args'] ?? []);
-                }
+                return self::getValueFromObjectBrick(
+                    $object,
+                    $brickType,
+                    $brickKey,
+                    $brickDescriptor,
+                    $descriptorData
+                );
             } else {
                 $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);
                 $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
@@ -1168,5 +1156,65 @@ class Service
         }
 
         return $enabled;
+    }
+
+    public static function getValueFromObjectBrick(
+        Concrete $object,
+        string $brickType,
+        string $brickKey,
+        string $brickDescriptor = null,
+        array $descriptorData = [],
+    ): stdClass|array|null {
+        $context = ['object' => $object];
+
+        $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+        $brickClass = Definition::getByKey($brickType);
+        if (!$brickClass) {
+            return null;
+        }
+
+        $context['outerFieldname'] = $key;
+        $def = $brickClass->getFieldDefinition($brickKey, $context);
+        if (!$def) {
+            return null;
+        }
+
+        if (!empty($key)) {
+            return self::getValueForObject(
+                $object,
+                $key,
+                $brickType,
+                $brickKey,
+                $def,
+                $context,
+                $brickDescriptor,
+                $descriptorData['args'] ?? []);
+        }
+
+        return null;
+    }
+
+    public static function parseObjectBrickFieldName(
+        string $fieldName
+    ): array {
+        $parts = explode('~', $fieldName);
+        if (count($parts) > 1) {
+            [$brickType, $brickKey] = $parts;
+            $brickDescriptor = null;
+
+            if (strpos($brickType, '?') !== false) {
+                $brickDescriptor = substr($brickType, 1);
+                $brickDescriptor = json_decode($brickDescriptor, true);
+                $brickType = $brickDescriptor['containerKey'];
+            }
+
+            return [
+                'brickType' => $brickType,
+                'brickKey' => $brickKey,
+                'brickDescriptor' => $brickDescriptor,
+            ];
+        }
+
+        return [];
     }
 }

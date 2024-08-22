@@ -25,7 +25,7 @@ class Table extends Base
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $fieldName = $nodeDef['attributes']['attribute'];
-        $tableDef = $class->getFieldDefinition($fieldName);
+        $tableDef = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $fieldName);
         $inputItems = [];
         $numCols = 0;
 
