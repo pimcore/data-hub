@@ -92,7 +92,7 @@ class WebserviceController extends FrontendController
         Request $request,
         LongRunningHelper $longRunningHelper
     ) {
-        $clientname = $request->get('clientname');
+        $clientname = $request->attributes->getString('clientname');
 
         $configuration = Configuration::getByName($clientname);
         if (!$configuration || !$configuration->isActive()) {
@@ -167,12 +167,6 @@ class WebserviceController extends FrontendController
             $rootValue = [];
 
             $validators = null;
-            if ($request->get('novalidate')) {
-                // disable all validators except the listed ones
-                $validators = [
-//                    new NoUndefinedVariables()
-                ];
-            }
 
             $event = new ExecutorEvent(
                 $request,
@@ -184,7 +178,7 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues = $event->getRequest()->get('variables', $variableValues);
+                $variableValues = $event->getRequest()->request->get('variables', $variableValues);
             }
 
             $configAllowIntrospection = true;

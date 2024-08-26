@@ -141,7 +141,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         }
 
         try {
-            $name = $request->get('name');
+            $name = $request->query->getString('name');
 
             $config = Configuration::getByName($name);
             if (!$config instanceof Configuration) {
@@ -178,9 +178,9 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         }
 
         try {
-            $path = $request->get('path');
-            $name = $request->get('name');
-            $type = $request->get('type');
+            $path = $request->query->getString('path');
+            $name = $request->query->getString('name');
+            $type = $request->query->getString('type');
             $this->checkPermissionsHasOneOf(['plugin_datahub_admin', 'plugin_datahub_adapter_' . $type]);
 
             $config = Configuration::getByName($name);
@@ -208,14 +208,14 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         $this->checkPermission(self::CONFIG_NAME);
 
         try {
-            $name = $request->get('name');
+            $name = $request->query->getString('name');
 
             $config = Configuration::getByName($name);
             if ($config instanceof Configuration) {
                 throw new \Exception('Name already exists.');
             }
 
-            $originalName = $request->get('originalName');
+            $originalName = $request->query->getString('originalName');
             $originalConfig = Configuration::getByName($originalName);
             if (!$originalConfig) {
                 throw new \Exception('Configuration not found');
@@ -246,7 +246,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     {
         $this->checkPermission(self::CONFIG_NAME);
 
-        $name = $request->get('name');
+        $name = $request->query->getString('name');
 
         $configuration = Configuration::getByName($name);
         if (!$configuration) {
@@ -396,8 +396,8 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
         $this->checkPermission(self::CONFIG_NAME);
 
         try {
-            $data = $request->get('data');
-            $modificationDate = $request->get('modificationDate', 0);
+            $data = $request->request->getString('data');
+            $modificationDate = $request->request->getInt('modificationDate', 0);
 
             $dataDecoded = json_decode($data, true);
 
@@ -474,7 +474,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
      */
     public function getExplorerUrlAction(RouterInterface $routingService, Request $request): ?JsonResponse
     {
-        $name = $request->get('name');
+        $name = $request->query->getString('name');
 
         $url = $routingService->generate('admin_pimcoredatahub_config', ['clientname' => $name]);
         if ($url) {
@@ -515,7 +515,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
      */
     public function getPermissionUsersAction(Request $request)
     {
-        $type = $request->get('type', 'user');
+        $type = $request->query->getString('type', 'user');
 
         $list = new User\Listing();
         if ($type === 'role') {
@@ -548,7 +548,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     {
         $this->checkPermission(self::CONFIG_NAME);
 
-        $name = $request->get('name');
+        $name = $request->query->getString('name');
         $configuration = Configuration::getByName($name);
         if (!$configuration) {
             throw new \Exception('Datahub configuration ' . $name . ' does not exist.');

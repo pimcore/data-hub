@@ -31,7 +31,7 @@ class CheckConsumerPermissionsService
                 $apiKey = $request->headers->get(static::TOKEN_HEADER);
             }
             if (empty($apiKey)) {
-                $apiKey = $request->get('apikey');
+                $apiKey = $request->query->getString('apikey');
             }
             if (is_array($securityConfig['apikey'])) {
                 return in_array($apiKey, $securityConfig['apikey']);

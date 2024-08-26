@@ -32,7 +32,7 @@ class GraphQLExplorerController extends AbstractController
     {
         $urlParams = array_merge($request->request->all(), $request->query->all());
 
-        $clientName = $request->get('clientname');
+        $clientName = $request->attributes->getString('clientname');
 
         $url = $routingService->generate('admin_pimcoredatahub_webservice', ['clientname' => $clientName]);
 
