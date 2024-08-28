@@ -35,7 +35,7 @@ final class ElementMetadataKeyValuePairInputType extends InputObjectType
      */
     public function __construct($config = [])
     {
-        $config['name'] = 'element_metadata_item_' . uniqid();
+        $config['name'] = 'element_metadata_item_key_value_pair_input';
         $this->build($config);
         parent::__construct($config);
     }

@@ -35,7 +35,7 @@ class ElementMetadataKeyValuePairType extends ObjectType
      */
     public function __construct($config = [])
     {
-        $config['name'] = 'element_metadata_item_' . uniqid();
+        $config['name'] = 'element_metadata_item_key_value_pair';
         $this->build($config);
         parent::__construct($config);
     }
