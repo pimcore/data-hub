@@ -178,7 +178,7 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues = $event->getRequest()->request->get('variables');
+                $variableValues = $event->getRequest()->request->all('variables');
             }
 
             if (!$variableValues) {
