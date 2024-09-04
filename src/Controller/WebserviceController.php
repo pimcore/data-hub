@@ -93,6 +93,7 @@ class WebserviceController extends FrontendController
         LongRunningHelper $longRunningHelper
     ) {
         $clientname = $request->attributes->getString('clientname');
+        $variableValues = null;
 
         $configuration = Configuration::getByName($clientname);
         if (!$configuration || !$configuration->isActive()) {
@@ -161,7 +162,7 @@ class WebserviceController extends FrontendController
         }
 
         $query = $input['query'] ?? '';
-        $variableValues = $input['variables'] ?? null;
+
 
         try {
             $rootValue = [];
@@ -178,7 +179,11 @@ class WebserviceController extends FrontendController
             $this->eventDispatcher->dispatch($event, ExecutorEvents::PRE_EXECUTE);
 
             if ($event->getRequest() instanceof Request) {
-                $variableValues = $event->getRequest()->request->get('variables', $variableValues);
+                $variableValues = $event->getRequest()->request->get('variables');
+            }
+
+            if(empty($variableValues)) {
+                $variableValues = $input['variables'] ?? null;
             }
 
             $configAllowIntrospection = true;
