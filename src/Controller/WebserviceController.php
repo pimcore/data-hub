@@ -163,7 +163,6 @@ class WebserviceController extends FrontendController
 
         $query = $input['query'] ?? '';
 
-
         try {
             $rootValue = [];
 
@@ -182,7 +181,7 @@ class WebserviceController extends FrontendController
                 $variableValues = $event->getRequest()->request->get('variables');
             }
 
-            if(empty($variableValues)) {
+            if (empty($variableValues)) {
                 $variableValues = $input['variables'] ?? null;
             }
 
