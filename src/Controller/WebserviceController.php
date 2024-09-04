@@ -181,7 +181,7 @@ class WebserviceController extends FrontendController
                 $variableValues = $event->getRequest()->request->get('variables');
             }
 
-            if (empty($variableValues)) {
+            if (!$variableValues) {
                 $variableValues = $input['variables'] ?? null;
             }
 
