@@ -38,7 +38,7 @@ class ResolveTest extends Unit
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], []);
 
-        for($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $this->assertEquals('translation-k' .$i, $listRes['edges'][$i]['cursor']);
 
             $translation = $listRes['edges'][$i]['node'];
@@ -53,7 +53,7 @@ class ResolveTest extends Unit
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ['domain' => 'admin']);
 
-        for($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $this->assertEquals('translation-ka' .$i, $listRes['edges'][$i]['cursor']);
 
             $translation = $listRes['edges'][$i]['node'];
@@ -85,7 +85,7 @@ class ResolveTest extends Unit
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ['keys' => $keys]);
 
-        for($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $this->assertEquals('translation-k' .$i + 1, $listRes['edges'][$i]['cursor']);
 
             $translation = $listRes['edges'][$i]['node'];
@@ -128,7 +128,7 @@ class ResolveTest extends Unit
         $translationListing = new TranslationListing($this->service, new EventDispatcher());
         $listRes = $translationListing->resolveListing([], ['languages' => $languages, 'keys' => $keys]);
 
-        for($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $translation = $listRes['edges'][$i]['node'];
             $translations = $translation->getTranslations();
 
@@ -149,10 +149,10 @@ class ResolveTest extends Unit
 
     private function addTranslations(): void
     {
-        for($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $this->addTranslation('k' . $i);
         }
-        for($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $this->addTranslation('ka' . $i, 'admin');
             $this->addTranslation('ka' . $i, 'admin');
         }

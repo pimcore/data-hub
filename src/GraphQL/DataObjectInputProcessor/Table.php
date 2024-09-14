@@ -46,7 +46,7 @@ class Table extends Base
         $attribute = $this->getAttribute();
         $objectBrickParts = Service::parseObjectBrickFieldName($attribute);
 
-        if(empty($objectBrickParts)) {
+        if (empty($objectBrickParts)) {
             $getter = 'get' . ucfirst($attribute);
             $currentTable = $object->$getter();
         } else {
