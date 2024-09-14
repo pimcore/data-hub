@@ -45,6 +45,7 @@ class AdvancedManyToManyObjectRelation extends Base
                     $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);
 
                     if ($element) {
+                        $data = [];
                         $metaData = $newValueItemValue['metadata'] ?? null;
                         if ($metaData) {
                             foreach ($metaData as $metaDataKey => $metaDataValue) {
