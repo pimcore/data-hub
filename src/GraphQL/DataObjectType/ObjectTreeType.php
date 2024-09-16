@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -47,7 +48,7 @@ class ObjectTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes(): array
     {
-        $context = RuntimeCache::get('datahub_context');
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 

@@ -222,7 +222,7 @@ class WorkspaceHelper
      */
     public static function checkPermission($element, $type)
     {
-        $context = RuntimeCache::get('datahub_context');
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 
