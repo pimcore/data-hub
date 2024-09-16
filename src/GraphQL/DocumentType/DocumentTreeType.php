@@ -51,8 +51,6 @@ class DocumentTreeType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes(): array
     {
-        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
-
         $types = [];
 
         $supportedTypes = [
