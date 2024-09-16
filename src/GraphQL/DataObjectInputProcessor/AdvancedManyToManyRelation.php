@@ -54,7 +54,7 @@ class AdvancedManyToManyRelation extends Base
                             }
                         }
                         $item = new ElementMetadata($fieldName, $columns ?? [], $element);
-                        if (isset($data) === true) {
+                        if ($data !== []) {
                             $item->setData($data);
                         }
                         $result[] = $item;
