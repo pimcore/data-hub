@@ -45,6 +45,7 @@ class AdvancedManyToManyRelation extends Base
                     $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);
 
                     if ($element) {
+                        $data = [];
                         $metaData = $newValueItemValue['metadata'] ?? null;
                         if ($metaData) {
                             foreach ($metaData as $metaDataKey => $metaDataValue) {
@@ -53,7 +54,7 @@ class AdvancedManyToManyRelation extends Base
                             }
                         }
                         $item = new ElementMetadata($fieldName, $columns ?? [], $element);
-                        if (isset($data) === true) {
+                        if ($data !== []) {
                             $item->setData($data);
                         }
                         $result[] = $item;

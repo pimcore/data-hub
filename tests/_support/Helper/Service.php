@@ -33,7 +33,7 @@ class Service extends Model
     {
 
         //TODO change this as soon as Pimcore helper as grabService method and requirement is bumped to pimcore/pimcore:10.4
-        if(empty(self::$container)) {
+        if (empty(self::$container)) {
             $container = \Pimcore::getContainer();
             self::$container = $container->has('test.service_container') ? $container->get('test.service_container') : $container;
         }
