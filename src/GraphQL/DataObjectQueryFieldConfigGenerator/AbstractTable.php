@@ -81,11 +81,11 @@ abstract class AbstractTable extends Base
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
         if ($class instanceof ObjectbrickDefinition) {
-            $name = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
+            $name = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getFieldType() . '_' . $fieldDefinition->getName();
         } elseif ($class instanceof FieldcollectionDefinition) {
-            $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
+            $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getFieldType() . '_' . $fieldDefinition->getName();
         } else {
-            $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+            $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getFieldType() . '_' . $fieldDefinition->getName();
         }
 
         $columns = $this->getTableColumns($fieldDefinition);
