@@ -20,8 +20,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
-use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
