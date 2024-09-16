@@ -55,7 +55,7 @@ class AdvancedManyToManyObjectRelation extends Base
                         }
                         $concrete = Concrete::getById($element->getId());
                         $item = new ObjectMetadata($fieldName, $columns ?? [], $concrete);
-                        if (isset($data) === true) {
+                        if ($data !== []) {
                             $item->setData($data);
                         }
                         $result[] = $item;
