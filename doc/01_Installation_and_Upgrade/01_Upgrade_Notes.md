@@ -3,6 +3,8 @@
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
 - [General] Replaced Request::get() with explicit input sources.
+- [Schema Definition] Added a button to add all definitions except system columns, along with multi drag-and-drop functionality using CTRL+ click to select and drag multiple fields to the configuration.
+- [Schema Definition] A category selector with CTRL + click functionality was added, and the issue with deleting the entire configuration has been resolved.
 
 ## 1.7.0
 - [GraphQL] Deprecated SQL Condition.
