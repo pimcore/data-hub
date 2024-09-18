@@ -87,3 +87,4 @@ plugin_pimcore_datahub_disable_introspection: "Disable Introspection"
 plugin_pimcore_datahub_security_introspection_description: "Please note: When introspection is disabled, the autocomplete feature will not work."
 plugin_pimcore_datahub_import: "Import"
 plugin_pimcore_datahub_export: "Export"
+plugin_pimcore_datahub_add_all_definitions: Add all definitions
