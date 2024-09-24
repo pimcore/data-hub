@@ -225,6 +225,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         var addNode = function (node) {
             if (!node.data.root && node.data.type != "layout" && node.data.dataType != 'localizedfields' && node.data.dataType != 'system') {
                 if (!this.selectionPanel.getRootNode().findChild("key", node.data.key)) {
+                    if (!this.checkSupported(node, true)) {
+                        return;
+                    }
                     var copy = Ext.apply({}, node.data);
                     delete copy.id;
                     var addedNode = this.selectionPanel.getRootNode().appendChild(copy);
@@ -338,6 +341,9 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                             var dragData = [];
                             records.forEach(function (record) {
                                 if (!this.selectionPanel.getRootNode().findChild("key", record.data.key)) {
+                                    if (!this.checkSupported(record)) {
+                                        return;
+                                    }
                                     var copy = Ext.apply({}, record.data);
                                     delete copy.id;
                                     copy = record.createNode(copy);
@@ -867,11 +873,13 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         return element;
     },
 
-    checkSupported: function (record) {
+    checkSupported: function (record, silent = false) {
         if (record.data.type == "data") {
             var dataType = record.data.dataType;
             if (dataType != "system" && !in_array(dataType, pimcore.plugin.datahub.graphql["supported" + ucfirst(this.type) + "DataTypes"])) {
-                Ext.MessageBox.alert(t("error"), sprintf(t("plugin_pimcore_datahub_" + this.type) + " " + t('plugin_pimcore_datahub_datatype_not_supported_yet'), dataType));
+                if (!silent) {
+                    Ext.MessageBox.alert(t("error"), sprintf(t("plugin_pimcore_datahub_" + this.type) + " " + t('plugin_pimcore_datahub_datatype_not_supported_yet'), dataType));
+                }
                 return false;
             }
         }
