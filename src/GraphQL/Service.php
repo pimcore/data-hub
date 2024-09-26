@@ -982,7 +982,7 @@ class Service
                 $brickType = $descriptorData['__brickType'];
                 $brickKey = $descriptorData['__brickKey'];
 
-                return self::getValueFromObjectBrick(
+                $blockData = self::getValueFromObjectBrick(
                     $object,
                     $brickType,
                     $brickKey,
