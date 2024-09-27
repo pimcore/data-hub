@@ -1145,7 +1145,7 @@ class Service
      */
     public function querySchemaEnabled(string $type)
     {
-        $context = RuntimeCache::get('datahub_context');
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
         if ($type === 'object') {
