@@ -20,9 +20,9 @@ use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\PermissionEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\PermissionEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
+use Pimcore\Cache;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
-use Pimcore\Logger;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
@@ -276,33 +276,56 @@ class WorkspaceHelper
             $parentIds[] = $element->getId();
         }
 
-        try {
-            $db = Db::get();
-            $sql = 'SELECT `' . $type . '` FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cid IN (' . implode(',', $parentIds) . ') AND configuration = ' . $db->quote($configuration->getName()) . ' AND `' . $type . '`=1 ORDER BY LENGTH(cpath) DESC LIMIT 1';
-            $permissionsParent = $db->fetchOne($sql);
-
-            if ($permissionsParent) {
+        $lookupTable = self::fetchLookupTable($elementType, $configuration);
+        foreach ($parentIds as $parentId) {
+            if (isset($lookupTable[$parentId]) && $lookupTable[$parentId][$type] === 1) {
                 return true;
             }
+        }
 
-            // exception for read permission
-            if (empty($permissionsParent) && $type === 'read') {
-                // check for children with permissions
-                $path = $element->getRealFullPath() . '/';
-                $path = str_replace('_', '\\_', $path);
-                if ($element->getId() === 1) {
-                    $path = '/';
-                }
+        if ($type === 'read') {
+            $path = $element->getRealFullPath() . '/';
+            $path = str_replace('_', '\\_', $path);
+            if ($element->getId() === 1) {
+                $path = '/';
+            }
 
-                $permissionsChildren = $db->fetchOne('SELECT ' . $type . ' FROM plugin_datahub_workspaces_' . $elementType . ' WHERE cpath LIKE ? AND configuration = ' . $db->quote($configuration->getName()) . ' AND ' . $type . ' = 1 LIMIT 1', [$path . '%']);
-                if ($permissionsChildren) {
+            foreach ($lookupTable as $row) {
+                if (strpos($row['cpath'], $path) === 0 && $row[$type] == 1) {
                     return true;
                 }
             }
-        } catch (\Exception $e) {
-            Logger::warn('Unable to get permission ' . $type . ' for ' . $elementType . ' ' . $element->getId());
         }
 
         return false;
+    }
+
+    private static function fetchLookupTable(string $elementType, Configuration $configuration): array
+    {
+        $cacheKey = 'datahub_permissions_' . $configuration->getName() . '_' . $elementType;
+        if (RuntimeCache::isRegistered($cacheKey)) {
+            return RuntimeCache::load($cacheKey);
+        }
+
+        $cache = Cache::load($cacheKey);
+        if ($cache !== false) {
+            RuntimeCache::save($cache, $cacheKey);
+
+            return $cache;
+        }
+
+        $db = Db::get();
+        $sql = 'SELECT cid, cpath, `create`, `read`, `update`, `delete` FROM plugin_datahub_workspaces_' . $elementType . ' WHERE configuration = ?';
+        $rows = $db->fetchAllAssociative($sql, [$configuration->getName()]);
+
+        $lookupTable = [];
+        foreach ($rows as $row) {
+            $lookupTable[$row['cid']] = $row;
+        }
+
+        RuntimeCache::save($lookupTable, $cacheKey);
+        Cache::save($lookupTable, $cacheKey);
+
+        return $lookupTable;
     }
 }
