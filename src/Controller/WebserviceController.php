@@ -225,17 +225,7 @@ class WebserviceController extends FrontendController
             ];
         }
 
-        $origin = '*';
-        if (!empty($_SERVER['HTTP_ORIGIN'])) {
-            $origin = $_SERVER['HTTP_ORIGIN'];
-        }
-
         $response = new JsonResponse($output);
-        $response->headers->set('Access-Control-Allow-Origin', $origin);
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-
         $this->cacheService->save($request, $response);
 
         return $response;

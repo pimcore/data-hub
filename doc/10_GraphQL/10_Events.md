@@ -230,6 +230,8 @@ class GraphQlSubscriber implements EventSubscriberInterface
 - `OutputCacheEvents::PRE_LOAD`: is triggered before trying to load an entry from cache, if cache is enabled. You can disable the cache  for this request by setting `$event->setUseCache(false)`. If you disable the cache, the entry won't be loaded nor saved
 - `OutputCacheEvents::PRE_SAVE`: if cache is enabled, it's triggered before saving an entry into the cache. You can use it to modify the response before it gets saved.
 
+Uncacheable headers, such as CORS Access-Control-Allow-Origin, are removed from the response before the PRE_SAVE event and re-added after the cached response is loaded.
+
 ```php
 <?php
 
