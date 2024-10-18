@@ -71,7 +71,12 @@ class OutputCacheService
 
         $cacheKey = $this->computeKey($request);
 
-        return $this->loadFromCache($cacheKey);
+        $response = $this->loadFromCache($cacheKey);
+        if ($response) {
+            $this->addCorsHeaders($response);
+        }
+
+        return $response;
     }
 
     /**
@@ -81,15 +86,43 @@ class OutputCacheService
     public function save(Request $request, JsonResponse $response, $extraTags = []): void
     {
         if ($this->useCache($request)) {
-            $cacheKey = $this->computeKey($request);
             $clientname = $request->attributes->getString('clientname');
             $extraTags = array_merge(['output', 'datahub', $clientname], $extraTags);
+
+            $this->removeCorsHeaders($response);
+            $cacheKey = $this->computeKey($request);
 
             $event = new OutputCachePreSaveEvent($request, $response);
             $this->eventDispatcher->dispatch($event, OutputCacheEvents::PRE_SAVE);
 
-            $this->saveToCache($cacheKey, $event->getResponse(), $extraTags);
+            $this->saveToCache($cacheKey, $response, $extraTags);
+
+            $this->addCorsHeaders($response);
         }
+    }
+
+    /**
+     * Removes CORS headers including Access-Control-Allow-Origin that should not be cached.
+     */
+    protected function removeCorsHeaders(JsonResponse $response): void
+    {
+        $response->headers->remove('Access-Control-Allow-Origin');
+        $response->headers->remove('Access-Control-Allow-Credentials');
+        $response->headers->remove('Access-Control-Allow-Methods');
+        $response->headers->remove('Access-Control-Allow-Headers');
+    }
+
+    protected function addCorsHeaders(JsonResponse $response): void
+    {
+        $origin = '*';
+        if (!empty($_SERVER['HTTP_ORIGIN'])) {
+            $origin = $_SERVER['HTTP_ORIGIN'];
+        }
+
+        $response->headers->set('Access-Control-Allow-Origin', $origin);
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
     }
 
     /**
