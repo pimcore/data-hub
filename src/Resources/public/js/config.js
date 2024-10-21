@@ -124,8 +124,10 @@ pimcore.plugin.datahub.config = Class.create({
                             this.refreshTree();
 
                         }.bind(this),
-                        function () {
-                            Ext.MessageBox.alert(t("error"), t("error"));
+                        function (response) {
+                            response = response.response;
+                            const data = Ext.decode(response.responseText);
+                            Ext.MessageBox.alert(t("error"), data.message);
                         }
                     );
                 }.bind(this)
