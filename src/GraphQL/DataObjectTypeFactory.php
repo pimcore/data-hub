@@ -44,7 +44,13 @@ class DataObjectTypeFactory
     {
         if (!isset(self::$registry[$className])) {
             $class = ClassDefinition::getByName($className);
-            $operatorImpl = new $this->className($this->getGraphQlService(), $className, $class->getId(), $config, $context);
+            $operatorImpl = new $this->className(
+                $this->getGraphQlService(),
+                $className,
+                $class->getId(),
+                $config,
+                $context
+            );
             self::$registry[$className] = $operatorImpl;
         }
 

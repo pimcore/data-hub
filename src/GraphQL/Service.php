@@ -428,7 +428,6 @@ class Service
     }
 
     /**
-     * @param string $className
      * @param array $config
      * @param array $context
      *
@@ -439,9 +438,8 @@ class Service
     public function buildDataObjectType(string $className, $config = [], $context = [])
     {
         $factory = $this->generalTypeGeneratorFactories->get('object');
-        $result = $factory->build($className, $config, $context);
 
-        return $result;
+        return $factory->build($className, $config, $context);
     }
 
     /**
