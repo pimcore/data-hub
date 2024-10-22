@@ -39,6 +39,7 @@ services:
   pimcore.datahub.graphql.dataobjecttype.quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\QuantityValueInputType'
   pimcore.datahub.graphql.dataobjecttype.input_quantity_value_input: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputQuantityValueInputType'
 
+  pimcore.datahub.graphql.dataobjecttype.object: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType'
   pimcore.datahub.graphql.dataobjecttype.object_tree: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectTreeType'
   pimcore.datahub.graphql.dataobjecttype._object_folder: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ObjectFolderType'
   pimcore.datahub.graphql.dataobjecttype.asset_metadata_manytoone: '@Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType'
@@ -84,6 +85,14 @@ services:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentTreeType
     tags:
       - { name: pimcore.datahub.graphql.generaltype_factory, id: document_tree }
+
+
+  pimcore.datahub.graphql.generaltype.factory.object:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectTypeFactory
+    arguments:
+      $className: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType
+    tags:
+      - { name: pimcore.datahub.graphql.generaltype_factory, id: object }     
 
   pimcore.datahub.graphql.generaltype.factory.object_tree:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\GeneralTypeFactory

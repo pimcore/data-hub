@@ -428,6 +428,23 @@ class Service
     }
 
     /**
+     * @param string $className
+     * @param array $config
+     * @param array $context
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public function buildDataObjectType(string $className, $config = [], $context = [])
+    {
+        $factory = $this->generalTypeGeneratorFactories->get('object');
+        $result = $factory->build($className, $config, $context);
+
+        return $result;
+    }
+
+    /**
      * @param string $typeName
      *
      * @return mixed
