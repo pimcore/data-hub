@@ -152,28 +152,51 @@ abstract class AbstractFieldHelper
         }
 
         foreach ($selections as $selectionNode) {
-            if ($selectionNode instanceof FieldNode) {
-                $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
-            } elseif ($selectionNode instanceof InlineFragmentNode) {
-                $inlineSelectionSetNode = $selectionNode->selectionSet;
-                /** @var NodeList $inlineSelections */
-                $inlineSelections = $inlineSelectionSetNode->selections;
-                $count = $inlineSelections->count();
-                for ($i = 0; $i < $count; $i++) {
-                    $inlineNode = $inlineSelections[$i];
-                    if ($inlineNode instanceof FieldNode) {
-                        $this->doExtractData($inlineNode, $data, $container, $args, $context, $resolveInfo);
-                    }
+            $this->processSelectionNode($data, $selectionNode, $container, $args, $context, $resolveInfo);
+        }
+    }
+
+    private function processSelectionNode(
+        &$data,
+        $selectionNode,
+        $container,
+        $args,
+        $context,
+        ResolveInfo $resolveInfo
+    ): void
+    {
+        if(!$selectionNode) {
+            return;
+        }
+
+        if ($selectionNode instanceof FieldNode) {
+            $this->doExtractData($selectionNode, $data, $container, $args, $context, $resolveInfo);
+        } elseif ($selectionNode instanceof InlineFragmentNode) {
+            $inlineSelectionSetNode = $selectionNode->selectionSet;
+            /** @var NodeList $inlineSelections */
+            $inlineSelections = $inlineSelectionSetNode->selections;
+            $count = $inlineSelections->count();
+            for ($i = 0; $i < $count; $i++) {
+                $inlineNode = $inlineSelections[$i];
+                if ($inlineNode instanceof FieldNode) {
+                    $this->doExtractData($inlineNode, $data, $container, $args, $context, $resolveInfo);
+
+                    continue;
                 }
-            } elseif ($selectionNode instanceof FragmentSpreadNode) {
-                $fragmentName = $selectionNode->name->value;
-                $knownFragments = $resolveInfo->fragments;
-                $resolvedFragment = $knownFragments[$fragmentName];
-                if ($resolvedFragment) {
-                    $fragmentSelectionSet = $resolvedFragment->selectionSet;
-                    $fragmentSelections = $fragmentSelectionSet->selections;
-                    $this->processSelections($data, $fragmentSelections, $container, $args, $context, $resolveInfo);
+                if($inlineNode instanceof FragmentSpreadNode) {
+                    $this->processSelectionNode($data, $inlineNode, $container, $args, $context, $resolveInfo);
+
+                    continue;
                 }
+            }
+        } elseif ($selectionNode instanceof FragmentSpreadNode) {
+            $fragmentName = $selectionNode->name->value;
+            $knownFragments = $resolveInfo->fragments;
+            $resolvedFragment = $knownFragments[$fragmentName];
+            if ($resolvedFragment) {
+                $fragmentSelectionSet = $resolvedFragment->selectionSet;
+                $fragmentSelections = $fragmentSelectionSet->selections;
+                $this->processSelections($data, $fragmentSelections, $container, $args, $context, $resolveInfo);
             }
         }
     }
