@@ -163,9 +163,8 @@ abstract class AbstractFieldHelper
         $args,
         $context,
         ResolveInfo $resolveInfo
-    ): void
-    {
-        if(!$selectionNode) {
+    ): void {
+        if (!$selectionNode) {
             return;
         }
 
@@ -183,7 +182,7 @@ abstract class AbstractFieldHelper
 
                     continue;
                 }
-                if($inlineNode instanceof FragmentSpreadNode) {
+                if ($inlineNode instanceof FragmentSpreadNode) {
                     $this->processSelectionNode($data, $inlineNode, $container, $args, $context, $resolveInfo);
 
                     continue;
