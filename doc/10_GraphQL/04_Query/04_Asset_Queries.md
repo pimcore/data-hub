@@ -96,7 +96,7 @@ Queries can be localized For details see the [localization documentation page](.
 
 You can request thumbnails for assets using a simple query like this:
 
-#### Video assets
+#### Video assets thumbnails
 
 You need to specify the name of the video thumbnail configuration you want to use.
 Additionally, you can use the `format` parameter to request a specific format.
@@ -110,7 +110,7 @@ query {
 }
 ```
 
-#### Image assets
+#### Image assets thumbnails
 
 You need to specify the name of the video thumbnail configuration you want to use.
 Use the `format` parameter to request a specific format.
