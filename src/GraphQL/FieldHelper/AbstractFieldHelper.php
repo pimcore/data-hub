@@ -185,8 +185,6 @@ abstract class AbstractFieldHelper
                 }
                 if($inlineNode instanceof FragmentSpreadNode) {
                     $this->processSelectionNode($data, $inlineNode, $container, $args, $context, $resolveInfo);
-
-                    continue;
                 }
             }
         } elseif ($selectionNode instanceof FragmentSpreadNode) {
