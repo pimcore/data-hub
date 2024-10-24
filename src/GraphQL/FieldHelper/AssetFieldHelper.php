@@ -46,8 +46,7 @@ class AssetFieldHelper extends AbstractFieldHelper
         string | Image\Thumbnail\Config $thumbNailConfig,
         string $thumbNailFormat = null,
         bool $deferred = false
-    ): mixed
-    {
+    ): mixed {
         match(true) {
             $asset instanceof Asset\Document => $thumb = $asset->getImageThumbnail(
                 $thumbNailConfig,
@@ -74,8 +73,7 @@ class AssetFieldHelper extends AbstractFieldHelper
         string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig,
         string $thumbNailFormat = null,
         bool $deferred = false
-    ): mixed
-    {
+    ): mixed {
         if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
             return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         } else {
