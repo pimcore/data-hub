@@ -92,3 +92,35 @@ For details see [filtering documentation page](./10_Filtering.md)
 ## Localization of Queries
 Queries can be localized For details see the [localization documentation page](./08_Localization.md).
 
+## Thumbnails
+
+You can request thumbnails for assets using a simple query like this:
+
+#### Video assets
+
+You need to specify the name of the video thumbnail configuration you want to use.
+Additionally, you can use the `format` parameter to request a specific format.
+
+```graphql
+query {
+  getAsset(id:353) {
+    id,    
+    thumbnail:fullpath(thumbnail: "content"),    
+  }
+}
+```
+
+#### Image assets
+
+You need to specify the name of the video thumbnail configuration you want to use.
+Use the `format` parameter to request a specific format.
+Specifying the `deferred` parameter will defer the thumbnail generation until it gets requested for the first time.
+
+```graphql
+query {
+  getAsset(id:289) {
+    id,    
+    thumbnail:fullpath(thumbnail: "events_header", deferred:true)    
+  }
+}
+```
