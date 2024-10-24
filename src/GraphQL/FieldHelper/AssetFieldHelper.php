@@ -49,15 +49,15 @@ class AssetFieldHelper extends AbstractFieldHelper
     ): mixed {
         $thumb = null;
 
-        if($asset instanceof Asset\Document) {
+        if ($asset instanceof Asset\Document) {
             $thumb = $asset->getImageThumbnail($thumbNailConfig, deferred: $deferred);
         }
 
-        if($asset instanceof Asset\Video) {
+        if ($asset instanceof Asset\Video) {
             $thumb = $asset->getImageThumbnail($thumbNailConfig);
         }
 
-        if($asset instanceof Asset\Image) {
+        if ($asset instanceof Asset\Image) {
             $thumb = $asset->getThumbnail($thumbNailConfig, $deferred);
         }
 
