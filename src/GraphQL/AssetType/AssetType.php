@@ -98,6 +98,7 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::string()],
                     'format' => ['type' => Type::string()],
+                    'deferred' => ['type' => Type::boolean(), 'defaultValue' => false],
                 ],
                 'resolve' => [$resolver, 'resolvePath'],
             ],
@@ -140,6 +141,7 @@ class AssetType extends ObjectType
                 'args' => [
                     'thumbnail' => ['type' => Type::nonNull(Type::string())],
                     'format' => ['type' => Type::string()],
+                    'deferred' => ['type' => Type::boolean(), 'defaultValue' => false],
                 ],
                 'resolve' => [$resolver, 'resolveSrcSet'],
             ],

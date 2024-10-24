@@ -41,14 +41,19 @@ class AssetFieldHelper extends AbstractFieldHelper
         return null;
     }
 
-    public function getImageDocumentThumbnail(Asset $asset, string | Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    public function getImageDocumentThumbnail(
+        Asset $asset,
+        string | Image\Thumbnail\Config $thumbNailConfig,
+        string $thumbNailFormat = null,
+        bool $deferred = false
+    ): mixed
     {
         $thumb = null;
 
         if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
-            $thumb = $asset->getImageThumbnail($thumbNailConfig);
+            $thumb = $asset->getImageThumbnail($thumbNailConfig, $deferred);
         } elseif ($asset instanceof Asset\Image) {
-            $thumb = $asset->getThumbnail($thumbNailConfig, false);
+            $thumb = $asset->getThumbnail($thumbNailConfig, $deferred);
         }
         if (isset($thumb, $thumbNailFormat) && method_exists($thumb, 'getAsFormat') && !($asset instanceof Asset\Video)) {
             $thumb = $thumb->getAsFormat($thumbNailFormat);
@@ -57,12 +62,17 @@ class AssetFieldHelper extends AbstractFieldHelper
         return $thumb;
     }
 
-    public function getAssetThumbnail(Asset $asset, string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    public function getAssetThumbnail(
+        Asset $asset,
+        string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig,
+        string $thumbNailFormat = null,
+        bool $deferred = false
+    ): mixed
     {
         if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
             return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         } else {
-            return $this->getImageDocumentThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+            return $this->getImageDocumentThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
         }
     }
 
