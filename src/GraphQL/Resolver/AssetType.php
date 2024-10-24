@@ -147,14 +147,13 @@ class AssetType
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
-        $deferred = $args['deferred'] ?? false;
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if (!isset($thumbNailConfig)) {
             return $asset->getFullPath();
         }
 
-        return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
     }
 
     /**
@@ -171,13 +170,12 @@ class AssetType
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
-        $deferred = $args['deferred'] ?? false;
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if (!isset($thumbNailConfig)) {
             return base64_encode(stream_get_contents($asset->getStream()));
         }
-        $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
 
         return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
     }
@@ -196,13 +194,12 @@ class AssetType
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
-        $deferred = $args['deferred'] ?? null;
         $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if ($asset instanceof Asset\Image) {
             $mediaQueries = [];
-            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
-            $thumbnailConfig = $asset->getThumbnail($args['thumbnail'], $deferred)->getConfig();
+            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
+            $thumbnailConfig = $asset->getThumbnail($args['thumbnail'])->getConfig();
             if ($thumbnailConfig) {
                 foreach ($thumbnailConfig->getMedias() as $key => $val) {
                     $mediaQueries[] = [
