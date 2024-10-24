@@ -41,7 +41,8 @@ class AssetFieldHelper extends AbstractFieldHelper
         return null;
     }
 
-    public function getImageDocumentThumbnail(Asset $asset, string | Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed {
+    public function getImageDocumentThumbnail(Asset $asset, string | Image\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
         $thumb = null;
 
         if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
@@ -56,7 +57,8 @@ class AssetFieldHelper extends AbstractFieldHelper
         return $thumb;
     }
 
-    public function getAssetThumbnail(Asset $asset, string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed {
+    public function getAssetThumbnail(Asset $asset, string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig, string $thumbNailFormat = null): mixed
+    {
         if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
             return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         } else {
