@@ -42,23 +42,38 @@ class Table extends Base
             $inputItems['col' . $i] = Type::string();
         }
 
-        $rowInput = new InputObjectType([
-            'name' => 'RowInput',
-            'fields' => $inputItems,
-        ]);
+        $dataTypes = $this->getGraphQlService()->getDataObjectDataTypes();
 
-        $inputType = new InputObjectType([
-            'name' => 'TableInput',
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => 'if true then the entire table will be overwritten',
+        $rowInput = array_key_exists('row_input', $dataTypes)
+            ? $dataTypes['row_input']
+            : new InputObjectType([
+                'name' => 'RowInput',
+                'fields' => $inputItems,
+            ]);
+
+        $inputType = array_key_exists('table_input', $dataTypes)
+            ? $dataTypes['table_input']
+            : new InputObjectType([
+                'name' => 'TableInput',
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => 'if true then the entire table will be overwritten',
+                    ],
+                    'rows' => [
+                        'type' => Type::listOf($rowInput),
+                    ],
                 ],
-                'rows' => [
-                    'type' => Type::listOf($rowInput),
-                ],
-            ],
-        ]);
+            ]);
+
+        if (!array_key_exists('row_input', $dataTypes) && !array_key_exists('table_input', $params) ) {
+            $newDataTypes = [
+                'row_input' => $rowInput,
+                'table_input' => $inputType
+            ];
+
+            $this->getGraphQlService()->registerDataObjectDataTypes($dataTypes + $newDataTypes);
+        }
 
         return [
             'arg' => $inputType,

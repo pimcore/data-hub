@@ -26,25 +26,41 @@ class ImageGallery extends Base
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\ImageGallery($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        $imageInput = new InputObjectType([
-            'name' => 'GalleryImageInput',
-            'fields' => [
-                'id' => Type::int(),
-            ],
-        ]);
+        $dataTypes = $this->getGraphQlService()->getDataObjectDataTypes();
 
-        $inputType = new InputObjectType([
-            'name' => 'ImageGalleryInput',
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => 'if true then the entire gallery list will be overwritten',
+        $imageInput = array_key_exists('gallery_image_input', $dataTypes)
+            ? $dataTypes['gallery_image_input']
+            : new InputObjectType([
+                'name' => 'GalleryImageInput',
+                'fields' => [
+                    'id' => Type::int(),
                 ],
-                'images' => [
-                    'type' => Type::listOf($imageInput),
+            ]);
+
+        $inputType = array_key_exists('image_gallery_input', $dataTypes)
+            ? $dataTypes['image_gallery_input']
+            : new InputObjectType([
+                'name' => 'ImageGalleryInput',
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => 'if true then the entire gallery list will be overwritten',
+                    ],
+                    'images' => [
+                        'type' => Type::listOf($imageInput),
+                    ],
                 ],
-            ],
-        ]);
+            ]);
+
+
+        if (!array_key_exists('gallery_image_input', $dataTypes) && !array_key_exists('image_gallery_input', $params) ) {
+            $newDataTypes = [
+                'gallery_image_input' => $imageInput,
+                'image_gallery_input' => $inputType
+            ];
+
+            $this->getGraphQlService()->registerDataObjectDataTypes($dataTypes + $newDataTypes);
+        }
 
         return [
             'arg' => $inputType,
