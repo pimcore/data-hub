@@ -48,14 +48,21 @@ class AssetFieldHelper extends AbstractFieldHelper
         bool $deferred = false
     ): mixed
     {
-        $thumb = null;
+        match(true) {
+            $asset instanceof Asset\Document => $thumb = $asset->getImageThumbnail(
+                $thumbNailConfig,
+                deferred: $deferred
+            ),
+            $asset instanceof Asset\Video => $thumb = $asset->getImageThumbnail($thumbNailConfig),
+            $asset instanceof Asset\Image => $thumb = $asset->getThumbnail($thumbNailConfig, $deferred),
+            default => $thumb = null
+        };
 
-        if ($asset instanceof Asset\Document || $asset instanceof Asset\Video) {
-            $thumb = $asset->getImageThumbnail($thumbNailConfig, $deferred);
-        } elseif ($asset instanceof Asset\Image) {
-            $thumb = $asset->getThumbnail($thumbNailConfig, $deferred);
-        }
-        if (isset($thumb, $thumbNailFormat) && method_exists($thumb, 'getAsFormat') && !($asset instanceof Asset\Video)) {
+        if (
+            !($asset instanceof Asset\Video) &&
+            isset($thumb, $thumbNailFormat) &&
+            method_exists($thumb, 'getAsFormat')
+        ) {
             $thumb = $thumb->getAsFormat($thumbNailFormat);
         }
 
