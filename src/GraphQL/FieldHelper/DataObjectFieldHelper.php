@@ -393,6 +393,7 @@ class DataObjectFieldHelper extends AbstractFieldHelper
                     );
                     $localizedValue = $container->$getter($args['language'] ?? null);
                     Localizedfield::setGetFallbackValues($orgUseFallbackValues);
+
                     return $localizedValue;
                 };
             } else {
