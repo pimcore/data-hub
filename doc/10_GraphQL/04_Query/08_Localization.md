@@ -87,3 +87,18 @@ However, you can always provide an alternative language for a specific field.
   }
 }
 ```
+
+### Fallback Language
+
+You can disable getting the value of the fallback language by passing the `getFallbackLanguageValue` argument.
+Set it to `false` to disable the fallback language.
+
+#####  Sample Request
+```
+query {
+ getCar(id: 1229) 
+  {
+    name(language:"de", getFallbackLanguageValue:false)
+  }
+}
+```
