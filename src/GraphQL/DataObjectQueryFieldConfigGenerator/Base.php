@@ -61,7 +61,13 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
         if ($container instanceof Data\Localizedfields) {
             $graphQLConfig['args'] = $graphQLConfig['args'] ?? [];
             $graphQLConfig['args'] = array_merge($graphQLConfig['args'],
-                ['language' => ['type' => Type::string()],
+                [
+                    'language' => [
+                        'type' => Type::string()
+                    ],
+                    'getFallbackLanguageValue' => [
+                        'type' => Type::boolean()
+                    ]
             ]);
         }
 
