@@ -63,11 +63,11 @@ class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefiniti
             $graphQLConfig['args'] = array_merge($graphQLConfig['args'],
                 [
                     'language' => [
-                        'type' => Type::string()
+                        'type' => Type::string(),
                     ],
                     'getFallbackLanguageValue' => [
-                        'type' => Type::boolean()
-                    ]
+                        'type' => Type::boolean(),
+                    ],
             ]);
         }
 
