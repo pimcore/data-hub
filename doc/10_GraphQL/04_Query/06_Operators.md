@@ -6,7 +6,8 @@ Operators allow to modify and transform the data before it is delivered to the e
 
 #### Alias
 
-Simply gives the child node a different name.
+Simply gives the child node a different name. 
+See also [Using Aliases](./11_Using_Aliases.md) for more information on how to use aliases.
 
 #### Date Formatter
 
