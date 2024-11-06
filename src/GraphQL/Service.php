@@ -786,7 +786,7 @@ class Service
      * @param array|null $brickDescriptor
      * @param array $args
      *
-     * @return stdclass, value and objectid where the value comes from
+     * @return mixed
      */
     public static function getValueForObject($object, $key, $brickType = null, $brickKey = null, $fieldDefinition = null, $context = [], $brickDescriptor = null, $args = [])
     {
@@ -1167,7 +1167,7 @@ class Service
         string $brickKey,
         ?array $brickDescriptor = null,
         array $descriptorData = [],
-    ): stdClass|array|null {
+    ): mixed {
         $context = ['object' => $object];
 
         $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
@@ -1191,7 +1191,8 @@ class Service
                 $def,
                 $context,
                 $brickDescriptor,
-                $descriptorData['args'] ?? []);
+                $descriptorData['args'] ?? []
+            );
         }
 
         return null;
