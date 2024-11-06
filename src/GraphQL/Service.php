@@ -782,6 +782,9 @@ class Service
      * @param string|null $brickType
      * @param string|null $brickKey
      * @param Data|null $fieldDefinition
+     * @param array $context
+     * @param array|null $brickDescriptor
+     * @param array $args
      *
      * @return stdclass, value and objectid where the value comes from
      */
@@ -1162,7 +1165,7 @@ class Service
         Concrete $object,
         string $brickType,
         string $brickKey,
-        string $brickDescriptor = null,
+        ?array $brickDescriptor = null,
         array $descriptorData = [],
     ): stdClass|array|null {
         $context = ['object' => $object];
