@@ -170,6 +170,7 @@ class WorkspaceHelper
                 }
             }
         }
+        Cache::clearTags(self::getCacheTags($config));
     }
 
     /**
@@ -210,6 +211,8 @@ class WorkspaceHelper
         $db->delete(Dao::TABLE_NAME_DOCUMENT, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_ASSET, ['configuration' => $config->getName()]);
         $db->delete(Dao::TABLE_NAME_DATAOBJECT, ['configuration' => $config->getName()]);
+
+        Cache::clearTags(self::getCacheTags($config));
     }
 
     /**
@@ -302,7 +305,7 @@ class WorkspaceHelper
 
     private static function fetchLookupTable(string $elementType, Configuration $configuration): array
     {
-        $cacheKey = 'datahub_permissions_' . $configuration->getName() . '_' . $elementType;
+        $cacheKey = 'datahub_workspace_permissions_' . $configuration->getName() . '_' . $elementType;
         if (RuntimeCache::isRegistered($cacheKey)) {
             return RuntimeCache::load($cacheKey);
         }
@@ -324,8 +327,13 @@ class WorkspaceHelper
         }
 
         RuntimeCache::save($lookupTable, $cacheKey);
-        Cache::save($lookupTable, $cacheKey);
+        Cache::save($lookupTable, $cacheKey, self::getCacheTags($configuration));
 
         return $lookupTable;
+    }
+
+    private static function getCacheTags(Configuration $configuration): array
+    {
+        return ['datahub_workspace_permissions_'. $configuration->getName()];
     }
 }
