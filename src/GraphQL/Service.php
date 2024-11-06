@@ -53,7 +53,6 @@ use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
-use stdClass;
 
 class Service
 {
@@ -841,7 +840,7 @@ class Service
      * @param string $attribute
      * @param \Closure $callback
      *
-     * @return stdclass|null
+     * @return mixed result of the callback
      *
      * @throws \Exception
      */
