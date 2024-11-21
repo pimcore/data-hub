@@ -46,6 +46,7 @@ class AdvancedManyToManyRelation extends Base
 
                     if ($element) {
                         $data = [];
+                        $columns = [];
                         $metaData = $newValueItemValue['metadata'] ?? null;
                         if ($metaData) {
                             foreach ($metaData as $metaDataKey => $metaDataValue) {
@@ -53,7 +54,7 @@ class AdvancedManyToManyRelation extends Base
                                 $data[$metaDataValue['name']] = $metaDataValue['value'];
                             }
                         }
-                        $item = new ElementMetadata($fieldName, $columns ?? [], $element);
+                        $item = new ElementMetadata($fieldName, $columns, $element);
                         if ($data !== []) {
                             $item->setData($data);
                         }
