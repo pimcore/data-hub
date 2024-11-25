@@ -11,7 +11,9 @@ See also [Using Aliases](./11_Using_Aliases.md) for more information on how to u
 
 #### Date Formatter
 
-Utilizes the PHP date formatter.
+Utilizes the PHP date formatter. For formatting options see [PHP Date Format](https://www.php.net/manual/en/function.date.php).
+
+##### Example
 
 ![Datahub Configs](../../img/graphql/date_formatter.png)
 
