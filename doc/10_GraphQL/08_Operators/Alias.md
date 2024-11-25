@@ -2,7 +2,7 @@
 
 Simply gives the child node a different name.
 
-If you are looking for a way to directly use aliases in a GraphQL query, please see [Using Aliases](./11_Using_Aliases.md). 
+If you are looking for a way to directly use aliases in a GraphQL query, please see[11_Using_Aliases.md](../04_Query/11_Using_Aliases.md) . 
 
 ## Configuration
 
