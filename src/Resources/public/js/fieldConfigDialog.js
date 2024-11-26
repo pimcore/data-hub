@@ -349,7 +349,6 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
                     },
                     listeners: {
                         beforedrop: function (node, data, overModel, dropPosition, dropHandlers, eOpts) {
-                            console.log(node);
                             var target = overModel.getOwnerTree().getView();
                             var source = data.view;
 
