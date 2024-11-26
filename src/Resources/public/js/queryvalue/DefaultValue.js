@@ -37,6 +37,8 @@ pimcore.plugin.datahub.queryvalue.defaultvalue = Class.create(pimcore.plugin.dat
 
     getCopyNode: function(source) {
 
+        let isOperator = source.data.isOperator ?? false;
+
         var copy = source.createNode({
             iconCls: source.data.iconCls,
             text: source.data.text,
@@ -44,6 +46,8 @@ pimcore.plugin.datahub.queryvalue.defaultvalue = Class.create(pimcore.plugin.dat
             leaf: true,
             dataType: source.data.dataType,
             qtip: source.data.key,
+            key: source.data.key,
+            isOperator: isOperator,
             configAttributes: {
                 label: source.data.text,
                 type: this.type,
