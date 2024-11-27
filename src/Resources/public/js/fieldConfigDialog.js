@@ -141,7 +141,7 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
     doGetRecursiveData: function (node) {
         var children = [];
         node.eachChild(function (child) {
-            var attributes = child.data.configAttributes;
+            var attributes = child.data.configAttributes ?? [];
             attributes.children = this.doGetRecursiveData(child);
             var childConfig = {
                 "isOperator": child.data.isOperator ? true : false,
@@ -265,6 +265,22 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
         }
     },
 
+    addToDragData: function (record, dragData, removeFromParent = false) {
+        if (!this.checkSupported(record)) {
+            return;
+        }
+
+        let copy = Ext.apply({}, record.data);
+        delete copy.id;
+        dragData.push(
+            record.createNode(copy)
+        );
+
+        if(removeFromParent) {
+            record.parentNode.removeChild(record);
+        }
+    },
+
     getSelectionPanel: function () {
         if (!this.selectionPanel) {
             this.selectedConfigItems = [];
@@ -340,15 +356,54 @@ pimcore.plugin.datahub.fieldConfigDialog = Class.create({
 
                             var dragData = [];
                             records.forEach(function (record) {
-                                if (!this.selectionPanel.getRootNode().findChild("key", record.data.key)) {
-                                    if (!this.checkSupported(record)) {
+                                let realOverModel = overModel;
+
+                                if(target !== source) {
+                                    if (record.data.isOperator || this.parentIsOperator(realOverModel)) {
+                                        let attr = record.data;
+                                        if (record.data.configAttributes) {
+                                            attr = record.data.configAttributes;
+                                        }
+                                        let elementConfig = {
+                                            "isOperator": true,
+                                            "attributes": attr
+                                        }
+
+                                        let element = this.getConfigElement(elementConfig);
+                                        let copy = element.getCopyNode(record);
+                                        dragData.push(copy);
+                                        this.openConfigDialog(element, copy);
+
                                         return;
                                     }
-                                    var copy = Ext.apply({}, record.data);
-                                    delete copy.id;
-                                    copy = record.createNode(copy);
-                                    dragData.push(copy);
+
+                                    this.addToDragData(record, dragData);
+                                    return;
                                 }
+
+                                if (dropPosition === "before" || dropPosition === "after") {
+                                    realOverModel = overModel.parentNode;
+                                }
+
+                                if (record.data.isOperator || this.parentIsOperator(realOverModel)) {
+                                    let attr = record.data;
+                                    if (record.data.isOperator && record.data.configAttributes) {
+                                        return;
+                                    }
+                                    let element = this.getConfigElement(attr);
+
+                                    let copy = element.getCopyNode(record);
+                                    dragData.push(copy);
+
+                                    this.openConfigDialog(element, copy);
+
+                                    record.parentNode.removeChild(record);
+
+                                    return;
+                                }
+
+                                this.addToDragData(record, dragData, true);
+
                             }.bind(this));
 
                             if (dragData.length === 0) {
