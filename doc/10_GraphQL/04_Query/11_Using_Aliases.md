@@ -7,7 +7,7 @@ There are two ways to use aliases:
 
 ## Alias Operator
 
-See [06_Operators.md](06_Operators.md) for more information.
+See [Alias operator](../08_Operators/Query/Alias.md) for more information.
 
 ## Alias in the Query
 

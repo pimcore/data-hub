@@ -1,6 +1,6 @@
 # DataObject Queries
 
-## Supported Data Types
+## Suppored Data Types
 
 Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
@@ -53,18 +53,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 ## Available Query Operators
 
-Check out the [Operators](./06_Operators.md) page for more information.
-
-* Alias
-* Asset Thumbnail
-* Asset Thumbnail HTML
-* Concatenator
-* Date Formatter
-* Element Counter
-* Merge
-* Substring
-* Static Text
-* Trimmer
+Check out the [Query operators](../08_Operators/Query) for more information.
 
 ## Get single Data Object
 

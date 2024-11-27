@@ -58,11 +58,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 ## Supported Mutation Operators
 
-* IfEmpty
-* Locale Switcher
-* ...
-
-See [the overview page](./21_Mutation_Operators.md) for more details.
+See [Mutation operators](../08_Operators/Mutation) for more details.
 
 ## Create Object
 

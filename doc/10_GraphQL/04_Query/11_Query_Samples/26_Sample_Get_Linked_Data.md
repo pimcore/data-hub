@@ -7,7 +7,7 @@
 Deeplink: [https://demo.pimcore.fun/admin/login/deeplink?object_277_object](https://demo.pimcore.fun/admin/login/deeplink?object_277_object)
 
 Note that you have to adapt your schema definition as depicted below. The thumbnail
-will generated using the [Thumbnail Operator](../06_Operators.md). 
+will be generated using the [Thumbnail operator](../../08_Operators/Query/AssetThumbnail.md). 
 
 ![Schema Definition](../../../img/graphql/manufacturer_thumbnail.png)
 
