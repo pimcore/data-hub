@@ -10,8 +10,6 @@ If you are looking for a way to directly use aliases in a GraphQL query, please 
 
 ## Example
 
-![img.png](img.png)
-
 In this example, the field `key` is renamed to `AliasForKey`. 
 
 Request:
