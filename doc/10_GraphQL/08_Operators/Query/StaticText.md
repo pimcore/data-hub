@@ -15,7 +15,7 @@ Adds the configured static text to the query.
 Request:
 ```graphql
 {
-  getCar(id: 81) {
+  getCar(id: 82) {
     id,
     StaticTextForQuery
   }
