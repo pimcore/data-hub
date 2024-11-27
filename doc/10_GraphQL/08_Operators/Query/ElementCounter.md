@@ -10,7 +10,7 @@ No configuration available.
 
 ## Example
 
-![Datahub Configs](../../img/graphql/operator_elementcounter1.png)
+![Datahub Configs](../../../img/graphql/operator_elementcounter1.png)
 
 Request:
 ```

@@ -1,6 +1,7 @@
 # Mutation Operators
 
 Operators allow to modify and transform the data before it is stored in Pimcore.
+Add the operator to the list and drag & drop the desired fields into the operator.
 
 ![Overview](../../img/graphql/mutation_operators.png)
 

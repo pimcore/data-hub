@@ -10,7 +10,7 @@ Add the operator to the list and drag & drop the desired field into the operator
 
 ## Example
 
-![Datahub Configs](../../img/graphql/date_formatter.png)
+![Datahub Configs](../../../img/graphql/date_formatter.png)
 
 Request:
 ```graphql
