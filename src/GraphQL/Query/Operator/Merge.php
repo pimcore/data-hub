@@ -81,7 +81,7 @@ class Merge extends AbstractOperator
         }
 
         if ($this->getUnique()) {
-            $resultItems = array_unique($resultItems);
+            $resultItems = array_unique($resultItems, SORT_REGULAR);
         }
         $result->value = $resultItems;
 

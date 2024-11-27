@@ -1,23 +1,38 @@
 # Date Formatter
 
 Utilizes the PHP date formatter. 
-Add the operator to the list and drag & drop the desired field into the operator.
 
 ## Configuration
 
-- **Label**: Value that gets displayed in the right panel.
+![date_formatter_config.png](../../../img/graphql/date_formatter_config.png)
+
+- **Label**: The name for the field to be used in the query .
 - **Date Format**: The format you want to use. For formatting options see [PHP Date Format](https://www.php.net/manual/en/function.date.php).
 
 ## Example
 
-![Datahub Configs](../../../img/graphql/date_formatter.png)
+![date_formatter_example.png](../../../img/graphql/date_formatter_example.png)
 
 Request:
 ```graphql
 {
-  getCar(id: 28) {
+  getCar(id: 82) {
     id,
-    modificationDate
+    modificationDate,
+    FormattedModificationDate
   }
+}
+```
+
+Response:
+```json
+{
+    "data": {
+        "getCar": {
+            "id": "82",
+            "modificationDate": 1732709167,
+            "FormattedModificationDate": "Wednesday 27th of November 2024 12:06:07"
+        }
+    }
 }
 ```

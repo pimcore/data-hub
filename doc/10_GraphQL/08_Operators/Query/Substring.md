@@ -4,6 +4,8 @@ This operator extracts a substring from a string.
 
 ## Configuration
 
+![substring_config.png](../../../img/graphql/substring_config.png)
+
 - **FieldName**: Name for the field to use in the query.
 - **Start**: The position of the first character to extract.
 - **Length**: The number of characters to extract.
@@ -11,12 +13,28 @@ This operator extracts a substring from a string.
 
 ## Example
 
+![substring_example.png](../../../img/graphql/substring_example.png)
+
 Request:
 ```graphql
 {
-  getCar(id: 28) {
-    id,    
-    substringName
+  getCar(id: 82) {
+    id,
+    description,
+    ShortDescription
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "getCar": {
+      "id": "82",
+      "description": "<p>Description that clearly exceeds 10 characters in length</p>",
+      "ShortDescription": "<p>Descript..."
+    }
   }
 }
 ```

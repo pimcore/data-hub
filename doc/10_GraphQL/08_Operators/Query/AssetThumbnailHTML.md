@@ -1,23 +1,36 @@
 # Asset Thumbnail HTML
 
 Returns the selected thumbnail HTML tag. 
-Add the operator to the list and drag & drop the desired image field into the operator.
 
 ## Configuration
+
+![thumbnail_html_config.png](../../../img/graphql/thumbnail_html_config.png)
 
 - **Attribute**: Name for the field to use in the query.
 - **Thumbnail**: Select the desired thumbnail from the list.
 
 ## Example
 
-![Thumbnail Config](../../../img/graphql/operator_thumbnail.png)
+![thumbnail_html_example.png](../../../img/graphql/thumbnail_html_example.png)
 
 Request:
 ```graphql
 {
-  getCar(id: 28) {
-    id,    
-    profileThumb
+  getCar(id: 82) {
+    id,
+    contentThumbnailHTML
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "getCar": {
+      "id": "82",
+      "contentThumbnailHTML": "<picture >\n\t<source srcset=\"/Car%20Images/ac%20cars/68/image-thumb__68__content/automotive-car-classic-149813.44c4f656.jpg 1x, /Car%20Images/ac%20cars/68/image-thumb__68__content/automotive-car-classic-149813@2x.44c4f656.jpg 2x\" width=\"1140\" height=\"641\" type=\"image/jpeg\" />\n\t<img src=\"/Car%20Images/ac%20cars/68/image-thumb__68__content/automotive-car-classic-149813.44c4f656.jpg\" width=\"1140\" height=\"641\" alt=\"\" loading=\"lazy\" srcset=\"/Car%20Images/ac%20cars/68/image-thumb__68__content/automotive-car-classic-149813.44c4f656.jpg 1x, /Car%20Images/ac%20cars/68/image-thumb__68__content/automotive-car-classic-149813@2x.44c4f656.jpg 2x\" />\n</picture>\n"
+    }
   }
 }
 ```

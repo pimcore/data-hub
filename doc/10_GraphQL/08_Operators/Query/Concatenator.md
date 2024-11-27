@@ -1,22 +1,36 @@
 # Concatenator
 
 Concatenates the values of the selected fields. 
-Add the operator and drag & drop the desired fields into the operator.
 
 ## Configuration
+
+![concat_config.png](../../../img/graphql/concat_config.png)
 
 - **Label**: Name for the field to use in the query.
 - **Glue**: The string that will be used to concatenate the values.
 
 ## Example
 
-![Concatenator Config](../../../img/graphql/operator_concatenator.png)
+![concat_example.png](../../../img/graphql/concat_example.png)
 
 Request:
 ```
 {
-  getCar(id: 28) {
-    concatenatedname
+  getCar(id: 82) {
+    id,
+    ConcatYearCountry
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "getCar": {
+      "id": "82",
+      "ConcatYearCountry": "1966-GB"
+    }
   }
 }
 ```
