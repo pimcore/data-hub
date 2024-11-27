@@ -53,7 +53,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 ## Available Query Operators
 
-Check out the [Query operators](../08_Operators/Query) for more information.
+Check out the [operators section](../08_Operators/README.md) for more information.
 
 ## Get single Data Object
 

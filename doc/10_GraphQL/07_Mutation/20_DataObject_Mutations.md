@@ -58,7 +58,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 
 ## Supported Mutation Operators
 
-See [Mutation operators](../08_Operators/Mutation) for more details.
+See [operators section](../08_Operators/README.md) for more details.
 
 ## Create Object
 
