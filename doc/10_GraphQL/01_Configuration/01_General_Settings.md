@@ -16,4 +16,9 @@ pimcore_data_hub:
     graphql:
         allow_sqlObjectCondition: false
 ```
+
+:::caution
+
 Please note that this option will be also removed in the next major version.
+
+:::

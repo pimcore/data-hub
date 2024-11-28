@@ -37,7 +37,11 @@ pimcore_data_hub:
 Defines workspaces for data that should be accessible via the endpoint.
 The definition is similar to Pimcore user [workspace permissions](https://pimcore.com/docs/6.x/Development_Documentation/Administration_of_Pimcore/Users_and_Roles.html) 
 
-**Note**: If no workspace is selected, no directories are accessible.
+:::warning
+
+If no workspace is selected, no directories are accessible.
+
+:::
 
 Available permissions:
 * Create

@@ -2,7 +2,9 @@
 This will add relations to categories relation field of Car object. Type can be omitted for 
 mutations only allowing one type, e.g. many-to-many-objects .
 
-> Note: Read permissions are required for related objects to be assigned.
+:::info
+Note: Read permissions are required for related objects to be assigned.
+:::
 
 Request:
 ```

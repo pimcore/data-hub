@@ -2,13 +2,22 @@
 
 Data object mutations are used to create, update and delete data objects, documents, assets and translations.
 Keep in mind that for all kinds of mutations you need the `Write` permission and the mutation itself needs to be enabled in the configuration.
+
+:::info
+
 Please be aware, that not all operations are supported for all data types.
+
+:::
 
 <div class="image-as-lightbox"></div>
 
 ![Mutation grid](../../img/graphql/mutation_grid.png)
- 
+
+:::info
+
 Note that for `Create` and `Update` operate you can query the updated data using the same request.
+
+:::
 
 ## Supported Mutation Datatypes
 

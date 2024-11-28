@@ -19,7 +19,11 @@ Similar to Pimcore's [Translate Value](https://pimcore.com/docs/6.x/User_Documen
 
 ![translate_value_example.png](../../../img/graphql/translate_value_example.png)
 
+:::info
+
 Note: Make sure to add the translation key to the translations in the Pimcore backend, using the admin domain.
+
+:::
 
 Request:
 ```graphql

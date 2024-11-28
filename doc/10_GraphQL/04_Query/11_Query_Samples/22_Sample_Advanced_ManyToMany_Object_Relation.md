@@ -16,7 +16,11 @@ Data:
 
 ### Request
 
+:::info
+
 Note that the response differs from `Advanced Many-to-Many Relations` as there can be only class.
+
+:::
 
 ```
 {

@@ -2,7 +2,11 @@
 
 ### Request
 
+:::info
+
 Note that for the fullpath and the base64 encoded data you can specify a thumbnail config.
+
+:::
 
 ```
 {

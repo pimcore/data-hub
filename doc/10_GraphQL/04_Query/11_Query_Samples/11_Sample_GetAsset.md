@@ -1,14 +1,23 @@
 # Get Asset By Id
 
 If you want to access an Asset directly.
+
+:::caution
+
 Note that the data will be base64 encoded and quite time-consuming to deliver.
+
+:::
 
 Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image)
 
 ### Request
 
+:::info
+
 Note that for the fullpath and the base64 encoded data you can specify a thumbnail config.
 You can use the `format` argument to retrieve the values for a specific format like `webp`.
+
+:::
 
 ```
 {

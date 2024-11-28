@@ -28,7 +28,11 @@ creating and updating documents.
 
 ### Free-form API
 
-> Important Note: To be able to fully exploit this feature you have to understand Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html) 
+:::info
+
+Important Note: To be able to fully exploit this feature you have to understand Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html)
+
+:::
 
 Update or add single or multiple editables by defining their exact name and their content.
 

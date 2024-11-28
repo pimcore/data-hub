@@ -29,7 +29,11 @@ and the server-side PHP implementation processing the input (the input processor
 A JS sample can be found 
 [here](https://github.com/pimcore/data-hub/blob/master/src/Resources/public/js/mutationoperator/IfEmpty.js).
 
+:::info
+
 Note that the namespace in your case would be `pimcore.plugin.datahub.mutationoperator.mycustommutationoperator`.
+
+:::
 
 Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/6.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
 docs page for further details.
