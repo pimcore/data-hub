@@ -4,12 +4,16 @@ Returns the selected thumbnail HTML tag.
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![thumbnail_html_config.png](../../../img/graphql/thumbnail_html_config.png)
 
 - **Attribute**: Name for the field to use in the query.
 - **Thumbnail**: Select the desired thumbnail from the list.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![thumbnail_html_example.png](../../../img/graphql/thumbnail_html_example.png)
 

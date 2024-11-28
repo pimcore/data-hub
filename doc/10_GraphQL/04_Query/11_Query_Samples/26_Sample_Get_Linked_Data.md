@@ -9,6 +9,8 @@ Deeplink: [https://demo.pimcore.fun/admin/login/deeplink?object_277_object](http
 Note that you have to adapt your schema definition as depicted below. The thumbnail
 will be generated using the [Thumbnail operator](../../08_Operators/Query/AssetThumbnail.md). 
 
+<div class="image-as-lightbox"></div>
+
 ![Schema Definition](../../../img/graphql/manufacturer_thumbnail.png)
 
 ### Request

@@ -6,10 +6,14 @@ Pimcore Datahub allows defining multiple endpoints that allow data delivery and 
 
 1. Open the Datahub configuration panel:
 
+<div class="image-as-lightbox"></div>
+
 ![Configuration Overview](./img/graphql/configuration3.png)
 
 
 2. Choose an endpoint technology: 
+
+<div class="image-as-lightbox"></div>
 
 ![Add Configuration](./img/add_config.png)
 

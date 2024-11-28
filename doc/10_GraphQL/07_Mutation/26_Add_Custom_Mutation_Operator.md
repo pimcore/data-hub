@@ -7,7 +7,7 @@ For adding a new mutation operator two steps are necessary:
 ### Type Definition
 Add a section similar to this one to your `services.yml` file.
 
-```
+```yaml
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_operator_mycustommutationoperator:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigGenerator\MyCustomMutationOperator
     tags:

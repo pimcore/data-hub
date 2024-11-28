@@ -1,5 +1,7 @@
 # Get Asset Metadata
 
+<div class="image-as-lightbox"></div>
+
 ![Metadata](../../../img/graphql/asset_metadata.png)
 
 Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image)
@@ -81,6 +83,8 @@ Get the custom asset metadata for language `de`
 ```
 
 ## Get Asset Embedded Meta Info
+
+<div class="image-as-lightbox"></div>
 
 ![Metadata](../../../img/graphql/asset_embeddedMetaInfo.png)
 

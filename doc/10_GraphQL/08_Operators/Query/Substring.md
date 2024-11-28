@@ -4,6 +4,8 @@ This operator extracts a substring from a string.
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![substring_config.png](../../../img/graphql/substring_config.png)
 
 - **FieldName**: Name for the field to use in the query.
@@ -12,6 +14,8 @@ This operator extracts a substring from a string.
 - **Ellipses**: If the string is longer than the specified length, an ellipsis is added at the end.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![substring_example.png](../../../img/graphql/substring_example.png)
 

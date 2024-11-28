@@ -7,7 +7,7 @@ For adding a new query data type two steps are necessary:
 
 To add a type definition, add a section similar to this one to your `services.yml` file.
 
-```
+```yaml
     pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_mycustomdatatype:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\MyCustomDatatype
         tags:

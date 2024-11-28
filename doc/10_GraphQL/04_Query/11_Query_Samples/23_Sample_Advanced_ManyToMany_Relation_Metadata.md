@@ -1,5 +1,7 @@
 # Get Advanced Many-to-Many Relation Metadata
 
+<div class="image-as-lightbox"></div>
+
 ![Metadata](../../../img/graphql/many2many.png)
 
 >TODO: Align this with the new demo as soon as reasonable content is available. 

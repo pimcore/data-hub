@@ -3,6 +3,8 @@
 Operators allow to modify and transform the data before it is delivered to the endpoint or stored in Pimcore,
 depending on whether they are used in a query or a mutation.
 
+<div class="image-as-lightbox"></div>
+
 ![Overview](../../img/graphql/queryoperators_overview.png)
 
 Operators can be selected in the GraphQL configuration using the `Schema Definition` tab.

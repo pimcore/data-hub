@@ -6,12 +6,16 @@ Similar to Pimcore's [Translate Value](https://pimcore.com/docs/6.x/User_Documen
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![translate_value_config.png](../../../img/graphql/translate_value_config.png)
 
 - **Label**: The label of the field.
 - **Prefix**: The prefix for the translation key.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![translate_value_example.png](../../../img/graphql/translate_value_example.png)
 

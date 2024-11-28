@@ -1,6 +1,9 @@
 # Security Settings
 
 The security settings define how the endpoint is secured and which data is accessible.
+
+<div class="image-as-lightbox"></div>
+
 ![security1.png](../../img/graphql/security1.png)
 
 ## Authentication

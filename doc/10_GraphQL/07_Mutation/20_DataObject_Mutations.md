@@ -3,7 +3,8 @@
 Data object mutations are used to create, update and delete data objects, documents, assets and translations.
 Keep in mind that for all kinds of mutations you need the `Write` permission and the mutation itself needs to be enabled in the configuration.
 Please be aware, that not all operations are supported for all data types.
- 
+
+<div class="image-as-lightbox"></div>
 
 ![Mutation grid](../../img/graphql/mutation_grid.png)
  
@@ -21,7 +22,7 @@ See [operators section](../08_Operators/README.md) for more details.
 ## Create Object
 
 Request:
-```
+```graphql
 mutation {
   createNews(parentId: 429, key: "news_created_by_gql", published: false) {
     success
@@ -59,7 +60,7 @@ Response:
 Updates german title and short text and returns the modification date. 
 
 Request:
-```
+```graphql
 mutation {
   updateNews(id: 1196, defaultLanguage: "de", input: {
     title: "german TITLE", 
@@ -93,7 +94,7 @@ Response:
 ## Delete Object
 
 Request:
-```
+```graphql
 mutation {
   deleteNews(id: 1196) {
     success
@@ -103,7 +104,7 @@ mutation {
 ```
 
 Response:
-```
+```graphql
 {
   "data": {
     "deleteNews": {

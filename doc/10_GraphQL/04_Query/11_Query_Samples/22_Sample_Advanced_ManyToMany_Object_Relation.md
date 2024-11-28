@@ -4,9 +4,13 @@
 
 Data Model:
 
+<div class="image-as-lightbox"></div>
+
 ![Data](../../../img/graphql/advanced_many_to_many_object_relation.png)
 
 Data:
+
+<div class="image-as-lightbox"></div>
 
 ![Data](../../../img/graphql/advanced_many_to_many_object_relation2.png)
 

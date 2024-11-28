@@ -6,9 +6,13 @@ Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?object_373_ob
 
 Operator Config: 
 
+<div class="image-as-lightbox"></div>
+
 ![Operator Config](../../../img/graphql/operator_translated1.png)
 
 Website Translation Grid:
+
+<div class="image-as-lightbox"></div>
 
 ![Data](../../../img/graphql/operator_translated2.png) 
 

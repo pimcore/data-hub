@@ -8,7 +8,7 @@ For adding a new query operator two steps are necessary:
 
 Add a section similar to this one to your `services.yml` file.
 
-```
+```yaml
     pimcore.datahub.graphql.querytypegenerator_operator_mycustomoperator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator\MyCustomOperator
         tags:
@@ -35,7 +35,7 @@ A sample can be found [here](https://github.com/pimcore/data-hub/blob/master/src
 Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:
 
-```
+```yaml
     pimcore.datahub.graphql.dataobjectqueryoperator.factory.mycustomoperator:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultOperatorFactory
         arguments:

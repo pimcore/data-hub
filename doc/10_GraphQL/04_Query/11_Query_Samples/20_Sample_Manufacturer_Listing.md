@@ -1,5 +1,7 @@
 # Get Manufacturer Listing
 
+<div class="image-as-lightbox"></div>
+
 ![Grid](../../../img/graphql/manufacturer_listing.png)
 
 ### Request

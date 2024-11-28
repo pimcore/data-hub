@@ -62,5 +62,6 @@ mutation {
    }
 }
 ```
+<div class="image-as-lightbox"></div>
 
 ![Grid](../../../img/graphql/document_create_mutation.png)

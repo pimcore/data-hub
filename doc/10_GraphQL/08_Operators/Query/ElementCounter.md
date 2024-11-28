@@ -5,6 +5,8 @@ Useful for counting the number of elements in a relation field.
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![element_counter_config.png](../../../img/graphql/element_counter_config.png)
 
 - **Label**: Name for the field to use in the query.
@@ -12,10 +14,12 @@ Useful for counting the number of elements in a relation field.
 
 ## Example
 
+<div class="image-as-lightbox"></div>
+
 ![element_counter_example.png](../../../img/graphql/element_counter_example.png)
 
 Request:
-```
+```graphql
 {
   getCar(id: 82) {
     id,

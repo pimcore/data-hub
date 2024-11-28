@@ -1,5 +1,7 @@
 # Many-to-Many Object Relation
 
+<div class="image-as-lightbox"></div>
+
 ![Data](../../../img/graphql/many_to_many_object_relation.png)
 
 ### Request

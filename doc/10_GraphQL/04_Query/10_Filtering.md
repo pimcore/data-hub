@@ -6,7 +6,9 @@ to filter listing.
 
 
 ## Sample
-Get all `Manufacturer` objects which have 'ca' in their name field. 
+Get all `Manufacturer` objects which have 'ca' in their name field.
+
+<div class="image-as-lightbox"></div>
 
 ![Filtered Grid](../../img/graphql/filtering.png)
 

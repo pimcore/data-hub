@@ -6,11 +6,15 @@ If you are looking for a way to directly use aliases in a GraphQL query, please 
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![alias_config.png](../../../img/graphql/alias_config.png)
 
 - **Attribute**: The new name for the field to be used in the query.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![alias_example.png](../../../img/graphql/alias_example.png)
 

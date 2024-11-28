@@ -4,11 +4,15 @@ Only sets the value if current one is empty. Add the operator to the list and dr
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![ifempty_config.png](../../../img/graphql/ifempty_config.png)
 
 - **Label**: Field name to be used in the query.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![ifempty_example.png](../../../img/graphql/ifempty_example.png)
 

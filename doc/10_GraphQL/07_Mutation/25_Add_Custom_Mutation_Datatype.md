@@ -6,7 +6,7 @@ For adding a new mutation data type two steps are necessary:
 
 Add a section similar to this one to your `services.yml` file.
 
-```
+```yaml
     pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_mycustomdatatype:
         class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\MyCustomDatatype
         tags:

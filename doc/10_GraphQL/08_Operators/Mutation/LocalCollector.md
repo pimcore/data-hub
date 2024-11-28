@@ -4,11 +4,15 @@ Allows editing all languages for a single field.
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![locale_collector_config.png](../../../img/graphql/locale_collector_config.png)
 
 - **Label**: Name for the field to be used in the mutation.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![locale_collector_example.png](../../../img/graphql/locale_collector_example.png)
 

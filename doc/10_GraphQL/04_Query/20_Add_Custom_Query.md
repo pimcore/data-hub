@@ -43,6 +43,7 @@ if you need more information on Pimcore's event mechanism.
         $event->setConfig($config);
     });
 ```
+<div class="image-as-lightbox"></div>
 
 ![iExplorer](../../img/graphql/add_query.png)
 

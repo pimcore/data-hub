@@ -2,6 +2,8 @@
 
 For example, to get `berlina` object's (id:261) parent, children and siblings
 
+<div class="image-as-lightbox"></div>
+
 ![](../../../img/graphql/sample_parentChildrenSiblings.png)
 
 ### Request

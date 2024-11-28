@@ -6,7 +6,7 @@ You can change the default language for localized fields by passing the `default
 for single and listing queries.
 
 #####  Sample Request
-```
+```graphql
 {
   getNewsListing(defaultLanguage: "de") {
   ...
@@ -18,7 +18,7 @@ for single and listing queries.
 However, you can always provide an alternative language for a specific field.
 
 #####  Sample Request
-```
+```graphql
 {
   getUser(id: 50, defaultLanguage: "en") {
     myAdvancedObjects {
@@ -39,7 +39,7 @@ However, you can always provide an alternative language for a specific field.
 ```
 
 ##### Response
-```
+```graphql
 {
   "data": {
     "getUser": {

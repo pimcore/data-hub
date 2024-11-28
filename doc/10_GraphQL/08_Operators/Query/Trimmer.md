@@ -4,12 +4,16 @@ Trims the value.
 
 ## Configuration
 
+<div class="image-as-lightbox"></div>
+
 ![trim_config.png](../../../img/graphql/trim_config.png)
 
 - **Label**: Name for the field to use in the query.
 - **Trim**: Where to trim, either `both`, `left`, `right` or `disabled`.
 
 ## Example
+
+<div class="image-as-lightbox"></div>
 
 ![trim_example.png](../../../img/graphql/trim_example.png)
 

@@ -1,10 +1,14 @@
 # Locale Switcher
 
+<div class="image-as-lightbox"></div>
+
 ![locale_switcher_config.png](../../../img/graphql/locale_switcher_config.png)
 
 Switches to different language other than the default language. Add the operator to the list and 
 
 ## Configuration
+
+<div class="image-as-lightbox"></div>
 
 ![locale_switcher_example.png](../../../img/graphql/locale_switcher_example.png)
 

@@ -14,7 +14,7 @@ When deploying configurations following steps are necessary:
 Either call: 
 ```bash
 datahub:configuration:rebuild-workspaces
-``` 
+```
 to do that for all definitions, or:
 
 

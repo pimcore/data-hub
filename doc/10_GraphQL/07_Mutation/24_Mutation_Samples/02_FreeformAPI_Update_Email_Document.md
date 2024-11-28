@@ -27,4 +27,6 @@ mutation {
 }
 ```
 
+<div class="image-as-lightbox"></div>
+
 ![Grid](../../../img/graphql/document_updateemail_mutation.png)

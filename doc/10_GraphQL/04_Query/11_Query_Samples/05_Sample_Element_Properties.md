@@ -1,5 +1,7 @@
 # Get Element Properties
 
+<div class="image-as-lightbox"></div>
+
 ![Sample Document Properties](../../../img/graphql/element_properties.png)
 
 ### Request

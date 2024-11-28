@@ -12,6 +12,8 @@ and services via GraphQL and test them with the integrated
 
 [![Preview](../img/graphql/intro_preview.png)](../img/graphql/intro.mp4)
 
+<div class="image-as-lightbox"></div>
+
 ![Explorer](../img/graphql/iexplorer.png)
 
 
@@ -61,6 +63,8 @@ See following pages for a general overview of possible mutations:
 [GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) can be opened
 for an endpoint in an iframe within Pimcore or as an additional browser tab. 
 
+<div class="image-as-lightbox"></div>
+
 ![Open iExplorer](../img/graphql/open_explorer.png)
 
 
@@ -93,5 +97,7 @@ see [Events Documentation](./10_Events.md).
 
 Open the settings and change `request.credentials` to `include`. Otherwise the 
 `XDEBUG_SESSION` cookie header will get removed by default.
+
+<div class="image-as-lightbox"></div>
 
 ![Settings](../img/graphql/debugging.png)
