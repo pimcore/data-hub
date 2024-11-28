@@ -4,23 +4,43 @@
 
 ![Metadata](../../../img/graphql/many2many.png)
 
->TODO: Align this with the new demo as soon as reasonable content is available. 
+Data:
+
+<div class="image-as-lightbox"></div>
+
+![many2many_data.png](../../../img/graphql/many2many_data.png)
 
 ### Request
 
-News listing with limit 3 and offset 1
-```
+:::info
+
+Make sure to use the correct inline fragments to access data from the related classes.
+The exact class name is required to access the data. E.g. for manufacturer data use `... on object_Manufacturer`.
+
+:::
+
+```graphql
 {
-  getUser(id: 50) {
-    # advanced many-to-many relation
-    multimeta {
+  getAccessoryPart(id:408) {
+    id,
+    classname
+    additionalLinkedElements {
       element {
-        ... on asset {
+				... on asset {
+          id, 
+          fullpath
+        }
+        ... on object_Manufacturer {
+          id,
+          name
+        }
+        ... on document_page {
+          id,
           fullpath
         }
       }
       metadata {
-        name
+        name, 
         value
       }
     }
@@ -30,52 +50,52 @@ News listing with limit 3 and offset 1
 
 ### Response
 
-```
+```json
 {
-  "data": {
-    "getUser": {
-      "multimeta": [
-        {
-          "element": {
-            "fullpath": "/screenshots/properties-2.png"
-          },
-          "metadata": [
-            {
-              "name": "aname",
-              "value": "B"
-            },
-            {
-              "name": "multi",
-              "value": "1,2"
-            },
-            {
-              "name": "name",
-              "value": "A"
-            }
-          ]
-        },
-        {
-          "element": {
-            "fullpath": "/screenshots/pim1.png"
-          },
-          "metadata": [
-            {
-              "name": "aname",
-              "value": "D"
-            },
-            {
-              "name": "multi",
-              "value": "3,2"
-            },
-            {
-              "name": "name",
-              "value": "C"
-            }
-          ]
+    "data": {
+        "getAccessoryPart": {
+            "id": "408",
+            "classname": "AccessoryPart",
+            "additionalLinkedElements": [
+                {
+                    "element": {
+                        "id": "97",
+                        "fullpath": "/en/Find-and-Buy/On-Sale"
+                    },
+                    "metadata": [
+                        {
+                            "name": "altName",
+                            "value": "OnSale"
+                        }
+                    ]
+                },
+                {
+                    "element": {
+                        "id": "33",
+                        "fullpath": "/Car%20Images/austin%20healey/austin-healey-1019023.jpg"
+                    },
+                    "metadata": [
+                        {
+                            "name": "altName",
+                            "value": "CarImage"
+                        }
+                    ]
+                },
+                {
+                    "element": {
+                        "id": "35",
+                        "name": "Austin-Healey"
+                    },
+                    "metadata": [
+                        {
+                            "name": "altName",
+                            "value": "Manufacturer"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     }
-  }
 }
 ```
 
