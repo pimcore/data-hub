@@ -23,5 +23,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 interface ResponseServiceInterface
 {
     public function removeCorsHeaders(JsonResponse $response): void;
+
     public function addCorsHeaders(JsonResponse $response): void;
 }
