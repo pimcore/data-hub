@@ -33,6 +33,7 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
+use Pimcore\Bundle\DataHubBundle\Service\ResponseServiceInterface;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Helper\LongRunningHelper;
@@ -90,7 +91,8 @@ class WebserviceController extends FrontendController
         LocaleServiceInterface $localeService,
         Factory $modelFactory,
         Request $request,
-        LongRunningHelper $longRunningHelper
+        LongRunningHelper $longRunningHelper,
+        ResponseServiceInterface $responseService
     ) {
         $clientname = $request->attributes->getString('clientname');
         $variableValues = null;
@@ -106,6 +108,8 @@ class WebserviceController extends FrontendController
 
         if ($response = $this->cacheService->load($request)) {
             Logger::debug('Loading response from cache');
+
+            $responseService->addCorsHeaders($response);
 
             return $response;
         }
@@ -226,7 +230,10 @@ class WebserviceController extends FrontendController
         }
 
         $response = new JsonResponse($output);
+
+        $responseService->removeCorsHeaders($response);
         $this->cacheService->save($request, $response);
+        $responseService->addCorsHeaders($response);
 
         return $response;
     }
