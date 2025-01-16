@@ -66,7 +66,7 @@ class Image
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $relation = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
 

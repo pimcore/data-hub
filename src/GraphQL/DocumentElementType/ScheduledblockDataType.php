@@ -35,7 +35,7 @@ class ScheduledblockDataType extends ObjectType
                 'fields' => [
                     '_editableType' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if ($value) {
                                 return $value->getType();
                             }
@@ -43,7 +43,7 @@ class ScheduledblockDataType extends ObjectType
                     ],
                     '_editableName' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if ($value) {
                                 return $value->getName();
                             }
@@ -51,7 +51,7 @@ class ScheduledblockDataType extends ObjectType
                     ],
                     'key' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['key'];
                             }
@@ -61,7 +61,7 @@ class ScheduledblockDataType extends ObjectType
                     ],
                     'date' => [
                         'type' => Type::int(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['date'];
                             }

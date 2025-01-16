@@ -65,7 +65,7 @@ class Objects
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $relations = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($relations) {

@@ -31,7 +31,7 @@ class Link
      *
      * @throws \Exception
      */
-    public function resolveText($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveText($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'text');
     }
@@ -45,7 +45,7 @@ class Link
      *
      * @throws \Exception
      */
-    public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'path');
     }
@@ -54,7 +54,7 @@ class Link
      *
      * @return null
      */
-    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTarget($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'target');
     }
@@ -63,7 +63,7 @@ class Link
      *
      * @return null
      */
-    public function resolveAnchor($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveAnchor($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'anchor');
     }
@@ -72,7 +72,7 @@ class Link
      *
      * @return null
      */
-    public function resolveTitle($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTitle($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'title');
     }
@@ -81,7 +81,7 @@ class Link
      *
      * @return null
      */
-    public function resolveAccesskey($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveAccesskey($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'accesskey');
     }
@@ -90,7 +90,7 @@ class Link
      *
      * @return null
      */
-    public function resolveRel($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveRel($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'rel');
     }
@@ -99,7 +99,7 @@ class Link
      *
      * @return null
      */
-    public function resolveClass($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveClass($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'class');
     }
@@ -108,7 +108,7 @@ class Link
      *
      * @return null
      */
-    public function resolveAttributes($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveAttributes($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'attributes');
     }
@@ -117,7 +117,7 @@ class Link
      *
      * @return null
      */
-    public function resolveTabindex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTabindex($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'tabindex');
     }
@@ -126,7 +126,7 @@ class Link
      *
      * @return null
      */
-    public function resolveParameters($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveParameters($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $this->resolveLinkValue($value, 'parameters');
     }

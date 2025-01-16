@@ -66,7 +66,7 @@ class ReverseManyToManyObjects
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $objectId = $value['id'];
         $object = Concrete::getById($objectId);

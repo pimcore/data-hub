@@ -37,7 +37,7 @@ class AreablockType extends ObjectType
                     'fields' => [
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getType();
                                 }
@@ -45,7 +45,7 @@ class AreablockType extends ObjectType
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -53,7 +53,7 @@ class AreablockType extends ObjectType
                         ],
                         'data' => [
                             'type' => Type::listOf($areablockDataType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Areablock) {
                                     return $value->getData();
                                 }

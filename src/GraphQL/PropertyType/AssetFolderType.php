@@ -43,7 +43,7 @@ class AssetFolderType extends ObjectType
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getName();
                         }
@@ -51,7 +51,7 @@ class AssetFolderType extends ObjectType
                 ],
                 'type' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value instanceof MarkerHotspotItem || $value instanceof Property) {
                             return $value->getType();
                         }
@@ -59,7 +59,7 @@ class AssetFolderType extends ObjectType
                 ],
                 'asset' => [
                     'type' => $assetFolderType,
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($graphQlService) {
                         $element = null;
                         if ($value instanceof MarkerHotspotItem) {
                             $element = \Pimcore\Model\Element\Service::getElementById($value->getType(), $value->getValue());

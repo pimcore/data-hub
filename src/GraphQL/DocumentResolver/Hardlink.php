@@ -38,7 +38,7 @@ class Hardlink
      *
      * @throws \Exception
      */
-    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTarget($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);

@@ -57,7 +57,7 @@ class Base
      *
      * @return \stdClass
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\AbstractOperator $operatorImpl */
         $operatorImpl = $this->getGraphQlService()->buildQueryOperator($this->typeName, $this->attributes);

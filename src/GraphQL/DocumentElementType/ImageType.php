@@ -50,7 +50,7 @@ class ImageType extends ObjectType
                     'fields' => [
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getType();
                                 }
@@ -60,7 +60,7 @@ class ImageType extends ObjectType
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getName();
                                 }
@@ -70,7 +70,7 @@ class ImageType extends ObjectType
                         ],
                         'image' => [
                             'type' => $assetType,
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($resolver) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($resolver) {
                                 if ($value instanceof Image) {
                                     $data = $value->getData();
                                     if (isset($data['id'])) {
@@ -86,7 +86,7 @@ class ImageType extends ObjectType
                         ],
                         'alt' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getAlt();
                                 }
@@ -96,7 +96,7 @@ class ImageType extends ObjectType
                         ],
                         'crop' => [
                             'type' => HotspotCropType::getInstance(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return [
                                         'cropTop' => $value->getCropTop(),
@@ -112,7 +112,7 @@ class ImageType extends ObjectType
                         ],
                         'hotspots' => [
                             'type' => Type::listOf($hotspotHotspotType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getHotspots();
                                 }
@@ -122,7 +122,7 @@ class ImageType extends ObjectType
                         ],
                         'marker' => [
                             'type' => Type::listOf($hotspotMarkerType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Image) {
                                     return $value->getMarker();
                                 }

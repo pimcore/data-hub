@@ -75,7 +75,7 @@ class Hotspotimage
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $container = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
         if ($container instanceof \Pimcore\Model\DataObject\Data\Hotspotimage) {

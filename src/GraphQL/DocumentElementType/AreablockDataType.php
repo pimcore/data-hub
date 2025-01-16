@@ -35,7 +35,7 @@ class AreablockDataType extends ObjectType
                 'fields' => [
                     '_editableType' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if ($value) {
                                 return $value->getType();
                             }
@@ -43,7 +43,7 @@ class AreablockDataType extends ObjectType
                     ],
                     '_editableName' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if ($value) {
                                 return $value->getName();
                             }
@@ -51,7 +51,7 @@ class AreablockDataType extends ObjectType
                     ],
                     'key' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['key'];
                             }
@@ -61,7 +61,7 @@ class AreablockDataType extends ObjectType
                     ],
                     'type' => [
                         'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['type'];
                             }
@@ -71,7 +71,7 @@ class AreablockDataType extends ObjectType
                     ],
                     'hidden' => [
                         'type' => Type::boolean(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                             if (is_array($value)) {
                                 return $value['hidden'];
                             }

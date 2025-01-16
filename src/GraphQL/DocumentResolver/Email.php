@@ -34,7 +34,7 @@ class Email
      *
      * @throws \Exception
      */
-    public function resolveObject($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveObject($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);

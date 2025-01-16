@@ -37,7 +37,7 @@ class EmbedType extends ObjectType
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Date) {
                                     return $value->getName();
                                 }
@@ -45,7 +45,7 @@ class EmbedType extends ObjectType
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Date) {
                                     return $value->getType();
                                 }
@@ -53,7 +53,7 @@ class EmbedType extends ObjectType
                         ],
                         'url' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Embed) {
                                     return $value->getUrl();
                                 }
