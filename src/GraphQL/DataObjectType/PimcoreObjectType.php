@@ -83,7 +83,7 @@ class PimcoreObjectType extends ObjectType
             'modificationDate' => Type::int(),
             'version' => [
                 'type' => Type::int(),
-                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     $object = \Pimcore\Model\DataObject::getById($value['id']);
                     if ($object) {
                         foreach (array_reverse($object->getVersions()) as $version) {
@@ -98,7 +98,7 @@ class PimcoreObjectType extends ObjectType
             ],
             'objectType' => [
                 'type' => Type::string(),
-                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     $object = \Pimcore\Model\DataObject::getById($value['id']);
 
                     if ($object) {
@@ -292,7 +292,7 @@ class PimcoreObjectType extends ObjectType
             [
                 'name' => $fieldname,
                 'type' => Type::listOf($union),
-                'resolve' => function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($fieldname) {
+                'resolve' => function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($fieldname) {
                     if ($value[$fieldname] instanceof Fieldcollection) {
                         $lofItems = [];
                         $fcData = $value[$fieldname];

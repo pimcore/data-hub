@@ -35,7 +35,7 @@ class MultiselectType extends ObjectType
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -43,7 +43,7 @@ class MultiselectType extends ObjectType
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
@@ -51,7 +51,7 @@ class MultiselectType extends ObjectType
                         ],
                         'selections' => [
                             'type' => Type::listOf(Type::string()),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Multiselect) {
                                     return $value->getData();
                                 }

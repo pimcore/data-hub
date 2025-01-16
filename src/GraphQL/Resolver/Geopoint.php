@@ -32,7 +32,7 @@ class Geopoint
      *
      * @throws \Exception
      */
-    public function resolveLongitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveLongitude($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof GeoCoordinates) {
             return $value->getLongitude();
@@ -50,7 +50,7 @@ class Geopoint
      *
      * @throws \Exception
      */
-    public function resolveLatitude($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveLatitude($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof GeoCoordinates) {
             return $value->getLatitude();

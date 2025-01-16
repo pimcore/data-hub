@@ -41,7 +41,7 @@ class Link
      *
      * @throws \Exception
      */
-    public function resolveObject($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveObject($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $document = Document::getById($documentId);
@@ -65,7 +65,7 @@ class Link
      *
      * @throws \Exception
      */
-    public function resolveTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTarget($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof Document\Editable\Link) {
             $value = $value->getData();

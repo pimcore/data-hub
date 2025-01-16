@@ -32,7 +32,7 @@ class Video
      *
      * @return string|null
      */
-    public function resolveType($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveType($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Video) {
             return $value->getType();
@@ -50,7 +50,7 @@ class Video
      *
      * @throws \Exception
      */
-    public function resolveTitle($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTitle($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Video) {
             return $value->getTitle();
@@ -66,7 +66,7 @@ class Video
      *
      * @return string|null
      */
-    public function resolveDescription($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveDescription($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Video) {
             return $value->getDescription();
@@ -82,7 +82,7 @@ class Video
      *
      * @return ElementDescriptor|null
      */
-    public function resolvePoster($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolvePoster($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Video) {
             $asset = $value->getPoster();
@@ -112,7 +112,7 @@ class Video
      *
      * @return ElementDescriptor|array|null
      */
-    public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof \Pimcore\Model\DataObject\Data\Video) {
             if ($value->getType() == 'asset' && $value->getData() instanceof \Pimcore\Model\Asset\Video) {

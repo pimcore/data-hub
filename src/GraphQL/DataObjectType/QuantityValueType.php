@@ -32,7 +32,7 @@ class QuantityValueType extends ObjectType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $config = [], $context = [])
+    public function __construct(Service $graphQlService, ?Data $fieldDefinition = null, $config = [], $context = [])
     {
         $this->fieldDefinition = $fieldDefinition;
         $this->setGraphQLService($graphQlService);

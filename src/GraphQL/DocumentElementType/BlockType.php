@@ -36,7 +36,7 @@ class BlockType extends ObjectType
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Block) {
                                     return $value->getName();
                                 }
@@ -44,7 +44,7 @@ class BlockType extends ObjectType
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Block) {
                                     return $value->getType();
                                 }
@@ -52,7 +52,7 @@ class BlockType extends ObjectType
                         ],
                         'indices' => [
                             'type' => Type::listOf(Type::int()),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Block) {
                                     return $value->getData();
                                 }

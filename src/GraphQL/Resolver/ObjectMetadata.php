@@ -57,7 +57,7 @@ class ObjectMetadata
      *
      * @throws \Exception
      */
-    public function resolveElement($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveElement($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $element = null;
 
@@ -92,7 +92,7 @@ class ObjectMetadata
      *
      * @throws \Exception
      */
-    public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveMetadata($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value && $value['element']) {
             /** @var Data\ObjectMetadata $relation */

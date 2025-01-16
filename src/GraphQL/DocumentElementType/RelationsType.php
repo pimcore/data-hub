@@ -44,7 +44,7 @@ class RelationsType extends ObjectType
                     'fields' => [
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relations) {
                                     return $value->getType();
                                 }
@@ -52,7 +52,7 @@ class RelationsType extends ObjectType
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relations) {
                                     return $value->getName();
                                 }
@@ -60,7 +60,7 @@ class RelationsType extends ObjectType
                         ],
                         'relations' => [
                             'type' => Type::listOf($anyTargetType),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Relations) {
                                     $targets = $value->getElements();
                                     if ($targets) {

@@ -39,7 +39,7 @@ class ObjectMetadataType extends ObjectType
      * @param ClassDefinition|null $class
      * @param array $config
      */
-    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])
+    public function __construct(Service $graphQlService, ?Data $fieldDefinition = null, $class = null, $config = [])
     {
         $this->setGraphQLService($graphQlService);
         $this->class = $class;

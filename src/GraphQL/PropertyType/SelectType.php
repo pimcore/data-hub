@@ -35,7 +35,7 @@ class SelectType extends ObjectType
             'fields' => [
                 'name' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value instanceof Property) {
                             return $value->getName();
                         }
@@ -43,7 +43,7 @@ class SelectType extends ObjectType
                 ],
                 'type' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value instanceof Property) {
                             return $value->getType();
                         }
@@ -51,7 +51,7 @@ class SelectType extends ObjectType
                 ],
                 'text' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value instanceof Property) {
                             return $value->getData();
                         }

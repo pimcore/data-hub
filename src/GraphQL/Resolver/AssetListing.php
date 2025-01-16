@@ -51,7 +51,7 @@ class AssetListing
      *
      * @return mixed
      */
-    public function resolveEdges($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdges($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $value['edges'];
     }
@@ -63,7 +63,7 @@ class AssetListing
      *
      * @return ElementDescriptor|null
      */
-    public function resolveEdge($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEdge($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $element = $value['node'];
 
@@ -83,7 +83,7 @@ class AssetListing
      *
      * @throws \Exception
      */
-    public function resolveListing($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveListing($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
@@ -208,7 +208,7 @@ class AssetListing
      *
      * @return mixed
      */
-    public function resolveListingTotalCount($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveListingTotalCount($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         return $value['totalCount'];
     }

@@ -45,7 +45,7 @@ class Substring extends AbstractOperator
      *
      * @throws \Exception
      */
-    public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
+    public function getLabeledValue($element, ?ResolveInfo $resolveInfo = null)
     {
         $result = new \stdClass();
         $result->label = $this->label;
