@@ -32,7 +32,7 @@ class QuantityValue
      *
      * @throws \Exception
      */
-    public function resolveUnit($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveUnit($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof AbstractQuantityValue && $unit = $value->getUnit()) {
             return $unit->getObjectVars();
@@ -50,7 +50,7 @@ class QuantityValue
      *
      * @throws \Exception
      */
-    public function resolveValue($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveValue($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof AbstractQuantityValue) {
             return $value->getValue();
@@ -68,7 +68,7 @@ class QuantityValue
      *
      * @throws \Exception
      */
-    public function resolveToString($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveToString($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $returnValue = null;
 

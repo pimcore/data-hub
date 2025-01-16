@@ -27,7 +27,7 @@ class DefaultValue extends AbstractValue
      *
      * @return \stdClass|null
      */
-    public function getLabeledValue($element, ResolveInfo $resolveInfo = null)
+    public function getLabeledValue($element, ?ResolveInfo $resolveInfo = null)
     {
         if ($element instanceof Concrete) {
             $result = new \stdClass();

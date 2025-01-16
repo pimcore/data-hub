@@ -63,7 +63,7 @@ class Base
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $result = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);
 

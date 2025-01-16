@@ -45,7 +45,7 @@ class Document extends Element
      *
      * @throws \Exception
      */
-    public function resolveTranslations($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null): array
+    public function resolveTranslations($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null): array
     {
         $languageRequested = $args['defaultLanguage'] ?? null;
 
@@ -77,7 +77,7 @@ class Document extends Element
      *
      * @throws \Exception
      */
-    public function resolveTranslationTarget($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null): ?ElementDescriptor
+    public function resolveTranslationTarget($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null): ?ElementDescriptor
     {
         $document = \Pimcore\Model\Document::getById($value['id']);
         if ($document instanceof \Pimcore\Model\Document) {

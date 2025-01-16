@@ -43,7 +43,7 @@ class RelationType extends ObjectType
                     'fields' => [
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
@@ -51,7 +51,7 @@ class RelationType extends ObjectType
                         ],
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getName();
                                 }
@@ -59,7 +59,7 @@ class RelationType extends ObjectType
                         ],
                         'id' => [
                             'type' => Type::int(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getId();
                                 }
@@ -67,7 +67,7 @@ class RelationType extends ObjectType
                         ],
                         'type' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getType();
                                 }
@@ -75,7 +75,7 @@ class RelationType extends ObjectType
                         ],
                         'subtype' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof Relation) {
                                     return $value->getSubtype();
                                 }
@@ -83,7 +83,7 @@ class RelationType extends ObjectType
                         ],
                         'relation' => [
                             'type' => $anyTargetType,
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($graphQlService) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($graphQlService) {
                                 if ($value instanceof Relation) {
                                     $target = $value->getElement();
                                     if ($target) {

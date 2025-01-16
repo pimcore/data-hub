@@ -31,7 +31,7 @@ class Helper extends ObjectType
         $fields = [
             'id' => [
                 'type' => Type::int(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getId();
                     }
@@ -39,7 +39,7 @@ class Helper extends ObjectType
             ],
             'name' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         $keyConfig = KeyConfig::getById($value->getId());
                         if ($keyConfig) {
@@ -50,7 +50,7 @@ class Helper extends ObjectType
             ],
             'title' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         $keyConfig = KeyConfig::getById($value->getId());
                         if ($keyConfig) {
@@ -63,7 +63,7 @@ class Helper extends ObjectType
             ],
             'description' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         $keyConfig = KeyConfig::getById($value->getId());
                         if ($keyConfig) {
@@ -74,7 +74,7 @@ class Helper extends ObjectType
             ],
             'type' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getType();
                     }

@@ -43,7 +43,7 @@ class PdfType extends ObjectType
                     'fields' => [
                         '_editableName' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value) {
                                     return $value->getName();
                                 }
@@ -51,7 +51,7 @@ class PdfType extends ObjectType
                         ],
                         '_editableType' => [
                             'type' => Type::string(),
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                                 if ($value instanceof \Pimcore\Model\Document\Editable\Numeric) {
                                     return $value->getType();
                                 }
@@ -59,7 +59,7 @@ class PdfType extends ObjectType
                         ],
                         'pdf' => [
                             'type' => $assetType,
-                            'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) use ($service) {
+                            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($service) {
                                 if ($value instanceof Pdf) {
                                     $pdfAsset = $value->getElement();
                                     if ($pdfAsset) {

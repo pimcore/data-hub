@@ -39,7 +39,7 @@ class DataObject extends Element
      *
      * @throws \Exception
      */
-    public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTag($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $object = \Pimcore\Model\DataObject::getById($value['id']);
 
@@ -60,7 +60,7 @@ class DataObject extends Element
      *
      * @return int|null
      */
-    public function resolveIndex($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveIndex($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if (null === $value) {
             return null;
@@ -82,7 +82,7 @@ class DataObject extends Element
      *
      * @return string|null
      */
-    public function resolveChildrenSortBy($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveChildrenSortBy($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if (null === $value) {
             return null;

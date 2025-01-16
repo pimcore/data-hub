@@ -30,5 +30,5 @@ interface ConfigElementInterface
      *
      * @return \stdClass|null
      */
-    public function getLabeledValue($element, ResolveInfo $resolveInfo = null);
+    public function getLabeledValue($element, ?ResolveInfo $resolveInfo = null);
 }

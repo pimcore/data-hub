@@ -77,7 +77,7 @@ class ImageGallery
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $result = [];
         $relations = GraphQlService::resolveValue($value, $this->fieldDefinition, $this->attribute, $args);

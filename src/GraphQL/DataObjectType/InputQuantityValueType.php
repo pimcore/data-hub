@@ -25,7 +25,7 @@ class InputQuantityValueType extends QuantityValueType
      * @param array $config
      * @param array $context
      */
-    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $config = [], $context = [])
+    public function __construct(Service $graphQlService, ?Data $fieldDefinition = null, $config = [], $context = [])
     {
         $config['fields'] = [
             'value' => [

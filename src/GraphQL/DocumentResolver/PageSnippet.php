@@ -35,7 +35,7 @@ class PageSnippet
      *
      * @throws \Exception
      */
-    public function resolveElements($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveElements($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $documentId = $value['id'];
         $getInheritedValuesInput = $args['getInheritedValues'] ?? false;

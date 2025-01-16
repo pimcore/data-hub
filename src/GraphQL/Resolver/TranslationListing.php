@@ -36,7 +36,7 @@ class TranslationListing
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function resolveEdge(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): mixed
+    public function resolveEdge(mixed $value = null, array $args = [], array $context = [], ?ResolveInfo $resolveInfo = null): mixed
     {
         $translation = $value['node'];
         $data = new ElementDescriptor();
@@ -46,7 +46,7 @@ class TranslationListing
         return $fieldHelper->extractData($data, $translation, $args, $context, $resolveInfo);
     }
 
-    public function resolveEdges(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): mixed
+    public function resolveEdges(mixed $value = null, array $args = [], array $context = [], ?ResolveInfo $resolveInfo = null): mixed
     {
         return $value['edges'];
     }
@@ -54,7 +54,7 @@ class TranslationListing
     /**
      * @throws \Exception
      */
-    public function resolveListing(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): array
+    public function resolveListing(mixed $value = null, array $args = [], array $context = [], ?ResolveInfo $resolveInfo = null): array
     {
         // get list of types
         $list = new \Pimcore\Model\Translation\Listing();
@@ -118,7 +118,7 @@ class TranslationListing
         return $connection;
     }
 
-    public function resolveListingTotalCount(mixed $value = null, array $args = [], array $context = [], ResolveInfo $resolveInfo = null): mixed
+    public function resolveListingTotalCount(mixed $value = null, array $args = [], array $context = [], ?ResolveInfo $resolveInfo = null): mixed
     {
         return $value['totalCount'];
     }

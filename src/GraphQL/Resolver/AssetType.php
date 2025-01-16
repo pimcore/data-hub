@@ -39,7 +39,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveTag($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveTag($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
 
@@ -62,7 +62,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveMetadata($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveMetadata($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         $metadata = $asset?->getMetadata(raw: true);
@@ -119,7 +119,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveEmbeddedMetaInfo($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveEmbeddedMetaInfo($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         if (!$asset) {
@@ -142,7 +142,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolvePath($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
@@ -166,7 +166,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveData($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
@@ -191,7 +191,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveSrcSet($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         $thumbNailConfig = $args['thumbnail'] ?? null;
@@ -227,7 +227,7 @@ class AssetType
      *
      * @throws Exception
      */
-    public function resolveResolutions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveResolutions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $types = $args['types'];
         $thumbnail = $value['url'] ?? null;
@@ -292,7 +292,7 @@ class AssetType
      *
      * @throws \Exception
      */
-    public function resolveDimensions($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveDimensions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
@@ -361,7 +361,7 @@ class AssetType
     /**
      * @throws Exception
      */
-    public function resolveVersion($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolveVersion($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
         if ($asset) {

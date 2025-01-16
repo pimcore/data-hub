@@ -40,7 +40,7 @@ class ElementDescriptorInputType extends InputObjectType
      * @param array $context
      */
     public function __construct(Service $graphQlService,
-        Data $fieldDefinition = null,
+        ?Data $fieldDefinition = null,
         $class = null,
         $config = ['name' => 'ElementDescriptorInput'],
         $context = [])

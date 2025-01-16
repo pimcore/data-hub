@@ -36,7 +36,7 @@ class SimpleTextType extends ObjectType
             'fields' => [
                 '_editableName' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value) {
                             return $value->getName();
                         }
@@ -44,7 +44,7 @@ class SimpleTextType extends ObjectType
                 ],
                 '_editableType' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value) {
                             return $value->getType();
                         }
@@ -52,7 +52,7 @@ class SimpleTextType extends ObjectType
                 ],
                 'text' => [
                     'type' => Type::string(),
-                    'resolve' => static function ($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null) {
+                    'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                         if ($value) {
                             if ($value instanceof Table) {
                                 if ($value->getData()) {

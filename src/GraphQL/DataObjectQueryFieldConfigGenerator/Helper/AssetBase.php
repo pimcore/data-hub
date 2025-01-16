@@ -65,7 +65,7 @@ class AssetBase
      *
      * @throws \Exception
      */
-    public function resolve($value = null, $args = [], $context = [], ResolveInfo $resolveInfo = null)
+    public function resolve($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = Service::resolveValue($value, $this->fieldDefinition, $this->attribute, $args = []);
 

@@ -43,7 +43,7 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
      * @param ClassDefinition|Definition|null $class
      * @param array $config
      */
-    public function __construct(Service $graphQlService, Data $fieldDefinition = null, $class = null, $config = [])
+    public function __construct(Service $graphQlService, ?Data $fieldDefinition = null, $class = null, $config = [])
     {
         $this->class = $class;
         $this->fieldDefinition = $fieldDefinition;
