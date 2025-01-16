@@ -25,10 +25,10 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - { php-version: "8.1", dependencies: "lowest", require_admin_bundle: false }
-                    - { php-version: "8.2", dependencies: "highest", require_admin_bundle: true }
-                    - { php-version: "8.3", dependencies: "highest", require_admin_bundle: true }
-                    - { php-version: "8.4", dependencies: "highest", pimcore_version: "12.x-dev", phpstan_args: "", experimental: true, require_admin_bundle: true }
+                    - { php-version: "8.1", dependencies: "lowest" }
+                    - { php-version: "8.2", dependencies: "highest" }
+                    - { php-version: "8.3", dependencies: "highest"}
+                    - { php-version: "8.4", dependencies: "highest", pimcore_version: "12.x-dev", phpstan_args: "", experimental: true }
         steps:
             - name: "Checkout code"
               uses: "actions/checkout@v2"
@@ -40,8 +40,6 @@ jobs:
                   php-version: "${{ matrix.php-version }}"
 
             - name: "Setup Pimcore environment"
-              env:
-                  REQUIRE_ADMIN_BUNDLE: "${{ matrix.require_admin_bundle }}"
               run: |
                   .github/ci/scripts/setup-environment.sh
 
