@@ -34,10 +34,10 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - { php-version: 8.1, database: "mariadb:10.3", dependencies: lowest, experimental: false, require_admin_bundle: false }
-                    - { php-version: 8.2, database: "mariadb:10.11", dependencies: highest, experimental: false, require_admin_bundle: true }
-                    - { php-version: 8.3, database: "mariadb:10.11", dependencies: highest, experimental: false, require_admin_bundle: true }
-                    - { php-version: 8.4, database: "mariadb:10.11", dependencies: highest, pimcore_version: "12.x-dev", experimental: true, require_admin_bundle: true }
+                    - { php-version: 8.1, database: "mariadb:10.3", dependencies: lowest, experimental: false }
+                    - { php-version: 8.2, database: "mariadb:10.11", dependencies: highest, experimental: false }
+                    - { php-version: 8.3, database: "mariadb:10.11", dependencies: highest, experimental: false }
+                    - { php-version: 8.4, database: "mariadb:10.11", dependencies: highest, pimcore_version: "12.x-dev", experimental: true }
         services:
             redis:
                 image: redis
@@ -70,8 +70,6 @@ jobs:
                   done
 
             - name: "Setup Pimcore environment"
-              env:
-                  REQUIRE_ADMIN_BUNDLE: "${{ matrix.require_admin_bundle }}"
               run: |
                   mysql -e "CREATE DATABASE pimcore_test CHARSET=utf8mb4;"
                   chmod 755 .github/ci/scripts/setup-environment.sh
