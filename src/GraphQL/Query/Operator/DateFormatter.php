@@ -76,7 +76,7 @@ class DateFormatter extends AbstractOperator
     {
         if ($theValue) {
             if (is_integer($theValue)) {
-                $theValue = Carbon::createFromTimestamp($theValue);
+                $theValue = Carbon::createFromTimestamp($theValue, date_default_timezone_get());
             }
             if ($this->format) {
                 if ($theValue instanceof Carbon) {
