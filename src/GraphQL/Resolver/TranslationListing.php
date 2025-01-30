@@ -61,8 +61,8 @@ class TranslationListing
 
         if (!empty($args['keys'])) {
             $keysArray = explode(',', $args['keys']);
-            $keysArray = array_map(fn($value): string => $list->quote($value), $keysArray);
-            $keysString = implode(",", $keysArray);
+            $keysArray = array_map(fn ($value): string => $list->quote($value), $keysArray);
+            $keysString = implode(',', $keysArray);
             $list->setCondition('`key` IN (' . $keysString . ')');
         }
 
