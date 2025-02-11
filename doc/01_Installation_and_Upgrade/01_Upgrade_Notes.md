@@ -1,5 +1,15 @@
 # Upgrade Notes
 
+## 2.0.0
+
+- [Operator] Removed merge operator
+- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:graphql:rebuild-workspaces`) instead.
+- [Config] Removed DatahubConfigLocator class
+- [Config] Removed support for legacy config file (`datahub-configurations.php`)
+- [Config] Removed `getConfigModificationDate` from config dao.
+- [Config] Removed sql query config field
+- [QueryType] `args['path']` will no longer be supported, use `args['fullpath']` instead.
+ 
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
 - [General] Replaced Request::get() with explicit input sources.
