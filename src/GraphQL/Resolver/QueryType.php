@@ -240,7 +240,13 @@ class QueryType
             return [];
         }
 
-        return $this->getGraphQlService()->getObjectFieldHelper()->extractData($data, $translation, $args, $context, $resolveInfo);
+        return $this->getGraphQlService()->getObjectFieldHelper()->extractData(
+            $data,
+            $translation,
+            $args,
+            $context,
+            $resolveInfo
+        );
     }
 
     /**
