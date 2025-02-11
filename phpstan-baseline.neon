@@ -181,11 +181,6 @@ parameters:
 			path: src/GraphQL/DataObjectType/LocalizedType.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: src/GraphQL/DataObjectType/MergeType.php
-
-		-
 			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DataObjectType\\\\ObjectFolderType has an unused parameter \\$config\\.$#"
 			count: 1
 			path: src/GraphQL/DataObjectType/ObjectFolderType.php
