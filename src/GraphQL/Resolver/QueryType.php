@@ -156,19 +156,12 @@ class QueryType
      *
      * @throws ClientSafeException
      *
-     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      *
      */
     public function resolveDocumentGetter($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
-        }
-
-        // TODO: remove this workaround for Release 1.0
-        if ($args['path'] ?? false) {
-            Logger::warn("Argument 'path' deprecated: will no longer be supported by Release 1.0. Use 'fullpath' instead.");
-            $args['fullpath'] = $args['path'];
         }
 
         $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
@@ -289,19 +282,6 @@ class QueryType
             $conditionParts[] = sprintf('(CONCAT(`%s`,`%s`) =' . Db::get()->quote($fullpath) . ')',
                 Service::getVersionDependentDatabaseColumnName('o_path'),
                 Service::getVersionDependentDatabaseColumnName('o_key'));
-        }
-
-        /** @var Configuration $configuration */
-        $configuration = $context['configuration'];
-        $sqlGetCondition = $configuration->getSqlObjectCondition();
-        $dataHubConfig = Pimcore::getContainer()?->getParameter('pimcore_data_hub');
-        if ($dataHubConfig && isset($dataHubConfig['graphql']['allow_sqlObjectCondition']) &&
-            !$dataHubConfig['graphql']['allow_sqlObjectCondition']) {
-            $sqlGetCondition = null;
-        }
-
-        if ($sqlGetCondition) {
-            $conditionParts[] = '(' . $sqlGetCondition . ')';
         }
 
         $condition = implode(' AND ', $conditionParts);
@@ -460,14 +440,6 @@ class QueryType
         // Include unpublished
         if (isset($args['published']) && $args['published'] === false) {
             $objectList->setUnpublished(true);
-        }
-
-        /** @var Configuration $configuration */
-        $configuration = $context['configuration'];
-        $sqlListCondition = $configuration->getSqlObjectCondition();
-
-        if ($sqlListCondition) {
-            $conditionParts[] = '(' . $sqlListCondition . ')';
         }
 
         if (!$configuration->skipPermisssionCheck()) {

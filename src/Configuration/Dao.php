@@ -41,43 +41,17 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     private static $_config = null;
 
-    /**
-     * @deprecated Will be removed in Pimcore 11
-     */
-    private const LEGACY_FILE = 'datahub-configurations.php';
-
-    /**
-     * @deprecated Will be removed as soon as Pimcore 10.6 isn´t supported anymore.
-     */
-    public const CONFIG_PATH = PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub';
-
     public function configure(): void
     {
         $config = \Pimcore::getContainer()->getParameter('pimcore_data_hub');
 
-        if (\Pimcore\Version::getMajorVersion() >= 11) {
-            $storageConfig = $config['config_location']['data_hub'];
+        $storageConfig = $config['config_location']['data_hub'];
+        parent::configure([
+            'containerConfig' => $config['configurations'] ?? [],
+            'settingsStoreScope' => 'pimcore_data_hub',
+            'storageConfig' => $storageConfig,
+        ]);
 
-            parent::configure([
-                'containerConfig' => $config['configurations'] ?? [],
-                'settingsStoreScope' => 'pimcore_data_hub',
-                'storageConfig' => $storageConfig,
-            ]);
-        } else {
-            $storageConfig = Config\LocationAwareConfigRepository::getStorageConfigurationCompatibilityLayer(
-                $config,
-                'data_hub',
-                'PIMCORE_CONFIG_STORAGE_DIR_DATA_HUB',
-                'PIMCORE_WRITE_TARGET_DATA_HUB'
-            );
-
-            parent::configure([
-                'containerConfig' => $config['configurations'] ?? [],
-                'settingsStoreScope' => 'pimcore_data_hub',
-                'storageDirectory' => $storageConfig,
-                'legacyConfigFile' => self::LEGACY_FILE,
-            ]);
-        }
     }
 
     /**
@@ -131,7 +105,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      * @param string $name
      *
      */
-    public function loadByName($name)
+    public function getByName($name)
     {
         $data = $this->getDataByName($name);
 
@@ -144,42 +118,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         } else {
             throw new Model\Exception\NotFoundException('Configuration with name: ' . $name . ' does not exist');
         }
-    }
-
-    /**
-     * @deprecated Will be removed in Pimcore 11
-     *
-     * get a configuration by name.
-     *
-     * TODO: remove this static function and rename "loadByName" to "getByName"
-     *
-     * @param string $name
-     *
-     */
-    public static function getByName($name)
-    {
-        try {
-            $config = new Configuration(null, null);
-            $config->getDao()->loadByName($name);
-
-            return $config;
-        } catch (\Pimcore\Model\Exception\NotFoundException $e) {
-            return null;
-        }
-    }
-
-    /**
-     *
-     * @return int
-     *
-     *@deprecated will be removed with pimcore 11
-     *
-     * get latest modification date of configuration file.
-     *
-     */
-    public static function getConfigModificationDate()
-    {
-        return 0;
     }
 
     /**
@@ -220,7 +158,7 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      * get the list of configurations.
      *
      */
-    public function loadList(): array
+    public function getList(): array
     {
         $list = [];
 
@@ -232,22 +170,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         }
 
         return $list;
-    }
-
-    /**
-     * @deprecated Will be removed in Pimcore 11
-     *
-     * get the list of configurations.
-     *
-     * TODO: remove this static function and rename "loadList" to "getList"
-     *
-     *
-     */
-    public static function getList(): array
-    {
-        $configuration = new Configuration(null, null);
-
-        return $configuration->getDao()->loadList();
     }
 
     /**

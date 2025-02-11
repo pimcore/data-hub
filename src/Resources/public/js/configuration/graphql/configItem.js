@@ -164,29 +164,6 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             }
         ];
 
-        if (pimcore.settings.allow_sqlObjectCondition) {
-            generalItems.push({
-                    xtype: "displayfield",
-                    hideLabel: true,
-                    value: t("plugin_pimcore_datahub_configpanel_condition_hint"),
-                    readOnly: true,
-                    disabled: true
-                },{
-                    xtype: "displayfield",
-                    hideLabel: true,
-                    value: t("plugin_pimcore_datahub_configpanel_condition_deprecated"),
-                    readOnly: true,
-                    disabled: true
-                },
-                {
-                    name: "sqlObjectCondition",
-                    fieldLabel: t("plugin_pimcore_datahub_configpanel_sqlObjectCondition") + ' (' + t("deprecated") + ')',
-                    xtype: "textarea",
-                    height: 100,
-                    value: this.data.general.sqlObjectCondition
-                });
-        }
-
         this.generalForm = new Ext.form.FormPanel({
             bodyStyle: "padding:10px;",
             autoScroll: true,

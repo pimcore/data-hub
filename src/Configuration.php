@@ -190,14 +190,6 @@ class Configuration extends AbstractModel
     }
 
     /**
-     * @deprecated property sqlObjectCondition will be removed in the next major release
-     */
-    public function getSqlObjectCondition(): ?string
-    {
-        return $this->configuration && $this->configuration['general'] ? $this->configuration['general']['sqlObjectCondition'] ?? null : null;
-    }
-
-    /**
      * @return string|bool
      */
     public function isActive()
@@ -310,7 +302,7 @@ class Configuration extends AbstractModel
     {
         $config = new self(null, null);
 
-        return $config->getDao()->loadList();
+        return $config->getDao()->getList();
     }
 
     /**
@@ -321,7 +313,7 @@ class Configuration extends AbstractModel
     {
         try {
             $config = new self(null, null);
-            $config->getDao()->loadByName($name);
+            $config->getDao()->getByName($name);
 
             return $config;
         } catch (\Pimcore\Model\Exception\NotFoundException $e) {

@@ -82,7 +82,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
             '/bundles/pimcoredatahub/js/queryoperator/DateFormatter.js',
             '/bundles/pimcoredatahub/js/queryoperator/ElementCounter.js',
             '/bundles/pimcoredatahub/js/queryoperator/Text.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Merge.js',
             '/bundles/pimcoredatahub/js/queryoperator/Substring.js',
             '/bundles/pimcoredatahub/js/queryoperator/Thumbnail.js',
             '/bundles/pimcoredatahub/js/queryoperator/ThumbnailHtml.js',
