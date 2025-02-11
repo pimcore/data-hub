@@ -16,7 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Exception;
-use Pimcore\Bundle\CoreBundle\DependencyInjection\ConfigurationHelper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
