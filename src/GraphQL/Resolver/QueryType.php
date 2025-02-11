@@ -240,9 +240,7 @@ class QueryType
             return [];
         }
 
-        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-
-        return $fieldHelper->extractData($data, $translation, $args, $context, $resolveInfo);
+        return $this->getGraphQlService()->getObjectFieldHelper()->extractData($data, $translation, $args, $context, $resolveInfo);
     }
 
     /**
@@ -442,6 +440,7 @@ class QueryType
             $objectList->setUnpublished(true);
         }
 
+        $configuration = $context['configuration'];
         if (!$configuration->skipPermisssionCheck()) {
             // check permissions
             $workspacesTableName = 'plugin_datahub_workspaces_object';

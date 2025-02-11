@@ -333,9 +333,7 @@ class Configuration extends AbstractModel
     public function getSpecialEntities(): array
     {
         $schema = $this->configuration['schema'] ?? null;
-        $entities = $schema ? $schema['specialEntities'] : [];
-
-        return $entities;
+        return $schema ? $schema['specialEntities'] : [];
     }
 
     public function getMutationEntities(): array
