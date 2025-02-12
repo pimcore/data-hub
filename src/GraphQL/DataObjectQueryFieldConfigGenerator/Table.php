@@ -36,7 +36,7 @@ class Table extends AbstractTable
                 foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
                     $key = $columnConfig['key'];
                     // key must be string, cannot be numeric
-                    if(is_numeric($columnConfig['key'])) {
+                    if (is_numeric($columnConfig['key'])) {
                         $key = self::NUMERIC_PREFIX . $columnConfig['key'];
                     }
                     $columns[$key] = Type::string();
