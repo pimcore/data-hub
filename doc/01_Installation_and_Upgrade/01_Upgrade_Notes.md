@@ -9,6 +9,7 @@
 - [Config] Removed `getConfigModificationDate` from config dao.
 - [Config] Removed sql query config field
 - [QueryType] `args['path']` will no longer be supported, use `args['fullpath']` instead.
+- [DataType] Generated type names now include the type itself, see https://github.com/pimcore/data-hub/issues/879
  
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
