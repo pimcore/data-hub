@@ -20,6 +20,8 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 class Table extends AbstractTable
 {
+    private const NUMERIC_PREFIX = 'col';
+
     protected function getTableColumns(Data $fieldDefinition): array
     {
         $columns = [];
@@ -32,7 +34,12 @@ class Table extends AbstractTable
 
             if ($fieldDefinition->isColumnConfigActivated()) {
                 foreach ($fieldDefinition->getColumnConfig() as $columnConfig) {
-                    $columns[$columnConfig['key']] = Type::string();
+                    $key = $columnConfig['key'];
+                    // key must be string, cannot be numeric
+                    if(is_numeric($columnConfig['key'])) {
+                        $key = self::NUMERIC_PREFIX . $columnConfig['key'];
+                    }
+                    $columns[$key] = Type::string();
                 }
 
                 return $columns;
