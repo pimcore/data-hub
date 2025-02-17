@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Closure;
 use DateTimeZone;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\InvalidFieldDefinitionException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Config;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -34,12 +35,12 @@ final class Date extends Base
      *
      * @return array
      *
-     * @throws RuntimeException
+     * @throws InvalidFieldDefinitionException
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
         if(!($fieldDefinition instanceof Data\Date)) {
-            throw new RuntimeException('Invalid field definition provided');
+            throw new InvalidFieldDefinitionException();
         }
 
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
