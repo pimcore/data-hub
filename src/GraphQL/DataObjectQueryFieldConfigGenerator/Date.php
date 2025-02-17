@@ -15,12 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
-use Carbon\Carbon;
-use Closure;
-use DateTimeZone;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
-use Pimcore\Config;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use RuntimeException;
@@ -38,7 +34,7 @@ final class Date extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        if(!($fieldDefinition instanceof Data\Date)) {
+        if (!($fieldDefinition instanceof Data\Date)) {
             throw new RuntimeException('Invalid field definition provided');
         }
 
@@ -49,7 +45,7 @@ final class Date extends Base
                 fn ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) =>
                 $this->getGraphQlService()->getFormattedDateTimeString(
                     $fieldDefinition,
-                    Service::resolveValue($value, $fieldDefinition, $attribute, $args))
+                    Service::resolveValue($value, $fieldDefinition, $attribute, $args)),
         ], $container);
     }
 }

@@ -1248,12 +1248,11 @@ class Service
     public function getFormattedDateTimeString(
         Data $fieldDefinition,
         Carbon $dt
-    ): string
-    {
-        if(
+    ): string {
+        if (
             ($fieldDefinition instanceof Date && $fieldDefinition->getColumnType() === 'date') ||
             ($fieldDefinition instanceof DateTime && $fieldDefinition->isRespectTimezone())
-        ){
+        ) {
             $dt->setTimezone(new DateTimeZone($this->getServerTimeZone()));
         }
 
@@ -1263,7 +1262,7 @@ class Service
     public function getServerTimeZone(): string
     {
         $tz = Config::getSystemConfiguration()['general']['timezone'];
-        if(empty($tz)) {
+        if (empty($tz)) {
             return 'UTC';
         }
 
