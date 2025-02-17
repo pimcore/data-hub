@@ -44,8 +44,8 @@ final class Datetime extends Base
             'resolve' =>
                 fn ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) =>
                 $this->getGraphQlService()->getFormattedDateTimeString(
-                    $fieldDefinition,
-                    Service::resolveValue($value, $fieldDefinition, $attribute, $args)),
+                    Service::resolveValue($value, $fieldDefinition, $attribute, $args)
+                ),
         ], $container);
     }
 }

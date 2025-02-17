@@ -1247,19 +1247,15 @@ class Service
      * @throws DateInvalidTimeZoneException
      */
     public function getFormattedDateTimeString(
-        Data $fieldDefinition,
-        Carbon $dt
-    ): string {
+        ?Carbon $dt
+    ): ?string {
+
+        if(!$dt) {
+            return null;
+        }
 
         if(Version::getMajorVersion() < 12) {
             return (string) $dt;
-        }
-
-        if (
-            ($fieldDefinition instanceof Date && $fieldDefinition->getColumnType() === 'date') ||
-            ($fieldDefinition instanceof DateTime && $fieldDefinition->isRespectTimezone())
-        ) {
-            $dt->setTimezone(new DateTimeZone($this->getServerTimeZone()));
         }
 
         return $dt->toIso8601String();
