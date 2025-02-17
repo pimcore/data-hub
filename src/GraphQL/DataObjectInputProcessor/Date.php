@@ -38,7 +38,7 @@ class Date extends Base
             if (!is_numeric($newValue)) {
                 $newValue = strtotime($newValue);
             }
-            $newValue = Carbon::createFromTimestamp($newValue);
+            $newValue = Carbon::createFromTimestamp($newValue, date_default_timezone_get());
 
             return $container->$setter($newValue);
         });
