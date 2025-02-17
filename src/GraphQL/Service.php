@@ -58,6 +58,7 @@ use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
+use Pimcore\Version;
 use Psr\Container\ContainerInterface;
 
 class Service
@@ -1249,6 +1250,11 @@ class Service
         Data $fieldDefinition,
         Carbon $dt
     ): string {
+
+        if(Version::getMajorVersion() < 12) {
+            return (string) $dt;
+        }
+
         if (
             ($fieldDefinition instanceof Date && $fieldDefinition->getColumnType() === 'date') ||
             ($fieldDefinition instanceof DateTime && $fieldDefinition->isRespectTimezone())
