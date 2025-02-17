@@ -29,6 +29,9 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Carbon\Carbon;
+use DateInvalidTimeZoneException;
+use DateTimeZone;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -39,12 +42,15 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryI
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
+use Pimcore\Config;
 use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Date;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Datetime;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
@@ -1234,5 +1240,33 @@ class Service
         }
 
         return [];
+    }
+
+    /**
+     * @throws DateInvalidTimeZoneException
+     */
+    public function getFormattedDateTimeString(
+        Data $fieldDefinition,
+        Carbon $dt
+    ): string
+    {
+        if(
+            ($fieldDefinition instanceof Date && $fieldDefinition->getColumnType() === 'date') ||
+            ($fieldDefinition instanceof DateTime && $fieldDefinition->isRespectTimezone())
+        ){
+            $dt->setTimezone(new DateTimeZone($this->getServerTimeZone()));
+        }
+
+        return $dt->toIso8601String();
+    }
+
+    public function getServerTimeZone(): string
+    {
+        $tz = Config::getSystemConfiguration()['general']['timezone'];
+        if(empty($tz)) {
+            return 'UTC';
+        }
+
+        return $tz;
     }
 }

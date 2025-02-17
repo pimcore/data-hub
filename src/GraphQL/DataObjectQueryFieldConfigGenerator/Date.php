@@ -25,7 +25,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use RuntimeException;
 
-final class Datetime extends Base
+final class Date extends Base
 {
     /**
      * @param string $attribute
@@ -38,7 +38,7 @@ final class Datetime extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        if(!($fieldDefinition instanceof Data\Datetime)) {
+        if(!($fieldDefinition instanceof Data\Date)) {
             throw new RuntimeException('Invalid field definition provided');
         }
 

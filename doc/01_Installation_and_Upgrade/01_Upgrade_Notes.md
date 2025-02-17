@@ -2,6 +2,7 @@
 
 ## 2.0.0
 
+- [General] Added timezone indication for date and datetime fields in the GraphQL schema.
 - [Operator] Removed merge operator
 - [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:graphql:rebuild-workspaces`) instead.
 - [Config] Removed DatahubConfigLocator class
