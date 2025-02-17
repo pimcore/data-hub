@@ -31,7 +31,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Carbon\Carbon;
 use DateInvalidTimeZoneException;
-use DateTimeZone;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -49,8 +48,6 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use Pimcore\Model\DataObject\ClassDefinition\Data\Date;
-use Pimcore\Model\DataObject\ClassDefinition\Data\Datetime;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
@@ -1250,7 +1247,7 @@ class Service
         ?Carbon $dt
     ): ?string {
 
-        if(!$dt) {
+        if (!$dt) {
             return null;
         }
 
