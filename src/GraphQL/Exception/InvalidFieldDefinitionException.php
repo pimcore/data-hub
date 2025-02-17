@@ -20,11 +20,10 @@ use Throwable;
 class InvalidFieldDefinitionException extends ClientSafeException
 {
     public function __construct(
-        string $message = "Invalid field definition provided.",
+        string $message = 'Invalid field definition provided.',
         int $code = 0,
         ?Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct($message, $code, $previous);
     }
 }

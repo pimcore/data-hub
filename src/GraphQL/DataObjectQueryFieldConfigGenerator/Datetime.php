@@ -20,7 +20,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\InvalidFieldDefinitionExcepti
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
-use RuntimeException;
 
 final class Datetime extends Base
 {
