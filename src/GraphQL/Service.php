@@ -1251,7 +1251,7 @@ class Service
             return null;
         }
 
-        if(Version::getMajorVersion() < 12) {
+        if (Version::getMajorVersion() < 12) {
             return (string) $dt;
         }
 
