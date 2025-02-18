@@ -56,7 +56,7 @@ abstract class AbstractDocumentType extends ObjectType
         $config['fields'] = [
             'creationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveCreationDate']
+                'resolve' => [$resolver, 'resolveCreationDate'],
             ],
             'id' => ['name' => 'id',
                 'type' => Type::id(),
