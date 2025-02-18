@@ -84,7 +84,7 @@ class PimcoreObjectType extends ObjectType
             'creationDate' => [
                 'type' => Type::string(),
                 'resolve' => function (
-                    ElementDescriptor $value = null
+                    ElementDescriptor $value
                 ): ?string {
                     $id = $value['id'] ?? null;
                     if(!$id) {
