@@ -1240,9 +1240,6 @@ class Service
         return [];
     }
 
-    /**
-     * @throws DateInvalidTimeZoneException
-     */
     public function getFormattedDateTimeString(
         ?Carbon $dt
     ): ?string {
@@ -1256,15 +1253,5 @@ class Service
         }
 
         return $dt->toIso8601String();
-    }
-
-    public function getServerTimeZone(): string
-    {
-        $tz = Config::getSystemConfiguration()['general']['timezone'];
-        if (empty($tz)) {
-            return 'UTC';
-        }
-
-        return $tz;
     }
 }
