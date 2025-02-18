@@ -1240,7 +1240,7 @@ class Service
         return [];
     }
 
-    public function getFormattedDateTimeString(
+    public function getFormattedDateTimeStringFromCarbon(
         ?Carbon $dt
     ): ?string {
 
@@ -1253,5 +1253,13 @@ class Service
         }
 
         return $dt->toIso8601String();
+    }
+
+    public function getFormattedDateTimeStringFromTimestamp(
+        float|int|string $ts
+    ): ?string {
+        return $this->getFormattedDateTimeStringFromCarbon(
+            Carbon::createFromTimestamp($ts)
+        );
     }
 }

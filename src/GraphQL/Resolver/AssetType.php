@@ -375,6 +375,41 @@ class AssetType
         return null;
     }
 
+    public function resolveModificationDate(
+        ?ElementDescriptor $value = null,
+        array $args = [],
+        array $context = [],
+        ?ResolveInfo $resolveInfo = null
+    ): ?string
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+        if(!$asset) {
+            return null;
+        }
+        return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+            $asset->getModificationDate()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function resolveCreationDate(
+        ?ElementDescriptor $value = null,
+        array $args = [],
+        array $context = [],
+        ?ResolveInfo $resolveInfo = null
+    ): ?string
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+        if(!$asset) {
+            return null;
+        }
+        return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+            $asset->getCreationDate()
+        );
+    }
+
     /**
      * @param ElementDescriptor $value
      * @param array $context

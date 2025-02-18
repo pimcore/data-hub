@@ -43,7 +43,7 @@ final class Datetime extends Base
             'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'resolve' =>
                 fn ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) =>
-                $this->getGraphQlService()->getFormattedDateTimeString(
+                $this->getGraphQlService()->getFormattedDateTimeStringFromCarbon(
                     Service::resolveValue($value, $fieldDefinition, $attribute, $args)
                 ),
         ], $container);

@@ -15,17 +15,20 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
+use Carbon\Carbon;
 use GraphQL\Error\InvariantViolation;
 use GraphQL\Type\Definition\FieldDefinition;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 use Pimcore\Cache\RuntimeCache;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
@@ -79,12 +82,44 @@ class PimcoreObjectType extends ObjectType
         // are only visible if explicitly configured by the user
         $fields = [
             'id' => Type::id(),
-            'creationDate' => Type::int(),
-            'modificationDate' => Type::int(),
+            'creationDate' => [
+                'type' => Type::string(),
+                'resolve' => function (
+                    ?ElementDescriptor $value = null,
+                    array $args = [],
+                    array $context = [],
+                    ?ResolveInfo $resolveInfo = null
+                ): ?string {
+                    $object = DataObject::getById($value['id']);
+                    if ($object) {
+                        return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+                            $object->getCreationDate()
+                        );
+                    }
+
+                    return null;
+                }],
+            'modificationDate' => [
+                'type' => Type::string(),
+                'resolve' => function (
+                    ?ElementDescriptor $value = null,
+                    array $args = [],
+                    array $context = [],
+                    ?ResolveInfo $resolveInfo = null
+                ): ?string {
+                    $object = DataObject::getById($value['id']);
+                    if ($object) {
+                        return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+                            $object->getModificationDate()
+                        );
+                    }
+
+                    return null;
+                }],
             'version' => [
                 'type' => Type::int(),
                 'resolve' => function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
-                    $object = \Pimcore\Model\DataObject::getById($value['id']);
+                    $object = DataObject::getById($value['id']);
                     if ($object) {
                         foreach (array_reverse($object->getVersions()) as $version) {
                             if ($object->getModificationDate() === $version->getDate()) {
@@ -99,7 +134,7 @@ class PimcoreObjectType extends ObjectType
             'objectType' => [
                 'type' => Type::string(),
                 'resolve' => function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
-                    $object = \Pimcore\Model\DataObject::getById($value['id']);
+                    $object = DataObject::getById($value['id']);
 
                     if ($object) {
                         $result = $object->getType();

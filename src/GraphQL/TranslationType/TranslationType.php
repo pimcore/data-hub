@@ -44,8 +44,8 @@ class TranslationType extends ObjectType
     {
         $config['fields'] = [
             'key' => Type::string(),
-            'creationDate' => Type::int(),
-            'modificationDate' => Type::int(),
+            'creationDate' => Type::string(),
+            'modificationDate' => Type::string(),
             'domain' => Type::string(),
             'type' => Type::string(),
             'translations' => [

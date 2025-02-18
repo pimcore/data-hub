@@ -50,8 +50,11 @@ class DocumentFolderType extends FolderType
                 'fullpath' => [
                     'type' => Type::string(),
                 ],
-                'creationDate' => Type::int(),
-                'modificationDate' => Type::int(),
+                'creationDate' => Type::string(),
+                'modificationDate' => [
+                    'type' => Type::string(),
+                    'resolve' => [$resolver, 'resolveModificationDate']
+                ],
                 'parent' => [
                     'type' => $documentTree,
                     'resolve' => [$resolver, 'resolveParent'],
