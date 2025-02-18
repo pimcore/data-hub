@@ -51,11 +51,11 @@ class ObjectFolderType extends FolderType
             ],
             'creationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveCreationDate']
+                'resolve' => [$resolver, 'resolveCreationDate'],
             ],
             'modificationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveModificationDate']
+                'resolve' => [$resolver, 'resolveModificationDate'],
             ],
             'parent' => [
                 'type' => $objectTreeType,
