@@ -386,12 +386,12 @@ class AssetType
         array $args = [],
         array $context = [],
         ?ResolveInfo $resolveInfo = null
-    ): ?string
-    {
+    ): ?string {
         $asset = $this->getAssetFromValue($value, $context);
-        if(!$asset) {
+        if (!$asset) {
             return null;
         }
+
         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
             $asset->getModificationDate()
         );
@@ -405,12 +405,12 @@ class AssetType
         array $args = [],
         array $context = [],
         ?ResolveInfo $resolveInfo = null
-    ): ?string
-    {
+    ): ?string {
         $asset = $this->getAssetFromValue($value, $context);
-        if(!$asset) {
+        if (!$asset) {
             return null;
         }
+
         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
             $asset->getCreationDate()
         );
