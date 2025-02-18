@@ -49,8 +49,14 @@ class ObjectFolderType extends FolderType
             'fullpath' => [
                 'type' => Type::string(),
             ],
-            'creationDate' => Type::string(),
-            'modificationDate' => Type::string(),
+            'creationDate' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveCreationDate']
+            ],
+            'modificationDate' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveModificationDate']
+            ],
             'parent' => [
                 'type' => $objectTreeType,
                 'resolve' => [$resolver, 'resolveParent'],
