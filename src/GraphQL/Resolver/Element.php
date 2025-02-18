@@ -168,7 +168,7 @@ class Element
         array $value
     ): ?string {
         $id = $value['id'] ?? null;
-        if(!$id) {
+        if (!$id) {
             return null;
         }
         $element = ElementService::getElementById($this->elementType, $id);
@@ -185,7 +185,7 @@ class Element
         array $value
     ): ?string {
         $id = $value['id'] ?? null;
-        if(!$id) {
+        if (!$id) {
             return null;
         }
         $element = ElementService::getElementById($this->elementType, $id);
