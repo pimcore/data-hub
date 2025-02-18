@@ -54,7 +54,10 @@ abstract class AbstractDocumentType extends ObjectType
         $documentTranslation = $this->getGraphQlService()->buildGeneralType('document_translation');
 
         $config['fields'] = [
-            'creationDate' => Type::string(),
+            'creationDate' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveCreationDate']
+            ],
             'id' => ['name' => 'id',
                 'type' => Type::id(),
             ],

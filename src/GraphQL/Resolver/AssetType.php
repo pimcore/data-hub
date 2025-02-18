@@ -91,7 +91,13 @@ class AssetType
         foreach ($metadata as $item) {
             $keys[$item['name']] = 1;
             $l = $item['language'] ?: 'default';
+            if($item['type'] === 'date') {
+                $item['data'] = $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+                    $item['data']
+                );
+            }
             $map[$l][$item['name']] = $item;
+
         }
         $result = [];
 
