@@ -87,7 +87,7 @@ class PimcoreObjectType extends ObjectType
                     ElementDescriptor $value = null
                 ): ?string {
                     $id = $value['id'] ?? null;
-                    if(!$id) {
+                    if (!$id) {
                         return null;
                     }
                     $object = DataObject::getById($id);
@@ -105,7 +105,7 @@ class PimcoreObjectType extends ObjectType
                     ElementDescriptor $value,
                 ): ?string {
                     $id = $value['id'] ?? null;
-                    if(!$id) {
+                    if (!$id) {
                         return null;
                     }
                     $object = DataObject::getById($value['id']);
