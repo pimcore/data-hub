@@ -169,12 +169,12 @@ class Element
         array $args = [],
         array $context = [],
         ?ResolveInfo $resolveInfo = null
-    ): ?string
-    {
+    ): ?string {
         $element = ElementService::getElementById($this->elementType, $value['id']);
-        if(!$element) {
+        if (!$element) {
             return null;
         }
+
         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
             $element->getModificationDate()
         );
@@ -185,18 +185,18 @@ class Element
         array $args = [],
         array $context = [],
         ?ResolveInfo $resolveInfo = null
-    ): ?string
-    {
+    ): ?string {
         $element = ElementService::getElementById($this->elementType, $value['id']);
-        if(!$element) {
+        if (!$element) {
             return null;
         }
+
         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
             $element->getCreationDate()
         );
     }
 
-/**
+    /**
      * @param array $args
      *
      * @return array

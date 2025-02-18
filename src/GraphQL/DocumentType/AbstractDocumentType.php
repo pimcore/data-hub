@@ -62,7 +62,7 @@ abstract class AbstractDocumentType extends ObjectType
                 'type' => Type::string()],
             'modificationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$resolver, 'resolveModificationDate']
+                'resolve' => [$resolver, 'resolveModificationDate'],
             ],
             'published' => ['name' => 'published',
                 'type' => Type::boolean(),

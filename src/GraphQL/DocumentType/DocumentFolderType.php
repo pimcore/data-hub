@@ -53,7 +53,7 @@ class DocumentFolderType extends FolderType
                 'creationDate' => Type::string(),
                 'modificationDate' => [
                     'type' => Type::string(),
-                    'resolve' => [$resolver, 'resolveModificationDate']
+                    'resolve' => [$resolver, 'resolveModificationDate'],
                 ],
                 'parent' => [
                     'type' => $documentTree,

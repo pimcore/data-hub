@@ -53,11 +53,11 @@ class AssetFolderType extends FolderType
             ],
             'creationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$elementResolver, 'resolveCreationDate']
+                'resolve' => [$elementResolver, 'resolveCreationDate'],
             ],
             'modificationDate' => [
                 'type' => Type::string(),
-                'resolve' => [$elementResolver, 'resolveModificationDate']
+                'resolve' => [$elementResolver, 'resolveModificationDate'],
             ],
             'properties' => [
                 'type' => Type::listOf($propertyType),
