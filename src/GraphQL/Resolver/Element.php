@@ -165,12 +165,13 @@ class Element
     }
 
     public function resolveModificationDate(
-        array $value = null,
-        array $args = [],
-        array $context = [],
-        ?ResolveInfo $resolveInfo = null
+        array $value
     ): ?string {
-        $element = ElementService::getElementById($this->elementType, $value['id']);
+        $id = $value['id'] ?? null;
+        if(!$id) {
+            return null;
+        }
+        $element = ElementService::getElementById($this->elementType, $id);
         if (!$element) {
             return null;
         }
@@ -181,12 +182,13 @@ class Element
     }
 
     public function resolveCreationDate(
-        array $value = null,
-        array $args = [],
-        array $context = [],
-        ?ResolveInfo $resolveInfo = null
+        array $value
     ): ?string {
-        $element = ElementService::getElementById($this->elementType, $value['id']);
+        $id = $value['id'] ?? null;
+        if(!$id) {
+            return null;
+        }
+        $element = ElementService::getElementById($this->elementType, $id);
         if (!$element) {
             return null;
         }

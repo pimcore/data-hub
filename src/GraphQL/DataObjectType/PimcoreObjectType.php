@@ -84,12 +84,13 @@ class PimcoreObjectType extends ObjectType
             'creationDate' => [
                 'type' => Type::string(),
                 'resolve' => function (
-                    ?ElementDescriptor $value = null,
-                    array $args = [],
-                    array $context = [],
-                    ?ResolveInfo $resolveInfo = null
+                    ElementDescriptor $value = null
                 ): ?string {
-                    $object = DataObject::getById($value['id']);
+                    $id = $value['id'] ?? null;
+                    if(!$id) {
+                        return null;
+                    }
+                    $object = DataObject::getById($id);
                     if ($object) {
                         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
                             $object->getCreationDate()
@@ -101,11 +102,12 @@ class PimcoreObjectType extends ObjectType
             'modificationDate' => [
                 'type' => Type::string(),
                 'resolve' => function (
-                    ?ElementDescriptor $value = null,
-                    array $args = [],
-                    array $context = [],
-                    ?ResolveInfo $resolveInfo = null
+                    ElementDescriptor $value,
                 ): ?string {
+                    $id = $value['id'] ?? null;
+                    if(!$id) {
+                        return null;
+                    }
                     $object = DataObject::getById($value['id']);
                     if ($object) {
                         return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(

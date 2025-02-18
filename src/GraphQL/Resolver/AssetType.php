@@ -381,13 +381,13 @@ class AssetType
         return null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function resolveModificationDate(
-        ?ElementDescriptor $value = null,
-        array $args = [],
-        array $context = [],
-        ?ResolveInfo $resolveInfo = null
+        ElementDescriptor $value
     ): ?string {
-        $asset = $this->getAssetFromValue($value, $context);
+        $asset = $this->getAssetFromValue($value, []);
         if (!$asset) {
             return null;
         }
@@ -401,12 +401,9 @@ class AssetType
      * @throws Exception
      */
     public function resolveCreationDate(
-        ?ElementDescriptor $value = null,
-        array $args = [],
-        array $context = [],
-        ?ResolveInfo $resolveInfo = null
+        ElementDescriptor $value
     ): ?string {
-        $asset = $this->getAssetFromValue($value, $context);
+        $asset = $this->getAssetFromValue($value, []);
         if (!$asset) {
             return null;
         }
