@@ -1,4 +1,4 @@
-# Upgrade NotesAdded datetime resolve for metadata in assets
+# Upgrade Notes
 
 ## 2.0.0
 
