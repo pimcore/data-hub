@@ -17,9 +17,11 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\TranslationType;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\JsonType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\Translation;
 
 class TranslationType extends ObjectType
 {
@@ -44,8 +46,26 @@ class TranslationType extends ObjectType
     {
         $config['fields'] = [
             'key' => Type::string(),
-            'creationDate' => Type::string(),
-            'modificationDate' => Type::string(),
+            'creationDate' => [
+                'type' => Type::string(),
+                'resolve' => function (
+                    array|ElementDescriptor $value
+                ) {
+                    return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+                        $value['creationDate']
+                    );
+                }
+            ],
+            'modificationDate' => [
+                'type' => Type::string(),
+                'resolve' => function (
+                    array|ElementDescriptor $value
+                ) {
+                    return $this->getGraphQlService()->getFormattedDateTimeStringFromTimestamp(
+                        $value['modificationDate']
+                    );
+                }
+            ],
             'domain' => Type::string(),
             'type' => Type::string(),
             'translations' => [
