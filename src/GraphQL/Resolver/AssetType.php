@@ -314,6 +314,7 @@ class AssetType
             if (!$versionData) {
                 throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
             }
+
             return $version->getData();
         } else {
             return $this->getAssetFromValue($value, $context);
