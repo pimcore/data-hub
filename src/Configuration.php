@@ -205,9 +205,6 @@ class Configuration extends AbstractModel
         return $this->configuration['security']['skipPermissionCheck'] ?? false;
     }
 
-    /**
-     * @return string|bool
-     */
     public function disableVersionedRequests(): bool|string
     {
         return $this->configuration['security']['disableVersionedRequests'] ?? false;

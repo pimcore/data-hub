@@ -316,7 +316,7 @@ class QueryType
 
         $configuration = $context['configuration'];
         if ($configuration->disableVersionedRequests()) {
-            Logger::debug("Versioned Requests disabled");
+            Logger::debug('Versioned Requests disabled');
             if (isset($args['version'])) {
                 unset($args['version']);
             }
