@@ -87,7 +87,10 @@ class AssetType extends ObjectType
         ];
 
         $config['fields'] = [
-            'creationDate' => Type::int(),
+            'creationDate' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveCreationDate'],
+            ],
             'id' => [
                 'name' => 'id',
                 'type' => Type::id(),
@@ -146,7 +149,10 @@ class AssetType extends ObjectType
                 'resolve' => [$resolver, 'resolveSrcSet'],
             ],
             'mimetype' => Type::string(),
-            'modificationDate' => Type::int(),
+            'modificationDate' => [
+                'type' => Type::string(),
+                'resolve' => [$resolver, 'resolveModificationDate'],
+            ],
             'type' => Type::string(),
             'filesize' => Type::int(),
             'version' => [

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Pimcore
@@ -21,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-final class Datetime extends Base
+final class Date extends Base
 {
     /**
      * @param string $attribute
@@ -34,7 +35,7 @@ final class Datetime extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        if (!($fieldDefinition instanceof Data\Datetime)) {
+        if (!($fieldDefinition instanceof Data\Date)) {
             throw new InvalidFieldDefinitionException();
         }
 
