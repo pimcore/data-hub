@@ -270,7 +270,6 @@ class QueryType
         $isFullpathSet = $args['fullpath'] ?? false;
         $isVersionSet = $args['version'] ?? false;
 
-
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath expected');
         }
@@ -313,9 +312,9 @@ class QueryType
         $object = null;
 
         if ($isVersionSet) {
-            Logger::debug("Version query is requested, version: " . $args['version']);
+            Logger::debug('Version query is requested, version: ' . $args['version']);
             if (!$isIdSet) {
-                throw new ClientSafeException("Version query requires object id to be set.");
+                throw new ClientSafeException('Version query requires object id to be set.');
             }
             $versionId = (int)$args['version'];
             $version = Version::getById($versionId);
@@ -330,7 +329,7 @@ class QueryType
                 throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
             }
 
-            Logger::debug("Version data loaded successfully for version: " . $versionId);
+            Logger::debug('Version data loaded successfully for version: ' . $versionId);
 
             $object = $versionData;
 

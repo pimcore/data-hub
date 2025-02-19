@@ -110,12 +110,8 @@ class QueryType extends ObjectType
         }
     }
 
-    /**
-     * @param array $config
-     * @param array $context
-     */
-
-    protected function versionWrapper(callable $resolver) {
+    protected function versionWrapper(callable $resolver)
+    {
         return function ($root, $args, $context, $info) use ($resolver) {
             $resolvedData = $resolver($root, $args, $context, $info);
 
@@ -126,6 +122,11 @@ class QueryType extends ObjectType
             return $resolvedData;
         };
     }
+
+    /**
+     * @param array $config
+     * @param array $context
+     */
     public function buildAssetQueries(&$config = [], $context = [])
     {
         /** @var Configuration $configuration */
@@ -133,7 +134,6 @@ class QueryType extends ObjectType
         $entities = $configuration->getSpecialEntities();
         $service = $this->getGraphQlService();
         $assetType = $service->buildAssetType('asset');
-
 
         if ($entities['asset']['read'] ?? false) {
             $resolver = $this->getResolver();
