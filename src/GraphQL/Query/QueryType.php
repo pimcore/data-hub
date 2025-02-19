@@ -237,6 +237,7 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
+                    'version' => ['type' => Type::int()],
                 ],
                 'type' => ClassTypeDefinitions::get($class),
                 'resolve' => [$resolver, 'resolveObjectGetter'],

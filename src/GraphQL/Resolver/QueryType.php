@@ -26,11 +26,13 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
+use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Translation;
+use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class QueryType
@@ -259,6 +261,8 @@ class QueryType
     {
         $isIdSet = $args['id'] ?? false;
         $isFullpathSet = $args['fullpath'] ?? false;
+        $isVersionSet = $args['version'] ?? false;
+
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath expected');
@@ -297,7 +301,35 @@ class QueryType
 
             throw new ClientSafeException($errorMessage);
         }
-        $object = $objectList[0];
+
+        $currentObject = $objectList[0];
+        $object = null;
+
+        if ($isVersionSet) {
+            Logger::debug("Version query is requested, version: " . $args['version']);
+            if (!$isIdSet) {
+                throw new ClientSafeException("Version query requires object id to be set.");
+            }
+            $versionId = (int)$args['version'];
+            $version = Version::getById($versionId);
+
+            // Ensure the version belongs to the current object.
+            if (!$version || $version->getCid() !== $currentObject->getId()) {
+                throw new ClientSafeException("Version with id '{$versionId}' not found for object with id '{$currentObject->getId()}'.");
+            }
+
+            $versionData = $version->getData();
+            if (!$versionData) {
+                throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
+            }
+
+            Logger::debug("Version data loaded successfully for version: " . $versionId);
+
+            $object = $versionData;
+
+        } else {
+            $object = $currentObject;
+        }
 
         if (!$this->omitPermissionCheck) {
             if (!WorkspaceHelper::checkPermission($object, 'read')) {
