@@ -184,6 +184,7 @@ class QueryType extends ObjectType
                     'path' => ['type' => Type::string(), 'description' => "Get document by 'path' is deprecated as it is wrongly named. The 'path' argument will be replaced by 'fullpath' for Release 1.0."],
                     'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
+                    'version' => ['type' => Type::int()],
                 ],
                 'type' => $this->getGraphQlService()->getDocumentTypeDefinition('document'),
                 'resolve' => [$resolver, 'resolveDocumentGetter'],

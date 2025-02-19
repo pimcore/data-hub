@@ -163,7 +163,14 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
-        $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
+        $documentElement = null;
+
+        if (isset($args['version'])) {
+            $version = Version::getById($args['version']);
+            $documentElement = $version->getData();
+        } else {
+            $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
+        }
 
         if (!$documentElement) {
             return null;
