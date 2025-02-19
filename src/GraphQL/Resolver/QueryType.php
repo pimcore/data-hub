@@ -256,6 +256,36 @@ class QueryType
     }
 
     /**
+     * @throws ClientSafeException
+     */
+    private function resolveVersionObject($args, $currentObject)
+    {
+        if (!isset($args['version'])) {
+            return $currentObject;
+        }
+
+        if (!isset($args['id'])) {
+            throw new ClientSafeException('Version query requires object id to be set');
+        }
+
+        $versionId = (int)$args['version'];
+        $version = Version::getById($versionId);
+
+        if (!$version || $version->getCid() !== $currentObject->getId()) {
+            throw new ClientSafeException("Version with id '{$versionId}' not found for object with id '{$currentObject->getId()}'.");
+        }
+
+        $versionData = $version->getData();
+        if (!$versionData) {
+            throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
+        }
+
+        Logger::debug('Version data loaded successfully for version: ' . $versionId);
+
+        return $versionData;
+    }
+
+    /**
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
@@ -268,7 +298,6 @@ class QueryType
     {
         $isIdSet = $args['id'] ?? false;
         $isFullpathSet = $args['fullpath'] ?? false;
-        $isVersionSet = $args['version'] ?? false;
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath expected');
@@ -309,33 +338,8 @@ class QueryType
         }
 
         $currentObject = $objectList[0];
-        $object = null;
 
-        if ($isVersionSet) {
-            Logger::debug('Version query is requested, version: ' . $args['version']);
-            if (!$isIdSet) {
-                throw new ClientSafeException('Version query requires object id to be set.');
-            }
-            $versionId = (int)$args['version'];
-            $version = Version::getById($versionId);
-
-            // Ensure the version belongs to the current object.
-            if (!$version || $version->getCid() !== $currentObject->getId()) {
-                throw new ClientSafeException("Version with id '{$versionId}' not found for object with id '{$currentObject->getId()}'.");
-            }
-
-            $versionData = $version->getData();
-            if (!$versionData) {
-                throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
-            }
-
-            Logger::debug('Version data loaded successfully for version: ' . $versionId);
-
-            $object = $versionData;
-
-        } else {
-            $object = $currentObject;
-        }
+        $object = $this->resolveVersionObject($args, $currentObject);
 
         if (!$this->omitPermissionCheck) {
             if (!WorkspaceHelper::checkPermission($object, 'read')) {

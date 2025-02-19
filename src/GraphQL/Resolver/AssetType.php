@@ -19,6 +19,7 @@ use Exception;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\AssetMetadataEvents;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -42,21 +43,7 @@ class AssetType
      */
     public function resolveTag($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         if ($asset) {
             $result = $this->getTags('asset', $asset->getId());
@@ -79,21 +66,7 @@ class AssetType
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         $metadata = $asset?->getMetadata(raw: true);
         if (!$metadata) {
@@ -157,21 +130,7 @@ class AssetType
      */
     public function resolveEmbeddedMetaInfo($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         if (!$asset) {
             return null;
@@ -195,21 +154,7 @@ class AssetType
      */
     public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
@@ -234,21 +179,7 @@ class AssetType
      */
     public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
@@ -274,21 +205,7 @@ class AssetType
      */
     public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
@@ -325,21 +242,7 @@ class AssetType
      */
     public function resolveResolutions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         $types = $args['types'];
         $thumbnail = $value['url'] ?? null;
@@ -374,7 +277,6 @@ class AssetType
             $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
             /** @var Asset\Image $asset */
-            $asset = $this->getAssetFromValue($value, $context);
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
             if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
@@ -396,6 +298,29 @@ class AssetType
     }
 
     /**
+     * @throws Exception
+     */
+    private function resolveVersionData($value = null, $context = [])
+    {
+        if (is_array($value) && isset($value['versionRequest'])) {
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            $versionId = $value->versionRequest;
+        }
+
+        if ($versionId !== null) {
+            $version = Version::getById($versionId);
+            $versionData = $version->getData();
+            if (!$versionData) {
+                throw new ClientSafeException("Failed to load version data for version '{$versionId}'.");
+            }
+            return $version->getData();
+        } else {
+            return $this->getAssetFromValue($value, $context);
+        }
+    }
+
+    /**
      * @param ElementDescriptor|null $value
      * @param array $args
      * @param array $context
@@ -406,25 +331,11 @@ class AssetType
      */
     public function resolveDimensions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
 
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
-            $asset = $this->getAssetFromValue($value, $context);
 
             if ($asset instanceof Asset\Video) {
                 $width = $asset->getCustomSetting('videoWidth');
@@ -473,27 +384,11 @@ class AssetType
      */
     public function resolveDuration(ElementDescriptor | null $value = null, array $context = []): ?float
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         if (!$value instanceof ElementDescriptor) {
             return null;
         }
-
-        $asset = $this->getAssetFromValue($value, $context);
 
         if (!$asset instanceof Asset\Video) {
             return null;
@@ -507,21 +402,7 @@ class AssetType
      */
     public function resolveVersion($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $versionId = null;
-        $asset = null;
-
-        if (is_array($value) && isset($value['versionRequest'])) {
-            $versionId = $value['versionRequest'];
-        } elseif (is_object($value) && isset($value->versionRequest)) {
-            $versionId = $value->versionRequest;
-        }
-
-        if ($versionId !== null) {
-            $version = Version::getById($versionId);
-            $asset = $version->getData();
-        } else {
-            $asset = $this->getAssetFromValue($value, $context);
-        }
+        $asset = $this->resolveVersionData($value, $context);
 
         if ($asset) {
             foreach (array_reverse($asset->getVersions()) as $version) {
@@ -540,7 +421,8 @@ class AssetType
     public function resolveModificationDate(
         ElementDescriptor $value
     ): ?string {
-        $asset = $this->getAssetFromValue($value, []);
+        $asset = $this->resolveVersionData($value);
+
         if (!$asset) {
             return null;
         }
