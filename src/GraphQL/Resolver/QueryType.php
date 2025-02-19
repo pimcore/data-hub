@@ -272,7 +272,8 @@ class QueryType
         $version = Version::getById($versionId);
 
         if (!$version || $version->getCid() !== $currentObject->getId()) {
-            throw new ClientSafeException("Version with id '{$versionId}' not found for object with id '{$currentObject->getId()}'.");
+            throw new ClientSafeException("Version with id '{$versionId}' not found for object with id "
+            . "'{$currentObject->getId()}'.");
         }
 
         $versionData = $version->getData();
