@@ -163,6 +163,13 @@ class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
+        $configuration = $context['configuration'];
+        if ($configuration->disableVersionedRequests()) {
+            if (isset($args['version'])) {
+                unset($args['version']);
+            }
+        }
+
         $documentElement = null;
 
         if (isset($args['version'])) {
@@ -207,6 +214,13 @@ class QueryType
         $assetElement = $this->getElementByTypeAndIdOrPath($args, 'asset');
         if (!$assetElement) {
             return null;
+        }
+
+        $configuration = $context['configuration'];
+        if ($configuration->disableVersionedRequests()) {
+            if (isset($args['version'])) {
+                unset($args['version']);
+            }
         }
 
         if (!$this->omitPermissionCheck) {
@@ -299,6 +313,14 @@ class QueryType
     {
         $isIdSet = $args['id'] ?? false;
         $isFullpathSet = $args['fullpath'] ?? false;
+
+        $configuration = $context['configuration'];
+        if ($configuration->disableVersionedRequests()) {
+            Logger::debug("Versioned Requests disabled");
+            if (isset($args['version'])) {
+                unset($args['version']);
+            }
+        }
 
         if (!$isIdSet && !$isFullpathSet) {
             throw new ClientSafeException('object id or fullpath expected');

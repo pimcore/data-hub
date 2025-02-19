@@ -206,6 +206,14 @@ class Configuration extends AbstractModel
     }
 
     /**
+     * @return string|bool
+     */
+    public function disableVersionedRequests(): bool|string
+    {
+        return $this->configuration['security']['disableVersionedRequests'] ?? false;
+    }
+
+    /**
      * @param string|null $path
      */
     public function setPath($path): void
