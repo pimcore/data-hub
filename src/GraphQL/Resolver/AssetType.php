@@ -23,7 +23,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Event\Model\AssetEvent;
-use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -47,13 +46,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -88,13 +83,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -173,8 +164,6 @@ class AssetType
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -189,7 +178,6 @@ class AssetType
         }
         $result = [];
         foreach ($asset->getCustomSetting('embeddedMetaData') ?? [] as $key => $value) {
-            Logger::debug("key " . $key . " : " . $value);
             $result[] = ['name' => $key, 'value' => $value];
         }
 
@@ -211,13 +199,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -254,13 +238,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -298,13 +278,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -353,13 +329,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -438,13 +410,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -509,13 +477,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
@@ -547,13 +511,9 @@ class AssetType
         $asset = null;
 
         if (is_array($value) && isset($value['versionRequest'])) {
-            Logger::debug("context test array -> ". $value['versionRequest']);
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
-            Logger::debug("context test object -> " . $value->versionRequest);
             $versionId = $value->versionRequest;
-        } else {
-            Logger::debug("context test -> " . "versionRequest not found");
         }
 
         if ($versionId !== null) {
