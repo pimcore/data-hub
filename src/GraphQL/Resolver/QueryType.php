@@ -164,10 +164,8 @@ class QueryType
         }
 
         $configuration = $context['configuration'];
-        if ($configuration->disableVersionedRequests()) {
-            if (isset($args['version'])) {
-                unset($args['version']);
-            }
+        if ($configuration->disableVersionedRequests() && isset($args['version'])) {
+            unset($args['version']);
         }
 
         $documentElement = null;
@@ -217,10 +215,8 @@ class QueryType
         }
 
         $configuration = $context['configuration'];
-        if ($configuration->disableVersionedRequests()) {
-            if (isset($args['version'])) {
-                unset($args['version']);
-            }
+        if ($configuration->disableVersionedRequests() && isset($args['version'])) {
+            unset($args['version']);
         }
 
         if (!$this->omitPermissionCheck) {
@@ -315,11 +311,8 @@ class QueryType
         $isFullpathSet = $args['fullpath'] ?? false;
 
         $configuration = $context['configuration'];
-        if ($configuration->disableVersionedRequests()) {
-            Logger::debug('Versioned Requests disabled');
-            if (isset($args['version'])) {
-                unset($args['version']);
-            }
+        if ($configuration->disableVersionedRequests() && isset($args['version'])) {
+            unset($args['version']);
         }
 
         if (!$isIdSet && !$isFullpathSet) {

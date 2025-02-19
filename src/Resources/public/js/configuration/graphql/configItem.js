@@ -213,7 +213,7 @@ pimcore.plugin.datahub.configuration.graphql.configItem = Class.create(pimcore.e
             value: this.data.security ? this.data.security.skipPermissionCheck : ""
         });
 
-        var disableVersionedRequests = new Ext.form.Checkbox({
+        let disableVersionedRequests = new Ext.form.Checkbox({
             fieldLabel: t('plugin_pimcore_datahub_disable_versioned_requests'),
             labelWidth: 200,
             name: "disableVersionedRequests",
