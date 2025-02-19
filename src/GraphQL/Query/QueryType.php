@@ -115,11 +115,10 @@ class QueryType extends ObjectType
      * @param array $context
      */
 
-    protected function wrapMagic(callable $resolver) {
+    protected function versionWrapper(callable $resolver) {
         return function ($root, $args, $context, $info) use ($resolver) {
             $resolvedData = $resolver($root, $args, $context, $info);
 
-            // If 'version' isn’t provided, set a default (for example, 1)
             if (isset($args['version'])) {
                 $resolvedData['versionRequest'] = $args['version'];
             }
@@ -149,7 +148,7 @@ class QueryType extends ObjectType
                     'version' => ['type' => Type::int()],
                 ],
                 'type' => $assetType,
-                'resolve' => $this->wrapMagic([$resolver, 'resolveAssetGetter']),
+                'resolve' => $this->versionWrapper([$resolver, 'resolveAssetGetter']),
             ];
 
             $config['fields']['getAsset'] = $defGet;
@@ -157,7 +156,7 @@ class QueryType extends ObjectType
             foreach ($config['fields'] as &$field) {
 
                 if (isset($field['resolve']) && is_callable($field['resolve'])) {
-                    $field['resolve'] = $this->wrapMagic($field['resolve']);
+                    $field['resolve'] = $this->versionWrapper($field['resolve']);
                 }
             }
         }
