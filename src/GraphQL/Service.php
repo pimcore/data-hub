@@ -29,6 +29,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
@@ -52,6 +53,7 @@ use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Factory;
 use Pimcore\Translation\Translator;
+use Pimcore\Version;
 use Psr\Container\ContainerInterface;
 
 class Service
@@ -1234,5 +1236,28 @@ class Service
         }
 
         return [];
+    }
+
+    public function getFormattedDateTimeStringFromCarbon(
+        ?Carbon $dt
+    ): ?string {
+
+        if (!$dt) {
+            return null;
+        }
+
+        if (Version::getMajorVersion() < 12) {
+            return (string) $dt;
+        }
+
+        return $dt->toIso8601String();
+    }
+
+    public function getFormattedDateTimeStringFromTimestamp(
+        float|int|string $ts
+    ): ?string {
+        return $this->getFormattedDateTimeStringFromCarbon(
+            Carbon::createFromTimestamp($ts)
+        );
     }
 }
