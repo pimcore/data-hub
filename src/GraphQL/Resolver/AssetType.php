@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Logger;
 use Pimcore\Model\Asset;
+use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class AssetType
@@ -56,7 +57,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -97,7 +98,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -171,7 +172,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -214,7 +215,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -257,7 +258,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -301,7 +302,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -356,7 +357,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -441,7 +442,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -512,7 +513,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
@@ -550,7 +551,7 @@ class AssetType
         }
 
         if ($versionId !== null) {
-            $version = \Pimcore\Model\Version::getById($versionId);
+            $version = Version::getById($versionId);
             $asset = $version->getData();
         } else {
             $asset = $this->getAssetFromValue($value, $context);
