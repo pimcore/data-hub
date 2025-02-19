@@ -114,6 +114,19 @@ class QueryType extends ObjectType
      * @param array $config
      * @param array $context
      */
+
+    protected function wrapMagic(callable $resolver) {
+        return function ($root, $args, $context, $info) use ($resolver) {
+            $resolvedData = $resolver($root, $args, $context, $info);
+
+            // If 'version' isn’t provided, set a default (for example, 1)
+            if (isset($args['version'])) {
+                $resolvedData['versionRequest'] = $args['version'];
+            }
+
+            return $resolvedData;
+        };
+    }
     public function buildAssetQueries(&$config = [], $context = [])
     {
         /** @var Configuration $configuration */
@@ -121,6 +134,7 @@ class QueryType extends ObjectType
         $entities = $configuration->getSpecialEntities();
         $service = $this->getGraphQlService();
         $assetType = $service->buildAssetType('asset');
+
 
         if ($entities['asset']['read'] ?? false) {
             $resolver = $this->getResolver();
@@ -132,12 +146,20 @@ class QueryType extends ObjectType
                     'id' => ['type' => Type::int()],
                     'fullpath' => ['type' => Type::string()],
                     'defaultLanguage' => ['type' => Type::string()],
+                    'version' => ['type' => Type::int()],
                 ],
                 'type' => $assetType,
-                'resolve' => [$resolver, 'resolveAssetGetter'],
+                'resolve' => $this->wrapMagic([$resolver, 'resolveAssetGetter']),
             ];
 
             $config['fields']['getAsset'] = $defGet;
+
+            foreach ($config['fields'] as &$field) {
+
+                if (isset($field['resolve']) && is_callable($field['resolve'])) {
+                    $field['resolve'] = $this->wrapMagic($field['resolve']);
+                }
+            }
         }
     }
 

@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Event\Model\AssetEvent;
+use Pimcore\Logger;
 use Pimcore\Model\Asset;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -41,7 +42,25 @@ class AssetType
      */
     public function resolveTag($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
 
         if ($asset) {
             $result = $this->getTags('asset', $asset->getId());
@@ -64,7 +83,26 @@ class AssetType
      */
     public function resolveMetadata($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         $metadata = $asset?->getMetadata(raw: true);
         if (!$metadata) {
             return null;
@@ -121,12 +159,30 @@ class AssetType
      */
     public function resolveEmbeddedMetaInfo($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         if (!$asset) {
             return null;
         }
         $result = [];
         foreach ($asset->getCustomSetting('embeddedMetaData') ?? [] as $key => $value) {
+            Logger::debug("key " . $key . " : " . $value);
             $result[] = ['name' => $key, 'value' => $value];
         }
 
@@ -144,7 +200,26 @@ class AssetType
      */
     public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -168,7 +243,26 @@ class AssetType
      */
     public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -193,7 +287,26 @@ class AssetType
      */
     public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? null;
@@ -229,6 +342,26 @@ class AssetType
      */
     public function resolveResolutions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         $types = $args['types'];
         $thumbnail = $value['url'] ?? null;
 
@@ -294,6 +427,26 @@ class AssetType
      */
     public function resolveDimensions($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
             $asset = $this->getAssetFromValue($value, $context);
@@ -345,6 +498,26 @@ class AssetType
      */
     public function resolveDuration(ElementDescriptor | null $value = null, array $context = []): ?float
     {
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         if (!$value instanceof ElementDescriptor) {
             return null;
         }
@@ -363,7 +536,26 @@ class AssetType
      */
     public function resolveVersion($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
-        $asset = $this->getAssetFromValue($value, $context);
+        $versionId = null;
+        $asset = null;
+
+        if (is_array($value) && isset($value['versionRequest'])) {
+            Logger::debug("context test array -> ". $value['versionRequest']);
+            $versionId = $value['versionRequest'];
+        } elseif (is_object($value) && isset($value->versionRequest)) {
+            Logger::debug("context test object -> " . $value->versionRequest);
+            $versionId = $value->versionRequest;
+        } else {
+            Logger::debug("context test -> " . "versionRequest not found");
+        }
+
+        if ($versionId !== null) {
+            $version = \Pimcore\Model\Version::getById($versionId);
+            $asset = $version->getData();
+        } else {
+            $asset = $this->getAssetFromValue($value, $context);
+        }
+
         if ($asset) {
             foreach (array_reverse($asset->getVersions()) as $version) {
                 if ($asset->getModificationDate() === $version->getDate()) {
