@@ -302,6 +302,8 @@ class AssetType
      */
     private function resolveVersionData($value = null, $context = [])
     {
+        $versionId = null;
+
         if (is_array($value) && isset($value['versionRequest'])) {
             $versionId = $value['versionRequest'];
         } elseif (is_object($value) && isset($value->versionRequest)) {
