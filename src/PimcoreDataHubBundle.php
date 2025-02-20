@@ -47,6 +47,7 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
     {
         return new PimcoreDataHubExtension();
     }
+
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new ImportExportLocatorsPass());
@@ -114,9 +115,6 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
         return $this->container->get(Installer::class);
     }
 
-    /**
-     * @return int
-     */
     public static function getNotAllowedPolicy(): int
     {
         return self::$notAllowedPolicy;
