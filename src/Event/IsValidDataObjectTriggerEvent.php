@@ -15,8 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Event;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Pimcore\Event\Model\ElementEventInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class IsValidDataObjectTriggerEvent extends Event
 {
