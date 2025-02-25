@@ -21,7 +21,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Data\AdvancedManyToManyObjectRelation;
 
-final class  ObjectsMetadata extends Base
+final class ObjectsMetadata extends Base
 {
     /**
      * @param string $attribute

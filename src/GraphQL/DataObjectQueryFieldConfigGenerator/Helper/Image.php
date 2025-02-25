@@ -24,7 +24,7 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-final class  Image
+final class Image
 {
     use ServiceTrait;
 

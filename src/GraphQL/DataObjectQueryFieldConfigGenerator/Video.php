@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-final class  Video extends Base
+final class Video extends Base
 {
     /**
      * @param string $attribute
