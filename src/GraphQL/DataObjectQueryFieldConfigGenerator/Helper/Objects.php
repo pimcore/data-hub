@@ -24,7 +24,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\AbstractElement;
 
-final class  Objects
+final class Objects
 {
     use ServiceTrait;
 

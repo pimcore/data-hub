@@ -24,7 +24,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\ElementInterface;
 
-final class  Href
+final class Href
 {
     use ServiceTrait;
 

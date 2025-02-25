@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-final class  Slider extends Base
+final class Slider extends Base
 {
     /**
      * @param string $attribute

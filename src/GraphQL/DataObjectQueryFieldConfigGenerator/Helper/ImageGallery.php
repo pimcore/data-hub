@@ -33,7 +33,7 @@ use Pimcore\Model\Element\Service;
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper
  */
-final class  ImageGallery
+final class ImageGallery
 {
     use ServiceTrait;
 
