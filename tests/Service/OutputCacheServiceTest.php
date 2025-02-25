@@ -46,7 +46,7 @@ class OutputCacheServiceTest extends Unit
         $this->eventDispatcher->method('dispatch')
             ->willReturnArgument(0);
 
-        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+        $this->sut = $this->getMockBuilder(OutputCacheServiceInterface::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['loadFromCache', 'saveToCache'])
             ->getMock();
@@ -106,7 +106,7 @@ class OutputCacheServiceTest extends Unit
                 ],
             ]);
 
-        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+        $this->sut = $this->getMockBuilder(OutputCacheServiceInterface::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['saveToCache'])
             ->getMock();
@@ -132,7 +132,7 @@ class OutputCacheServiceTest extends Unit
             ],
         ]);
 
-        $this->sut = $this->getMockBuilder(OutputCacheService::class)
+        $this->sut = $this->getMockBuilder(OutputCacheServiceInterface::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
             ->setMethods(['loadFromCache'])
             ->getMock();

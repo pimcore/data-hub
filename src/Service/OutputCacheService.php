@@ -24,7 +24,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-final class OutputCacheService
+final class OutputCacheService implements OutputCacheServiceInterface
 {
     /**
      * @var bool

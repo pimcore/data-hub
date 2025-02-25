@@ -30,3 +30,6 @@ services:
         public: true
         arguments:
             $bundle: "@=service('kernel').getBundle('PimcoreDataHubBundle')"
+
+    Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\OutputCacheService

@@ -30,7 +30,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * @package Pimcore\Bundle\DataHubBundle
  *
  */
-final class Configuration extends AbstractModel
+class Configuration extends AbstractModel
 {
     public const SECURITYCONFIG_AUTH_APIKEY = 'datahub_apikey';
 

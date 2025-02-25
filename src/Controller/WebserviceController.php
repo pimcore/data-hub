@@ -33,6 +33,7 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\ResponseServiceInterface;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Controller\FrontendController;
@@ -62,7 +63,7 @@ final class WebserviceController extends FrontendController
     private $permissionsService;
 
     /**
-     * @var OutputCacheService
+     * @var OutputCacheServiceInterface
      */
     private $cacheService;
 
@@ -74,7 +75,7 @@ final class WebserviceController extends FrontendController
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         CheckConsumerPermissionsService $permissionsService,
-        OutputCacheService $cacheService,
+        OutputCacheServiceInterface $cacheService,
         FileUploadService $uploadService
     ) {
         $this->eventDispatcher = $eventDispatcher;
