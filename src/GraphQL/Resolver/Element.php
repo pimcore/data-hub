@@ -35,7 +35,7 @@ use Pimcore\Model\Property;
 /**
  * @internal
  */
-final class Element
+class Element
 {
     use ServiceTrait, ElementTagTrait;
 

@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Table;
 
-final class SimpleTextType extends ObjectType
+class SimpleTextType extends ObjectType
 {
     protected static $instance;
 
