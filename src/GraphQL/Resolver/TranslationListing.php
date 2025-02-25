@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class TranslationListing
+/**
+ * @internal
+ */
+final class TranslationListing
 {
     use ServiceTrait;
 

@@ -24,7 +24,10 @@ use Pimcore\Logger;
 use Pimcore\Model\Tool\SettingsStore;
 use Pimcore\Model\User\Permission\Definition;
 
-class Installer extends SettingsStoreAwareInstaller
+/**
+ * @internal
+ */
+final class Installer extends SettingsStoreAwareInstaller
 {
     const DATAHUB_PERMISSION_CATEGORY = 'Datahub';
 

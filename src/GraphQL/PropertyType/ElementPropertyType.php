@@ -25,7 +25,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
 use Pimcore\Model\Asset\Folder;
 use Pimcore\Model\Document;
 
-class ElementPropertyType extends UnionType
+final class ElementPropertyType extends UnionType
 {
     use ServiceTrait;
 

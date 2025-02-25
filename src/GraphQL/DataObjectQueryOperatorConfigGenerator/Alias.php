@@ -15,6 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class Alias extends StringBase
+final class Alias extends StringBase
 {
 }

@@ -28,8 +28,9 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * @method Configuration\Dao getDao()
  *
  * @package Pimcore\Bundle\DataHubBundle
+ *
  */
-class Configuration extends AbstractModel
+final class Configuration extends AbstractModel
 {
     public const SECURITYCONFIG_AUTH_APIKEY = 'datahub_apikey';
 

@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class BaseOperator extends Base
+final class BaseOperator extends Base
 {
     /**
      * @param array $nodeDef

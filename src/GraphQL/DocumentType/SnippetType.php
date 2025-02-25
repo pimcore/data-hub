@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class SnippetType extends PageSnippetType
+/**
+ * @internal
+ */
+final class SnippetType extends PageSnippetType
 {
     /**
      * @param array $config

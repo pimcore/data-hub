@@ -21,7 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\RelationHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 
-class Hardlink
+final class Hardlink
 {
     use ServiceTrait;
 

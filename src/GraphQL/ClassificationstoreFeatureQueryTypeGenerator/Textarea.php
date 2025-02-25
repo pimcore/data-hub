@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
 
-class Textarea extends Base
+final class Textarea extends Base
 {
     /**
      * @return StringType

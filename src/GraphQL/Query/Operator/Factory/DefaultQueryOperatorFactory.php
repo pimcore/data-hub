@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory;
 
-class DefaultQueryOperatorFactory extends DefaultOperatorFactoryBase
+/**
+ * @internal
+ */
+final class DefaultQueryOperatorFactory extends DefaultOperatorFactoryBase
 {
 }

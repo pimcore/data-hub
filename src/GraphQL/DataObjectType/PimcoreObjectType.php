@@ -33,7 +33,7 @@ use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
-class PimcoreObjectType extends ObjectType
+final class PimcoreObjectType extends ObjectType
 {
     use ServiceTrait;
 

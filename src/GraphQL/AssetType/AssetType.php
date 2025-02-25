@@ -22,7 +22,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Element;
 
-class AssetType extends ObjectType
+/**
+ * @internal
+ */
+final class AssetType extends ObjectType
 {
     use ServiceTrait;
 

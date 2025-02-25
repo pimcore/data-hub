@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
 
-class Datetime extends Base
+final class Datetime extends Base
 {
     /**
      * @return StringType

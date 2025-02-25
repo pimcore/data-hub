@@ -22,7 +22,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class DocumentElementType extends UnionType implements ContainerAwareInterface
+/**
+ * @internal
+ */
+final class DocumentElementType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
     use ServiceTrait;

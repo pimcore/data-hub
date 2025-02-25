@@ -19,7 +19,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class GeneralTypeFactory
+/**
+ * @internal
+ */
+final class GeneralTypeFactory
 {
     use ServiceTrait;
 

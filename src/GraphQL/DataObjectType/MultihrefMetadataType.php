@@ -24,7 +24,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
-class MultihrefMetadataType extends ObjectType
+final class MultihrefMetadataType extends ObjectType
 {
     use ServiceTrait;
 

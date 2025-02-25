@@ -15,6 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class Substring extends StringBase
+final class Substring extends StringBase
 {
 }

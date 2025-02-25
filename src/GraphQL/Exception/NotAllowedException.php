@@ -15,6 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Exception;
 
-class NotAllowedException extends ClientSafeException
+final class NotAllowedException extends ClientSafeException
 {
 }

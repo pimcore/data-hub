@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ListOfType;
 use Pimcore\Tool;
 
-class LocalizedType extends InputObjectType
+final class LocalizedType extends InputObjectType
 {
     /**
      * @var array<string, LocalizedType>

@@ -32,7 +32,10 @@ use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Property;
 
-class Element
+/**
+ * @internal
+ */
+final class Element
 {
     use ServiceTrait, ElementTagTrait;
 

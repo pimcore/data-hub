@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class QuantityValue extends Base
+final class QuantityValue extends Base
 {
     /**
      * @param Concrete|AbstractData $object

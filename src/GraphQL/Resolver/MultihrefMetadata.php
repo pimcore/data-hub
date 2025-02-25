@@ -24,7 +24,10 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ElementMetadata;
 use Pimcore\Model\Document;
 
-class MultihrefMetadata
+/**
+ * @internal
+ */
+final class MultihrefMetadata
 {
     use ServiceTrait;
 

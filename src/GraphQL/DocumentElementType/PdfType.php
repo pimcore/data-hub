@@ -22,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Editable\Pdf;
 
-class PdfType extends ObjectType
+final class PdfType extends ObjectType
 {
     protected static $instance;
 

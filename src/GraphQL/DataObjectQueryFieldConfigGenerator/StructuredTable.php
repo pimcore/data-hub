@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class StructuredTable extends AbstractTable
+final class  StructuredTable extends AbstractTable
 {
     protected function getTableColumns(Data $fieldDefinition): array
     {

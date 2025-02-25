@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\Operator\Factory;
 
-class DefaultMutationOperatorFactory extends DefaultMutationOperatorFactoryBase
+/**
+ * @internal
+ */
+final class DefaultMutationOperatorFactory extends DefaultMutationOperatorFactoryBase
 {
 }

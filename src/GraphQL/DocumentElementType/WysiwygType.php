@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Wysiwyg;
 
-class WysiwygType extends SimpleTextType
+final class WysiwygType extends SimpleTextType
 {
     protected static $instance;
 

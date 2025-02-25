@@ -22,7 +22,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Editable\Relations;
 
-class RelationsType extends ObjectType
+final class RelationsType extends ObjectType
 {
     /** @var static|null */
     protected static $instance;

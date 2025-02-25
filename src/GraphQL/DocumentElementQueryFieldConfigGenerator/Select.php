@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\SelectType;
 
-class Select extends Base
+final class Select extends Base
 {
     /**
      * @return SelectType

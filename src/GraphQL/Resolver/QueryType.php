@@ -33,7 +33,10 @@ use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Translation;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class QueryType
+/**
+ * @internal
+ */
+final class QueryType
 {
     use ServiceTrait;
     use PermissionInfoTrait;

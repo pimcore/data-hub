@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Model\Document\PageSnippet;
 
-class Block extends Base
+final class Block extends Base
 {
     use EditablesTrait;
 

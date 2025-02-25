@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
-class TextareaType extends SimpleTextType
+final class TextareaType extends SimpleTextType
 {
     protected static $instance;
 

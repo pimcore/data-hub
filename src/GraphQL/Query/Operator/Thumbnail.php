@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Element\ElementInterface;
 
-class Thumbnail extends AbstractOperator
+/**
+ * @internal
+ */
+final class Thumbnail extends AbstractOperator
 {
     private $thumbnailConfig;
 

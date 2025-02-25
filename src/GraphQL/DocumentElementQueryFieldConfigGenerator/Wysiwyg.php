@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\WysiwygType;
 
-class Wysiwyg extends Base
+final class Wysiwyg extends Base
 {
     /**
      * @return WysiwygType

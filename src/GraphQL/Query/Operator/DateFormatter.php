@@ -19,7 +19,10 @@ use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class DateFormatter extends AbstractOperator
+/**
+ * @internal
+ */
+final class DateFormatter extends AbstractOperator
 {
     /**
      * @var string|null

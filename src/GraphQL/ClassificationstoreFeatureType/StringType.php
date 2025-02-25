@@ -21,7 +21,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
-class StringType extends ObjectType
+final class StringType extends ObjectType
 {
     protected static $instance = [];
 

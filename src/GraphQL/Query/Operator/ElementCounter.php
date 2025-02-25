@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class ElementCounter extends AbstractOperator
+/**
+ * @internal
+ */
+final class ElementCounter extends AbstractOperator
 {
     private $countEmpty;
 

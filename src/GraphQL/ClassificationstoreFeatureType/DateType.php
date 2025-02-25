@@ -22,7 +22,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
-class DateType extends ObjectType
+final class DateType extends ObjectType
 {
     /** @var static|null */
     protected static $instance;

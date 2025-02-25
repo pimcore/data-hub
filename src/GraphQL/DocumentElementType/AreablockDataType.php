@@ -21,7 +21,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AreablockDataType extends ObjectType
+final class AreablockDataType extends ObjectType
 {
     use ServiceTrait;
 

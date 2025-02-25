@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Localizedfields;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
-class Fieldcollections extends Base
+/**
+ * @internal
+ */
+final class Fieldcollections extends Base
 {
     /** @var array */
     public static $typeCache = [];

@@ -25,7 +25,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 
-class ReverseManyToManyObjects
+final class  ReverseManyToManyObjects
 {
     use ServiceTrait;
 

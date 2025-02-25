@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\MultiselectType;
 
-class Multiselect extends Base
+final class Multiselect extends Base
 {
     /**
      * @return MultiselectType

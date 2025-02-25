@@ -47,7 +47,10 @@ use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class MutationType extends ObjectType
+/**
+ * @internal
+ */
+final class MutationType extends ObjectType
 {
     use ServiceTrait;
     use PermissionInfoTrait;

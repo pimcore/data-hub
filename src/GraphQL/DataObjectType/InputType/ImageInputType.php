@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\InputType;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class ImageInputType extends AbstractRelationInputType
+final class ImageInputType extends AbstractRelationInputType
 {
     /**
      * @param array $config

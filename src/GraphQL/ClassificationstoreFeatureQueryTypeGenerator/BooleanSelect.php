@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\BooleanSelectType;
 
-class BooleanSelect extends Base
+final class BooleanSelect extends Base
 {
     /**
      * @return BooleanSelectType

@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\CheckboxType;
 
-class Checkbox extends Base
+final class Checkbox extends Base
 {
     /**
      * @return CheckboxType

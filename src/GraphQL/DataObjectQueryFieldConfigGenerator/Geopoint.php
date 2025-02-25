@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeopointType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Geopoint extends Base
+final class Geopoint extends Base
 {
     /**
      * @param string $attribute

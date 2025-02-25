@@ -15,7 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator;
 
-class ManyToOneRelation extends Base
+/**
+ * @internal
+ */
+final class ManyToOneRelation extends Base
 {
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])

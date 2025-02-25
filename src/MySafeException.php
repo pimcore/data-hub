@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle;
 
 use GraphQL\Error\ClientAware;
 
-class MySafeException extends \Exception implements ClientAware
+final class MySafeException extends \Exception implements ClientAware
 {
     /**
      * @var string|null

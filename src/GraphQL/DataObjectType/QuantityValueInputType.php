@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class QuantityValueInputType extends InputObjectType
+final class QuantityValueInputType extends InputObjectType
 {
     use ServiceTrait;
 

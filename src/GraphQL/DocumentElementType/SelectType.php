@@ -15,7 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
-class SelectType extends SimpleTextType
+final class SelectType extends SimpleTextType
 {
     protected static $instance;
 

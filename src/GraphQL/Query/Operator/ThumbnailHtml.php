@@ -25,7 +25,10 @@ use Pimcore\Model\Element\ElementInterface;
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator
  */
-class ThumbnailHtml extends AbstractOperator
+/**
+ * @internal
+ */
+final class ThumbnailHtml extends AbstractOperator
 {
     /**
      * @var string|null

@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class Link
+/**
+ * @internal
+ */
+final class Link
 {
     use ServiceTrait;
 

@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 
-class HotspotMetadataType extends UnionType
+final class HotspotMetadataType extends UnionType
 {
     use ServiceTrait;
 

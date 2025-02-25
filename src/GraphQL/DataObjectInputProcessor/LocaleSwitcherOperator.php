@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class LocaleSwitcherOperator extends BaseOperator
+final class LocaleSwitcherOperator extends BaseOperator
 {
     protected $locale;
 

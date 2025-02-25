@@ -24,7 +24,7 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class BlockType extends ObjectType implements ContainerAwareInterface
+final class BlockType extends ObjectType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
     use ServiceTrait;

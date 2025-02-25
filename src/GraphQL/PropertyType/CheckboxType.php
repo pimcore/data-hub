@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
-class CheckboxType extends ObjectType
+final class CheckboxType extends ObjectType
 {
     use ServiceTrait;
 

@@ -17,7 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\MultiselectType;
 
-class Languagemultiselect extends Base
+final class Languagemultiselect extends Base
 {
     /**
      * @return MultiselectType
