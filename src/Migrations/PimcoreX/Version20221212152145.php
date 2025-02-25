@@ -20,6 +20,9 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
+/**
+ * @internal
+ */
 final class Version20221212152145 extends AbstractMigration
 {
     public function getDescription(): string

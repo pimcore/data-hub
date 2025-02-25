@@ -19,7 +19,10 @@ use GraphQL\Error\InvariantViolation;
 use GraphQL\Server\RequestError;
 use Symfony\Component\HttpFoundation\Request;
 
-class FileUploadService
+/**
+ * @internal
+ */
+final class FileUploadService
 {
     /**
      *

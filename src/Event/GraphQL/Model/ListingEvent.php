@@ -19,7 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Listing\AbstractListing;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class ListingEvent extends Event
+final class ListingEvent extends Event
 {
     /**
      * @var AbstractListing

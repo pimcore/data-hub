@@ -36,9 +36,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
+ * @internal
+ *
  * @Route("/admin/pimcoredatahub/config")
  */
-class ConfigController extends \Pimcore\Controller\UserAwareController
+final class ConfigController extends \Pimcore\Controller\UserAwareController
 {
     use JsonHelperTrait;
 

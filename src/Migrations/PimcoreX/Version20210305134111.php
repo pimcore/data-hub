@@ -20,9 +20,9 @@ use Pimcore\Migrations\BundleAwareMigration;
 use Pimcore\Model\Tool\SettingsStore;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * @internal
  */
-class Version20210305134111 extends BundleAwareMigration
+final class Version20210305134111 extends BundleAwareMigration
 {
     protected function getBundleName(): string
     {

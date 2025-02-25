@@ -46,7 +46,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class WebserviceController extends FrontendController
+/**
+ * @internal
+ */
+final class WebserviceController extends FrontendController
 {
     /**
      * @var EventDispatcherInterface

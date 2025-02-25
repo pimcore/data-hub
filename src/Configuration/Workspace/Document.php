@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Configuration\Workspace;
 
-class Document extends AbstractWorkspace
+/**
+ * @internal
+ */
+final class Document extends AbstractWorkspace
 {
 }

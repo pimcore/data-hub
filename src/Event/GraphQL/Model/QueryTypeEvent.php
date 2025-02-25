@@ -20,7 +20,7 @@ use Pimcore\Event\Traits\RequestAwareTrait;
 use Pimcore\Event\Traits\ResponseAwareTrait;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class QueryTypeEvent extends Event
+final class QueryTypeEvent extends Event
 {
     use RequestAwareTrait;
     use ResponseAwareTrait;

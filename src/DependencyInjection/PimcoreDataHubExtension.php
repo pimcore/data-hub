@@ -22,7 +22,10 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
+/**
+ * @internal
+ */
+final class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container)
     {

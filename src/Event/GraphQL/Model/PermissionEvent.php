@@ -19,7 +19,7 @@ use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class PermissionEvent extends Event
+final class PermissionEvent extends Event
 {
     /**
      * @var ElementInterface|OwnerAwareFieldInterface $element
