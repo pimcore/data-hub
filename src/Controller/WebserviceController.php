@@ -32,7 +32,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
-use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\ResponseServiceInterface;
 use Pimcore\Cache\RuntimeCache;

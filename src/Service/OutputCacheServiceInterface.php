@@ -24,6 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
 interface OutputCacheServiceInterface
 {
     public function load(Request $request);
-    public function save(Request $request, JsonResponse $response, $extraTags = []): void;
 
+    public function save(Request $request, JsonResponse $response, $extraTags = []): void;
 }
