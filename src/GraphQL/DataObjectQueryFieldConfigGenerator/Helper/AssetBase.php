@@ -24,7 +24,7 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class AssetBase
+class  AssetBase
 {
     use ServiceTrait;
 

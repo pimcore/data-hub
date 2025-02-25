@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\TypeDefinitionInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefinitionInterface
+class  Base implements DataObjectQueryFieldConfigGeneratorInterface, TypeDefinitionInterface
 {
     use ServiceTrait;
 

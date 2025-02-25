@@ -27,7 +27,7 @@ use Pimcore\Model\DataObject\Data\BlockElement;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\DataObject\Service;
 
-final class Block extends Base
+final class  Block extends Base
 {
     /**
      * @param string $attribute
