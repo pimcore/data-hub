@@ -59,24 +59,6 @@ final class BlockEntryType extends ObjectType implements ContainerAwareInterface
     }
 
     /**
-     * @param string $type
-     * @param ClassDefinition|null $class
-     *
-     * @return static|null
-     */
-    public static function getInstance($type, Service $graphQlService, Data $fieldDefinition, $class)
-    {
-        if (!isset(self::$instance[$type])) {
-            $config = [
-                'name' => $type,
-            ];
-            self::$instance = new static($graphQlService, $fieldDefinition, $class, $config);
-        }
-
-        return self::$instance;
-    }
-
-    /**
      * @param array $config
      */
     public function build(&$config)
