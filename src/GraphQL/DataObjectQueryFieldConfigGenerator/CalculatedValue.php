@@ -25,7 +25,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  *
  * @internal
  */
-
 final class CalculatedValue extends Base
 {
     /**
