@@ -100,7 +100,8 @@ class OutputCacheService implements OutputCacheServiceInterface
      */
     protected function loadFromCache($key)
     {
-        Logger::debug("Loading from cache!");
+        Logger::debug('Loading from cache!');
+
         return \Pimcore\Cache::load($key);
     }
 
@@ -113,7 +114,7 @@ class OutputCacheService implements OutputCacheServiceInterface
     protected function saveToCache($key, $item, $tags = []): void
     {
         $ret = \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);
-        Logger::debug("Saved to cache! Ret: " . print_r($ret, true));
+        Logger::debug('Saved to cache! Ret: ' . print_r($ret, true));
     }
 
     private function computeKey(Request $request): string
