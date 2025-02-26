@@ -24,7 +24,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-final class OutputCacheService implements OutputCacheServiceInterface
+class OutputCacheService implements OutputCacheServiceInterface
 {
     /**
      * @var bool
@@ -100,6 +100,7 @@ final class OutputCacheService implements OutputCacheServiceInterface
      */
     protected function loadFromCache($key)
     {
+        Logger::debug("Loading from cache!");
         return \Pimcore\Cache::load($key);
     }
 
@@ -111,7 +112,8 @@ final class OutputCacheService implements OutputCacheServiceInterface
      */
     protected function saveToCache($key, $item, $tags = []): void
     {
-        \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);
+        $ret = \Pimcore\Cache::save($item, $key, $tags, $this->lifetime);
+        Logger::debug("Saved to cache! Ret: " . print_r($ret, true));
     }
 
     private function computeKey(Request $request): string
