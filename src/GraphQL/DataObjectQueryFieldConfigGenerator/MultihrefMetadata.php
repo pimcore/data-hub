@@ -20,6 +20,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\MultihrefMetadataType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class MultihrefMetadata extends Base
 {
     /**

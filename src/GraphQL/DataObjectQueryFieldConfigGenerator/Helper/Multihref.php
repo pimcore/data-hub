@@ -24,6 +24,9 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Element\AbstractElement;
 
+/**
+ * @internal
+ */
 final class Multihref
 {
     use ServiceTrait;

@@ -18,6 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Document\PageSnippet;
 
+/**
+ * @internal
+ */
 final class Multiselect extends Base
 {
     /**

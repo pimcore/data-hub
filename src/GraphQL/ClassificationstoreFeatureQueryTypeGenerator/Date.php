@@ -17,6 +17,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\DateType;
 
+/**
+ * @internal
+ */
 final class Date extends Base
 {
     /**

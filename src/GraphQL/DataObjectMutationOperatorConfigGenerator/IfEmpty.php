@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigG
 
 use Pimcore\Model\DataObject\ClassDefinition;
 
-class IfEmpty extends Base
+/**
+ * @internal
+ */
+final class IfEmpty extends Base
 {
     /**
      * @param array $nodeDef

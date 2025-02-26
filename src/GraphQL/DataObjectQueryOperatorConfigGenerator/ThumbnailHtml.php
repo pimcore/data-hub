@@ -24,6 +24,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
  * Class ThumbnailHtml
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator
+ *
+ * @internal
  */
 final class ThumbnailHtml extends Base
 {

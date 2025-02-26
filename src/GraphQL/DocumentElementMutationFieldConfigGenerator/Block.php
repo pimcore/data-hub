@@ -20,6 +20,9 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Block extends Base
 {
     /** @var InputObjectType|null */

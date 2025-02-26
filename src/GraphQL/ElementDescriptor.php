@@ -20,9 +20,6 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 
-/**
- * @internal
- */
 final class ElementDescriptor extends BaseDescriptor
 {
     public function __construct(?ElementInterface $element = null)

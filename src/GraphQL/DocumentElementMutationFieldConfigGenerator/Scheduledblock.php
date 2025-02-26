@@ -21,6 +21,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataI
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Scheduledblock extends Base
 {
     /** @var InputObjectType|null */

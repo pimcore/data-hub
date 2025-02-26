@@ -21,6 +21,9 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
+/**
+ * @internal
+ */
 final class CheckboxType extends ObjectType
 {
     protected static $instance;

@@ -21,6 +21,9 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
 
+/**
+ * @internal
+ */
 final class Helper extends ObjectType
 {
     /**

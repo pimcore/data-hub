@@ -21,6 +21,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class UrlSlugType extends ObjectType
 {
     use ServiceTrait;

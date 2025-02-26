@@ -32,6 +32,8 @@ use Pimcore\Model\Element\Service;
  * Class ImageGallery
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper
+ *
+ * @internal
  */
 final class ImageGallery
 {

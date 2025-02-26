@@ -24,6 +24,9 @@ use Pimcore\Cache\RuntimeCache;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @internal
+ */
 final class FieldcollectionType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

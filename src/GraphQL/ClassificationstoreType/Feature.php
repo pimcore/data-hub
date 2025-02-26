@@ -24,6 +24,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @internal
+ */
 final class Feature extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

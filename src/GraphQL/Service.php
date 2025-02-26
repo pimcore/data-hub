@@ -56,9 +56,6 @@ use Pimcore\Translation\Translator;
 use Pimcore\Version;
 use Psr\Container\ContainerInterface;
 
-/**
- * @internal
- */
 final class Service
 {
     // @var ContainerInterface

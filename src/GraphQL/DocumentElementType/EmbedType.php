@@ -21,6 +21,9 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Date;
 use Pimcore\Model\Document\Editable\Embed;
 
+/**
+ * @internal
+ */
 final class EmbedType extends ObjectType
 {
     protected static $instance;

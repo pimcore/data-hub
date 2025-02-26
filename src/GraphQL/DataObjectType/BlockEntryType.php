@@ -27,6 +27,9 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @internal
+ */
 final class BlockEntryType extends ObjectType implements ContainerAwareInterface
 {
     /**

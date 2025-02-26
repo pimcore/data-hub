@@ -25,6 +25,9 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
+/**
+ * @internal
+ */
 final class DataObjectType extends ObjectType
 {
     use ServiceTrait;

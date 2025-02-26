@@ -20,6 +20,9 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
+/**
+ * @internal
+ */
 final class Fieldcollections extends Base
 {
     /**

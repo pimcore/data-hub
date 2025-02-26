@@ -23,6 +23,9 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\Exception\NotFoundException;
 
+/**
+ * @internal
+ */
 final class ManyToManyObjectRelation extends Base
 {
     use ElementIdentificationTrait;

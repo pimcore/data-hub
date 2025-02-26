@@ -20,6 +20,9 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\PageSnippet;
 
+/**
+ * @internal
+ */
 final class Image extends Base
 {
     /**

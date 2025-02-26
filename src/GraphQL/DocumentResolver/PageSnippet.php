@@ -22,6 +22,9 @@ use Pimcore\Model\Document\Editable;
 use Pimcore\Model\Document\Editable\Areablock;
 use Pimcore\Model\Document\Editable\BlockInterface;
 
+/**
+ * @internal
+ */
 final class PageSnippet
 {
     use ServiceTrait;

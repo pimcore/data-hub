@@ -18,6 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class UrlSlug extends Base
 {
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)

@@ -28,6 +28,9 @@ use Pimcore\Model\DataObject;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @internal
+ */
 final class ObjectTreeType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

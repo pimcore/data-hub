@@ -17,6 +17,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\MultiselectType;
 
+/**
+ * @internal
+ */
 final class Countrymultiselect extends Base
 {
     /**

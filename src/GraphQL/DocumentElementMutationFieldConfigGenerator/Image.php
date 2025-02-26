@@ -19,6 +19,9 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Image extends Base
 {
     //TODO extend it with markers, hotspots etc.

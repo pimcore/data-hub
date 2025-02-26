@@ -18,6 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class Table extends AbstractTable
 {
     private const NUMERIC_PREFIX = 'col';

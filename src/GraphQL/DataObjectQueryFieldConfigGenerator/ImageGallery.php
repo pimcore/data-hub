@@ -24,6 +24,8 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class ImageGallery
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
 final class ImageGallery extends Base
 {

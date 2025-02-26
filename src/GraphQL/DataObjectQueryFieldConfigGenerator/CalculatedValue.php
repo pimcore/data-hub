@@ -22,7 +22,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class CalculatedValue
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
+
 final class CalculatedValue extends Base
 {
     /**

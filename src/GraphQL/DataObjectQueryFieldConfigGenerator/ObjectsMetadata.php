@@ -21,6 +21,9 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Data\AdvancedManyToManyObjectRelation;
 
+/**
+ * @internal
+ */
 final class ObjectsMetadata extends Base
 {
     /**

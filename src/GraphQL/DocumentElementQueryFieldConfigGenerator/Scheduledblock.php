@@ -19,6 +19,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockDataT
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\ScheduledblockType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Scheduledblock extends Base
 {
     /** @var ScheduledblockDataType */

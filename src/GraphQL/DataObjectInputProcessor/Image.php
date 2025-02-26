@@ -23,6 +23,9 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
+/**
+ * @internal
+ */
 final class Image extends Base
 {
     /**

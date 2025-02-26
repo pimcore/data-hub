@@ -20,6 +20,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Areablock;
 
+/**
+ * @internal
+ */
 final class AreablockType extends ObjectType
 {
     protected static $instance;

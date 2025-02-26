@@ -21,6 +21,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
+/**
+ * @internal
+ */
 final class QuantityValueType extends ObjectType
 {
     protected static $instance = [];

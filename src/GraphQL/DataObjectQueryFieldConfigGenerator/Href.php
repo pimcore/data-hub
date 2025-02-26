@@ -19,6 +19,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\HrefType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class Href extends Base
 {
     /**

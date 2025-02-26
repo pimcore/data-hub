@@ -15,9 +15,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-/**
- * @internal
- */
 final class ConfigEvents
 {
     public const SPECIAL_ENTITIES = 'pimcore.datahub.config.special_entities';

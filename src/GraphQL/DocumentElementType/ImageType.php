@@ -24,6 +24,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\HotspotCropType;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\Editable\Image;
 
+/**
+ * @internal
+ */
 final class ImageType extends ObjectType
 {
     protected static $instance;

@@ -22,6 +22,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentResolver\Link;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
+/**
+ * @internal
+ */
 final class LinkDataType extends ObjectType
 {
     use ServiceTrait;

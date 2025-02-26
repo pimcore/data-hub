@@ -25,6 +25,8 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class Objects
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
 final class Objects extends Base implements TypeDefinitionInterface
 {

@@ -21,6 +21,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
+/**
+ * @internal
+ */
 final class Date extends Base
 {
     /**

@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
+/**
+ * @internal
+ */
 final class Thumbnail extends StringBase
 {
 }

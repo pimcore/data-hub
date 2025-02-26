@@ -19,6 +19,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Areablock extends Base
 {
     protected $areablockDataType;

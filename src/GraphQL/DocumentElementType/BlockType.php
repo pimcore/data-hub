@@ -20,6 +20,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Block;
 
+/**
+ * @internal
+ */
 final class BlockType extends ObjectType
 {
     protected static $instance;

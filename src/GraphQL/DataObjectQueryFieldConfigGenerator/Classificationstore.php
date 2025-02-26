@@ -22,6 +22,9 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 
+/**
+ * @internal
+ */
 final class Classificationstore extends Base
 {
     /**

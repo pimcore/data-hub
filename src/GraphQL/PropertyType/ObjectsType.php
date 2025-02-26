@@ -24,6 +24,9 @@ use Pimcore\Model\Document;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+/**
+ * @internal
+ */
 final class ObjectsType extends UnionType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

@@ -24,6 +24,9 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data\ObjectMetadata;
 
+/**
+ * @internal
+ */
 final class ObjectsMetadata
 {
     use ServiceTrait;

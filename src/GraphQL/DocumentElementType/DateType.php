@@ -21,6 +21,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Date;
 
+/**
+ * @internal
+ */
 final class DateType extends ObjectType
 {
     protected static $instance;

@@ -19,6 +19,9 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ListOfType;
 use Pimcore\Tool;
 
+/**
+ * @internal
+ */
 final class LocalizedType extends InputObjectType
 {
     /**

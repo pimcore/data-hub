@@ -26,6 +26,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
  * Class HotspotType
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType
+ *
+ * @internal
  */
 final class HotspotType extends ObjectType
 {

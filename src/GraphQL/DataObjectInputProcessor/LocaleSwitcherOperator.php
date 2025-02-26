@@ -19,6 +19,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
+/**
+ * @internal
+ */
 final class LocaleSwitcherOperator extends BaseOperator
 {
     protected $locale;

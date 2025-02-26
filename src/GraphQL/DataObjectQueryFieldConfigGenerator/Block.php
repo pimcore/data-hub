@@ -27,6 +27,9 @@ use Pimcore\Model\DataObject\Data\BlockElement;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\DataObject\Service;
 
+/**
+ * @internal
+ */
 final class Block extends Base
 {
     /**

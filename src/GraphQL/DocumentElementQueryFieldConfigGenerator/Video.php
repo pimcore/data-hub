@@ -18,6 +18,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\VideoType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
+/**
+ * @internal
+ */
 final class Video extends Base
 {
     /**

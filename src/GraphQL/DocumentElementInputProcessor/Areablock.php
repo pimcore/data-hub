@@ -19,6 +19,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Model\Document\PageSnippet;
 
+/**
+ * @internal
+ */
 final class Areablock extends Base
 {
     use EditablesTrait;

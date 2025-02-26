@@ -19,6 +19,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LinkType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
+/**
+ * @internal
+ */
 final class Link extends Base
 {
     /**
