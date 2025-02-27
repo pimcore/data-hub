@@ -18,6 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle;
 use Pimcore\Bundle\AdminBundle\PimcoreAdminBundle;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\CustomDocumentTypePass;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
+use Pimcore\Bundle\DataHubBundle\DependencyInjection\PimcoreDataHubExtension;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
@@ -26,6 +27,7 @@ use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
 {
@@ -40,6 +42,11 @@ class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundl
 
     //TODO decide whether we want to return null here or throw an exception (maybe make this configurable?)
     public static $notAllowedPolicy = self::NOT_ALLOWED_POLICY_NULL;
+
+    public function getContainerExtension(): ExtensionInterface
+    {
+        return new PimcoreDataHubExtension();
+    }
 
     public function build(ContainerBuilder $container)
     {
