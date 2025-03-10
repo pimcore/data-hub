@@ -42,6 +42,7 @@ class AdvancedManyToManyObjectRelation extends Base
             $result = [];
             if (is_array($newValue)) {
                 foreach ($newValue as $newValueItemKey => $newValueItemValue) {
+                    $columns = [];
                     $element = $this->getElementByTypeAndIdOrPath($newValueItemValue);
 
                     if ($element) {
@@ -54,7 +55,7 @@ class AdvancedManyToManyObjectRelation extends Base
                             }
                         }
                         $concrete = Concrete::getById($element->getId());
-                        $item = new ObjectMetadata($fieldName, $columns ?? [], $concrete);
+                        $item = new ObjectMetadata($fieldName, $columns, $concrete);
                         if ($data !== []) {
                             $item->setData($data);
                         }
