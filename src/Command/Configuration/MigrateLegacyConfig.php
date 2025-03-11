@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateLegacyConfig extends AbstractCommand
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('datahub:configuration:migrate-legacy-config')
