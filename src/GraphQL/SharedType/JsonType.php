@@ -18,9 +18,6 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\SharedType;
 use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Utils\Utils as GraphQLUtils;
 
-/**
- * @internal
- */
 final class JsonType extends ScalarType
 {
     public function serialize(mixed $value): string
