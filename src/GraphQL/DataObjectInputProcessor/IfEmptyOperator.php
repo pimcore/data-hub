@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class IfEmptyOperator extends BaseOperator
+/**
+ * @internal
+ */
+final class IfEmptyOperator extends BaseOperator
 {
     /**
      * @param array $nodeDef

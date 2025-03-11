@@ -23,8 +23,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class Hotspotimage
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
-class Hotspotimage extends Base
+final class Hotspotimage extends Base
 {
     public const TYPE = 'object_datatype_hotspotimage';
 

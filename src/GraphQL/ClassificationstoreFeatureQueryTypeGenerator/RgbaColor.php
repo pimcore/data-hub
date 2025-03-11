@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
 
-class RgbaColor extends Base
+/**
+ * @internal
+ */
+final class RgbaColor extends Base
 {
     /**
      * @return StringType

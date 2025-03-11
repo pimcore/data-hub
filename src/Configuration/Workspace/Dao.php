@@ -17,6 +17,9 @@ namespace Pimcore\Bundle\DataHubBundle\Configuration\Workspace;
 
 use Pimcore\Model;
 
+/**
+ * @internal
+ */
 class Dao extends Model\Dao\AbstractDao
 {
     const TABLE_NAME_ASSET = 'plugin_datahub_workspaces_asset';

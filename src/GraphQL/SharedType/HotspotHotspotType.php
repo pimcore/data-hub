@@ -25,8 +25,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
  * Class HotspotHotspotType
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\SharedType
+ *
+ * @internal
  */
-class HotspotHotspotType extends ObjectType
+final class HotspotHotspotType extends ObjectType
 {
     use ServiceTrait;
 

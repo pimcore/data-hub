@@ -33,7 +33,10 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Factory;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class QueryType extends ObjectType
+/**
+ * @internal
+ */
+final class QueryType extends ObjectType
 {
     use ServiceTrait;
     use PermissionInfoTrait;

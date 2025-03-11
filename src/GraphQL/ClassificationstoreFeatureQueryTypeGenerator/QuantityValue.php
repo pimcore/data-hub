@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\QuantityValueType;
 
-class QuantityValue extends Base
+/**
+ * @internal
+ */
+final class QuantityValue extends Base
 {
     /**
      * @return mixed

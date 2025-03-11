@@ -19,7 +19,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LinkType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Link extends Base
+/**
+ * @internal
+ */
+final class Link extends Base
 {
     /**
      * @param string $attribute

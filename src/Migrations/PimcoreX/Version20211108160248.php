@@ -23,7 +23,7 @@ use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Installer;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * @internal
  */
 final class Version20211108160248 extends AbstractMigration
 {

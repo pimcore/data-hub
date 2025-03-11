@@ -22,7 +22,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\SharedType\JsonType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class TranslationType extends ObjectType
+/**
+ * @internal
+ */
+final class TranslationType extends ObjectType
 {
     use ServiceTrait;
 

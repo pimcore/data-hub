@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\Event\Config;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class SpecialEntitiesEvent extends Event
+final class SpecialEntitiesEvent extends Event
 {
     protected $specialSettings;
 

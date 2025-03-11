@@ -21,7 +21,10 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class ImageGallery extends Base
+/**
+ * @internal
+ */
+final class ImageGallery extends Base
 {
     /**
      * @param Concrete|AbstractData $object

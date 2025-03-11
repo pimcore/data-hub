@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class GeopointType extends ObjectType
+/**
+ * @internal
+ */
+final class GeopointType extends ObjectType
 {
     protected static $instance;
 

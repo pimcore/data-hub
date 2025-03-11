@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class Substring extends AbstractOperator
+/**
+ * @internal
+ */
+final class Substring extends AbstractOperator
 {
     private $start;
 

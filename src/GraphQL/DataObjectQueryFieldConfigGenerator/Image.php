@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Image extends AssetBase
+/**
+ * @internal
+ */
+final class Image extends AssetBase
 {
     /**
      * @param string $attribute

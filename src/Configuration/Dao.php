@@ -26,8 +26,10 @@ use Symfony\Component\Uid\Uuid as Uid;
  * @package Pimcore\Bundle\DataHubBundle\Configuration
  *
  * @property Configuration $model
+ *
+ * @internal
  */
-class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
+final class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
 {
     public const ROOT_PATH = '/';
 

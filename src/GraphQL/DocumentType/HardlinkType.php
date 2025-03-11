@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class HardlinkType extends AbstractDocumentType
+/**
+ * @internal
+ */
+final class HardlinkType extends AbstractDocumentType
 {
     use ServiceTrait;
 

@@ -24,8 +24,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
  * Class ThumbnailHtml
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\QueryOperatorConfigGenerator
+ *
+ * @internal
  */
-class ThumbnailHtml extends Base
+final class ThumbnailHtml extends Base
 {
     /**
      * @param array $config

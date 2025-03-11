@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\ElementDescriptorInputType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class ManyToManyObjectRelation extends Base
+/**
+ * @internal
+ */
+final class ManyToManyObjectRelation extends Base
 {
     protected $elementInputType;
 

@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\Classificationstore;
 
-class Group extends ObjectType
+/**
+ * @internal
+ */
+final class Group extends ObjectType
 {
     use ServiceTrait;
 

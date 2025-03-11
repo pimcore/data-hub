@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class Link extends Base
+/**
+ * @internal
+ */
+final class Link extends Base
 {
     /**
      * @param Concrete|AbstractData $object

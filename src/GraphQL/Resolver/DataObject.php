@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\AbstractObject;
 
-class DataObject extends Element
+/**
+ * @internal
+ */
+final class DataObject extends Element
 {
     use ServiceTrait, ElementTagTrait;
 

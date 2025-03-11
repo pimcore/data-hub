@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-class BlockDescriptor extends BaseDescriptor
+/**
+ * @internal
+ */
+final class BlockDescriptor extends BaseDescriptor
 {
 }

@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Logger;
 use Pimcore\Model\Asset;
 
-class DocumentFieldHelper extends AbstractFieldHelper
+final class DocumentFieldHelper extends AbstractFieldHelper
 {
     /**
      * @param array $data

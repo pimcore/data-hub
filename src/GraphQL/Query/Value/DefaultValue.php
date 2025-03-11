@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 
-class DefaultValue extends AbstractValue
+/**
+ * @internal
+ */
+final class DefaultValue extends AbstractValue
 {
     /**
      * @param ElementInterface|null $element

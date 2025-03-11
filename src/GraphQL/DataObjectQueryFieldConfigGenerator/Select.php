@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator;
 
-class Select extends Input
+/**
+ * @internal
+ */
+final class Select extends Input
 {
 }

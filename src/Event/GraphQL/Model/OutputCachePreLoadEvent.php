@@ -19,7 +19,7 @@ use Pimcore\Event\Traits\RequestAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class OutputCachePreLoadEvent extends Event
+final class OutputCachePreLoadEvent extends Event
 {
     use RequestAwareTrait;
 

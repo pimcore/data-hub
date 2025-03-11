@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\Data\AbstractQuantityValue;
 
-class QuantityValue
+/**
+ * @internal
+ */
+final class QuantityValue
 {
     use ServiceTrait;
 

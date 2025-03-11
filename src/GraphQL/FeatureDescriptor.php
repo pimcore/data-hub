@@ -15,7 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
-class FeatureDescriptor extends \ArrayObject
+/**
+ * @internal
+ */
+final class FeatureDescriptor extends \ArrayObject
 {
     protected $id;
 

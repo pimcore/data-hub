@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\BlockType;
 
-class Block extends Base
+/**
+ * @internal
+ */
+final class Block extends Base
 {
     /**
      * @return BlockType

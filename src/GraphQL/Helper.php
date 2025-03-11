@@ -23,7 +23,7 @@ use Pimcore\Model\DataObject\Listing;
 /**
  * @internal
  */
-class Helper
+final class Helper
 {
     /**
      * @param Listing\Concrete $list

@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset\Image;
 
-class Video
+/**
+ * @internal
+ */
+final class Video
 {
     use ServiceTrait;
 

@@ -20,7 +20,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
 
-class DataObjectTypeFactory
+final class DataObjectTypeFactory
 {
     use ServiceTrait;
 

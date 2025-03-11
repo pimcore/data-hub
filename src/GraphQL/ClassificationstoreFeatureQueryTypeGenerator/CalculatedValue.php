@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTy
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
 
-class CalculatedValue extends Base
+/**
+ * @internal
+ */
+final class CalculatedValue extends Base
 {
     /**
      * @return StringType

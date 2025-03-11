@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigG
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\LocaleCollectorOperator;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\LocalizedType;
 
-class LocaleCollector extends Base
+/**
+ * @internal
+ */
+final class LocaleCollector extends Base
 {
     /**
      * @param array $nodeDef

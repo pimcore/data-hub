@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class LocaleCollectorOperator extends BaseOperator
+/**
+ * @internal
+ */
+final class LocaleCollectorOperator extends BaseOperator
 {
     /**
      * @param Concrete|AbstractData $object

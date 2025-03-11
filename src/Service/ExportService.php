@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 
-class ExportService
+/**
+ * @internal
+ */
+final class ExportService
 {
     public function exportConfigurationJson(Configuration $configuration): string
     {

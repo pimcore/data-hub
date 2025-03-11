@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Element\Data\MarkerHotspotItem;
 use Pimcore\Model\Property;
 
-class TextType extends ObjectType
+/**
+ * @internal
+ */
+final class TextType extends ObjectType
 {
     use ServiceTrait;
 

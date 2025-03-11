@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class DateFormatter extends StringBase
+/**
+ * @internal
+ */
+final class DateFormatter extends StringBase
 {
 }

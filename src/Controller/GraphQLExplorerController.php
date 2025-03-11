@@ -20,7 +20,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
-class GraphQLExplorerController extends AbstractController
+/**
+ * @internal
+ */
+final class GraphQLExplorerController extends AbstractController
 {
     /**
      *

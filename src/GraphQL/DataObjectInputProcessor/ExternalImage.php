@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class ExternalImage extends Base
+/**
+ * @internal
+ */
+final class ExternalImage extends Base
 {
     /**
      * @param Concrete|AbstractData $object

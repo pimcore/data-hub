@@ -20,7 +20,10 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class Fieldcollections extends Base
+/**
+ * @internal
+ */
+final class Fieldcollections extends Base
 {
     /**
      * @var array
