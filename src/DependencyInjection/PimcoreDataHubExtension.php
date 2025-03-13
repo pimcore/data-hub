@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Exception;
+use Pimcore\Config\LocationAwareConfigRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -54,5 +55,11 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
 
             $loader->load('doctrine_migrations.yml');
         }
+
+        LocationAwareConfigRepository::loadSymfonyConfigFiles(
+            $container,
+            'pimcore_data_hub',
+            'data_hub'
+        );
     }
 }
