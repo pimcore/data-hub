@@ -24,7 +24,10 @@ use Pimcore\Logger;
 use Pimcore\Model\Tool\SettingsStore;
 use Pimcore\Model\User\Permission\Definition;
 
-class Installer extends SettingsStoreAwareInstaller
+/**
+ * @internal
+ */
+final class Installer extends SettingsStoreAwareInstaller
 {
     const DATAHUB_PERMISSION_CATEGORY = 'Datahub';
 
@@ -60,7 +63,7 @@ class Installer extends SettingsStoreAwareInstaller
                         `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         PRIMARY KEY (`cid`, `configuration`)
                         )
-                    COLLATE='utf8mb4_general_ci'
+                    COLLATE='utf8mb4_unicode_520_ci'
                     ENGINE=InnoDB
                     ;
                 ");

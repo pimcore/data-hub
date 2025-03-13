@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\Type;
 
-class ExternalImage extends Base
+/**
+ * @internal
+ */
+final class ExternalImage extends Base
 {
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])

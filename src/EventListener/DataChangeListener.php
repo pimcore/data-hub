@@ -26,7 +26,10 @@ use Pimcore\Event\Model\DocumentEvent;
 use Pimcore\Model\Element\ValidationException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class DataChangeListener implements EventSubscriberInterface
+/**
+ * @internal
+ */
+final class DataChangeListener implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {

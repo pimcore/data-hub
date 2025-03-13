@@ -30,7 +30,10 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class AssetListing
+/**
+ * @internal
+ */
+final class AssetListing
 {
     use ServiceTrait;
 

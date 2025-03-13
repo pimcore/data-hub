@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Document\PageSnippet;
 
-class Embed extends Base
+/**
+ * @internal
+ */
+final class Embed extends Base
 {
     /**
      * @param PageSnippet $document

@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationOperatorConfigG
 
 use Pimcore\Model\DataObject\ClassDefinition;
 
-class LocaleSwitcher extends Base
+/**
+ * @internal
+ */
+final class LocaleSwitcher extends Base
 {
     /**
      * @param array $nodeDef

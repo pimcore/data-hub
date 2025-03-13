@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Table extends Base
+/**
+ * @internal
+ */
+final class Table extends Base
 {
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])

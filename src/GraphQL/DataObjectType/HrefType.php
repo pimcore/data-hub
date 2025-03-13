@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
-class HrefType extends AbstractRelationsType
+/**
+ * @internal
+ */
+final class HrefType extends AbstractRelationsType
 {
 }

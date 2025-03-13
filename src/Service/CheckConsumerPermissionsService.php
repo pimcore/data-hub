@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\Service;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\HttpFoundation\Request;
 
-class CheckConsumerPermissionsService
+/**
+ * @internal
+ */
+final class CheckConsumerPermissionsService
 {
     public const TOKEN_HEADER = 'X-API-Key';
 

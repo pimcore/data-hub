@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Checkbox;
 
-class CheckboxType extends ObjectType
+/**
+ * @internal
+ */
+final class CheckboxType extends ObjectType
 {
     protected static $instance;
 

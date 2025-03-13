@@ -28,7 +28,7 @@ use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 
-class DataObjectFieldHelper extends AbstractFieldHelper
+final class DataObjectFieldHelper extends AbstractFieldHelper
 {
     /**
      * @param array $nodeDef

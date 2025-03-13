@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class Date extends Base
+/**
+ * @internal
+ */
+final class Date extends Base
 {
     /**
      * @param Concrete|AbstractData $object
@@ -35,10 +38,17 @@ class Date extends Base
     {
         $attribute = $this->getAttribute();
         Service::setValue($object, $attribute, function ($container, $setter) use ($newValue) {
-            if (!is_numeric($newValue)) {
-                $newValue = strtotime($newValue);
+
+            if ($newValue === '') {
+                $newValue = null;
             }
-            $newValue = Carbon::createFromTimestamp($newValue, date_default_timezone_get());
+
+            if (!is_null($newValue)) {
+                if (!is_numeric($newValue)) {
+                    $newValue = strtotime($newValue);
+                }
+                $newValue = Carbon::createFromTimestamp($newValue, date_default_timezone_get());
+            }
 
             return $container->$setter($newValue);
         });

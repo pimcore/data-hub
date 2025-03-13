@@ -28,7 +28,10 @@ use Pimcore\Model\Element\Data\MarkerHotspotItem;
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\Resolver
  */
-class HotspotType
+/**
+ * @internal
+ */
+final class HotspotType
 {
     use ServiceTrait;
 

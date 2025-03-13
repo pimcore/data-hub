@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AssetMetadataItem extends ObjectType
+/**
+ * @internal
+ */
+final class AssetMetadataItem extends ObjectType
 {
     use ServiceTrait;
 

@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Extension\Bundle\PimcoreBundleManager;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-class ImportService
+final class ImportService
 {
     public function __construct(
         protected PimcoreBundleManager $bundleManager,

@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
-class Input extends Base
+/**
+ * @internal
+ */
+final class Input extends Base
 {
 }

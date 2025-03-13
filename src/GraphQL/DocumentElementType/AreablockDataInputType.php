@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class AreablockDataInputType extends InputObjectType
+/**
+ * @internal
+ */
+final class AreablockDataInputType extends InputObjectType
 {
     use ServiceTrait;
 

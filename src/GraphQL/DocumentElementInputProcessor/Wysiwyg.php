@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
-class Wysiwyg extends Base
+/**
+ * @internal
+ */
+final class Wysiwyg extends Base
 {
 }

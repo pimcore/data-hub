@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerat
 
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class InputQuantityValue extends Base
+/**
+ * @internal
+ */
+final class InputQuantityValue extends Base
 {
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {

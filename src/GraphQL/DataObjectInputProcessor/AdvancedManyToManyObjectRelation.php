@@ -23,7 +23,10 @@ use Pimcore\Model\DataObject\Data\ObjectMetadata;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\Exception\NotFoundException;
 
-class AdvancedManyToManyObjectRelation extends Base
+/**
+ * @internal
+ */
+final class AdvancedManyToManyObjectRelation extends Base
 {
     use ElementIdentificationTrait;
 

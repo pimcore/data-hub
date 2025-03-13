@@ -30,8 +30,10 @@ use Pimcore\Model\DataObject\Fieldcollection;
  * Class Hotspotimage
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Helper
+ *
+ * @internal
  */
-class Hotspotimage
+final class Hotspotimage
 {
     use ServiceTrait;
 

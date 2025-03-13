@@ -24,7 +24,10 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\ElementInterface;
 
-class Href
+/**
+ * @internal
+ */
+final class Href
 {
     use ServiceTrait;
 

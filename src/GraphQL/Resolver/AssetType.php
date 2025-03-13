@@ -28,7 +28,10 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\Version;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class AssetType
+/**
+ * @internal
+ */
+final class AssetType
 {
     use ServiceTrait, ElementTagTrait;
 

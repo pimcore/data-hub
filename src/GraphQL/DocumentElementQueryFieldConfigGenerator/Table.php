@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\TableType;
 
-class Table extends Base
+/**
+ * @internal
+ */
+final class Table extends Base
 {
     /**
      * @return TableType

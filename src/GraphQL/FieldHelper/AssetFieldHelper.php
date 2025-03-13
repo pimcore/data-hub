@@ -21,7 +21,7 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\Asset\Image;
 use Pimcore\Model\Asset\Video;
 
-class AssetFieldHelper extends AbstractFieldHelper
+final class AssetFieldHelper extends AbstractFieldHelper
 {
     public function getVideoThumbnail(Asset\Video $asset, string | Video\Thumbnail\Config $thumbNailConfig, ?string $thumbNailFormat = null): mixed
     {

@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\AreablockDataInputT
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class Areablock extends Base
+/**
+ * @internal
+ */
+final class Areablock extends Base
 {
     /** @var InputObjectType|null */
     public static $itemType;

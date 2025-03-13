@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class Concatenator extends AbstractOperator
+/**
+ * @internal
+ */
+final class Concatenator extends AbstractOperator
 {
     private $glue;
 

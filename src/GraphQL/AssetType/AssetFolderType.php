@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\General\FolderType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class AssetFolderType extends FolderType
+/**
+ * @internal
+ */
+final class AssetFolderType extends FolderType
 {
     /**
      * @param array $config

@@ -20,6 +20,8 @@ use Pimcore\Model\AbstractModel;
 /**
  * @method \Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao getDao()
  * @method void save()
+ *
+ * @internal
  */
 abstract class AbstractWorkspace extends AbstractModel
 {

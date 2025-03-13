@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Scheduledblock;
 
-class ScheduledblockType extends ObjectType
+/**
+ * @internal
+ */
+final class ScheduledblockType extends ObjectType
 {
     protected static $instance;
 

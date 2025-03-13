@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\RelationType;
 
-class Relation extends Base
+/**
+ * @internal
+ */
+final class Relation extends Base
 {
     /**
      * @return RelationType

@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class ElementCounter extends IntBase
+/**
+ * @internal
+ */
+final class ElementCounter extends IntBase
 {
 }

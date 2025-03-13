@@ -15,7 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Model;
 
-class SpecialEntitySetting implements \JsonSerializable
+/**
+ * @internal
+ */
+final class SpecialEntitySetting implements \JsonSerializable
 {
     protected $name;
 

@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class TranslationListing
+/**
+ * @internal
+ */
+final class TranslationListing
 {
     use ServiceTrait;
 
@@ -61,8 +64,9 @@ class TranslationListing
 
         if (!empty($args['keys'])) {
             $keysArray = explode(',', $args['keys']);
-            $keysString = "'" . implode("','", $keysArray) . "'" ;
-            $list->setCondition('translations_messages.key IN (' . $keysString . ')');
+            $keysArray = array_map(fn ($value): string => $list->quote($value), $keysArray);
+            $keysString = implode(',', $keysArray);
+            $list->setCondition('`key` IN (' . $keysString . ')');
         }
 
         if (!empty($args['languages'])) {

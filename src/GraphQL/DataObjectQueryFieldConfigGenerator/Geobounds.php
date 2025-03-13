@@ -19,7 +19,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\GeoboundsType;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Geobounds extends Base
+/**
+ * @internal
+ */
+final class Geobounds extends Base
 {
     /**
      * @param string $attribute

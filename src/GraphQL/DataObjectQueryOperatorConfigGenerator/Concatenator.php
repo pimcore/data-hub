@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class Concatenator extends StringBase
+/**
+ * @internal
+ */
+final class Concatenator extends StringBase
 {
 }

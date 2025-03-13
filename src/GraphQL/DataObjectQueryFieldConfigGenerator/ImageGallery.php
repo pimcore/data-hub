@@ -24,8 +24,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class ImageGallery
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
-class ImageGallery extends Base
+final class ImageGallery extends Base
 {
     const TYPE = 'imageGallery';
 

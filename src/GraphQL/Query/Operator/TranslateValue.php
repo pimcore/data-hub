@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class TranslateValue extends AbstractOperator
+/**
+ * @internal
+ */
+final class TranslateValue extends AbstractOperator
 {
     private $prefix;
 

@@ -18,7 +18,7 @@ namespace Pimcore\Bundle\DataHubBundle\Event;
 final class AdminEvents
 {
     /**
-     * Allows you to modify/append the the configuration list.
+     * Allows you to modify/append the configuration list.
      *
      * Arguments:
      *  - list | the configuration list

@@ -19,7 +19,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\SharedType;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 
-class KeyValueType extends InputObjectType
+/**
+ * @internal
+ */
+final class KeyValueType extends InputObjectType
 {
     /**
      * @var static|null

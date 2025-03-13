@@ -56,7 +56,7 @@ use Pimcore\Translation\Translator;
 use Pimcore\Version;
 use Psr\Container\ContainerInterface;
 
-class Service
+final class Service
 {
     // @var ContainerInterface
     protected $dataObjectQueryTypeGeneratorFactories;

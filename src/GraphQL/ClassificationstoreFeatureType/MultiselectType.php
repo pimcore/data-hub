@@ -22,7 +22,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
 
-class MultiselectType extends ObjectType
+/**
+ * @internal
+ */
+final class MultiselectType extends ObjectType
 {
     protected static $instance = [];
 
