@@ -1,5 +1,8 @@
 # Upgrade Notes
 
+## 1.10.0
+- [Doctrine] Added support of `doctrine/dbal` `v4`.
+
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
 - [General] Replaced Request::get() with explicit input sources.
