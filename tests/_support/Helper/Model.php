@@ -40,7 +40,7 @@ class Model extends AbstractDefinitionHelper
         $this->debug('[DataHub] Running datahub installer');
 
         //create migrations table in order to allow installation - needed for SettingsStoreAware Installer
-        \Pimcore\Db::get()->exec('
+        \Pimcore\Db::get()->executeQuery('
         create table migration_versions
         (
             version varchar(1024) not null
