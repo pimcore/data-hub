@@ -22,16 +22,16 @@ class IsValidDataObjectTriggerEvent extends Event
 {
     protected bool $isValid;
 
-    protected ElementEventInterface $event;
+    protected ElementEventInterface $triggerEvent;
 
-    public function getEvent(): ElementEventInterface
+    public function getTriggerEvent(): ElementEventInterface
     {
-        return $this->event;
+        return $this->triggerEvent;
     }
 
-    public function setEvent(ElementEventInterface $event)
+    public function setTriggerEvent(ElementEventInterface $triggerEvent)
     {
-        $this->event = $event;
+        $this->triggerEvent = $triggerEvent;
 
         return $this;
     }
