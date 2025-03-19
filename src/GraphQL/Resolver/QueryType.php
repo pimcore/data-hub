@@ -275,14 +275,13 @@ class QueryType
         $conditionParts = [];
 
         if ($isIdSet) {
-            $conditionParts[] = sprintf('(%s =' . $args['id'] . ')', Service::getVersionDependentDatabaseColumnName('o_id'));
+            $conditionParts[] = '(id =' . $args['id'] . ')';
         }
 
         if ($isFullpathSet) {
             $fullpath = Service::correctPath($args['fullpath']);
-            $conditionParts[] = sprintf('(CONCAT(`%s`,`%s`) =' . Db::get()->quote($fullpath) . ')',
-                Service::getVersionDependentDatabaseColumnName('o_path'),
-                Service::getVersionDependentDatabaseColumnName('o_key'));
+            $conditionParts[] = '(CONCAT(`path`,`key`) =' . Db::get()->quote($fullpath) . ')';
+
         }
 
         $condition = implode(' AND ', $conditionParts);
@@ -388,7 +387,7 @@ class QueryType
                 $args['ids'] = explode(',', $args['ids']);
             }
             $ids = implode(', ', array_map([$db, 'quote'], $args['ids']));
-            $conditionParts[] = sprintf('(%s IN (' . $ids . '))', Service::getVersionDependentDatabaseColumnName('o_id'));
+            $conditionParts[] = '(id IN (' . $ids . '))';
         }
         if (isset($args['fullpaths'])) {
             $quotedFullpaths = array_map(
@@ -400,9 +399,7 @@ class QueryType
                 },
                 str_getcsv($args['fullpaths'], ',', "'")
             );
-            $conditionParts[] = sprintf('(CONCAT(`%s`,`%s`) IN (' . implode(',', $quotedFullpaths) . '))',
-                Service::getVersionDependentDatabaseColumnName('o_path'),
-                Service::getVersionDependentDatabaseColumnName('o_key'));
+            $conditionParts[] = '(CONCAT(`path`,`key`) IN (' . implode(',', $quotedFullpaths) . '))';
         }
 
         if (isset($args['tags'])) {
@@ -415,10 +412,10 @@ class QueryType
                 return $db->quote($tag);
             }, $args['tags'])));
 
-            $conditionParts[] = sprintf("%s IN (
+            $conditionParts[] = "id IN (
                             SELECT cId FROM tags_assignment INNER JOIN tags ON tags.id = tags_assignment.tagid
                             WHERE
-                                ctype = 'object' AND LOWER(tags.name) IN (", Service::getVersionDependentDatabaseColumnName('o_id')) . $tags . '))';
+                                ctype = 'object' AND LOWER(tags.name) IN (" . $tags . '))';
         }
 
         // paging
@@ -447,11 +444,11 @@ class QueryType
         if (!$configuration->skipPermisssionCheck()) {
             // check permissions
             $workspacesTableName = 'plugin_datahub_workspaces_object';
-            $conditionParts[] = sprintf(' (
+            $conditionParts[] = ' (
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.%s,' . $db->quoteIdentifier($tableName) . '.%s),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
+                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
@@ -459,15 +456,11 @@ class QueryType
             (
                 SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
                 WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.%s,' . $db->quoteIdentifier($tableName) . '.%s))=1
+                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.key))=1
                 ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
                 LIMIT 1
             )=1
-            )',
-                Service::getVersionDependentDatabaseColumnName('o_path'),
-                Service::getVersionDependentDatabaseColumnName('o_key'),
-                Service::getVersionDependentDatabaseColumnName('o_path'),
-                Service::getVersionDependentDatabaseColumnName('o_key'));
+            )';
         }
 
         if (isset($args['filter'])) {

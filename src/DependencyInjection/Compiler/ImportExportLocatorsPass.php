@@ -39,7 +39,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class ImportExportLocatorsPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $this->processGeneralTypes($container);
 

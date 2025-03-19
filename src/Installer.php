@@ -60,7 +60,7 @@ class Installer extends SettingsStoreAwareInstaller
                         `delete` TINYINT(1) UNSIGNED NULL DEFAULT '0',
                         PRIMARY KEY (`cid`, `configuration`)
                         )
-                    COLLATE='utf8mb4_general_ci'
+                    COLLATE='utf8mb4_unicode_520_ci'
                     ENGINE=InnoDB
                     ;
                 ");
