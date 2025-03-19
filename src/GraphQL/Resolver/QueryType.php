@@ -16,8 +16,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Pimcore;
-use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\ListingEvents;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
@@ -28,7 +26,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\PermissionInfoTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
-use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Listing;
@@ -156,19 +153,12 @@ class QueryType
      *
      * @throws ClientSafeException
      *
-     * @deprecated args['path'] will no longer be supported by Release 1.0. Use args['fullpath'] instead.
      *
      */
     public function resolveDocumentGetter($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
-        }
-
-        // TODO: remove this workaround for Release 1.0
-        if ($args['path'] ?? false) {
-            Logger::warn("Argument 'path' deprecated: will no longer be supported by Release 1.0. Use 'fullpath' instead.");
-            $args['fullpath'] = $args['path'];
         }
 
         $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
@@ -247,9 +237,13 @@ class QueryType
             return [];
         }
 
-        $fieldHelper = $this->getGraphQlService()->getObjectFieldHelper();
-
-        return $fieldHelper->extractData($data, $translation, $args, $context, $resolveInfo);
+        return $this->getGraphQlService()->getObjectFieldHelper()->extractData(
+            $data,
+            $translation,
+            $args,
+            $context,
+            $resolveInfo
+        );
     }
 
     /**
@@ -288,19 +282,6 @@ class QueryType
             $fullpath = Service::correctPath($args['fullpath']);
             $conditionParts[] = '(CONCAT(`path`,`key`) =' . Db::get()->quote($fullpath) . ')';
 
-        }
-
-        /** @var Configuration $configuration */
-        $configuration = $context['configuration'];
-        $sqlGetCondition = $configuration->getSqlObjectCondition();
-        $dataHubConfig = Pimcore::getContainer()?->getParameter('pimcore_data_hub');
-        if ($dataHubConfig && isset($dataHubConfig['graphql']['allow_sqlObjectCondition']) &&
-            !$dataHubConfig['graphql']['allow_sqlObjectCondition']) {
-            $sqlGetCondition = null;
-        }
-
-        if ($sqlGetCondition) {
-            $conditionParts[] = '(' . $sqlGetCondition . ')';
         }
 
         $condition = implode(' AND ', $conditionParts);
@@ -459,14 +440,7 @@ class QueryType
             $objectList->setUnpublished(true);
         }
 
-        /** @var Configuration $configuration */
         $configuration = $context['configuration'];
-        $sqlListCondition = $configuration->getSqlObjectCondition();
-
-        if ($sqlListCondition) {
-            $conditionParts[] = '(' . $sqlListCondition . ')';
-        }
-
         if (!$configuration->skipPermisssionCheck()) {
             // check permissions
             $workspacesTableName = 'plugin_datahub_workspaces_object';

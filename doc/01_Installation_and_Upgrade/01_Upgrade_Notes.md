@@ -1,5 +1,18 @@
 # Upgrade Notes
 
+## 2.0.0
+
+- [General] Added timezone indication for date and datetime fields in the GraphQL schema, including creation and modification date.
+Therefore, the type of both date fields in the GraphQL schema have changed from `int` (timestamp) to `string`.
+- [Operator] Removed merge operator
+- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:graphql:rebuild-workspaces`) instead.
+- [Config] Removed DatahubConfigLocator class
+- [Config] Removed support for legacy config file (`datahub-configurations.php`)
+- [Config] Removed `getConfigModificationDate` from config dao.
+- [Config] Removed sql query config field
+- [QueryType] `args['path']` will no longer be supported, use `args['fullpath']` instead.
+- [DataType] Generated type names now include the type itself, see https://github.com/pimcore/data-hub/issues/879
+ 
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
 - [General] Replaced Request::get() with explicit input sources.

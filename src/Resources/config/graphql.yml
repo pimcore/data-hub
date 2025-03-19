@@ -316,7 +316,7 @@ services:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_classificationstore }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_date:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Base
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Date
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_date }
 
@@ -520,11 +520,6 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_elementcounter }
 
-  pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_merge:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Merge
-    tags:
-      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_merge }
-
   pimcore.datahub.graphql.dataobjectquerytypegenerator_operator_substring:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator\Substring
     tags:
@@ -608,13 +603,6 @@ services:
       $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\ThumbnailHtml
     tags:
       - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: thumbnailhtml }
-
-  pimcore.datahub.graphql.dataobjectqueryoperator.factory.merge:
-    class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
-    arguments:
-      $className: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Merge
-    tags:
-      - { name: pimcore.datahub.graphql.dataobjectqueryoperator_factory, id: merge }
 
   pimcore.datahub.graphql.dataobjectqueryoperator.factory.text:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\DefaultQueryOperatorFactory
