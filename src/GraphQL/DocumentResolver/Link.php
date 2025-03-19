@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\Service;
 
-class Link
+/**
+ * @internal
+ */
+final class Link
 {
     use ServiceTrait;
 

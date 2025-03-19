@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class ElementTag extends ObjectType
+/**
+ * @internal
+ */
+final class ElementTag extends ObjectType
 {
     use ServiceTrait;
 

@@ -16,13 +16,17 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Exception;
+use Pimcore\Config\LocationAwareConfigRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
+/**
+ * @internal
+ */
+final class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -51,5 +55,11 @@ class PimcoreDataHubExtension extends Extension implements PrependExtensionInter
 
             $loader->load('doctrine_migrations.yml');
         }
+
+        LocationAwareConfigRepository::loadSymfonyConfigFiles(
+            $container,
+            'pimcore_data_hub',
+            'data_hub'
+        );
     }
 }

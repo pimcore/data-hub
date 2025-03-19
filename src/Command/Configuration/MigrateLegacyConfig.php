@@ -21,7 +21,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateLegacyConfig extends AbstractCommand
+/**
+ * @internal
+ */
+final class MigrateLegacyConfig extends AbstractCommand
 {
     protected function configure(): void
     {

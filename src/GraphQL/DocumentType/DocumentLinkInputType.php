@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class DocumentLinkInputType extends InputObjectType
+/**
+ * @internal
+ */
+final class DocumentLinkInputType extends InputObjectType
 {
     use ServiceTrait;
 

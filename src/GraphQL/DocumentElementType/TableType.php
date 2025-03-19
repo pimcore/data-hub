@@ -15,7 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
-class TableType extends SimpleTextType
+/**
+ * @internal
+ */
+final class TableType extends SimpleTextType
 {
     protected static $instance;
 

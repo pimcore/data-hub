@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 
-class LinkType extends ObjectType
+/**
+ * @internal
+ */
+final class LinkType extends ObjectType
 {
     protected static $instance;
 

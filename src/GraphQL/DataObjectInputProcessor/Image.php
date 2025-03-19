@@ -23,7 +23,10 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class Image extends Base
+/**
+ * @internal
+ */
+final class Image extends Base
 {
     /**
      * @param Concrete|AbstractData $object

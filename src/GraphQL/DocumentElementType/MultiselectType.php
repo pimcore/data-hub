@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 
-class MultiselectType extends ObjectType
+/**
+ * @internal
+ */
+final class MultiselectType extends ObjectType
 {
     protected static $instance;
 

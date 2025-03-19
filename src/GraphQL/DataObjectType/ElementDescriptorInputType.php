@@ -22,7 +22,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class ElementDescriptorInputType extends InputObjectType
+/**
+ * @internal
+ */
+final class ElementDescriptorInputType extends InputObjectType
 {
     use ServiceTrait;
 

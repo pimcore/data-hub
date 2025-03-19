@@ -25,8 +25,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  * Class Multihref
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator
+ *
+ * @internal
  */
-class Multihref extends Base implements TypeDefinitionInterface
+final class Multihref extends Base implements TypeDefinitionInterface
 {
     /**
      * @param string $attribute

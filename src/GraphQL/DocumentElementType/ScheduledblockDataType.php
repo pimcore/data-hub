@@ -21,7 +21,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class ScheduledblockDataType extends ObjectType
+/**
+ * @internal
+ */
+final class ScheduledblockDataType extends ObjectType
 {
     use ServiceTrait;
 

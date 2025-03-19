@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class Trimmer extends StringBase
+/**
+ * @internal
+ */
+final class Trimmer extends StringBase
 {
 }

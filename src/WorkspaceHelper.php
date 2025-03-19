@@ -28,7 +28,7 @@ use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class WorkspaceHelper
+final class WorkspaceHelper
 {
     const MODIFY_SPACE_OBJECT = 'object';
 

@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class Wysiwyg extends Base
+/**
+ * @internal
+ */
+final class Wysiwyg extends Base
 {
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Input */
     public $processor;

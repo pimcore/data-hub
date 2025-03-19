@@ -23,8 +23,10 @@ use GraphQL\Type\Definition\Type;
  * Class HotspotCropType
  *
  * @package Pimcore\Bundle\DataHubBundle\GraphQL\SharedType
+ *
+ * @internal
  */
-class HotspotCropType extends ObjectType
+final class HotspotCropType extends ObjectType
 {
     /**
      * @var static|null

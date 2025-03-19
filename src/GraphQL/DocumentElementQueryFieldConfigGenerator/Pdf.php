@@ -17,7 +17,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGe
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\PdfType;
 
-class Pdf extends Base
+/**
+ * @internal
+ */
+final class Pdf extends Base
 {
     /**
      * @return PdfType

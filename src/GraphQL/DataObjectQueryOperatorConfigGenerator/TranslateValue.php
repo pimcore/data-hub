@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryOperatorConfigGenerator;
 
-class TranslateValue extends StringBase
+/**
+ * @internal
+ */
+final class TranslateValue extends StringBase
 {
 }

@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class Select extends Base
+/**
+ * @internal
+ */
+final class Select extends Base
 {
     /** @var \Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor\Select */
     public $processor;

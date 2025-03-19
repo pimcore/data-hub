@@ -24,7 +24,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Editable\Video;
 use Pimcore\Model\Element\ElementInterface;
 
-class VideoType extends ObjectType
+/**
+ * @internal
+ */
+final class VideoType extends ObjectType
 {
     protected static $instance;
 

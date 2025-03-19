@@ -21,7 +21,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document\Service as DocumentService;
 
-class Document extends Element
+/**
+ * @internal
+ */
+final class Document extends Element
 {
     use ServiceTrait;
 

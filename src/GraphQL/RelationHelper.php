@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Model\Element\ElementInterface;
 
-class RelationHelper
+/**
+ * @internal
+ */
+final class RelationHelper
 {
     /**
      * @param array $args

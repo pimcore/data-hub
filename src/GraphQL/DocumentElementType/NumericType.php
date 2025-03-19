@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\Document\Editable\Numeric;
 
-class NumericType extends ObjectType
+/**
+ * @internal
+ */
+final class NumericType extends ObjectType
 {
     protected static $instance;
 

@@ -20,6 +20,9 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
+/**
+ * @internal
+ */
 final class Version20230503165847 extends AbstractMigration
 {
     private const CONFIG_DIR = PIMCORE_CONFIGURATION_DIRECTORY . '/data_hub';

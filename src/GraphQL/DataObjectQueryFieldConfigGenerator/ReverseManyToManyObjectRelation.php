@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class ReverseManyToManyObjectRelation extends Base
+/**
+ * @internal
+ */
+final class ReverseManyToManyObjectRelation extends Base
 {
     /**
      * @param string $attribute

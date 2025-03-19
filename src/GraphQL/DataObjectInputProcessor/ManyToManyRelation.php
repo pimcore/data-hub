@@ -22,7 +22,10 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Model\Exception\NotFoundException;
 
-class ManyToManyRelation extends Base
+/**
+ * @internal
+ */
+final class ManyToManyRelation extends Base
 {
     use ElementIdentificationTrait;
 

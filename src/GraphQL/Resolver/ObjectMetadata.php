@@ -23,7 +23,10 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data;
 
-class ObjectMetadata
+/**
+ * @internal
+ */
+final class ObjectMetadata
 {
     use ServiceTrait;
 

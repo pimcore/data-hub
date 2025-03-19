@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
 
-class Element
+/**
+ * @internal
+ */
+final class Element
 {
     public static $instance;
 

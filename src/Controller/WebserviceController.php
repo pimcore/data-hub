@@ -32,7 +32,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
-use Pimcore\Bundle\DataHubBundle\Service\OutputCacheService;
+use Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\ResponseServiceInterface;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Controller\FrontendController;
@@ -46,7 +46,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class WebserviceController extends FrontendController
+/**
+ * @internal
+ */
+final class WebserviceController extends FrontendController
 {
     /**
      * @var EventDispatcherInterface
@@ -59,7 +62,7 @@ class WebserviceController extends FrontendController
     private $permissionsService;
 
     /**
-     * @var OutputCacheService
+     * @var OutputCacheServiceInterface
      */
     private $cacheService;
 
@@ -71,7 +74,7 @@ class WebserviceController extends FrontendController
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         CheckConsumerPermissionsService $permissionsService,
-        OutputCacheService $cacheService,
+        OutputCacheServiceInterface $cacheService,
         FileUploadService $uploadService
     ) {
         $this->eventDispatcher = $eventDispatcher;

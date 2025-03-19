@@ -19,7 +19,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class Multiselect extends Base
+/**
+ * @internal
+ */
+final class Multiselect extends Base
 {
     /**
      * @param string $attribute

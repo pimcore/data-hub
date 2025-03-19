@@ -15,6 +15,9 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementInputProcessor;
 
-class Select extends Base
+/**
+ * @internal
+ */
+final class Select extends Base
 {
 }

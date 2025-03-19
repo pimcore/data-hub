@@ -21,7 +21,7 @@ use Pimcore\Event\Traits\ResponseAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class ExecutorEvent extends Event
+final class ExecutorEvent extends Event
 {
     use RequestAwareTrait;
     use ResponseAwareTrait;

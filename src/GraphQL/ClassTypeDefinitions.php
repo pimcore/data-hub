@@ -23,7 +23,10 @@ use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition;
 
-class ClassTypeDefinitions
+/**
+ * @internal
+ */
+final class ClassTypeDefinitions
 {
     /**
      * @var array

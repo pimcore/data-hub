@@ -18,7 +18,10 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class QuantityValueUnitType extends ObjectType
+/**
+ * @internal
+ */
+final class QuantityValueUnitType extends ObjectType
 {
     /** @var static|null */
     protected static $instance;

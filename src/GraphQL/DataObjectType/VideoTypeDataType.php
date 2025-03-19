@@ -24,7 +24,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 
-class VideoTypeDataType extends UnionType
+/**
+ * @internal
+ */
+final class VideoTypeDataType extends UnionType
 {
     use ServiceTrait;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -13,20 +15,15 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator;
+namespace Pimcore\Bundle\DataHubBundle\Service;
 
-use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\NumericType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @internal
- */
-final class Numeric extends Base
+/** @internal  */
+interface OutputCacheServiceInterface
 {
-    /**
-     * @return NumericType
-     */
-    public function getFieldType()
-    {
-        return NumericType::getInstance();
-    }
+    public function load(Request $request);
+
+    public function save(Request $request, JsonResponse $response, $extraTags = []): void;
 }

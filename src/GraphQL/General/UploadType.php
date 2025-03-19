@@ -23,7 +23,10 @@ use GraphQL\Utils\Utils;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UnexpectedValueException;
 
-class UploadType extends ScalarType
+/**
+ * @internal
+ */
+final class UploadType extends ScalarType
 {
     public string $name = 'Upload';
 

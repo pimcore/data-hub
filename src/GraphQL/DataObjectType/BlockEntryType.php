@@ -27,7 +27,10 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class BlockEntryType extends ObjectType implements ContainerAwareInterface
+/**
+ * @internal
+ */
+final class BlockEntryType extends ObjectType implements ContainerAwareInterface
 {
     /**
      * @var static|null
@@ -56,24 +59,6 @@ class BlockEntryType extends ObjectType implements ContainerAwareInterface
         $this->build($config);
 
         parent::__construct($config);
-    }
-
-    /**
-     * @param string $type
-     * @param ClassDefinition|null $class
-     *
-     * @return static|null
-     */
-    public static function getInstance($type, Service $graphQlService, Data $fieldDefinition, $class)
-    {
-        if (!isset(self::$instance[$type])) {
-            $config = [
-                'name' => $type,
-            ];
-            self::$instance = new static($graphQlService, $fieldDefinition, $class, $config);
-        }
-
-        return self::$instance;
     }
 
     /**

@@ -35,6 +35,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @internal
+ */
 #[Route('/admin/pimcoredatahub/config')]
 class ConfigController extends \Pimcore\Controller\UserAwareController
 {

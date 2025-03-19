@@ -22,7 +22,10 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 
-class Classificationstore extends Base
+/**
+ * @internal
+ */
+final class Classificationstore extends Base
 {
     /**
      * @param string $attribute

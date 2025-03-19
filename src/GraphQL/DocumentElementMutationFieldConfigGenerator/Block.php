@@ -20,7 +20,10 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
-class Block extends Base
+/**
+ * @internal
+ */
+final class Block extends Base
 {
     /** @var InputObjectType|null */
     public static $itemType;

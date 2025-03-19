@@ -15,7 +15,10 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType;
 
-class InputType extends SimpleTextType
+/**
+ * @internal
+ */
+final class InputType extends SimpleTextType
 {
     protected static $instance;
 

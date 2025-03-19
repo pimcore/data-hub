@@ -20,7 +20,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 
-class InputQuantityValue extends Base
+/**
+ * @internal
+ */
+final class InputQuantityValue extends Base
 {
     /**
      * @param Concrete|AbstractData $object
