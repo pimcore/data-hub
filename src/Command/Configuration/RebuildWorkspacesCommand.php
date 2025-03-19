@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RebuildWorkspacesCommand extends AbstractCommand
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('datahub:configuration:rebuild-workspaces')
