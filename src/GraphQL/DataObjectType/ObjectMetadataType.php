@@ -70,7 +70,7 @@ final class ObjectMetadataType extends ObjectType
 
         $className = $fieldDefinition->getAllowedClassId();
         $elementTypeDefinition = ClassTypeDefinitions::get($className);
-
+        $metadataKeyValuePairType = ElementMetadataKeyValuePairType::getInstance();
         $resolver = new ObjectMetadata($fieldDefinition, $class, $fieldHelper);
 
         $fields = ['element' =>
@@ -79,7 +79,7 @@ final class ObjectMetadataType extends ObjectType
                 'resolve' => [$resolver, 'resolveElement'],
             ],
             'metadata' => [
-                'type' => Type::listOf(new ElementMetadataKeyValuePairType()),
+                'type' => Type::listOf($metadataKeyValuePairType),
                 'resolve' => [$resolver, 'resolveMetadata'],
 
             ]];
