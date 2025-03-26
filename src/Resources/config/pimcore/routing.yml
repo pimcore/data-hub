@@ -1,6 +1,6 @@
 app:
     resource: "@PimcoreDataHubBundle/Controller/"
-    type:     annotation
+    type: attribute
 
 
 admin_pimcoredatahub_config:
