@@ -51,7 +51,7 @@ final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements Pimcor
         return new PimcoreDataHubExtension();
     }
 
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new ImportExportLocatorsPass());
         $container->addCompilerPass(new CustomDocumentTypePass());
