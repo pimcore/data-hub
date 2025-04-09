@@ -15,6 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
+use GraphQL\Deferred;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -54,7 +56,7 @@ final class DocumentElementType extends UnionType implements ContainerAwareInter
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info)
+    public function resolveType($element, $context, ResolveInfo $info): callable|Deferred|ObjectType|null|string
     {
         $type = $element->getType();
         $service = $this->getGraphQlService();

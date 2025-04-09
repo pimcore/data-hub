@@ -60,7 +60,7 @@ final class AnyDocumentTargetType extends UnionType implements ContainerAwareInt
         return $types;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info)
+    public function resolveType($element, $context, ResolveInfo $info): ?string
     {
         if ($element) {
             if ($element['__elementType'] == 'document') {

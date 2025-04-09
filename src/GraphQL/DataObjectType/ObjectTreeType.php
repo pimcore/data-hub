@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
+use GraphQL\Deferred;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -63,7 +65,7 @@ final class ObjectTreeType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info)
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|string|callable|Deferred|null
     {
         if (!$element) {
             return null;
