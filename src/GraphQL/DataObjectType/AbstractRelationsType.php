@@ -15,6 +15,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType;
 
+use GraphQL\Deferred;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
@@ -127,7 +129,7 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         return $types;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info)
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|string|callable|Deferred|null
     {
         if ($element) {
             if ($element['__elementType'] == 'object') {

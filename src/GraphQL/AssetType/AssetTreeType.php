@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\AssetType;
 
+use GraphQL\Deferred;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -54,7 +56,7 @@ final class AssetTreeType extends UnionType implements ContainerAwareInterface
         return $types;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info)
+    public function resolveType($element, $context, ResolveInfo $info): callable|Deferred|ObjectType|null|string
     {
         if (!$element) {
             return null;
