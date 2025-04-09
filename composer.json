@@ -24,10 +24,10 @@
     "webonyx/graphql-php": "^15.2.3"
   },
   "require-dev": {
-    "phpstan/phpstan": "^1.9",
+    "phpstan/phpstan": "1.12.15",
     "phpunit/phpunit": "^9.6",
     "symfony/phpunit-bridge": "^6",
-    "codeception/codeception": "^5.0.3",
+    "codeception/codeception": "^5.0.10",
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony": "^3.1.0",
