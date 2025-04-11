@@ -44,7 +44,7 @@ class RebuildDefinitionsCommand extends AbstractCommand
      *
      * @throws \Exception
      *
-     *@deprecated Use Pimcore\Bundle\DataHubBundle\Command\Configuration\RebuildWorkspacesCommand instead.
+     * @deprecated Use Pimcore\Bundle\DataHubBundle\Command\Configuration\RebuildWorkspacesCommand instead.
      *
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -76,11 +76,6 @@ class RebuildDefinitionsCommand extends AbstractCommand
 
         $this->output->writeln('done');
 
-        if (defined('Symfony\Component\Console\Command\Command::SUCCESS')) {
-            return Command::SUCCESS;
-        } else {
-            //TODO remove this as soon as support for Symfony 4 gets dropped
-            return 0;
-        }
+        return self::SUCCESS;
     }
 }
