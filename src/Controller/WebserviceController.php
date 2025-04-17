@@ -99,7 +99,6 @@ final class WebserviceController extends FrontendController
     ) {
         $clientname = $request->attributes->getString('clientname');
         $variableValues = null;
-        $foo = '123';
 
         $configuration = Configuration::getByName($clientname);
         if (!$configuration || !$configuration->isActive()) {
