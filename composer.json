@@ -1,6 +1,6 @@
 {
   "name": "pimcore/data-hub",
-  "license": "GPL-3.0+",
+  "license": "proprietary",
   "type": "pimcore-bundle",
   "description": "Pimcore Datahub",
   "config": {
