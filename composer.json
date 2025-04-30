@@ -1,6 +1,6 @@
 {
   "name": "pimcore/data-hub",
-  "license": "Pimcore Open Core License (POCL)",
+  "license": "proprietary",
   "type": "pimcore-bundle",
   "description": "Pimcore Datahub",
   "config": {
