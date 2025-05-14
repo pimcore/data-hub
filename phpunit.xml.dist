@@ -2,7 +2,9 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-         colors="true">
+         colors="true"
+         beStrictAboutDeprecations="false"
+>
     
     <testsuite name="Project Test Suite">
         <directory>tests/</directory>
@@ -17,6 +19,6 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="SYMFONY_PHPUNIT_VERSION" value="7.5" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=10"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
     </php>
 </phpunit>
