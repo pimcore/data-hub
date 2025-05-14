@@ -76,7 +76,7 @@ jobs:
         needs: setup-matrix
         strategy:
             matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
-        uses: pimcore/workflows-collection-public/.github/workflows/reusable-codeception-tests-centralized.yaml@mcop1-patch-1
+        uses: pimcore/workflows-collection-public/.github/workflows/reusable-codeception-tests-centralized.yaml@main
         with:
             APP_ENV: test
             PIMCORE_TEST: 1
