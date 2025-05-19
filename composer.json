@@ -31,7 +31,7 @@
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony": "^3.1.0",
-    "symfony/dotenv": "^6.2",
+    "symfony/dotenv": "^6.2 || ^7.2",
     "symfony/runtime": "^6.4"
   },
   "autoload": {
