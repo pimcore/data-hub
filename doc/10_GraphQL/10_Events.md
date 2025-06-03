@@ -1,14 +1,14 @@
 # Events
 
 Datahub GraphQL events are based on the Symfony event dispatcher, and are triggered during execution of Query and Mutation requests.
-[Read more](https://github.com/pimcore/pimcore/blob/master/doc/Development_Documentation/20_Extending_Pimcore/11_Event_API_and_Event_Manager.md) about events on Pimcore documentation.
+[Read more](https://docs.pimcore.com/platform/Pimcore/Extending_Pimcore/Event_API_and_Event_Manager) about events on Pimcore documentation.
 
 All Datahub events are defined as a constant on component classes:
-- [Query](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/QueryEvents.php)
-- [Mutation](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/MutationEvents.php)
-- [Executor](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ExecutorEvents.php)
-- [Listing](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/ListingEvents.php)
-- [Ouput cache](https://github.com/pimcore/data-hub/blob/master/src/Event/GraphQL/OutputCacheEvents.php)
+- [Query](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/QueryEvents.php)
+- [Mutation](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/MutationEvents.php)
+- [Executor](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ExecutorEvents.php)
+- [Listing](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ListingEvents.php)
+- [Ouput cache](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/OutputCacheEvents.php)
 
 ## Event Subscriber Examples
 
@@ -180,8 +180,7 @@ class GraphQlSubscriber implements EventSubscriberInterface
 
 #### Example 4: Add custom query conditions to object listing
 
-- For global SQL conditions also [General Settings](https://github.com/pimcore/data-hub/blob/master/doc/graphl/General.md#general-settings)
-- For simple filter conditions also see [Filtering](https://github.com/pimcore/data-hub/blob/master/doc/graphl/Filtering.md#request)
+- For simple filter conditions also see [Filtering](./04_Query/10_Filtering.md)
 
 ```php
 <?php

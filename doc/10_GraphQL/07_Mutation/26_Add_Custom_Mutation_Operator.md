@@ -15,7 +15,7 @@ Add a section similar to this one to your `services.yml` file.
 ```
 
 For reference have a look at:
-[`IfEmpty Operator`](https://github.com/pimcore/data-hub/blob/master/src/GraphQL/DataObjectMutationOperatorConfigGenerator/IfEmpty.php).
+[`IfEmpty Operator`](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectMutationOperatorConfigGenerator/IfEmpty.php).
 
 This will again define a processor (see the next subsection) and try to automatically determine the input type
 depending on its child element.
@@ -27,7 +27,7 @@ You have to provide both JavaScript code dealing with the UI configuration aspec
 and the server-side PHP implementation processing the input (the input processor according to your input schema).
 
 A JS sample can be found 
-[here](https://github.com/pimcore/data-hub/blob/master/src/Resources/public/js/mutationoperator/IfEmpty.js).
+[here](https://github.com/pimcore/data-hub/blob/2.x/src/Resources/public/js/mutationoperator/IfEmpty.js).
 
 :::info
 
@@ -40,7 +40,7 @@ docs page for further details.
 
 Next thing is to provide the input processor on the server side.
 A sample can be found 
-[here](https://github.com/pimcore/data-hub/blob/master/src/GraphQL/DataObjectInputProcessor/IfEmptyOperator.php).
+[here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectInputProcessor/IfEmptyOperator.php).
 It will get the child value and only overwrite the current value if it is empty.
 
 

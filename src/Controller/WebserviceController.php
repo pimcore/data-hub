@@ -168,7 +168,7 @@ class WebserviceController extends FrontendController
         $query = $input['query'] ?? '';
 
         try {
-            $rootValue = [];
+            $rootValue = null;
 
             $validators = null;
 

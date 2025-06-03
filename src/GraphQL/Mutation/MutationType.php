@@ -628,7 +628,7 @@ class MutationType extends ObjectType
                             $newInstance->setType($args['type']);
                         }
 
-                        $resolver = $me->getUpdateObjectResolver($processors, $localeService, $newInstance, $me->omitPermissionCheck);
+                        $resolver = $me->getUpdateObjectResolver($processors, $localeService, $newInstance, true);
 
                         $returnValue = call_user_func_array($resolver, [$value, $args, $context, $info]);
                         if (isset($returnValue['success']) === true &&
