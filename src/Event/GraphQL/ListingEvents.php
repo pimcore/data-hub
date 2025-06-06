@@ -15,6 +15,13 @@ namespace Pimcore\Bundle\DataHubBundle\Event\GraphQL;
 final class ListingEvents
 {
     /**
+     * @Event("Symfony\Component\EventDispatcher\GenericEvent")
+     *
+     * @var string
+     */
+    const PRE_BUILD = 'pimcore.datahub.graphql.listing.preBuild';
+
+    /**
      * @Event("Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\ListingEvent")
      *
      * @var string

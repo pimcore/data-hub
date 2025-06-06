@@ -370,6 +370,12 @@ final class QueryType
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
 
+        $event = new GenericEvent(
+            arguments: $args,
+        );
+
+        $this->eventDispatcher->dispatch($event, ListingEvents::PRE_BUILD);
+
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
         /** @var Listing\Concrete $objectList */
