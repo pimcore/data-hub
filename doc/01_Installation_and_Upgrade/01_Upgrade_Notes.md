@@ -13,7 +13,9 @@ Therefore, the type of both date fields in the GraphQL schema have changed from 
 - [Config] Removed sql query config field
 - [QueryType] `args['path']` will no longer be supported, use `args['fullpath']` instead.
 - [DataType] Generated type names now include the type itself, see https://github.com/pimcore/data-hub/issues/879
- 
+- [QueryType] Change type name for `table` definition, now the name also includes the type, see https://github.com/pimcore/data-hub/pull/883
+- [DataType] Added numeric-prefix `col` for `table` columns to allow numbers as column names
+
 ## 1.8.0
 - [General] Dropped support of `pimcore/pimcore` v10. Bumped minimum requirement of `pimcore/pimcore` to `^11.2`
 - [General] Replaced Request::get() with explicit input sources.
