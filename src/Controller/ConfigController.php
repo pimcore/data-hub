@@ -208,9 +208,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             if (!$originalConfig) {
                 throw new \Exception('Configuration not found');
             }
-            if ($originalConfig->isWriteable() === false) {
-                throw new ConfigWriteException();
-            }
             if (!$originalConfig->isAllowed('update')) {
                 throw $this->createAccessDeniedHttpException();
             }
