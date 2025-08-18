@@ -35,7 +35,6 @@ On Pimcore Datahub adapters:
 - [Datahub Simple Rest API](https://pimcore.com/docs/platform/Datahub_Simple_Rest/)
 - [Datahub File Export](https://pimcore.com/docs/platform/Datahub_File_Export/)
 - [Datahub Productsup](https://pimcore.com/docs/platform/Datahub_Productsup/)
-- [Datahub CI Hub](https://pimcore.com/docs/platform/Datahub_CI_Hub/)
   
 ## Contributions
 As Pimcore Datahub is a community project, any contributions highly appreciated.
