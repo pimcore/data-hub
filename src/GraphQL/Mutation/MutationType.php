@@ -726,6 +726,7 @@ final class MutationType extends ObjectType
                     'type' => $updateResultType,
                     'args' => [
                         'id' => ['type' => Type::int()],
+                        'key' => ['type' => Type::string()],
                         'fullpath' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'defaultLanguage' => ['type' => Type::string()],
@@ -880,6 +881,16 @@ final class MutationType extends ObjectType
 
                 if (isset($args['omitMandatoryCheck'])) {
                     $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
+                }
+
+                if (isset($args['key'])) {
+                    if (!DataObject\Service::isValidKey($args['key'], AbstractObject::OBJECT_TYPE_OBJECT)) {
+                        return [
+                            'success' => false,
+                            'message' => '"key" is not valid',
+                        ];
+                    }
+                    $object->setKey($args['key']);
                 }
 
                 $tags = [];
