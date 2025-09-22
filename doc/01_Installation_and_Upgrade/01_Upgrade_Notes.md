@@ -1,5 +1,8 @@
 # Upgrade Notes
 
+## 2.2.0
+- [MutationType] Added system field `key` as an optional argument for data object mutation
+
 ## 2.0.0
 
 - [General] Marked several classes as internal and/or final.
