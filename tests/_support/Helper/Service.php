@@ -15,7 +15,6 @@
 
 namespace Pimcore\Bundle\PimcoreDataHubBundle\Tests\Helper;
 
-use Pimcore\Model\DataObject\Unittest;
 use Pimcore\Tests\Support\Helper\Model;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
