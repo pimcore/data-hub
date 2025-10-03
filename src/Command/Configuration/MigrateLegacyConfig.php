@@ -14,6 +14,7 @@ namespace Pimcore\Bundle\DataHubBundle\Command\Configuration;
 
 use Pimcore\Console\AbstractCommand;
 use Pimcore\Model\Tool\SettingsStore;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,13 +22,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
+#[AsCommand(
+    name: 'datahub:configuration:migrate-legacy-config',
+    description: 'Migrate legacy configurations (datahub-configurations.php) to YAML or settings store, depending on your configuration.'
+)]
 final class MigrateLegacyConfig extends AbstractCommand
 {
     protected function configure(): void
     {
-        $this
-            ->setName('datahub:configuration:migrate-legacy-config')
-            ->setDescription('Migrate legacy configurations (datahub-configurations.php) to YAML or settings store, depending on your configuration.');
+        // Configuration moved to AsCommand attribute
     }
 
     private function loadLegacyConfigs(string $fileName): array
@@ -63,11 +66,9 @@ final class MigrateLegacyConfig extends AbstractCommand
     }
 
     /**
-     * @return int|null
-     *
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->migrateConfiguration('datahub-configurations.php', 'pimcore_data_hub');
         if (defined('Symfony\Component\Console\Command\Command::SUCCESS')) {

@@ -12,40 +12,38 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Command\Configuration;
 
-use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\Console\Input\InputOption;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @internal
  */
+#[AsCommand(
+    name: 'datahub:configuration:rebuild-workspaces',
+    description: 'Migrate workspaces from configuration files to database.'
+)]
 final class RebuildWorkspacesCommand extends AbstractCommand
 {
     protected function configure(): void
     {
-        $this
-            ->setName('datahub:configuration:rebuild-workspaces')
-            ->setDescription('Migrate workspaces from configuration files to database.')
-            ->addOption(
-                'configs',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Comma separated list of configurations'
-            );
+        $this->addOption(
+            'configs',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Comma separated list of configurations'
+        );
     }
 
     /**
-     *
-     *
-     * @return int|null
-     *
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $list = [];
         $options = $input->getOption('configs');
