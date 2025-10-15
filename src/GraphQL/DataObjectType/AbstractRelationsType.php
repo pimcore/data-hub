@@ -24,8 +24,8 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Pimcore\Model\Document;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 
 abstract class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 {

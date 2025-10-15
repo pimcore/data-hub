@@ -20,8 +20,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 
 /**
  * @internal
