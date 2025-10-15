@@ -16,6 +16,8 @@ use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -24,8 +26,6 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Pimcore\Model\Document;
-use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
-use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 
 abstract class AbstractRelationsType extends UnionType implements ContainerAwareInterface
 {

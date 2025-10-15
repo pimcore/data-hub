@@ -14,12 +14,12 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\General;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
+use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\Document;
-use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareInterface;
-use Pimcore\Bundle\CoreBundle\DependencyInjection\ContainerAwareTrait;
 
 /**
  * @internal
