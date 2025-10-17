@@ -12,6 +12,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
+use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -377,7 +378,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
 
         try {
             $data = $request->request->getString('data');
-            $modificationDate = $request->request->getInt('modificationDate', 0);
+            $modificationDate = ParameterBagHelper::getInt($request->request, 'modificationDate', 0);
 
             $dataDecoded = json_decode($data, true);
 
