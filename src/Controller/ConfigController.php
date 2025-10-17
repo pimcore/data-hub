@@ -12,7 +12,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Controller;
 
-use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -23,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Service\ExportService;
 use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
