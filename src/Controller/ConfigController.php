@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Service\ExportService;
 use Pimcore\Bundle\DataHubBundle\Service\ImportService;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Model\Exception\ConfigWriteException;
 use Pimcore\Model\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -377,7 +378,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
 
         try {
             $data = $request->request->getString('data');
-            $modificationDate = $request->request->getInt('modificationDate', 0);
+            $modificationDate = ParameterBagHelper::getInt($request->request, 'modificationDate', 0);
 
             $dataDecoded = json_decode($data, true);
 
