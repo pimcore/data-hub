@@ -12,13 +12,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Command\Configuration;
 
-use Pimcore\Console\AbstractCommand;
-use Symfony\Component\Console\Command\Command;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Symfony\Component\Console\Input\InputOption;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
