@@ -12,13 +12,13 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Command\Configuration;
 
-use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Console\AbstractCommand;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Symfony\Component\Console\Input\InputOption;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -43,7 +43,7 @@ final class RebuildWorkspacesCommand extends AbstractCommand
     /**
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $list = [];
         $options = $input->getOption('configs');
@@ -74,10 +74,6 @@ final class RebuildWorkspacesCommand extends AbstractCommand
             }
         }
 
-        if (defined('Symfony\Component\Console\Command\Command::SUCCESS')) {
-            return Command::SUCCESS;
-        } else {
-            return 0;
-        }
+        return Command::SUCCESS;
     }
 }
