@@ -151,6 +151,10 @@ final class AssetType
     public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -175,6 +179,9 @@ final class AssetType
     public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -200,6 +207,10 @@ final class AssetType
     public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? null;
@@ -269,6 +280,10 @@ final class AssetType
 
             /** @var Asset\Image $asset */
             $asset = $this->getAssetFromValue($value, $context);
+            if (!$asset) {
+                return null;
+            }
+
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
             if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
@@ -303,6 +318,9 @@ final class AssetType
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
             $asset = $this->getAssetFromValue($value, $context);
+            if (!$asset) {
+                return null;
+            }
 
             if ($asset instanceof Asset\Video) {
                 $width = $asset->getCustomSetting('videoWidth');
