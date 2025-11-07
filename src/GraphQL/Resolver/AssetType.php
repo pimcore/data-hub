@@ -207,16 +207,13 @@ final class AssetType
     public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
-        if (!$asset) {
-            return null;
-        }
-
-        $thumbNailConfig = $args['thumbnail'] ?? null;
-        $thumbNailFormat = $args['format'] ?? null;
-        $deferred = $args['deferred'] ?? null;
-        $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if ($asset instanceof Asset\Image) {
+            $thumbNailConfig = $args['thumbnail'] ?? null;
+            $thumbNailFormat = $args['format'] ?? null;
+            $deferred = $args['deferred'] ?? null;
+            $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
+
             $mediaQueries = [];
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
             $thumbnailConfig = $asset->getThumbnail($args['thumbnail'], $deferred)->getConfig();
@@ -278,7 +275,7 @@ final class AssetType
             $thumbnailFormat = $args['format'] ?? null;
             $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-            /** @var Asset\Image $asset */
+            /** @var Asset\Image|null $asset */
             $asset = $this->getAssetFromValue($value, $context);
             if (!$asset) {
                 return null;
