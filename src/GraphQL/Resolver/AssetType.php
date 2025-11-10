@@ -151,6 +151,10 @@ final class AssetType
     public function resolvePath($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
+
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -175,6 +179,9 @@ final class AssetType
     public function resolveData($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
+        if (!$asset) {
+            return null;
+        }
         $thumbNailConfig = $args['thumbnail'] ?? null;
         $thumbNailFormat = $args['format'] ?? null;
         $deferred = $args['deferred'] ?? false;
@@ -200,12 +207,13 @@ final class AssetType
     public function resolveSrcSet($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
         $asset = $this->getAssetFromValue($value, $context);
-        $thumbNailConfig = $args['thumbnail'] ?? null;
-        $thumbNailFormat = $args['format'] ?? null;
-        $deferred = $args['deferred'] ?? null;
-        $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
         if ($asset instanceof Asset\Image) {
+            $thumbNailConfig = $args['thumbnail'] ?? null;
+            $thumbNailFormat = $args['format'] ?? null;
+            $deferred = $args['deferred'] ?? null;
+            $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
+
             $mediaQueries = [];
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
             $thumbnailConfig = $asset->getThumbnail($args['thumbnail'], $deferred)->getConfig();
@@ -267,8 +275,12 @@ final class AssetType
             $thumbnailFormat = $args['format'] ?? null;
             $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
-            /** @var Asset\Image $asset */
+            /** @var Asset\Image|null $asset */
             $asset = $this->getAssetFromValue($value, $context);
+            if (!$asset) {
+                return null;
+            }
+
             $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
             if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
@@ -303,6 +315,9 @@ final class AssetType
         if ($value instanceof ElementDescriptor) {
             $thumbnailName = $args['thumbnail'] ?? null;
             $asset = $this->getAssetFromValue($value, $context);
+            if (!$asset) {
+                return null;
+            }
 
             if ($asset instanceof Asset\Video) {
                 $width = $asset->getCustomSetting('videoWidth');
