@@ -19,4 +19,8 @@ permissions:
 jobs:
   php-cs-fixer:
     uses: pimcore/workflows-collection-public/.github/workflows/reusable-php-cs-fixer.yaml@main
-    secrets: inherit
+    with:
+      head_ref: ${{ github.head_ref || github.ref_name }}
+      repository: ${{ github.repository }}
+    secrets:
+      PHP_CS_FIXER_GITHUB_TOKEN: ${{ secrets.PHP_CS_FIXER_GITHUB_TOKEN }}
