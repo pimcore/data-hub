@@ -1,27 +1,22 @@
 name: "PHP-CS-Fixer"
 
 on:
-    pull_request:
-        branches:
-            - "[0-9]+.[0-9]+"
-            - "[0-9]+.x"
-            - "feature-*"
-    push:
-        branches:
-            - "[0-9]+.[0-9]+"
-            - "[0-9]+.x"
-            - "*_actions"
-            - "feature-*"
+  pull_request:
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.x"
+      - "feature-*"
+  push:
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.x"
+      - "*_actions"
+      - "feature-*"
 
 permissions:
-    contents: read
+  contents: write
 
 jobs:
-    php-cs-fixer:
-        uses: pimcore/workflows-collection-public/.github/workflows/reusable-php-cs-fixer.yaml@main
-        with:
-            head_ref: ${{ github.head_ref || github.ref_name }}
-            repository: ${{ github.repository }}
-        secrets:
-            PHP_CS_FIXER_GITHUB_TOKEN: ${{ secrets.PHP_CS_FIXER_GITHUB_TOKEN }}
-
+  php-cs-fixer:
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-php-cs-fixer.yaml@main
+    secrets: inherit
