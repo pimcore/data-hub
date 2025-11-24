@@ -818,7 +818,11 @@ class Service
                     /** @var Data\Localizedfields $fieldDefinitionLocalizedFields */
                     $fieldDefinitionLocalizedFields = $brickDefinition->getFieldDefinition('localizedfields');
                     $fieldDefinition = $fieldDefinitionLocalizedFields->getFieldDefinition($brickKey);
-                    $value = $localizedFields->getLocalizedValue($brickDescriptor['brickfield'], isset($args['language']) ? $args['language'] : null);
+                    $value = $localizedFields->getLocalizedValue(
+                        $brickDescriptor['brickfield'],
+                        $args['language'] ?? null,
+                        isset($args['getFallbackLanguageValue']) ? !$args['getFallbackLanguageValue'] : false
+                    );
                 } else {
                     $brickFieldGetter = 'get' . ucfirst($brickKey);
                     $value = $value->$brickFieldGetter();
@@ -1022,7 +1026,11 @@ class Service
                 $result = $itemData[$descriptorData['__blockFieldName']]->getData();
 
                 if (isset($descriptorData['__localized']) && $descriptorData['__localized']) {
-                    $result = $result->getLocalizedValue($descriptorData['__localized'], $args['language'] ?? null);
+                    $result = $result->getLocalizedValue(
+                        $descriptorData['__localized'],
+                        $args['language'] ?? null,
+                        isset($args['getFallbackLanguageValue']) ? !$args['getFallbackLanguageValue'] : false
+                    );
                 }
             }
         } elseif (substr($attribute, 0, 1) == '~') {
