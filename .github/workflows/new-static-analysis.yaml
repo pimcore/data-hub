@@ -1,0 +1,90 @@
+name: "Static analysis centralised"
+
+on:
+  schedule:
+    - cron: '0 3 * * 1,3,5'
+  workflow_dispatch:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths-ignore:
+      - 'assets/**'
+      - 'assets-customized/**'
+      - 'doc/**'
+      - 'install/**'
+      - 'src/Resources/public/**'
+  push:
+    paths-ignore:
+      - 'assets/**'
+      - 'assets-customized/**'
+      - 'doc/**'
+      - 'install/**'
+      - 'src/Resources/public/**'
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.x"
+
+env:
+  PIMCORE_PROJECT_ROOT: ${{ github.workspace }}
+  PRIVATE_REPO: ${{ github.event.repository.private }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      php_versions: ${{ steps.parse-php-versions.outputs.php_versions }}
+      phpstan_matrix: ${{ steps.set-matrix.outputs.phpstan_matrix }}
+      private_repo: ${{ env.PRIVATE_REPO }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout reusable workflow repo
+        uses: actions/checkout@v4
+        with:
+          repository: pimcore/workflows-collection-public
+          ref: reusable-workflows
+          path: reusable-workflows
+
+      - name: Parse PHP versions from composer.json
+        id: parse-php-versions
+        run: |
+          if [ -f composer.json ]; then
+            php_versions=$(jq -r '.require.php' composer.json | grep -oP '\d+\.\d+' | tr '\n' ',' | sed 's/,$//')
+            if [ -z "$php_versions" ]; then
+              echo "php_versions=default" >> "$GITHUB_OUTPUT"
+            else
+              echo "php_versions=$php_versions" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            exit 1
+          fi
+
+      - name: Set up matrix JSON
+        id: set-matrix
+        run: |
+          php_versions="${{ steps.parse-php-versions.outputs.php_versions }}"
+          MATRIX_JSON=$(cat reusable-workflows/phpstan-configuration/matrix-config.json)
+          FILTERED_MATRIX_JSON=$(echo "$MATRIX_JSON" | jq --arg php_versions "$php_versions" '{ include: [ .configs[] | select(.php_version == $php_versions) | .matrix[] ] }')
+          ENCODED_MATRIX_JSON=$(echo "$FILTERED_MATRIX_JSON" | jq -c .)
+          echo "phpstan_matrix=$ENCODED_MATRIX_JSON" >> "$GITHUB_OUTPUT"
+
+  static-analysis:
+    needs: setup-matrix
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-static-analysis-unified.yaml@reusable-workflows
+    with:
+      phpstan_matrix: ${{ needs.setup-matrix.outputs.phpstan_matrix }}
+      private_repo: ${{ needs.setup-matrix.outputs.private_repo }}
+      APP_ENV: test
+      PIMCORE_TEST: 1
+      REQUIRE_ADMIN_BUNDLE: "true"
+      COVERAGE: "none"
+    secrets:
+      SSH_PRIVATE_KEY_PIMCORE_DEPLOYMENTS_USER: ${{ secrets.SSH_PRIVATE_KEY_PIMCORE_DEPLOYMENTS_USER }}
+      COMPOSER_PIMCORE_REPO_PACKAGIST_TOKEN: ${{ secrets.COMPOSER_PIMCORE_REPO_PACKAGIST_TOKEN }}
+      PIMCORE_CI_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_CI_INSTANCE_IDENTIFIER }}
+      PIMCORE_CI_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_CI_ENCRYPTION_SECRET }}
+      PIMCORE_CI_PRODUCT_KEY: ${{ secrets.PIMCORE_CI_PRODUCT_KEY }}
