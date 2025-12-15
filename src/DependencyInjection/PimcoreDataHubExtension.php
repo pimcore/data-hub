@@ -25,6 +25,9 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  */
 final class PimcoreDataHubExtension extends Extension implements PrependExtensionInterface
 {
+    /**
+     * @throws Exception
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
@@ -37,6 +40,11 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         );
 
         $loader->load('config.yml');
+
+        $bundles = $container->getParameter('kernel.bundles');
+        if (isset($bundles['PimcoreStudioBackendBundle'])) {
+            $loader->load('studio_backend.yaml');
+        }
     }
 
     /**
@@ -44,13 +52,17 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
      */
     public function prepend(ContainerBuilder $container): void
     {
-        if ($container->hasExtension('doctrine_migrations')) {
-            $loader = new YamlFileLoader(
-                $container,
-                new FileLocator(__DIR__ . '/../Resources/config')
-            );
+        $loader = new YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__ . '/../Resources/config')
+        );
 
+        if ($container->hasExtension('doctrine_migrations')) {
             $loader->load('doctrine_migrations.yml');
+        }
+
+        if ($container->hasExtension('pimcore_studio_backend')) {
+            $loader->load('pimcore/studio_backend.yaml');
         }
 
         LocationAwareConfigRepository::loadSymfonyConfigFiles(

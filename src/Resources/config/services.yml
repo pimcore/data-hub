@@ -15,6 +15,8 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Controller\:
         resource: '../../Controller'
+        exclude:
+            - '../../Controller/Studio'
         public: true
         autowire: true
         autoconfigure: true
@@ -33,3 +35,9 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\OutputCacheService
+
+    Pimcore\Bundle\DataHubBundle\Routing\StudioRouteLoader:
+        arguments:
+            - '@kernel'
+        tags:
+            - { name: routing.loader }

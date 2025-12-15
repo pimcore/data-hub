@@ -1,0 +1,5 @@
+pimcore_studio_backend:
+    open_api_scan_paths:
+        - "%kernel.project_dir%/vendor/pimcore/data-hub/src/Controller/Studio"
+        - "%kernel.project_dir%/vendor/pimcore/data-hub/src/OpenApi"
+        - "%kernel.project_dir%/vendor/pimcore/data-hub/src/Schema"
