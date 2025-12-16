@@ -24,13 +24,12 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
 {
     public function hydrate(
         Configuration $config,
-        array $existingChildren = [],
         ?string $group = null,
-        ?string $groupName = null
+        array $existingChildren = [],
     ): HydratedConfiguration {
 
-        if ($group && $groupName) {
-            return $this->hydrateGroup($config, $existingChildren, $group, $groupName);
+        if ($group) {
+            return $this->hydrateGroup($config, $existingChildren, $group);
         }
 
         return $this->hydrateItem($config);
@@ -64,8 +63,7 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
     private function hydrateGroup(
         Configuration $config,
         array $existingChildren,
-        string $group,
-        string $groupName
+        string $group
     ): HydratedConfiguration
     {
         return new HydratedConfiguration(

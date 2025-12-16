@@ -26,8 +26,7 @@ interface ConfigurationHydratorInterface
      */
     public function hydrate(
         Configuration $config,
-        array $existingChildren = [],
         ?string $group = null,
-        ?string $groupName = null
+        array $existingChildren = [],
     ): HydratedConfiguration;
 }

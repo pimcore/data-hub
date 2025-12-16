@@ -47,9 +47,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
             $hydratedItem = $this->configurationHydrator->hydrate(
                 $config,
-                $hydratedGroupItem?->getChildren() ?? [],
                 $group,
-                $config->getName()
+                $hydratedGroupItem?->getChildren() ?? []
             );
 
             $this->eventDispatcher->dispatch(
