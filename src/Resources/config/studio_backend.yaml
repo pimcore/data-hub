@@ -8,3 +8,9 @@ services:
         resource: '../../Controller/Studio'
         public: true
         tags: [ 'controller.service_arguments' ]
+
+    Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationService
+
+    Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface:
+        class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydrator

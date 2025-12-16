@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
 use OpenApi\Attributes\Get;
+use Pimcore\Bundle\DataHubBundle\Schema\Configuration;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Prefix;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Tags;
+use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\StudioBackendBundle\Controller\AbstractApiController;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\InvalidArgumentException;
@@ -41,7 +43,8 @@ final class CollectionController extends AbstractApiController
     private const string ROUTE = '/config';
 
     public function __construct(
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        private readonly ConfigurationServiceInterface $configurationService
     ) {
         parent::__construct($serializer);
     }
@@ -63,7 +66,7 @@ final class CollectionController extends AbstractApiController
     )]
     #[SuccessResponse(
         description: 'bundle_copilot_actions_success_response',
-        content: new CollectionJson(new GenericCollection("string")),
+        content: new CollectionJson(new GenericCollection(Configuration::class)),
     )]
     #[IsGranted(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)]
     #[DefaultResponses([
@@ -71,9 +74,13 @@ final class CollectionController extends AbstractApiController
         HttpResponseCodes::NOT_FOUND,
     ])]
     public function listActions(
-        Request $request
     ): JsonResponse {
-        //TODO adapt response
-      return new JsonResponse("data");
+        $configs = $this->configurationService->getConfigurations();
+
+        return $this->getPaginatedCollection(
+            $this->serializer,
+            $configs,
+            count($configs)
+        );
     }
 }
