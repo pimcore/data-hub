@@ -22,5 +22,7 @@ class PermissionConstants
     public const string PLUGIN_DATA_HUB_ADMIN = 'plugin_datahub_admin';
     public const string PLUGIN_DATA_HUB_ADAPTER_PREFIX = 'plugin_datahub_adapter_';
     public const string PLUGIN_DATA_HUB_PERMISSION_READ = 'read';
-
+    public const string PLUGIN_DATA_HUB_PERMISSION_DELETE = 'delete';
+    public const string PLUGIN_DATA_HUB_PERMISSION_UPDATE = 'update';
+    public const string PLUGIN_DATA_HUB_PERMISSION_CREATE = 'create';
 }

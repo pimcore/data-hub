@@ -21,7 +21,7 @@ final readonly class AddConfiguration
     public function __construct(
         private string $name,
         private string $type,
-        private string $path,
+        private ?string $path = null,
     ) {
     }
 
@@ -35,7 +35,7 @@ final readonly class AddConfiguration
         return $this->type;
     }
 
-    public function getPath(): string
+    public function getPath(): ?string
     {
         return $this->path;
     }

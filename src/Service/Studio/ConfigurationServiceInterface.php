@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration;
+use Pimcore\Bundle\DataHubBundle\Schema\ConfigurationDetail;
 
 /** @internal  */
 interface ConfigurationServiceInterface
@@ -33,4 +34,9 @@ interface ConfigurationServiceInterface
      * @throws \Exception
      */
     public function addConfiguration(string $name, string $type, string $path): string;
+
+    /**
+     * @throws \Exception
+     */
+    public function getConfiguration(string $name): ConfigurationDetail;
 }

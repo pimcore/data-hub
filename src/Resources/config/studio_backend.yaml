@@ -14,3 +14,6 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydrator
+
+    Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydratorInterface:
+        class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydrator

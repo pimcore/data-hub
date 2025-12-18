@@ -13,27 +13,28 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
-use OpenApi\Attributes\Post;
+use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Prefix;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Tags;
-use Pimcore\Bundle\DataHubBundle\Schema\AddConfiguration;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\StudioBackendBundle\Controller\AbstractApiController;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Query\StringParameter;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\CreatedResponse;
+use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Path\IdParameter;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\DefaultResponses;
+use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\SuccessResponse;
 use Pimcore\Bundle\StudioBackendBundle\Util\Constant\HttpResponseCodes;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @internal
  */
-final class AddController extends AbstractApiController
+final class GetController extends AbstractApiController
 {
-    private const string ROUTE = '/config/add';
+    private const string ROUTE = '/config/{name}';
 
     public function __construct(
         SerializerInterface $serializer,
@@ -47,36 +48,33 @@ final class AddController extends AbstractApiController
      */
     #[Route(
         path: self::ROUTE,
-        name: 'pimcore_studio_api_data_hub_config_add',
-        methods: ['POST']
+        name: 'pimcore_studio_api_data_hub_config_get',
+        methods: ['GET']
     )]
-    #[Post(
+    #[Get(
         path: Prefix::BUNDLE . self::ROUTE,
-        operationId: 'bundle_data_hub_config_add',
-        description: 'bundle_data_hub_config_add_description',
-        summary: 'bundle_data_hub_config_add_summary',
+        operationId: 'bundle_data_hub_config_get',
+        description: 'bundle_data_hub_config_get_description',
+        summary: 'bundle_data_hub_config_get_summary',
         tags: [Tags::DataHub->value]
     )]
-    #[StringParameter('name', 'assets', 'The name of the configuration')]
-    #[StringParameter('type', 'graphql', 'Type of the adapter')]
-    #[StringParameter('path', '', 'Configuration path', false)]
-    #[CreatedResponse(
-        description: 'bundle_data_hub_config_add_success_response'
+    #[IdParameter(
+        type: 'configuration',
+        name: 'name',
     )]
+    #[SuccessResponse(
+        description: 'bundle_data_hub_config_get_success_response',
+    )]
+    #[IsGranted(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)]
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::NOT_FOUND,
     ])]
-    public function addConfiguration(
-        #[MapQueryString] AddConfiguration $addConfiguration
-    ): Response {
-        $this->configurationService->addConfiguration(
-            $addConfiguration->getName(),
-            $addConfiguration->getType(),
-            $addConfiguration->getPath() ?? ''
+    public function getConfiguration(string $name): JsonResponse
+    {
+        return $this->jsonResponse(
+            $this->configurationService->getConfiguration($name)
         );
-
-        return new Response();
     }
 }
 

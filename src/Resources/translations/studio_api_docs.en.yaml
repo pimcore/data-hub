@@ -13,3 +13,8 @@ bundle_data_hub_config_add: Add Data Hub Configuration
 bundle_data_hub_config_add_description: Create a new Data Hub configuration
 bundle_data_hub_config_add_summary: Add Data Hub Configuration
 bundle_data_hub_config_add_success_response: Data Hub configuration successfully created
+pimcore_studio_api_data_hub_config_get: Get Data Hub Configuration
+bundle_data_hub_config_get: Get Data Hub Configuration
+bundle_data_hub_config_get_description: Get a Data Hub configuration by name
+bundle_data_hub_config_get_summary: Get Data Hub Configuration
+bundle_data_hub_config_get_success_response: Data Hub configuration details
