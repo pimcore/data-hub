@@ -14,12 +14,11 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
-
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
-use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
+use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
+use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -70,6 +69,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         $event = new GenericEvent($this, ['list' => $configs]);
         $this->eventDispatcher->dispatch($event, AdminEvents::CONFIGURATION_LIST);
+
         return $event->getArgument('list');
     }
 
@@ -77,8 +77,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         array &$hydratedConfigs,
         HydratedConfiguration $hydratedItem,
         ?string $group
-    ): void
-    {
+    ): void {
         if ($group) {
             $hydratedConfigs[$group] = $hydratedItem;
 

@@ -15,7 +15,6 @@ namespace Pimcore\Bundle\DataHubBundle\Hydrator;
 
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
-use Pimcore\Bundle\StudioBackendBundle\Exception\Api\InvalidArgumentException;
 
 /**
  * @internal
@@ -34,10 +33,10 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
 
         return $this->hydrateItem($config);
     }
+
     private function hydrateItem(
         Configuration $config
-    ): HydratedConfiguration
-    {
+    ): HydratedConfiguration {
         $name = $config->getName();
         $type = $config->getType() ?: 'graphql';
 
@@ -64,8 +63,7 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
         Configuration $config,
         array $existingChildren,
         string $group
-    ): HydratedConfiguration
-    {
+    ): HydratedConfiguration {
         return new HydratedConfiguration(
             id: 'group_' . $group,
             text: htmlspecialchars($group),
