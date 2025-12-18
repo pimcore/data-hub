@@ -23,4 +23,9 @@ interface ConfigurationServiceInterface
      * @return Configuration[]
      */
     public function getConfigurations(): array;
+
+    /**
+     * @throws \Exception
+     */
+    public function deleteConfiguration(string $name): void;
 }

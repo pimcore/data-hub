@@ -3,3 +3,8 @@ pimcore_studio_api_data_hub_config_collection: Data Hub Config Collection
 bundle_data_hub_config_collection: Data Hub Config Collection
 bundle_data_hub_config_collection_description: Data Hub Config Collection
 bundle_data_hub_config_collection_summary: Data Hub Config Collection
+pimcore_studio_api_data_hub_config_delete: Delete Data Hub Configuration
+bundle_data_hub_config_delete: Delete Data Hub Configuration
+bundle_data_hub_config_delete_description: Delete a Data Hub configuration by name
+bundle_data_hub_config_delete_summary: Delete Data Hub Configuration
+bundle_data_hub_config_delete_success_response: Data Hub configuration successfully deleted

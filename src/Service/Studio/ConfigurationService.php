@@ -19,8 +19,13 @@ use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /** @internal */
 final readonly class ConfigurationService implements ConfigurationServiceInterface
@@ -63,6 +68,32 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         }
 
         return array_values($hydratedConfigs);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function deleteConfiguration(string $name): void
+    {
+        $config = Configuration::getByName($name);
+
+        if (!$config instanceof Configuration) {
+            throw new NotFoundHttpException('Configuration does not exist.');
+        }
+
+        if ($config->isWriteable() === false) {
+            throw new NotWriteableException(
+                'delete',
+                'Cant delete configuration "' . $name . '" as it is not writeable.'
+            );
+        }
+
+        if (!$config->isAllowed('delete')) {
+            throw new ForbiddenException('Permission denied to delete the configuration.');
+        }
+
+        WorkspaceHelper::deleteConfiguration($config);
+        $config->delete();
     }
 
     private function resolveConfigurationList(array $configs): iterable
