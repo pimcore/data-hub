@@ -13,28 +13,27 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
-use OpenApi\Attributes\Delete;
-use OpenApi\Attributes\Schema;
+use OpenApi\Attributes\Post;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Prefix;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Tags;
+use Pimcore\Bundle\DataHubBundle\Schema\AddConfiguration;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
-use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\StudioBackendBundle\Controller\AbstractApiController;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Path\IdParameter;
+use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Query\StringParameter;
+use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\CreatedResponse;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\DefaultResponses;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\SuccessResponse;
 use Pimcore\Bundle\StudioBackendBundle\Util\Constant\HttpResponseCodes;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @internal
  */
-final class DeleteController extends AbstractApiController
+final class AddController extends AbstractApiController
 {
-    private const string ROUTE = '/config/delete/{name}';
+    private const string ROUTE = '/config/add';
 
     public function __construct(
         SerializerInterface $serializer,
@@ -48,32 +47,34 @@ final class DeleteController extends AbstractApiController
      */
     #[Route(
         path: self::ROUTE,
-        name: 'pimcore_studio_api_data_hub_config_delete',
-        methods: ['DELETE']
+        name: 'pimcore_studio_api_data_hub_config_add',
+        methods: ['POST']
     )]
-    #[Delete(
+    #[Post(
         path: Prefix::BUNDLE . self::ROUTE,
-        operationId: 'bundle_data_hub_config_delete',
-        description: 'bundle_data_hub_config_delete_description',
-        summary: 'bundle_data_hub_config_delete_summary',
+        operationId: 'bundle_data_hub_config_add',
+        description: 'bundle_data_hub_config_add_description',
+        summary: 'bundle_data_hub_config_add_summary',
         tags: [Tags::DataHub->value]
     )]
-    #[IdParameter(
-        type: 'configuration',
-        schema: new Schema(type: 'string'),
-        name: 'name',
+    #[StringParameter('name', 'assets', 'The name of the configuration')]
+    #[StringParameter('type', 'graphql', 'Type of the adapter')]
+    #[StringParameter('path', '', 'Configuration path', false)]
+    #[CreatedResponse(
+        description: 'bundle_data_hub_config_add_success_response'
     )]
-    #[SuccessResponse(
-        description: 'bundle_data_hub_config_delete_success_response',
-    )]
-    #[IsGranted(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)]
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::NOT_FOUND,
     ])]
-    public function deleteConfiguration(string $name): Response
-    {
-        $this->configurationService->deleteConfiguration($name);
+    public function addConfiguration(
+        #[MapQueryString] AddConfiguration $addConfiguration
+    ): Response {
+        $this->configurationService->addConfiguration(
+            $addConfiguration->getName(),
+            $addConfiguration->getType(),
+            $addConfiguration->getPath()
+        );
 
         return new Response();
     }

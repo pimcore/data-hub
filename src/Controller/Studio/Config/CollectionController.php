@@ -67,7 +67,6 @@ final class CollectionController extends AbstractApiController
         description: 'bundle_copilot_actions_success_response',
         content: new CollectionJson(new GenericCollection(Configuration::class)),
     )]
-    #[IsGranted(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)]
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::NOT_FOUND,

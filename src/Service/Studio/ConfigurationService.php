@@ -19,10 +19,12 @@ use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
+use Pimcore\Bundle\PortalEngineBundle\Enum\Collection\Permission;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ElementExistsException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,7 +44,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $configs = $this->resolveConfigurationList(Configuration::getList());
 
         foreach ($configs as $config) {
-            if (!$config instanceof Configuration) {
+            if (
+                !$config instanceof Configuration ||
+                !$config->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ)
+            ){
                 continue;
             }
 
@@ -94,6 +99,30 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         WorkspaceHelper::deleteConfiguration($config);
         $config->delete();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function addConfiguration(string $name, string $type, string $path): string
+    {
+        if (new Configuration(null, null)->isWriteable() === false) {
+            throw new NotWriteableException(
+                'create',
+                'Cannot create configuration as configurations are not writeable.'
+            );
+        }
+
+        $config = Configuration::getByName($name);
+
+        if ($config instanceof Configuration) {
+            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+        }
+
+        $config = new Configuration($type, $path, $name);
+        $config->save();
+
+        return $name;
     }
 
     private function resolveConfigurationList(array $configs): iterable

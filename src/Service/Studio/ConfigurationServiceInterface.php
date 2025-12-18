@@ -28,4 +28,9 @@ interface ConfigurationServiceInterface
      * @throws \Exception
      */
     public function deleteConfiguration(string $name): void;
+
+    /**
+     * @throws \Exception
+     */
+    public function addConfiguration(string $name, string $type, string $path): string;
 }
