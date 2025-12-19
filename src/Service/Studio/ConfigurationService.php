@@ -110,7 +110,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
      */
     public function addConfiguration(string $name, string $type, string $path): string
     {
-        if (new Configuration(null, null)->isWriteable() === false) {
+        if ((new Configuration(null, null))->isWriteable() === false) {
             throw new NotWriteableException(
                 PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
                 'Cannot create configuration as configurations are not writeable.'
