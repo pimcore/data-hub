@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
 use OpenApi\Attributes\Get;
-use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Schema;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Prefix;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Tags;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -60,6 +60,7 @@ final class GetController extends AbstractApiController
     )]
     #[IdParameter(
         type: 'configuration',
+        schema: new Schema(type: 'string'),
         name: 'name',
     )]
     #[SuccessResponse(
