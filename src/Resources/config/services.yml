@@ -24,6 +24,7 @@ services:
     
     Pimcore\Bundle\DataHubBundle\Service\:
         resource: '../../Service'
+        exclude: '../../Service/Studio'
         public: true
         autowire: true
         autoconfigure: true
