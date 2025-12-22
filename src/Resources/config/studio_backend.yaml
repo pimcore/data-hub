@@ -9,10 +9,6 @@ services:
         public: true
         tags: [ 'controller.service_arguments' ]
 
-    Pimcore\Bundle\DataHubBundle\Service\Studio\:
-        resource: '../../Service/Studio'
-        public: true
-
     Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationService
 
