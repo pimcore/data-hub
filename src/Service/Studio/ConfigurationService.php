@@ -118,7 +118,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         }
 
         $this->checkUserPermission(
-            PermissionConstants::PLUGIN_DATA_HUB_CONFIG
+            [
+                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+            ]
         );
 
         if ($this->configExists($name)) {
@@ -151,11 +154,71 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $config->delete();
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function cloneConfiguration(string $name, string $originalName): string
+    {
+        if ((new Configuration(null, null))->isWriteable() === false) {
+            throw new NotWriteableException(
+                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
+                'Cannot clone configuration as configurations are not writeable.'
+            );
+        }
+
+        $this->checkUserPermission(
+            [
+                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+            ]
+        );
+
+        if ($this->configExists($name)) {
+            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+        }
+
+        $originalConfig = $this->fetchConfiguration($originalName);
+
+        $this->checkConfigPermission($originalConfig, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
+        $this->checkUserPermission(
+            [
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $originalConfig->getType()
+            ]
+        );
+
+        $clonedConfig = new Configuration(
+            $originalConfig->getType(),
+            $originalConfig->getPath(),
+            $name,
+            $originalConfig->getConfiguration()
+        );
+
+        $clonedConfig->save();
+
+        return $name;
+    }
+
     private function checkConfigPermission(
         Configuration $configuration,
-        string $permission
+        array|string $permission
     ): void {
-        if (!$configuration->isAllowed($permission)) {
+        $throw = false;
+
+        if(is_string($permission) && !$configuration->isAllowed($permission)) {
+            $throw = true;
+        }
+
+        if(is_array($permission)) {
+            foreach($permission as $perm) {
+                if (!$configuration->isAllowed($perm)) {
+                    $throw = true;
+                    break;
+                }
+            }
+        }
+
+        if($throw) {
             throw new ForbiddenException('Permission denied: ' . $permission);
         }
     }
@@ -276,11 +339,24 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $hydratedConfigs[] = $hydratedItem;
     }
 
-    private function checkUserPermission(string $permission): void
+    private function checkUserPermission(array|string $permission): void
     {
-        if(!$this->securityService->getCurrentUser()->isAllowed(
-            $permission
-        )) {
+        $user = $this->securityService->getCurrentUser();
+        $throw = false;
+
+        if(is_string($permission) && !$user->isAllowed($permission)) {
+            $throw = true;
+        }
+
+        if(is_array($permission)) {
+            foreach($permission as $perm) {
+                if (!$user->isAllowed($perm)) {
+                    $throw = true;
+                }
+            }
+        }
+
+        if($throw) {
             throw new ForbiddenException('Permission denied: ' . $permission);
         }
     }

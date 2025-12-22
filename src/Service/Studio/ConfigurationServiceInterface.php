@@ -39,4 +39,9 @@ interface ConfigurationServiceInterface
      * @throws \Exception
      */
     public function getConfiguration(string $name): ConfigurationDetail;
+
+    /**
+     * @throws \Exception
+     */
+    public function cloneConfiguration(string $name, string $originalName): string;
 }
