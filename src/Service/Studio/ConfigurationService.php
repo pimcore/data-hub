@@ -128,9 +128,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             ]
         );
 
-        if ($this->configExists($name)) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
-        }
+        $this->ensureConfigDoesNotExist($name);
 
         $config = new Configuration($type, $path, $name);
         $config->save();
@@ -177,10 +175,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             ]
         );
 
-        if ($this->configExists($name)) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
-        }
-
+        $this->ensureConfigDoesNotExist($name);
         $originalConfig = $this->fetchConfiguration($originalName);
 
         $this->checkConfigPermission($originalConfig, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
@@ -318,10 +313,12 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $configuration;
     }
 
-    private function configExists(string $name): bool
+    private function ensureConfigDoesNotExist(string $name): void
     {
         $configuration = Configuration::getByName($name);
-        return $configuration instanceof Configuration;
+        if ($configuration instanceof Configuration) {
+            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+        }
     }
 
     private function normalizeConfigurationSchema(array $config): array
@@ -466,9 +463,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             );
         }
 
-        if ($this->configExists($name)) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
-        }
+        $this->ensureConfigDoesNotExist($name);
 
         if (!$this->isBundleInstalled($type)) {
             throw new ValidationFailedException(sprintf(
