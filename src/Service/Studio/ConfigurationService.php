@@ -33,8 +33,6 @@ use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -462,7 +460,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $type = $importData['type'] ?? null;
         $name = $importData['name'] ?? null;
 
-        if (!isset($type) || !isset($importData['path']) || !isset($name)) {
+        if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
                 "Uploaded configuration data is invalid. Missing keys: type, path, name."
             );
