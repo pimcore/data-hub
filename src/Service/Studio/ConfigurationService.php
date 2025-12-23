@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
+use Exception;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -30,7 +31,11 @@ use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ElementExistsException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -43,7 +48,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         private ConfigurationHydratorInterface $configurationHydrator,
         private ConfigurationDetailHydratorInterface $configurationDetailHydrator,
         private Service $graphQlService,
-        private SecurityServiceInterface $securityService
+        private SecurityServiceInterface $securityService,
+        protected ContainerBagInterface $parameterBag
     ) {
     }
 
@@ -85,7 +91,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getConfiguration(string $name): ConfigurationDetail
     {
@@ -106,7 +112,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function addConfiguration(string $name, string $type, string $path): string
     {
@@ -135,7 +141,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteConfiguration(string $name): void
     {
@@ -155,7 +161,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function cloneConfiguration(string $name, string $originalName): string
     {
@@ -197,6 +203,84 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $clonedConfig->save();
 
         return $name;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function importConfiguration(string $json): array
+    {
+        if ((new Configuration(null, null))->isWriteable() === false) {
+            throw new NotWriteableException(
+                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
+                'Cannot import configuration as configurations are not writeable.'
+            );
+        }
+
+        $this->checkUserPermission(
+            [
+                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+            ]
+        );
+
+        $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->validateUploadedConfigurationData($importData);
+
+        $this->checkUserPermission(
+            [
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $importData['type']
+            ]
+        );
+
+        $configuration = new Configuration(
+            $importData['type'],
+            $importData['path'],
+            $importData['name']
+        );
+        $configuration->setModificationDate(time());
+        $configuration->setConfiguration($importData['configuration']);
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'type' => $configuration->getType(),
+            'name' => $configuration->getName(),
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function exportConfiguration(string $name): array
+    {
+        $configuration = $this->fetchConfiguration($name);
+
+        $exportData = clone $configuration;
+        $data = json_decode(
+            json_encode($exportData, JSON_THROW_ON_ERROR),
+            false,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        unset(
+            $data->configuration->general->modificationDate,
+            $data->configuration->general->createDate,
+        );
+
+        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+        $filename = sprintf(
+            'datahub_%s_%s_export.json',
+            $configuration->getType(),
+            $configuration->getName()
+        );
+
+        return [
+            'json' => $json,
+            'filename' => $filename,
+        ];
     }
 
     private function checkConfigPermission(
@@ -358,6 +442,41 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if($throw) {
             throw new ForbiddenException('Permission denied: ' . $permission);
+        }
+    }
+
+    private function isBundleInstalled(?string $type): bool
+    {
+        try {
+            $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
+        }
+        catch(Exception) {
+            return false;
+        }
+
+        return array_key_exists($type, $registeredBundles['supported_types']);
+    }
+
+    private function validateUploadedConfigurationData(array $importData): void
+    {
+        $type = $importData['type'] ?? null;
+        $name = $importData['name'] ?? null;
+
+        if (!isset($type) || !isset($importData['path']) || !isset($name)) {
+            throw new ValidationFailedException(
+                "Uploaded configuration data is invalid. Missing keys: type, path, name."
+            );
+        }
+
+        if ($this->configExists($name)) {
+            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+        }
+
+        if (!$this->isBundleInstalled($type)) {
+            throw new ValidationFailedException(sprintf(
+                'Cant handle type "%s". According bundle is not installed!',
+                $type
+            ));
         }
     }
 }

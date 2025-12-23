@@ -44,4 +44,14 @@ interface ConfigurationServiceInterface
      * @throws \Exception
      */
     public function cloneConfiguration(string $name, string $originalName): string;
+
+    /**
+     * @throws \Exception
+     */
+    public function importConfiguration(string $json): array;
+
+    /**
+     * @throws \Exception
+     */
+    public function exportConfiguration(string $name): array;
 }
