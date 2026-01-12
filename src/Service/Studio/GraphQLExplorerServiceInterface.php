@@ -15,10 +15,19 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /** @internal  */
 interface GraphQLExplorerServiceInterface
 {
+
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
 }
 
