@@ -19,14 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 /** @internal  */
 interface GraphQLExplorerServiceInterface
 {
-    /**
-     * Generate the GraphQL Explorer interface HTML
-     *
-     * @param string $clientname The GraphQL client/endpoint name
-     * @param array<string, mixed> $urlParams Additional URL parameters to pass to the GraphQL endpoint
-     * @return Response HTML response with the explorer interface
-     * @throws \Exception If the GraphQL endpoint URL cannot be resolved
-     */
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
 }
 
