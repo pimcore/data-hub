@@ -53,10 +53,6 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
             'clientname' => $clientname,
         ]);
 
-        if (!$url) {
-            throw new RuntimeException('Unable to resolve GraphQL endpoint URL');
-        }
-
         if ($urlParams !== []) {
             $url .= '?' . http_build_query($urlParams);
         }
