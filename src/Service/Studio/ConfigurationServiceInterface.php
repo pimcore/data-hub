@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration;
+use Pimcore\Bundle\DataHubBundle\Schema\ConfigurationDetail;
 
 /** @internal  */
 interface ConfigurationServiceInterface
@@ -23,4 +24,34 @@ interface ConfigurationServiceInterface
      * @return Configuration[]
      */
     public function getConfigurations(): array;
+
+    /**
+     * @throws \Exception
+     */
+    public function deleteConfiguration(string $name): void;
+
+    /**
+     * @throws \Exception
+     */
+    public function addConfiguration(string $name, string $type, string $path): string;
+
+    /**
+     * @throws \Exception
+     */
+    public function getConfiguration(string $name): ConfigurationDetail;
+
+    /**
+     * @throws \Exception
+     */
+    public function cloneConfiguration(string $name, string $originalName): string;
+
+    /**
+     * @throws \Exception
+     */
+    public function importConfiguration(string $json): array;
+
+    /**
+     * @throws \Exception
+     */
+    public function exportConfiguration(string $name): array;
 }

@@ -13,21 +13,18 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
-use OpenApi\Attributes\Get;
+use OpenApi\Attributes\Delete;
+use OpenApi\Attributes\Schema;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Prefix;
 use Pimcore\Bundle\DataHubBundle\OpenApi\Config\Tags;
-use Pimcore\Bundle\DataHubBundle\Schema\Configuration;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\StudioBackendBundle\Controller\AbstractApiController;
-use Pimcore\Bundle\StudioBackendBundle\Exception\Api\InvalidArgumentException;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Property\GenericCollection;
-use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\Content\CollectionJson;
+use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Path\IdParameter;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\DefaultResponses;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\SuccessResponse;
 use Pimcore\Bundle\StudioBackendBundle\Util\Constant\HttpResponseCodes;
-use Pimcore\Bundle\StudioBackendBundle\Util\Trait\PaginatedResponseTrait;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -35,11 +32,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * @internal
  */
-final class CollectionController extends AbstractApiController
+final class DeleteController extends AbstractApiController
 {
-    use PaginatedResponseTrait;
-
-    private const string ROUTE = '/config';
+    private const string ROUTE = '/config/delete/{name}';
 
     public function __construct(
         SerializerInterface $serializer,
@@ -49,36 +44,38 @@ final class CollectionController extends AbstractApiController
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws \Exception
      */
     #[Route(
         path: self::ROUTE,
-        name: 'pimcore_studio_api_data_hub_config_collection',
-        methods: ['GET']
+        name: 'pimcore_studio_api_data_hub_config_delete',
+        methods: ['DELETE']
     )]
-    #[Get(
+    #[Delete(
         path: Prefix::BUNDLE . self::ROUTE,
-        operationId: 'bundle_data_hub_config_collection',
-        description: 'bundle_data_hub_config_collection_description',
-        summary: 'bundle_data_hub_config_collection_summary',
+        operationId: 'bundle_data_hub_config_delete',
+        description: 'bundle_data_hub_config_delete_description',
+        summary: 'bundle_data_hub_config_delete_summary',
         tags: [Tags::DataHub->value]
     )]
-    #[SuccessResponse(
-        description: 'bundle_copilot_actions_success_response',
-        content: new CollectionJson(new GenericCollection(Configuration::class)),
+    #[IdParameter(
+        type: 'configuration',
+        schema: new Schema(type: 'string'),
+        name: 'name',
     )]
+    #[SuccessResponse(
+        description: 'bundle_data_hub_config_delete_success_response',
+    )]
+    #[IsGranted(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)]
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::NOT_FOUND,
     ])]
-    public function listActions(
-    ): JsonResponse {
-        $configs = $this->configurationService->getConfigurations();
+    public function deleteConfiguration(string $name): Response
+    {
+        $this->configurationService->deleteConfiguration($name);
 
-        return $this->getPaginatedCollection(
-            $this->serializer,
-            $configs,
-            count($configs)
-        );
+        return new Response();
     }
 }
+

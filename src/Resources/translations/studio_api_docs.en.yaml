@@ -3,3 +3,33 @@ pimcore_studio_api_data_hub_config_collection: Data Hub Config Collection
 bundle_data_hub_config_collection: Data Hub Config Collection
 bundle_data_hub_config_collection_description: Data Hub Config Collection
 bundle_data_hub_config_collection_summary: Data Hub Config Collection
+pimcore_studio_api_data_hub_config_delete: Delete Data Hub Configuration
+bundle_data_hub_config_delete: Delete Data Hub Configuration
+bundle_data_hub_config_delete_description: Delete a Data Hub configuration by name
+bundle_data_hub_config_delete_summary: Delete Data Hub Configuration
+bundle_data_hub_config_delete_success_response: Data Hub configuration successfully deleted
+pimcore_studio_api_data_hub_config_add: Add Data Hub Configuration
+bundle_data_hub_config_add: Add Data Hub Configuration
+bundle_data_hub_config_add_description: Create a new Data Hub configuration
+bundle_data_hub_config_add_summary: Add Data Hub Configuration
+bundle_data_hub_config_add_success_response: Data Hub configuration successfully created
+pimcore_studio_api_data_hub_config_get: Get Data Hub Configuration
+bundle_data_hub_config_get: Get Data Hub Configuration
+bundle_data_hub_config_get_description: Get a Data Hub configuration by name
+bundle_data_hub_config_get_summary: Get Data Hub Configuration
+bundle_data_hub_config_get_success_response: Data Hub configuration details
+pimcore_studio_api_data_hub_config_clone: Clone Data Hub Configuration
+bundle_data_hub_config_clone: Clone Data Hub Configuration
+bundle_data_hub_config_clone_description: Clone an existing Data Hub configuration with a new name
+bundle_data_hub_config_clone_summary: Clone Data Hub Configuration
+bundle_data_hub_config_clone_success_response: Data Hub configuration successfully cloned
+pimcore_studio_api_data_hub_config_import: Import Data Hub Configuration
+bundle_data_hub_config_import: Import Data Hub Configuration
+bundle_data_hub_config_import_description: Import a Data Hub configuration from a JSON file
+bundle_data_hub_config_import_summary: Import Data Hub Configuration
+bundle_data_hub_config_import_success_response: Data Hub configuration successfully imported
+pimcore_studio_api_data_hub_config_export: Export Data Hub Configuration
+bundle_data_hub_config_export: Export Data Hub Configuration
+bundle_data_hub_config_export_description: Export a Data Hub configuration as a JSON file
+bundle_data_hub_config_export_summary: Export Data Hub Configuration
+bundle_data_hub_config_export_success_response: Data Hub configuration successfully exported
