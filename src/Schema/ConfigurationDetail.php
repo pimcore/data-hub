@@ -42,9 +42,17 @@ final readonly class ConfigurationDetail
         private array $configuration,
         #[Property(description: 'User permissions', type: 'object', example: ['update' => true, 'delete' => true])]
         private array $userPermissions,
-        #[Property(description: 'Supported GraphQL query data types', type: 'array', items: new Items(type: 'string'))]
+        #[Property(
+            description: 'Supported GraphQL query data types',
+            type: 'array',
+            items: new Items(type: 'string'))
+        ]
         private array $supportedGraphQLQueryDataTypes,
-        #[Property(description: 'Supported GraphQL mutation data types', type: 'array', items: new Items(type: 'string'))]
+        #[Property(
+            description: 'Supported GraphQL mutation data types',
+            type: 'array',
+            items: new Items(type: 'string'))
+        ]
         private array $supportedGraphQLMutationDataTypes,
         #[Property(description: 'Modification date timestamp', type: 'integer', example: 1705075200)]
         private int $modificationDate,
