@@ -70,7 +70,7 @@ final class ImportController extends AbstractApiController
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::BAD_REQUEST,
-        HttpResponseCodes::CREATED
+        HttpResponseCodes::CREATED,
     ])]
     public function importConfiguration(Request $request): Response
     {
@@ -101,5 +101,3 @@ final class ImportController extends AbstractApiController
         );
     }
 }
-
-

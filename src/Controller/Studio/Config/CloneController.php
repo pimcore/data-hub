@@ -65,7 +65,7 @@ final class CloneController extends AbstractApiController
     #[DefaultResponses([
         HttpResponseCodes::UNAUTHORIZED,
         HttpResponseCodes::NOT_FOUND,
-        HttpResponseCodes::CREATED
+        HttpResponseCodes::CREATED,
     ])]
     public function cloneConfiguration(
         #[MapQueryString] CloneConfiguration $cloneConfiguration
@@ -77,11 +77,9 @@ final class CloneController extends AbstractApiController
 
         return $this->jsonResponse(
             [
-                'clonedConfigurationName' => $clonedConfigName
+                'clonedConfigurationName' => $clonedConfigName,
             ],
             HttpResponseCodes::CREATED->value
         );
     }
 }
-
-

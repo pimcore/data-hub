@@ -53,4 +53,3 @@ final class FileUploadRequestBody extends RequestBody
         $this->description = $description;
     }
 }
-

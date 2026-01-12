@@ -40,4 +40,3 @@ final readonly class AddConfiguration
         return $this->path;
     }
 }
-

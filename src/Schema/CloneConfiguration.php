@@ -34,5 +34,3 @@ final readonly class CloneConfiguration
         return $this->originalName;
     }
 }
-
-

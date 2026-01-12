@@ -58,4 +58,3 @@ final readonly class ConfigurationDetail
         return $this->modificationDate;
     }
 }
-

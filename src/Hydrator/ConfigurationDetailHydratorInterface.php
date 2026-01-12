@@ -27,4 +27,3 @@ interface ConfigurationDetailHydratorInterface
         array $supportedMutationDataTypes
     ): ConfigurationDetail;
 }
-

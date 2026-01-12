@@ -60,7 +60,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             if (
                 !$config instanceof Configuration ||
                 !$config->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ)
-            ){
+            ) {
                 continue;
             }
 
@@ -124,7 +124,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $this->checkUserPermission(
             [
                 PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
             ]
         );
 
@@ -171,7 +171,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $this->checkUserPermission(
             [
                 PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
             ]
         );
 
@@ -182,7 +182,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $this->checkUserPermission(
             [
                 PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $originalConfig->getType()
+                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $originalConfig->getType(),
             ]
         );
 
@@ -213,7 +213,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $this->checkUserPermission(
             [
                 PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN
+                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
             ]
         );
 
@@ -223,7 +223,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $this->checkUserPermission(
             [
                 PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $importData['type']
+                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $importData['type'],
             ]
         );
 
@@ -282,20 +282,21 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     ): void {
         $throw = false;
 
-        if(is_string($permission) && !$configuration->isAllowed($permission)) {
+        if (is_string($permission) && !$configuration->isAllowed($permission)) {
             $throw = true;
         }
 
-        if(is_array($permission)) {
-            foreach($permission as $perm) {
+        if (is_array($permission)) {
+            foreach ($permission as $perm) {
                 if (!$configuration->isAllowed($perm)) {
                     $throw = true;
+
                     break;
                 }
             }
         }
 
-        if($throw) {
+        if ($throw) {
             throw new ForbiddenException('Permission denied: ' . $permission);
         }
     }
@@ -423,19 +424,19 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $user = $this->securityService->getCurrentUser();
         $throw = false;
 
-        if(is_string($permission) && !$user->isAllowed($permission)) {
+        if (is_string($permission) && !$user->isAllowed($permission)) {
             $throw = true;
         }
 
-        if(is_array($permission)) {
-            foreach($permission as $perm) {
+        if (is_array($permission)) {
+            foreach ($permission as $perm) {
                 if (!$user->isAllowed($perm)) {
                     $throw = true;
                 }
             }
         }
 
-        if($throw) {
+        if ($throw) {
             throw new ForbiddenException('Permission denied: ' . $permission);
         }
     }
@@ -444,8 +445,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         try {
             $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
-        }
-        catch(Exception) {
+        } catch (Exception) {
             return false;
         }
 
@@ -459,7 +459,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
-                "Uploaded configuration data is invalid. Missing keys: type, path, name."
+                'Uploaded configuration data is invalid. Missing keys: type, path, name.'
             );
         }
 

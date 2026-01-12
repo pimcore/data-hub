@@ -78,4 +78,3 @@ final class DeleteController extends AbstractApiController
         return new Response();
     }
 }
-

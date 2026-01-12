@@ -25,8 +25,7 @@ final readonly class ConfigurationDetailHydrator implements ConfigurationDetailH
         Configuration $configuration,
         array $supportedQueryDataTypes,
         array $supportedMutationDataTypes
-    ): ConfigurationDetail
-    {
+    ): ConfigurationDetail {
         return new ConfigurationDetail(
             $configuration->getName(),
             $configuration->getConfiguration(),
@@ -37,4 +36,3 @@ final readonly class ConfigurationDetailHydrator implements ConfigurationDetailH
         );
     }
 }
-
