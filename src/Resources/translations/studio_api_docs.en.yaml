@@ -33,3 +33,8 @@ bundle_data_hub_config_export: Export Data Hub Configuration
 bundle_data_hub_config_export_description: Export a Data Hub configuration as a JSON file
 bundle_data_hub_config_export_summary: Export Data Hub Configuration
 bundle_data_hub_config_export_success_response: Data Hub configuration successfully exported
+pimcore_studio_api_data_hub_graphql_explorer: GraphQL Explorer
+bundle_data_hub_graphql_explorer: GraphQL Explorer
+bundle_data_hub_graphql_explorer_description: Get the GraphQL Explorer interface for testing and exploring GraphQL endpoints
+bundle_data_hub_graphql_explorer_summary: Get GraphQL Explorer
+bundle_data_hub_graphql_explorer_success_response: GraphQL Explorer HTML interface
