@@ -29,7 +29,7 @@ use OpenApi\Attributes\Schema;
         'userPermissions',
         'supportedGraphQLQueryDataTypes',
         'supportedGraphQLMutationDataTypes',
-        'modificationDate'
+        'modificationDate',
     ],
     type: 'object'
 )]
