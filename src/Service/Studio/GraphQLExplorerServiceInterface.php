@@ -22,7 +22,6 @@ use Twig\Error\SyntaxError;
 /** @internal  */
 interface GraphQLExplorerServiceInterface
 {
-
     /**
      * @throws SyntaxError
      * @throws RuntimeError
@@ -30,4 +29,3 @@ interface GraphQLExplorerServiceInterface
      */
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
 }
-

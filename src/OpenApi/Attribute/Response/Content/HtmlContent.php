@@ -33,4 +33,3 @@ final class HtmlContent extends MediaType
         );
     }
 }
-

@@ -45,6 +45,7 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
 
     /**
      * @param array<string, mixed> $urlParams
+     *
      * @throws RuntimeException If the GraphQL endpoint URL cannot be resolved
      */
     private function generateGraphQLUrl(string $clientname, array $urlParams): string
@@ -85,4 +86,3 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
         return $response;
     }
 }
-

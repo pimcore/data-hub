@@ -79,4 +79,3 @@ final class ExplorerController extends AbstractApiController
         return $this->explorerService->generateExplorerResponse($clientname, $urlParams);
     }
 }
-
