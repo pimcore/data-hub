@@ -38,3 +38,8 @@ bundle_data_hub_graphql_explorer: GraphQL Explorer
 bundle_data_hub_graphql_explorer_description: Get the GraphQL Explorer interface for testing and exploring GraphQL endpoints
 bundle_data_hub_graphql_explorer_summary: Get GraphQL Explorer
 bundle_data_hub_graphql_explorer_success_response: GraphQL Explorer HTML interface
+pimcore_studio_api_data_hub_graphql_explorer_url: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url_description: Get the URL for the GraphQL Explorer interface for a specific configuration
+bundle_data_hub_graphql_explorer_url_summary: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url_success_response: GraphQL Explorer URL
