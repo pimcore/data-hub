@@ -38,6 +38,7 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
 final class ConfigurationDetail implements AdditionalAttributesInterface
 {
     use AdditionalAttributesTrait;
+
     public function __construct(
         #[Property(description: 'Configuration name', type: 'string', example: 'assets')]
         private string $name,

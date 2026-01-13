@@ -24,4 +24,3 @@ interface UserServiceInterface
      */
     public function getUsers(string $type): array;
 }
-

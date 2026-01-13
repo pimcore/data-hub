@@ -25,4 +25,3 @@ interface ThumbnailServiceInterface
      */
     public function getThumbnails(): array;
 }
-

@@ -77,4 +77,3 @@ final class CollectionController extends AbstractApiController
         );
     }
 }
-

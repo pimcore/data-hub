@@ -30,4 +30,3 @@ final readonly class PermissionUserHydrator implements PermissionUserHydratorInt
         );
     }
 }
-

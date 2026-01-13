@@ -30,6 +30,7 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
 final class Thumbnail implements AdditionalAttributesInterface
 {
     use AdditionalAttributesTrait;
+
     public function __construct(
         #[Property(description: 'Thumbnail ID', type: 'string', example: 'content')]
         private readonly string $id,
@@ -48,4 +49,3 @@ final class Thumbnail implements AdditionalAttributesInterface
         return $this->text;
     }
 }
-

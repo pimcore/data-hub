@@ -48,4 +48,3 @@ final readonly class ThumbnailService implements ThumbnailServiceInterface
         return $thumbnails;
     }
 }
-

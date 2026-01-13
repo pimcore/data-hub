@@ -38,4 +38,3 @@ final class ExplorerUrlJson extends JsonContent
         );
     }
 }
-

@@ -30,6 +30,7 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
 final class PermissionUser implements AdditionalAttributesInterface
 {
     use AdditionalAttributesTrait;
+
     public function __construct(
         #[Property(description: 'User or Role ID', type: 'integer', example: 42)]
         private readonly int $id,
@@ -55,4 +56,3 @@ final class PermissionUser implements AdditionalAttributesInterface
         return $this->elementType;
     }
 }
-

@@ -23,4 +23,3 @@ interface ThumbnailHydratorInterface
 {
     public function hydrate(Config $config): Thumbnail;
 }
-

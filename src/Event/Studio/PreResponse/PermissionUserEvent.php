@@ -34,4 +34,3 @@ final class PermissionUserEvent extends AbstractPreResponseEvent
         return $this->permissionUser;
     }
 }
-

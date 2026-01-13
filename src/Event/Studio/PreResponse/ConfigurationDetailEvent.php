@@ -68,4 +68,3 @@ final class ConfigurationDetailEvent extends AbstractPreResponseEvent
         return $this->configurationDetail;
     }
 }
-

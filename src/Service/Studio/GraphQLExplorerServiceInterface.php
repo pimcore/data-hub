@@ -28,5 +28,6 @@ interface GraphQLExplorerServiceInterface
      * @throws LoaderError
      */
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
+
     public function getExplorerUrl(string $clientname): string;
 }

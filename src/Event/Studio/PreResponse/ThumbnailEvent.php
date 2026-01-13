@@ -34,4 +34,3 @@ final class ThumbnailEvent extends AbstractPreResponseEvent
         return $this->thumbnail;
     }
 }
-

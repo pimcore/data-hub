@@ -23,4 +23,3 @@ interface PermissionUserHydratorInterface
 {
     public function hydrate(User|User\Role $user, string $type): PermissionUser;
 }
-
