@@ -36,3 +36,6 @@ Thumbs.db
 /.htaccess
 /auth.json
 /config.json
+
+# studio related
+/assets/studio/node_modules

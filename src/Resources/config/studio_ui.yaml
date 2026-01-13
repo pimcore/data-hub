@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Pimcore\Bundle\DataHubBundle\Webpack\WebpackEntryPointProvider:
+    tags:
+      - { name: 'pimcore_studio_ui.webpack_entry_point_provider' }
+
+pimcore_studio_ui:
+  static_resources:
+    editmode:
+      css:
+        - '/bundles/pimcoredatahub/css/editmode.css'
+      js:
+        - '/bundles/pimcoredatahub/js/editmode.js'

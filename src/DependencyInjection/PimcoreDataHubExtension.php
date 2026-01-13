@@ -65,6 +65,10 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             $loader->load('pimcore/studio_backend.yaml');
         }
 
+        if ($container->hasExtension('pimcore_studio_ui')) {
+            $loader->load('studio_ui.yaml');
+        }
+
         LocationAwareConfigRepository::loadSymfonyConfigFiles(
             $container,
             'pimcore_data_hub',
