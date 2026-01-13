@@ -38,3 +38,18 @@ bundle_data_hub_graphql_explorer: GraphQL Explorer
 bundle_data_hub_graphql_explorer_description: Get the GraphQL Explorer interface for testing and exploring GraphQL endpoints
 bundle_data_hub_graphql_explorer_summary: Get GraphQL Explorer
 bundle_data_hub_graphql_explorer_success_response: GraphQL Explorer HTML interface
+pimcore_studio_api_data_hub_graphql_explorer_url: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url_description: Get the URL for the GraphQL Explorer interface for a specific configuration
+bundle_data_hub_graphql_explorer_url_summary: Get GraphQL Explorer URL
+bundle_data_hub_graphql_explorer_url_success_response: GraphQL Explorer URL
+pimcore_studio_api_data_hub_users_collection: Data Hub Users Collection
+bundle_data_hub_users_collection: Data Hub Users Collection
+bundle_data_hub_users_collection_description: Get a list of users and roles that can be assigned permissions in Data Hub configurations
+bundle_data_hub_users_collection_summary: Get Data Hub Users Collection
+bundle_data_hub_users_collection_success_response: List of users and roles available for Data Hub permissions
+pimcore_studio_api_data_hub_thumbnails_collection: Data Hub Thumbnails Collection
+bundle_data_hub_thumbnails_collection: Data Hub Thumbnails Collection
+bundle_data_hub_thumbnails_collection_description: Get a list of available image thumbnail configurations for Data Hub
+bundle_data_hub_thumbnails_collection_summary: Get Data Hub Thumbnails Collection
+bundle_data_hub_thumbnails_collection_success_response: List of available thumbnail configurations

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 /**
@@ -14,20 +13,15 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
-use Symfony\Component\HttpFoundation\Response;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Pimcore\Bundle\DataHubBundle\Schema\Thumbnail;
 
-/** @internal  */
-interface GraphQLExplorerServiceInterface
+/**
+ * @internal
+ */
+interface ThumbnailServiceInterface
 {
     /**
-     * @throws SyntaxError
-     * @throws RuntimeError
-     * @throws LoaderError
+     * @return array<int, Thumbnail>
      */
-    public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
-
-    public function getExplorerUrl(string $clientname): string;
+    public function getThumbnails(): array;
 }

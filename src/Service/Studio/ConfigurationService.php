@@ -19,6 +19,7 @@ use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
+use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationDetailEvent;
 use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydratorInterface;
@@ -102,11 +103,18 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $supportedQueryDataTypes = $this->graphQlService->getSupportedDataObjectQueryDataTypes();
         $supportedMutationDataTypes = $this->graphQlService->getSupportedDataObjectMutationDataTypes();
 
-        return $this->configurationDetailHydrator->hydrate(
+        $hydratedDetail = $this->configurationDetailHydrator->hydrate(
             $configuration,
             $supportedQueryDataTypes,
             $supportedMutationDataTypes
         );
+
+        $this->eventDispatcher->dispatch(
+            new ConfigurationDetailEvent($hydratedDetail),
+            ConfigurationDetailEvent::EVENT_NAME
+        );
+
+        return $hydratedDetail;
     }
 
     /**

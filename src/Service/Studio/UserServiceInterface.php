@@ -14,20 +14,13 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
-use Symfony\Component\HttpFoundation\Response;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Pimcore\Bundle\DataHubBundle\Schema\PermissionUser;
 
 /** @internal  */
-interface GraphQLExplorerServiceInterface
+interface UserServiceInterface
 {
     /**
-     * @throws SyntaxError
-     * @throws RuntimeError
-     * @throws LoaderError
+     * @return PermissionUser[]
      */
-    public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
-
-    public function getExplorerUrl(string $clientname): string;
+    public function getUsers(string $type): array;
 }

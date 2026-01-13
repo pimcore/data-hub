@@ -15,8 +15,20 @@ services:
     Pimcore\Bundle\DataHubBundle\Service\Studio\GraphQLExplorerServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\Studio\GraphQLExplorerService
 
+    Pimcore\Bundle\DataHubBundle\Service\Studio\UserServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\Studio\UserService
+
     Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydrator
 
     Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydrator
+
+    Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydratorInterface:
+        class: Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydrator
+
+    Pimcore\Bundle\DataHubBundle\Service\Studio\ThumbnailServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\Studio\ThumbnailService
+
+    Pimcore\Bundle\DataHubBundle\Hydrator\ThumbnailHydratorInterface:
+        class: Pimcore\Bundle\DataHubBundle\Hydrator\ThumbnailHydrator
