@@ -43,3 +43,8 @@ bundle_data_hub_graphql_explorer_url: Get GraphQL Explorer URL
 bundle_data_hub_graphql_explorer_url_description: Get the URL for the GraphQL Explorer interface for a specific configuration
 bundle_data_hub_graphql_explorer_url_summary: Get GraphQL Explorer URL
 bundle_data_hub_graphql_explorer_url_success_response: GraphQL Explorer URL
+pimcore_studio_api_data_hub_users_collection: Data Hub Users Collection
+bundle_data_hub_users_collection: Data Hub Users Collection
+bundle_data_hub_users_collection_description: Get a list of users and roles that can be assigned permissions in Data Hub configurations
+bundle_data_hub_users_collection_summary: Get Data Hub Users Collection
+bundle_data_hub_users_collection_success_response: List of users and roles available for Data Hub permissions
