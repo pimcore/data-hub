@@ -1,0 +1,236 @@
+/**
+ * This source file is available under the terms of the
+ * Pimcore Open Core License (POCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
+ *  @license    Pimcore Open Core License (POCL)
+ */
+
+import React, { useEffect, useState, useMemo } from 'react'
+import { isNil, isUndefined } from 'lodash'
+import {
+  Content,
+  ContentLayout,
+  Flex,
+  Icon,
+  SearchInput,
+  Spin,
+  TreeElement,
+  type TreeDataItem
+} from '@pimcore/studio-ui-bundle/components'
+import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
+import { ConfigSidebarToolbar } from './components/config-sidebar-toolbar/toolbar'
+import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
+import { bundleServiceIds } from '../../../../config/service-ids'
+import { useConfigContext } from '../../providers/config-provider'
+import { useDataHubConfig } from '../../hooks/use-data-hub-config'
+import { findConfigById, filterConfigsRecursive } from '../../utils/tree-helpers'
+import { hasValidAdapter, getAdapterTypeString } from '../../utils/adapter-helpers'
+
+interface ConfigSidebarProps {
+  handleOpenConfig: (config: BundleDataHubConfiguration) => void
+}
+
+export const ConfigSidebar = ({
+  handleOpenConfig
+}: ConfigSidebarProps): React.JSX.Element => {
+  const { configurationsData, isLoading, isFetching, refetch, expandedKeys, setExpandedKeys } = useConfigContext()
+  const [configListData, setConfigListData] = useState<BundleDataHubConfiguration[]>([])
+  const [filteredData, setFilteredData] = useState<BundleDataHubConfiguration[]>([])
+  const [searchValue, setSearchValue] = useState('')
+  const [treeKey, setTreeKey] = useState(0)
+
+  const { handleAdd, handleClone, handleDelete } = useDataHubConfig({ refetch })
+
+  useEffect(() => {
+    if (!isNil(configurationsData?.items)) {
+      setConfigListData(configurationsData.items)
+      setFilteredData(configurationsData.items)
+      setTreeKey(prev => prev + 1)
+    }
+  }, [configurationsData])
+
+  useEffect(() => {
+    console.log('expandedKeys changed:', expandedKeys)
+  }, [expandedKeys])
+
+  useEffect(() => {
+    if (searchValue === '') {
+      setFilteredData(configListData)
+    } else {
+      setFilteredData(filterConfigsRecursive(configListData, searchValue))
+    }
+  }, [searchValue, configListData])
+
+  const { t } = useTranslation()
+
+  const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
+
+  const getAdapterIcon = (type: string | undefined): React.JSX.Element => {
+    if (isUndefined(type)) {
+      return <Icon value="database" />
+    }
+    try {
+      const adapter = adapterRegistry.getDynamicType(type, false)
+      return adapter?.getIcon() ?? <Icon value="database" />
+    } catch (error) {
+      console.error('Error getting adapter:', error)
+      return <Icon value="database" />
+    }
+  }
+
+  // Transform BundleDataHubConfiguration to TreeDataItem format
+  const transformToTreeData = (items: BundleDataHubConfiguration[] | null): TreeDataItem[] => {
+    if (isNil(items)) {
+      return []
+    }
+
+    return items
+      .filter((item) => {
+        // Keep folders
+        if (item.allowChildren === true) return true
+
+        // For configurations, only keep if we have an adapter
+        const adapter = getAdapterTypeString(item.adapter as string | undefined)
+        return hasValidAdapter(adapter, adapterRegistry)
+      })
+      .sort((a, b) => {
+        // Sort alphabetically by text (case-insensitive)
+        return a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })
+      })
+      .map((item) => {
+        const actions = item.allowChildren !== true
+          ? [
+              { key: 'clone', icon: 'copy-03' },
+              { key: 'delete', icon: 'trash' }
+            ]
+          : []
+
+        const icon = item.allowChildren === true
+          ? <Icon value="folder" />
+          : getAdapterIcon(getAdapterTypeString(item.adapter as string | undefined))
+
+        return {
+          key: !isUndefined(item.id) ? String(item.id) : '',
+          title: item.text,
+          icon,
+          children: !isUndefined(item.children) ? transformToTreeData(item.children) : undefined,
+          isLeaf: item.leaf,
+          actions,
+          allowDrag: false,
+          allowDrop: false
+        }
+      })
+  }
+
+  const treeData = useMemo(() => transformToTreeData(filteredData), [filteredData])
+
+  const handleAddWrapper = (adapterType: string): void => {
+    handleAdd(adapterType, handleOpenConfig)
+  }
+
+  const handleCloneWrapper = (key: string): void => {
+    const config = findConfigById(key, configListData)
+    if (!isNil(config)) {
+      handleClone(config, handleOpenConfig)
+    }
+  }
+
+  const handleDeleteWrapper = (key: string): void => {
+    const config = findConfigById(key, configListData)
+    if (!isNil(config)) {
+      handleDelete(config)
+    }
+  }
+  const handleActionsClick = (key: string, action: string): void => {
+    switch (action) {
+      case 'clone':
+        handleCloneWrapper(key)
+        break
+      case 'delete':
+        handleDeleteWrapper(key)
+        break
+    }
+  }
+
+  const handleTreeItemClick = (key: string): void => {
+    const config = findConfigById(key, configListData)
+    if (!isNil(config)) {
+      if (config.allowChildren === true) {
+        // Toggle expansion for folders
+        setExpandedKeys(prevKeys =>
+          prevKeys.includes(key)
+            ? prevKeys.filter(k => k !== key)
+            : [...prevKeys, key]
+        )
+      } else {
+        // Open config for non-folders
+        handleOpenConfig(config)
+      }
+    }
+  }
+
+  return (
+    <ContentLayout
+      renderToolbar={
+        <ConfigSidebarToolbar
+          isFetching={ isFetching }
+          onAdd={ handleAddWrapper }
+          onRefresh={ refetch }
+        />
+      }
+    >
+      <Content
+        loading={ isLoading }
+        padded
+      >
+        <SearchInput
+          onChange={ (e) => { setSearchValue(e.target.value) } }
+          placeholder={ t('search') }
+          withoutAddon
+        />
+
+        <Flex
+          className="h-full"
+          gap="mini"
+          justify={ isFetching ? 'center' : 'start' }
+          vertical
+        >
+          {isFetching
+            ? (
+              <Flex
+                align="center"
+                justify="center"
+              >
+                <Spin
+                  asContainer
+                  tip='Loading'
+                />
+              </Flex>
+              )
+            : (
+              <>
+                {filteredData.length === 0
+                  ? (
+                    <Content none />
+                    )
+                  : (
+                    <TreeElement
+                      key={ `config-tree-${treeKey}` }
+                      defaultExpandedKeys={ expandedKeys }
+                      onActionsClick={ handleActionsClick }
+                      onExpand={ (keys) => { setExpandedKeys(keys as string[]) } }
+                      onSelected={ (key) => { handleTreeItemClick(String(key)) } }
+                      treeData={ treeData }
+                    />
+                    )}
+              </>
+              )}
+        </Flex>
+      </Content>
+    </ContentLayout>
+  )
+}

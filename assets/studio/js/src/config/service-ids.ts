@@ -7,4 +7,12 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
-// eslint-disable-next-line header/header
+
+/**
+ * Service IDs for the Data Hub Bundle
+ * Centralized location for all dependency injection service identifiers
+ */
+export const bundleServiceIds = {
+  'DataHub/DynamicTypes/Adapter/Registry': 'DataHub/DynamicTypes/Adapter/Registry',
+  'DataHub/DynamicTypes/Adapter/GraphQL': 'DataHub/DynamicTypes/Adapter/GraphQL'
+} as const

@@ -1,0 +1,8 @@
+data-hub.configuration: 'Data Hub Configuration'
+data-hub.add.button: 'Add Configuration'
+data-hub.add.name: 'Enter configuration name'
+data-hub.clone.name: 'Enter name for cloned configuration'
+data-hub.delete.confirm: 'Are you sure you want to delete the configuration "{{name}}"?'
+
+tree.actions.clone: 'Clone'
+tree.actions.delete: 'Delete'

@@ -7,4 +7,7 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
-// eslint-disable-next-line header/header
+
+export * from './dynamic-type-data-hub-adapter-abstract'
+export * from './dynamic-type-data-hub-adapter-registry'
+export * from './adapters/dynamic-type-data-hub-adapter-graphql'

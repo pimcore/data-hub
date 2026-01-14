@@ -7,4 +7,13 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
-// eslint-disable-next-line header/header
+
+import type React from 'react'
+import { injectable } from '@pimcore/studio-ui-bundle/app'
+
+@injectable()
+export abstract class DynamicTypeDataHubAdapterAbstract {
+  abstract readonly id: string
+  abstract readonly name: string
+  abstract getIcon (): React.JSX.Element
+}

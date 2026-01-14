@@ -9,19 +9,26 @@
  */
 
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
-import { DataHubModule } from './modules/data-hub/index'
+import { DataHubModule } from './modules/config/index'
+import { bundleServiceIds } from './config/service-ids'
+import { DynamicTypeDataHubAdapterRegistry } from './modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry'
+import { DynamicTypeDataHubAdapterGraphQL } from './modules/config/dynamic-types/adapters/dynamic-type-data-hub-adapter-graphql'
 
-if (module.hot !== undefined) {}
+if (module.hot !== undefined) {
+  module.hot.accept()
+}
 
 export const DataHubPlugin: IAbstractPlugin = {
   name: 'data-hub-plugin',
 
   // Register and overwrite services here
-  onInit: ({ container }): void => {},
+  onInit: ({ container }): void => {
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])).to(DynamicTypeDataHubAdapterRegistry).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Adapter/GraphQL'])).to(DynamicTypeDataHubAdapterGraphQL).inSingletonScope()
+  },
 
   // register modules here
   onStartup: ({ moduleSystem }): void => {
     moduleSystem.registerModule(DataHubModule)
-    console.log('Hello from data hub bundle.')
   }
 }
