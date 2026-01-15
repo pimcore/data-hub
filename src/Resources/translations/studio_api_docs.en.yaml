@@ -18,6 +18,11 @@ bundle_data_hub_config_get: Get Data Hub Configuration
 bundle_data_hub_config_get_description: Get a Data Hub configuration by name
 bundle_data_hub_config_get_summary: Get Data Hub Configuration
 bundle_data_hub_config_get_success_response: Data Hub configuration details
+pimcore_studio_api_data_hub_config_update: Update Data Hub Configuration
+bundle_data_hub_config_update: Update Data Hub Configuration
+bundle_data_hub_config_update_description: Update an existing Data Hub configuration with validation for concurrent modifications
+bundle_data_hub_config_update_summary: Update Data Hub Configuration
+bundle_data_hub_config_update_success_response: Data Hub configuration successfully updated
 pimcore_studio_api_data_hub_config_clone: Clone Data Hub Configuration
 bundle_data_hub_config_clone: Clone Data Hub Configuration
 bundle_data_hub_config_clone_description: Clone an existing Data Hub configuration with a new name
