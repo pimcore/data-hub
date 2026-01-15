@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Schema;
 
+use JsonException;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
@@ -22,22 +23,43 @@ use OpenApi\Attributes\Schema;
 #[Schema(
     schema: 'BundleDataHubUpdateConfiguration',
     title: 'Bundle Data Hub Update Configuration',
-    required: ['configuration', 'modificationDate'],
+    required: ['data', 'modificationDate'],
     type: 'object'
 )]
 final readonly class UpdateConfiguration
 {
     public function __construct(
-        #[Property(description: 'Configuration data', type: 'object')]
-        private array $configuration,
-        #[Property(description: 'Client-side modification date timestamp for conflict detection', type: 'integer', example: 1705075200)]
+        #[Property(
+            description: 'Configuration data as JSON string containing general settings, schema (queryEntities, mutationEntities, specialEntities), security, workspaces, and permissions',
+            type: 'string',
+            example: '{"general":{"active":true,"type":"GraphQL","name":"assets","description":"","group":"GQL"},"schema":{"queryEntities":[],"mutationEntities":[],"specialEntities":[]},"security":{"method":"datahub_apikey","apikey":"your-key","skipPermissionCheck":false,"disableIntrospection":false},"workspaces":{"asset":[],"document":[],"object":[]},"permissions":{"user":[],"role":[]}}'
+        )]
+        private string $data,
+        #[Property(
+            description: 'Client-side modification date timestamp for conflict detection',
+            type: 'integer',
+            example: 1768215191
+        )]
         private int $modificationDate,
     ) {
     }
 
+    public function getData(): string
+    {
+        return $this->data;
+    }
+
+    /**
+     * @throws JsonException
+     */
     public function getConfiguration(): array
     {
-        return $this->configuration;
+        return json_decode(
+            $this->data,
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
     }
 
     public function getModificationDate(): int

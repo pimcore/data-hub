@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Controller\Studio\Config;
 
+use Exception;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Put;
 use OpenApi\Attributes\RequestBody;
@@ -49,7 +50,7 @@ final class UpdateController extends AbstractApiController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     #[Route(
         path: self::ROUTE,

@@ -287,7 +287,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot update configuration "' . $name . '" as it is not writeable.'
         );
 
-        // Verify both read and update permissions are present (as in original implementation)
         $this->checkConfigPermission($config, self::REQUIRED_READ_UPDATE_PERMISSIONS);
 
         $currentConfiguration = $config->getConfiguration();
@@ -311,7 +310,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         return $configuration['general']['modificationDate'];
     }
-
 
     private function checkConfigPermission(
         Configuration $configuration,
