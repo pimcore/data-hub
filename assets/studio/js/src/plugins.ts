@@ -11,12 +11,11 @@
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
 import { DataHubModule } from './modules/data-hub/index'
 
-
 if (module.hot !== undefined) {
   module.hot.accept()
 }
 
-  export const DataHubPlugin: IAbstractPlugin = {
+export const DataHubPlugin: IAbstractPlugin = {
   name: 'data-hub-plugin',
 
   // Register and overwrite services here
