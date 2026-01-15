@@ -101,9 +101,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return array_values($hydratedConfigs);
     }
 
-    /**
-     * @throws Exception
-     */
     public function getConfiguration(string $name): ConfigurationDetail
     {
         $configuration = $this->fetchConfiguration($name);
@@ -129,9 +126,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $hydratedDetail;
     }
 
-    /**
-     * @throws Exception
-     */
     public function addConfiguration(string $name, string $type, string $path): string
     {
         $this->ensureConfigurationsAreWriteable(
@@ -149,9 +143,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $name;
     }
 
-    /**
-     * @throws Exception
-     */
     public function deleteConfiguration(string $name): void
     {
         $config = $this->fetchConfiguration($name);
@@ -168,9 +159,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $config->delete();
     }
 
-    /**
-     * @throws Exception
-     */
     public function cloneConfiguration(string $name, string $originalName): string
     {
         $this->ensureConfigurationsAreWriteable(
@@ -203,9 +191,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $name;
     }
 
-    /**
-     * @throws Exception
-     */
     public function importConfiguration(string $json): array
     {
         $this->ensureConfigurationsAreWriteable(
@@ -241,9 +226,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ];
     }
 
-    /**
-     * @throws Exception
-     */
     public function exportConfiguration(string $name): array
     {
         $configuration = $this->fetchConfiguration($name);
@@ -274,9 +256,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ];
     }
 
-    /**
-     * @throws Exception
-     */
     public function updateConfiguration(string $name, array $configuration, int $clientModificationDate): int
     {
         $config = $this->fetchConfiguration($name);
