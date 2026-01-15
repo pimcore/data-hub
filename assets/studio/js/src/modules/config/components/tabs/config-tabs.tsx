@@ -8,12 +8,14 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo } from 'react'
-import { Tabs, Content } from '@pimcore/studio-ui-bundle/components'
+import React, { useMemo, useRef, useState, useCallback } from 'react'
+import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot } from '@pimcore/studio-ui-bundle/components'
 import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
 import { useAdapterIcon } from '../../hooks/use-adapter-icon'
 import { isUndefined } from 'lodash'
 import { getAdapterTypeString } from '../../utils/adapter-helpers'
+import { ConfigTabContent } from './config-tab-content'
+import { useStyles } from './config-tabs.styles'
 
 interface ConfigTabsProps {
   openedConfigs: BundleDataHubConfiguration[]
@@ -21,14 +23,8 @@ interface ConfigTabsProps {
   configurationsData?: { items: BundleDataHubConfiguration[] }
   onChangeTab: (key: string) => void
   onCloseTab: (key: string) => void
-}
-
-const TabContent = ({ config }: { config: BundleDataHubConfiguration }): React.JSX.Element => {
-  return (
-    <Content>
-      <div>Configuration: {config.text}</div>
-    </Content>
-  )
+  modifiedConfigs: string[]
+  setModifiedConfigs: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const TabItem = ({ config }: { config: BundleDataHubConfiguration }): React.JSX.Element => {
@@ -42,8 +38,28 @@ export const ConfigTabs = ({
   activeTabKey,
   configurationsData,
   onChangeTab,
-  onCloseTab
+  onCloseTab,
+  modifiedConfigs,
+  setModifiedConfigs
 }: ConfigTabsProps): React.JSX.Element => {
+  const { styles } = useStyles()
+  const refetchFunctionsRef = useRef<Map<string, () => Promise<any>>>(new Map())
+  const [isFetchingTab, setIsFetchingTab] = useState(false)
+
+  const handleRefetchReady = useCallback((configId: string, refetchFn: () => Promise<any>): void => {
+    refetchFunctionsRef.current.set(configId, refetchFn)
+  }, [])
+
+  const handleRefresh = (): void => {
+    if (activeTabKey !== undefined) {
+      const refetchFn = refetchFunctionsRef.current.get(activeTabKey)
+      if (refetchFn !== undefined) {
+        setIsFetchingTab(true)
+        refetchFn().then(() => { setIsFetchingTab(false) }).catch(() => { setIsFetchingTab(false) })
+      }
+    }
+  }
+
   const tabItems = useMemo(() => {
     // Recursively collect all config IDs from the tree
     const collectConfigIds = (items: BundleDataHubConfiguration[]): Set<string> => {
@@ -65,23 +81,40 @@ export const ConfigTabs = ({
       .filter(config => existingConfigIds.has(config.id))
       .map((config) => ({
         key: config.id,
-        label: config.text,
+        label: `${config.text} ${modifiedConfigs.includes(config.id) ? '*' : ''}`,
         icon: <TabItem config={ config } />,
-        children: <TabContent config={ config } />
+        children: <ConfigTabContent config={ config } onRefetchReady={ handleRefetchReady } modifiedConfigs={ modifiedConfigs } setModifiedConfigs={ setModifiedConfigs } />
       }))
-  }, [configurationsData, openedConfigs])
+  }, [configurationsData, openedConfigs, modifiedConfigs, handleRefetchReady, setModifiedConfigs])
 
   if (isUndefined(activeTabKey)) {
     return <Content none />
   }
 
+  const portalId = `data-hub-save-button-${activeTabKey}`
+
   return (
-    <Tabs
-      activeKey={ activeTabKey }
-      items={ tabItems }
-      onChange={ onChangeTab }
-      onEdit={ onCloseTab }
-      type="editable-card"
-    />
+    <ContentLayout
+      renderToolbar={
+        <Toolbar>
+          <IconButton
+            disabled={ isFetchingTab }
+            icon={ { value: 'refresh' } }
+            onClick={ handleRefresh }
+          />
+          <PortalSlot id={ portalId } />
+        </Toolbar>
+      }
+    >
+      <Tabs
+        activeKey={ activeTabKey }
+        className={ styles.tabs }
+        hasStickyHeader
+        items={ tabItems }
+        onChange={ onChangeTab }
+        onClose={ onCloseTab }
+        rootClassName={ styles.tabsContainer }
+      />
+    </ContentLayout>
   )
 }

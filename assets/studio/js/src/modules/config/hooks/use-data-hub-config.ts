@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useFormModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
@@ -18,8 +18,9 @@ import {
   type BundleDataHubConfiguration,
   type BundleDataHubConfigCollectionApiResponse
 } from '../config-api-slice-enhanced'
-import { isNil, isUndefined } from 'lodash'
+import { has, isNil, isUndefined } from 'lodash'
 import { findConfigInTree } from '../utils/tree-helpers'
+import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
 
 interface UseDataHubConfigReturn {
   handleAdd: (adapterType: string, onSuccess?: (config: BundleDataHubConfiguration) => void) => void
@@ -34,9 +35,27 @@ interface UseDataHubConfigProps {
 export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHubConfigReturn => {
   const { t } = useTranslation()
   const modal = useFormModal()
-  const [addConfig] = useBundleDataHubConfigAddMutation()
-  const [cloneConfig] = useBundleDataHubConfigCloneMutation()
-  const [deleteConfig] = useBundleDataHubConfigDeleteMutation()
+  const [addConfig, { error: addError }] = useBundleDataHubConfigAddMutation()
+  const [cloneConfig, { error: cloneError }] = useBundleDataHubConfigCloneMutation()
+  const [deleteConfig, { error: deleteError }] = useBundleDataHubConfigDeleteMutation()
+
+  useEffect(() => {
+    if (addError) {
+      trackError(new ApiError(addError))
+    }
+  }, [addError])
+
+  useEffect(() => {
+    if (cloneError) {
+      trackError(new ApiError(cloneError))
+    }
+  }, [cloneError])
+
+  useEffect(() => {
+    if (deleteError) {
+      trackError(new ApiError(deleteError))
+    }
+  }, [deleteError])
 
   const handleAdd = useCallback((
     adapterType: string,
@@ -44,8 +63,31 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
   ): void => {
     modal.input({
       label: t('data-hub.add.name'),
+      rule: {
+        required: true,
+        validator: (_rule: any, value: string) => {
+          if (!value || value.trim().length === 0) {
+            return Promise.reject(new Error(t('data-hub.config.name-required')))
+          }
+          if (value.length < 3) {
+            return Promise.reject(new Error(t('data-hub.config.name-min-length')))
+          }
+          if (value.length > 80) {
+            return Promise.reject(new Error(t('data-hub.config.name-max-length')))
+          }
+          if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
+            return Promise.reject(new Error(t('data-hub.config.name-pattern')))
+          }
+          return Promise.resolve()
+        }
+      },
       onOk: async (value: string) => {
-        await addConfig({ name: value, type: adapterType })
+        const result = await addConfig({ name: value, type: adapterType })
+        
+        if (has(result, 'error')) {
+          return
+        }
+
         const { data: updatedData } = await refetch()
 
         if (!isUndefined(updatedData?.items)) {
@@ -69,9 +111,32 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
 
     modal.input({
       label: t('data-hub.clone.name'),
+      rule: {
+        required: true,
+        validator: (_rule: any, value: string) => {
+          if (!value || value.trim().length === 0) {
+            return Promise.reject(new Error(t('data-hub.config.name-required')))
+          }
+          if (value.length < 3) {
+            return Promise.reject(new Error(t('data-hub.config.name-min-length')))
+          }
+          if (value.length > 80) {
+            return Promise.reject(new Error(t('data-hub.config.name-max-length')))
+          }
+          if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
+            return Promise.reject(new Error(t('data-hub.config.name-pattern')))
+          }
+          return Promise.resolve()
+        }
+      },
       onOk: async (value: string) => {
         const configId = !isUndefined(config.id) ? String(config.id) : ''
-        await cloneConfig({ name: value, originalName: configId })
+        const result = await cloneConfig({ name: value, originalName: configId })
+        
+        if (has(result, 'error')) {
+          return
+        }
+
         const { data: updatedData } = await refetch()
 
         if (!isUndefined(updatedData?.items)) {
@@ -98,7 +163,12 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
       content: t('data-hub.delete.confirm', { name: config.text }),
       onOk: async () => {
         const configId = !isUndefined(config.id) ? String(config.id) : ''
-        await deleteConfig({ name: configId })
+        const result = await deleteConfig({ name: configId })
+        
+        if (has(result, 'error')) {
+          return
+        }
+
         await refetch()
 
         if (!isNil(onSuccess)) {

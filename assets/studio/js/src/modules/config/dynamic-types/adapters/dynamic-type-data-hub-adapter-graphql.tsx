@@ -11,7 +11,8 @@
 import React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
-import { DynamicTypeDataHubAdapterAbstract } from '../dynamic-type-data-hub-adapter-abstract'
+import { DynamicTypeDataHubAdapterAbstract, type AdapterFormProps } from '../dynamic-type-data-hub-adapter-abstract'
+import { GraphQLAdapterForm } from '../../../graphql/components/graphql-adapter-form'
 
 @injectable()
 export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterAbstract {
@@ -20,5 +21,9 @@ export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterA
 
   getIcon (): React.JSX.Element {
     return <Icon value="data-object-variant" />
+  }
+
+  getFormComponent (props: AdapterFormProps): React.JSX.Element {
+    return <GraphQLAdapterForm { ...props } />
   }
 }

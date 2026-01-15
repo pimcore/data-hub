@@ -10,10 +10,19 @@
 
 import type React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
+import { type BundleDataHubConfigurationDetail } from '../config-api-slice-enhanced'
+
+export interface AdapterFormProps {
+  config: BundleDataHubConfigurationDetail
+  configName: string
+  configId: string
+  onChange: (isDirty: boolean) => void
+}
 
 @injectable()
 export abstract class DynamicTypeDataHubAdapterAbstract {
   abstract readonly id: string
   abstract readonly name: string
   abstract getIcon (): React.JSX.Element
+  abstract getFormComponent (props: AdapterFormProps): React.JSX.Element
 }

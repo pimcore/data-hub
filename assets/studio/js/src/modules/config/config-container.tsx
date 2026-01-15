@@ -20,6 +20,7 @@ export const ConfigContainer = (): React.JSX.Element => {
   const { data: configurationsData, isLoading, isFetching, refetch } = useBundleDataHubConfigCollectionQuery()
   const { openedConfigs, activeTabKey, handleOpenConfig, handleCloseTab, handleChangeTab } = useTabManager()
   const [expandedKeys, setExpandedKeys] = useState<string[]>([])
+  const [modifiedConfigs, setModifiedConfigs] = useState<string[]>([])
 
   return (
     <ConfigProvider
@@ -43,9 +44,11 @@ export const ConfigContainer = (): React.JSX.Element => {
             <ConfigTabs
               activeTabKey={ activeTabKey }
               configurationsData={ configurationsData }
+              modifiedConfigs={ modifiedConfigs }
               onChangeTab={ handleChangeTab }
               onCloseTab={ handleCloseTab }
               openedConfigs={ openedConfigs }
+              setModifiedConfigs={ setModifiedConfigs }
             />
           )
         } }

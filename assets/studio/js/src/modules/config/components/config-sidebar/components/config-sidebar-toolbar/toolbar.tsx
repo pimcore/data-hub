@@ -36,6 +36,7 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSid
   return (
     <Toolbar>
       <IconButton
+        disabled={ isFetching }
         icon={ { value: 'refresh' } }
         onClick={ onRefresh }
         type="link"
