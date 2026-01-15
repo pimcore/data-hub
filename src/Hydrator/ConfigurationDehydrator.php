@@ -26,6 +26,7 @@ final readonly class ConfigurationDehydrator implements ConfigurationDehydratorI
     {
         $configuration = $this->dehydrateSchemaEntities($configuration);
         $configuration = $this->dehydrateSpecialEntities($configuration);
+
         return $this->dehydrateApiKeys($configuration);
     }
 
@@ -83,4 +84,3 @@ final readonly class ConfigurationDehydrator implements ConfigurationDehydratorI
         return $configuration;
     }
 }
-

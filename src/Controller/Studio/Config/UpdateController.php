@@ -98,4 +98,3 @@ final class UpdateController extends AbstractApiController
         );
     }
 }
-

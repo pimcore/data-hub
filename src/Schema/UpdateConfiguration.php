@@ -67,4 +67,3 @@ final readonly class UpdateConfiguration
         return $this->modificationDate;
     }
 }
-

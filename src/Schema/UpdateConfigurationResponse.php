@@ -38,4 +38,3 @@ final readonly class UpdateConfigurationResponse
         return $this->modificationDate;
     }
 }
-

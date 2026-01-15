@@ -28,4 +28,3 @@ interface ConfigurationDehydratorInterface
      */
     public function dehydrate(array $configuration): array;
 }
-
