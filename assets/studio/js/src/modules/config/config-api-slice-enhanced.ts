@@ -26,12 +26,15 @@ export const api = baseApi.enhanceEndpoints({
       invalidatesTags: ['DataHubConfigs']
     },
     bundleDataHubConfigGet: {
-      providesTags: (result, error, arg) => [{ type: 'DataHubConfigs', id: arg.name }]
+      providesTags: []
     },
     bundleDataHubConfigExport: {
       providesTags: (result, error, arg) => [{ type: 'DataHubConfigs', id: arg.name }]
     },
     bundleDataHubConfigImport: {
+      invalidatesTags: ['DataHubConfigs']
+    },
+    bundleDataHubConfigUpdate: {
       invalidatesTags: ['DataHubConfigs']
     }
   }
@@ -46,5 +49,6 @@ export const {
   useBundleDataHubConfigDeleteMutation,
   useBundleDataHubConfigGetQuery,
   useBundleDataHubConfigExportQuery,
-  useBundleDataHubConfigImportMutation
+  useBundleDataHubConfigImportMutation,
+  useBundleDataHubConfigUpdateMutation
 } = api

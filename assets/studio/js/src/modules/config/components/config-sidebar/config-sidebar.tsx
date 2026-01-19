@@ -161,11 +161,12 @@ export const ConfigSidebar = ({
     if (!isNil(config)) {
       if (config.allowChildren === true) {
         // Toggle expansion for folders
-        setExpandedKeys(prevKeys =>
-          prevKeys.includes(key)
-            ? prevKeys.filter(k => k !== key)
-            : [...prevKeys, key]
-        )
+        const currentKeys = expandedKeys
+        if (!isNil(currentKeys) && currentKeys.includes(key)) {
+          setExpandedKeys(currentKeys.filter(k => k !== key))
+        } else {
+          setExpandedKeys([...currentKeys, key])
+        }
       } else {
         // Open config for non-folders
         handleOpenConfig(config)
@@ -219,8 +220,8 @@ export const ConfigSidebar = ({
                     )
                   : (
                     <TreeElement
-                      key={ `config-tree-${treeKey}` }
                       defaultExpandedKeys={ expandedKeys }
+                      key={ `config-tree-${treeKey}` }
                       onActionsClick={ handleActionsClick }
                       onExpand={ (keys) => { setExpandedKeys(keys as string[]) } }
                       onSelected={ (key) => { handleTreeItemClick(String(key)) } }

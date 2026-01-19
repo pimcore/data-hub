@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { Form, Input, Switch, TextArea, Flex, Text, FormKit } from '@pimcore/studio-ui-bundle/components'
+import { Form, Input, Switch, TextArea, FormKit } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 
 export const GeneralTab = (): React.JSX.Element => {
@@ -21,13 +21,7 @@ export const GeneralTab = (): React.JSX.Element => {
         name="active"
         valuePropName="checked"
       >
-        <Flex
-          align="center"
-          gap="small"
-        >
-          <Switch />
-          <Text>{ t('data-hub.config.active') }</Text>
-        </Flex>
+        <Switch labelRight={ t('data-hub.config.active') } />
       </Form.Item>
 
       <Form.Item

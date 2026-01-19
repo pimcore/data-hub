@@ -72,6 +72,17 @@ const injectedRtkApi = api
                 }),
                 providesTags: ["Bundle Data Hub"],
             }),
+            bundleDataHubConfigUpdate: build.mutation<
+                BundleDataHubConfigUpdateApiResponse,
+                BundleDataHubConfigUpdateApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/pimcore-studio/api/bundle/data-hub/config/${queryArg.name}`,
+                    method: "PUT",
+                    body: queryArg.bundleDataHubUpdateConfiguration,
+                }),
+                invalidatesTags: ["Bundle Data Hub"],
+            }),
             bundleDataHubConfigImport: build.mutation<
                 BundleDataHubConfigImportApiResponse,
                 BundleDataHubConfigImportApiArg
@@ -128,6 +139,13 @@ export type BundleDataHubConfigGetApiResponse =
 export type BundleDataHubConfigGetApiArg = {
     /** Name of the configuration */
     name: string;
+};
+export type BundleDataHubConfigUpdateApiResponse =
+    /** status 200 Data Hub configuration successfully updated */ BundleDataHubUpdateConfigurationResponse;
+export type BundleDataHubConfigUpdateApiArg = {
+    /** Name of the configuration */
+    name: string;
+    bundleDataHubUpdateConfiguration: BundleDataHubUpdateConfiguration;
 };
 export type BundleDataHubConfigImportApiResponse =
     /** status 201 Data Hub configuration successfully imported */ void;
@@ -196,6 +214,16 @@ export type BundleDataHubConfigurationDetail = {
     /** Modification date timestamp */
     modificationDate: number;
 };
+export type BundleDataHubUpdateConfigurationResponse = {
+    /** New modification date timestamp */
+    modificationDate: number;
+};
+export type BundleDataHubUpdateConfiguration = {
+    /** Configuration data as JSON string containing general settings, schema (queryEntities, mutationEntities, specialEntities), security, workspaces, and permissions */
+    data: string;
+    /** Client-side modification date timestamp for conflict detection */
+    modificationDate: number;
+};
 export const {
     useBundleDataHubConfigAddMutation,
     useBundleDataHubConfigCloneMutation,
@@ -203,5 +231,6 @@ export const {
     useBundleDataHubConfigDeleteMutation,
     useBundleDataHubConfigExportQuery,
     useBundleDataHubConfigGetQuery,
+    useBundleDataHubConfigUpdateMutation,
     useBundleDataHubConfigImportMutation,
 } = injectedRtkApi;

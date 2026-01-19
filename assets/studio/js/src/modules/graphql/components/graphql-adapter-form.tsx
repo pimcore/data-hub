@@ -8,120 +8,130 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { Form, Tabs, Button, FormKit, Portal, IconTextButton, ButtonGroup } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type AdapterFormProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
 import { GeneralTab } from './tabs/general-tab'
+import { SchemaDefinitionTab } from './tabs/schema-definition-tab'
 import { SecurityDefinitionTab } from './tabs/security-definition-tab'
+import { PermissionsTab } from './tabs/permissions-tab'
 import { useBundleDataHubGraphqlExplorerUrlQuery } from '../graphql-api-slice-enhanced'
+import { useBundleDataHubConfigUpdateMutation } from '../../config/config-api-slice-enhanced'
+import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
+import { isNil, isEmpty } from 'lodash'
+import { type GraphQLFormValues } from './types'
+import { transformFormToBackend, transformBackendToForm } from '../utils/transformers'
+import { type BackendConfiguration } from './backend-types'
 
-export const GraphQLAdapterForm = ({ config, configName, configId, onChange }: AdapterFormProps): React.JSX.Element => {
+export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isActive }: AdapterFormProps): React.JSX.Element => {
   const [form] = Form.useForm()
   const { t } = useTranslation()
   const [isDirty, setIsDirty] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const modificationDateRef = useRef<number>(config.modificationDate ?? Date.now())
 
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
-  const portalId = `data-hub-save-button-${configId}`
+  const [updateConfig, { error: updateError, isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
+  const portalId = 'data-hub-save-button'
 
-  const configData = config.configuration as any
-
-  const initialValues = useMemo(() => ({
-    active: configData?.general?.active ?? true,
-    type: 'GraphQL',
-    name: configName,
-    description: configData?.general?.description ?? '',
-    group: configData?.general?.group ?? '',
-    security: {
-      method: configData?.security?.method ?? 'datahub_apikey',
-      apikey: configData?.security?.apikey ? (Array.isArray(configData.security.apikey) ? configData.security.apikey.join('\n') : configData.security.apikey) : '',
-      skipPermissionCheck: configData?.security?.skipPermissionCheck ?? false,
-      disableIntrospection: configData?.security?.disableIntrospection ?? false
-    },
-    workspaces: {
-      documents: (configData?.workspaces?.document || []).map((ws: any) => ({
-        path: ws.cpath || '',
-        create: ws.create || false,
-        read: ws.read || false,
-        update: ws.update || false,
-        delete: ws.delete || false
-      })),
-      assets: (configData?.workspaces?.asset || []).map((ws: any) => ({
-        path: ws.cpath || '',
-        create: ws.create || false,
-        read: ws.read || false,
-        update: ws.update || false,
-        delete: ws.delete || false
-      })),
-      objects: (configData?.workspaces?.object || []).map((ws: any) => ({
-        path: ws.cpath || '',
-        create: ws.create || false,
-        read: ws.read || false,
-        update: ws.update || false,
-        delete: ws.delete || false
-      }))
+  useEffect(() => {
+    if (!isNil(updateError)) {
+      trackError(new ApiError(updateError))
     }
-  }), [configData, configName])
+  }, [updateError])
+
+  const configData = config.configuration as BackendConfiguration
+
+  const initialValues = useMemo<GraphQLFormValues>(() =>
+    transformBackendToForm(configData, configName),
+  [configData, configName])
 
   useEffect(() => {
     form.setFieldsValue(initialValues)
     setIsDirty(false)
     onChange(false)
-  }, [initialValues, form, onChange])
+    modificationDateRef.current = config.modificationDate ?? Date.now()
+  }, [initialValues, form, onChange, config.modificationDate])
 
   const onValuesChange = (): void => {
     setIsDirty(true)
     onChange(true)
   }
 
+  const handleFormChange = (): void => {
+    setIsDirty(true)
+    onChange(true)
+  }
+
   const handleSave = (): void => {
-    form.validateFields().then((values) => {
-      setIsSaving(true)
-      
-      // TODO: Implement update mutation when backend endpoint is available
-      console.log('Saving configuration:', values)
-      
-      // Simulate save for now
-      setTimeout(() => {
-        setIsSaving(false)
+    form.validateFields().then(async (values) => {
+      try {
+        // Merge with initial values to preserve data from unrendered tabs
+        const mergedValues: GraphQLFormValues = {
+          ...initialValues,
+          ...values as GraphQLFormValues
+        }
+
+        const updatedConfig = transformFormToBackend(mergedValues, configData)
+
+        const { data: response } = await updateConfig({
+          name: configName,
+          bundleDataHubUpdateConfiguration: {
+            data: JSON.stringify(updatedConfig),
+            modificationDate: modificationDateRef.current
+          }
+        })
+
+        if (!isNil(response?.modificationDate)) {
+          modificationDateRef.current = response.modificationDate
+        }
+
         setIsDirty(false)
-      }, 500)
+        onChange(false)
+      } catch (error) {
+        console.error('Failed to save configuration:', error)
+      }
     }).catch((error) => {
       console.error('Validation failed:', error)
     })
   }
 
   const handleOpenInTab = (): void => {
-    if (explorerUrlData?.explorerUrl) {
+    if (explorerUrlData !== undefined && !isEmpty(explorerUrlData.explorerUrl)) {
       window.open(explorerUrlData.explorerUrl, '_blank')
     }
   }
 
-  const renderSaveButton = (): React.JSX.Element => (
-    <Portal targetId={ portalId }>
-      <ButtonGroup
-        items={ [
-          <IconTextButton
-            key="open-in-tab"
-            icon={ { value: 'new-tab' } }
-            onClick={ handleOpenInTab }
-          >
-            {t('data-hub.open-in-tab')}
-          </IconTextButton>,
-          <Button
-            key="save"
-            disabled={ !isDirty }
-            loading={ isSaving }
-            onClick={ handleSave }
-            type="primary"
-          >
-            {t('save')}
-          </Button>
-        ] }
-      />
-    </Portal>
-  )
+  const renderSaveButton = (): React.JSX.Element | null => {
+    if (!isActive) {
+      return null
+    }
+
+    return (
+      <Portal targetId={ portalId }>
+        <ButtonGroup
+          items={ [
+            <IconTextButton
+              icon={ { value: 'new-tab' } }
+              key="open-in-tab"
+              onClick={ handleOpenInTab }
+            >
+              {t('data-hub.open-in-tab')}
+            </IconTextButton>,
+            <Button
+              disabled={ !isDirty }
+              key="save"
+              loading={ isSaving }
+              onClick={ handleSave }
+              type="primary"
+            >
+              {t('save')}
+            </Button>
+          ] }
+        />
+      </Portal>
+    )
+  }
 
   const tabItems = [
     {
@@ -132,17 +142,17 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange }: A
     {
       key: 'schema',
       label: t('data-hub.tabs.schema-definition'),
-      children: <div>Schema Definition - Coming soon</div>
+      children: <SchemaDefinitionTab />
     },
     {
       key: 'security',
       label: t('data-hub.tabs.security-definition'),
-      children: <SecurityDefinitionTab onFormChange={ onValuesChange } />
+      children: <SecurityDefinitionTab onFormChange={ handleFormChange } />
     },
     {
       key: 'permissions',
       label: t('data-hub.tabs.permissions'),
-      children: <div>Permissions - Coming soon</div>
+      children: <PermissionsTab />
     }
   ]
 

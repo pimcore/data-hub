@@ -12,7 +12,7 @@ import React, { useMemo, useRef, useState, useCallback } from 'react'
 import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot } from '@pimcore/studio-ui-bundle/components'
 import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
 import { useAdapterIcon } from '../../hooks/use-adapter-icon'
-import { isUndefined } from 'lodash'
+import { isUndefined, isNil } from 'lodash'
 import { getAdapterTypeString } from '../../utils/adapter-helpers'
 import { ConfigTabContent } from './config-tab-content'
 import { useStyles } from './config-tabs.styles'
@@ -66,24 +66,30 @@ export const ConfigTabs = ({
       const ids = new Set<string>()
       items.forEach(item => {
         ids.add(item.id)
-        if (item.children) {
+        if (!isNil(item.children)) {
           collectConfigIds(item.children).forEach(id => ids.add(id))
         }
       })
       return ids
     }
 
-    const existingConfigIds = configurationsData?.items 
+    const existingConfigIds = !isNil(configurationsData?.items)
       ? collectConfigIds(configurationsData.items)
       : new Set<string>()
 
     return openedConfigs
-      .filter(config => existingConfigIds.has(config.id))
+      .filter(config => !isNil(existingConfigIds) && existingConfigIds.has(config.id))
       .map((config) => ({
         key: config.id,
         label: `${config.text} ${modifiedConfigs.includes(config.id) ? '*' : ''}`,
         icon: <TabItem config={ config } />,
-        children: <ConfigTabContent config={ config } onRefetchReady={ handleRefetchReady } modifiedConfigs={ modifiedConfigs } setModifiedConfigs={ setModifiedConfigs } />
+        children: <ConfigTabContent
+          config={ config }
+          isActive={ activeTabKey === config.id }
+          modifiedConfigs={ modifiedConfigs }
+          onRefetchReady={ handleRefetchReady }
+          setModifiedConfigs={ setModifiedConfigs }
+                  />
       }))
   }, [configurationsData, openedConfigs, modifiedConfigs, handleRefetchReady, setModifiedConfigs])
 
@@ -91,7 +97,7 @@ export const ConfigTabs = ({
     return <Content none />
   }
 
-  const portalId = `data-hub-save-button-${activeTabKey}`
+  const portalId = 'data-hub-save-button'
 
   return (
     <ContentLayout

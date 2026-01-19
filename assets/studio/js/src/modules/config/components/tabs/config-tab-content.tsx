@@ -22,10 +22,14 @@ interface ConfigTabContentProps {
   onRefetchReady: (configId: string, refetchFn: () => Promise<any>) => void
   modifiedConfigs: string[]
   setModifiedConfigs: React.Dispatch<React.SetStateAction<string[]>>
+  isActive: boolean
 }
 
-export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setModifiedConfigs }: ConfigTabContentProps): React.JSX.Element => {
-  const { data: configDetail, isLoading, isFetching, error, refetch } = useBundleDataHubConfigGetQuery({ name: config.text })
+export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setModifiedConfigs, isActive }: ConfigTabContentProps): React.JSX.Element => {
+  const { data: configDetail, isLoading, isFetching, error, refetch } = useBundleDataHubConfigGetQuery(
+    { name: config.text },
+    { refetchOnMountOrArgChange: true }
+  )
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
   // Register refetch function only once when component mounts
@@ -51,7 +55,7 @@ export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setM
     }
 
     const adapterType = getAdapterTypeString(config.adapter as string | undefined)
-    
+
     if (isUndefined(adapterType)) {
       return <div>Unknown adapter type</div>
     }
@@ -66,7 +70,8 @@ export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setM
         config: configDetail,
         configName: config.text,
         configId: config.id,
-        onChange: handleChange
+        onChange: handleChange,
+        isActive
       })
     } catch (err) {
       console.error('Error rendering form:', err)

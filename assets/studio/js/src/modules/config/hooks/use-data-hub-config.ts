@@ -11,6 +11,7 @@
 import { useCallback, useEffect } from 'react'
 import { useFormModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { isNil, isUndefined, has, isString } from 'lodash'
 import {
   useBundleDataHubConfigAddMutation,
   useBundleDataHubConfigCloneMutation,
@@ -18,7 +19,6 @@ import {
   type BundleDataHubConfiguration,
   type BundleDataHubConfigCollectionApiResponse
 } from '../config-api-slice-enhanced'
-import { has, isNil, isUndefined } from 'lodash'
 import { findConfigInTree } from '../utils/tree-helpers'
 import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
 
@@ -40,19 +40,19 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
   const [deleteConfig, { error: deleteError }] = useBundleDataHubConfigDeleteMutation()
 
   useEffect(() => {
-    if (addError) {
+    if (!isNil(addError)) {
       trackError(new ApiError(addError))
     }
   }, [addError])
 
   useEffect(() => {
-    if (cloneError) {
+    if (!isNil(cloneError)) {
       trackError(new ApiError(cloneError))
     }
   }, [cloneError])
 
   useEffect(() => {
-    if (deleteError) {
+    if (!isNil(deleteError)) {
       trackError(new ApiError(deleteError))
     }
   }, [deleteError])
@@ -65,25 +65,25 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
       label: t('data-hub.add.name'),
       rule: {
         required: true,
-        validator: (_rule: any, value: string) => {
-          if (!value || value.trim().length === 0) {
-            return Promise.reject(new Error(t('data-hub.config.name-required')))
+        validator: async (_rule: any, value: string) => {
+          if (!isString(value) || value.trim().length === 0) {
+            return await Promise.reject(new Error(t('data-hub.config.name-required')))
           }
           if (value.length < 3) {
-            return Promise.reject(new Error(t('data-hub.config.name-min-length')))
+            return await Promise.reject(new Error(t('data-hub.config.name-min-length')))
           }
           if (value.length > 80) {
-            return Promise.reject(new Error(t('data-hub.config.name-max-length')))
+            return await Promise.reject(new Error(t('data-hub.config.name-max-length')))
           }
           if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-            return Promise.reject(new Error(t('data-hub.config.name-pattern')))
+            return await Promise.reject(new Error(t('data-hub.config.name-pattern')))
           }
-          return Promise.resolve()
+          await Promise.resolve()
         }
       },
       onOk: async (value: string) => {
         const result = await addConfig({ name: value, type: adapterType })
-        
+
         if (has(result, 'error')) {
           return
         }
@@ -113,26 +113,26 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
       label: t('data-hub.clone.name'),
       rule: {
         required: true,
-        validator: (_rule: any, value: string) => {
-          if (!value || value.trim().length === 0) {
-            return Promise.reject(new Error(t('data-hub.config.name-required')))
+        validator: async (_rule: any, value: string) => {
+          if (!isString(value) || value.trim().length === 0) {
+            return await Promise.reject(new Error(t('data-hub.config.name-required')))
           }
           if (value.length < 3) {
-            return Promise.reject(new Error(t('data-hub.config.name-min-length')))
+            return await Promise.reject(new Error(t('data-hub.config.name-min-length')))
           }
           if (value.length > 80) {
-            return Promise.reject(new Error(t('data-hub.config.name-max-length')))
+            return await Promise.reject(new Error(t('data-hub.config.name-max-length')))
           }
           if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-            return Promise.reject(new Error(t('data-hub.config.name-pattern')))
+            return await Promise.reject(new Error(t('data-hub.config.name-pattern')))
           }
-          return Promise.resolve()
+          await Promise.resolve()
         }
       },
       onOk: async (value: string) => {
         const configId = !isUndefined(config.id) ? String(config.id) : ''
         const result = await cloneConfig({ name: value, originalName: configId })
-        
+
         if (has(result, 'error')) {
           return
         }
@@ -164,7 +164,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
       onOk: async () => {
         const configId = !isUndefined(config.id) ? String(config.id) : ''
         const result = await deleteConfig({ name: configId })
-        
+
         if (has(result, 'error')) {
           return
         }

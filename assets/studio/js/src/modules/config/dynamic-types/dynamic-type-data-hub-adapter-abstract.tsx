@@ -17,6 +17,7 @@ export interface AdapterFormProps {
   configName: string
   configId: string
   onChange: (isDirty: boolean) => void
+  isActive: boolean
 }
 
 @injectable()
