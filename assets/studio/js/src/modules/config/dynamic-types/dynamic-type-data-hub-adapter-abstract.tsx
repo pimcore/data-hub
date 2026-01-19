@@ -23,7 +23,10 @@ export interface AdapterFormProps {
 @injectable()
 export abstract class DynamicTypeDataHubAdapterAbstract {
   abstract readonly id: string
-  abstract readonly name: string
   abstract getIcon (): React.JSX.Element
   abstract getFormComponent (props: AdapterFormProps): React.JSX.Element
+
+  getNameTranslationKey (): string {
+    return `data-hub.adapter.${this.id}`
+  }
 }

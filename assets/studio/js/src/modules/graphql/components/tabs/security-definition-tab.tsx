@@ -87,7 +87,7 @@ export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabPro
             </Form.Item>
             <Tooltip title={ t('data-hub.security.generate-apikey') }>
               <IconButton
-                icon={ { value: 'asset' } }
+                icon={ { value: 'webhook' } }
                 onClick={ generateApiKey }
                 type="default"
               />

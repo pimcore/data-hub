@@ -258,7 +258,6 @@ export function transformBackendToForm (
 ): GraphQLFormValues {
   return {
     active: backendConfig.general?.active ?? true,
-    type: 'GraphQL',
     name: configName,
     description: backendConfig.general?.description ?? '',
     group: backendConfig.general?.group ?? '',

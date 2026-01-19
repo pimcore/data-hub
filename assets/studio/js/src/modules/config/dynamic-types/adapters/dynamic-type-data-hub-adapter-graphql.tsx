@@ -17,10 +17,9 @@ import { GraphQLAdapterForm } from '../../../graphql/components/graphql-adapter-
 @injectable()
 export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterAbstract {
   readonly id = 'graphql'
-  readonly name = 'GraphQL'
 
   getIcon (): React.JSX.Element {
-    return <Icon value="data-object-variant" />
+    return <Icon value="graphql" />
   }
 
   getFormComponent (props: AdapterFormProps): React.JSX.Element {

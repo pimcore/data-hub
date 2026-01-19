@@ -14,7 +14,6 @@ import { type QueryEntity, type MutationEntity, type GenericType } from './tabs/
 
 export interface GraphQLFormValues {
   active: boolean
-  type: string
   name: string
   description: string
   group: string
