@@ -54,10 +54,6 @@ export const ConfigSidebar = ({
   }, [configurationsData])
 
   useEffect(() => {
-    console.log('expandedKeys changed:', expandedKeys)
-  }, [expandedKeys])
-
-  useEffect(() => {
     if (searchValue === '') {
       setFilteredData(configListData)
     } else {
