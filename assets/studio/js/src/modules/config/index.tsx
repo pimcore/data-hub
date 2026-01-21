@@ -14,13 +14,16 @@ import { type MainNavRegistry } from '@pimcore/studio-ui-bundle/modules/app'
 import { type WidgetRegistry } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { ConfigContainer } from './config-container'
 import { type DynamicTypeDataHubAdapterRegistry } from './dynamic-types/dynamic-type-data-hub-adapter-registry'
+import { type DynamicTypeOperatorRegistry } from '../graphql/operator-types/dynamic-type-operator-registry'
 import { bundleServiceIds } from '../../config/service-ids'
 
 export const DataHubModule: AbstractModule = {
   onInit: (): void => {
-    // Register dynamic type adapters
     const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
     adapterRegistry.registerDynamicType(container.get(bundleServiceIds['DataHub/DynamicTypes/Adapter/GraphQL']))
+
+    const operatorRegistry = container.get<DynamicTypeOperatorRegistry>(bundleServiceIds['DataHub/DynamicTypes/Operator/Registry'])
+    operatorRegistry.registerDynamicType(container.get(bundleServiceIds['DataHub/DynamicTypes/Operator/DateFormatter']))
 
     const widgetRegistryService = container.get<WidgetRegistry>(serviceIds.widgetManager)
     const mainNavRegistryService = container.get<MainNavRegistry>(serviceIds.mainNavRegistry)

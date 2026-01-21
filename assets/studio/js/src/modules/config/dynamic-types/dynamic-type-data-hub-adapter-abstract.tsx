@@ -10,6 +10,7 @@
 
 import type React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
+import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { type BundleDataHubConfigurationDetail } from '../config-api-slice-enhanced'
 
 export interface AdapterFormProps {
@@ -23,7 +24,7 @@ export interface AdapterFormProps {
 @injectable()
 export abstract class DynamicTypeDataHubAdapterAbstract {
   abstract readonly id: string
-  abstract getIcon (): React.JSX.Element
+  abstract getIcon (): ElementIcon
   abstract getFormComponent (props: AdapterFormProps): React.JSX.Element
 
   getNameTranslationKey (): string {

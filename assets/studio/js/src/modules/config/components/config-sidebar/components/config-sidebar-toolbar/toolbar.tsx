@@ -29,7 +29,7 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSid
   const dropdownItems: DropdownProps['menu']['items'] = adapters.map((adapter) => ({
     key: adapter.id,
     label: t(adapter.getNameTranslationKey()),
-    icon: adapter.getIcon(),
+    icon: <Icon { ...adapter.getIcon() } />,
     onClick: () => { onAdd(adapter.id) }
   }))
 

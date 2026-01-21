@@ -142,7 +142,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
     {
       key: 'schema',
       label: t('data-hub.tabs.schema-definition'),
-      children: <SchemaDefinitionTab />
+      children: <SchemaDefinitionTab onFormChange={ handleFormChange } />
     },
     {
       key: 'security',

@@ -9,13 +9,14 @@
  */
 
 import React, { useMemo, useRef, useState, useCallback } from 'react'
-import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot } from '@pimcore/studio-ui-bundle/components'
+import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot, Icon } from '@pimcore/studio-ui-bundle/components'
 import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
-import { useAdapterIcon } from '../../hooks/use-adapter-icon'
 import { isUndefined, isNil } from 'lodash'
-import { getAdapterTypeString } from '../../utils/adapter-helpers'
 import { ConfigTabContent } from './config-tab-content'
 import { useStyles } from './config-tabs.styles'
+import { container } from '@pimcore/studio-ui-bundle/app'
+import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
+import { bundleServiceIds } from '../../../../config/service-ids'
 
 interface ConfigTabsProps {
   openedConfigs: BundleDataHubConfiguration[]
@@ -27,10 +28,16 @@ interface ConfigTabsProps {
   setModifiedConfigs: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const TabItem = ({ config }: { config: BundleDataHubConfiguration }): React.JSX.Element => {
-  const icon = useAdapterIcon(getAdapterTypeString(config.adapter as string | undefined))
+const TabItem = ({ config }: { config: BundleDataHubConfiguration }): React.JSX.Element | null => {
+  const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
+  const adapterType = config.adapter as string | undefined
 
-  return <>{icon}</>
+  if (isUndefined(adapterType)) {
+    return null
+  }
+
+  const adapter = adapterRegistry.getDynamicType(adapterType, false)
+  return adapter !== undefined ? <Icon { ...adapter.getIcon() } /> : null
 }
 
 export const ConfigTabs = ({
@@ -51,9 +58,9 @@ export const ConfigTabs = ({
   }, [])
 
   const handleRefresh = (): void => {
-    if (activeTabKey !== undefined) {
+    if (!isNil(activeTabKey)) {
       const refetchFn = refetchFunctionsRef.current.get(activeTabKey)
-      if (refetchFn !== undefined) {
+      if (!isNil(refetchFn)) {
         setIsFetchingTab(true)
         refetchFn().then(() => { setIsFetchingTab(false) }).catch(() => { setIsFetchingTab(false) })
       }

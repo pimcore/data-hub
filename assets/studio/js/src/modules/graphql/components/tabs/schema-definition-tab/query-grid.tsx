@@ -8,21 +8,25 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Flex, OperationalGrid, IconButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { createColumnHelper } from '@tanstack/react-table'
 import { SchemaAccordion } from './schema-accordion'
 import { isNil } from 'lodash'
 import { type QueryEntity } from './types'
+import { SchemaFieldsModal } from './schema-fields-modal/schema-fields-modal'
 
 interface QueryGridProps {
   value?: QueryEntity[]
   onChange?: (value: QueryEntity[]) => void
+  onFormChange?: () => void
 }
 
-export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.Element => {
+export const QueryGrid = ({ value = [], onChange, onFormChange }: QueryGridProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedEntity, setSelectedEntity] = useState<QueryEntity | null>(null)
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<QueryEntity>()
@@ -40,7 +44,7 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
         id: 'settings',
         header: t('data-hub.schema.settings'),
         size: 100,
-        cell: () => {
+        cell: (info) => {
           return (
             <Flex
               align="center"
@@ -49,7 +53,8 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
               <IconButton
                 icon={ { value: 'settings' } }
                 onClick={ () => {
-                  // TODO: Implement settings dialog
+                  setSelectedEntity(value[info.row.index])
+                  setModalOpen(true)
                 } }
                 type="link"
               />
@@ -84,21 +89,31 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
   }, [t, value, onChange])
 
   return (
-    <OperationalGrid
-      autoWidth
-      columns={ columns }
-      onChange={ onChange }
-      value={ value }
-    >
-      <OperationalGrid.Operations>
-        {() => (
-          <SchemaAccordion
-            onChange={ onChange }
-            type="query"
-            value={ value }
-          />
-        )}
-      </OperationalGrid.Operations>
-    </OperationalGrid>
+    <>
+      <OperationalGrid
+        autoWidth
+        columns={ columns }
+        onChange={ onChange }
+        value={ value }
+      >
+        <OperationalGrid.Operations>
+          {() => (
+            <SchemaAccordion
+              onChange={ onChange }
+              type="query"
+              value={ value }
+            />
+          )}
+        </OperationalGrid.Operations>
+      </OperationalGrid>
+
+      <SchemaFieldsModal
+        entityName={ selectedEntity?.entity ?? '' }
+        onApply={ () => { setModalOpen(false) } }
+        onCancel={ () => { setModalOpen(false) } }
+        onFormChange={ onFormChange }
+        open={ modalOpen }
+      />
+    </>
   )
 }

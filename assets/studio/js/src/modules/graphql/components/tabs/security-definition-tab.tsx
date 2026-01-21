@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { Form, Select, TextArea, Switch, IconButton, Flex, FormKit, Tooltip } from '@pimcore/studio-ui-bundle/components'
+import { Form, Select, TextArea, Switch, Button, Flex, FormKit, Box } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { WorkspaceGrid } from './security-definition-tab/workspace-grid'
@@ -34,7 +34,6 @@ export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabPro
       }
     })
 
-    // Trigger form change to enable save button
     if (!isNil(onFormChange)) {
       onFormChange()
     }
@@ -70,30 +69,23 @@ export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabPro
         </Form.Item>
 
         <Form.Item
-          help={ t('data-hub.security.apikey-description') }
           label={ t('data-hub.security.apikey') }
+          name={ ['security', 'apikey'] }
+          tooltip={ t('data-hub.security.apikey-description') }
         >
-          <Flex
-            align="flex-start"
-            gap={ 8 }
-          >
-            <Form.Item
-              name={ ['security', 'apikey'] }
-              noStyle
-            >
-              <TextArea
-                autoSize={ { minRows: 4, maxRows: 10 } }
-              />
-            </Form.Item>
-            <Tooltip title={ t('data-hub.security.generate-apikey') }>
-              <IconButton
-                icon={ { value: 'webhook' } }
-                onClick={ generateApiKey }
-                type="default"
-              />
-            </Tooltip>
-          </Flex>
+          <TextArea
+            autoSize={ { minRows: 4, maxRows: 10 } }
+          />
         </Form.Item>
+
+        <Box margin={ { bottom: 'small' } }>
+          <Button
+            onClick={ generateApiKey }
+            type="default"
+          >
+            {t('data-hub.security.generate-apikey')}
+          </Button>
+        </Box>
 
         <Form.Item
           name={ ['security', 'skipPermissionCheck'] }
@@ -103,11 +95,13 @@ export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabPro
         </Form.Item>
 
         <Form.Item
-          help={ t('data-hub.security.introspection-description') }
           name={ ['security', 'disableIntrospection'] }
           valuePropName="checked"
         >
-          <Switch labelRight={ t('data-hub.security.disable-introspection') } />
+          <Switch
+            labelRight={ t('data-hub.security.disable-introspection') }
+            tooltip={ t('data-hub.security.introspection-description') }
+          />
         </Form.Item>
       </FormKit.Panel>
 

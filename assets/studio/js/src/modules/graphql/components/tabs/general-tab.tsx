@@ -25,7 +25,10 @@ export const GeneralTab = (): React.JSX.Element => {
       </Form.Item>
 
       <Form.Item label={ t('data-hub.config.type') }>
-        <Input disabled value={ t('data-hub.adapter.graphql') } />
+        <Input
+          disabled
+          value={ t('data-hub.adapter.graphql') }
+        />
       </Form.Item>
 
       <Form.Item

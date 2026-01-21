@@ -11,7 +11,7 @@
 import { useCallback, useEffect } from 'react'
 import { useFormModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { isNil, isUndefined, has, isString } from 'lodash'
+import { isNil, isUndefined, has, isString, cloneDeep, set } from 'lodash'
 import {
   useBundleDataHubConfigAddMutation,
   useBundleDataHubConfigCloneMutation,
@@ -21,6 +21,8 @@ import {
 } from '../config-api-slice-enhanced'
 import { findConfigInTree } from '../utils/tree-helpers'
 import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
+import { type FetchBaseQueryError } from '@reduxjs/toolkit/query'
+import { type SerializedError } from '@reduxjs/toolkit'
 
 interface UseDataHubConfigReturn {
   handleAdd: (adapterType: string, onSuccess?: (config: BundleDataHubConfiguration) => void) => void
@@ -39,21 +41,36 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
   const [cloneConfig, { error: cloneError }] = useBundleDataHubConfigCloneMutation()
   const [deleteConfig, { error: deleteError }] = useBundleDataHubConfigDeleteMutation()
 
+  const handleConfigExistsError = useCallback((error: FetchBaseQueryError | SerializedError) => {
+    const errorKey = (error as any)?.data?.errorKey
+    if (errorKey === 'error_element_exists') {
+      const customError = cloneDeep(error) as FetchBaseQueryError
+      const modifiedError = set(customError, 'data.errorKey', 'data-hub.config-exists')
+      const apiError = new ApiError(modifiedError)
+      trackError(apiError)
+      return
+    }
+
+    const apiError = new ApiError(error)
+    trackError(apiError)
+  }, [])
+
   useEffect(() => {
     if (!isNil(addError)) {
-      trackError(new ApiError(addError))
+      handleConfigExistsError(addError)
     }
-  }, [addError])
+  }, [addError, handleConfigExistsError])
 
   useEffect(() => {
     if (!isNil(cloneError)) {
-      trackError(new ApiError(cloneError))
+      handleConfigExistsError(cloneError)
     }
-  }, [cloneError])
+  }, [cloneError, handleConfigExistsError])
 
   useEffect(() => {
     if (!isNil(deleteError)) {
-      trackError(new ApiError(deleteError))
+      const apiError = new ApiError(deleteError)
+      trackError(apiError)
     }
   }, [deleteError])
 

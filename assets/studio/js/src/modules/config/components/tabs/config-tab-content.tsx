@@ -11,8 +11,7 @@
 import React, { useEffect, useCallback } from 'react'
 import { Content } from '@pimcore/studio-ui-bundle/components'
 import { type BundleDataHubConfiguration, useBundleDataHubConfigGetQuery } from '../../config-api-slice-enhanced'
-import { getAdapterTypeString } from '../../utils/adapter-helpers'
-import { isUndefined } from 'lodash'
+import { isUndefined, isNil } from 'lodash'
 import { container } from '@pimcore/studio-ui-bundle/app'
 import { bundleServiceIds } from '../../../../config/service-ids'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
@@ -50,11 +49,11 @@ export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setM
   }, [config.id, setModifiedConfigs])
 
   const renderContent = (): React.JSX.Element => {
-    if (error !== undefined || configDetail === undefined) {
+    if (!isNil(error) || isNil(configDetail)) {
       return <div>Error loading configuration</div>
     }
 
-    const adapterType = getAdapterTypeString(config.adapter as string | undefined)
+    const adapterType = config.adapter as string | undefined
 
     if (isUndefined(adapterType)) {
       return <div>Unknown adapter type</div>
@@ -62,7 +61,7 @@ export const ConfigTabContent = ({ config, onRefetchReady, modifiedConfigs, setM
 
     try {
       const adapter = adapterRegistry.getDynamicType(adapterType, false)
-      if (adapter === undefined) {
+      if (isNil(adapter)) {
         return <div>Adapter not found: {adapterType}</div>
       }
 

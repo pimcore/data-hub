@@ -17,14 +17,5 @@ export const hasValidAdapter = (
 ): boolean => {
   if (isUndefined(adapterType)) return false
 
-  try {
-    const adapter = adapterRegistry.getDynamicType(adapterType, false)
-    return !isUndefined(adapter)
-  } catch (error) {
-    return false
-  }
-}
-
-export const getAdapterTypeString = (adapterType: string | undefined): string | undefined => {
-  return !isUndefined(adapterType) ? String(adapterType) : undefined
+  return adapterRegistry.hasDynamicType(adapterType)
 }

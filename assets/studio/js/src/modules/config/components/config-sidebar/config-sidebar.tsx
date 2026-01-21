@@ -28,7 +28,7 @@ import { bundleServiceIds } from '../../../../config/service-ids'
 import { useConfigContext } from '../../providers/config-provider'
 import { useDataHubConfig } from '../../hooks/use-data-hub-config'
 import { findConfigById, filterConfigsRecursive } from '../../utils/tree-helpers'
-import { hasValidAdapter, getAdapterTypeString } from '../../utils/adapter-helpers'
+import { hasValidAdapter } from '../../utils/adapter-helpers'
 
 interface ConfigSidebarProps {
   handleOpenConfig: (config: BundleDataHubConfiguration) => void
@@ -65,20 +65,20 @@ export const ConfigSidebar = ({
 
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
-  const getAdapterIcon = (type: string | undefined): React.JSX.Element => {
-    if (isUndefined(type)) {
-      return <Icon value="database" />
+  const getTreeItemIcon = (item: BundleDataHubConfiguration): React.JSX.Element | undefined => {
+    if (item.allowChildren === true) {
+      return <Icon value="folder" />
     }
-    try {
-      const adapter = adapterRegistry.getDynamicType(type, false)
-      return adapter?.getIcon() ?? <Icon value="database" />
-    } catch (error) {
-      console.error('Error getting adapter:', error)
-      return <Icon value="database" />
+
+    const adapterType = item.adapter as string | undefined
+    if (isUndefined(adapterType)) {
+      return undefined
     }
+
+    const adapter = adapterRegistry.getDynamicType(adapterType, false)
+    return !isUndefined(adapter) ? <Icon { ...adapter.getIcon() } /> : undefined
   }
 
-  // Transform BundleDataHubConfiguration to TreeDataItem format
   const transformToTreeData = (items: BundleDataHubConfiguration[] | null): TreeDataItem[] => {
     if (isNil(items)) {
       return []
@@ -86,15 +86,11 @@ export const ConfigSidebar = ({
 
     return items
       .filter((item) => {
-        // Keep folders
         if (item.allowChildren === true) return true
 
-        // For configurations, only keep if we have an adapter
-        const adapter = getAdapterTypeString(item.adapter as string | undefined)
-        return hasValidAdapter(adapter, adapterRegistry)
+        return hasValidAdapter(item.adapter as string | undefined, adapterRegistry)
       })
       .sort((a, b) => {
-        // Sort alphabetically by text (case-insensitive)
         return a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })
       })
       .map((item) => {
@@ -105,14 +101,10 @@ export const ConfigSidebar = ({
             ]
           : []
 
-        const icon = item.allowChildren === true
-          ? <Icon value="folder" />
-          : getAdapterIcon(getAdapterTypeString(item.adapter as string | undefined))
-
         return {
           key: !isUndefined(item.id) ? String(item.id) : '',
           title: item.text,
-          icon,
+          icon: getTreeItemIcon(item),
           children: !isUndefined(item.children) ? transformToTreeData(item.children) : undefined,
           isLeaf: item.leaf,
           actions,
@@ -156,7 +148,6 @@ export const ConfigSidebar = ({
     const config = findConfigById(key, configListData)
     if (!isNil(config)) {
       if (config.allowChildren === true) {
-        // Toggle expansion for folders
         const currentKeys = expandedKeys
         if (!isNil(currentKeys) && currentKeys.includes(key)) {
           setExpandedKeys(currentKeys.filter(k => k !== key))
@@ -164,7 +155,6 @@ export const ConfigSidebar = ({
           setExpandedKeys([...currentKeys, key])
         }
       } else {
-        // Open config for non-folders
         handleOpenConfig(config)
       }
     }

@@ -14,5 +14,7 @@
  */
 export const bundleServiceIds = {
   'DataHub/DynamicTypes/Adapter/Registry': 'DataHub/DynamicTypes/Adapter/Registry',
-  'DataHub/DynamicTypes/Adapter/GraphQL': 'DataHub/DynamicTypes/Adapter/GraphQL'
+  'DataHub/DynamicTypes/Adapter/GraphQL': 'DataHub/DynamicTypes/Adapter/GraphQL',
+  'DataHub/DynamicTypes/Operator/Registry': 'DataHub/DynamicTypes/Operator/Registry',
+  'DataHub/DynamicTypes/Operator/DateFormatter': 'DataHub/DynamicTypes/Operator/DateFormatter'
 } as const

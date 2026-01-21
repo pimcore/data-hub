@@ -60,7 +60,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "1.0.0-canary.20260119-114326-069cbe5",
+    "@pimcore/studio-ui-bundle": "1.0.0-canary.20260121-105603-b94d3e5",
     "antd-style": "3.7.x",
     "lodash": "^4.17.21",
     "quill": "^2.0.3",

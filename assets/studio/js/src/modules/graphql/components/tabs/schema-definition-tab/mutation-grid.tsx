@@ -81,9 +81,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
             >
               <IconButton
                 icon={ { value: 'settings' } }
-                onClick={ () => {
-                  // TODO: Implement settings dialog
-                } }
+                onClick={ () => {} }
                 type="link"
               />
             </Flex>
