@@ -15,6 +15,8 @@
 export const bundleServiceIds = {
   'DataHub/DynamicTypes/Adapter/Registry': 'DataHub/DynamicTypes/Adapter/Registry',
   'DataHub/DynamicTypes/Adapter/GraphQL': 'DataHub/DynamicTypes/Adapter/GraphQL',
-  'DataHub/DynamicTypes/Operator/Registry': 'DataHub/DynamicTypes/Operator/Registry',
-  'DataHub/DynamicTypes/Operator/DateFormatter': 'DataHub/DynamicTypes/Operator/DateFormatter'
+  'DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry': 'DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry',
+  'DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry': 'DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry',
+  'DataHub/DynamicTypes/Operator/DateFormatter': 'DataHub/DynamicTypes/Operator/DateFormatter',
+  'DataHub/DynamicTypes/Operator/LocaleSwitcher': 'DataHub/DynamicTypes/Operator/LocaleSwitcher'
 } as const

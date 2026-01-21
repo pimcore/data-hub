@@ -13,21 +13,25 @@ import { injectable } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { Text } from '@pimcore/studio-ui-bundle/components'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
-import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps } from '../../dynamic-type-operator-abstract'
-import type { ColumnConfig } from '../../../components/tabs/schema-definition-tab/schema-fields-modal/types'
+import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
 import { DateFormatterConfigModal } from './date-formatter-config-modal'
 
+export interface DateFormatterAttributes {
+  label: string
+  format: string
+}
+
 @injectable()
-export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstract {
+export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstract<DateFormatterAttributes> {
   readonly id = 'DateFormatter'
 
   getIcon (): ElementIcon {
     return { type: 'name', value: 'calendar' }
   }
 
-  getLabel (config: ColumnConfig): React.ReactNode {
+  getLabel (config: ColumnConfig<DateFormatterAttributes>): React.ReactNode {
     const label = config.attributes.label ?? 'DateFormatter'
-    const format = (config.attributes as any).format
+    const format = config.attributes.format
 
     if (!isNil(format)) {
       return (
@@ -40,7 +44,7 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
     return label
   }
 
-  getConfigModal (props: OperatorConfigModalProps): React.JSX.Element {
+  getConfigModal (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
     return <DateFormatterConfigModal { ...props } />
   }
 

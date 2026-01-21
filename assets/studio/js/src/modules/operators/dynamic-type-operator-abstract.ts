@@ -11,16 +11,22 @@
 import type React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
-import type { ColumnConfig } from '../components/tabs/schema-definition-tab/schema-fields-modal/types'
 
-export interface OperatorConfigModalProps {
-  config: ColumnConfig
-  onApply: (config: ColumnConfig) => void
+export interface ColumnConfig<TAttributes = any> {
+  attributes: TAttributes
+  isOperator: boolean
+  key?: string
+  label?: string
+}
+
+export interface OperatorConfigModalProps<TAttributes = any> {
+  config: ColumnConfig<TAttributes>
+  onApply: (config: ColumnConfig<TAttributes>) => void
   onCancel: () => void
 }
 
 @injectable()
-export abstract class DynamicTypeOperatorAbstract {
+export abstract class DynamicTypeOperatorAbstract<TAttributes = any> {
   /**
    * Unique identifier for the operator type (e.g., 'DateFormatter', 'Alias', 'Substring')
    */
@@ -34,12 +40,12 @@ export abstract class DynamicTypeOperatorAbstract {
   /**
    * Get the display label for the tree node
    */
-  abstract getLabel (config: ColumnConfig): React.ReactNode
+  abstract getLabel (config: ColumnConfig<TAttributes>): React.ReactNode
 
   /**
    * Get the configuration modal component for this operator
    */
-  abstract getConfigModal (props: OperatorConfigModalProps): React.JSX.Element | null
+  abstract getConfigModal (props: OperatorConfigModalProps<TAttributes>): React.JSX.Element | null
 
   /**
    * Get the translation key for the operator name
@@ -49,9 +55,9 @@ export abstract class DynamicTypeOperatorAbstract {
   }
 
   /**
-   * Get the translation key for the operator group
+   * Get the translation key for the operator description
    */
-  getGroupTranslationKey (): string {
-    return 'data-hub.operator.group.other'
+  getDescriptionTranslationKey (): string {
+    return `data-hub.operator.${this.id.toLowerCase()}.description`
   }
 }

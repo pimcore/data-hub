@@ -51,7 +51,7 @@ export const WorkspaceAccordion = ({
           handleAdd()
         } }
       >
-        {t('data-hub.workspaces.add')}
+        {t('add')}
       </IconTextButton>
     ),
     children: (

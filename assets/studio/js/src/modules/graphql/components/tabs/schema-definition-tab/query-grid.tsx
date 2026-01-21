@@ -16,6 +16,7 @@ import { SchemaAccordion } from './schema-accordion'
 import { isNil } from 'lodash'
 import { type QueryEntity } from './types'
 import { SchemaFieldsModal } from './schema-fields-modal/schema-fields-modal'
+import { bundleServiceIds } from '../../../../../config/service-ids'
 
 interface QueryGridProps {
   value?: QueryEntity[]
@@ -113,6 +114,7 @@ export const QueryGrid = ({ value = [], onChange, onFormChange }: QueryGridProps
         onCancel={ () => { setModalOpen(false) } }
         onFormChange={ onFormChange }
         open={ modalOpen }
+        operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry'] }
       />
     </>
   )

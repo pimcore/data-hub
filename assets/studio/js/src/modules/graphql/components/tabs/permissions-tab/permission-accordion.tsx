@@ -129,7 +129,7 @@ export const PermissionAccordion = ({
             handleOpen()
           } }
         >
-          {t('data-hub.permissions.add')}
+          {t('add')}
         </IconTextButton>
         {openDropdown && (
           <InlineDropdownPanel>

@@ -18,6 +18,8 @@ import { isNil } from 'lodash'
 interface SchemaFieldsModalProps {
   open: boolean
   entityName: string
+  operatorRegistryServiceId: string
+  type?: 'query' | 'mutation'
   onCancel: () => void
   onApply: () => void
   onFormChange?: () => void
@@ -26,6 +28,8 @@ interface SchemaFieldsModalProps {
 export const SchemaFieldsModal = ({
   open,
   entityName,
+  operatorRegistryServiceId,
+  type = 'query',
   onCancel,
   onApply,
   onFormChange
@@ -37,21 +41,21 @@ export const SchemaFieldsModal = ({
 
   useEffect(() => {
     if (open) {
-      const queryEntities = form.getFieldValue(['schema', 'query']) ?? []
-      const entity: QueryEntityConfig | undefined = queryEntities.find((e: any) => e.entity === entityName)
+      const entities = form.getFieldValue(['schema', type]) ?? []
+      const entity: QueryEntityConfig | undefined = entities.find((e: any) => e.entity === entityName)
       setLocalEntityConfig(!isNil(entity) ? JSON.parse(JSON.stringify(entity)) as QueryEntityConfig : undefined)
     }
-  }, [open, form, entityName])
+  }, [open, form, entityName, type])
 
   const handleApply = (): void => {
-    const queryEntities = form.getFieldValue(['schema', 'query']) ?? []
-    const entityIndex = queryEntities.findIndex((e: any) => e.entity === entityName)
+    const entities = form.getFieldValue(['schema', type]) ?? []
+    const entityIndex = entities.findIndex((e: any) => e.entity === entityName)
 
     if (entityIndex !== -1 && !isNil(localEntityConfig)) {
-      const updatedEntities = [...queryEntities]
+      const updatedEntities = [...entities]
       updatedEntities[entityIndex] = localEntityConfig
 
-      form.setFieldValue(['schema', 'query'], updatedEntities)
+      form.setFieldValue(['schema', type], updatedEntities)
 
       if (!isNil(onFormChange)) {
         onFormChange()
@@ -78,8 +82,8 @@ export const SchemaFieldsModal = ({
       ) }
       onCancel={ onCancel }
       open={ open }
-      title={ t('data-hub.schema.modal-title', { entity: entityName }) }
       size="XL"
+      title={ t(`data-hub.schema.${type}-modal-title`, { entity: entityName }) }
     >
       <div style={ { height: '600px' } }>
         <ConfigLayout
@@ -96,6 +100,7 @@ export const SchemaFieldsModal = ({
               </Content>
             )
           } }
+          resizeAble
           rightItem={ {
             children: (
               <Content padded>
@@ -104,11 +109,11 @@ export const SchemaFieldsModal = ({
                   entityConfig={ localEntityConfig }
                   entityName={ entityName }
                   onEntityConfigChange={ setLocalEntityConfig }
+                  operatorRegistryServiceId={ operatorRegistryServiceId }
                 />
               </Content>
             )
           } }
-          resizeAble
         />
       </div>
     </Modal>

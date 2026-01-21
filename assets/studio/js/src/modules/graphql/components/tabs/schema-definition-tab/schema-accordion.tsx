@@ -97,7 +97,7 @@ export const SchemaAccordion = ({
             handleOpen()
           } }
         >
-          {t('data-hub.schema.add')}
+          {t('add')}
         </IconTextButton>
         {openDropdown && (
           <InlineDropdownPanel>

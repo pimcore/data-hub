@@ -40,7 +40,7 @@ export const SchemaDefinitionTab = ({ onFormChange }: SchemaDefinitionTabProps):
             name={ ['schema', 'mutation'] }
             noStyle
           >
-            <MutationGrid />
+            <MutationGrid onFormChange={ onFormChange } />
           </Form.Item>
 
           {/* Generic Types */}

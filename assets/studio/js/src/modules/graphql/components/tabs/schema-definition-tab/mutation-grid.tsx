@@ -8,21 +8,26 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Flex, OperationalGrid, IconButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { createColumnHelper } from '@tanstack/react-table'
 import { SchemaAccordion } from './schema-accordion'
 import { isNil } from 'lodash'
 import { type MutationEntity } from './types'
+import { SchemaFieldsModal } from './schema-fields-modal/schema-fields-modal'
+import { bundleServiceIds } from '../../../../../config/service-ids'
 
 interface MutationGridProps {
   value?: MutationEntity[]
   onChange?: (value: MutationEntity[]) => void
+  onFormChange?: () => void
 }
 
-export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React.JSX.Element => {
+export const MutationGrid = ({ value = [], onChange, onFormChange }: MutationGridProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedEntity, setSelectedEntity] = useState<MutationEntity | null>(null)
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MutationEntity>()
@@ -73,7 +78,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         id: 'settings',
         header: t('data-hub.schema.settings'),
         size: 100,
-        cell: () => {
+        cell: (info) => {
           return (
             <Flex
               align="center"
@@ -81,7 +86,10 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
             >
               <IconButton
                 icon={ { value: 'settings' } }
-                onClick={ () => {} }
+                onClick={ () => {
+                  setSelectedEntity(value[info.row.index])
+                  setModalOpen(true)
+                } }
                 type="link"
               />
             </Flex>
@@ -115,21 +123,35 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
   }, [t, value, onChange])
 
   return (
-    <OperationalGrid
-      autoWidth
-      columns={ columns }
-      onChange={ onChange }
-      value={ value }
-    >
-      <OperationalGrid.Operations>
-        {() => (
-          <SchemaAccordion
-            onChange={ onChange }
-            type="mutation"
-            value={ value }
-          />
-        )}
-      </OperationalGrid.Operations>
-    </OperationalGrid>
+    <>
+      <OperationalGrid
+        autoWidth
+        columns={ columns }
+        onChange={ onChange }
+        value={ value }
+      >
+        <OperationalGrid.Operations>
+          {() => (
+            <SchemaAccordion
+              onChange={ onChange }
+              type="mutation"
+              value={ value }
+            />
+          )}
+        </OperationalGrid.Operations>
+      </OperationalGrid>
+
+      {!isNil(selectedEntity) && (
+        <SchemaFieldsModal
+          entityName={ selectedEntity.entity }
+          onApply={ () => { setModalOpen(false) } }
+          onCancel={ () => { setModalOpen(false) } }
+          onFormChange={ onFormChange }
+          open={ modalOpen }
+          operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry'] }
+          type="mutation"
+        />
+      )}
+    </>
   )
 }

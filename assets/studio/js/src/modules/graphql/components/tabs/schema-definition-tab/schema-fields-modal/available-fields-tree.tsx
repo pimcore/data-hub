@@ -14,13 +14,14 @@ import { type TreeNode, type QueryEntityConfig, type ColumnConfig } from './type
 import { useInjection, serviceIds } from '@pimcore/studio-ui-bundle/app'
 import { uuid, isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
-import { type DynamicTypeOperatorRegistry } from '../../../../operator-types/dynamic-type-operator-registry'
+import { type DynamicTypeOperatorRegistry } from '../../../../../operators/dynamic-type-operator-registry'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 
 interface AvailableFieldsTreeProps {
   className?: string
   entityConfig?: QueryEntityConfig
   entityName: string
+  operatorRegistryServiceId: string
   onEntityConfigChange: (config: QueryEntityConfig) => void
 }
 
@@ -82,7 +83,7 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
           : undefined,
         columnConfig: column,
         actions: [
-          { key: 'edit', icon: 'pencil-01' },
+          { key: 'edit', icon: 'edit' },
           { key: 'delete', icon: 'trash' }
         ]
       }
@@ -145,13 +146,14 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
   return fieldNodes
 }
 
-export const AvailableFieldsTree = ({ entityConfig, entityName, onEntityConfigChange }: AvailableFieldsTreeProps): React.JSX.Element => {
+export const AvailableFieldsTree = ({ entityConfig, entityName, operatorRegistryServiceId, onEntityConfigChange }: AvailableFieldsTreeProps): React.JSX.Element => {
   const [operatorModalConfig, setOperatorModalConfig] = useState<{
     column: ColumnConfig
     operatorId: string
     columnIndex: number
   } | null>(null)
-  const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>('DataHub/DynamicTypes/Operator/Registry')
+
+  const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
 
   const enrichedConfig = useMemo(() => {

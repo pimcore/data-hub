@@ -10,31 +10,31 @@
 
 import React, { useState } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Input, Form, Flex, Button, Modal, IconTextButton } from '@pimcore/studio-ui-bundle/components'
-import { type OperatorConfigModalProps } from '../../dynamic-type-operator-abstract'
-import type { ColumnConfig } from '../../../components/tabs/schema-definition-tab/schema-fields-modal/types'
+import { Input, Form, Flex, Button, Modal, IconTextButton, FormKit } from '@pimcore/studio-ui-bundle/components'
+import { type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
+import { type DateFormatterAttributes } from './dynamic-type-operator-date-formatter'
 
-export function DateFormatterConfigModal ({ config, onApply, onCancel }: OperatorConfigModalProps): React.JSX.Element {
+export function DateFormatterConfigModal ({ config, onApply, onCancel }: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
   const { t } = useTranslation()
   const [form] = Form.useForm()
 
   useState(() => {
     form.setFieldsValue({
       label: config.attributes.label ?? 'DateFormatter',
-      format: (config.attributes as any).format ?? 'Y-m-d H:i:s'
+      format: config.attributes.format ?? 'Y-m-d H:i:s'
     })
   })
 
   const handleApply = async (): Promise<void> => {
     const values = await form.validateFields()
 
-    const updatedConfig: ColumnConfig = {
+    const updatedConfig: ColumnConfig<DateFormatterAttributes> = {
       ...config,
       attributes: {
         ...config.attributes,
         label: values.label,
         format: values.format
-      } as any
+      }
     }
 
     onApply(updatedConfig)
@@ -53,35 +53,36 @@ export function DateFormatterConfigModal ({ config, onApply, onCancel }: Operato
             onClick={ openHelp }
             type="default"
           >
-            {t('data-hub.operator.help')}
+            {t('data-hub.help')}
           </IconTextButton>
 
           <Flex gap="small">
             <Button onClick={ onCancel }>
-              {t('data-hub.operator.cancel')}
+              {t('cancel')}
             </Button>
             <Button
               onClick={ () => { void handleApply() } }
               type="primary"
             >
-              {t('data-hub.operator.apply')}
+              {t('apply')}
             </Button>
           </Flex>
         </Flex>
       }
       onCancel={ onCancel }
       open
+      size="M"
       title={ t('data-hub.operator.dateformatter.settings') }
-      width={ 500 }
     >
-      <Form
-        form={ form }
-        layout="vertical"
+      <FormKit
+        formProps={ {
+          form
+        } }
       >
         <Form.Item
-          label={ t('data-hub.operator.label') }
+          label={ t('data-hub.label') }
           name="label"
-          rules={ [{ required: true, message: t('data-hub.operator.label.required') }] }
+          rules={ [{ required: true, message: t('form.validation.required') }] }
         >
           <Input maxLength={ 255 } />
         </Form.Item>
@@ -93,7 +94,7 @@ export function DateFormatterConfigModal ({ config, onApply, onCancel }: Operato
         >
           <Input maxLength={ 255 } />
         </Form.Item>
-      </Form>
+      </FormKit>
     </Modal>
   )
 }
