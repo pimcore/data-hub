@@ -60,4 +60,19 @@ export abstract class DynamicTypeOperatorAbstract<TAttributes = any> {
   getDescriptionTranslationKey (): string {
     return `data-hub.operator.${this.id.toLowerCase()}.description`
   }
+
+  /**
+   * Get the translation key for the operator group
+   */
+  getGroupTranslationKey (): string {
+    return 'data-hub.operator.group.other'
+  }
+
+  /**
+   * Get the optional subgroup key for organizing operators into folders
+   * Return undefined for no subgroup
+   */
+  getSubGroupKey (): string | undefined {
+    return 'data-hub.operator.subgroup.other'
+  }
 }
