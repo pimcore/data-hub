@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable, ContentLayout, Toolbar } from '@pimcore/studio-ui-bundle/components'
+import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable, ContentLayout, Toolbar, Sidebar, SidebarProvider, Title, SidebarTitle, Box } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
@@ -17,6 +17,7 @@ import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/operators/dynamic-type-operator-registry'
 import { useStyles } from './schema-fields-modal.styles'
+import { useOperatorButtonStyles } from './operator-button.styles'
 import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
 
 interface SchemaFieldsModalProps {
@@ -40,6 +41,7 @@ export const SchemaFieldsModal = ({
 }: SchemaFieldsModalProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
+  const { styles: operatorStyles } = useOperatorButtonStyles()
   const form = Form.useFormInstance()
   const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const { getByName } = useClassDefinitions()
@@ -153,33 +155,36 @@ export const SchemaFieldsModal = ({
     return OperatorTitleRenderer
   }, [])
 
-  // Build tab items for class attributes and operators
-  const tabItems = React.useMemo(() => {
-    const items: Array<{ key: string, label: string, children: React.JSX.Element }> = []
+  // Build sidebar entries for class attributes and operator groups
+  const sidebarEntries = React.useMemo(() => {
+    const entries: Array<{ key: string, icon: React.JSX.Element, tooltip: string, component: React.JSX.Element }> = []
 
-    // Add class attributes tab
-    items.push({
+    // Add class attributes entry
+    entries.push({
       key: 'class-attributes',
-      label: t('data-hub.schema.class-attributes'),
-      icon: <Icon value="object-data" />,
-      children: (
-        <Content
-          loading={ isLoading }
-          padded
-        >
-          <TreeElement
-            defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
-            draggable={ false }
-            selectable={ false }
-            showIcon
-            titleRender={ classAttributesTitleRender }
-            treeData={ classAttributesTree }
-          />
+      icon: <Icon value="data-object" />,
+      tooltip: t('data-hub.schema.class-attributes'),
+      component: (
+        <Content loading={ isLoading }>
+          <SidebarTitle withBorder>
+            {t('data-hub.schema.class-attributes')}
+          </SidebarTitle>
+
+          <Box padding={ { x: 'extra-small', bottom: 'small' } }>
+            <TreeElement
+              defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
+              draggable={ false }
+              selectable={ false }
+              showIcon
+              titleRender={ classAttributesTitleRender }
+              treeData={ classAttributesTree }
+            />
+          </Box>
         </Content>
       )
     })
 
-    // Add operator tabs
+    // Add operator groups
     const operators = operatorRegistry.getDynamicTypes()
     const groups = new Map<string, Map<string | undefined, Array<{ id: string, icon: any, name: string }>>>()
 
@@ -205,128 +210,165 @@ export const SchemaFieldsModal = ({
     })
 
     Array.from(groups.entries()).forEach(([groupKey, subGroups]) => {
-      const treeData: any[] = []
-
-      // Build tree with subgroups and operators
-      Array.from(subGroups.entries()).forEach(([subGroupKey, operators]) => {
-        const sortedOperators = operators.sort((a, b) => a.name.localeCompare(b.name))
-
-        if (subGroupKey === undefined) {
-          // No subgroup - add operators directly
-          sortedOperators.forEach(operator => {
-            treeData.push({
-              key: `${groupKey}-${operator.id}`,
-              title: operator.name,
-              icon: <Icon { ...operator.icon } />,
-              isLeaf: true
-            })
-          })
-        } else {
-          // Has subgroup - create folder
-          treeData.push({
-            key: `${groupKey}-${subGroupKey}`,
-            title: t(subGroupKey),
-            icon: <Icon value="folder" />,
-            children: sortedOperators.map(operator => ({
-              key: `${groupKey}-${subGroupKey}-${operator.id}`,
-              title: operator.name,
-              icon: <Icon { ...operator.icon } />,
-              className: 'ant-tree-node--has-drag-and-drop',
-              isLeaf: true
-            }))
-          })
-        }
-      })
-
-      items.push({
+      entries.push({
         key: groupKey,
-        label: t(groupKey),
-        children: (
-          <Content padded>
-            <TreeElement
+        icon: <Icon value="data-object" />,
+        tooltip: t(groupKey),
+        component: (
+          <Content>
+            <SidebarTitle withBorder>
+              {t(groupKey)}
+            </SidebarTitle>
 
-              defaultExpandedKeys={ collectAllKeys(treeData) }
-              draggable={ false }
-              selectable={ false }
-              showIcon
-              titleRender={ operatorsTitleRender }
-              treeData={ treeData }
-            />
+            <Box>
+              {Array.from(subGroups.entries()).map(([subGroupKey, operators]) => {
+                const sortedOperators = operators.sort((a, b) => a.name.localeCompare(b.name))
+
+                if (subGroupKey === undefined) {
+                  // No subgroup - render operators directly in grid
+                  return (
+                    <Box
+                      className={ operatorStyles.gridContainer }
+                      key={ `${groupKey}-direct` }
+                      padding={ { x: 'extra-small', bottom: 'small' } }
+                    >
+                      {sortedOperators.map(operator => (
+                        <Draggable
+                          info={ {
+                            type: 'operator',
+                            data: {
+                              key: `${groupKey}-${operator.id}`,
+                              title: operator.name,
+                              operatorId: operator.id
+                            },
+                            icon: operator.icon,
+                            title: operator.name
+                          } }
+                          key={ `${groupKey}-${operator.id}` }
+                        >
+                          <Button
+                            className={ operatorStyles.operatorButton }
+                            type="default"
+                          >
+                            <Flex
+                              align="center"
+                              justify="center"
+                              vertical
+                            >
+                              <Icon
+                                { ...operator.icon }
+                                className={ operatorStyles.operatorIcon }
+                                options={ { width: 24, height: 24 } }
+                              />
+                              <span className={ operatorStyles.operatorName }>
+                                {operator.name}
+                              </span>
+                            </Flex>
+                          </Button>
+                        </Draggable>
+                      ))}
+                    </Box>
+                  )
+                } else {
+                  // Has subgroup - use collapsible panel
+                  return (
+                    <Panel
+                      border={ false }
+                      collapsed={ false }
+                      collapsible
+                      contentPadding="extra-small"
+                      key={ `${groupKey}-${subGroupKey}` }
+                      theme="card-with-highlight"
+                      title={ t(subGroupKey) }
+                    >
+                      <Box className={ operatorStyles.gridContainer }>
+                        {sortedOperators.map(operator => (
+                          <Draggable
+                            info={ {
+                              type: 'operator',
+                              data: {
+                                key: `${groupKey}-${subGroupKey}-${operator.id}`,
+                                title: operator.name,
+                                operatorId: operator.id
+                              },
+                              icon: operator.icon,
+                              title: operator.name
+                            } }
+                            key={ `${groupKey}-${subGroupKey}-${operator.id}` }
+                          >
+                            <Button
+                              className={ operatorStyles.operatorButton }
+                              type="default"
+                            >
+                              <Flex
+                                align="center"
+                                justify="center"
+                                vertical
+                              >
+                                <Icon
+                                  { ...operator.icon }
+                                  className={ operatorStyles.operatorIcon }
+                                  options={ { width: 24, height: 24 } }
+                                />
+                                <span className={ operatorStyles.operatorName }>
+                                  {operator.name}
+                                </span>
+                              </Flex>
+                            </Button>
+                          </Draggable>
+                        ))}
+                      </Box>
+                    </Panel>
+                  )
+                }
+              })}
+            </Box>
           </Content>
         )
       })
     })
 
-    return items
-  }, [classAttributesTree, isLoading])
+    return entries
+  }, [operatorRegistry, t, operatorsTitleRender, collectAllKeys, classAttributesTree, isLoading, classAttributesTitleRender])
 
   return (
     <Modal
-      footer={ null }
+      footer={ (
+        <Flex
+          gap="small"
+          justify="flex-end"
+        >
+          <Button
+            onClick={ handleApply }
+            type="primary"
+          >
+            {t('button.apply')}
+          </Button>
+        </Flex>
+      ) }
       key={ `${className}-${type}` }
       onCancel={ onCancel }
       open={ open }
-      size="XXL"
+      size="XL"
       title={ t(`data-hub.schema.${type}-modal-title`, { entity: className }) }
     >
       <ContentLayout
         className={ styles.contentLayout }
-        renderToolbar={ (
-          <Toolbar
-              padding={ { x: 'none' } }
-              position="bottom"
-              theme="secondary"
-            >
-              <Flex
-                gap="small"
-                justify="flex-end"
-                style={ { width: '100%' } }
-              >
-                <Button
-                  onClick={ handleApply }
-                  type="primary"
-                >
-                  {t('button.apply')}
-                </Button>
-              </Flex>
-            </Toolbar>
-          ) }
+        renderSidebar={ (
+          <SidebarProvider initialActiveTab={ sidebarEntries[0]?.key }>
+            <Sidebar
+              entries={ sidebarEntries }
+              sizing="large"
+            />
+          </SidebarProvider>
+        ) }
         >
-          <Content style={ { height: '100%' } }>
-            <ConfigLayout
-            withToolbar={ false }
-              leftItem={ {
-                minSize: 200,
-                size: 400,
-                maxSize: 600,
-                children: (
-                  <Tabs
-                    className={ styles.tabs }
-                    defaultActiveKey="class-attributes"
-                    items={ tabItems }
-                    size="small"
-                    style={ { height: '100%' } }
-                    tabPosition="left"
-                  />
-                )
-              } }
-              resizeAble
-              rightItem={ {
-                children: (
-                  <Content padded>
-                    <Panel
-                      theme="default"
-                      title={ t('data-hub.schema.available-fields') }
-                    >
-                      <AvailableFieldsTree
-                        entityConfig={ localEntityConfig }
-                        onEntityConfigChange={ setLocalEntityConfig }
-                        operatorRegistryServiceId={ operatorRegistryServiceId }
-                      />
-                    </Panel>
-                  </Content>
-                )
-              } }
+          <Content>
+            <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
+            <AvailableFieldsTree
+              entityConfig={ localEntityConfig }
+              onEntityConfigChange={ setLocalEntityConfig }
+              operatorRegistryServiceId={ operatorRegistryServiceId }
             />
           </Content>
         </ContentLayout>
