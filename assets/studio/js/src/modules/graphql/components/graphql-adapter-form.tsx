@@ -33,7 +33,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
   const [updateConfig, { error: updateError, isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
   const portalId = 'data-hub-save-button'
-
+   
   useEffect(() => {
     if (!isNil(updateError)) {
       trackError(new ApiError(updateError))

@@ -10,19 +10,18 @@
 
 import React, { useState, useEffect } from 'react'
 import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable } from '@pimcore/studio-ui-bundle/components'
-import { useTranslation, useInjection, serviceIds } from '@pimcore/studio-ui-bundle/app'
+import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
 import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/operators/dynamic-type-operator-registry'
-import { useClassDefinitionGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/class-definition'
-import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-definitions'
-import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { useStyles } from './schema-fields-modal.styles'
+import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
 
 interface SchemaFieldsModalProps {
   open: boolean
-  entityName: string
+  className: string
   operatorRegistryServiceId: string
   type?: 'query' | 'mutation'
   onCancel: () => void
@@ -32,7 +31,7 @@ interface SchemaFieldsModalProps {
 
 export const SchemaFieldsModal = ({
   open,
-  entityName,
+  className,
   operatorRegistryServiceId,
   type = 'query',
   onCancel,
@@ -43,11 +42,13 @@ export const SchemaFieldsModal = ({
   const { styles } = useStyles()
   const form = Form.useFormInstance()
   const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
-  const { data: classLayout } = useClassDefinitionGetLayoutByIdQuery(
-    { id: 'EV' },
-    { skip: !open }
-  )
-  const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
+  const { getByName } = useClassDefinitions()
+
+  const classDefinition = getByName(className)
+  const { classAttributesTree, isLoading } = useClassAttributesTree({
+    classId: classDefinition?.id ?? '',
+    enabled: open && classDefinition !== undefined
+  })
 
   const [localEntityConfig, setLocalEntityConfig] = useState<QueryEntityConfig | undefined>(undefined)
 
@@ -66,74 +67,17 @@ export const SchemaFieldsModal = ({
     return keys
   }
 
-  // Build class attributes tree
-  const classAttributesTree = React.useMemo(() => {
-    let treeData: any[] = []
-    try {
-      if (isNil(classLayout)) {
-        treeData = []
-      } else {
-        // classLayout IS the layout object itself, not wrapped
-        const reduced = reduce({ layout: classLayout })
-
-        if (reduced?.structure === undefined) {
-          treeData = []
-        } else {
-          const { structure, fieldDefinitions } = reduced
-
-          const tree = buildTree({
-            structure,
-            fieldDefinitions,
-            itemCallback: ({ fieldDefinition, initialTreeItem }) => {
-              // Get the icon props from the field definition registry
-              const dynType = fieldDefinitionRegistry.hasDynamicType(fieldDefinition.fieldtype)
-                ? fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype)
-                : undefined
-              
-              // Destructure to exclude the icon (React element) from initialTreeItem
-              // The icon from buildTree is a React element which can cause DnD issues
-              const { icon: _icon, ...restTreeItem } = initialTreeItem
-              
-              return {
-                ...restTreeItem,
-                className: 'ant-tree-node--has-drag-and-drop',
-                // Re-add the icon from initialTreeItem (it's already correct for display)
-                icon: initialTreeItem.icon,
-                // Add dataType from fieldDefinition for use in drag data
-                dataType: fieldDefinition.fieldtype,
-                // Add serializable icon props for drag overlay (NOT React element)
-                iconProps: dynType !== undefined ? dynType.getIcon() : { value: 'field' }
-              }
-            }
-          })
-
-          // buildTree returns a single root node object, not an array
-          // We want to show the children of the root node
-          if (!isNil(tree?.children) && Array.isArray(tree.children)) {
-            treeData = tree.children
-          } else {
-            treeData = []
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error building class attributes tree:', error)
-      treeData = []
-    }
-    return treeData
-  }, [classLayout, fieldDefinitionRegistry])
-
   useEffect(() => {
     if (open) {
       const entities = form.getFieldValue(['schema', type]) ?? []
-      const entity: QueryEntityConfig | undefined = entities.find((e: any) => e.entity === entityName)
+      const entity: QueryEntityConfig | undefined = entities.find((e: any) => e.entity === className)
       setLocalEntityConfig(!isNil(entity) ? JSON.parse(JSON.stringify(entity)) as QueryEntityConfig : undefined)
     }
-  }, [open, form, entityName, type])
+  }, [open, form, className, type])
 
   const handleApply = (): void => {
     const entities = form.getFieldValue(['schema', type]) ?? []
-    const entityIndex = entities.findIndex((e: any) => e.entity === entityName)
+    const entityIndex = entities.findIndex((e: any) => e.entity === className)
 
     if (entityIndex !== -1 && !isNil(localEntityConfig)) {
       const updatedEntities = [...entities]
@@ -202,15 +146,19 @@ export const SchemaFieldsModal = ({
       key: 'class-attributes',
       label: t('data-hub.schema.class-attributes'),
       children: (
-
-        <TreeElement
-          defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
-          draggable={ false }
-          selectable={ false }
-          showIcon
-          titleRender={ classAttributesTitleRender }
-          treeData={ classAttributesTree }
-        />
+        <Content
+          loading={ isLoading }
+          padded
+        >
+          <TreeElement
+            defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
+            draggable={ false }
+            selectable={ false }
+            showIcon
+            titleRender={ classAttributesTitleRender }
+            treeData={ classAttributesTree }
+          />
+        </Content>
       )
     })
 
@@ -293,7 +241,7 @@ export const SchemaFieldsModal = ({
     })
 
     return items
-  }, [operatorRegistry, t, classAttributesTree])
+  }, [classAttributesTree, isLoading])
 
   return (
     <Modal
@@ -310,10 +258,11 @@ export const SchemaFieldsModal = ({
           </Button>
         </Flex>
       ) }
+      key={ `${className}-${type}` }
       onCancel={ onCancel }
       open={ open }
       size="XL"
-      title={ t(`data-hub.schema.${type}-modal-title`, { entity: entityName }) }
+      title={ t(`data-hub.schema.${type}-modal-title`, { entity: className }) }
     >
       <div style={ { height: '600px' } }>
         <ConfigLayout
@@ -343,7 +292,7 @@ export const SchemaFieldsModal = ({
                 >
                   <AvailableFieldsTree
                     entityConfig={ localEntityConfig }
-                    entityName={ entityName }
+                    entityName={ className }
                     onEntityConfigChange={ setLocalEntityConfig }
                     operatorRegistryServiceId={ operatorRegistryServiceId }
                   />

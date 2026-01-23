@@ -109,7 +109,7 @@ export const QueryGrid = ({ value = [], onChange, onFormChange }: QueryGridProps
       </OperationalGrid>
 
       <SchemaFieldsModal
-        entityName={ selectedEntity?.entity ?? '' }
+        className={ selectedEntity?.entity ?? '' }
         onApply={ () => { setModalOpen(false) } }
         onCancel={ () => { setModalOpen(false) } }
         onFormChange={ onFormChange }

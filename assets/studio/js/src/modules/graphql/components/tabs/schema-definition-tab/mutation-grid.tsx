@@ -143,7 +143,7 @@ export const MutationGrid = ({ value = [], onChange, onFormChange }: MutationGri
 
       {!isNil(selectedEntity) && (
         <SchemaFieldsModal
-          entityName={ selectedEntity.entity }
+          className={ selectedEntity.entity }
           onApply={ () => { setModalOpen(false) } }
           onCancel={ () => { setModalOpen(false) } }
           onFormChange={ onFormChange }
