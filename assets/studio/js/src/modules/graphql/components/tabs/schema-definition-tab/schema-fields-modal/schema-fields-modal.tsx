@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable } from '@pimcore/studio-ui-bundle/components'
+import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable, ContentLayout, Toolbar } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
@@ -95,44 +95,60 @@ export const SchemaFieldsModal = ({
 
   // Create titleRender for class attributes
   const classAttributesTitleRender = React.useMemo(() => {
-    const ClassAttributeTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => (
-      <Draggable
-        info={ {
-          type: 'class-attribute',
-          data: {
-            key: String(node.key),
-            title: String(node.title),
-            dataType: String(node.dataType ?? 'text')
-          },
-          icon: node.iconProps ?? { value: 'field' },
-          title: String(node.title)
-        } }
-      >
-        {initialComponent}
-      </Draggable>
-    )
+    const ClassAttributeTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => {
+      const isLeaf = node.isLeaf === true || (isNil(node.children) || node.children.length === 0)
+
+      if (!isLeaf) {
+        return <>{initialComponent}</>
+      }
+
+      return (
+        <Draggable
+          info={ {
+            type: 'class-attribute',
+            data: {
+              key: String(node.key),
+              title: String(node.title),
+              dataType: String(node.dataType ?? 'text')
+            },
+            icon: node.iconProps ?? { value: 'field' },
+            title: String(node.title)
+          } }
+        >
+          {initialComponent}
+        </Draggable>
+      )
+    }
     ClassAttributeTitleRenderer.displayName = 'ClassAttributeTitleRenderer'
     return ClassAttributeTitleRenderer
   }, [])
 
   // Create titleRender for operators
   const operatorsTitleRender = React.useMemo(() => {
-    const OperatorTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => (
-      <Draggable
-        info={ {
-          type: 'operator',
-          data: {
-            key: String(node.key),
-            title: String(node.title),
-            operatorId: String(node.key.toString().split('-').pop())
-          },
-          icon: { value: 'function' },
-          title: String(node.title)
-        } }
-      >
-        {initialComponent}
-      </Draggable>
-    )
+    const OperatorTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => {
+      const isLeaf = node.isLeaf === true || (isNil(node.children) || node.children.length === 0)
+
+      if (!isLeaf) {
+        return <>{initialComponent}</>
+      }
+
+      return (
+        <Draggable
+          info={ {
+            type: 'operator',
+            data: {
+              key: String(node.key),
+              title: String(node.title),
+              operatorId: String(node.key.toString().split('-').pop())
+            },
+            icon: { value: 'function' },
+            title: String(node.title)
+          } }
+        >
+          {initialComponent}
+        </Draggable>
+      )
+    }
     OperatorTitleRenderer.displayName = 'OperatorTitleRenderer'
     return OperatorTitleRenderer
   }, [])
@@ -145,6 +161,7 @@ export const SchemaFieldsModal = ({
     items.push({
       key: 'class-attributes',
       label: t('data-hub.schema.class-attributes'),
+      icon: <Icon value="object-data" />,
       children: (
         <Content
           loading={ isLoading }
@@ -245,63 +262,75 @@ export const SchemaFieldsModal = ({
 
   return (
     <Modal
-      footer={ (
-        <Flex
-          gap="small"
-          justify="flex-end"
-        >
-          <Button
-            onClick={ handleApply }
-            type="primary"
-          >
-            {t('button.apply')}
-          </Button>
-        </Flex>
-      ) }
+      footer={ null }
       key={ `${className}-${type}` }
       onCancel={ onCancel }
       open={ open }
-      size="XL"
+      size="XXL"
       title={ t(`data-hub.schema.${type}-modal-title`, { entity: className }) }
     >
-      <div style={ { height: '600px' } }>
-        <ConfigLayout
-          leftItem={ {
-            minSize: 200,
-            size: 400,
-            maxSize: 600,
-            children: (
-              <Tabs
-                className={ styles.tabs }
-                defaultActiveKey="class-attributes"
-                hasStickyHeader
-                items={ tabItems }
-                size="small"
-                style={ { height: '100%' } }
-                tabPosition="left"
-              />
-            )
-          } }
-          resizeAble
-          rightItem={ {
-            children: (
-              <Content padded>
-                <Panel
-                  theme="default"
-                  title={ t('data-hub.schema.available-fields') }
+      <ContentLayout
+        className={ styles.contentLayout }
+        renderToolbar={ (
+          <Toolbar
+              padding={ { x: 'none' } }
+              position="bottom"
+              theme="secondary"
+            >
+              <Flex
+                gap="small"
+                justify="flex-end"
+                style={ { width: '100%' } }
+              >
+                <Button
+                  onClick={ handleApply }
+                  type="primary"
                 >
-                  <AvailableFieldsTree
-                    entityConfig={ localEntityConfig }
-                    entityName={ className }
-                    onEntityConfigChange={ setLocalEntityConfig }
-                    operatorRegistryServiceId={ operatorRegistryServiceId }
+                  {t('button.apply')}
+                </Button>
+              </Flex>
+            </Toolbar>
+          ) }
+        >
+          <Content style={ { height: '100%' } }>
+            <ConfigLayout
+            withToolbar={ false }
+              leftItem={ {
+                minSize: 200,
+                size: 400,
+                maxSize: 600,
+                children: (
+                  <Tabs
+                    className={ styles.tabs }
+                    defaultActiveKey="class-attributes"
+                    hasStickyHeader
+                    items={ tabItems }
+                    size="small"
+                    style={ { height: '100%' } }
+                    tabPosition="left"
                   />
-                </Panel>
-              </Content>
-            )
-          } }
-        />
-      </div>
+                )
+              } }
+              resizeAble
+              rightItem={ {
+                children: (
+                  <Content padded>
+                    <Panel
+                      theme="default"
+                      title={ t('data-hub.schema.available-fields') }
+                    >
+                      <AvailableFieldsTree
+                        entityConfig={ localEntityConfig }
+                        onEntityConfigChange={ setLocalEntityConfig }
+                        operatorRegistryServiceId={ operatorRegistryServiceId }
+                      />
+                    </Panel>
+                  </Content>
+                )
+              } }
+            />
+          </Content>
+        </ContentLayout>
     </Modal>
   )
 }

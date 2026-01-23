@@ -30,7 +30,7 @@ export const useClassAttributesTree = ({
   enabled
 }: UseClassAttributesTreeProps): UseClassAttributesTreeReturn => {
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
-  
+
   const { data: classLayout, isLoading, isFetching } = useClassDefinitionGetLayoutByIdQuery(
     { id: classId },
     { skip: !enabled }
@@ -58,11 +58,11 @@ export const useClassAttributesTree = ({
               const dynType = fieldDefinitionRegistry.hasDynamicType(fieldDefinition.fieldtype)
                 ? fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype)
                 : undefined
-              
+
               // Destructure to exclude the icon (React element) from initialTreeItem
               // The icon from buildTree is a React element which can cause DnD issues
               const { icon: _icon, ...restTreeItem } = initialTreeItem
-              
+
               return {
                 ...restTreeItem,
                 className: 'ant-tree-node--has-drag-and-drop',

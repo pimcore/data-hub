@@ -231,25 +231,76 @@ export const useAvailableFieldsState = ({
   // Move an item into an operator as a child
   const moveIntoOperator = useCallback((item: ChildItem, operatorKey: string, workingColumns?: ColumnConfig[]): void => {
     const baseColumns = workingColumns ?? columns
-    const operatorIndex = baseColumns.findIndex(col => col.key === operatorKey)
-    if (operatorIndex === -1) return
-
     const newColumns = [...baseColumns]
-    const operator = { ...newColumns[operatorIndex] }
-    const children = Array.isArray(operator.attributes.children)
-      ? [...operator.attributes.children]
-      : []
 
     const childItem: ChildItem = {
       ...item,
       // Only generate new UUID if item doesn't have a key (new items), preserve key for moves
       key: isNonEmptyString(item.key) ? item.key : uuid()
     }
-    children.push(childItem)
 
-    operator.attributes = { ...operator.attributes, children }
-    newColumns[operatorIndex] = operator
-    updateColumns(newColumns)
+    // Recursive function to find and add child to operator at any level
+    const addChildToOperator = (children: ChildItem[], targetKey: string): boolean => {
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i]
+        
+        if (child.key === targetKey) {
+          // Found the target operator - add the child to it
+          const childChildren = Array.isArray(child.attributes.children)
+            ? [...child.attributes.children]
+            : []
+          childChildren.push(childItem)
+          children[i] = {
+            ...child,
+            attributes: { ...child.attributes, children: childChildren }
+          }
+          return true
+        }
+
+        // Recursively search in this child's children
+        if (Array.isArray(child.attributes.children) && child.attributes.children.length > 0) {
+          const childrenCopy = [...child.attributes.children]
+          if (addChildToOperator(childrenCopy, targetKey)) {
+            children[i] = {
+              ...child,
+              attributes: { ...child.attributes, children: childrenCopy }
+            }
+            return true
+          }
+        }
+      }
+      return false
+    }
+
+    // First check if it's a top-level operator
+    const operatorIndex = newColumns.findIndex(col => col.key === operatorKey)
+    if (operatorIndex !== -1) {
+      const operator = { ...newColumns[operatorIndex] }
+      const children = Array.isArray(operator.attributes.children)
+        ? [...operator.attributes.children]
+        : []
+      children.push(childItem)
+      operator.attributes = { ...operator.attributes, children }
+      newColumns[operatorIndex] = operator
+      updateColumns(newColumns)
+      return
+    }
+
+    // If not found at top level, search recursively in all columns
+    for (let i = 0; i < newColumns.length; i++) {
+      const column = newColumns[i]
+      if (Array.isArray(column.attributes.children) && column.attributes.children.length > 0) {
+        const childrenCopy = [...column.attributes.children]
+        if (addChildToOperator(childrenCopy, operatorKey)) {
+          newColumns[i] = {
+            ...column,
+            attributes: { ...column.attributes, children: childrenCopy }
+          }
+          updateColumns(newColumns)
+          return
+        }
+      }
+    }
   }, [columns, updateColumns])
 
   // Move an item as sibling to another child

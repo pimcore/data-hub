@@ -10,7 +10,7 @@
 
 import { createStyles } from 'antd-style'
 
-export const useStyles = createStyles(({ css }) => {
+export const useStyles = createStyles(({ css, token }) => {
   return {
     tabs: css`
       .ant-tabs-nav {
@@ -29,7 +29,14 @@ export const useStyles = createStyles(({ css }) => {
         height: 100%;
       }
       
+      &.ant-tabs-left > .ant-tabs-nav {
+        border-right: 1px solid ${token.colorBorderTertiary};
+      }
+    `,
     
+    contentLayout: css`
+      height: 80vh;
+      border-top: 1px solid ${token.colorBorderTertiary};
     `
   }
 })
