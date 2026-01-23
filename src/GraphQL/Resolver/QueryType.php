@@ -375,6 +375,7 @@ final class QueryType
         );
 
         $this->eventDispatcher->dispatch($event, ListingEvents::PRE_BUILD);
+        $args = $event->getArguments();
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';
