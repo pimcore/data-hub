@@ -8,14 +8,15 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import { Icon, TreeElement } from '@pimcore/studio-ui-bundle/components'
-import { type TreeNode, type QueryEntityConfig, type ColumnConfig } from './types'
-import { useInjection, serviceIds } from '@pimcore/studio-ui-bundle/app'
-import { uuid, isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
+import { type TreeNode, type QueryEntityConfig, type ColumnConfig } from '../types'
+import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
-import { type DynamicTypeOperatorRegistry } from '../../../../../operators/dynamic-type-operator-registry'
+import { type DynamicTypeOperatorRegistry } from '../../../../../../operators/dynamic-type-operator-registry'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
+import { TreeNodeTitleRenderer } from './tree-node-title-renderer'
+import { AvailableFieldsProvider, useAvailableFieldsContext } from './available-fields-context'
 
 interface AvailableFieldsTreeProps {
   className?: string
@@ -25,43 +26,12 @@ interface AvailableFieldsTreeProps {
   onEntityConfigChange: (config: QueryEntityConfig) => void
 }
 
-const enrichConfigWithUUIDs = (config: QueryEntityConfig): QueryEntityConfig => {
-  if (config?.columnConfig?.columns === undefined) {
-    return config
-  }
-
-  const enrichedColumns = config.columnConfig.columns.map(column => {
-    if (!isNonEmptyString(column.key)) {
-      column.key = uuid()
-    }
-
-    if (Array.isArray(column.attributes.children)) {
-      column.attributes.children = column.attributes.children.map(child => {
-        if (!isNonEmptyString(child.key)) {
-          child.key = uuid()
-        }
-        return child
-      })
-    }
-
-    return column
-  })
-
-  return {
-    ...config,
-    columnConfig: {
-      ...config.columnConfig,
-      columns: enrichedColumns
-    }
-  }
-}
-
-const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorRegistry: DynamicTypeOperatorRegistry, fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry): TreeNode[] => {
-  if (config?.columnConfig?.columns === undefined) {
+const buildTreeFromColumns = (columns: ColumnConfig[], operatorRegistry: DynamicTypeOperatorRegistry, fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry): TreeNode[] => {
+  if (columns.length === 0) {
     return []
   }
 
-  const fieldNodes: TreeNode[] = config.columnConfig.columns.map((column, index) => {
+  const fieldNodes: TreeNode[] = columns.map((column, index) => {
     const { attributes, isOperator, key } = column
     const nodeKey = key!
 
@@ -82,6 +52,7 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
             )
           : undefined,
         columnConfig: column,
+        className: 'ant-tree-node--has-drag-and-drop',
         actions: [
           { key: 'edit', icon: 'edit' },
           { key: 'delete', icon: 'trash' }
@@ -110,6 +81,7 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
               : undefined,
             columnConfig: column,
             childIndex,
+            className: 'ant-tree-node--has-drag-and-drop',
             actions: [
               { key: 'delete', icon: 'trash' }
             ]
@@ -136,6 +108,7 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
           )
         : undefined,
       columnConfig: column,
+      className: 'ant-tree-node--has-drag-and-drop',
       actions: [
         { key: 'delete', icon: 'trash' }
       ],
@@ -146,116 +119,62 @@ const buildTreeFromColumns = (config: QueryEntityConfig | undefined, operatorReg
   return fieldNodes
 }
 
-export const AvailableFieldsTree = ({ entityConfig, entityName, operatorRegistryServiceId, onEntityConfigChange }: AvailableFieldsTreeProps): React.JSX.Element => {
+/** Inner component that uses the context */
+const AvailableFieldsTreeInner = (): React.JSX.Element => {
+  const {
+    columns,
+    treeData,
+    operatorRegistry,
+    updateColumns,
+    findColumnByKey,
+    deleteItem
+  } = useAvailableFieldsContext()
+
   const [operatorModalConfig, setOperatorModalConfig] = useState<{
     column: ColumnConfig
     operatorId: string
     columnIndex: number
   } | null>(null)
 
-  const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
-  const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
+  const handleModalApply = useCallback((updatedConfig: ColumnConfig): void => {
+    if (isNil(operatorModalConfig)) return
 
-  const enrichedConfig = useMemo(() => {
-    if (entityConfig === undefined) return entityConfig
-    return enrichConfigWithUUIDs(entityConfig)
-  }, [entityConfig])
+    const newColumns = [...columns]
+    newColumns[operatorModalConfig.columnIndex] = updatedConfig
 
-  const updateColumns = (columns: ColumnConfig[]): void => {
-    if (isNil(enrichedConfig)) return
-
-    const updatedEntity = {
-      ...enrichedConfig,
-      columnConfig: {
-        ...enrichedConfig.columnConfig,
-        columns
-      }
-    }
-
-    onEntityConfigChange(updatedEntity)
-  }
-
-  const handleModalApply = (updatedConfig: ColumnConfig): void => {
-    if (isNil(operatorModalConfig) || isNil(enrichedConfig)) return
-
-    const columns = [...(enrichedConfig.columnConfig?.columns ?? [])]
-    columns[operatorModalConfig.columnIndex] = updatedConfig
-
-    updateColumns(columns)
+    updateColumns(newColumns)
     setOperatorModalConfig(null)
-  }
+  }, [operatorModalConfig, columns, updateColumns])
 
-  const handleModalCancel = (): void => {
+  const handleModalCancel = useCallback((): void => {
     setOperatorModalConfig(null)
-  }
+  }, [])
 
-  const handleActionsClick = (key: string, action: string): void => {
-    const findTreeNode = (nodes: TreeNode[], searchKey: string): TreeNode | null => {
-      for (const treeNode of nodes) {
-        if (treeNode.key === searchKey) {
-          return treeNode
-        }
-        if (treeNode.children !== undefined) {
-          const found = findTreeNode(treeNode.children, searchKey)
-          if (!isNil(found)) return found
-        }
-      }
-      return null
-    }
-
-    const treeNode = findTreeNode(treeData, key)
-    if (isNil(treeNode?.columnConfig)) {
+  const handleActionsClick = useCallback((key: string, action: string): void => {
+    if (action === 'delete') {
+      deleteItem(key)
       return
     }
 
-    const { columnConfig, childIndex } = treeNode
+    if (action === 'edit') {
+      const found = findColumnByKey(key)
+      if (found === undefined) return
+      
+      // Only top-level operators can be edited (no childIndex means it's top-level)
+      if (found.childIndex !== undefined) return
+      
+      if (!isNonEmptyString(found.column.attributes.class)) return
 
-    if (action === 'delete') {
-      if (isNil(enrichedConfig)) return
-
-      if (childIndex !== undefined) {
-        const columns = [...(enrichedConfig.columnConfig?.columns ?? [])]
-        const columnIndex = columns.findIndex(c => c === columnConfig)
-        if (columnIndex === -1) return
-
-        const updatedColumn = {
-          ...columnConfig,
-          attributes: {
-            ...columnConfig.attributes,
-            children: [...(columnConfig.attributes.children ?? [])]
-          }
-        }
-        updatedColumn.attributes.children.splice(childIndex, 1)
-
-        columns[columnIndex] = updatedColumn
-
-        updateColumns(columns)
-      } else {
-        const columns = [...(enrichedConfig.columnConfig?.columns ?? [])]
-        const columnIndex = columns.findIndex(c => c === columnConfig)
-        if (columnIndex === -1) return
-
-        columns.splice(columnIndex, 1)
-
-        updateColumns(columns)
-      }
-    } else if (action === 'edit') {
-      if (!isNonEmptyString(columnConfig.attributes.class)) {
-        return
-      }
-
-      const columnIndex = enrichedConfig?.columnConfig?.columns?.findIndex(c => c === columnConfig) ?? -1
+      const columnIndex = columns.findIndex(c => c.key === found.column.key)
       if (columnIndex === -1) return
 
       setOperatorModalConfig({
-        column: columnConfig,
-        operatorId: columnConfig.attributes.class,
+        column: columns[columnIndex],
+        operatorId: found.column.attributes.class,
         columnIndex
       })
     }
-  }
-
-  const treeData = useMemo(() => buildTreeFromColumns(enrichedConfig, operatorRegistry, fieldDefinitionRegistry), [enrichedConfig, operatorRegistry, fieldDefinitionRegistry])
+  }, [columns, deleteItem, findColumnByKey])
 
   const allKeys = useMemo(() => {
     const keys: string[] = []
@@ -271,6 +190,15 @@ export const AvailableFieldsTree = ({ entityConfig, entityName, operatorRegistry
     return keys
   }, [treeData])
 
+  const titleRender = useCallback((node: TreeNode, initialComponent: React.ReactNode): React.JSX.Element => {
+    return (
+      <TreeNodeTitleRenderer
+        initialComponent={ initialComponent }
+        node={ node }
+      />
+    )
+  }, [])
+
   return (
     <>
       <TreeElement
@@ -279,6 +207,7 @@ export const AvailableFieldsTree = ({ entityConfig, entityName, operatorRegistry
         onActionsClick={ handleActionsClick }
         selectable={ false }
         showIcon
+        titleRender={ titleRender }
         treeData={ treeData }
       />
 
@@ -293,5 +222,23 @@ export const AvailableFieldsTree = ({ entityConfig, entityName, operatorRegistry
         })
       })()}
     </>
+  )
+}
+
+/** Main component that provides the context */
+export const AvailableFieldsTree = ({
+  entityConfig,
+  operatorRegistryServiceId,
+  onEntityConfigChange
+}: AvailableFieldsTreeProps): React.JSX.Element => {
+  return (
+    <AvailableFieldsProvider
+      buildTreeFromColumns={ buildTreeFromColumns }
+      entityConfig={ entityConfig }
+      onEntityConfigChange={ onEntityConfigChange }
+      operatorRegistryServiceId={ operatorRegistryServiceId }
+    >
+      <AvailableFieldsTreeInner />
+    </AvailableFieldsProvider>
   )
 }

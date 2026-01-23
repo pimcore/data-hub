@@ -10,6 +10,16 @@
 
 import { type TreeDataItem } from '@pimcore/studio-ui-bundle/components'
 
+export interface ChildAttribute {
+  key?: string
+  attributes?: {
+    attribute?: string
+    label?: string
+    dataType?: string
+  }
+  isOperator?: boolean
+}
+
 export interface FieldAttribute {
   attribute?: string
   label: string
@@ -17,7 +27,7 @@ export interface FieldAttribute {
   layout?: Record<string, any>
   type?: string
   class?: string
-  children?: FieldAttribute[]
+  children?: ChildAttribute[]
   key?: string
 }
 

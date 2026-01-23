@@ -51,4 +51,8 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
   getGroupTranslationKey (): string {
     return 'data-hub.operator.group.formatter'
   }
+
+  getMaxChildCount (): number {
+    return 1
+  }
 }

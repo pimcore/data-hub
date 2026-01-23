@@ -8,14 +8,13 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
-import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel } from '@pimcore/studio-ui-bundle/components'
+import React, { useState, useEffect } from 'react'
+import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation, useInjection, serviceIds } from '@pimcore/studio-ui-bundle/app'
 import { AvailableFieldsTree } from './available-fields-tree'
 import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/operators/dynamic-type-operator-registry'
-import { uuid } from '@pimcore/studio-ui-bundle/utils'
 import { useClassDefinitionGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
@@ -51,68 +50,78 @@ export const SchemaFieldsModal = ({
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
 
   const [localEntityConfig, setLocalEntityConfig] = useState<QueryEntityConfig | undefined>(undefined)
-  
+
   // Helper function to collect all keys from tree
   const collectAllKeys = (nodes: any[]): string[] => {
     const keys: string[] = []
-    const traverse = (items: any[]) => {
+    const traverse = (items: any[]): void => {
       items.forEach(item => {
-        if (item.key) keys.push(item.key)
-        if (item.children && Array.isArray(item.children)) {
-          traverse(item.children)
+        if (!isNil(item.key)) keys.push(String(item.key))
+        if (!isNil(item.children) && Array.isArray(item.children)) {
+          traverse(item.children as any[])
         }
       })
     }
     traverse(nodes)
     return keys
   }
-  
+
   // Build class attributes tree
-  let classAttributesTree: any[] = []
-  try {
-    if (!classLayout) {
-      classAttributesTree = []
-    } else {
-      // classLayout IS the layout object itself, not wrapped
-      const reduced = reduce({ layout: classLayout })
-    
-      if (reduced === undefined || reduced.structure === undefined) {
-        classAttributesTree = []
+  const classAttributesTree = React.useMemo(() => {
+    let treeData: any[] = []
+    try {
+      if (isNil(classLayout)) {
+        treeData = []
       } else {
-        const { structure, fieldDefinitions } = reduced
+        // classLayout IS the layout object itself, not wrapped
+        const reduced = reduce({ layout: classLayout })
 
-        const tree = buildTree({
-          structure,
-          fieldDefinitions,
-          itemCallback: ({ fieldDefinition, initialTreeItem }) => {
-            let icon = <Icon value="asterisk" />
-            
-            if (fieldDefinitionRegistry.hasDynamicType(fieldDefinition.fieldtype)) {
-              const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype)
-              icon = <Icon {...dynType.getIcon()} iconColorGroup="fieldDefinition" />
-            }
-
-            return {
-              ...initialTreeItem,
-              icon,
-              title: fieldDefinition.title ?? fieldDefinition.name ?? 'Untitled'
-            }
-          }
-        })
-
-        // buildTree returns a single root node object, not an array
-        // We want to show the children of the root node
-        if (tree && tree.children && Array.isArray(tree.children)) {
-          classAttributesTree = tree.children
+        if (reduced?.structure === undefined) {
+          treeData = []
         } else {
-          classAttributesTree = []
+          const { structure, fieldDefinitions } = reduced
+
+          const tree = buildTree({
+            structure,
+            fieldDefinitions,
+            itemCallback: ({ fieldDefinition, initialTreeItem }) => {
+              // Get the icon props from the field definition registry
+              const dynType = fieldDefinitionRegistry.hasDynamicType(fieldDefinition.fieldtype)
+                ? fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype)
+                : undefined
+              
+              // Destructure to exclude the icon (React element) from initialTreeItem
+              // The icon from buildTree is a React element which can cause DnD issues
+              const { icon: _icon, ...restTreeItem } = initialTreeItem
+              
+              return {
+                ...restTreeItem,
+                className: 'ant-tree-node--has-drag-and-drop',
+                // Re-add the icon from initialTreeItem (it's already correct for display)
+                icon: initialTreeItem.icon,
+                // Add dataType from fieldDefinition for use in drag data
+                dataType: fieldDefinition.fieldtype,
+                // Add serializable icon props for drag overlay (NOT React element)
+                iconProps: dynType !== undefined ? dynType.getIcon() : { value: 'field' }
+              }
+            }
+          })
+
+          // buildTree returns a single root node object, not an array
+          // We want to show the children of the root node
+          if (!isNil(tree?.children) && Array.isArray(tree.children)) {
+            treeData = tree.children
+          } else {
+            treeData = []
+          }
         }
       }
+    } catch (error) {
+      console.error('Error building class attributes tree:', error)
+      treeData = []
     }
-  } catch (error) {
-    console.error('Error building class attributes tree:', error)
-    classAttributesTree = []
-  }
+    return treeData
+  }, [classLayout, fieldDefinitionRegistry])
 
   useEffect(() => {
     if (open) {
@@ -140,6 +149,50 @@ export const SchemaFieldsModal = ({
     onApply()
   }
 
+  // Create titleRender for class attributes
+  const classAttributesTitleRender = React.useMemo(() => {
+    const ClassAttributeTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => (
+      <Draggable
+        info={ {
+          type: 'class-attribute',
+          data: {
+            key: String(node.key),
+            title: String(node.title),
+            dataType: String(node.dataType ?? 'text')
+          },
+          icon: node.iconProps ?? { value: 'field' },
+          title: String(node.title)
+        } }
+      >
+        {initialComponent}
+      </Draggable>
+    )
+    ClassAttributeTitleRenderer.displayName = 'ClassAttributeTitleRenderer'
+    return ClassAttributeTitleRenderer
+  }, [])
+
+  // Create titleRender for operators
+  const operatorsTitleRender = React.useMemo(() => {
+    const OperatorTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => (
+      <Draggable
+        info={ {
+          type: 'operator',
+          data: {
+            key: String(node.key),
+            title: String(node.title),
+            operatorId: String(node.key.toString().split('-').pop())
+          },
+          icon: { value: 'function' },
+          title: String(node.title)
+        } }
+      >
+        {initialComponent}
+      </Draggable>
+    )
+    OperatorTitleRenderer.displayName = 'OperatorTitleRenderer'
+    return OperatorTitleRenderer
+  }, [])
+
   // Build tab items for class attributes and operators
   const tabItems = React.useMemo(() => {
     const items: Array<{ key: string, label: string, children: React.JSX.Element }> = []
@@ -149,15 +202,15 @@ export const SchemaFieldsModal = ({
       key: 'class-attributes',
       label: t('data-hub.schema.class-attributes'),
       children: (
-        <Content padded>
-          <TreeElement
-            blockNode
-            defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
-            selectable={ false }
-            showIcon
-            treeData={ classAttributesTree }
-          />
-        </Content>
+
+        <TreeElement
+          defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
+          draggable={ false }
+          selectable={ false }
+          showIcon
+          titleRender={ classAttributesTitleRender }
+          treeData={ classAttributesTree }
+        />
       )
     })
 
@@ -169,16 +222,16 @@ export const SchemaFieldsModal = ({
     operators.forEach(operator => {
       const groupKey = operator.getGroupTranslationKey()
       const subGroupKey = operator.getSubGroupKey()
-      
+
       if (!groups.has(groupKey)) {
         groups.set(groupKey, new Map())
       }
-      
+
       const groupMap = groups.get(groupKey)!
       if (!groupMap.has(subGroupKey)) {
         groupMap.set(subGroupKey, [])
       }
-      
+
       groupMap.get(subGroupKey)?.push({
         id: operator.id,
         icon: operator.getIcon(),
@@ -188,11 +241,11 @@ export const SchemaFieldsModal = ({
 
     Array.from(groups.entries()).forEach(([groupKey, subGroups]) => {
       const treeData: any[] = []
-      
+
       // Build tree with subgroups and operators
       Array.from(subGroups.entries()).forEach(([subGroupKey, operators]) => {
         const sortedOperators = operators.sort((a, b) => a.name.localeCompare(b.name))
-        
+
         if (subGroupKey === undefined) {
           // No subgroup - add operators directly
           sortedOperators.forEach(operator => {
@@ -213,6 +266,7 @@ export const SchemaFieldsModal = ({
               key: `${groupKey}-${subGroupKey}-${operator.id}`,
               title: operator.name,
               icon: <Icon { ...operator.icon } />,
+              className: 'ant-tree-node--has-drag-and-drop',
               isLeaf: true
             }))
           })
@@ -225,10 +279,12 @@ export const SchemaFieldsModal = ({
         children: (
           <Content padded>
             <TreeElement
-              blockNode
+
               defaultExpandedKeys={ collectAllKeys(treeData) }
+              draggable={ false }
               selectable={ false }
               showIcon
+              titleRender={ operatorsTitleRender }
               treeData={ treeData }
             />
           </Content>
@@ -261,21 +317,20 @@ export const SchemaFieldsModal = ({
     >
       <div style={ { height: '600px' } }>
         <ConfigLayout
-          gap="none"
           leftItem={ {
             minSize: 200,
             size: 400,
             maxSize: 600,
             children: (
-                <Tabs
-                  className={ styles.tabs }
-                  defaultActiveKey="class-attributes"
-                  hasStickyHeader
-                  items={ tabItems }
-                  size="small"
-                  style={ { height: '100%' } }
-                  tabPosition="left"
-                />
+              <Tabs
+                className={ styles.tabs }
+                defaultActiveKey="class-attributes"
+                hasStickyHeader
+                items={ tabItems }
+                size="small"
+                style={ { height: '100%' } }
+                tabPosition="left"
+              />
             )
           } }
           resizeAble

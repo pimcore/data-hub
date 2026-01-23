@@ -75,4 +75,46 @@ export abstract class DynamicTypeOperatorAbstract<TAttributes = any> {
   getSubGroupKey (): string | undefined {
     return 'data-hub.operator.subgroup.other'
   }
+
+  /**
+   * Get the maximum number of children this operator can have
+   * Return undefined for unlimited children
+   * Return a number to enforce a specific limit
+   */
+  getMaxChildCount (): number | undefined {
+    return undefined
+  }
+
+  /**
+   * Check if this operator can accept a child
+   * Similar to ExtJS allowChild function
+   *
+   * @param config - The operator's current configuration
+   * @returns true if a child can be added, false otherwise
+   */
+  allowChild (config: ColumnConfig<TAttributes>): boolean {
+    const maxChildCount = this.getMaxChildCount()
+
+    // If no limit is defined, always allow children
+    if (maxChildCount === undefined) {
+      return true
+    }
+
+    // Check current child count against limit
+    // Use any cast to access children property which may not be in generic TAttributes
+    const attributes = config.attributes as any
+    const currentChildCount = Array.isArray(attributes?.children)
+      ? attributes.children.length
+      : 0
+
+    return currentChildCount < maxChildCount
+  }
+
+  /**
+   * Check if this operator type allows children at all
+   * Override this to return false for operators that cannot have children
+   */
+  allowsChildren (): boolean {
+    return true
+  }
 }

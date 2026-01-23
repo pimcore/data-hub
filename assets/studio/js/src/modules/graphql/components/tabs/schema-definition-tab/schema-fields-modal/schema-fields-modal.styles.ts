@@ -28,6 +28,8 @@ export const useStyles = createStyles(({ css }) => {
       .ant-tabs-content, .ant-tabs-tabpane {
         height: 100%;
       }
+      
+    
     `
   }
 })
