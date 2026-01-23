@@ -35,7 +35,7 @@ export const useStyles = createStyles(({ css, token }) => {
     `,
     
     contentLayout: css`
-      height: 80vh;
+      height: 60vh;
       border-top: 1px solid ${token.colorBorderTertiary};
     `
   }

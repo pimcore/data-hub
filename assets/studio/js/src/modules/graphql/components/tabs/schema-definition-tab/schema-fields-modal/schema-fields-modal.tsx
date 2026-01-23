@@ -303,7 +303,6 @@ export const SchemaFieldsModal = ({
                   <Tabs
                     className={ styles.tabs }
                     defaultActiveKey="class-attributes"
-                    hasStickyHeader
                     items={ tabItems }
                     size="small"
                     style={ { height: '100%' } }
