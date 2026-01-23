@@ -33,7 +33,7 @@ export const useStyles = createStyles(({ css, token }) => {
         border-right: 1px solid ${token.colorBorderTertiary};
       }
     `,
-    
+
     contentLayout: css`
       height: 60vh;
       border-top: 1px solid ${token.colorBorderTertiary};      border-bottom: 1px solid ${token.colorBorderTertiary};    `

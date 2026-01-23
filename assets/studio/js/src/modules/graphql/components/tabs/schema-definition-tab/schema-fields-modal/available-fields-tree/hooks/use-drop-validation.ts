@@ -44,17 +44,17 @@ export const useDropValidation = ({
    */
   const isValidContext = useCallback((info: DropInfo, targetNodeKey: string): boolean => {
     const dropType = info.type
-    
+
     // Only accept known drag types
     if (dropType !== 'class-attribute' && dropType !== 'operator' && dropType !== 'available-field') {
       return false
     }
-    
+
     // Don't allow dropping on itself
     if (dropType === 'available-field' && info.data?.sourceKey === targetNodeKey) {
       return false
     }
-    
+
     return true
   }, [])
 
@@ -71,7 +71,7 @@ export const useDropValidation = ({
     // For nested nodes, we need to traverse to find the actual config
     // Start with the parent column
     const parentColumn = columns.find(col => col.key === node.columnConfig?.key)
-    if (!parentColumn || !Array.isArray(parentColumn.attributes?.children)) {
+    if (isNil(parentColumn) || !Array.isArray(parentColumn.attributes?.children)) {
       return null
     }
 
@@ -83,8 +83,8 @@ export const useDropValidation = ({
           return child
         }
         if (Array.isArray(child.attributes?.children)) {
-          const found = findChildByKey(child.attributes.children, targetKey)
-          if (found) return found
+          const found = findChildByKey(child.attributes.children as any[], targetKey)
+          if (!isNil(found)) return found
         }
       }
       return null
@@ -103,11 +103,11 @@ export const useDropValidation = ({
     }
 
     const operatorClass = targetNode.childIndex !== undefined
-      ? targetNode.columnConfig?.attributes?.children?.[targetNode.childIndex]?.attributes?.class
-      : targetNode.columnConfig?.attributes?.class
+      ? (targetNode.columnConfig?.attributes?.children?.[targetNode.childIndex]?.attributes as any)?.class
+      : (targetNode.columnConfig?.attributes as any)?.class
 
     const operatorType = operatorRegistry.getDynamicType(
-      operatorClass ?? '',
+      String(operatorClass ?? ''),
       false
     )
 
@@ -117,7 +117,7 @@ export const useDropValidation = ({
 
     // Check if operator type allows children at all
     const allowsChildrenAtAll = operatorType.allowsChildren?.() ?? false
-    if (allowsChildrenAtAll !== true) {
+    if (!allowsChildrenAtAll) {
       return false
     }
 
@@ -126,8 +126,8 @@ export const useDropValidation = ({
 
     if (!isNil(currentConfig)) {
       // Check with the current config state
-      const canAcceptChild = operatorType.allowChild?.(currentConfig) ?? true
-      if (canAcceptChild !== true) {
+      const canAcceptChild = operatorType.allowChild?.(currentConfig as ColumnConfig) ?? true
+      if (!canAcceptChild) {
         return false
       }
     }
@@ -146,13 +146,13 @@ export const useDropValidation = ({
 
       if (!isNil(parentColumn) && !isNil(parentColumn.attributes.class)) {
         const operatorType = operatorRegistry.getDynamicType(parentColumn.attributes.class, false)
-        
+
         if (isNil(operatorType)) {
           return false
         }
 
         // Check if parent allows children at all
-        if (operatorType.allowsChildren?.() === false) {
+        if (!(operatorType.allowsChildren?.())) {
           return false
         }
 

@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, ConfigLayout, Icon, Tabs, TreeElement, Panel, Draggable, ContentLayout, Toolbar, Sidebar, SidebarProvider, Title, SidebarTitle, Box } from '@pimcore/studio-ui-bundle/components'
+import { Modal, Flex, Button, Form, Content, Icon, TreeElement, Panel, Draggable, ContentLayout, Sidebar, SidebarProvider, Title, SidebarTitle, Box } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
@@ -362,16 +362,16 @@ export const SchemaFieldsModal = ({
             />
           </SidebarProvider>
         ) }
-        >
-          <Content>
-            <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
-            <AvailableFieldsTree
-              entityConfig={ localEntityConfig }
-              onEntityConfigChange={ setLocalEntityConfig }
-              operatorRegistryServiceId={ operatorRegistryServiceId }
-            />
-          </Content>
-        </ContentLayout>
+      >
+        <Content>
+          <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
+          <AvailableFieldsTree
+            entityConfig={ localEntityConfig }
+            onEntityConfigChange={ setLocalEntityConfig }
+            operatorRegistryServiceId={ operatorRegistryServiceId }
+          />
+        </Content>
+      </ContentLayout>
     </Modal>
   )
 }
