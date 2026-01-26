@@ -16,10 +16,7 @@ import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bund
 import { type QueryEntityConfig } from '../../types'
 import { useTreeState, type DragInfo } from './use-tree-state'
 import { DragType, DropPosition } from '../../drag-types'
-import {
-  type TreeItemData,
-  type TreePath
-} from '../tree-item'
+import { type TreeItemData, type TreePath } from '../tree-item/tree-item'
 
 export { type DragInfo } from './use-tree-state'
 

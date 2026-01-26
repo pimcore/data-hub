@@ -12,29 +12,33 @@ import { uuid, isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { type TreeItemData, type TreePath } from './tree-item'
 import { DropPosition } from '../../drag-types'
 
-export function cloneItems (items: TreeItemData[]): TreeItemData[] {
-  return items.map(item => ({
-    ...item,
-    key: item.key,
-    attributes: {
-      ...item.attributes,
-      ...(Array.isArray(item.attributes.children)
-        ? { children: cloneItems(item.attributes.children) }
-        : {})
+function mapTree (
+  items: TreeItemData[],
+  transform: (item: TreeItemData) => TreeItemData
+): TreeItemData[] {
+  return items.map(item => {
+    const transformed = transform(item)
+    return {
+      ...transformed,
+      attributes: {
+        ...transformed.attributes,
+        ...(Array.isArray(item.attributes.children)
+          ? { children: mapTree(item.attributes.children, transform) }
+          : {})
+      }
     }
-  }))
+  })
+}
+
+export function cloneItems (items: TreeItemData[]): TreeItemData[] {
+  return mapTree(items, item => ({ ...item, key: item.key, attributes: { ...item.attributes } }))
 }
 
 export function ensureKeys (items: TreeItemData[]): TreeItemData[] {
-  return items.map(item => ({
+  return mapTree(items, item => ({
     ...item,
     key: isNonEmptyString(item.key) ? item.key : uuid(),
-    attributes: {
-      ...item.attributes,
-      ...(Array.isArray(item.attributes.children)
-        ? { children: ensureKeys(item.attributes.children) }
-        : {})
-    }
+    attributes: { ...item.attributes }
   }))
 }
 
@@ -76,9 +80,7 @@ function getParentContext (items: TreeItemData[], path: TreePath): { parent: Tre
   if (path.length === 0) return { parent: null, index: -1 }
   if (path.length === 1) return { parent: items, index: path[0] }
 
-  const parentPath = path.slice(0, -1)
-  const parent = getItemAtPath(items, parentPath)
-
+  const parent = getItemAtPath(items, path.slice(0, -1))
   if (parent === null || !Array.isArray(parent.attributes.children)) {
     return { parent: null, index: -1 }
   }
@@ -105,13 +107,11 @@ export function insertAtPath (
   }
 
   if (path.length === 0) {
-    // Insert at end of top level
     newItems.push(itemWithKey)
     return newItems
   }
 
   if (position === DropPosition.INTO) {
-    // Insert as child of item at path
     const target = getItemAtPath(newItems, path)
     if (target === null) return items
 
@@ -122,7 +122,6 @@ export function insertAtPath (
     return newItems
   }
 
-  // Insert as sibling
   const { parent, index } = getParentContext(newItems, path)
   if (parent === null || index === -1) return items
 
@@ -157,37 +156,25 @@ export function moveItem (
   toPath: TreePath,
   position: DropPosition = DropPosition.AFTER
 ): TreeItemData[] {
-  // First remove the item
   const { items: afterRemove, removed } = removeAtPath(items, fromPath)
   if (removed === null) return items
 
   // Adjust toPath if it was affected by the removal
   const adjustedToPath = adjustPathAfterRemoval(toPath, fromPath)
 
-  // Insert at new location
   return insertAtPath(afterRemove, removed, adjustedToPath, position)
 }
 
 function adjustPathAfterRemoval (path: TreePath, removedPath: TreePath): TreePath {
   if (path.length === 0 || removedPath.length === 0) return path
 
-  // Check if paths share a common ancestor
-  const minLength = Math.min(path.length, removedPath.length)
-
-  for (let i = 0; i < minLength - 1; i++) {
-    if (path[i] !== removedPath[i]) {
-      break
-    }
-  }
-
-  // If they share a common parent (or are at same level) and removed was before target
   if (path.length >= removedPath.length) {
     const compareIndex = removedPath.length - 1
     if (
       removedPath.slice(0, compareIndex).every((v, i) => v === path[i]) &&
       removedPath[compareIndex] < path[compareIndex]
     ) {
-      // Decrement the affected index
+      // Decrement the affected index since an earlier sibling was removed
       const adjusted = [...path]
       adjusted[compareIndex]--
       return adjusted

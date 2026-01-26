@@ -12,16 +12,14 @@ import { useCallback, useState, useEffect, useRef } from 'react'
 import { uuid } from '@pimcore/studio-ui-bundle/utils'
 import { type DragAndDropInfo } from '@pimcore/studio-ui-bundle/components'
 import { type QueryEntityConfig, type ColumnConfig } from '../../types'
+import { type TreeItemData, type TreePath, createTreeItem } from '../tree-item/tree-item'
 import {
-  type TreeItemData,
-  type TreePath,
   ensureKeys,
   findItemPath,
   getItemAtPath,
   insertAtPath,
-  removeAtPath,
-  createTreeItem
-} from '../tree-item'
+  removeAtPath
+} from '../tree-item/tree-operations'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
 import { DragType, DropPosition } from '../../drag-types'
 
