@@ -10,6 +10,7 @@
 
 import { uuid, isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { type TreeItemData, type TreePath } from './tree-item'
+import { DropPosition } from '../../drag-types'
 
 export function cloneItems (items: TreeItemData[]): TreeItemData[] {
   return items.map(item => ({
@@ -89,7 +90,7 @@ export function insertAtPath (
   items: TreeItemData[],
   item: TreeItemData,
   path: TreePath,
-  position: 'before' | 'after' | 'into' = 'after'
+  position: DropPosition = DropPosition.AFTER
 ): TreeItemData[] {
   const newItems = cloneItems(items)
   const itemWithKey: TreeItemData = {
@@ -109,7 +110,7 @@ export function insertAtPath (
     return newItems
   }
 
-  if (position === 'into') {
+  if (position === DropPosition.INTO) {
     // Insert as child of item at path
     const target = getItemAtPath(newItems, path)
     if (target === null) return items
@@ -125,7 +126,7 @@ export function insertAtPath (
   const { parent, index } = getParentContext(newItems, path)
   if (parent === null || index === -1) return items
 
-  const insertIndex = position === 'before' ? index : index + 1
+  const insertIndex = position === DropPosition.BEFORE ? index : index + 1
   parent.splice(insertIndex, 0, itemWithKey)
 
   return newItems
@@ -154,7 +155,7 @@ export function moveItem (
   items: TreeItemData[],
   fromPath: TreePath,
   toPath: TreePath,
-  position: 'before' | 'after' | 'into' = 'after'
+  position: DropPosition = DropPosition.AFTER
 ): TreeItemData[] {
   // First remove the item
   const { items: afterRemove, removed } = removeAtPath(items, fromPath)

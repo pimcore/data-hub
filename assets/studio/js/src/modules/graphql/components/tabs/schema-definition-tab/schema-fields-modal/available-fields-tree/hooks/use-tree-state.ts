@@ -23,7 +23,7 @@ import {
   createTreeItem
 } from '../tree-item'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
-import { DragType } from '../../drag-types'
+import { DragType, DropPosition } from '../../drag-types'
 
 interface UseTreeStateProps {
   entityConfig?: QueryEntityConfig
@@ -38,10 +38,10 @@ interface UseTreeStateReturn {
   findPath: (key: string) => TreePath | null
   getItem: (path: TreePath) => TreeItemData | null
   deleteByKey: (key: string) => void
-  insert: (item: TreeItemData, targetPath: TreePath, position: 'before' | 'after' | 'into') => void
+  insert: (item: TreeItemData, targetPath: TreePath, position: DropPosition) => void
   appendToRoot: (item: TreeItemData) => void
-  move: (sourceKey: string, targetPath: TreePath, position: 'before' | 'after' | 'into') => void
-  canDrop: (dragInfo: DragInfo, targetKey: string, position: 'before' | 'after' | 'into') => boolean
+  move: (sourceKey: string, targetPath: TreePath, position: DropPosition) => void
+  canDrop: (dragInfo: DragInfo, targetKey: string, position: DropPosition) => boolean
   canDropToRoot: (dragInfo: DragInfo) => boolean
 }
 
@@ -198,7 +198,7 @@ export const useTreeState = ({
   const insert = useCallback((
     item: TreeItemData,
     targetPath: TreePath,
-    position: 'before' | 'after' | 'into'
+    position: DropPosition
   ): void => {
     const newItems = insertAtPath(items, item, targetPath, position)
     updateItems(newItems)
@@ -241,7 +241,7 @@ export const useTreeState = ({
   const move = useCallback((
     sourceKey: string,
     targetPath: TreePath,
-    position: 'before' | 'after' | 'into'
+    position: DropPosition
   ): void => {
     const sourcePath = findItemPath(items, sourceKey)
     if (sourcePath === null) return
@@ -264,7 +264,7 @@ export const useTreeState = ({
   const canDrop = useCallback((
     dragInfo: DragInfo,
     targetKey: string,
-    position: 'before' | 'after' | 'into'
+    position: DropPosition
   ): boolean => {
     const currentItems = itemsRef.current
 
@@ -278,7 +278,7 @@ export const useTreeState = ({
     const targetData = getItemAtPath(currentItems, targetPath)
     if (targetData === null) return false
 
-    if (position === 'into') {
+    if (position === DropPosition.INTO) {
       const targetItem = createTreeItem(targetData, operatorRegistry)
       if (!targetItem.canHaveChildren()) return false
 
@@ -304,7 +304,7 @@ export const useTreeState = ({
       }
     }
 
-    if (targetPath.length > 1 && position !== 'into') {
+    if (targetPath.length > 1 && position !== DropPosition.INTO) {
       const parentPath = targetPath.slice(0, -1)
       const parentData = getItemAtPath(currentItems, parentPath)
       if (parentData !== null) {

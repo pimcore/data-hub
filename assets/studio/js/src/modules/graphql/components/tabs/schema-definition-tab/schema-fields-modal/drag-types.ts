@@ -13,3 +13,9 @@ export enum DragType {
   OPERATOR = 'operator',
   TREE_ITEM = 'tree-item'
 }
+
+export enum DropPosition {
+  BEFORE = 'before',
+  AFTER = 'after',
+  INTO = 'into'
+}

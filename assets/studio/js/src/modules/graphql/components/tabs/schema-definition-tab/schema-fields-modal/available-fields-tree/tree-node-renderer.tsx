@@ -12,7 +12,7 @@ import React, { useMemo } from 'react'
 import { HotspotDroppable, Draggable, type HotspotArea } from '@pimcore/studio-ui-bundle/components'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
 import { type TreeItemData, createTreeItem } from './tree-item'
-import { DragType } from '../drag-types'
+import { DragType, DropPosition } from '../drag-types'
 
 interface TreeNodeRendererProps {
   itemData: TreeItemData
@@ -44,24 +44,24 @@ export const TreeNodeRenderer = ({
         id: 'sorting-top',
         className: 'dnd__sorting dnd__sorting--top',
         isValidContext: (info: DragInfo) => isValidDragType(info),
-        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, 'before'),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, DropPosition.BEFORE),
         position: { x: 0, y: 0, width: '100%', height: '30%' },
-        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'before') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, DropPosition.BEFORE) }
       },
       {
         id: 'drop-middle',
         isValidContext: (info: DragInfo) => isValidDragType(info),
-        isValidData: (info: DragInfo) => !isSelfDrag(info) && treeItem.canHaveChildren() && canDrop(info, nodeKey, 'into'),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && treeItem.canHaveChildren() && canDrop(info, nodeKey, DropPosition.INTO),
         position: { x: '0', y: '30%', width: '100%', height: '40%' },
-        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'into') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, DropPosition.INTO) }
       },
       {
         id: 'sorting-bottom',
         className: 'dnd__sorting dnd__sorting--bottom',
         isValidContext: (info: DragInfo) => isValidDragType(info),
-        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, 'after'),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, DropPosition.AFTER),
         position: { x: 0, y: '70%', width: '100%', height: '30%' },
-        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'after') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, DropPosition.AFTER) }
       }
     ]
   }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop])

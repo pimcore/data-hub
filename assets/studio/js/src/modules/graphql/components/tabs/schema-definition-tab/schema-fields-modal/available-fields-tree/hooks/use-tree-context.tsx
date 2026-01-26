@@ -15,7 +15,7 @@ import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type QueryEntityConfig } from '../../types'
 import { useTreeState, type DragInfo } from './use-tree-state'
-import { DragType } from '../../drag-types'
+import { DragType, DropPosition } from '../../drag-types'
 import {
   type TreeItemData,
   type TreePath
@@ -30,13 +30,13 @@ interface TreeContextValue {
   findPath: (key: string) => TreePath | null
   getItem: (path: TreePath) => TreeItemData | null
   deleteByKey: (key: string) => void
-  insert: (item: TreeItemData, targetPath: TreePath, position: 'before' | 'after' | 'into') => void
-  move: (sourceKey: string, targetPath: TreePath, position: 'before' | 'after' | 'into') => void
+  insert: (item: TreeItemData, targetPath: TreePath, position: DropPosition) => void
+  move: (sourceKey: string, targetPath: TreePath, position: DropPosition) => void
   updateItemAttributes: (key: string, attributes: Record<string, any>) => void
-  canDrop: (dragInfo: DragInfo, targetKey: string, position: 'before' | 'after' | 'into') => boolean
+  canDrop: (dragInfo: DragInfo, targetKey: string, position: DropPosition) => boolean
   canDropToRoot: (dragInfo: DragInfo) => boolean
   isValidDragType: (dragInfo: DragInfo) => boolean
-  handleDrop: (dragInfo: DragInfo, targetKey: string, position: 'before' | 'after' | 'into') => void
+  handleDrop: (dragInfo: DragInfo, targetKey: string, position: DropPosition) => void
   handleDropToRoot: (dragInfo: DragInfo) => void
 }
 
@@ -96,7 +96,7 @@ export const TreeProvider = ({
   const handleDrop = useCallback((
     dragInfo: DragInfo,
     targetKey: string,
-    position: 'before' | 'after' | 'into'
+    position: DropPosition
   ): void => {
     const targetPath = findPath(targetKey)
     if (targetPath === null) {
@@ -158,7 +158,7 @@ export const TreeProvider = ({
       if (sourcePath !== null && sourcePath.length === 1) {
         return
       }
-      move(dragInfo.data.key, [items.length], 'before')
+      move(dragInfo.data.key, [items.length], DropPosition.BEFORE)
       return
     }
 
