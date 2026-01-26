@@ -10,6 +10,7 @@
 
 import { type SourceConfig } from '../../../../../../operators/dynamic-type-operator-abstract'
 import { isNil } from 'lodash'
+import { DragType } from '../drag-types'
 
 interface DragInfo {
   type: string
@@ -28,11 +29,11 @@ interface TreeItemAttributes {
 
 export function createSourceConfigFromDragInfo (dragInfo?: DragInfo): SourceConfig {
   return {
-    dataType: !isNil(dragInfo) && dragInfo.type === 'class-attribute' && !isNil(dragInfo.data?.dataType)
+    dataType: !isNil(dragInfo) && dragInfo.type === DragType.CLASS_ATTRIBUTE && !isNil(dragInfo.data?.dataType)
       ? String(dragInfo.data.dataType)
       : undefined,
-    isOperator: !isNil(dragInfo) && dragInfo.type === 'operator',
-    operatorClass: !isNil(dragInfo) && dragInfo.type === 'operator' && !isNil(dragInfo.data?.operatorId)
+    isOperator: !isNil(dragInfo) && dragInfo.type === DragType.OPERATOR,
+    operatorClass: !isNil(dragInfo) && dragInfo.type === DragType.OPERATOR && !isNil(dragInfo.data?.operatorId)
       ? String(dragInfo.data.operatorId)
       : undefined
   }

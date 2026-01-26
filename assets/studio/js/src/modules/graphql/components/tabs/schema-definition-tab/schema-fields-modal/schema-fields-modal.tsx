@@ -21,6 +21,7 @@ import { useOperatorButtonStyles } from './operator-button.styles'
 import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
 import { useOperator } from '../../../../../../modules/operators/hooks/use-operator'
 import { useOperatorGroups } from '../../../../../../modules/operators/hooks/use-operator-groups'
+import { DragType } from './drag-types'
 
 interface SchemaFieldsModalProps {
   open: boolean
@@ -111,7 +112,7 @@ export const SchemaFieldsModal = ({
       return (
         <Draggable
           info={ {
-            type: 'class-attribute',
+            type: DragType.CLASS_ATTRIBUTE,
             data: {
               key: String(node.key),
               title: String(node.title),
@@ -141,7 +142,7 @@ export const SchemaFieldsModal = ({
       return (
         <Draggable
           info={ {
-            type: 'operator',
+            type: DragType.OPERATOR,
             data: {
               key: String(node.key),
               title: String(node.title),
@@ -245,7 +246,7 @@ export const SchemaFieldsModal = ({
                         {sortedOperators.map(operator => (
                           <Draggable
                             info={ {
-                              type: 'operator',
+                              type: DragType.OPERATOR,
                               data: {
                                 key: `${groupKey}-${operator.id}`,
                                 title: operator.localizedName,
@@ -295,7 +296,7 @@ export const SchemaFieldsModal = ({
                           {sortedOperators.map(operator => (
                             <Draggable
                               info={ {
-                                type: 'operator',
+                                type: DragType.OPERATOR,
                                 data: {
                                   key: `${groupKey}-${subGroupKey}-${operator.id}`,
                                   title: operator.localizedName,

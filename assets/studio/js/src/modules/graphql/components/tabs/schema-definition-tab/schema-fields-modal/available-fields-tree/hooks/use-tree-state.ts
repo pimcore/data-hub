@@ -10,6 +10,7 @@
 
 import { useCallback, useState, useEffect, useRef } from 'react'
 import { uuid } from '@pimcore/studio-ui-bundle/utils'
+import { type DragAndDropInfo } from '@pimcore/studio-ui-bundle/components'
 import { type QueryEntityConfig, type ColumnConfig } from '../../types'
 import {
   type TreeItemData,
@@ -22,6 +23,7 @@ import {
   createTreeItem
 } from '../tree-item'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
+import { DragType } from '../../drag-types'
 
 interface UseTreeStateProps {
   entityConfig?: QueryEntityConfig
@@ -43,8 +45,8 @@ interface UseTreeStateReturn {
   canDropToRoot: (dragInfo: DragInfo) => boolean
 }
 
-export interface DragInfo {
-  type: 'class-attribute' | 'operator' | 'tree-item'
+export interface DragInfo extends DragAndDropInfo {
+  type: DragType.CLASS_ATTRIBUTE | DragType.OPERATOR | DragType.TREE_ITEM
   data: {
     key?: string
     title?: string
@@ -107,7 +109,7 @@ function itemsToColumns (items: TreeItemData[]): ColumnConfig[] {
 }
 
 function createItemFromDragInfo (dragInfo: DragInfo): TreeItemData | null {
-  if (dragInfo.type === 'class-attribute') {
+  if (dragInfo.type === DragType.CLASS_ATTRIBUTE) {
     return {
       key: uuid(),
       isOperator: false,
@@ -119,14 +121,14 @@ function createItemFromDragInfo (dragInfo: DragInfo): TreeItemData | null {
     }
   }
 
-  if (dragInfo.type === 'operator') {
+  if (dragInfo.type === DragType.OPERATOR) {
     return {
       key: uuid(),
       isOperator: true,
       attributes: {
         label: String(dragInfo.data.title ?? ''),
         class: String(dragInfo.data.operatorId ?? ''),
-        type: 'operator',
+        type: DragType.OPERATOR,
         children: []
       }
     }
@@ -266,7 +268,7 @@ export const useTreeState = ({
   ): boolean => {
     const currentItems = itemsRef.current
 
-    if (dragInfo.type === 'tree-item' && dragInfo.data.key === targetKey) {
+    if (dragInfo.type === DragType.TREE_ITEM && dragInfo.data.key === targetKey) {
       return false
     }
 
@@ -280,7 +282,7 @@ export const useTreeState = ({
       const targetItem = createTreeItem(targetData, operatorRegistry)
       if (!targetItem.canHaveChildren()) return false
 
-      if (dragInfo.type === 'tree-item' && dragInfo.data.key !== undefined) {
+      if (dragInfo.type === DragType.TREE_ITEM && dragInfo.data.key !== undefined) {
         const sourcePath = findItemPath(currentItems, dragInfo.data.key)
         if (sourcePath !== null) {
           const sourceData = getItemAtPath(currentItems, sourcePath)
@@ -308,7 +310,7 @@ export const useTreeState = ({
       if (parentData !== null) {
         const parentItem = createTreeItem(parentData, operatorRegistry)
 
-        if (dragInfo.type === 'tree-item' && dragInfo.data.key !== undefined) {
+        if (dragInfo.type === DragType.TREE_ITEM && dragInfo.data.key !== undefined) {
           const sourcePath = findItemPath(currentItems, dragInfo.data.key)
           if (sourcePath === null) {
             return false
@@ -339,9 +341,9 @@ export const useTreeState = ({
   }, [operatorRegistry])
 
   const canDropToRoot = useCallback((dragInfo: DragInfo): boolean => {
-    return dragInfo.type === 'class-attribute' ||
-           dragInfo.type === 'operator' ||
-           dragInfo.type === 'tree-item'
+    return dragInfo.type === DragType.CLASS_ATTRIBUTE ||
+           dragInfo.type === DragType.OPERATOR ||
+           dragInfo.type === DragType.TREE_ITEM
   }, [])
 
   return {

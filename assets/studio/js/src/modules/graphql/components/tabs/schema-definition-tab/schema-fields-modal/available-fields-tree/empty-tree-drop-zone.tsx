@@ -12,14 +12,6 @@ import React, { forwardRef, useCallback } from 'react'
 import { Droppable, useDroppable } from '@pimcore/studio-ui-bundle/components'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
 
-const buildDragInfo = (info: unknown): DragInfo => {
-  const rawInfo = info as Record<string, unknown>
-  if (rawInfo.type === 'available-field') {
-    return { type: 'tree-item', data: rawInfo.data as DragInfo['data'] }
-  }
-  return rawInfo as unknown as DragInfo
-}
-
 const EmptyTreeDropContent = forwardRef<HTMLDivElement>(function EmptyTreeDropContent (props, ref): React.JSX.Element {
   const { getStateClasses } = useDroppable()
   const stateClasses = getStateClasses()
@@ -52,16 +44,16 @@ export const EmptyTreeDropZone = (): React.JSX.Element => {
     handleDropToRoot
   } = useTreeContext()
 
-  const checkForValidContext = useCallback((info: unknown): boolean => {
-    return isValidDragType(buildDragInfo(info))
+  const checkForValidContext = useCallback((info: DragInfo): boolean => {
+    return isValidDragType(info)
   }, [isValidDragType])
 
-  const checkForValidData = useCallback((info: unknown): boolean => {
-    return canDropToRoot(buildDragInfo(info))
+  const checkForValidData = useCallback((info: DragInfo): boolean => {
+    return canDropToRoot(info)
   }, [canDropToRoot])
 
-  const onDrop = useCallback((info: unknown): void => {
-    handleDropToRoot(buildDragInfo(info))
+  const onDrop = useCallback((info: DragInfo): void => {
+    handleDropToRoot(info)
   }, [handleDropToRoot])
 
   return (

@@ -13,6 +13,7 @@ import { isNil } from 'lodash'
 import { type TreeNode, type ColumnConfig } from '../../types'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
 import { createSourceConfigFromDragInfo } from '../source-config-utils'
+import { DragType } from '../../drag-types'
 
 interface UseDropValidationProps {
   columns: ColumnConfig[]
@@ -40,44 +41,32 @@ export const useDropValidation = ({
   columns,
   operatorRegistry
 }: UseDropValidationProps): UseDropValidationReturn => {
-  /**
-   * Check if the drag type is valid for this tree
-   */
   const isValidContext = useCallback((info: DropInfo, targetNodeKey: string): boolean => {
     const dropType = info.type
 
-    // Only accept known drag types
-    if (dropType !== 'class-attribute' && dropType !== 'operator' && dropType !== 'available-field') {
+    if (dropType !== DragType.CLASS_ATTRIBUTE && dropType !== DragType.OPERATOR && dropType !== DragType.TREE_ITEM) {
       return false
     }
 
-    // Don't allow dropping on itself
-    if (dropType === 'available-field' && info.data?.sourceKey === targetNodeKey) {
+    if (dropType === DragType.TREE_ITEM && info.data?.sourceKey === targetNodeKey) {
       return false
     }
 
     return true
   }, [])
 
-  /**
-   * Helper to get the actual config for a node (handles nested operators)
-   */
+  // Handles nested operators by traversing the tree
   const getNodeConfig = useCallback((node: TreeNode): any => {
-    // For top-level nodes, return the column config directly
     if (node.childIndex === undefined) {
       const column = columns.find(col => col.key === node.columnConfig?.key)
       return column
     }
 
-    // For nested nodes, we need to traverse to find the actual config
-    // Start with the parent column
     const parentColumn = columns.find(col => col.key === node.columnConfig?.key)
     if (isNil(parentColumn) || !Array.isArray(parentColumn.attributes?.children)) {
       return null
     }
 
-    // Use the key to find the exact child in the tree
-    // The key is unique, so we can search recursively
     const findChildByKey = (children: any[], targetKey: string): any => {
       for (const child of children) {
         if (child.key === targetKey) {
@@ -94,11 +83,7 @@ export const useDropValidation = ({
     return findChildByKey(parentColumn.attributes.children, String(node.key))
   }, [columns])
 
-  /**
-   * Check if an operator can accept a child
-   */
   const isValidDropIntoOperator = useCallback((targetNode: TreeNode, dragInfo?: DropInfo): boolean => {
-    // Field definitions cannot have children - they must always be leafs
     if (targetNode.isOperator !== true) {
       return false
     }
@@ -116,19 +101,16 @@ export const useDropValidation = ({
       return false
     }
 
-    // Check if operator type allows children at all
     const allowsChildrenAtAll = operatorType.allowsChildren?.() ?? false
     if (!allowsChildrenAtAll) {
       return false
     }
 
-    // Get the actual config for this node (handles nested operators)
     const currentConfig = getNodeConfig(targetNode)
 
     if (!isNil(currentConfig)) {
       const sourceConfig = createSourceConfigFromDragInfo(dragInfo)
 
-      // Check with target config and source config (similar to ExtJS targetNode/dropNode)
       const canAcceptChild = operatorType.allowChild?.(currentConfig as ColumnConfig, sourceConfig) ?? true
       if (!canAcceptChild) {
         return false
@@ -138,12 +120,8 @@ export const useDropValidation = ({
     return true
   }, [operatorRegistry, getNodeConfig])
 
-  /**
-   * Check if a sibling drop is valid
-   * For child nodes, this checks if the parent operator can accept more children
-   */
+  // For child nodes, checks if the parent operator can accept more children
   const isValidSiblingDrop = useCallback((targetNode: TreeNode, dragInfo?: DropInfo): boolean => {
-    // If this is a child node, check parent operator constraints
     if (targetNode.childIndex !== undefined && !isNil(targetNode.columnConfig)) {
       const parentColumn = columns.find(col => col.key === targetNode.columnConfig?.key)
 
@@ -154,26 +132,21 @@ export const useDropValidation = ({
           return false
         }
 
-        // Check if parent allows children at all
         if (!(operatorType.allowsChildren?.())) {
           return false
         }
 
-        // For move operations within the same parent, we're not adding new children
-        // so we don't need to check allowChild
-        if (dragInfo?.type === 'available-field' && dragInfo.data?.sourceParentKey === parentColumn.key) {
+        if (dragInfo?.type === DragType.TREE_ITEM && dragInfo.data?.sourceParentKey === parentColumn.key) {
           return true
         }
 
         const sourceConfig = createSourceConfigFromDragInfo(dragInfo)
 
-        // Check if parent can accept more children (similar to ExtJS targetNode/dropNode)
         const canAcceptChild = operatorType.allowChild?.(parentColumn, sourceConfig) ?? true
         return canAcceptChild
       }
     }
 
-    // For top-level nodes, allow the drop
     return true
   }, [columns, operatorRegistry])
 

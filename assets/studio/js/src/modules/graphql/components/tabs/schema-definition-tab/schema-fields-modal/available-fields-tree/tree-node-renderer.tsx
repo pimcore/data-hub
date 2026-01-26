@@ -12,6 +12,7 @@ import React, { useMemo } from 'react'
 import { HotspotDroppable, Draggable, type HotspotArea } from '@pimcore/studio-ui-bundle/components'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
 import { type TreeItemData, createTreeItem } from './tree-item'
+import { DragType } from '../drag-types'
 
 interface TreeNodeRendererProps {
   itemData: TreeItemData
@@ -33,50 +34,34 @@ export const TreeNodeRenderer = ({
   const nodeKey = itemData.key
   const treeItem = createTreeItem(itemData, operatorRegistry)
 
-  const hotspots: HotspotArea[] = useMemo(() => {
-    const buildDragInfo = (info: any): DragInfo => {
-      if (info.type === 'available-field') {
-        return { type: 'tree-item', data: info.data }
-      }
-      return info as DragInfo
-    }
+  const isSelfDrag = (info: DragInfo): boolean => {
+    return info.type === DragType.TREE_ITEM && info.data.key === nodeKey
+  }
 
+  const hotspots: HotspotArea[] = useMemo(() => {
     return [
       {
         id: 'sorting-top',
         className: 'dnd__sorting dnd__sorting--top',
-        isValidContext: (info: any) => isValidDragType(buildDragInfo(info)),
-        isValidData: (info: any) => {
-          const dragInfo = buildDragInfo(info)
-          if (dragInfo.type === 'tree-item' && dragInfo.data.key === nodeKey) return false
-          return canDrop(dragInfo, nodeKey, 'before')
-        },
+        isValidContext: (info: DragInfo) => isValidDragType(info),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, 'before'),
         position: { x: 0, y: 0, width: '100%', height: '30%' },
-        onDrop: (info: any) => { handleDrop(buildDragInfo(info), nodeKey, 'before') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'before') }
       },
       {
         id: 'drop-middle',
-        isValidContext: (info: any) => isValidDragType(buildDragInfo(info)),
-        isValidData: (info: any) => {
-          const dragInfo = buildDragInfo(info)
-          if (dragInfo.type === 'tree-item' && dragInfo.data.key === nodeKey) return false
-          if (!treeItem.canHaveChildren()) return false
-          return canDrop(dragInfo, nodeKey, 'into')
-        },
+        isValidContext: (info: DragInfo) => isValidDragType(info),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && treeItem.canHaveChildren() && canDrop(info, nodeKey, 'into'),
         position: { x: '0', y: '30%', width: '100%', height: '40%' },
-        onDrop: (info: any) => { handleDrop(buildDragInfo(info), nodeKey, 'into') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'into') }
       },
       {
         id: 'sorting-bottom',
         className: 'dnd__sorting dnd__sorting--bottom',
-        isValidContext: (info: any) => isValidDragType(buildDragInfo(info)),
-        isValidData: (info: any) => {
-          const dragInfo = buildDragInfo(info)
-          if (dragInfo.type === 'tree-item' && dragInfo.data.key === nodeKey) return false
-          return canDrop(dragInfo, nodeKey, 'after')
-        },
+        isValidContext: (info: DragInfo) => isValidDragType(info),
+        isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, 'after'),
         position: { x: 0, y: '70%', width: '100%', height: '30%' },
-        onDrop: (info: any) => { handleDrop(buildDragInfo(info), nodeKey, 'after') }
+        onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, 'after') }
       }
     ]
   }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop])
@@ -94,7 +79,7 @@ export const TreeNodeRenderer = ({
   }, [itemData, operatorRegistry, fieldDefinitionRegistry])
 
   const dragInfo = useMemo(() => ({
-    type: 'tree-item',
+    type: DragType.TREE_ITEM,
     data: {
       key: nodeKey,
       isOperator: itemData.isOperator,

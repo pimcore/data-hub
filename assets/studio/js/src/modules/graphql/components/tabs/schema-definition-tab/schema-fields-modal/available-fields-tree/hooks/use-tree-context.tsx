@@ -15,6 +15,7 @@ import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type QueryEntityConfig } from '../../types'
 import { useTreeState, type DragInfo } from './use-tree-state'
+import { DragType } from '../../drag-types'
 import {
   type TreeItemData,
   type TreePath
@@ -87,9 +88,9 @@ export const TreeProvider = ({
   })
 
   const isValidDragType = useCallback((dragInfo: DragInfo): boolean => {
-    return dragInfo.type === 'class-attribute' ||
-           dragInfo.type === 'operator' ||
-           dragInfo.type === 'tree-item'
+    return dragInfo.type === DragType.CLASS_ATTRIBUTE ||
+           dragInfo.type === DragType.OPERATOR ||
+           dragInfo.type === DragType.TREE_ITEM
   }, [])
 
   const handleDrop = useCallback((
@@ -103,7 +104,7 @@ export const TreeProvider = ({
       return
     }
 
-    if (dragInfo.type === 'tree-item' && dragInfo.data.key !== undefined) {
+    if (dragInfo.type === DragType.TREE_ITEM && dragInfo.data.key !== undefined) {
       move(dragInfo.data.key, targetPath, position)
       return
     }
@@ -125,7 +126,7 @@ export const TreeProvider = ({
           dataType: String(dragInfo.data.dataType ?? 'text')
         }
       }
-    } else if (dragInfo.type === 'operator' && dragInfo.data.operatorId !== undefined) {
+    } else if (dragInfo.type === DragType.OPERATOR && dragInfo.data.operatorId !== undefined) {
       const operator = operatorRegistry.getDynamicType(dragInfo.data.operatorId, false)
       if (operator === undefined) {
         console.warn('Operator not found for', dragInfo.data.operatorId)
@@ -137,7 +138,7 @@ export const TreeProvider = ({
         attributes: {
           label: String(dragInfo.data.title ?? ''),
           class: String(dragInfo.data.operatorId ?? ''),
-          type: 'operator',
+          type: DragType.OPERATOR,
           children: []
         }
       }
@@ -152,7 +153,7 @@ export const TreeProvider = ({
   }, [findPath, move, insert, fieldDefinitionRegistry, operatorRegistry, onOperatorAdded])
 
   const handleDropToRoot = useCallback((dragInfo: DragInfo): void => {
-    if (dragInfo.type === 'tree-item' && dragInfo.data.key !== undefined) {
+    if (dragInfo.type === DragType.TREE_ITEM && dragInfo.data.key !== undefined) {
       const sourcePath = findPath(dragInfo.data.key)
       if (sourcePath !== null && sourcePath.length === 1) {
         return
@@ -163,7 +164,7 @@ export const TreeProvider = ({
 
     let newItem: TreeItemData | null = null
 
-    if (dragInfo.type === 'class-attribute' && dragInfo.data.dataType !== undefined) {
+    if (dragInfo.type === DragType.CLASS_ATTRIBUTE && dragInfo.data.dataType !== undefined) {
       const fieldDefinition = fieldDefinitionRegistry.getDynamicType(dragInfo.data.dataType, false)
       if (fieldDefinition === undefined) {
         return
@@ -177,7 +178,7 @@ export const TreeProvider = ({
           dataType: String(dragInfo.data.dataType ?? 'text')
         }
       }
-    } else if (dragInfo.type === 'operator' && dragInfo.data.operatorId !== undefined) {
+    } else if (dragInfo.type === DragType.OPERATOR && dragInfo.data.operatorId !== undefined) {
       const operator = operatorRegistry.getDynamicType(dragInfo.data.operatorId, false)
       if (operator === undefined) {
         return
@@ -188,7 +189,7 @@ export const TreeProvider = ({
         attributes: {
           label: String(dragInfo.data.title ?? ''),
           class: String(dragInfo.data.operatorId ?? ''),
-          type: 'operator',
+          type: DragType.OPERATOR,
           children: []
         }
       }
