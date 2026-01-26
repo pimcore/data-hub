@@ -9,13 +9,14 @@
  */
 
 import { uuid, isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
-import { type TreeItemData, type TreePath } from './tree-item'
+import { isNil, flatMap } from 'lodash'
+import { type InternalTreeNode, type TreePath } from '../tree-item/tree-item'
 import { DropPosition } from '../../drag-types'
 
-function mapTree (
-  items: TreeItemData[],
-  transform: (item: TreeItemData) => TreeItemData
-): TreeItemData[] {
+export function mapTree (
+  items: InternalTreeNode[],
+  transform: (item: InternalTreeNode) => InternalTreeNode
+): InternalTreeNode[] {
   return items.map(item => {
     const transformed = transform(item)
     return {
@@ -30,11 +31,11 @@ function mapTree (
   })
 }
 
-export function cloneItems (items: TreeItemData[]): TreeItemData[] {
-  return mapTree(items, item => ({ ...item, key: item.key, attributes: { ...item.attributes } }))
+export function cloneItems (items: InternalTreeNode[]): InternalTreeNode[] {
+  return mapTree(items, item => ({ ...item, attributes: { ...item.attributes } }))
 }
 
-export function ensureKeys (items: TreeItemData[]): TreeItemData[] {
+export function ensureKeys (items: InternalTreeNode[]): InternalTreeNode[] {
   return mapTree(items, item => ({
     ...item,
     key: isNonEmptyString(item.key) ? item.key : uuid(),
@@ -42,7 +43,7 @@ export function ensureKeys (items: TreeItemData[]): TreeItemData[] {
   }))
 }
 
-export function findItemPath (items: TreeItemData[], key: string, currentPath: TreePath = []): TreePath | null {
+export function findItemPath (items: InternalTreeNode[], key: string, currentPath: TreePath = []): TreePath | null {
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
     const itemPath = [...currentPath, i]
@@ -53,7 +54,7 @@ export function findItemPath (items: TreeItemData[], key: string, currentPath: T
 
     if (Array.isArray(item.attributes.children)) {
       const childPath = findItemPath(item.attributes.children, key, itemPath)
-      if (childPath !== null) {
+      if (!isNil(childPath)) {
         return childPath
       }
     }
@@ -62,12 +63,12 @@ export function findItemPath (items: TreeItemData[], key: string, currentPath: T
   return null
 }
 
-export function getItemAtPath (items: TreeItemData[], path: TreePath): TreeItemData | null {
+export function getItemAtPath (items: InternalTreeNode[], path: TreePath): InternalTreeNode | null {
   if (path.length === 0) return null
 
-  let current: TreeItemData | null = items[path[0]] ?? null
+  let current: InternalTreeNode | null = items[path[0]] ?? null
 
-  for (let i = 1; i < path.length && current !== null; i++) {
+  for (let i = 1; i < path.length && !isNil(current); i++) {
     const children = current.attributes.children
     if (!Array.isArray(children)) return null
     current = children[path[i]] ?? null
@@ -76,12 +77,12 @@ export function getItemAtPath (items: TreeItemData[], path: TreePath): TreeItemD
   return current
 }
 
-function getParentContext (items: TreeItemData[], path: TreePath): { parent: TreeItemData[] | null, index: number } {
+function getParentContext (items: InternalTreeNode[], path: TreePath): { parent: InternalTreeNode[] | null, index: number } {
   if (path.length === 0) return { parent: null, index: -1 }
   if (path.length === 1) return { parent: items, index: path[0] }
 
   const parent = getItemAtPath(items, path.slice(0, -1))
-  if (parent === null || !Array.isArray(parent.attributes.children)) {
+  if (isNil(parent) || !Array.isArray(parent.attributes.children)) {
     return { parent: null, index: -1 }
   }
 
@@ -89,13 +90,13 @@ function getParentContext (items: TreeItemData[], path: TreePath): { parent: Tre
 }
 
 export function insertAtPath (
-  items: TreeItemData[],
-  item: TreeItemData,
+  items: InternalTreeNode[],
+  item: InternalTreeNode,
   path: TreePath,
   position: DropPosition = DropPosition.AFTER
-): TreeItemData[] {
+): InternalTreeNode[] {
   const newItems = cloneItems(items)
-  const itemWithKey: TreeItemData = {
+  const itemWithKey: InternalTreeNode = {
     ...item,
     key: isNonEmptyString(item.key) ? item.key : uuid(),
     attributes: {
@@ -113,7 +114,7 @@ export function insertAtPath (
 
   if (position === DropPosition.INTO) {
     const target = getItemAtPath(newItems, path)
-    if (target === null) return items
+    if (isNil(target)) return items
 
     if (!Array.isArray(target.attributes.children)) {
       target.attributes.children = []
@@ -123,7 +124,7 @@ export function insertAtPath (
   }
 
   const { parent, index } = getParentContext(newItems, path)
-  if (parent === null || index === -1) return items
+  if (isNil(parent) || index === -1) return items
 
   const insertIndex = position === DropPosition.BEFORE ? index : index + 1
   parent.splice(insertIndex, 0, itemWithKey)
@@ -132,9 +133,9 @@ export function insertAtPath (
 }
 
 export function removeAtPath (
-  items: TreeItemData[],
+  items: InternalTreeNode[],
   path: TreePath
-): { items: TreeItemData[], removed: TreeItemData | null } {
+): { items: InternalTreeNode[], removed: InternalTreeNode | null } {
   if (path.length === 0) {
     return { items, removed: null }
   }
@@ -142,7 +143,7 @@ export function removeAtPath (
   const newItems = cloneItems(items)
   const { parent, index } = getParentContext(newItems, path)
 
-  if (parent === null || index === -1 || index >= parent.length) {
+  if (isNil(parent) || index === -1 || index >= parent.length) {
     return { items, removed: null }
   }
 
@@ -151,13 +152,13 @@ export function removeAtPath (
 }
 
 export function moveItem (
-  items: TreeItemData[],
+  items: InternalTreeNode[],
   fromPath: TreePath,
   toPath: TreePath,
   position: DropPosition = DropPosition.AFTER
-): TreeItemData[] {
+): InternalTreeNode[] {
   const { items: afterRemove, removed } = removeAtPath(items, fromPath)
-  if (removed === null) return items
+  if (isNil(removed)) return items
 
   // Adjust toPath if it was affected by the removal
   const adjustedToPath = adjustPathAfterRemoval(toPath, fromPath)
@@ -165,7 +166,7 @@ export function moveItem (
   return insertAtPath(afterRemove, removed, adjustedToPath, position)
 }
 
-function adjustPathAfterRemoval (path: TreePath, removedPath: TreePath): TreePath {
+export function adjustPathAfterRemoval (path: TreePath, removedPath: TreePath): TreePath {
   if (path.length === 0 || removedPath.length === 0) return path
 
   if (path.length >= removedPath.length) {
@@ -184,18 +185,9 @@ function adjustPathAfterRemoval (path: TreePath, removedPath: TreePath): TreePat
   return path
 }
 
-export function collectAllKeys (items: TreeItemData[]): string[] {
-  const keys: string[] = []
-
-  const traverse = (children: TreeItemData[]): void => {
-    for (const child of children) {
-      keys.push(child.key)
-      if (Array.isArray(child.attributes.children)) {
-        traverse(child.attributes.children)
-      }
-    }
-  }
-
-  traverse(items)
-  return keys
+export function collectAllKeys (items: InternalTreeNode[]): string[] {
+  return flatMap(items, item => {
+    const children = item.attributes.children
+    return [item.key, ...(Array.isArray(children) ? collectAllKeys(children) : [])]
+  })
 }

@@ -8,6 +8,8 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import { type DragAndDropInfo } from '@pimcore/studio-ui-bundle/components'
+
 export enum DragType {
   CLASS_ATTRIBUTE = 'class-attribute',
   OPERATOR = 'operator',
@@ -18,4 +20,15 @@ export enum DropPosition {
   BEFORE = 'before',
   AFTER = 'after',
   INTO = 'into'
+}
+
+export interface DragInfo extends DragAndDropInfo {
+  type: DragType.CLASS_ATTRIBUTE | DragType.OPERATOR | DragType.TREE_ITEM
+  data: {
+    key?: string
+    title?: string
+    dataType?: string
+    operatorId?: string
+    [key: string]: any
+  }
 }

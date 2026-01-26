@@ -31,27 +31,27 @@ export interface FieldAttribute {
   key?: string
 }
 
-export interface ColumnConfig {
+export interface PersistedColumnConfig {
   attributes: FieldAttribute
   isOperator: boolean
   key?: string
   label?: string
 }
 
-export interface EntityColumnConfig {
-  columns: ColumnConfig[]
+export interface EntityPersistedColumnConfig {
+  columns: PersistedColumnConfig[]
 }
 
 export interface QueryEntityConfig {
   id: string
   name: string
-  columnConfig?: EntityColumnConfig
+  columnConfig?: EntityPersistedColumnConfig
 }
 
 export interface TreeNode extends TreeDataItem {
   dataType?: string
   isOperator?: boolean
   label?: string
-  columnConfig?: ColumnConfig
+  columnConfig?: PersistedColumnConfig
   childIndex?: number
 }

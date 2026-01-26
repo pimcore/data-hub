@@ -11,11 +11,11 @@
 import React, { useMemo } from 'react'
 import { HotspotDroppable, Draggable, type HotspotArea } from '@pimcore/studio-ui-bundle/components'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
-import { type TreeItemData, createTreeItem } from './tree-item/tree-item'
+import { type InternalTreeNode, createTreeItem } from './tree-item/tree-item'
 import { DragType, DropPosition } from '../drag-types'
 
 interface TreeNodeRendererProps {
-  itemData: TreeItemData
+  itemData: InternalTreeNode
   initialComponent: React.ReactNode
 }
 

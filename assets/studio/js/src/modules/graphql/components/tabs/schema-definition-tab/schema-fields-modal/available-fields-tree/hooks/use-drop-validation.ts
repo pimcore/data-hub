@@ -10,52 +10,33 @@
 
 import { useCallback } from 'react'
 import { isNil } from 'lodash'
-import { type TreeNode, type ColumnConfig } from '../../types'
+import { type TreeNode, type PersistedColumnConfig } from '../../types'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
 import { createSourceConfigFromDragInfo } from '../source-config-utils'
-import { DragType } from '../../drag-types'
+import { DragType, type DragInfo } from '../../drag-types'
 
 interface UseDropValidationProps {
-  columns: ColumnConfig[]
+  columns: PersistedColumnConfig[]
   operatorRegistry: DynamicTypeOperatorRegistry
 }
 
-interface DropInfo {
-  type: string
-  data?: {
-    sourceKey?: string
-    [key: string]: any
-  }
-}
-
 interface UseDropValidationReturn {
-  /** Check if the drag type is valid for this tree */
-  isValidContext: (info: DropInfo, targetNodeKey: string) => boolean
-  /** Check if an operator can accept a child */
-  isValidDropIntoOperator: (targetNode: TreeNode, dragInfo?: DropInfo) => boolean
-  /** Check if a sibling drop is valid (for child nodes, checks parent constraints) */
-  isValidSiblingDrop: (targetNode: TreeNode, dragInfo?: DropInfo) => boolean
+  isValidContext: (info: DragInfo, targetNodeKey: string) => boolean
+  isValidDropIntoOperator: (targetNode: TreeNode, dragInfo?: DragInfo) => boolean
+  isValidSiblingDrop: (targetNode: TreeNode, dragInfo?: DragInfo) => boolean
 }
 
 export const useDropValidation = ({
   columns,
   operatorRegistry
 }: UseDropValidationProps): UseDropValidationReturn => {
-  const isValidContext = useCallback((info: DropInfo, targetNodeKey: string): boolean => {
-    const dropType = info.type
-
-    if (dropType !== DragType.CLASS_ATTRIBUTE && dropType !== DragType.OPERATOR && dropType !== DragType.TREE_ITEM) {
+  const isValidContext = useCallback((info: DragInfo, targetNodeKey: string): boolean => {
+    if (info.type === DragType.TREE_ITEM && info.data?.key === targetNodeKey) {
       return false
     }
-
-    if (dropType === DragType.TREE_ITEM && info.data?.sourceKey === targetNodeKey) {
-      return false
-    }
-
     return true
   }, [])
 
-  // Handles nested operators by traversing the tree
   const getNodeConfig = useCallback((node: TreeNode): any => {
     if (node.childIndex === undefined) {
       const column = columns.find(col => col.key === node.columnConfig?.key)
@@ -83,7 +64,7 @@ export const useDropValidation = ({
     return findChildByKey(parentColumn.attributes.children, String(node.key))
   }, [columns])
 
-  const isValidDropIntoOperator = useCallback((targetNode: TreeNode, dragInfo?: DropInfo): boolean => {
+  const isValidDropIntoOperator = useCallback((targetNode: TreeNode, dragInfo?: DragInfo): boolean => {
     if (targetNode.isOperator !== true) {
       return false
     }
@@ -97,7 +78,7 @@ export const useDropValidation = ({
       false
     )
 
-    if (operatorType === undefined) {
+    if (isNil(operatorType)) {
       return false
     }
 
@@ -111,7 +92,7 @@ export const useDropValidation = ({
     if (!isNil(currentConfig)) {
       const sourceConfig = createSourceConfigFromDragInfo(dragInfo)
 
-      const canAcceptChild = operatorType.allowChild?.(currentConfig as ColumnConfig, sourceConfig) ?? true
+      const canAcceptChild = operatorType.allowChild?.(currentConfig as PersistedColumnConfig, sourceConfig) ?? true
       if (!canAcceptChild) {
         return false
       }
@@ -120,8 +101,7 @@ export const useDropValidation = ({
     return true
   }, [operatorRegistry, getNodeConfig])
 
-  // For child nodes, checks if the parent operator can accept more children
-  const isValidSiblingDrop = useCallback((targetNode: TreeNode, dragInfo?: DropInfo): boolean => {
+  const isValidSiblingDrop = useCallback((targetNode: TreeNode, dragInfo?: DragInfo): boolean => {
     if (targetNode.childIndex !== undefined && !isNil(targetNode.columnConfig)) {
       const parentColumn = columns.find(col => col.key === targetNode.columnConfig?.key)
 
@@ -136,7 +116,7 @@ export const useDropValidation = ({
           return false
         }
 
-        if (dragInfo?.type === DragType.TREE_ITEM && dragInfo.data?.sourceParentKey === parentColumn.key) {
+        if (dragInfo?.type === DragType.TREE_ITEM && dragInfo.data?.parentKey === parentColumn.key) {
           return true
         }
 

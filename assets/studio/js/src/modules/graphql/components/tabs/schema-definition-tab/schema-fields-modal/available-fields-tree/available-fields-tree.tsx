@@ -10,14 +10,14 @@
 
 import React, { useMemo, useState, useCallback } from 'react'
 import { Icon, TreeElement } from '@pimcore/studio-ui-bundle/components'
-import { type QueryEntityConfig, type ColumnConfig } from '../types'
+import { type QueryEntityConfig, type PersistedColumnConfig } from '../types'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../operators/dynamic-type-operator-registry'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { TreeProvider, useTreeContext } from './hooks/use-tree-context'
-import { type TreeItemData, createTreeItem } from './tree-item/tree-item'
-import { collectAllKeys } from './tree-item/tree-operations'
+import { type InternalTreeNode, createTreeItem } from './tree-item/tree-item'
+import { collectAllKeys } from './utils/tree-operations'
 import { TreeNodeRenderer } from './tree-node-renderer'
 import { EmptyTreeDropZone } from './empty-tree-drop-zone'
 import { useOperator } from '../../../../../../operators/hooks/use-operator'
@@ -28,9 +28,6 @@ interface AvailableFieldsTreeProps {
   onEntityConfigChange: (config: QueryEntityConfig) => void
 }
 
-/**
- * Tree node type for antd TreeElement
- */
 interface TreeNodeData {
   key: string
   title: React.ReactNode
@@ -38,20 +35,16 @@ interface TreeNodeData {
   children?: TreeNodeData[]
   className?: string
   actions?: Array<{ key: string, icon: string }>
-  // Custom data for our use
-  itemData: TreeItemData
+  itemData: InternalTreeNode
 }
 
-/**
- * Build antd tree nodes from TreeItemData
- */
 const buildTreeNodes = (
-  items: TreeItemData[],
+  items: InternalTreeNode[],
   operatorRegistry: DynamicTypeOperatorRegistry,
   fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry,
   getLocalizedName: (operator: any) => string
 ): TreeNodeData[] => {
-  const buildNode = (item: TreeItemData): TreeNodeData => {
+  const buildNode = (item: InternalTreeNode): TreeNodeData => {
     const treeItem = createTreeItem(item, operatorRegistry)
 
     let icon: React.ReactNode
@@ -103,7 +96,7 @@ const buildTreeNodes = (
 }
 
 interface OperatorModalConfig {
-  itemData: TreeItemData
+  itemData: InternalTreeNode
   operatorId: string
 }
 
@@ -112,7 +105,6 @@ interface AvailableFieldsTreeInnerProps {
   setOperatorModalConfig: React.Dispatch<React.SetStateAction<OperatorModalConfig | null>>
 }
 
-/** Inner component that uses the context */
 const AvailableFieldsTreeInner = ({
   operatorModalConfig,
   setOperatorModalConfig
@@ -140,10 +132,9 @@ const AvailableFieldsTreeInner = ({
     [items]
   )
 
-  const handleModalApply = useCallback((updatedConfig: ColumnConfig): void => {
+  const handleModalApply = useCallback((updatedConfig: PersistedColumnConfig): void => {
     if (isNil(operatorModalConfig)) return
 
-    // Update the item attributes in the tree
     updateItemAttributes(operatorModalConfig.itemData.key, updatedConfig.attributes)
     setOperatorModalConfig(null)
   }, [operatorModalConfig, updateItemAttributes, setOperatorModalConfig])
@@ -219,7 +210,6 @@ const AvailableFieldsTreeInner = ({
   )
 }
 
-/** Main component that provides the context */
 export const AvailableFieldsTree = ({
   entityConfig,
   operatorRegistryServiceId,
@@ -227,7 +217,7 @@ export const AvailableFieldsTree = ({
 }: AvailableFieldsTreeProps): React.JSX.Element => {
   const [operatorModalConfig, setOperatorModalConfig] = useState<OperatorModalConfig | null>(null)
 
-  const handleOperatorAdded = useCallback((item: TreeItemData): void => {
+  const handleOperatorAdded = useCallback((item: InternalTreeNode): void => {
     if (isNonEmptyString(item.attributes.class)) {
       setOperatorModalConfig({
         itemData: item,

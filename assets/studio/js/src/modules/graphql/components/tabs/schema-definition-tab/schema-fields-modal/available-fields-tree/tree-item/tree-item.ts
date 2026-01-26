@@ -14,11 +14,11 @@ import { createSourceConfigFromAttributes } from '../source-config-utils'
 export interface TreeItemAttributes {
   label?: string
   dataType?: string
-  children?: TreeItemData[]
+  children?: InternalTreeNode[]
   [key: string]: any
 }
 
-export interface TreeItemData {
+export interface InternalTreeNode {
   key: string
   isOperator: boolean
   attributes: TreeItemAttributes
@@ -43,7 +43,7 @@ export abstract class TreeItem {
   abstract getActions (): TreeItemAction[]
   abstract getChildren (operatorRegistry: DynamicTypeOperatorRegistry): TreeItem[]
 
-  toData (): TreeItemData {
+  toData (): InternalTreeNode {
     return {
       key: this.key,
       isOperator: this.isOperator,
@@ -117,7 +117,7 @@ export class OperatorItem extends TreeItem {
   }
 }
 
-export function createTreeItem (data: TreeItemData, operatorRegistry: DynamicTypeOperatorRegistry): TreeItem {
+export function createTreeItem (data: InternalTreeNode, operatorRegistry: DynamicTypeOperatorRegistry): TreeItem {
   if (data.isOperator) {
     return new OperatorItem(data.key, data.attributes, operatorRegistry)
   }
