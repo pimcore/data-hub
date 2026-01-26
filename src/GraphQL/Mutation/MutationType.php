@@ -730,6 +730,7 @@ final class MutationType extends ObjectType
                         'fullpath' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'defaultLanguage' => ['type' => Type::string()],
+                        'published' => ['type' => Type::boolean()],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'omitVersionCreate' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
@@ -881,6 +882,10 @@ final class MutationType extends ObjectType
 
                 if (isset($args['omitMandatoryCheck'])) {
                     $object->setOmitMandatoryCheck($args['omitMandatoryCheck']);
+                }
+
+                if (isset($args['published'])) {
+                    $object->setPublished($args['published']);
                 }
 
                 if (isset($args['key'])) {
