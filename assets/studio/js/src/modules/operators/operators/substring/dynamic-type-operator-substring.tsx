@@ -15,30 +15,33 @@ import { Text } from '@pimcore/studio-ui-bundle/components'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
-import { DateFormatterConfigModal } from './date-formatter-config-modal'
+import { SubstringConfigModal } from './substring-config-modal'
 
-export interface DateFormatterAttributes {
+export interface SubstringAttributes {
   label: string
-  format: string
+  start: number
+  length?: number
+  ellipses?: boolean
 }
 
 @injectable()
-export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstract<DateFormatterAttributes> {
-  readonly id = 'DateFormatter'
+export class DynamicTypeOperatorSubstring extends DynamicTypeOperatorAbstract<SubstringAttributes> {
+  readonly id = 'Substring'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'calendar' }
+    return { type: 'name', value: 'text' }
   }
 
-  getLabel (config: ColumnConfig<DateFormatterAttributes>, localizedName: string): React.ReactNode {
+  getLabel (config: ColumnConfig<SubstringAttributes>, localizedName: string): React.ReactNode {
     const label = config.attributes.label
-    const format = config.attributes.format
+    const start = config.attributes.start
+    const length = config.attributes.length
     const displayLabel = isNonEmptyString(label) ? label : localizedName
 
-    if (!isNil(format)) {
+    if (!isNil(start) || !isNil(length)) {
       return (
         <>
-          {displayLabel} <Text type="secondary">({format})</Text>
+          {displayLabel} <Text type="secondary">({start},{length ?? '∞'})</Text>
         </>
       )
     }
@@ -46,16 +49,16 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
     return displayLabel
   }
 
-  getConfigModal (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
-    return <DateFormatterConfigModal { ...props } />
+  getConfigModal (props: OperatorConfigModalProps<SubstringAttributes>): React.JSX.Element {
+    return <SubstringConfigModal { ...props } />
   }
 
   getGroup (): string {
-    return 'formatter'
+    return 'transformer'
   }
 
   getSubGroup (): string | undefined {
-    return 'other'
+    return 'string'
   }
 
   getMaxChildCount (): number {

@@ -11,6 +11,22 @@
 import { injectable } from '@pimcore/studio-ui-bundle/app'
 import { DynamicTypeRegistryAbstract } from '@pimcore/studio-ui-bundle/modules/element'
 import { type DynamicTypeOperatorAbstract } from './dynamic-type-operator-abstract'
+import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
+
+export interface GroupConfig {
+  icon: ElementIcon
+  priority: number
+}
 
 @injectable()
-export class DynamicTypeOperatorRegistry extends DynamicTypeRegistryAbstract<DynamicTypeOperatorAbstract> {}
+export class DynamicTypeOperatorRegistry extends DynamicTypeRegistryAbstract<DynamicTypeOperatorAbstract> {
+  private readonly groupConfigs = new Map<string, GroupConfig>()
+
+  registerGroupConfig (group: string, config: GroupConfig): void {
+    this.groupConfigs.set(group, config)
+  }
+
+  getGroupConfig (group: string): GroupConfig | undefined {
+    return this.groupConfigs.get(group)
+  }
+}

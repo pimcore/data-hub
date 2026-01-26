@@ -19,6 +19,8 @@ import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/oper
 import { useStyles } from './schema-fields-modal.styles'
 import { useOperatorButtonStyles } from './operator-button.styles'
 import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
+import { useOperator } from '../../../../../../modules/operators/hooks/use-operator'
+import { useOperatorGroups } from '../../../../../../modules/operators/hooks/use-operator-groups'
 
 interface SchemaFieldsModalProps {
   open: boolean
@@ -45,6 +47,8 @@ export const SchemaFieldsModal = ({
   const form = Form.useFormInstance()
   const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const { getByName } = useClassDefinitions()
+  const { getLocalizedName, getGroup } = useOperator()
+  const { getGroupIcon } = useOperatorGroups(operatorRegistry)
 
   const classDefinition = getByName(className)
   const { classAttributesTree, isLoading } = useClassAttributesTree({
@@ -186,115 +190,71 @@ export const SchemaFieldsModal = ({
 
     // Add operator groups
     const operators = operatorRegistry.getDynamicTypes()
-    const groups = new Map<string, Map<string | undefined, Array<{ id: string, icon: any, name: string }>>>()
+    const groups = new Map<string, { groupName: string, priority: number, subGroups: Map<string | undefined, Array<{ id: string, icon: any, localizedName: string }>> }>()
 
     // Organize operators by group and subgroup
     operators.forEach(operator => {
-      const groupKey = operator.getGroupTranslationKey()
-      const subGroupKey = operator.getSubGroupKey()
+      const groupName = operator.getGroup()
+      const { group: translatedGroup, subGroup: translatedSubGroup } = getGroup(operator)
+      const groupConfig = operatorRegistry.getGroupConfig(groupName)
+      const priority = groupConfig?.priority ?? 999
 
-      if (!groups.has(groupKey)) {
-        groups.set(groupKey, new Map())
+      if (!groups.has(translatedGroup)) {
+        groups.set(translatedGroup, { groupName, priority, subGroups: new Map() })
       }
 
-      const groupMap = groups.get(groupKey)!
-      if (!groupMap.has(subGroupKey)) {
-        groupMap.set(subGroupKey, [])
+      const groupData = groups.get(translatedGroup)!
+      if (!groupData.subGroups.has(translatedSubGroup)) {
+        groupData.subGroups.set(translatedSubGroup, [])
       }
 
-      groupMap.get(subGroupKey)?.push({
+      groupData.subGroups.get(translatedSubGroup)?.push({
         id: operator.id,
         icon: operator.getIcon(),
-        name: t(operator.getNameTranslationKey())
+        localizedName: getLocalizedName(operator)
       })
     })
 
-    Array.from(groups.entries()).forEach(([groupKey, subGroups]) => {
-      entries.push({
-        key: groupKey,
-        icon: <Icon value="data-object" />,
-        tooltip: t(groupKey),
-        component: (
-          <Content>
-            <SidebarTitle withBorder>
-              {t(groupKey)}
-            </SidebarTitle>
+    Array.from(groups.entries())
+      .sort(([, a], [, b]) => a.priority - b.priority)
+      .forEach(([groupKey, groupData]) => {
+        const groupIcon = getGroupIcon(groupData.groupName)
 
-            <Box>
-              {Array.from(subGroups.entries()).map(([subGroupKey, operators]) => {
-                const sortedOperators = operators.sort((a, b) => a.name.localeCompare(b.name))
+        entries.push({
+          key: groupKey,
+          icon: <Icon { ...groupIcon } />,
+          tooltip: t(groupKey),
+          component: (
+            <Content>
+              <SidebarTitle withBorder>
+                {t(groupKey)}
+              </SidebarTitle>
 
-                if (subGroupKey === undefined) {
+              <Box>
+                {Array.from(groupData.subGroups.entries()).map(([subGroupKey, operators]) => {
+                  const sortedOperators = operators.sort((a, b) => a.localizedName.localeCompare(b.localizedName))
+
+                  if (subGroupKey === undefined) {
                   // No subgroup - render operators directly in grid
-                  return (
-                    <Box
-                      className={ operatorStyles.gridContainer }
-                      key={ `${groupKey}-direct` }
-                      padding={ { x: 'extra-small', bottom: 'small' } }
-                    >
-                      {sortedOperators.map(operator => (
-                        <Draggable
-                          info={ {
-                            type: 'operator',
-                            data: {
-                              key: `${groupKey}-${operator.id}`,
-                              title: operator.name,
-                              operatorId: operator.id
-                            },
-                            icon: operator.icon,
-                            title: operator.name
-                          } }
-                          key={ `${groupKey}-${operator.id}` }
-                        >
-                          <Button
-                            className={ operatorStyles.operatorButton }
-                            type="default"
-                          >
-                            <Flex
-                              align="center"
-                              justify="center"
-                              vertical
-                            >
-                              <Icon
-                                { ...operator.icon }
-                                className={ operatorStyles.operatorIcon }
-                                options={ { width: 24, height: 24 } }
-                              />
-                              <span className={ operatorStyles.operatorName }>
-                                {operator.name}
-                              </span>
-                            </Flex>
-                          </Button>
-                        </Draggable>
-                      ))}
-                    </Box>
-                  )
-                } else {
-                  // Has subgroup - use collapsible panel
-                  return (
-                    <Panel
-                      border={ false }
-                      collapsed={ false }
-                      collapsible
-                      contentPadding="extra-small"
-                      key={ `${groupKey}-${subGroupKey}` }
-                      theme="card-with-highlight"
-                      title={ t(subGroupKey) }
-                    >
-                      <Box className={ operatorStyles.gridContainer }>
+                    return (
+                      <Box
+                        className={ operatorStyles.gridContainer }
+                        key={ `${groupKey}-direct` }
+                        padding={ { x: 'extra-small', bottom: 'small' } }
+                      >
                         {sortedOperators.map(operator => (
                           <Draggable
                             info={ {
                               type: 'operator',
                               data: {
-                                key: `${groupKey}-${subGroupKey}-${operator.id}`,
-                                title: operator.name,
+                                key: `${groupKey}-${operator.id}`,
+                                title: operator.localizedName,
                                 operatorId: operator.id
                               },
                               icon: operator.icon,
-                              title: operator.name
+                              title: operator.localizedName
                             } }
-                            key={ `${groupKey}-${subGroupKey}-${operator.id}` }
+                            key={ `${groupKey}-${operator.id}` }
                           >
                             <Button
                               className={ operatorStyles.operatorButton }
@@ -311,22 +271,72 @@ export const SchemaFieldsModal = ({
                                   options={ { width: 24, height: 24 } }
                                 />
                                 <span className={ operatorStyles.operatorName }>
-                                  {operator.name}
+                                  {operator.localizedName}
                                 </span>
                               </Flex>
                             </Button>
                           </Draggable>
                         ))}
                       </Box>
-                    </Panel>
-                  )
-                }
-              })}
-            </Box>
-          </Content>
-        )
+                    )
+                  } else {
+                  // Has subgroup - use collapsible panel
+                    return (
+                      <Panel
+                        border={ false }
+                        collapsed={ false }
+                        collapsible
+                        contentPadding="extra-small"
+                        key={ `${groupKey}-${subGroupKey}` }
+                        theme="card-with-highlight"
+                        title={ t(subGroupKey) }
+                      >
+                        <Box className={ operatorStyles.gridContainer }>
+                          {sortedOperators.map(operator => (
+                            <Draggable
+                              info={ {
+                                type: 'operator',
+                                data: {
+                                  key: `${groupKey}-${subGroupKey}-${operator.id}`,
+                                  title: operator.localizedName,
+                                  operatorId: operator.id
+                                },
+                                icon: operator.icon,
+                                title: operator.localizedName
+                              } }
+                              key={ `${groupKey}-${subGroupKey}-${operator.id}` }
+                            >
+                              <Button
+                                className={ operatorStyles.operatorButton }
+                                type="default"
+                              >
+                                <Flex
+                                  align="center"
+                                  justify="center"
+                                  vertical
+                                >
+                                  <Icon
+                                    { ...operator.icon }
+                                    className={ operatorStyles.operatorIcon }
+                                    options={ { width: 24, height: 24 } }
+                                  />
+                                  <span className={ operatorStyles.operatorName }>
+                                    {operator.localizedName}
+                                  </span>
+                                </Flex>
+                              </Button>
+                            </Draggable>
+                          ))}
+                        </Box>
+                      </Panel>
+                    )
+                  }
+                })}
+              </Box>
+            </Content>
+          )
+        })
       })
-    })
 
     return entries
   }, [operatorRegistry, t, operatorsTitleRender, collectAllKeys, classAttributesTree, isLoading, classAttributesTitleRender])

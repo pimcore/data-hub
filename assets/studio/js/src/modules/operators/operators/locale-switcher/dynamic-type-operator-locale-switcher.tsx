@@ -10,6 +10,7 @@
 
 import React from 'react'
 import { Text } from '@pimcore/studio-ui-bundle/components'
+import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { LocaleSwitcherConfigModal } from './locale-switcher-config-modal'
@@ -30,22 +31,27 @@ export class DynamicTypeOperatorLocaleSwitcher extends DynamicTypeOperatorAbstra
     }
   }
 
-  getLabel (config: ColumnConfig<LocaleSwitcherAttributes>): React.ReactNode {
+  getLabel (config: ColumnConfig<LocaleSwitcherAttributes>, localizedName: string): React.ReactNode {
     const label = config.attributes.label
     const locale = config.attributes.locale
+    const displayLabel = isNonEmptyString(label) ? label : localizedName
 
-    if (isNil(locale)) {
-      return <Text>{label}</Text>
+    if (!isNil(locale) && locale !== '') {
+      return (
+        <>
+          {displayLabel} <Text type="secondary">({locale})</Text>
+        </>
+      )
     }
 
-    return (
-      <>
-        {label} <Text type="secondary">({locale})</Text>
-      </>
-    )
+    return displayLabel
   }
 
   getConfigModal (props: OperatorConfigModalProps<LocaleSwitcherAttributes>): React.JSX.Element {
     return <LocaleSwitcherConfigModal { ...props } />
+  }
+
+  getMaxChildCount (): number {
+    return 1
   }
 }

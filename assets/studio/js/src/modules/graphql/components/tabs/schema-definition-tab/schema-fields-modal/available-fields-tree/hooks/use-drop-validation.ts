@@ -12,6 +12,7 @@ import { useCallback } from 'react'
 import { isNil } from 'lodash'
 import { type TreeNode, type ColumnConfig } from '../../types'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
+import { createSourceConfigFromDragInfo } from '../source-config-utils'
 
 interface UseDropValidationProps {
   columns: ColumnConfig[]
@@ -125,8 +126,10 @@ export const useDropValidation = ({
     const currentConfig = getNodeConfig(targetNode)
 
     if (!isNil(currentConfig)) {
-      // Check with the current config state
-      const canAcceptChild = operatorType.allowChild?.(currentConfig as ColumnConfig) ?? true
+      const sourceConfig = createSourceConfigFromDragInfo(dragInfo)
+
+      // Check with target config and source config (similar to ExtJS targetNode/dropNode)
+      const canAcceptChild = operatorType.allowChild?.(currentConfig as ColumnConfig, sourceConfig) ?? true
       if (!canAcceptChild) {
         return false
       }
@@ -162,8 +165,10 @@ export const useDropValidation = ({
           return true
         }
 
-        // Check if parent can accept more children
-        const canAcceptChild = operatorType.allowChild?.(parentColumn) ?? true
+        const sourceConfig = createSourceConfigFromDragInfo(dragInfo)
+
+        // Check if parent can accept more children (similar to ExtJS targetNode/dropNode)
+        const canAcceptChild = operatorType.allowChild?.(parentColumn, sourceConfig) ?? true
         return canAcceptChild
       }
     }

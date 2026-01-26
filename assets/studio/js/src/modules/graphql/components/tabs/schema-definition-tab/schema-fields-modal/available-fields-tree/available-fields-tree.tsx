@@ -19,6 +19,7 @@ import { TreeProvider, useTreeContext } from './hooks/use-tree-context'
 import { type TreeItemData, collectAllKeys, createTreeItem } from './tree-item'
 import { TreeNodeRenderer } from './tree-node-renderer'
 import { EmptyTreeDropZone } from './empty-tree-drop-zone'
+import { useOperator } from '../../../../../../operators/hooks/use-operator'
 
 interface AvailableFieldsTreeProps {
   entityConfig?: QueryEntityConfig
@@ -46,7 +47,8 @@ interface TreeNodeData {
 const buildTreeNodes = (
   items: TreeItemData[],
   operatorRegistry: DynamicTypeOperatorRegistry,
-  fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry
+  fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry,
+  getLocalizedName: (operator: any) => string
 ): TreeNodeData[] => {
   const buildNode = (item: TreeItemData): TreeNodeData => {
     const treeItem = createTreeItem(item, operatorRegistry)
@@ -56,7 +58,8 @@ const buildTreeNodes = (
 
     if (item.isOperator) {
       const operatorType = operatorRegistry.getDynamicType(String(item.attributes.class ?? ''), false)
-      icon = operatorType !== undefined
+      const config = { key: item.key, isOperator: true, attributes: item.attributes }
+      icon = !isNil(operatorType)
         ? (
           <Icon
             { ...operatorType.getIcon() }
@@ -64,10 +67,11 @@ const buildTreeNodes = (
           />
           )
         : undefined
-      title = operatorType?.getLabel({ key: item.key, isOperator: true, attributes: item.attributes }) ?? item.attributes.label
+      title = operatorType?.getLabel(config, getLocalizedName(operatorType)) ??
+        item.attributes.label
     } else {
       const fieldDef = fieldDefinitionRegistry.getDynamicType(item.attributes.dataType ?? '', false)
-      icon = fieldDef !== undefined
+      icon = !isNil(fieldDef)
         ? (
           <Icon
             { ...fieldDef.getIcon() }
@@ -122,10 +126,12 @@ const AvailableFieldsTreeInner = ({
     updateItemAttributes
   } = useTreeContext()
 
+  const { getLocalizedName } = useOperator()
+
   // Build tree nodes for antd TreeElement
   const treeData = useMemo(
-    () => buildTreeNodes(items, operatorRegistry, fieldDefinitionRegistry),
-    [items, operatorRegistry, fieldDefinitionRegistry]
+    () => buildTreeNodes(items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName),
+    [items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName]
   )
 
   const allKeys = useMemo(
@@ -195,7 +201,7 @@ const AvailableFieldsTreeInner = ({
 
       {!isNil(operatorModalConfig) && (() => {
         const operatorType = operatorRegistry.getDynamicType(operatorModalConfig.operatorId, false)
-        if (operatorType === undefined) return null
+        if (isNil(operatorType)) return null
 
         return operatorType.getConfigModal({
           config: {
@@ -203,6 +209,7 @@ const AvailableFieldsTreeInner = ({
             isOperator: true,
             attributes: operatorModalConfig.itemData.attributes
           },
+          operator: operatorType,
           onApply: handleModalApply,
           onCancel: handleModalCancel
         })

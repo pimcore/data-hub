@@ -9,29 +9,19 @@
  */
 
 import React from 'react'
-import { Input, Form, Select } from '@pimcore/studio-ui-bundle/components'
+import { Form, Input, Select } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type OperatorConfigModalProps } from '../../dynamic-type-operator-abstract'
-import { useSettings } from '@pimcore/studio-ui-bundle/modules/app'
-import { useLanguageLookup } from '@pimcore/studio-ui-bundle/modules/translations'
-import { type LocaleSwitcherAttributes } from './dynamic-type-operator-locale-switcher'
+import { type TrimmerAttributes } from './dynamic-type-operator-trimmer'
 import { OperatorModal } from '../../components/operator-modal'
 
-export function LocaleSwitcherConfigModal (props: OperatorConfigModalProps<LocaleSwitcherAttributes>): React.JSX.Element {
+export const TrimmerConfigModal = (props: OperatorConfigModalProps<TrimmerAttributes>): React.JSX.Element => {
   const { t } = useTranslation()
-  const settings = useSettings()
-  const { getDisplayName } = useLanguageLookup()
-
-  const availableLanguages = (settings.validLanguages ?? []).map((locale: string) => ({
-    value: locale,
-    label: `${getDisplayName(locale)} [${locale}]`
-  }))
 
   return (
     <OperatorModal
       { ...props }
-      initialValues={ { locale: '' } }
-      size="M"
+      initialValues={ { trim: 3 } }
     >
       {() => (
         <>
@@ -39,16 +29,19 @@ export function LocaleSwitcherConfigModal (props: OperatorConfigModalProps<Local
             label={ t('data-hub.label') }
             name="label"
           >
-            <Input maxLength={ 255 } />
+            <Input />
           </Form.Item>
-
           <Form.Item
-            label={ t('data-hub.locale') }
-            name="locale"
+            label={ t('data-hub.operator.trim') }
+            name="trim"
           >
             <Select
-              options={ availableLanguages }
-              placeholder={ t('data-hub.locale.select') }
+              options={ [
+                { label: t('data-hub.operator.trim.disabled'), value: 0 },
+                { label: t('data-hub.operator.trim.left'), value: 1 },
+                { label: t('data-hub.operator.trim.right'), value: 2 },
+                { label: t('data-hub.operator.trim.both'), value: 3 }
+              ] }
             />
           </Form.Item>
         </>

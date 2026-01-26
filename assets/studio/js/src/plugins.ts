@@ -14,8 +14,21 @@ import { bundleServiceIds } from './config/service-ids'
 import { DynamicTypeDataHubAdapterRegistry } from './modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { DynamicTypeDataHubAdapterGraphQL } from './modules/config/dynamic-types/adapters/dynamic-type-data-hub-adapter-graphql'
 import { DynamicTypeOperatorRegistry } from './modules/operators/dynamic-type-operator-registry'
-import { DynamicTypeOperatorDateFormatter } from './modules/operators/operators/date-formatter/dynamic-type-operator-date-formatter'
-import { DynamicTypeOperatorLocaleSwitcher } from './modules/operators/operators/locale-switcher/dynamic-type-operator-locale-switcher'
+import {
+  DynamicTypeOperatorAlias,
+  DynamicTypeOperatorConcatenator,
+  DynamicTypeOperatorDateFormatter,
+  DynamicTypeOperatorElementCounter,
+  DynamicTypeOperatorIfEmpty,
+  DynamicTypeOperatorLocaleCollector,
+  DynamicTypeOperatorLocaleSwitcher,
+  DynamicTypeOperatorSubstring,
+  DynamicTypeOperatorText,
+  DynamicTypeOperatorThumbnail,
+  DynamicTypeOperatorThumbnailHtml,
+  DynamicTypeOperatorTranslateValue,
+  DynamicTypeOperatorTrimmer
+} from './modules/operators/operators'
 
 if (module.hot !== undefined) {
   module.hot.accept()
@@ -31,7 +44,22 @@ export const DataHubPlugin: IAbstractPlugin = {
 
     container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry'])).to(DynamicTypeOperatorRegistry).inSingletonScope()
     container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry'])).to(DynamicTypeOperatorRegistry).inSingletonScope()
+
+    // Query Operators
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Alias'])).to(DynamicTypeOperatorAlias).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Concatenator'])).to(DynamicTypeOperatorConcatenator).inSingletonScope()
     container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/DateFormatter'])).to(DynamicTypeOperatorDateFormatter).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/ElementCounter'])).to(DynamicTypeOperatorElementCounter).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Substring'])).to(DynamicTypeOperatorSubstring).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Text'])).to(DynamicTypeOperatorText).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Thumbnail'])).to(DynamicTypeOperatorThumbnail).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/ThumbnailHtml'])).to(DynamicTypeOperatorThumbnailHtml).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/TranslateValue'])).to(DynamicTypeOperatorTranslateValue).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/Trimmer'])).to(DynamicTypeOperatorTrimmer).inSingletonScope()
+
+    // Mutation Operators
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/IfEmpty'])).to(DynamicTypeOperatorIfEmpty).inSingletonScope()
+    container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/LocaleCollector'])).to(DynamicTypeOperatorLocaleCollector).inSingletonScope()
     container.bind(String(bundleServiceIds['DataHub/DynamicTypes/Operator/LocaleSwitcher'])).to(DynamicTypeOperatorLocaleSwitcher).inSingletonScope()
   },
 

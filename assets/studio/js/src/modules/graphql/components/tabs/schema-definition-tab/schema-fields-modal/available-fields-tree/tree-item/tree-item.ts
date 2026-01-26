@@ -9,6 +9,7 @@
  */
 
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
+import { createSourceConfigFromAttributes } from '../source-config-utils'
 
 export interface TreeItemAttributes {
   label?: string
@@ -92,14 +93,15 @@ export class OperatorItem extends TreeItem {
     return operatorType.allowsChildren?.() ?? false
   }
 
-  canAcceptChild (_child: TreeItem, isMovingWithinSameParent: boolean = false): boolean {
+  canAcceptChild (child: TreeItem, isMovingWithinSameParent: boolean = false): boolean {
     const operatorType = this.getOperatorType()
     if (operatorType === undefined) return false
     if (!this.canHaveChildren()) return false
     if (isMovingWithinSameParent) return true
 
-    const data = this.toData()
-    return operatorType.allowChild?.(data) ?? true
+    const targetConfig = this.toData()
+    const sourceConfig = createSourceConfigFromAttributes(child.attributes, child.isOperator)
+    return operatorType.allowChild?.(targetConfig, sourceConfig) ?? true
   }
 
   getActions (): TreeItemAction[] {

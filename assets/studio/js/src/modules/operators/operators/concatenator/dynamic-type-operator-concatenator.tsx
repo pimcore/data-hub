@@ -15,30 +15,30 @@ import { Text } from '@pimcore/studio-ui-bundle/components'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
-import { DateFormatterConfigModal } from './date-formatter-config-modal'
+import { ConcatenatorConfigModal } from './concatenator-config-modal'
 
-export interface DateFormatterAttributes {
+export interface ConcatenatorAttributes {
   label: string
-  format: string
+  glue?: string
 }
 
 @injectable()
-export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstract<DateFormatterAttributes> {
-  readonly id = 'DateFormatter'
+export class DynamicTypeOperatorConcatenator extends DynamicTypeOperatorAbstract<ConcatenatorAttributes> {
+  readonly id = 'Concatenator'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'calendar' }
+    return { type: 'name', value: 'concatenate' }
   }
 
-  getLabel (config: ColumnConfig<DateFormatterAttributes>, localizedName: string): React.ReactNode {
+  getLabel (config: ColumnConfig<ConcatenatorAttributes>, localizedName: string): React.ReactNode {
     const label = config.attributes.label
-    const format = config.attributes.format
+    const glue = config.attributes.glue
     const displayLabel = isNonEmptyString(label) ? label : localizedName
 
-    if (!isNil(format)) {
+    if (!isNil(glue) && glue !== '') {
       return (
         <>
-          {displayLabel} <Text type="secondary">({format})</Text>
+          {displayLabel} <Text type="secondary">({glue})</Text>
         </>
       )
     }
@@ -46,19 +46,19 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
     return displayLabel
   }
 
-  getConfigModal (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
-    return <DateFormatterConfigModal { ...props } />
+  getConfigModal (props: OperatorConfigModalProps<ConcatenatorAttributes>): React.JSX.Element {
+    return <ConcatenatorConfigModal { ...props } />
   }
 
   getGroup (): string {
-    return 'formatter'
+    return 'transformer'
   }
 
   getSubGroup (): string | undefined {
     return 'other'
   }
 
-  getMaxChildCount (): number {
-    return 1
+  allowsChildren (): boolean {
+    return true
   }
 }

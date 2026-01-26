@@ -8,37 +8,37 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
+import React from 'react'
 import { isNil } from 'lodash'
 import { Text } from '@pimcore/studio-ui-bundle/components'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { DynamicTypeOperatorAbstract, type OperatorConfigModalProps, type ColumnConfig } from '../../dynamic-type-operator-abstract'
-import { DateFormatterConfigModal } from './date-formatter-config-modal'
+import { TranslateValueConfigModal } from './translate-value-config-modal'
 
-export interface DateFormatterAttributes {
+export interface TranslateValueAttributes {
   label: string
-  format: string
+  prefix?: string
 }
 
 @injectable()
-export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstract<DateFormatterAttributes> {
-  readonly id = 'DateFormatter'
+export class DynamicTypeOperatorTranslateValue extends DynamicTypeOperatorAbstract<TranslateValueAttributes> {
+  readonly id = 'TranslateValue'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'calendar' }
+    return { type: 'name', value: 'localized-fields' }
   }
 
-  getLabel (config: ColumnConfig<DateFormatterAttributes>, localizedName: string): React.ReactNode {
+  getLabel (config: ColumnConfig<TranslateValueAttributes>, localizedName: string): React.ReactNode {
     const label = config.attributes.label
-    const format = config.attributes.format
+    const prefix = config.attributes.prefix
     const displayLabel = isNonEmptyString(label) ? label : localizedName
 
-    if (!isNil(format)) {
+    if (!isNil(prefix) && prefix !== '') {
       return (
         <>
-          {displayLabel} <Text type="secondary">({format})</Text>
+          {displayLabel} <Text type="secondary">({prefix})</Text>
         </>
       )
     }
@@ -46,16 +46,16 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
     return displayLabel
   }
 
-  getConfigModal (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
-    return <DateFormatterConfigModal { ...props } />
-  }
-
   getGroup (): string {
-    return 'formatter'
+    return 'transformer'
   }
 
   getSubGroup (): string | undefined {
-    return 'other'
+    return 'string'
+  }
+
+  getConfigModal (props: OperatorConfigModalProps<TranslateValueAttributes>): React.JSX.Element {
+    return <TranslateValueConfigModal { ...props } />
   }
 
   getMaxChildCount (): number {
