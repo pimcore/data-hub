@@ -21,6 +21,7 @@ import { collectAllKeys } from './utils/tree-operations'
 import { TreeNodeRenderer } from './tree-node-renderer'
 import { EmptyTreeDropZone } from './empty-tree-drop-zone'
 import { useOperator } from '../../../../../../operators/hooks/use-operator'
+import { useStyles } from './available-fields-tree.styles'
 
 interface AvailableFieldsTreeProps {
   entityConfig?: QueryEntityConfig
@@ -121,6 +122,7 @@ const AvailableFieldsTreeInner = ({
   } = useTreeContext()
 
   const { getLocalizedName, getIcon } = useOperator()
+  const { styles } = useStyles()
 
   // Build tree nodes for antd TreeElement
   const treeData = useMemo(
@@ -183,6 +185,7 @@ const AvailableFieldsTreeInner = ({
         : (
           <TreeElement
             blockNode
+            className={ styles.treeContainer }
             defaultExpandedKeys={ allKeys }
             onActionsClick={ handleActionsClick }
             selectable={ false }

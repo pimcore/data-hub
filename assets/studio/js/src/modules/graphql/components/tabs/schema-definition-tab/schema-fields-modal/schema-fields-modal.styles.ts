@@ -38,6 +38,10 @@ export const useStyles = createStyles(({ css, token }) => {
       height: 60vh;
       border-top: 1px solid ${token.colorBorderTertiary};
       border-bottom: 1px solid ${token.colorBorderTertiary};
+      
+      .pimcore-content-layout__content {
+        padding-right: ${token.padding}px;
+      }
     `,
 
     gridContainer: css`

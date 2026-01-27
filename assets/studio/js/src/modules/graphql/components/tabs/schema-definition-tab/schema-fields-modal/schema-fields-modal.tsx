@@ -342,7 +342,7 @@ export const SchemaFieldsModal = ({
           </SidebarProvider>
         ) }
       >
-        <Content>
+        <Content padded padding={{right: 'medium'}}>
           <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
           <AvailableFieldsTree
             entityConfig={ localEntityConfig }

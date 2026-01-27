@@ -9,31 +9,27 @@
  */
 
 import React, { forwardRef, useCallback } from 'react'
-import { Droppable, useDroppable } from '@pimcore/studio-ui-bundle/components'
+import { Droppable, useDroppable, Flex } from '@pimcore/studio-ui-bundle/components'
+import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
+import { useStyles } from './empty-tree-drop-zone.styles'
+import cn from 'classnames'
 
 const EmptyTreeDropContent = forwardRef<HTMLDivElement>(function EmptyTreeDropContent (props, ref): React.JSX.Element {
+  const { t } = useTranslation()
   const { getStateClasses } = useDroppable()
+  const { styles } = useStyles()
   const stateClasses = getStateClasses()
 
   return (
-    <div
-      className={ stateClasses.join(' ') }
+    <Flex
+      align="center"
+      className={ cn(styles.dropZone, stateClasses.join(' ')) }
+      justify="center"
       ref={ ref }
-      style={ {
-        padding: '32px 16px',
-        textAlign: 'center',
-        color: '#999',
-        border: '2px dashed #d9d9d9',
-        borderRadius: '4px',
-        minHeight: '100px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      } }
     >
-      Drag fields or operators here
-    </div>
+      {t('data-hub.schema.drag-class-attributes-or-operators')}
+    </Flex>
   )
 })
 
