@@ -27,7 +27,7 @@ export class DynamicTypeOperatorThumbnail extends DynamicTypeOperatorAbstract<Th
   readonly id = 'Thumbnail'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'thumbnails' }
+    return { type: 'name', value: 'image-thumbnail' }
   }
 
   getLabel (config: ColumnConfig<ThumbnailAttributes>, localizedName: string): React.ReactNode {

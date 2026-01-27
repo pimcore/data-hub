@@ -19,7 +19,7 @@ export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterA
   readonly id = 'graphql'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'graphql' }
+    return { type: 'name', value: 'graphql', colorToken: 'colorCodingViolet4' }
   }
 
   getFormComponent (props: AdapterFormProps): React.JSX.Element {

@@ -27,7 +27,7 @@ export class DynamicTypeOperatorTrimmer extends DynamicTypeOperatorAbstract<Trim
   readonly id = 'Trimmer'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'trim' }
+    return { type: 'name', value: 'trimmer' }
   }
 
   getLabel (config: ColumnConfig<TrimmerAttributes>, localizedName: string): React.ReactNode {

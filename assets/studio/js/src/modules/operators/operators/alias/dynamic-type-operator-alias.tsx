@@ -24,7 +24,7 @@ export class DynamicTypeOperatorAlias extends DynamicTypeOperatorAbstract<AliasA
   readonly id = 'Alias'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'alias' }
+    return { type: 'name', value: 'text-input' }
   }
 
   getLabel (config: ColumnConfig<AliasAttributes>, localizedName: string): React.ReactNode {

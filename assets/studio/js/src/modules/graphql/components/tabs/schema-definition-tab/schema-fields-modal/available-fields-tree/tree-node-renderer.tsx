@@ -9,10 +9,12 @@
  */
 
 import React, { useMemo } from 'react'
+import { isNil } from 'lodash'
 import { HotspotDroppable, Draggable, type HotspotArea } from '@pimcore/studio-ui-bundle/components'
 import { useTreeContext, type DragInfo } from './hooks/use-tree-context'
 import { type InternalTreeNode, createTreeItem } from './tree-item/tree-item'
 import { DragType, DropPosition } from '../drag-types'
+import { useOperator } from '../../../../../../operators/hooks/use-operator'
 
 interface TreeNodeRendererProps {
   itemData: InternalTreeNode
@@ -30,6 +32,8 @@ export const TreeNodeRenderer = ({
     isValidDragType,
     handleDrop
   } = useTreeContext()
+
+  const { getIcon } = useOperator()
 
   const nodeKey = itemData.key
   const treeItem = createTreeItem(itemData, operatorRegistry)
@@ -67,16 +71,16 @@ export const TreeNodeRenderer = ({
   }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop])
 
   const iconProps = useMemo((): { value: string } => {
-    if (itemData.isOperator && itemData.attributes.class !== undefined) {
+    if (itemData.isOperator && !isNil(itemData.attributes.class)) {
       const opType = operatorRegistry.getDynamicType(String(itemData.attributes.class), false)
-      return opType?.getIcon() ?? { value: 'field' }
+      return !isNil(opType) ? getIcon(opType, operatorRegistry) : { value: 'field' }
     }
-    if (itemData.attributes.dataType !== undefined) {
+    if (!isNil(itemData.attributes.dataType)) {
       const fieldDef = fieldDefinitionRegistry.getDynamicType(String(itemData.attributes.dataType), false)
       return fieldDef?.getIcon() ?? { value: 'field' }
     }
     return { value: 'field' }
-  }, [itemData, operatorRegistry, fieldDefinitionRegistry])
+  }, [itemData, operatorRegistry, fieldDefinitionRegistry, getIcon])
 
   const dragInfo = useMemo(() => ({
     type: DragType.TREE_ITEM,

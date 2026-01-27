@@ -25,7 +25,7 @@ export class DynamicTypeOperatorText extends DynamicTypeOperatorAbstract<TextAtt
   readonly id = 'Text'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'text' }
+    return { type: 'name', value: 'long-text' }
   }
 
   getLabel (config: ColumnConfig<TextAttributes>, localizedName: string): React.ReactNode {

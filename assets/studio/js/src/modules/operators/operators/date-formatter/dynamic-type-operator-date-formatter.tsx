@@ -27,7 +27,7 @@ export class DynamicTypeOperatorDateFormatter extends DynamicTypeOperatorAbstrac
   readonly id = 'DateFormatter'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'calendar' }
+    return { type: 'name', value: 'date-formatter' }
   }
 
   getLabel (config: ColumnConfig<DateFormatterAttributes>, localizedName: string): React.ReactNode {

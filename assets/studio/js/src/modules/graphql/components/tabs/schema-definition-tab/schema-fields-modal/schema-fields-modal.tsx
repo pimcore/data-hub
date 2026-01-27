@@ -48,7 +48,7 @@ export const SchemaFieldsModal = ({
   const form = Form.useFormInstance()
   const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const { getByName } = useClassDefinitions()
-  const { getLocalizedName, getGroup } = useOperator()
+  const { getLocalizedName, getGroup, getIcon } = useOperator()
   const { getGroupIcon } = useOperatorGroups(operatorRegistry)
 
   const classDefinition = getByName(className)
@@ -211,7 +211,7 @@ export const SchemaFieldsModal = ({
 
       groupData.subGroups.get(translatedSubGroup)?.push({
         id: operator.id,
-        icon: operator.getIcon(),
+        icon: getIcon(operator, operatorRegistry),
         localizedName: getLocalizedName(operator)
       })
     })

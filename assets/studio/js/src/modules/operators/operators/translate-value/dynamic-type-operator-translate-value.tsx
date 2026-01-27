@@ -27,7 +27,7 @@ export class DynamicTypeOperatorTranslateValue extends DynamicTypeOperatorAbstra
   readonly id = 'TranslateValue'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'localized-fields' }
+    return { type: 'name', value: 'translate' }
   }
 
   getLabel (config: ColumnConfig<TranslateValueAttributes>, localizedName: string): React.ReactNode {

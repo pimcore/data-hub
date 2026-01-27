@@ -10,6 +10,7 @@
 
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
 import { DataHubModule } from './modules/config/index'
+import { GraphQLModule } from './modules/graphql/index'
 import { bundleServiceIds } from './config/service-ids'
 import { DynamicTypeDataHubAdapterRegistry } from './modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { DynamicTypeDataHubAdapterGraphQL } from './modules/config/dynamic-types/adapters/dynamic-type-data-hub-adapter-graphql'
@@ -66,5 +67,6 @@ export const DataHubPlugin: IAbstractPlugin = {
   // register modules here
   onStartup: ({ moduleSystem }): void => {
     moduleSystem.registerModule(DataHubModule)
+    moduleSystem.registerModule(GraphQLModule)
   }
 }

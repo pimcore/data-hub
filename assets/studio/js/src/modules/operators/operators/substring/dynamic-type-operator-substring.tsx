@@ -29,7 +29,7 @@ export class DynamicTypeOperatorSubstring extends DynamicTypeOperatorAbstract<Su
   readonly id = 'Substring'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'text' }
+    return { type: 'name', value: 'substring' }
   }
 
   getLabel (config: ColumnConfig<SubstringAttributes>, localizedName: string): React.ReactNode {

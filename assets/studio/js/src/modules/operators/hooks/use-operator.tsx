@@ -10,12 +10,15 @@
 
 import { useCallback } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { kebabCase } from 'lodash'
+import { kebabCase, isNil } from 'lodash'
 import { type DynamicTypeOperatorAbstract } from '../dynamic-type-operator-abstract'
+import type { DynamicTypeOperatorRegistry } from '../dynamic-type-operator-registry'
+import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 
 interface UseOperatorReturn {
   getLocalizedName: (operator: DynamicTypeOperatorAbstract) => string
   getGroup: (operator: DynamicTypeOperatorAbstract) => { group: string, subGroup?: string }
+  getIcon: (operator: DynamicTypeOperatorAbstract, registry: DynamicTypeOperatorRegistry) => ElementIcon
 }
 
 export function useOperator (): UseOperatorReturn {
@@ -38,8 +41,32 @@ export function useOperator (): UseOperatorReturn {
     [t]
   )
 
+  const getIcon = useCallback(
+    (operator: DynamicTypeOperatorAbstract, registry: DynamicTypeOperatorRegistry): ElementIcon => {
+      const operatorIcon = operator.getIcon()
+
+      if (!isNil(operatorIcon.colorToken)) {
+        return operatorIcon
+      }
+
+      const groupName = operator.getGroup()
+      const groupConfig = registry.getGroupConfig(groupName)
+
+      if (isNil(groupConfig?.icon.colorToken)) {
+        return operatorIcon
+      }
+
+      return {
+        ...operatorIcon,
+        colorToken: groupConfig.icon.colorToken
+      }
+    },
+    []
+  )
+
   return {
     getLocalizedName,
-    getGroup
+    getGroup,
+    getIcon
   }
 }

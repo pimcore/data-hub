@@ -27,7 +27,7 @@ export class DynamicTypeOperatorConcatenator extends DynamicTypeOperatorAbstract
   readonly id = 'Concatenator'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'concatenate' }
+    return { type: 'name', value: 'operator-concatenator' }
   }
 
   getLabel (config: ColumnConfig<ConcatenatorAttributes>, localizedName: string): React.ReactNode {

@@ -42,7 +42,8 @@ const buildTreeNodes = (
   items: InternalTreeNode[],
   operatorRegistry: DynamicTypeOperatorRegistry,
   fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry,
-  getLocalizedName: (operator: any) => string
+  getLocalizedName: (operator: any) => string,
+  getIcon: (operator: any, registry: DynamicTypeOperatorRegistry) => any
 ): TreeNodeData[] => {
   const buildNode = (item: InternalTreeNode): TreeNodeData => {
     const treeItem = createTreeItem(item, operatorRegistry)
@@ -56,7 +57,7 @@ const buildTreeNodes = (
       icon = !isNil(operatorType)
         ? (
           <Icon
-            { ...operatorType.getIcon() }
+            { ...getIcon(operatorType, operatorRegistry) }
             iconColorGroup="operator"
           />
           )
@@ -119,12 +120,12 @@ const AvailableFieldsTreeInner = ({
     updateItemAttributes
   } = useTreeContext()
 
-  const { getLocalizedName } = useOperator()
+  const { getLocalizedName, getIcon } = useOperator()
 
   // Build tree nodes for antd TreeElement
   const treeData = useMemo(
-    () => buildTreeNodes(items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName),
-    [items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName]
+    () => buildTreeNodes(items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName, getIcon),
+    [items, operatorRegistry, fieldDefinitionRegistry, getLocalizedName, getIcon]
   )
 
   const allKeys = useMemo(

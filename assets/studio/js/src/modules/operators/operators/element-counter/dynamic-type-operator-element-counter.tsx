@@ -25,7 +25,7 @@ export class DynamicTypeOperatorElementCounter extends DynamicTypeOperatorAbstra
   readonly id = 'ElementCounter'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'number' }
+    return { type: 'name', value: 'counter' }
   }
 
   getLabel (config: ColumnConfig<ElementCounterAttributes>, localizedName: string): React.ReactNode {
