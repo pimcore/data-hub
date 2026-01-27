@@ -36,6 +36,16 @@ export const useStyles = createStyles(({ css, token }) => {
 
     contentLayout: css`
       height: 60vh;
-      border-top: 1px solid ${token.colorBorderTertiary};      border-bottom: 1px solid ${token.colorBorderTertiary};    `
+      border-top: 1px solid ${token.colorBorderTertiary};
+      border-bottom: 1px solid ${token.colorBorderTertiary};
+    `,
+
+    gridContainer: css`
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: ${token.marginXS}px;
+      width: 100%;
+      align-items: stretch;
+    `
   }
 })

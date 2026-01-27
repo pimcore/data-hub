@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, Icon, TreeElement, Panel, Draggable, ContentLayout, Sidebar, SidebarProvider, Title, SidebarTitle, Box } from '@pimcore/studio-ui-bundle/components'
+import { Modal, Flex, Button, Form, Content, Icon, TreeElement, Panel, Draggable, ContentLayout, Sidebar, SidebarProvider, Title, SidebarTitle, Box, GridButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
@@ -17,7 +17,6 @@ import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/operators/dynamic-type-operator-registry'
 import { useStyles } from './schema-fields-modal.styles'
-import { useOperatorButtonStyles } from './operator-button.styles'
 import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
 import { useOperator } from '../../../../../../modules/operators/hooks/use-operator'
 import { useOperatorGroups } from '../../../../../../modules/operators/hooks/use-operator-groups'
@@ -44,7 +43,6 @@ export const SchemaFieldsModal = ({
 }: SchemaFieldsModalProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
-  const { styles: operatorStyles } = useOperatorButtonStyles()
   const form = Form.useFormInstance()
   const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const { getByName } = useClassDefinitions()
@@ -239,7 +237,7 @@ export const SchemaFieldsModal = ({
                   // No subgroup - render operators directly in grid
                     return (
                       <Box
-                        className={ operatorStyles.gridContainer }
+                        className={ styles.gridContainer }
                         key={ `${groupKey}-direct` }
                         padding={ { x: 'extra-small', bottom: 'small' } }
                       >
@@ -257,25 +255,10 @@ export const SchemaFieldsModal = ({
                             } }
                             key={ `${groupKey}-${operator.id}` }
                           >
-                            <Button
-                              className={ operatorStyles.operatorButton }
-                              type="default"
-                            >
-                              <Flex
-                                align="center"
-                                justify="center"
-                                vertical
-                              >
-                                <Icon
-                                  { ...operator.icon }
-                                  className={ operatorStyles.operatorIcon }
-                                  options={ { width: 24, height: 24 } }
-                                />
-                                <span className={ operatorStyles.operatorName }>
-                                  {operator.localizedName}
-                                </span>
-                              </Flex>
-                            </Button>
+                            <GridButton
+                              icon={ operator.icon }
+                              label={ operator.localizedName }
+                            />
                           </Draggable>
                         ))}
                       </Box>
@@ -292,7 +275,7 @@ export const SchemaFieldsModal = ({
                         theme="card-with-highlight"
                         title={ t(subGroupKey) }
                       >
-                        <Box className={ operatorStyles.gridContainer }>
+                        <Box className={ styles.gridContainer }>
                           {sortedOperators.map(operator => (
                             <Draggable
                               info={ {
@@ -307,25 +290,10 @@ export const SchemaFieldsModal = ({
                               } }
                               key={ `${groupKey}-${subGroupKey}-${operator.id}` }
                             >
-                              <Button
-                                className={ operatorStyles.operatorButton }
-                                type="default"
-                              >
-                                <Flex
-                                  align="center"
-                                  justify="center"
-                                  vertical
-                                >
-                                  <Icon
-                                    { ...operator.icon }
-                                    className={ operatorStyles.operatorIcon }
-                                    options={ { width: 24, height: 24 } }
-                                  />
-                                  <span className={ operatorStyles.operatorName }>
-                                    {operator.localizedName}
-                                  </span>
-                                </Flex>
-                              </Button>
+                              <GridButton
+                                icon={ operator.icon }
+                                label={ operator.localizedName }
+                              />
                             </Draggable>
                           ))}
                         </Box>
