@@ -9,10 +9,11 @@
  */
 
 import React from 'react'
-import { Toolbar, DropdownButton, Dropdown, type DropdownProps, IconButton, Icon, Flex } from '@pimcore/studio-ui-bundle/components'
+import { Toolbar, DropdownButton, Dropdown, type DropdownProps, IconButton, Icon, Flex, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { bundleServiceIds } from '../../../../../../config/service-ids'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../../../dynamic-types/dynamic-type-data-hub-adapter-registry'
+import { ImportButton } from '../../../import-button/import-button'
 
 interface ConfigSidebarToolbarProps {
   onAdd: (adapterType: string) => void
@@ -26,6 +27,10 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSid
 
   const adapters = adapterRegistry.getDynamicTypes()
 
+  const handleImportSuccess = async (): Promise<void> => {
+    onRefresh()
+  }
+
   const dropdownItems: DropdownProps['menu']['items'] = adapters.map((adapter) => ({
     key: adapter.id,
     label: t(adapter.getNameTranslationKey()),
@@ -34,28 +39,39 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSid
   }))
 
   return (
-    <Toolbar>
-      <IconButton
-        disabled={ isFetching }
-        icon={ { value: 'refresh' } }
-        onClick={ onRefresh }
-        type="link"
-      />
+    <>
+      <Toolbar>
+        <Flex gap="extra-small">
+          <Tooltip title={ t('refresh') }>
+            <IconButton
+              disabled={ isFetching }
+              icon={ { value: 'refresh' } }
+              onClick={ onRefresh }
+              type="link"
+            />
+          </Tooltip>
 
-      <Dropdown
-        menu={ { items: dropdownItems } }
-        trigger={ ['click'] }
-      >
-        <DropdownButton>
-          <Flex
-            align='center'
-            gap='extra-small'
-          >
-            <Icon value="new" />
-            {t('new')}
-          </Flex>
-        </DropdownButton>
-      </Dropdown>
-    </Toolbar>
+          <ImportButton
+            disabled={ isFetching }
+            onSuccess={ handleImportSuccess }
+          />
+        </Flex>
+
+        <Dropdown
+          menu={ { items: dropdownItems } }
+          trigger={ ['click'] }
+        >
+          <DropdownButton>
+            <Flex
+              align='center'
+              gap='extra-small'
+            >
+              <Icon value="new" />
+              {t('new')}
+            </Flex>
+          </DropdownButton>
+        </Dropdown>
+      </Toolbar>
+    </>
   )
 }

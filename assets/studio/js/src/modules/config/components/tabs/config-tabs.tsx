@@ -9,14 +9,15 @@
  */
 
 import React, { useMemo, useRef, useState, useCallback } from 'react'
-import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot, Icon } from '@pimcore/studio-ui-bundle/components'
+import { Tabs, Content, ContentLayout, Toolbar, IconButton, PortalSlot, Icon, Space, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
 import { isUndefined, isNil } from 'lodash'
 import { ConfigTabContent } from './config-tab-content'
 import { useStyles } from './config-tabs.styles'
-import { container } from '@pimcore/studio-ui-bundle/app'
+import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { bundleServiceIds } from '../../../../config/service-ids'
+import { ExportButton } from '../export-button'
 
 interface ConfigTabsProps {
   openedConfigs: BundleDataHubConfiguration[]
@@ -50,6 +51,7 @@ export const ConfigTabs = ({
   setModifiedConfigs
 }: ConfigTabsProps): React.JSX.Element => {
   const { styles } = useStyles()
+  const { t } = useTranslation()
   const refetchFunctionsRef = useRef<Map<string, () => Promise<any>>>(new Map())
   const [isFetchingTab, setIsFetchingTab] = useState(false)
 
@@ -106,15 +108,24 @@ export const ConfigTabs = ({
 
   const portalId = 'data-hub-save-button'
 
+  const activeConfig = openedConfigs.find(config => config.id === activeTabKey)
+
   return (
     <ContentLayout
       renderToolbar={
         <Toolbar>
-          <IconButton
-            disabled={ isFetchingTab }
-            icon={ { value: 'refresh' } }
-            onClick={ handleRefresh }
-          />
+          <Space size="none">
+            <Tooltip title={ t('refresh') }>
+              <IconButton
+                disabled={ isFetchingTab }
+                icon={ { value: 'refresh' } }
+                onClick={ handleRefresh }
+              />
+            </Tooltip>
+            {!isNil(activeConfig) && (
+              <ExportButton configName={ activeConfig.text } />
+            )}
+          </Space>
           <PortalSlot id={ portalId } />
         </Toolbar>
       }

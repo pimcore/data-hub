@@ -97,6 +97,7 @@ export const ConfigSidebar = ({
         const actions = item.allowChildren !== true
           ? [
               { key: 'clone', icon: 'copy-03' },
+              { key: 'export', icon: 'download' },
               { key: 'delete', icon: 'trash' }
             ]
           : []
@@ -133,10 +134,20 @@ export const ConfigSidebar = ({
       handleDelete(config)
     }
   }
+  const handleExportWrapper = (key: string): void => {
+    const config = findConfigById(key, configListData)
+    if (!isNil(config)) {
+      window.location.href = `/pimcore-studio/api/bundle/data-hub/config/${config.text}/export`
+    }
+  }
+
   const handleActionsClick = (key: string, action: string): void => {
     switch (action) {
       case 'clone':
         handleCloneWrapper(key)
+        break
+      case 'export':
+        handleExportWrapper(key)
         break
       case 'delete':
         handleDeleteWrapper(key)
