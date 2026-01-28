@@ -349,7 +349,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         $configuration = Configuration::getByName($name);
         if ($configuration instanceof Configuration) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+            throw new ElementExistsException(
+                message: 'Configuration with name "' . $name . '" already exists.', 
+                errorKey: 'data-hub.config-exists'
+            );
         }
     }
 
