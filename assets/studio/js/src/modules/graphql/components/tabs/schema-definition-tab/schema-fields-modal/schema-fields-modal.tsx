@@ -9,18 +9,14 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, Icon, TreeElement, Panel, Draggable, ContentLayout, Sidebar, SidebarProvider, Title, SidebarTitle, Box, GridButton } from '@pimcore/studio-ui-bundle/components'
-import { useTranslation, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { Modal, Flex, Button, Form, Content, ContentLayout, Sidebar, SidebarProvider, Title } from '@pimcore/studio-ui-bundle/components'
+import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
 import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
-import { type DynamicTypeOperatorRegistry } from '../../../../../../modules/operators/dynamic-type-operator-registry'
 import { useStyles } from './schema-fields-modal.styles'
-import { useClassAttributesTree } from './hooks/use-class-attributes-tree'
-import { useOperator } from '../../../../../../modules/operators/hooks/use-operator'
-import { useOperatorGroups } from '../../../../../../modules/operators/hooks/use-operator-groups'
-import { DragType } from './drag-types'
+import { useSidebarEntries } from './hooks/use-sidebar-entries'
 
 interface SchemaFieldsModalProps {
   open: boolean
@@ -44,33 +40,18 @@ export const SchemaFieldsModal = ({
   const { t } = useTranslation()
   const { styles } = useStyles()
   const form = Form.useFormInstance()
-  const operatorRegistry = useInjection<DynamicTypeOperatorRegistry>(operatorRegistryServiceId)
   const { getByName } = useClassDefinitions()
-  const { getLocalizedName, getGroup, getIcon } = useOperator()
-  const { getGroupIcon } = useOperatorGroups(operatorRegistry)
 
   const classDefinition = getByName(className)
-  const { classAttributesTree, isLoading } = useClassAttributesTree({
+
+  const sidebarEntries = useSidebarEntries({
     classId: classDefinition?.id ?? '',
-    enabled: open && classDefinition !== undefined
+    enabled: open && !isNil(classDefinition),
+    operatorRegistryServiceId,
+    gridContainerClassName: styles.gridContainer
   })
 
   const [localEntityConfig, setLocalEntityConfig] = useState<QueryEntityConfig | undefined>(undefined)
-
-  // Helper function to collect all keys from tree
-  const collectAllKeys = (nodes: any[]): string[] => {
-    const keys: string[] = []
-    const traverse = (items: any[]): void => {
-      items.forEach(item => {
-        if (!isNil(item.key)) keys.push(String(item.key))
-        if (!isNil(item.children) && Array.isArray(item.children)) {
-          traverse(item.children as any[])
-        }
-      })
-    }
-    traverse(nodes)
-    return keys
-  }
 
   useEffect(() => {
     if (open) {
@@ -97,219 +78,6 @@ export const SchemaFieldsModal = ({
 
     onApply()
   }
-
-  // Create titleRender for class attributes
-  const classAttributesTitleRender = React.useMemo(() => {
-    const ClassAttributeTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => {
-      const isLeaf = node.isLeaf === true || (isNil(node.children) || node.children.length === 0)
-
-      if (!isLeaf) {
-        return <>{initialComponent}</>
-      }
-
-      return (
-        <Draggable
-          info={ {
-            type: DragType.CLASS_ATTRIBUTE,
-            data: {
-              key: String(node.key),
-              attribute: node.attribute,
-              title: String(node.title),
-              dataType: String(node.dataType ?? 'text')
-            },
-            icon: node.iconProps ?? { value: 'field' },
-            title: String(node.title)
-          } }
-        >
-          {initialComponent}
-        </Draggable>
-      )
-    }
-    ClassAttributeTitleRenderer.displayName = 'ClassAttributeTitleRenderer'
-    return ClassAttributeTitleRenderer
-  }, [])
-
-  // Create titleRender for operators
-  const operatorsTitleRender = React.useMemo(() => {
-    const OperatorTitleRenderer = (node: any, initialComponent: React.ReactNode): React.JSX.Element => {
-      const isLeaf = node.isLeaf === true || (isNil(node.children) || node.children.length === 0)
-
-      if (!isLeaf) {
-        return <>{initialComponent}</>
-      }
-
-      return (
-        <Draggable
-          info={ {
-            type: DragType.OPERATOR,
-            data: {
-              key: String(node.key),
-              title: String(node.title),
-              operatorId: String(node.key.toString().split('-').pop())
-            },
-            icon: { value: 'function' },
-            title: String(node.title)
-          } }
-        >
-          {initialComponent}
-        </Draggable>
-      )
-    }
-    OperatorTitleRenderer.displayName = 'OperatorTitleRenderer'
-    return OperatorTitleRenderer
-  }, [])
-
-  // Build sidebar entries for class attributes and operator groups
-  const sidebarEntries = React.useMemo(() => {
-    const entries: Array<{ key: string, icon: React.JSX.Element, tooltip: string, component: React.JSX.Element }> = []
-
-    // Add class attributes entry
-    entries.push({
-      key: 'class-attributes',
-      icon: <Icon value="data-object" />,
-      tooltip: t('data-hub.schema.class-attributes'),
-      component: (
-        <Content loading={ isLoading }>
-          <SidebarTitle withBorder>
-            {t('data-hub.schema.class-attributes')}
-          </SidebarTitle>
-
-          <Box padding={ { x: 'extra-small', bottom: 'small' } }>
-            <TreeElement
-              defaultExpandedKeys={ collectAllKeys(classAttributesTree) }
-              draggable={ false }
-              selectable={ false }
-              showIcon
-              titleRender={ classAttributesTitleRender }
-              treeData={ classAttributesTree }
-            />
-          </Box>
-        </Content>
-      )
-    })
-
-    // Add operator groups
-    const operators = operatorRegistry.getDynamicTypes()
-    const groups = new Map<string, { groupName: string, priority: number, subGroups: Map<string | undefined, Array<{ id: string, icon: any, localizedName: string }>> }>()
-
-    // Organize operators by group and subgroup
-    operators.forEach(operator => {
-      const groupName = operator.getGroup()
-      const { group: translatedGroup, subGroup: translatedSubGroup } = getGroup(operator)
-      const groupConfig = operatorRegistry.getGroupConfig(groupName)
-      const priority = groupConfig?.priority ?? 999
-
-      if (!groups.has(translatedGroup)) {
-        groups.set(translatedGroup, { groupName, priority, subGroups: new Map() })
-      }
-
-      const groupData = groups.get(translatedGroup)!
-      if (!groupData.subGroups.has(translatedSubGroup)) {
-        groupData.subGroups.set(translatedSubGroup, [])
-      }
-
-      groupData.subGroups.get(translatedSubGroup)?.push({
-        id: operator.id,
-        icon: getIcon(operator, operatorRegistry),
-        localizedName: getLocalizedName(operator)
-      })
-    })
-
-    Array.from(groups.entries())
-      .sort(([, a], [, b]) => a.priority - b.priority)
-      .forEach(([groupKey, groupData]) => {
-        const groupIcon = getGroupIcon(groupData.groupName)
-
-        entries.push({
-          key: groupKey,
-          icon: <Icon { ...groupIcon } />,
-          tooltip: t(groupKey),
-          component: (
-            <Content>
-              <SidebarTitle withBorder>
-                {t(groupKey)}
-              </SidebarTitle>
-
-              <Box>
-                {Array.from(groupData.subGroups.entries()).map(([subGroupKey, operators]) => {
-                  const sortedOperators = operators.sort((a, b) => a.localizedName.localeCompare(b.localizedName))
-
-                  if (subGroupKey === undefined) {
-                  // No subgroup - render operators directly in grid
-                    return (
-                      <Box
-                        className={ styles.gridContainer }
-                        key={ `${groupKey}-direct` }
-                        padding={ { x: 'extra-small', bottom: 'small' } }
-                      >
-                        {sortedOperators.map(operator => (
-                          <Draggable
-                            info={ {
-                              type: DragType.OPERATOR,
-                              data: {
-                                key: `${groupKey}-${operator.id}`,
-                                title: operator.localizedName,
-                                operatorId: operator.id
-                              },
-                              icon: operator.icon,
-                              title: operator.localizedName
-                            } }
-                            key={ `${groupKey}-${operator.id}` }
-                          >
-                            <GridButton
-                              icon={ operator.icon }
-                              label={ operator.localizedName }
-                            />
-                          </Draggable>
-                        ))}
-                      </Box>
-                    )
-                  } else {
-                  // Has subgroup - use collapsible panel
-                    return (
-                      <Panel
-                        border={ false }
-                        collapsed={ false }
-                        collapsible
-                        contentPadding="extra-small"
-                        key={ `${groupKey}-${subGroupKey}` }
-                        theme="card-with-highlight"
-                        title={ t(subGroupKey) }
-                      >
-                        <Box className={ styles.gridContainer }>
-                          {sortedOperators.map(operator => (
-                            <Draggable
-                              info={ {
-                                type: DragType.OPERATOR,
-                                data: {
-                                  key: `${groupKey}-${subGroupKey}-${operator.id}`,
-                                  title: operator.localizedName,
-                                  operatorId: operator.id
-                                },
-                                icon: operator.icon,
-                                title: operator.localizedName
-                              } }
-                              key={ `${groupKey}-${subGroupKey}-${operator.id}` }
-                            >
-                              <GridButton
-                                icon={ operator.icon }
-                                label={ operator.localizedName }
-                              />
-                            </Draggable>
-                          ))}
-                        </Box>
-                      </Panel>
-                    )
-                  }
-                })}
-              </Box>
-            </Content>
-          )
-        })
-      })
-
-    return entries
-  }, [operatorRegistry, t, operatorsTitleRender, collectAllKeys, classAttributesTree, isLoading, classAttributesTitleRender])
 
   return (
     <Modal

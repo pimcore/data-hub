@@ -11,6 +11,7 @@
 import React, { useMemo } from 'react'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { isNil } from 'lodash'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type InternalTreeNode, createTreeItem } from '../tree-item/tree-item'
@@ -21,6 +22,7 @@ export interface TreeNodeData {
   key: string
   title: React.ReactNode
   icon?: React.ReactNode
+  iconProps?: any
   children?: TreeNodeData[]
   className?: string
   actions?: Array<{ key: string, icon: string }>
@@ -35,6 +37,7 @@ interface UseTreeNodesProps {
 
 interface NodeDisplay {
   icon?: React.ReactNode
+  iconProps?: any
   title: React.ReactNode
 }
 
@@ -54,15 +57,19 @@ export const useTreeNodes = ({
       if (operatorType === null) {
         return {
           icon: undefined,
+          iconProps: undefined,
           title: String(item.attributes.label ?? '')
         }
       }
 
+      const iconProps = getIcon(operatorType, operatorRegistry)
+
       return {
         icon: <Icon
-          { ...getIcon(operatorType, operatorRegistry) }
+          { ...iconProps }
           iconColorGroup="operator"
               />,
+        iconProps,
         title: operatorType.getLabel(config, getLocalizedName(operatorType)) ?? String(item.attributes.label ?? '')
       }
     }
@@ -72,26 +79,30 @@ export const useTreeNodes = ({
       const systemColumn = systemColumnLookup.get(attributeValue)
 
       if (systemColumn === undefined) {
-        return { icon: undefined, title: undefined }
+        return { icon: undefined, iconProps: undefined, title: undefined }
       }
 
       return {
         icon: <Icon { ...systemColumn.iconProps } />,
+        iconProps: systemColumn.iconProps,
         title: t(systemColumn.translationKey)
       }
     }
 
     const buildFieldDefinitionDisplay = (item: InternalTreeNode): NodeDisplay => {
       const fieldDef = fieldDefinitionRegistry.getDynamicType(item.attributes.dataType ?? '', false)
+      const iconProps = !isNil(fieldDef) ? fieldDef.getIcon() : undefined
+
       return {
-        icon: fieldDef !== null
+        icon: !isNil(iconProps)
           ? (
             <Icon
-              { ...fieldDef.getIcon() }
+              { ...iconProps }
               iconColorGroup="fieldDefinition"
             />
             )
           : undefined,
+        iconProps,
         title: item.attributes.label ?? item.attributes.attribute ?? ''
       }
     }
@@ -110,6 +121,7 @@ export const useTreeNodes = ({
         key: item.key,
         title: display.title,
         icon: display.icon,
+        iconProps: display.iconProps,
         className: 'ant-tree-node--has-drag-and-drop',
         actions: treeItem.getActions(),
         itemData: item,

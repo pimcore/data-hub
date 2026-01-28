@@ -54,4 +54,7 @@ export interface TreeNode extends TreeDataItem {
   label?: string
   columnConfig?: PersistedColumnConfig
   childIndex?: number
+  attribute?: string
+  iconProps?: any
+  operatorId?: string
 }
