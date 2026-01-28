@@ -27,7 +27,7 @@ export class DynamicTypeOperatorLocaleSwitcher extends DynamicTypeOperatorAbstra
   getIcon (): ElementIcon {
     return {
       type: 'name',
-      value: 'globe-02'
+      value: 'locale-switcher'
     }
   }
 

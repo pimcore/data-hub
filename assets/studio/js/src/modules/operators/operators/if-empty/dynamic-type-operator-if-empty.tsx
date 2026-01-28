@@ -24,7 +24,7 @@ export class DynamicTypeOperatorIfEmpty extends DynamicTypeOperatorAbstract<IfEm
   readonly id = 'IfEmpty'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'question-circle' }
+    return { type: 'name', value: 'settings-brightness' }
   }
 
   getLabel (config: ColumnConfig<IfEmptyAttributes>, localizedName: string): React.ReactNode {

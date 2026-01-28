@@ -24,7 +24,7 @@ export class DynamicTypeOperatorLocaleCollector extends DynamicTypeOperatorAbstr
   readonly id = 'LocaleCollector'
 
   getIcon (): ElementIcon {
-    return { type: 'name', value: 'globe' }
+    return { type: 'name', value: 'locale-collector' }
   }
 
   getLabel (config: ColumnConfig<LocaleCollectorAttributes>, localizedName: string): React.ReactNode {

@@ -17,7 +17,7 @@ export interface SystemColumnDefinition {
   iconProps: IconProps
 }
 
-export const SYSTEM_COLUMN_ICON: IconProps = { value: 'workflow', colorToken: 'colorCodingGreen1' }
+export const SYSTEM_COLUMN_ICON: IconProps = { value: 'system-columns', colorToken: 'colorCodingGreen1' }
 
 export const systemColumnDefinitions: SystemColumnDefinition[] = [
   {
