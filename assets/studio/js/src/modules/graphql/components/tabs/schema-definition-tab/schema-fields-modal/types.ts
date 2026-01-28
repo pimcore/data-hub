@@ -57,4 +57,5 @@ export interface TreeNode extends TreeDataItem {
   attribute?: string
   iconProps?: any
   operatorId?: string
+  isFieldDefinition?: boolean
 }

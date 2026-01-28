@@ -10,7 +10,6 @@
 
 import React from 'react'
 import { Draggable } from '@pimcore/studio-ui-bundle/components'
-import { isNil } from 'lodash'
 import { DragType } from '../drag-types'
 import { type TreeNode } from '../types'
 
@@ -21,15 +20,13 @@ interface DraggableTreeTitleProps {
 
 /**
  * Wraps tree node titles with drag capability for the class attributes sidebar.
- * Only leaf nodes are draggable.
+ * Only nodes marked as field definitions are draggable.
  */
 export const DraggableTreeTitle = ({
   node,
   initialComponent
 }: DraggableTreeTitleProps): React.JSX.Element => {
-  const isLeaf = node.isLeaf === true || (isNil(node.children) || node.children.length === 0)
-
-  if (!isLeaf) {
+  if (node.isFieldDefinition !== true) {
     return <>{initialComponent}</>
   }
 

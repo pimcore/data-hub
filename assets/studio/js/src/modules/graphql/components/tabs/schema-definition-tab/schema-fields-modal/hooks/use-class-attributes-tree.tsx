@@ -8,34 +8,24 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { useClassDefinitionGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-definitions'
-import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
+import { type DynamicTypeFieldDefinitionRegistry, DynamicTypeFieldDefinitionDataAbstract } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { useInjection, serviceIds, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
-import { isNil } from 'lodash'
+import { isNil, flatMap } from 'lodash'
 import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
+import { type TreeNode } from '../types'
 
 interface UseClassAttributesTreeProps {
   classId: string
   enabled: boolean
 }
 
-interface TreeNode {
-  key: React.Key
-  title?: React.ReactNode | ((data: any) => React.ReactNode)
-  icon?: React.ReactNode
-  isLeaf?: boolean
-  className?: string
-  iconProps?: any
-  attribute?: string
-  dataType?: string
-  children?: TreeNode[]
-}
-
 interface UseClassAttributesTreeReturn {
   classAttributesTree: TreeNode[]
+  getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
 }
 
@@ -64,15 +54,24 @@ export const useClassAttributesTree = ({
         fieldDefinitions,
         itemCallback: ({ fieldDefinition, initialTreeItem }) => {
           const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype, false)
+          const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract
 
           const { icon: _icon, ...restTreeItem } = initialTreeItem
 
+          const label = fieldDefinition.title ?? fieldDefinition.name
+          const title = isFieldDefinition
+            ? `${label} (${fieldDefinition.name})`
+            : initialTreeItem.title
+
           return {
             ...restTreeItem,
-            className: 'ant-tree-node--has-drag-and-drop',
+            title,
+            className: isFieldDefinition ? 'ant-tree-node--has-drag-and-drop' : undefined,
             icon: initialTreeItem.icon,
             dataType: fieldDefinition.fieldtype,
-            iconProps: dynType !== undefined ? dynType.getIcon() : { value: 'field' }
+            attribute: fieldDefinition.name,
+            iconProps: dynType !== undefined ? dynType.getIcon() : { value: 'field' },
+            isFieldDefinition
           }
         }
       })
@@ -94,7 +93,8 @@ export const useClassAttributesTree = ({
         icon: <Icon { ...iconProps } />,
         iconProps,
         className: 'ant-tree-node--has-drag-and-drop',
-        attribute
+        attribute,
+        isFieldDefinition: true
       }))
     })
 
@@ -116,8 +116,23 @@ export const useClassAttributesTree = ({
     }
   }, [classLayout])
 
+  const getFieldDefinitions = useCallback((): TreeNode[] => {
+    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
+    if (isNil(objectColumnsNode) || isNil(objectColumnsNode.children)) return []
+
+    const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
+      flatMap(nodes, node => {
+        if (node.isFieldDefinition === true) return [node]
+        if (!isNil(node.children)) return collectFieldDefinitions(node.children as TreeNode[])
+        return []
+      })
+
+    return collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+  }, [classAttributesTree])
+
   return {
     classAttributesTree,
+    getFieldDefinitions,
     isLoading: isLoading || isFetching
   }
 }

@@ -17,6 +17,7 @@ import { type QueryEntityConfig } from './types'
 import { isNil } from 'lodash'
 import { useStyles } from './schema-fields-modal.styles'
 import { useSidebarEntries } from './hooks/use-sidebar-entries'
+import { AddAllDefinitionsButton } from './components/add-all-definitions-button'
 
 interface SchemaFieldsModalProps {
   open: boolean
@@ -43,10 +44,12 @@ export const SchemaFieldsModal = ({
   const { getByName } = useClassDefinitions()
 
   const classDefinition = getByName(className)
+  const classId = classDefinition?.id ?? ''
+  const enabled = open && !isNil(classDefinition)
 
   const sidebarEntries = useSidebarEntries({
-    classId: classDefinition?.id ?? '',
-    enabled: open && !isNil(classDefinition),
+    classId,
+    enabled,
     operatorRegistryServiceId,
     gridContainerClassName: styles.gridContainer
   })
@@ -84,8 +87,14 @@ export const SchemaFieldsModal = ({
       footer={ (
         <Flex
           gap="small"
-          justify="flex-end"
+          justify="space-between"
         >
+          <AddAllDefinitionsButton
+            classId={ classId }
+            enabled={ enabled }
+            entityConfig={ localEntityConfig }
+            onEntityConfigChange={ setLocalEntityConfig }
+          />
           <Button
             onClick={ handleApply }
             type="primary"
