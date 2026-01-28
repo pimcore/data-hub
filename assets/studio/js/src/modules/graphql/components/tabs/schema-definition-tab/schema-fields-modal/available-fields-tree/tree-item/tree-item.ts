@@ -12,6 +12,7 @@ import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators
 import { createSourceConfigFromAttributes } from '../source-config-utils'
 
 export interface TreeItemAttributes {
+  attribute?: string
   label?: string
   dataType?: string
   children?: InternalTreeNode[]

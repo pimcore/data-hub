@@ -58,7 +58,7 @@ export function createItemFromDragInfo (dragInfo: DragInfo): InternalTreeNode | 
       key: uuid(),
       isOperator: false,
       attributes: {
-        attribute: String(dragInfo.data.key ?? ''),
+        attribute: String(dragInfo.data.attribute ?? dragInfo.data.key ?? ''),
         label: String(dragInfo.data.title ?? ''),
         dataType: String(dragInfo.data.dataType ?? 'text')
       }

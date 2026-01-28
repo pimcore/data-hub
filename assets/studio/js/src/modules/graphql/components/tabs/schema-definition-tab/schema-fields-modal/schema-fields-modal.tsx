@@ -113,6 +113,7 @@ export const SchemaFieldsModal = ({
             type: DragType.CLASS_ATTRIBUTE,
             data: {
               key: String(node.key),
+              attribute: node.attribute,
               title: String(node.title),
               dataType: String(node.dataType ?? 'text')
             },
@@ -342,7 +343,10 @@ export const SchemaFieldsModal = ({
           </SidebarProvider>
         ) }
       >
-        <Content padded padding={{right: 'medium'}}>
+        <Content
+          padded
+          padding={ { right: 'medium' } }
+        >
           <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
           <AvailableFieldsTree
             entityConfig={ localEntityConfig }
