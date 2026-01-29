@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, useState, useMemo, useRef } from 'react'
-import { Form, Tabs, Button, FormKit, Portal, IconTextButton, ButtonGroup } from '@pimcore/studio-ui-bundle/components'
+import { Form, Tabs, Button, FormKit, Portal, IconTextButton, ButtonGroup, useMessage } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type AdapterFormProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
 import { GeneralTab } from './tabs/general-tab'
@@ -27,6 +27,7 @@ import { type BackendConfiguration } from './backend-types'
 export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isActive }: AdapterFormProps): React.JSX.Element => {
   const [form] = Form.useForm()
   const { t } = useTranslation()
+  const messageApi = useMessage()
   const [isDirty, setIsDirty] = useState(false)
   const modificationDateRef = useRef<number>(config.modificationDate ?? Date.now())
 
@@ -88,6 +89,8 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
 
         setIsDirty(false)
         onChange(false)
+
+        void messageApi.success(t('save-success'))
       } catch (error) {
         console.error('Failed to save configuration:', error)
       }
