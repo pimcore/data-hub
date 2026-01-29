@@ -41,16 +41,16 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
 
   const validateConfigName = async (_rule: any, value: string): Promise<void> => {
     if (!isString(value) || value.trim().length === 0) {
-      return await Promise.reject(new Error(t('data-hub.config.name-required')))
+      await Promise.reject(new Error(t('data-hub.config.name-required'))); return
     }
     if (value.length < 3) {
-      return await Promise.reject(new Error(t('data-hub.config.name-min-length')))
+      await Promise.reject(new Error(t('data-hub.config.name-min-length'))); return
     }
     if (value.length > 80) {
-      return await Promise.reject(new Error(t('data-hub.config.name-max-length')))
+      await Promise.reject(new Error(t('data-hub.config.name-max-length'))); return
     }
     if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-      return await Promise.reject(new Error(t('data-hub.config.name-pattern')))
+      await Promise.reject(new Error(t('data-hub.config.name-pattern'))); return
     }
     await Promise.resolve()
   }
