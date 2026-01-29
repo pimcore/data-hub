@@ -76,7 +76,7 @@ export const ConfigSidebar = ({
     }
 
     const adapter = adapterRegistry.getDynamicType(adapterType, false)
-    return !isUndefined(adapter) ? <Icon { ...adapter.getIcon() } /> : undefined
+    return isUndefined(adapter) ? undefined : <Icon { ...adapter.getIcon() } />
   }
 
   const transformToTreeData = (items: BundleDataHubConfiguration[] | null): TreeDataItem[] => {
@@ -94,19 +94,19 @@ export const ConfigSidebar = ({
         return a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })
       })
       .map((item) => {
-        const actions = item.allowChildren !== true
-          ? [
+        const actions = item.allowChildren === true
+          ? []
+          : [
               { key: 'clone', icon: 'copy-03' },
               { key: 'export', icon: 'download' },
               { key: 'delete', icon: 'trash' }
             ]
-          : []
 
         return {
-          key: !isUndefined(item.id) ? String(item.id) : '',
+          key: isUndefined(item.id) ? '' : String(item.id),
           title: item.text,
           icon: getTreeItemIcon(item),
-          children: !isUndefined(item.children) ? transformToTreeData(item.children) : undefined,
+          children: isUndefined(item.children) ? undefined : transformToTreeData(item.children),
           isLeaf: item.leaf,
           actions,
           allowDrag: false,

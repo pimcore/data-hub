@@ -29,7 +29,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
   const { t } = useTranslation()
   const messageApi = useMessage()
   const [isDirty, setIsDirty] = useState(false)
-  const modificationDateRef = useRef<number>(config.modificationDate ?? Date.now())
+  const modificationDateRef = useRef<number>(config.modificationDate ?? Math.floor(Date.now() / 1000))
 
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
   const [updateConfig, { error: updateError, isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
@@ -51,7 +51,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
     form.setFieldsValue(initialValues)
     setIsDirty(false)
     onChange(false)
-    modificationDateRef.current = config.modificationDate ?? Date.now()
+    modificationDateRef.current = config.modificationDate ?? Math.floor(Date.now() / 1000)
   }, [initialValues, form, onChange, config.modificationDate])
 
   const onValuesChange = (): void => {

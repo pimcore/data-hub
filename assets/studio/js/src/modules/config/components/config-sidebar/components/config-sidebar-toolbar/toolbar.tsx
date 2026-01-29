@@ -37,40 +37,38 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
   }))
 
   return (
-    <>
-      <Toolbar>
-        <Flex gap="extra-small">
-          <Tooltip title={ t('refresh') }>
-            <IconButton
-              disabled={ isFetching }
-              icon={ { value: 'refresh' } }
-              onClick={ onRefresh }
-              type="link"
-            />
-          </Tooltip>
-
-          <ImportButton
+    <Toolbar>
+      <Flex gap="extra-small">
+        <Tooltip title={ t('refresh') }>
+          <IconButton
             disabled={ isFetching }
-            handleOpenConfig={ handleOpenConfig }
-            onRefresh={ onRefresh }
+            icon={ { value: 'refresh' } }
+            onClick={ onRefresh }
+            type="link"
           />
-        </Flex>
+        </Tooltip>
 
-        <Dropdown
-          menu={ { items: dropdownItems } }
-          trigger={ ['click'] }
-        >
-          <DropdownButton>
-            <Flex
-              align='center'
-              gap='extra-small'
-            >
-              <Icon value="new" />
-              {t('new')}
-            </Flex>
-          </DropdownButton>
-        </Dropdown>
-      </Toolbar>
-    </>
+        <ImportButton
+          disabled={ isFetching }
+          handleOpenConfig={ handleOpenConfig }
+          onRefresh={ onRefresh }
+        />
+      </Flex>
+
+      <Dropdown
+        menu={ { items: dropdownItems } }
+        trigger={ ['click'] }
+      >
+        <DropdownButton>
+          <Flex
+            align='center'
+            gap='extra-small'
+          >
+            <Icon value="new" />
+            {t('new')}
+          </Flex>
+        </DropdownButton>
+      </Dropdown>
+    </Toolbar>
   )
 }
