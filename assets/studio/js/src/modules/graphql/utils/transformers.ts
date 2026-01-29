@@ -156,7 +156,6 @@ export function transformSchemaEntitiesFromBackend (backendEntities: Record<stri
   }))
 }
 
-
 export function transformApiKeyToBackend (apikey: string | undefined | null): string[] {
   if (isNil(apikey)) {
     return []
