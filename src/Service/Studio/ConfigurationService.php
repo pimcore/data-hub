@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationDetailEvent;
 use Pimcore\Bundle\DataHubBundle\Event\Studio\PreResponse\ConfigurationEvent;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDehydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
@@ -42,13 +43,24 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /** @internal */
 final readonly class ConfigurationService implements ConfigurationServiceInterface
 {
+    private const array REQUIRED_CREATE_PERMISSIONS = [
+        PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+        PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+    ];
+
+    private const array REQUIRED_READ_UPDATE_PERMISSIONS = [
+        PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ,
+        PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
+    ];
+
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
         private ConfigurationHydratorInterface $configurationHydrator,
         private ConfigurationDetailHydratorInterface $configurationDetailHydrator,
+        private ConfigurationDehydratorInterface $configurationDehydrator,
         private Service $graphQlService,
         private SecurityServiceInterface $securityService,
-        protected ContainerBagInterface $parameterBag
+        private ContainerBagInterface $parameterBag
     ) {
     }
 
@@ -89,9 +101,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return array_values($hydratedConfigs);
     }
 
-    /**
-     * @throws Exception
-     */
     public function getConfiguration(string $name): ConfigurationDetail
     {
         $configuration = $this->fetchConfiguration($name);
@@ -117,24 +126,14 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $hydratedDetail;
     }
 
-    /**
-     * @throws Exception
-     */
     public function addConfiguration(string $name, string $type, string $path): string
     {
-        if ((new Configuration(null, null))->isWriteable() === false) {
-            throw new NotWriteableException(
-                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
-                'Cannot create configuration as configurations are not writeable.'
-            );
-        }
-
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-            ]
+        $this->ensureConfigurationsAreWriteable(
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
+            'Cannot create configuration as configurations are not writeable.'
         );
+
+        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
 
         $this->ensureConfigDoesNotExist($name);
 
@@ -144,19 +143,15 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $name;
     }
 
-    /**
-     * @throws Exception
-     */
     public function deleteConfiguration(string $name): void
     {
         $config = $this->fetchConfiguration($name);
 
-        if ($config->isWriteable() === false) {
-            throw new NotWriteableException(
-                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_DELETE,
-                'Cant delete configuration "' . $name . '" as it is not writeable.'
-            );
-        }
+        $this->ensureConfigurationIsWriteable(
+            $config,
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_DELETE,
+            'Cannot delete configuration "' . $name . '" as it is not writeable.'
+        );
 
         $this->checkConfigPermission($config, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_DELETE);
 
@@ -164,24 +159,14 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         $config->delete();
     }
 
-    /**
-     * @throws Exception
-     */
     public function cloneConfiguration(string $name, string $originalName): string
     {
-        if ((new Configuration(null, null))->isWriteable() === false) {
-            throw new NotWriteableException(
-                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
-                'Cannot clone configuration as configurations are not writeable.'
-            );
-        }
-
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-            ]
+        $this->ensureConfigurationsAreWriteable(
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
+            'Cannot clone configuration as configurations are not writeable.'
         );
+
+        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
 
         $this->ensureConfigDoesNotExist($name);
         $originalConfig = $this->fetchConfiguration($originalName);
@@ -206,24 +191,14 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return $name;
     }
 
-    /**
-     * @throws Exception
-     */
     public function importConfiguration(string $json): array
     {
-        if ((new Configuration(null, null))->isWriteable() === false) {
-            throw new NotWriteableException(
-                PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
-                'Cannot import configuration as configurations are not writeable.'
-            );
-        }
-
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-            ]
+        $this->ensureConfigurationsAreWriteable(
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_CREATE,
+            'Cannot import configuration as configurations are not writeable.'
         );
+
+        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
 
         $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $this->validateUploadedConfigurationData($importData);
@@ -251,9 +226,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ];
     }
 
-    /**
-     * @throws Exception
-     */
     public function exportConfiguration(string $name): array
     {
         $configuration = $this->fetchConfiguration($name);
@@ -284,28 +256,79 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ];
     }
 
+    public function updateConfiguration(string $name, array $configuration, int $clientModificationDate): int
+    {
+        $config = $this->fetchConfiguration($name);
+
+        $this->ensureConfigurationIsWriteable(
+            $config,
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
+            'Cannot update configuration "' . $name . '" as it is not writeable.'
+        );
+
+        $this->checkConfigPermission($config, self::REQUIRED_READ_UPDATE_PERMISSIONS);
+
+        $currentConfiguration = $config->getConfiguration();
+        $savedModificationDate = 0;
+
+        if ($currentConfiguration && isset($currentConfiguration['general']['modificationDate'])) {
+            $savedModificationDate = $currentConfiguration['general']['modificationDate'];
+        }
+
+        if ($clientModificationDate < $savedModificationDate) {
+            throw new ValidationFailedException(
+                'The configuration was modified during editing, please reload the configuration and make your changes again'
+            );
+        }
+
+        $configuration = $this->configurationDehydrator->dehydrate($configuration);
+        $configuration['general']['modificationDate'] = time();
+
+        $config->setConfiguration($configuration);
+        $config->save();
+
+        return $configuration['general']['modificationDate'];
+    }
+
     private function checkConfigPermission(
         Configuration $configuration,
         array|string $permission
     ): void {
-        $throw = false;
+        $permissions = is_array($permission) ? $permission : [$permission];
 
-        if (is_string($permission) && !$configuration->isAllowed($permission)) {
-            $throw = true;
-        }
-
-        if (is_array($permission)) {
-            foreach ($permission as $perm) {
-                if (!$configuration->isAllowed($perm)) {
-                    $throw = true;
-
-                    break;
-                }
+        foreach ($permissions as $perm) {
+            if (!$configuration->isAllowed($perm)) {
+                throw new ForbiddenException('Permission denied: ' . $perm);
             }
         }
+    }
 
-        if ($throw) {
-            throw new ForbiddenException('Permission denied: ' . $permission);
+    /**
+     * Ensures that a specific configuration instance is writeable
+     *
+     * @throws NotWriteableException
+     */
+    private function ensureConfigurationIsWriteable(
+        Configuration $configuration,
+        string $permission,
+        string $message
+    ): void {
+        if ($configuration->isWriteable() === false) {
+            throw new NotWriteableException($permission, $message);
+        }
+    }
+
+    /**
+     * Ensures that configurations in general are writeable (for create operations)
+     *
+     * @throws NotWriteableException
+     */
+    private function ensureConfigurationsAreWriteable(
+        string $permission,
+        string $message
+    ): void {
+        if ((new Configuration(null, null))->isWriteable() === false) {
+            throw new NotWriteableException($permission, $message);
         }
     }
 
@@ -326,7 +349,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         $configuration = Configuration::getByName($name);
         if ($configuration instanceof Configuration) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+            throw new ElementExistsException(
+                message: 'Configuration with name "' . $name . '" already exists.', 
+                errorKey: 'data-hub.config-exists'
+            );
         }
     }
 
@@ -430,22 +456,12 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     private function checkUserPermission(array|string $permission): void
     {
         $user = $this->securityService->getCurrentUser();
-        $throw = false;
+        $permissions = is_array($permission) ? $permission : [$permission];
 
-        if (is_string($permission) && !$user->isAllowed($permission)) {
-            $throw = true;
-        }
-
-        if (is_array($permission)) {
-            foreach ($permission as $perm) {
-                if (!$user->isAllowed($perm)) {
-                    $throw = true;
-                }
+        foreach ($permissions as $perm) {
+            if (!$user->isAllowed($perm)) {
+                throw new ForbiddenException('Permission denied: ' . $perm);
             }
-        }
-
-        if ($throw) {
-            throw new ForbiddenException('Permission denied: ' . $permission);
         }
     }
 
@@ -467,7 +483,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
-                'Uploaded configuration data is invalid. Missing keys: type, path, name.'
+                message: 'Uploaded configuration data is invalid. Missing keys: type, path, name.',
+                errorKey: 'data-hub.import-config-invalid'
             );
         }
 
@@ -475,7 +492,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!$this->isBundleInstalled($type)) {
             throw new ValidationFailedException(sprintf(
-                'Cant handle type "%s". According bundle is not installed!',
+                'Cannot handle type "%s". According bundle is not installed!',
                 $type
             ));
         }

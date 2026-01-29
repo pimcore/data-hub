@@ -24,6 +24,9 @@ services:
     Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDetailHydrator
 
+    Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDehydratorInterface:
+        class: Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationDehydrator
+
     Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydrator
 
