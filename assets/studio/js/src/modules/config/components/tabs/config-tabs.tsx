@@ -38,7 +38,7 @@ const TabItem = ({ config }: { config: BundleDataHubConfiguration }): React.JSX.
   }
 
   const adapter = adapterRegistry.getDynamicType(adapterType, false)
-  return adapter !== undefined ? <Icon { ...adapter.getIcon() } /> : null
+  return isUndefined(adapter) ? null : <Icon { ...adapter.getIcon() } />
 }
 
 export const ConfigTabs = ({
@@ -82,9 +82,9 @@ export const ConfigTabs = ({
       return ids
     }
 
-    const existingConfigIds = !isNil(configurationsData?.items)
-      ? collectConfigIds(configurationsData.items)
-      : new Set<string>()
+    const existingConfigIds = isNil(configurationsData?.items)
+      ? new Set<string>()
+      : collectConfigIds(configurationsData.items)
 
     return openedConfigs
       .filter(config => !isNil(existingConfigIds) && existingConfigIds.has(config.id))
