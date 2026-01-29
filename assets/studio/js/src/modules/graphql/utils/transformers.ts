@@ -58,6 +58,7 @@ export function transformWorkspacesFromBackend (backendWorkspaces: BackendConfig
 
 export function transformPermissionToBackend (permission: Permission, type: 'role' | 'user'): BackendPermission {
   return {
+    id: permission.id,
     name: permission.name,
     read: permission.read ?? false,
     update: permission.update ?? false,
@@ -67,6 +68,7 @@ export function transformPermissionToBackend (permission: Permission, type: 'rol
 
 export function transformPermissionFromBackend (backendPermission: BackendPermission, type: 'role' | 'user'): Permission {
   return {
+    id: backendPermission.id,
     name: backendPermission.name ?? (type === 'role' ? (backendPermission.role ?? '') : (backendPermission.user ?? '')),
     read: backendPermission.read ?? false,
     update: backendPermission.update ?? false,

@@ -9,6 +9,7 @@
  */
 
 export interface Permission {
+  id?: number
   name: string
   read: boolean
   update: boolean

@@ -71,6 +71,7 @@ export const PermissionAccordion = ({
       if (!isNil(existingRole)) return undefined
 
       return {
+        id: role.id,
         name: role.name,
         read: true,
         update: false,
@@ -84,6 +85,7 @@ export const PermissionAccordion = ({
       if (!isNil(existingUser)) return undefined
 
       return {
+        id: user.id,
         name: user.username,
         read: true,
         update: false,
