@@ -14,22 +14,20 @@ import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { bundleServiceIds } from '../../../../../../config/service-ids'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { ImportButton } from '../../../import-button/import-button'
+import { type BundleDataHubConfiguration } from '../../../../config-api-slice.gen'
 
 interface ConfigSidebarToolbarProps {
   onAdd: (adapterType: string) => void
-  onRefresh: () => void
+  onRefresh: () => Promise<{ data?: { items?: BundleDataHubConfiguration[] } }>
+  handleOpenConfig: (config: BundleDataHubConfiguration) => void
   isFetching: boolean
 }
 
-export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSidebarToolbarProps): React.JSX.Element => {
+export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFetching }: ConfigSidebarToolbarProps): React.JSX.Element => {
   const { t } = useTranslation()
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
   const adapters = adapterRegistry.getDynamicTypes()
-
-  const handleImportSuccess = async (): Promise<void> => {
-    onRefresh()
-  }
 
   const dropdownItems: DropdownProps['menu']['items'] = adapters.map((adapter) => ({
     key: adapter.id,
@@ -53,7 +51,8 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, isFetching }: ConfigSid
 
           <ImportButton
             disabled={ isFetching }
-            onSuccess={ handleImportSuccess }
+            handleOpenConfig={ handleOpenConfig }
+            onRefresh={ onRefresh }
           />
         </Flex>
 

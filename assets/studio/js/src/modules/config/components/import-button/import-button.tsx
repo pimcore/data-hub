@@ -9,29 +9,51 @@
  */
 
 import React from 'react'
-import { ModalUpload, IconButton, Tooltip } from '@pimcore/studio-ui-bundle/components'
+import { ImportModal, IconButton, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { getPrefix } from '@pimcore/studio-ui-bundle/api'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { type BundleDataHubConfiguration } from '../../config-api-slice.gen'
+import { findConfigInTree } from '../../utils/tree-helpers'
+import { isUndefined } from 'lodash'
+
+interface ImportResponse {
+  success: boolean
+  type: string
+  name: string
+}
 
 interface ImportButtonProps {
-  onSuccess: () => Promise<void>
+  onRefresh: () => Promise<{ data?: { items?: BundleDataHubConfiguration[] } }>
+  handleOpenConfig: (config: BundleDataHubConfiguration) => void
   disabled?: boolean
 }
 
 export const ImportButton = ({
-  onSuccess,
+  onRefresh,
+  handleOpenConfig,
   disabled = false
 }: ImportButtonProps): React.JSX.Element => {
   const { t } = useTranslation()
 
+  const handleImportSuccess = async (data: ImportResponse): Promise<void> => {
+    const { data: updatedData } = await onRefresh()
+
+    if (!isUndefined(updatedData?.items)) {
+      const importedConfig = findConfigInTree(updatedData.items, (item) =>
+        !isUndefined(item.id) && item.id === data.name
+      )
+
+      if (!isUndefined(importedConfig)) {
+        handleOpenConfig(importedConfig)
+      }
+    }
+  }
+
   return (
-    <ModalUpload
+    <ImportModal
       accept=".json,application/json"
       action={ `${getPrefix()}/bundle/data-hub/config/import` }
-      maxItems={ 1 }
-      multiple={ false }
-      name="file"
-      onSuccess={ onSuccess }
+      onUploadSuccess={ handleImportSuccess }
     >
       <Tooltip title={ t('tree.actions.import') }>
         <IconButton
@@ -40,6 +62,6 @@ export const ImportButton = ({
           type="link"
         />
       </Tooltip>
-    </ModalUpload>
+    </ImportModal>
   )
 }

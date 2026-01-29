@@ -175,6 +175,7 @@ export const ConfigSidebar = ({
     <ContentLayout
       renderToolbar={
         <ConfigSidebarToolbar
+          handleOpenConfig={ handleOpenConfig }
           isFetching={ isFetching }
           onAdd={ handleAddWrapper }
           onRefresh={ refetch }

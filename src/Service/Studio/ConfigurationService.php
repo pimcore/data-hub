@@ -483,7 +483,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
-                'Uploaded configuration data is invalid. Missing keys: type, path, name.'
+                message: 'Uploaded configuration data is invalid. Missing keys: type, path, name.',
+                errorKey: 'data-hub.import-config-invalid'
             );
         }
 
