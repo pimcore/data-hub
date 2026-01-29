@@ -29,8 +29,7 @@ export interface BackendPermission {
 
 export interface BackendSchemaEntity {
   id: string
-  entity: string
-  name?: string
+  name: string
   [key: string]: any
 }
 

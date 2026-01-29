@@ -13,7 +13,6 @@ import { isString, isNil } from 'lodash'
 import { type GraphQLFormValues, type Workspace, type Permission, type GenericType } from '../components/types'
 import { type BackendConfiguration, type BackendWorkspace, type BackendPermission, type BackendSchemaEntity, type BackendSpecialEntity } from '../components/backend-types'
 
-// Workspace transformers
 export function extractElementPath (pathValue: ElementReference | string | null | undefined): string {
   if (isString(pathValue)) {
     return pathValue
@@ -57,24 +56,13 @@ export function transformWorkspacesFromBackend (backendWorkspaces: BackendConfig
   }
 }
 
-// Permission transformers
 export function transformPermissionToBackend (permission: Permission, type: 'role' | 'user'): BackendPermission {
-  // Create a clean object with only the fields the backend expects
-  const backendPermission: BackendPermission = {
-    name: permission.name, // Classic UI needs this for display
+  return {
+    name: permission.name,
     read: permission.read ?? false,
     update: permission.update ?? false,
     delete: permission.delete ?? false
   }
-
-  // Set either role or user field based on type
-  if (type === 'role') {
-    backendPermission.role = permission.name
-  } else {
-    backendPermission.user = permission.name
-  }
-
-  return backendPermission
 }
 
 export function transformPermissionFromBackend (backendPermission: BackendPermission, type: 'role' | 'user'): Permission {
@@ -87,17 +75,10 @@ export function transformPermissionFromBackend (backendPermission: BackendPermis
 }
 
 export function transformPermissionsToBackend (permissions: GraphQLFormValues['permissions'] | undefined): BackendConfiguration['permissions'] {
-  const result: BackendConfiguration['permissions'] = {}
-
-  if (!isNil(permissions) && (permissions.roles?.length ?? 0) > 0) {
-    result.role = permissions.roles.map(perm => transformPermissionToBackend(perm, 'role'))
+  return {
+    role: (permissions?.roles ?? []).map(perm => transformPermissionToBackend(perm, 'role')),
+    user: (permissions?.users ?? []).map(perm => transformPermissionToBackend(perm, 'user'))
   }
-
-  if (!isNil(permissions) && (permissions.users?.length ?? 0) > 0) {
-    result.user = permissions.users.map(perm => transformPermissionToBackend(perm, 'user'))
-  }
-
-  return result
 }
 
 export function transformPermissionsFromBackend (backendPermissions: BackendConfiguration['permissions']): GraphQLFormValues['permissions'] {
@@ -105,22 +86,6 @@ export function transformPermissionsFromBackend (backendPermissions: BackendConf
     roles: (backendPermissions?.role ?? []).map(perm => transformPermissionFromBackend(perm, 'role')),
     users: (backendPermissions?.user ?? []).map(perm => transformPermissionFromBackend(perm, 'user'))
   }
-}
-
-// Schema transformers
-
-/**
- * Checks if the entity field is a meaningful value that differs from the name field.
- * This is needed because the UI adds an 'entity' field for display purposes,
- * but the backend may already have a 'name' field with the same value.
- * We only want to send 'entity' to the backend if it provides unique information.
- *
- * @param entityField - The entity field value from the UI
- * @param name - The name field value (may be undefined)
- * @returns true if entity field should be included in backend payload
- */
-function shouldIncludeEntityField (entityField: unknown, name: unknown): boolean {
-  return !isNil(entityField) && isString(entityField) && (isNil(name) || entityField !== name)
 }
 
 export function transformGenericTypeToBackend (genericType: GenericType): BackendSpecialEntity {
@@ -147,23 +112,16 @@ export function transformGenericTypeFromBackend (backendEntity: BackendSpecialEn
   }
 }
 
-/**
- * Transforms schema entities from UI format to backend format.
- * Handles both array and object-based entity structures.
- * Filters out duplicate 'entity' fields that match the 'name' field to avoid redundant data.
- *
- * @param entities - Schema entities in UI format (can be array or object)
- * @returns Array of schema entities in backend format
- */
+// Maps UI 'entity' field to backend 'name' field
 export function transformSchemaEntitiesToBackend (entities: Record<string, unknown> | unknown[]): BackendSchemaEntity[] {
   if (Array.isArray(entities)) {
     return entities.map((entity: any) => {
-      const { entity: entityField, ...rest } = entity
-
-      if (shouldIncludeEntityField(entityField, rest.name)) {
-        return { ...rest, entity: entityField }
+      const { entity: entityField, id, ...rest } = entity
+      return {
+        id,
+        name: entityField ?? rest.name ?? id,
+        ...rest
       }
-      return rest
     })
   }
 
@@ -171,8 +129,8 @@ export function transformSchemaEntitiesToBackend (entities: Record<string, unkno
     const { entity: entityField, ...rest } = entity
     return {
       id,
-      ...rest,
-      ...(shouldIncludeEntityField(entityField, rest.name) ? { entity: entityField } : {})
+      name: entityField ?? rest.name ?? id,
+      ...rest
     }
   })
 }
@@ -185,18 +143,18 @@ export function transformSchemaEntitiesFromBackend (backendEntities: Record<stri
   if (Array.isArray(backendEntities)) {
     return backendEntities.map((entity: any) => ({
       ...entity,
-      entity: entity.entity ?? entity.name ?? entity.id
+      entity: entity.name ?? entity.id
     }))
   }
 
   return Object.entries(backendEntities as Record<string, unknown>).map(([id, entity]: [string, any]) => ({
     id,
-    entity: entity.entity ?? entity.name ?? id,
-    ...entity
+    ...entity,
+    entity: entity.name ?? id
   }))
 }
 
-// Security transformers
+
 export function transformApiKeyToBackend (apikey: string | undefined | null): string[] {
   if (isNil(apikey)) {
     return []
@@ -221,13 +179,13 @@ export function transformApiKeyFromBackend (apikey: string | string[] | undefine
   return apikey
 }
 
-// Full form transformers
 export function transformFormToBackend (
   formValues: GraphQLFormValues,
   existingConfig: BackendConfiguration
 ): BackendConfiguration {
+  const { userPermissions, ...restConfig } = existingConfig
   return {
-    ...existingConfig,
+    ...restConfig,
     general: {
       ...(existingConfig.general ?? {}),
       active: formValues.active,
@@ -245,8 +203,8 @@ export function transformFormToBackend (
     permissions: transformPermissionsToBackend(formValues.permissions),
     schema: {
       ...(existingConfig.schema ?? {}),
-      queryEntities: formValues.schema?.query ?? [],
-      mutationEntities: formValues.schema?.mutation ?? [],
+      queryEntities: transformSchemaEntitiesToBackend(formValues.schema?.query ?? []),
+      mutationEntities: transformSchemaEntitiesToBackend(formValues.schema?.mutation ?? []),
       specialEntities: (formValues.schema?.genericTypes ?? []).map(transformGenericTypeToBackend)
     }
   }
