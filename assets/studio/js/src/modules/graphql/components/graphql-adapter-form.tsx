@@ -112,7 +112,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
         <ButtonGroup
           items={ [
             <IconTextButton
-              icon={ { value: 'new-tab' } }
+              icon={ { value: 'graphql', colorToken: 'colorCodingViolet4' } }
               key="open-in-tab"
               onClick={ handleOpenInTab }
             >

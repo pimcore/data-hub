@@ -12,32 +12,10 @@ import { createStyles } from 'antd-style'
 
 export const useStyles = createStyles(({ css, token }) => {
   return {
-    tabs: css`
-      .ant-tabs-nav {
-        margin: 0;
-      }
-      
-      .ant-tabs-nav-list {
-        margin: 0;
-      }
-      
-      .ant-tabs-tab {
-        margin: 4px !important;
-      }
-      
-      .ant-tabs-content, .ant-tabs-tabpane {
-        height: 100%;
-      }
-      
-      &.ant-tabs-left > .ant-tabs-nav {
-        border-right: 1px solid ${token.colorBorderTertiary};
-      }
-    `,
-
     contentLayout: css`
       height: 60vh;
-      border-top: 1px solid ${token.colorBorderTertiary};
-      border-bottom: 1px solid ${token.colorBorderTertiary};
+      border-top: 1px solid ${token.colorBorderSecondary};
+      border-bottom: 1px solid ${token.colorBorderSecondary};
       
       .pimcore-content-layout__content {
         padding-right: ${token.padding}px;

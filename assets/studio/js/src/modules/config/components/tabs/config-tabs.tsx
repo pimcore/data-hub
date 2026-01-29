@@ -114,7 +114,7 @@ export const ConfigTabs = ({
     <ContentLayout
       renderToolbar={
         <Toolbar>
-          <Space size="none">
+          <Space size="extra-small">
             <Tooltip title={ t('refresh') }>
               <IconButton
                 disabled={ isFetchingTab }

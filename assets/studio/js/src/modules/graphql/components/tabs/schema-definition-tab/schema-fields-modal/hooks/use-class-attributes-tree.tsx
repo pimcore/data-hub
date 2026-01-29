@@ -14,24 +14,68 @@ import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-defin
 import { type DynamicTypeFieldDefinitionRegistry, DynamicTypeFieldDefinitionDataAbstract } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { useInjection, serviceIds, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
-import { isNil, flatMap } from 'lodash'
+import { isNil, flatMap, flatMapDeep } from 'lodash'
 import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
 import { type TreeNode } from '../types'
 
 interface UseClassAttributesTreeProps {
   classId: string
   enabled: boolean
+  searchValue?: string
 }
 
 interface UseClassAttributesTreeReturn {
   classAttributesTree: TreeNode[]
+  filteredTree: TreeNode[]
+  expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
 }
 
+const filterTreeNodesRecursive = (
+  nodes: TreeNode[],
+  searchValue: string
+): TreeNode[] => {
+  if (!Array.isArray(nodes)) {
+    return []
+  }
+
+  return nodes.reduce<TreeNode[]>((acc, node) => {
+    // Only search in field definitions (isFieldDefinition: true)
+    const isFieldDefinition = node.isFieldDefinition === true
+    const matchesSearch = isFieldDefinition &&
+      ((node.title?.toString().toLowerCase().includes(searchValue.toLowerCase()) ?? false) ||
+       (node.attribute?.toLowerCase().includes(searchValue.toLowerCase()) ?? false))
+
+    const filteredChildren = (!isNil(node.children) && Array.isArray(node.children))
+      ? filterTreeNodesRecursive(node.children as TreeNode[], searchValue)
+      : []
+
+    // Include node if:
+    // 1. It's a field definition and matches the search
+    // 2. It has children that match the search (parent nodes)
+    if ((matchesSearch ?? false) || filteredChildren.length > 0) {
+      acc.push({
+        ...node,
+        children: filteredChildren.length > 0 ? filteredChildren : node.children
+      })
+    }
+
+    return acc
+  }, [])
+}
+
+const collectAllKeys = (nodes: TreeNode[]): string[] => {
+  return flatMapDeep(nodes, (node) => [
+    ...(!isNil(node.key) ? [String(node.key)] : []),
+    ...(!isNil(node.children) && Array.isArray(node.children) ? collectAllKeys(node.children as TreeNode[]) : [])
+  ])
+}
+
 export const useClassAttributesTree = ({
   classId,
-  enabled
+  enabled,
+  searchValue = ''
 }: UseClassAttributesTreeProps): UseClassAttributesTreeReturn => {
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
   const { t } = useTranslation()
@@ -116,6 +160,21 @@ export const useClassAttributesTree = ({
     }
   }, [classLayout])
 
+  const filteredTree = useMemo(() => {
+    if (searchValue === '') {
+      return classAttributesTree
+    }
+    return filterTreeNodesRecursive(classAttributesTree, searchValue)
+  }, [searchValue, classAttributesTree])
+
+  const expandedKeys = useMemo(() => {
+    if (searchValue === '') {
+      return collectAllKeys(classAttributesTree)
+    }
+    // When searching, expand all nodes to show matched results
+    return collectAllKeys(filteredTree)
+  }, [searchValue, classAttributesTree, filteredTree])
+
   const getFieldDefinitions = useCallback((): TreeNode[] => {
     const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
     if (isNil(objectColumnsNode) || isNil(objectColumnsNode.children)) return []
@@ -132,6 +191,8 @@ export const useClassAttributesTree = ({
 
   return {
     classAttributesTree,
+    filteredTree,
+    expandedKeys,
     getFieldDefinitions,
     isLoading: isLoading || isFetching
   }
