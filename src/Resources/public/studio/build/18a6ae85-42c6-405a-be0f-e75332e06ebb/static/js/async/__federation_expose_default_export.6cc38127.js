@@ -1,0 +1,2 @@
+/*! For license information please see __federation_expose_default_export.6cc38127.js.LICENSE.txt */
+"use strict";(self.webpackChunkpimcore_datahub_bundle=self.webpackChunkpimcore_datahub_bundle||[]).push([["525"],{82(e,t,l){l.r(t),l.d(t,{DataHubPlugin:()=>a});let u={onInit:()=>{}};void 0!==(e=l.hmd(e)).hot&&e.hot.accept();let a={name:"data-hub-plugin",onInit:e=>{let{container:t}=e},onStartup:e=>{let{moduleSystem:t}=e;t.registerModule(u),console.log("Hello from data hub bundle.")}}}}]);
