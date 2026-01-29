@@ -36,7 +36,7 @@ export function OperatorModal<T = any> ({
 
   useEffect(() => {
     const initialData = getInitialValues(initialValues)
-    form.setFieldsValue(initialData)
+    form.setFieldsValue(initialData as Partial<any>)
   }, [])
 
   const handleApply = async (): Promise<void> => {
