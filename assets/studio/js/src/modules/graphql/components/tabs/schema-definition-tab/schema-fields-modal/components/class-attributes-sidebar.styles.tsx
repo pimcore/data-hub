@@ -12,11 +12,10 @@ import { createStyles } from 'antd-style'
 
 export const useStyles = createStyles(({ css }) => {
   return {
-    sidebarTitle: css`
-      .ant-typography {
-        width: 100%;
+    treeContainer: css`
+      .ant-tree-title {
+        white-space: nowrap;
       }
-        padding: 8px;
     `
   }
 })

@@ -14,6 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
+import { useStyles } from './class-attributes-sidebar.styles'
 
 interface ClassAttributesSidebarProps {
   classId: string
@@ -25,6 +26,7 @@ export const ClassAttributesSidebar = ({
   enabled
 }: ClassAttributesSidebarProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const { styles } = useStyles()
   const [searchValue, setSearchValue] = useState('')
   const { filteredTree, expandedKeys, isLoading } = useClassAttributesTree({
     classId,
@@ -70,6 +72,7 @@ export const ClassAttributesSidebar = ({
       >
 
         <TreeElement
+          className={ styles.treeContainer }
           defaultExpandedKeys={ expandedKeys }
           draggable={ false }
           selectable={ false }
