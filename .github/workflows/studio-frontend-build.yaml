@@ -17,6 +17,7 @@ on:
       - "*_actions"
       - "feature-*"
       - "nightly"
+      - "studio"
     paths:
       - "assets/studio/**"
   workflow_dispatch:
