@@ -21,10 +21,9 @@ import { bundleServiceIds } from '../../../../../config/service-ids'
 interface MutationGridProps {
   value?: MutationEntity[]
   onChange?: (value: MutationEntity[]) => void
-  onFormChange?: () => void
 }
 
-export const MutationGrid = ({ value = [], onChange, onFormChange }: MutationGridProps): React.JSX.Element => {
+export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<MutationEntity | null>(null)
@@ -120,7 +119,7 @@ export const MutationGrid = ({ value = [], onChange, onFormChange }: MutationGri
         )
       }
     ]
-  }, [t, value, onChange])
+  }, [value, onChange])
 
   return (
     <>
@@ -146,7 +145,6 @@ export const MutationGrid = ({ value = [], onChange, onFormChange }: MutationGri
           className={ selectedEntity.entity }
           onApply={ () => { setModalOpen(false) } }
           onCancel={ () => { setModalOpen(false) } }
-          onFormChange={ onFormChange }
           open={ modalOpen }
           operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry'] }
           type="mutation"

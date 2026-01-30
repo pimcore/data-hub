@@ -11,6 +11,7 @@
 import React from 'react'
 import { Draggable, GridButton } from '@pimcore/studio-ui-bundle/components'
 import { DragType } from '../drag-types'
+import { isNil } from 'lodash'
 
 interface OperatorGridItemProps {
   groupKey: string
@@ -27,9 +28,9 @@ export const OperatorGridItem = ({
   subGroupKey,
   operator
 }: OperatorGridItemProps): React.JSX.Element => {
-  const dragKey = subGroupKey !== undefined
-    ? `${groupKey}-${subGroupKey}-${operator.id}`
-    : `${groupKey}-${operator.id}`
+  const dragKey = isNil(subGroupKey)
+    ? `${groupKey}-${operator.id}`
+    : `${groupKey}-${subGroupKey}-${operator.id}`
 
   return (
     <Draggable

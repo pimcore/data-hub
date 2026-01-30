@@ -91,17 +91,17 @@ export const useTreeNodes = ({
 
     const buildFieldDefinitionDisplay = (item: InternalTreeNode): NodeDisplay => {
       const fieldDef = fieldDefinitionRegistry.getDynamicType(item.attributes.dataType ?? '', false)
-      const iconProps = !isNil(fieldDef) ? fieldDef.getIcon() : undefined
+      const iconProps = fieldDef?.getIcon()
 
       return {
-        icon: !isNil(iconProps)
-          ? (
+        icon: isNil(iconProps)
+          ? undefined
+          : (
             <Icon
               { ...iconProps }
               iconColorGroup="fieldDefinition"
             />
-            )
-          : undefined,
+            ),
         iconProps,
         title: item.attributes.label ?? item.attributes.attribute ?? ''
       }

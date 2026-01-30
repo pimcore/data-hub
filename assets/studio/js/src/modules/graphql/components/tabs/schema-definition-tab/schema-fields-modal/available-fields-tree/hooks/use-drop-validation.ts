@@ -9,7 +9,7 @@
  */
 
 import { useCallback } from 'react'
-import { isNil } from 'lodash'
+import { get, isNil } from 'lodash'
 import { type TreeNode, type PersistedColumnConfig } from '../../types'
 import { type DynamicTypeOperatorRegistry } from '../../../../../../../operators/dynamic-type-operator-registry'
 import { createSourceConfigFromDragInfo } from '../source-config-utils'
@@ -69,9 +69,12 @@ export const useDropValidation = ({
       return false
     }
 
-    const operatorClass = targetNode.childIndex !== undefined
-      ? (targetNode.columnConfig?.attributes?.children?.[targetNode.childIndex]?.attributes as any)?.class
-      : (targetNode.columnConfig?.attributes as any)?.class
+    const operatorClass = isNil(targetNode.childIndex)
+      ? get(targetNode, 'columnConfig.attributes.class')
+      : get(
+        targetNode,
+        ['columnConfig', 'attributes', 'children', targetNode.childIndex, 'attributes', 'class']
+      )
 
     const operatorType = operatorRegistry.getDynamicType(
       String(operatorClass ?? ''),

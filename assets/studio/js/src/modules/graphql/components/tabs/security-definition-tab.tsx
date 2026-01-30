@@ -11,20 +11,15 @@
 import React from 'react'
 import { Form, Select, TextArea, Switch, Button, Flex, FormKit, Box } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { isNil } from 'lodash'
 import { WorkspaceGrid } from './security-definition-tab/workspace-grid'
 
-interface SecurityDefinitionTabProps {
-  onFormChange?: () => void
-}
-
-export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabProps): React.JSX.Element => {
+export const SecurityDefinitionTab = (): React.JSX.Element => {
   const { t } = useTranslation()
   const form = Form.useFormInstance()
 
   const generateApiKey = (): void => {
     const currentValue = form.getFieldValue(['security', 'apikey']) as string | undefined
-    const currentValueStr = !isNil(currentValue) ? currentValue : ''
+    const currentValueStr = String(currentValue ?? '')
     const newKey = generateRandomKey()
     const newValue = currentValueStr.length > 0 ? `${currentValueStr}\n${newKey}` : newKey
 
@@ -32,11 +27,7 @@ export const SecurityDefinitionTab = ({ onFormChange }: SecurityDefinitionTabPro
       security: {
         apikey: newValue
       }
-    })
-
-    if (!isNil(onFormChange)) {
-      onFormChange()
-    }
+    }, { triggerChange: true })
   }
 
   const generateRandomKey = (): string => {

@@ -67,7 +67,7 @@ const filterTreeNodesRecursive = (
 
 const collectAllKeys = (nodes: TreeNode[]): string[] => {
   return flatMapDeep(nodes, (node) => [
-    ...(!isNil(node.key) ? [String(node.key)] : []),
+    ...(isNil(node.key) ? [] : [String(node.key)]),
     ...(!isNil(node.children) && Array.isArray(node.children) ? collectAllKeys(node.children as TreeNode[]) : [])
   ])
 }
@@ -114,7 +114,7 @@ export const useClassAttributesTree = ({
             icon: initialTreeItem.icon,
             dataType: fieldDefinition.fieldtype,
             attribute: fieldDefinition.name,
-            iconProps: dynType !== undefined ? dynType.getIcon() : { value: 'field' },
+            iconProps: dynType?.getIcon() ?? { value: 'info' },
             isFieldDefinition
           }
         }

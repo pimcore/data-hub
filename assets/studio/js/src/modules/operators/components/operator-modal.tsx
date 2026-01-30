@@ -22,13 +22,13 @@ interface OperatorModalProps<T = any> extends OperatorConfigModalProps<T> {
   footer?: (context: { handleApply: () => Promise<void>, onCancel: () => void }) => React.ReactNode
 }
 
-export function OperatorModal<T = any> ({
+export const OperatorModal = <T = any>({
   children,
   initialValues,
   size,
   footer,
   ...props
-}: OperatorModalProps<T>): React.JSX.Element {
+}: OperatorModalProps<T>): React.JSX.Element => {
   const { onCancel } = props
   const { t } = useTranslation()
   const { localizedName, getInitialValues, updateAttributes } = useOperatorModal(props)

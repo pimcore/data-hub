@@ -15,7 +15,7 @@ import { type OperatorConfigModalProps } from '../../dynamic-type-operator-abstr
 import { type DateFormatterAttributes } from './dynamic-type-operator-date-formatter'
 import { OperatorModal } from '../../components/operator-modal'
 
-export function DateFormatterConfigModal (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element {
+export const DateFormatterConfigModal = (props: OperatorConfigModalProps<DateFormatterAttributes>): React.JSX.Element => {
   const { t } = useTranslation()
 
   const openHelp = (): void => {

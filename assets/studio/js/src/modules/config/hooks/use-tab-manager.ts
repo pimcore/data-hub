@@ -10,7 +10,6 @@
 
 import { useState, useCallback } from 'react'
 import { type BundleDataHubConfiguration } from '../config-api-slice.gen'
-import { isUndefined } from 'lodash'
 
 interface UseTabManagerReturn {
   openedConfigs: BundleDataHubConfiguration[]
@@ -43,12 +42,7 @@ export const useTabManager = (): UseTabManagerReturn => {
         const prevTab = prev[targetIndex - 1]
         const nextTab = prev[targetIndex + 1]
 
-        const prevTabId = prevTab?.id
-        const nextTabId = !isUndefined(nextTab) ? nextTab?.id : undefined
-
-        const activeId = !isUndefined(prevTab) ? prevTabId : nextTabId
-
-        setActiveTabKey(activeId)
+        setActiveTabKey(prevTab?.id ?? nextTab?.id)
       }
 
       return updatedConfigs

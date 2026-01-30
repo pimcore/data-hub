@@ -9,7 +9,7 @@
  */
 
 import { type BundleDataHubConfiguration } from '../config-api-slice.gen'
-import { isUndefined, isNil } from 'lodash'
+import { isUndefined, isNil, isArray } from 'lodash'
 
 export const findConfigById = (
   id: string,
@@ -51,15 +51,13 @@ export const filterConfigsRecursive = (
   items: BundleDataHubConfiguration[] | undefined | null,
   searchValue: string
 ): BundleDataHubConfiguration[] => {
-  if (isNil(items) || !Array.isArray(items)) {
+  if (!isArray(items)) {
     return []
   }
 
   return items.reduce<BundleDataHubConfiguration[]>((acc, item) => {
     const matchesSearch = item.text.toLowerCase().includes(searchValue.toLowerCase())
-    const filteredChildren = !isUndefined(item.children)
-      ? filterConfigsRecursive(item.children, searchValue)
-      : []
+    const filteredChildren = filterConfigsRecursive(item.children, searchValue)
 
     if (matchesSearch || filteredChildren.length > 0) {
       acc.push({

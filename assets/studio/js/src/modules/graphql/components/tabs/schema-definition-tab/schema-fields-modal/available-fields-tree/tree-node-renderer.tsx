@@ -70,16 +70,16 @@ export const TreeNodeRenderer = ({
     ]
   }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop])
 
-  const iconProps = useMemo((): { value: string } => {
+  const iconProps = useMemo((): { value: string } | undefined => {
     if (itemData.isOperator && !isNil(itemData.attributes.class)) {
       const opType = operatorRegistry.getDynamicType(String(itemData.attributes.class), false)
-      return !isNil(opType) ? getIcon(opType, operatorRegistry) : { value: 'field' }
+      return isNil(opType) ? undefined : getIcon(opType, operatorRegistry)
     }
     if (!isNil(itemData.attributes.dataType)) {
       const fieldDef = fieldDefinitionRegistry.getDynamicType(String(itemData.attributes.dataType), false)
-      return fieldDef?.getIcon() ?? { value: 'field' }
+      return fieldDef?.getIcon() ?? undefined
     }
-    return { value: 'field' }
+    return undefined
   }, [itemData, operatorRegistry, fieldDefinitionRegistry, getIcon])
 
   const dragInfo = useMemo(() => ({
@@ -91,7 +91,7 @@ export const TreeNodeRenderer = ({
       dataType: itemData.attributes.dataType,
       operatorClass: itemData.attributes.class
     },
-    icon: iconProps,
+    icon: iconProps ?? { value: 'info' },
     title: String(itemData.attributes.label ?? itemData.attributes.attribute ?? '')
   }), [nodeKey, itemData, iconProps])
 
