@@ -15,7 +15,6 @@ import { MutationGrid } from './schema-definition-tab/mutation-grid'
 import { GenericTypesGrid } from './schema-definition-tab/generic-types-grid'
 import { FieldWidthContainer } from '../../../config/components/field-width-container'
 
-
 export const SchemaDefinitionTab = (): React.JSX.Element => {
   return (
     <FormKit.Panel contentPadding="extra-small">
