@@ -12,11 +12,10 @@ import React, { useState, useMemo } from 'react'
 import { Flex, IconTextButton, Select, Button, Icon, OperationalGrid, Accordion } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
-import { type Permission, type RoleItem, type UserItem } from './types'
-import { useUserGetCollectionQuery } from '@pimcore/studio-ui-bundle/api/user'
-import { useRoleGetCollectionQuery } from '@pimcore/studio-ui-bundle/api/role'
+import { type Permission } from './types'
 import { type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
 import { InlineDropdownPanel } from '../../inline-dropdown-panel/inline-dropdown-panel'
+import { useBundleDataHubUsersCollectionQuery } from '../../../../config/users-api-slice.gen'
 
 interface PermissionAccordionProps {
   type: 'roles' | 'users'
@@ -33,21 +32,21 @@ export const PermissionAccordion = ({
   const [openDropdown, setOpenDropdown] = useState(false)
   const [selectedItems, setSelectedItems] = useState<number[]>([])
 
-  const { data: roleList } = useRoleGetCollectionQuery()
-  const { data: userList } = useUserGetCollectionQuery()
-
   const isRoles = type === 'roles'
+  const { data: roleList } = useBundleDataHubUsersCollectionQuery({ type: 'role' }, { skip: !isRoles, refetchOnMountOrArgChange: true })
+  const { data: userList } = useBundleDataHubUsersCollectionQuery({ type: 'user' }, { skip: isRoles, refetchOnMountOrArgChange: true })
+
   const items = isRoles ? roleList?.items : userList?.items
 
   const currentNames = useMemo(() => value.map((p: Permission) => p.name), [value])
 
   const options = useMemo(() => {
     return items
-      ?.filter((item: RoleItem | UserItem) => {
-        const name: string = isRoles ? (item as RoleItem).name : (item as UserItem).username
+      ?.filter((item) => {
+        const name: string = item.text
         return !currentNames.includes(name)
       })
-      .map((item: RoleItem | UserItem) => ({
+      .map((item) => ({
         value: item.id,
         label: (
           <Flex
@@ -55,42 +54,26 @@ export const PermissionAccordion = ({
             gap="mini"
           >
             <Icon value={ isRoles ? 'shield' : 'user' } />
-            {isRoles ? (item as RoleItem).name : (item as UserItem).username}
+            {item.text}
           </Flex>
         ),
-        searchValue: isRoles ? (item as RoleItem).name : (item as UserItem).username
+        searchValue: item.text
       })) ?? []
   }, [items, currentNames, isRoles])
 
   const createPermission = (id: number): Permission | undefined => {
-    if (isRoles) {
-      const role = roleList?.items.find(r => r.id === id)
-      if (isNil(role)) return undefined
+    const item = items?.find(i => i.id === id)
+    if (isNil(item)) return undefined
 
-      const existingRole = value.find((r: Permission) => r.name === role.name)
-      if (!isNil(existingRole)) return undefined
+    const existingPermission = value.find((p: Permission) => p.name === item.text)
+    if (!isNil(existingPermission)) return undefined
 
-      return {
-        id: role.id,
-        name: role.name,
-        read: true,
-        update: false,
-        delete: false
-      }
-    } else {
-      const user = userList?.items.find(u => u.id === id)
-      if (isNil(user)) return undefined
-
-      const existingUser = value.find((u: Permission) => u.name === user.username)
-      if (!isNil(existingUser)) return undefined
-
-      return {
-        id: user.id,
-        name: user.username,
-        read: true,
-        update: false,
-        delete: false
-      }
+    return {
+      id: item.id,
+      name: item.text,
+      read: true,
+      update: false,
+      delete: false
     }
   }
 

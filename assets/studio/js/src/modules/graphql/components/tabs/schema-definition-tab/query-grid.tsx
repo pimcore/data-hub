@@ -107,13 +107,15 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
         </OperationalGrid.Operations>
       </OperationalGrid>
 
-      <SchemaFieldsModal
-        className={ selectedEntity?.entity ?? '' }
-        onApply={ () => { setModalOpen(false) } }
-        onCancel={ () => { setModalOpen(false) } }
-        open={ modalOpen }
-        operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry'] }
-      />
+      {modalOpen && (
+        <SchemaFieldsModal
+          className={ selectedEntity?.entity ?? '' }
+          onApply={ () => { setModalOpen(false) } }
+          onCancel={ () => { setModalOpen(false) } }
+          open={ modalOpen }
+          operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry'] }
+        />
+      )}
     </>
   )
 }

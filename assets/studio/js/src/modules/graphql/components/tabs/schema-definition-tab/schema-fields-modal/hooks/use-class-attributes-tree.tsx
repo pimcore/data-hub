@@ -82,7 +82,7 @@ export const useClassAttributesTree = ({
 
   const { data: classLayout, isLoading, isFetching } = useClassDefinitionGetLayoutByIdQuery(
     { id: classId },
-    { skip: !enabled }
+    { skip: !enabled, refetchOnMountOrArgChange: true }
   )
 
   const classAttributesTree = useMemo(() => {

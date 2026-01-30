@@ -140,7 +140,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         </OperationalGrid.Operations>
       </OperationalGrid>
 
-      {!isNil(selectedEntity) && (
+      {modalOpen && !isNil(selectedEntity) && (
         <SchemaFieldsModal
           className={ selectedEntity.entity }
           onApply={ () => { setModalOpen(false) } }

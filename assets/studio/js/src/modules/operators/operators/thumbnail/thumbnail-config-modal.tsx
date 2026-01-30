@@ -14,6 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type ThumbnailAttributes } from './dynamic-type-operator-thumbnail'
 import { type OperatorConfigModalProps } from '../../dynamic-type-operator-abstract'
 import { OperatorModal } from '../../components/operator-modal'
+import { ThumbnailSelect } from '../../components/thumbnail-select'
 
 export const ThumbnailConfigModal = (props: OperatorConfigModalProps<ThumbnailAttributes>): React.JSX.Element => {
   const { t } = useTranslation()
@@ -33,7 +34,7 @@ export const ThumbnailConfigModal = (props: OperatorConfigModalProps<ThumbnailAt
             label={ t('data-hub.thumbnail') }
             name="thumbnailConfig"
           >
-            <Input placeholder={ t('data-hub.operator.thumbnail.thumbnail-name') } />
+            <ThumbnailSelect placeholder={ t('data-hub.operator.thumbnail.thumbnail-name') } />
           </Form.Item>
         </>
       )}

@@ -28,8 +28,14 @@ const config: ConfigFile = {
     '../../js/src/modules/config/config-api-slice.gen.ts': {
       filterEndpoints: pathMatcher(/bundle\/data-hub\/config/i)
     },
+    '../../js/src/modules/config/users-api-slice.gen.ts': {
+      filterEndpoints: pathMatcher(/bundle\/data-hub\/users/i)
+    },
     '../../js/src/modules/graphql/graphql-api-slice.gen.ts': {
       filterEndpoints: pathMatcher(/bundle\/data-hub\/graphql/i)
+    },
+    '../../js/src/modules/operators/thumbnails-api-slice.gen.ts': {
+      filterEndpoints: pathMatcher(/bundle\/data-hub\/thumbnails/i)
     },
   },
   exportName: 'api',
