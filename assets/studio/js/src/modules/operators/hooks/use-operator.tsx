@@ -26,7 +26,7 @@ export function useOperator (): UseOperatorReturn {
 
   const getLocalizedName = useCallback(
     (operator: DynamicTypeOperatorAbstract) => t(`data-hub.operator.${kebabCase(operator.id)}`),
-    [t]
+    []
   )
 
   const getGroup = useCallback(
@@ -35,10 +35,10 @@ export function useOperator (): UseOperatorReturn {
       const subGroup = operator.getSubGroup()
       return {
         group: t(`data-hub.operator.group.${kebabCase(group)}`),
-        subGroup: subGroup !== undefined ? t(`data-hub.operator.subgroup.${kebabCase(subGroup)}`) : undefined
+        subGroup: isNil(subGroup) ? undefined : t(`data-hub.operator.subgroup.${kebabCase(subGroup)}`)
       }
     },
-    [t]
+    []
   )
 
   const getIcon = useCallback(

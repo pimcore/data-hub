@@ -41,7 +41,7 @@ export function createSourceConfigFromDragInfo (dragInfo?: DragInfo): SourceConf
 
 export function createSourceConfigFromAttributes (attributes: TreeItemAttributes, isOperator: boolean): SourceConfig {
   return {
-    dataType: !isNil(attributes.dataType) ? String(attributes.dataType) : undefined,
+    dataType: attributes.dataType,
     isOperator,
     operatorClass: isOperator && !isNil(attributes.class) ? String(attributes.class) : undefined
   }

@@ -14,7 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
 import { type QueryEntityConfig } from './types'
-import { isNil } from 'lodash'
+import { isNil, cloneDeep } from 'lodash'
 import { useStyles } from './schema-fields-modal.styles'
 import { useSidebarEntries } from './hooks/use-sidebar-entries'
 import { AddAllDefinitionsButton } from './components/add-all-definitions-button'
@@ -26,7 +26,6 @@ interface SchemaFieldsModalProps {
   type?: 'query' | 'mutation'
   onCancel: () => void
   onApply: () => void
-  onFormChange?: () => void
 }
 
 export const SchemaFieldsModal = ({
@@ -35,8 +34,7 @@ export const SchemaFieldsModal = ({
   operatorRegistryServiceId,
   type = 'query',
   onCancel,
-  onApply,
-  onFormChange
+  onApply
 }: SchemaFieldsModalProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
@@ -60,7 +58,7 @@ export const SchemaFieldsModal = ({
     if (open) {
       const entities = form.getFieldValue(['schema', type]) ?? []
       const entity: QueryEntityConfig | undefined = entities.find((e: any) => e.entity === className)
-      setLocalEntityConfig(!isNil(entity) ? JSON.parse(JSON.stringify(entity)) as QueryEntityConfig : undefined)
+      setLocalEntityConfig(isNil(entity) ? undefined : cloneDeep(entity))
     }
   }, [open, form, className, type])
 
@@ -72,11 +70,7 @@ export const SchemaFieldsModal = ({
       const updatedEntities = [...entities]
       updatedEntities[entityIndex] = localEntityConfig
 
-      form.setFieldValue(['schema', type], updatedEntities)
-
-      if (!isNil(onFormChange)) {
-        onFormChange()
-      }
+      form.setFieldValue(['schema', type], updatedEntities, { triggerChange: true })
     }
 
     onApply()

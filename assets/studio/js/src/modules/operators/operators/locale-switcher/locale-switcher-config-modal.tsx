@@ -17,7 +17,7 @@ import { useLanguageLookup } from '@pimcore/studio-ui-bundle/modules/translation
 import { type LocaleSwitcherAttributes } from './dynamic-type-operator-locale-switcher'
 import { OperatorModal } from '../../components/operator-modal'
 
-export function LocaleSwitcherConfigModal (props: OperatorConfigModalProps<LocaleSwitcherAttributes>): React.JSX.Element {
+export const LocaleSwitcherConfigModal = (props: OperatorConfigModalProps<LocaleSwitcherAttributes>): React.JSX.Element => {
   const { t } = useTranslation()
   const settings = useSettings()
   const { getDisplayName } = useLanguageLookup()

@@ -52,14 +52,9 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
     setIsDirty(false)
     onChange(false)
     modificationDateRef.current = config.modificationDate ?? Math.floor(Date.now() / 1000)
-  }, [initialValues, form, onChange, config.modificationDate])
+  }, [initialValues])
 
   const onValuesChange = (): void => {
-    setIsDirty(true)
-    onChange(true)
-  }
-
-  const handleFormChange = (): void => {
     setIsDirty(true)
     onChange(true)
   }
@@ -145,12 +140,12 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
     {
       key: 'schema',
       label: t('data-hub.tabs.schema-definition'),
-      children: <SchemaDefinitionTab onFormChange={ handleFormChange } />
+      children: <SchemaDefinitionTab />
     },
     {
       key: 'security',
       label: t('data-hub.tabs.security-definition'),
-      children: <SecurityDefinitionTab onFormChange={ handleFormChange } />
+      children: <SecurityDefinitionTab />
     },
     {
       key: 'permissions',

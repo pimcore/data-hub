@@ -50,7 +50,7 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         meta: {
           type: 'checkbox',
           editable: (row: GenericType) => row.createPossible,
-          tooltip: (row: GenericType) => !row.createPossible ? t('data-hub.schema.operation-not-implemented') : null,
+          tooltip: (row: GenericType) => row.createPossible ? null : t('data-hub.schema.operation-not-implemented'),
           config: {
             align: 'center'
           }
@@ -62,7 +62,7 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         meta: {
           type: 'checkbox',
           editable: (row: GenericType) => row.readPossible,
-          tooltip: (row: GenericType) => !row.readPossible ? t('data-hub.schema.operation-not-implemented') : null,
+          tooltip: (row: GenericType) => row.readPossible ? null : t('data-hub.schema.operation-not-implemented'),
           config: {
             align: 'center'
           }
@@ -74,7 +74,7 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         meta: {
           type: 'checkbox',
           editable: (row: GenericType) => row.updatePossible,
-          tooltip: (row: GenericType) => !row.updatePossible ? t('data-hub.schema.operation-not-implemented') : null,
+          tooltip: (row: GenericType) => row.updatePossible ? null : t('data-hub.schema.operation-not-implemented'),
           config: {
             align: 'center'
           }
@@ -86,7 +86,7 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         meta: {
           type: 'checkbox',
           editable: (row: GenericType) => row.deletePossible,
-          tooltip: (row: GenericType) => !row.deletePossible ? t('data-hub.schema.operation-not-implemented') : null,
+          tooltip: (row: GenericType) => row.deletePossible ? null : t('data-hub.schema.operation-not-implemented'),
           config: {
             align: 'center'
           }

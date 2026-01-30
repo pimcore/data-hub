@@ -15,11 +15,8 @@ import { MutationGrid } from './schema-definition-tab/mutation-grid'
 import { GenericTypesGrid } from './schema-definition-tab/generic-types-grid'
 import { FieldWidthContainer } from '../../../config/components/field-width-container'
 
-interface SchemaDefinitionTabProps {
-  onFormChange?: () => void
-}
 
-export const SchemaDefinitionTab = ({ onFormChange }: SchemaDefinitionTabProps): React.JSX.Element => {
+export const SchemaDefinitionTab = (): React.JSX.Element => {
   return (
     <FormKit.Panel contentPadding="extra-small">
       <FieldWidthContainer>
@@ -27,23 +24,20 @@ export const SchemaDefinitionTab = ({ onFormChange }: SchemaDefinitionTabProps):
           gap="small"
           vertical
         >
-          {/* Query Schema */}
           <Form.Item
             name={ ['schema', 'query'] }
             noStyle
           >
-            <QueryGrid onFormChange={ onFormChange } />
+            <QueryGrid />
           </Form.Item>
 
-          {/* Mutation Schema */}
           <Form.Item
             name={ ['schema', 'mutation'] }
             noStyle
           >
-            <MutationGrid onFormChange={ onFormChange } />
+            <MutationGrid />
           </Form.Item>
 
-          {/* Generic Types */}
           <Form.Item
             name={ ['schema', 'genericTypes'] }
             noStyle

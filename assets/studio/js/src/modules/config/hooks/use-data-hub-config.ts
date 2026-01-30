@@ -41,16 +41,16 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
 
   const validateConfigName = async (_rule: any, value: string): Promise<void> => {
     if (!isString(value) || value.trim().length === 0) {
-      await Promise.reject(new Error(t('data-hub.config.name-required'))); return
+      throw new Error(t('data-hub.config.name-required'))
     }
     if (value.length < 3) {
-      await Promise.reject(new Error(t('data-hub.config.name-min-length'))); return
+      throw new Error(t('data-hub.config.name-min-length'))
     }
     if (value.length > 80) {
-      await Promise.reject(new Error(t('data-hub.config.name-max-length'))); return
+      throw new Error(t('data-hub.config.name-max-length'))
     }
     if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-      await Promise.reject(new Error(t('data-hub.config.name-pattern'))); return
+      throw new Error(t('data-hub.config.name-pattern'))
     }
     await Promise.resolve()
   }
@@ -104,7 +104,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
         }
       }
     })
-  }, [addConfig, refetch, modal, t])
+  }, [addConfig, refetch, modal])
 
   const handleClone = useCallback((
     config: BundleDataHubConfiguration,
@@ -119,7 +119,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
         validator: validateConfigName
       },
       onOk: async (value: string) => {
-        const configId = !isUndefined(config.id) ? String(config.id) : ''
+        const configId = String(config.id ?? '')
         const result = await cloneConfig({ name: value, originalName: configId })
 
         if (has(result, 'error')) {
@@ -139,7 +139,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
         }
       }
     })
-  }, [cloneConfig, refetch, modal, t])
+  }, [cloneConfig, refetch, modal])
 
   const handleDelete = useCallback((
     config: BundleDataHubConfiguration,
@@ -151,7 +151,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
       title: t('delete'),
       content: t('data-hub.delete.confirm', { name: config.text }),
       onOk: async () => {
-        const configId = !isUndefined(config.id) ? String(config.id) : ''
+        const configId = String(config.id ?? '')
         const result = await deleteConfig({ name: configId })
 
         if (has(result, 'error')) {
@@ -165,7 +165,7 @@ export const useDataHubConfig = ({ refetch }: UseDataHubConfigProps): UseDataHub
         }
       }
     })
-  }, [deleteConfig, refetch, modal, t])
+  }, [deleteConfig, refetch, modal])
 
   return {
     handleAdd,

@@ -188,13 +188,13 @@ export function transformFormToBackend (
   return {
     ...restConfig,
     general: {
-      ...(existingConfig.general ?? {}),
+      ...existingConfig.general,
       active: formValues.active,
       description: formValues.description,
       group: formValues.group
     },
     security: {
-      ...(existingConfig.security ?? {}),
+      ...existingConfig.security,
       method: formValues.security?.method,
       apikey: transformApiKeyToBackend(formValues.security?.apikey),
       skipPermissionCheck: formValues.security?.skipPermissionCheck ?? false,
@@ -203,7 +203,7 @@ export function transformFormToBackend (
     workspaces: transformWorkspacesToBackend(formValues.workspaces),
     permissions: transformPermissionsToBackend(formValues.permissions),
     schema: {
-      ...(existingConfig.schema ?? {}),
+      ...existingConfig.schema,
       queryEntities: transformSchemaEntitiesToBackend(formValues.schema?.query ?? []),
       mutationEntities: transformSchemaEntitiesToBackend(formValues.schema?.mutation ?? []),
       specialEntities: (formValues.schema?.genericTypes ?? []).map(transformGenericTypeToBackend)

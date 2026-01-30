@@ -21,10 +21,9 @@ import { bundleServiceIds } from '../../../../../config/service-ids'
 interface QueryGridProps {
   value?: QueryEntity[]
   onChange?: (value: QueryEntity[]) => void
-  onFormChange?: () => void
 }
 
-export const QueryGrid = ({ value = [], onChange, onFormChange }: QueryGridProps): React.JSX.Element => {
+export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<QueryEntity | null>(null)
@@ -112,7 +111,6 @@ export const QueryGrid = ({ value = [], onChange, onFormChange }: QueryGridProps
         className={ selectedEntity?.entity ?? '' }
         onApply={ () => { setModalOpen(false) } }
         onCancel={ () => { setModalOpen(false) } }
-        onFormChange={ onFormChange }
         open={ modalOpen }
         operatorRegistryServiceId={ bundleServiceIds['DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry'] }
       />
