@@ -30,7 +30,7 @@ final readonly class UpdateConfiguration
 {
     public function __construct(
         #[Property(
-            description: 'Configuration data as JSON string containing general settings, schema (queryEntities, mutationEntities, specialEntities), security, workspaces, and permissions',
+            description: 'JSON-encoded configuration containing general, schema, security, workspaces, and permissions',
             type: 'string',
             example: '{"general":{"active":true,"type":"GraphQL","name":"assets","description":"","group":"GQL"},"schema":{"queryEntities":[],"mutationEntities":[],"specialEntities":[]},"security":{"method":"datahub_apikey","apikey":"your-key","skipPermissionCheck":false,"disableIntrospection":false},"workspaces":{"asset":[],"document":[],"object":[]},"permissions":{"user":[],"role":[]}}'
         )]
