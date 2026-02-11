@@ -18,7 +18,6 @@
   "require": {
     "nesbot/carbon": "^2.72 || ^3.8.4",
     "php": "~8.3.0 || ~8.4.0",
-    "pimcore/admin-ui-classic-bundle": "^2.0",
     "pimcore/pimcore": "^12.3",
     "pimcore/compatibility-bridge-v10": "^2.0",
     "pimcore/studio-backend-bundle": "^1.0",
