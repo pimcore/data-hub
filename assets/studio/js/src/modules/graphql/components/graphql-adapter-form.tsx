@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, useState, useMemo, useRef } from 'react'
-import { Form, Tabs, Button, FormKit, Portal, IconTextButton, ButtonGroup, useMessage } from '@pimcore/studio-ui-bundle/components'
+import { Form, Tabs, Button, FormKit, Portal, IconTextButton, ButtonGroup, useMessage, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type AdapterFormProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
 import { GeneralTab } from './tabs/general-tab'
@@ -42,6 +42,7 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
   }, [updateError])
 
   const configData = config.configuration as BackendConfiguration
+  const isWriteable = configData?.general?.writeable ?? true
 
   const initialValues = useMemo<GraphQLFormValues>(() =>
     transformBackendToForm(configData, configName),
@@ -110,21 +111,27 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
         <ButtonGroup
           items={ [
             <IconTextButton
+              disabled={ false }
               icon={ { value: 'graphql', colorToken: 'colorCodingViolet4' } }
               key="open-in-tab"
               onClick={ handleOpenInTab }
             >
               {t('data-hub.open-in-tab')}
             </IconTextButton>,
-            <Button
-              disabled={ !isDirty }
-              key="save"
-              loading={ isSaving }
-              onClick={ handleSave }
-              type="primary"
+            <Tooltip
+              key="save-tooltip"
+              title={ isWriteable ? '' : t('config_not_writeable') }
             >
-              {t('save')}
-            </Button>
+              <Button
+                disabled={ !isDirty || !isWriteable }
+                key="save"
+                loading={ isSaving }
+                onClick={ handleSave }
+                type="primary"
+              >
+                {t('save')}
+              </Button>
+            </Tooltip>
           ] }
         />
       </Portal>
@@ -140,17 +147,17 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
     {
       key: 'schema',
       label: t('data-hub.tabs.schema-definition'),
-      children: <SchemaDefinitionTab />
+      children: <SchemaDefinitionTab isWriteable={ isWriteable } />
     },
     {
       key: 'security',
       label: t('data-hub.tabs.security-definition'),
-      children: <SecurityDefinitionTab />
+      children: <SecurityDefinitionTab isWriteable={ isWriteable } />
     },
     {
       key: 'permissions',
       label: t('data-hub.tabs.permissions'),
-      children: <PermissionsTab />
+      children: <PermissionsTab isWriteable={ isWriteable } />
     }
   ]
 
@@ -160,7 +167,8 @@ export const GraphQLAdapterForm = ({ config, configName, configId, onChange, isA
         form,
         initialValues,
         layout: 'vertical',
-        onValuesChange
+        onValuesChange,
+        disabled: !isWriteable
       } }
     >
       <Tabs

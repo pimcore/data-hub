@@ -13,7 +13,11 @@ import { Form, Select, TextArea, Switch, Button, Flex, FormKit, Box } from '@pim
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { WorkspaceGrid } from './security-definition-tab/workspace-grid'
 
-export const SecurityDefinitionTab = (): React.JSX.Element => {
+interface SecurityDefinitionTabProps {
+  isWriteable?: boolean
+}
+
+export const SecurityDefinitionTab = ({ isWriteable = true }: SecurityDefinitionTabProps): React.JSX.Element => {
   const { t } = useTranslation()
   const form = Form.useFormInstance()
 
@@ -108,21 +112,30 @@ export const SecurityDefinitionTab = (): React.JSX.Element => {
             name={ ['workspaces', 'documents'] }
             noStyle
           >
-            <WorkspaceGrid type="documents" />
+            <WorkspaceGrid
+              isWriteable={ isWriteable }
+              type="documents"
+            />
           </Form.Item>
 
           <Form.Item
             name={ ['workspaces', 'assets'] }
             noStyle
           >
-            <WorkspaceGrid type="assets" />
+            <WorkspaceGrid
+              isWriteable={ isWriteable }
+              type="assets"
+            />
           </Form.Item>
 
           <Form.Item
             name={ ['workspaces', 'objects'] }
             noStyle
           >
-            <WorkspaceGrid type="objects" />
+            <WorkspaceGrid
+              isWriteable={ isWriteable }
+              type="objects"
+            />
           </Form.Item>
         </Flex>
       </FormKit.Panel>

@@ -33,6 +33,7 @@ interface UseTreeNodesProps {
   items: InternalTreeNode[]
   operatorRegistry: DynamicTypeOperatorRegistry
   fieldDefinitionRegistry: DynamicTypeFieldDefinitionRegistry
+  disabled?: boolean
 }
 
 interface NodeDisplay {
@@ -44,7 +45,8 @@ interface NodeDisplay {
 export const useTreeNodes = ({
   items,
   operatorRegistry,
-  fieldDefinitionRegistry
+  fieldDefinitionRegistry,
+  disabled = false
 }: UseTreeNodesProps): TreeNodeData[] => {
   const { t } = useTranslation()
   const { getLocalizedName, getIcon } = useOperator()
@@ -117,18 +119,28 @@ export const useTreeNodes = ({
       const treeItem = createTreeItem(item, operatorRegistry)
       const display = getNodeDisplay(item)
 
+      // When disabled, show only 'view' action for operators, no actions for fields
+      let actions: Array<{ key: string, icon: string }> = []
+      if (disabled) {
+        if (item.isOperator) {
+          actions = [{ key: 'view', icon: 'view' }]
+        }
+      } else {
+        actions = treeItem.getActions()
+      }
+
       return {
         key: item.key,
         title: display.title,
         icon: display.icon,
         iconProps: display.iconProps,
         className: 'ant-tree-node--has-drag-and-drop',
-        actions: treeItem.getActions(),
+        actions,
         itemData: item,
         children: item.attributes.children?.map(buildNode)
       }
     }
 
     return items.map(buildNode)
-  }, [items, operatorRegistry, fieldDefinitionRegistry])
+  }, [items, operatorRegistry, fieldDefinitionRegistry, disabled])
 }
