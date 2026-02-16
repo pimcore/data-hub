@@ -25,7 +25,6 @@ export const ExportButton = ({ configName, disabled }: ExportButtonProps): React
     window.location.href = getExportUrl(configName)
   }
 
-
   return (
     <Tooltip title={ t('tree.actions.export') }>
       <IconButton
