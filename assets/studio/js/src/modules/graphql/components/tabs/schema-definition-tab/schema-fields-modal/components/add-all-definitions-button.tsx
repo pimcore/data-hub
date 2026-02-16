@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback } from 'react'
-import { IconTextButton } from '@pimcore/studio-ui-bundle/components'
+import { Button } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { uuid } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
@@ -67,12 +67,30 @@ export const AddAllDefinitionsButton = ({
     }
   }, [entityConfig, getFieldDefinitions, onEntityConfigChange])
 
+  const allDefinitionsAdded = useCallback((): boolean => {
+    if (isNil(entityConfig)) return false
+
+    const leafAttributes = getFieldDefinitions()
+    const currentColumns = entityConfig.columnConfig?.columns ?? []
+    const existingAttributes = new Set<string>(
+      currentColumns
+        .map(col => col.attributes?.attribute)
+        .filter((attr): attr is string => !isNil(attr))
+    )
+
+    const newAttributesCount = leafAttributes
+      .filter(attr => !isNil(attr.attribute) && !existingAttributes.has(attr.attribute))
+      .length
+
+    return newAttributesCount === 0
+  }, [entityConfig, getFieldDefinitions])
+
   return (
-    <IconTextButton
-      icon={ { value: 'plus-circle' } }
+    <Button
+      disabled={ allDefinitionsAdded() }
       onClick={ handleAddAllDefinitions }
     >
-      {t('data-hub.schema.add-all-definitions')}
-    </IconTextButton>
+      {t('data-hub.schema.insert-all-definitions')}
+    </Button>
   )
 }

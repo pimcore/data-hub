@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput, Divider } from '@pimcore/studio-ui-bundle/components'
+import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
@@ -50,7 +50,7 @@ export const ClassAttributesSidebar = ({
           <SidebarTitle withBorder>
             {t('data-hub.schema.class-attributes')}
           </SidebarTitle>
-          <Box padding={ { x: 'small', y: 'extra-small' } }>
+          <Box padding={ 'small' }>
             <SearchInput
               onChange={ (e) => { setSearchValue(e.target.value) } }
               placeholder={ t('search') }
@@ -59,16 +59,12 @@ export const ClassAttributesSidebar = ({
               withoutAddon
             />
           </Box>
-          <Divider
-            size="none"
-            theme="secondary"
-          />
         </>
       }
     >
       <Content
         loading={ isLoading }
-        padded
+        padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
 
         <TreeElement

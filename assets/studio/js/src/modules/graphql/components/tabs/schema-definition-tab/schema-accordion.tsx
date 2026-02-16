@@ -91,7 +91,7 @@ export const SchemaAccordion = ({
     info: (
       <>
         <IconTextButton
-          icon={ { value: 'plus-circle' } }
+          icon={ { value: 'add-find' } }
           onClick={ (e) => {
             e.stopPropagation()
             handleOpen()

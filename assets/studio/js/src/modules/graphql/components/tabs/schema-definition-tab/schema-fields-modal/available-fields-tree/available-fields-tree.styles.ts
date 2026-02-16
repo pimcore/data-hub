@@ -10,11 +10,15 @@
 
 import { createStyles } from 'antd-style'
 
-export const useStyles = createStyles(({ css }) => {
+export const useStyles = createStyles(({ css, token }) => {
   return {
     treeContainer: css`
       .ant-tree-title {
         white-space: nowrap;
+      }
+      
+      .ant-tree-list-holder-inner .ant-tree-treenode {
+        padding: 1px ${token.paddingXS}px;
       }
     `
   }
