@@ -64,6 +64,16 @@ const AvailableFieldsTreeInner = ({
     [items]
   )
 
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(allKeys)
+
+  useMemo(() => {
+    setExpandedKeys(allKeys)
+  }, [allKeys])
+
+  const handleExpand = useCallback((keys: React.Key[]): void => {
+    setExpandedKeys(keys)
+  }, [])
+
   const handleModalApply = useCallback((updatedConfig: PersistedColumnConfig): void => {
     if (isNil(operatorModalConfig)) return
 
@@ -96,14 +106,21 @@ const AvailableFieldsTreeInner = ({
     }
   }, [deleteByKey, findPath, getItem, setOperatorModalConfig])
 
+  const expandedKeysSet = useMemo(() => new Set(expandedKeys), [expandedKeys])
+
   const titleRender = useCallback((node: TreeNodeData, initialComponent: React.ReactNode): React.JSX.Element => {
+    const isExpanded = expandedKeysSet.has(node.key)
+    const hasChildren = node.children !== undefined && node.children.length > 0
+    const hasExpandedChildren = isExpanded && hasChildren
+
     return (
       <TreeNodeRenderer
+        hasExpandedChildren={ hasExpandedChildren }
         initialComponent={ initialComponent }
         itemData={ node.itemData }
       />
     )
-  }, [])
+  }, [expandedKeysSet])
 
   return (
     <>
@@ -115,8 +132,9 @@ const AvailableFieldsTreeInner = ({
           <TreeElement
             blockNode
             className={ styles.treeContainer }
-            defaultExpandedKeys={ allKeys }
+            expandedKeys={ expandedKeys }
             onActionsClick={ handleActionsClick }
+            onExpand={ handleExpand }
             selectable={ false }
             showIcon
             titleRender={ titleRender }

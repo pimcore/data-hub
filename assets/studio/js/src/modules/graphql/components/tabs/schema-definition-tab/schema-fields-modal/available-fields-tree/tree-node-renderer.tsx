@@ -19,11 +19,13 @@ import { useOperator } from '../../../../../../operators/hooks/use-operator'
 interface TreeNodeRendererProps {
   itemData: InternalTreeNode
   initialComponent: React.ReactNode
+  hasExpandedChildren: boolean
 }
 
 export const TreeNodeRenderer = ({
   itemData,
-  initialComponent
+  initialComponent,
+  hasExpandedChildren
 }: TreeNodeRendererProps): React.JSX.Element => {
   const {
     operatorRegistry,
@@ -43,7 +45,7 @@ export const TreeNodeRenderer = ({
   }
 
   const hotspots: HotspotArea[] = useMemo(() => {
-    return [
+    const baseHotspots: HotspotArea[] = [
       {
         id: 'sorting-top',
         className: 'dnd__sorting dnd__sorting--top',
@@ -58,17 +60,22 @@ export const TreeNodeRenderer = ({
         isValidData: (info: DragInfo) => !isSelfDrag(info) && treeItem.canHaveChildren() && canDrop(info, nodeKey, DropPosition.INTO),
         position: { x: '0', y: '30%', width: '100%', height: '40%' },
         onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, DropPosition.INTO) }
-      },
-      {
+      }
+    ]
+
+    if (!hasExpandedChildren) {
+      baseHotspots.push({
         id: 'sorting-bottom',
         className: 'dnd__sorting dnd__sorting--bottom',
         isValidContext: (info: DragInfo) => isValidDragType(info),
         isValidData: (info: DragInfo) => !isSelfDrag(info) && canDrop(info, nodeKey, DropPosition.AFTER),
         position: { x: 0, y: '70%', width: '100%', height: '30%' },
         onDrop: (info: DragInfo) => { handleDrop(info, nodeKey, DropPosition.AFTER) }
-      }
-    ]
-  }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop])
+      })
+    }
+
+    return baseHotspots
+  }, [nodeKey, treeItem, isValidDragType, canDrop, handleDrop, hasExpandedChildren])
 
   const iconProps = useMemo((): { value: string } | undefined => {
     if (itemData.isOperator && !isNil(itemData.attributes.class)) {

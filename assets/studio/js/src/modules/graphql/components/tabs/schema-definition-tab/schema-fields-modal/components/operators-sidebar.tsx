@@ -40,7 +40,6 @@ export const OperatorsSidebar = ({
       localizedName: string
     }>>()
 
-    // Filter and organize operators for this specific group
     operators.forEach(operator => {
       if (operator.getGroup() !== groupName) return
 
@@ -60,18 +59,21 @@ export const OperatorsSidebar = ({
     return subGroups
   }, [operatorRegistry, groupName, getLocalizedName, getGroup, getIcon])
 
+  const hasSubGroups = useMemo(() => {
+    return Array.from(groupData.keys()).some(key => key !== undefined)
+  }, [groupData])
+
   return (
     <>
       <SidebarTitle withBorder>
         {translatedGroupName}
       </SidebarTitle>
 
-      <Box>
+      <Box padding={ hasSubGroups ? { x: 'extra-small' } : undefined }>
         {Array.from(groupData.entries()).map(([subGroupKey, operators]) => {
           const sortedOperators = operators.sort((a, b) => a.localizedName.localeCompare(b.localizedName))
 
           if (subGroupKey === undefined) {
-            // No subgroup - render operators directly in grid
             return (
               <Box
                 className={ gridContainerClassName }
@@ -88,12 +90,10 @@ export const OperatorsSidebar = ({
               </Box>
             )
           } else {
-            // Has subgroup - use collapsible panel
             return (
               <Panel
                 border={ false }
                 collapsed={ false }
-                collapsible
                 contentPadding="extra-small"
                 key={ `${translatedGroupName}-${subGroupKey}` }
                 theme="card-with-highlight"
