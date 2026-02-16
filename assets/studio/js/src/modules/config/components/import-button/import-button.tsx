@@ -58,7 +58,7 @@ export const ImportButton = ({
       <Tooltip title={ t('tree.actions.import') }>
         <IconButton
           disabled={ disabled }
-          icon={ { value: 'import-csv' } }
+          icon={ { value: 'import' } }
           type="link"
         />
       </Tooltip>
