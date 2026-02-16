@@ -57,7 +57,7 @@ export const WorkspaceAccordion = ({
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type])
+  }), [type, value, handleAdd, t])
 
   return (
     <Accordion

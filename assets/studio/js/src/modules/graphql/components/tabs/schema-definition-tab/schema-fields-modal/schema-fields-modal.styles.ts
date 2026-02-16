@@ -14,7 +14,6 @@ export const useStyles = createStyles(({ css, token }) => {
   return {
     contentLayout: css`
       height: 60vh;
-      border-top: 1px solid ${token.colorBorderSecondary};
       border-bottom: 1px solid ${token.colorBorderSecondary};
       
       .pimcore-content-layout__content {
