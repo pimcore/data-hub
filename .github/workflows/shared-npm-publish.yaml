@@ -69,10 +69,6 @@ jobs:
         working-directory: ./assets/studio
         run: npm run generate-types
 
-      - name: Run rsbuild plugins build
-        working-directory: ./assets/studio
-        run: npm run build-rsbuild-plugins
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
