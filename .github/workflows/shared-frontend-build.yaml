@@ -1,32 +1,10 @@
-name: "Studio Frontend Build"
+name: "Shared Frontend Build"
 
 on:
-  push:
-    branches:
-      - "[0-9]+.[0-9]+"
-      - "[0-9]+.x"
-      - "feature-*"
-      - "nightly"
-      - "studio"
-    paths:
-      - "assets/studio/**"
-  pull_request_target:
-    branches:
-      - "[0-9]+.[0-9]+"
-      - "[0-9]+.x"
-      - "*_actions"
-      - "feature-*"
-      - "nightly"
-      - "studio"
-    paths:
-      - "assets/studio/**"
-  workflow_dispatch:
-
-env:
- BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+  workflow_call:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   install:
@@ -36,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.head_ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Set up Node.js
@@ -59,14 +37,11 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.head_ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Set up Node.js
@@ -93,14 +68,11 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.head_ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Set up Node.js
@@ -125,14 +97,11 @@ jobs:
       - check-types
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.head_ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Set up Node.js

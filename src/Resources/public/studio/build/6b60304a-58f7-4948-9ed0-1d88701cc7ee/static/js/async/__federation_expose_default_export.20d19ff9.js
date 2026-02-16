@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpimcore_datahub_bundle=self.webpackChunkpimcore_datahub_bundle||[]).push([["525"],{7989(e,a,u){u.r(a),u.d(a,{ConfigContainer:()=>n.y});var n=u(4661)}}]);

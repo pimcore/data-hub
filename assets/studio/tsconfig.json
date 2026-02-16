@@ -12,7 +12,11 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/build/types",
+    "declarationDir": "./dist/build/types"
   },
 
   "include": [
