@@ -21,8 +21,15 @@
       "types": "./dist/build/types/src/sdk/*/index.d.ts"
     }
   },
+  "keywords": [
+    "pimcore",
+    "pimcore-studio-ui",
+    "pimcore-data-hub"
+  ],
+  "files": [
+    "dist"
+  ],
   "license": "proprietary",
-  "private": true,
   "devDependencies": {
     "@babel/preset-react": "^7.23.3",
     "@module-federation/rsbuild-plugin": "^0.14.0",
