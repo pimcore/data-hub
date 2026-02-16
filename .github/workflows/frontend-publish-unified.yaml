@@ -10,7 +10,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  TARGET_RELEASE: 3.0.0
+  TARGET_RELEASE: 2.4.0
 
 permissions:
   id-token: write  # Required for OIDC
