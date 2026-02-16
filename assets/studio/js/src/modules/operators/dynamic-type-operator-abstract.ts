@@ -28,6 +28,7 @@ export interface SourceConfig {
 export interface OperatorConfigModalProps<TAttributes = any> {
   config: ColumnConfig<TAttributes>
   operator: DynamicTypeOperatorAbstract<TAttributes>
+  disabled?: boolean
   onApply: (config: ColumnConfig<TAttributes>) => void
   onCancel: () => void
 }

@@ -50,6 +50,7 @@ export interface BackendConfiguration {
     active: boolean
     description: string
     group: string
+    writeable?: boolean
     [key: string]: any
   }
   security?: {

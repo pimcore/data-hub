@@ -18,6 +18,8 @@ import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { bundleServiceIds } from '../../../../config/service-ids'
 import { ExportButton } from '../export-button'
+import { useDataHubConfig } from '../../hooks/use-data-hub-config'
+import { useConfigContext } from '../../providers/config-provider'
 
 interface ConfigTabsProps {
   openedConfigs: BundleDataHubConfiguration[]
@@ -54,6 +56,8 @@ export const ConfigTabs = ({
   const { t } = useTranslation()
   const refetchFunctionsRef = useRef<Map<string, () => Promise<any>>>(new Map())
   const [isFetchingTab, setIsFetchingTab] = useState(false)
+  const { refetch } = useConfigContext()
+  const { handleDelete } = useDataHubConfig({ refetch })
 
   const handleRefetchReady = useCallback((configId: string, refetchFn: () => Promise<any>): void => {
     refetchFunctionsRef.current.set(configId, refetchFn)
@@ -68,6 +72,17 @@ export const ConfigTabs = ({
       }
     }
   }
+
+  const handleDeleteWrapper = useCallback((): void => {
+    if (!isNil(activeTabKey)) {
+      const config = openedConfigs.find(c => c.id === activeTabKey)
+      if (!isNil(config)) {
+        handleDelete(config, () => {
+          onCloseTab(activeTabKey)
+        })
+      }
+    }
+  }, [activeTabKey, openedConfigs, handleDelete, onCloseTab])
 
   const tabItems = useMemo(() => {
     // Recursively collect all config IDs from the tree
@@ -109,6 +124,7 @@ export const ConfigTabs = ({
   const portalId = 'data-hub-save-button'
 
   const activeConfig = openedConfigs.find(config => config.id === activeTabKey)
+  const isActiveConfigWriteable = activeConfig?.writable !== false
 
   return (
     <ContentLayout
@@ -120,6 +136,13 @@ export const ConfigTabs = ({
                 disabled={ isFetchingTab }
                 icon={ { value: 'refresh' } }
                 onClick={ handleRefresh }
+              />
+            </Tooltip>
+            <Tooltip title={ isActiveConfigWriteable ? t('delete') : t('config_not_writeable') }>
+              <IconButton
+                disabled={ !isActiveConfigWriteable }
+                icon={ { value: 'trash' } }
+                onClick={ handleDeleteWrapper }
               />
             </Tooltip>
             {!isNil(activeConfig) && (

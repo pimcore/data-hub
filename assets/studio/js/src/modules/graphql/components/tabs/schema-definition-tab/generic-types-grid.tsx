@@ -17,9 +17,10 @@ import { type GenericType } from './types'
 interface GenericTypesGridProps {
   value?: GenericType[]
   onChange?: (value: GenericType[]) => void
+  isWriteable?: boolean
 }
 
-export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps): React.JSX.Element => {
+export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: GenericTypesGridProps): React.JSX.Element => {
   const { t } = useTranslation()
 
   const columns = useMemo(() => {
@@ -49,10 +50,11 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: (row: GenericType) => row.createPossible,
-          tooltip: (row: GenericType) => row.createPossible ? null : t('data-hub.schema.operation-not-implemented'),
+          editable: (row: GenericType) => isWriteable && row.createPossible,
+          tooltip: (row: GenericType) => !isWriteable ? null : (row.createPossible ? null : t('data-hub.schema.operation-not-implemented')),
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: (row: GenericType) => !isWriteable || !row.createPossible
           }
         }
       }),
@@ -61,10 +63,11 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: (row: GenericType) => row.readPossible,
-          tooltip: (row: GenericType) => row.readPossible ? null : t('data-hub.schema.operation-not-implemented'),
+          editable: (row: GenericType) => isWriteable && row.readPossible,
+          tooltip: (row: GenericType) => !isWriteable ? null : (row.readPossible ? null : t('data-hub.schema.operation-not-implemented')),
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: (row: GenericType) => !isWriteable || !row.readPossible
           }
         }
       }),
@@ -73,10 +76,11 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: (row: GenericType) => row.updatePossible,
-          tooltip: (row: GenericType) => row.updatePossible ? null : t('data-hub.schema.operation-not-implemented'),
+          editable: (row: GenericType) => isWriteable && row.updatePossible,
+          tooltip: (row: GenericType) => !isWriteable ? null : (row.updatePossible ? null : t('data-hub.schema.operation-not-implemented')),
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: (row: GenericType) => !isWriteable || !row.updatePossible
           }
         }
       }),
@@ -85,15 +89,16 @@ export const GenericTypesGrid = ({ value = [], onChange }: GenericTypesGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: (row: GenericType) => row.deletePossible,
-          tooltip: (row: GenericType) => row.deletePossible ? null : t('data-hub.schema.operation-not-implemented'),
+          editable: (row: GenericType) => isWriteable && row.deletePossible,
+          tooltip: (row: GenericType) => !isWriteable ? null : (row.deletePossible ? null : t('data-hub.schema.operation-not-implemented')),
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: (row: GenericType) => !isWriteable || !row.deletePossible
           }
         }
       })
     ]
-  }, [t])
+  }, [t, isWriteable])
 
   const accordionItem: AccordionItemType = useMemo(() => ({
     key: 'genericTypes',

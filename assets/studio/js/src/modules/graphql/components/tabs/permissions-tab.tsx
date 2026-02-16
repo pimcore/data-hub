@@ -13,7 +13,11 @@ import { Form, Flex, FormKit } from '@pimcore/studio-ui-bundle/components'
 import { PermissionGrid } from './permissions-tab/permission-grid'
 import { FieldWidthContainer } from '../../../config/components/field-width-container'
 
-export const PermissionsTab = (): React.JSX.Element => {
+interface PermissionsTabProps {
+  isWriteable?: boolean
+}
+
+export const PermissionsTab = ({ isWriteable = true }: PermissionsTabProps): React.JSX.Element => {
   return (
     <FormKit.Panel contentPadding="extra-small">
       <FieldWidthContainer>
@@ -26,6 +30,7 @@ export const PermissionsTab = (): React.JSX.Element => {
             noStyle
           >
             <PermissionGrid
+              isWriteable={ isWriteable }
               type="roles"
             />
           </Form.Item>
@@ -34,6 +39,7 @@ export const PermissionsTab = (): React.JSX.Element => {
             noStyle
           >
             <PermissionGrid
+              isWriteable={ isWriteable }
               type="users"
             />
           </Form.Item>

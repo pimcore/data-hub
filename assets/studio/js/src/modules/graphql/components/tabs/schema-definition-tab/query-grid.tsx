@@ -21,9 +21,10 @@ import { bundleServiceIds } from '../../../../../config/service-ids'
 interface QueryGridProps {
   value?: QueryEntity[]
   onChange?: (value: QueryEntity[]) => void
+  isWriteable?: boolean
 }
 
-export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.Element => {
+export const QueryGrid = ({ value = [], onChange, isWriteable = true }: QueryGridProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<QueryEntity | null>(null)
@@ -37,6 +38,7 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
         size: 300,
         meta: {
           type: 'input-text',
+          editable: isWriteable,
           autoWidth: true
         }
       }),
@@ -51,6 +53,7 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
               justify="center"
             >
               <IconButton
+                disabled={ false }
                 icon={ { value: 'settings' } }
                 onClick={ () => {
                   setSelectedEntity(value[info.row.index])
@@ -86,7 +89,7 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
         )
       }
     ]
-  }, [t, value, onChange])
+  }, [t, value, onChange, isWriteable])
 
   return (
     <>
@@ -110,6 +113,7 @@ export const QueryGrid = ({ value = [], onChange }: QueryGridProps): React.JSX.E
       {modalOpen && (
         <SchemaFieldsModal
           className={ selectedEntity?.entity ?? '' }
+          disabled={ !isWriteable }
           onApply={ () => { setModalOpen(false) } }
           onCancel={ () => { setModalOpen(false) } }
           open={ modalOpen }

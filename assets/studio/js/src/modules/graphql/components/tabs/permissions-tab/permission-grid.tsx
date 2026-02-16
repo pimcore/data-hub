@@ -20,9 +20,10 @@ interface PermissionGridProps {
   type: 'roles' | 'users'
   value?: Permission[]
   onChange?: (value: Permission[]) => void
+  isWriteable?: boolean
 }
 
-export const PermissionGrid = ({ type, value = [], onChange }: PermissionGridProps): React.JSX.Element => {
+export const PermissionGrid = ({ type, value = [], onChange, isWriteable = true }: PermissionGridProps): React.JSX.Element => {
   const { t } = useTranslation()
 
   const itemType = type === 'roles' ? 'role' : 'user'
@@ -44,9 +45,10 @@ export const PermissionGrid = ({ type, value = [], onChange }: PermissionGridPro
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -55,9 +57,10 @@ export const PermissionGrid = ({ type, value = [], onChange }: PermissionGridPro
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -66,9 +69,10 @@ export const PermissionGrid = ({ type, value = [], onChange }: PermissionGridPro
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -98,7 +102,7 @@ export const PermissionGrid = ({ type, value = [], onChange }: PermissionGridPro
         enableSorting: false
       }
     ]
-  }, [itemType, t, value, onChange])
+  }, [itemType, t, value, onChange, isWriteable])
 
   return (
     <OperationalGrid

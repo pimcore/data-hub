@@ -21,9 +21,10 @@ import { bundleServiceIds } from '../../../../../config/service-ids'
 interface MutationGridProps {
   value?: MutationEntity[]
   onChange?: (value: MutationEntity[]) => void
+  isWriteable?: boolean
 }
 
-export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React.JSX.Element => {
+export const MutationGrid = ({ value = [], onChange, isWriteable = true }: MutationGridProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<MutationEntity | null>(null)
@@ -37,6 +38,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         size: 200,
         meta: {
           type: 'input-text',
+          editable: isWriteable,
           autoWidth: true
         }
       }),
@@ -45,9 +47,10 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -56,9 +59,10 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -67,9 +71,10 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -84,6 +89,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
               justify="center"
             >
               <IconButton
+                disabled={ false }
                 icon={ { value: 'settings' } }
                 onClick={ () => {
                   setSelectedEntity(value[info.row.index])
@@ -119,7 +125,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
         )
       }
     ]
-  }, [value, onChange])
+  }, [value, onChange, t, isWriteable])
 
   return (
     <>
@@ -143,6 +149,7 @@ export const MutationGrid = ({ value = [], onChange }: MutationGridProps): React
       {modalOpen && !isNil(selectedEntity) && (
         <SchemaFieldsModal
           className={ selectedEntity.entity }
+          disabled={ !isWriteable }
           onApply={ () => { setModalOpen(false) } }
           onCancel={ () => { setModalOpen(false) } }
           open={ modalOpen }
