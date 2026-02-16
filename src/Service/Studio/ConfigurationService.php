@@ -349,7 +349,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         $configuration = Configuration::getByName($name);
         if ($configuration instanceof Configuration) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+            throw new ElementExistsException(
+                message: 'Configuration with name "' . $name . '" already exists.', 
+                errorKey: 'data-hub.config-exists'
+            );
         }
     }
 
@@ -480,7 +483,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
-                'Uploaded configuration data is invalid. Missing keys: type, path, name.'
+                message: 'Uploaded configuration data is invalid. Missing keys: type, path, name.',
+                errorKey: 'data-hub.import-config-invalid'
             );
         }
 
