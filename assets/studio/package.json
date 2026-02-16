@@ -1,5 +1,5 @@
 {
-  "name": "pimcore_datahub_bundle",
+  "name": "@pimcore/data-hub",
   "version": "0.0.1",
   "scripts": {
     "dev": "NODE_ENV=development rsbuild build",
@@ -10,10 +10,30 @@
     "lint-fix-watch": "nodemon --watch './js/**/*' --exec \"eslint --ext .js,.jsx,.ts,.tsx ./js --fix --cache\" -e js,jsx,ts,tsx",
     "check-types": "tsc --noEmit",
     "check-types-watch": "tsc --noEmit --watch",
-    "build-api-client": "TS_NODE_COMPILER_OPTIONS='{\"moduleResolution\":\"node\"}' npx @rtk-query/codegen-openapi ./build/api/openapi-config.ts"
+    "build-api-client": "TS_NODE_COMPILER_OPTIONS='{\"moduleResolution\":\"node\"}' npx @rtk-query/codegen-openapi ./build/api/openapi-config.ts",
+    "generate-types": "tsc && tsc-alias"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/build/types/src/sdk/index.d.ts"
+    },
+    "./*": {
+      "types": "./dist/build/types/src/sdk/*/index.d.ts"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pimcore/data-hub"
+  },
+  "keywords": [
+    "pimcore",
+    "pimcore-studio-ui",
+    "pimcore-data-hub"
+  ],
+  "files": [
+    "dist"
+  ],
   "license": "proprietary",
-  "private": true,
   "devDependencies": {
     "@babel/preset-react": "^7.23.3",
     "@module-federation/rsbuild-plugin": "^0.14.0",
@@ -56,21 +76,15 @@
     "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.3.3",
     "whatwg-fetch": "^3.6.20"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "1.0.0-canary.20260216-113612-7943dd6",
-    "antd-style": "3.7.x",
-    "lodash": "^4.17.21",
-    "quill": "^2.0.3",
-    "quill-table-better": "^1.1.6",
-    "react": "18.3.x",
-    "react-dom": "18.3.x",
-    "@tanstack/react-table": "^8.20.5",
-    "uuid": "^10.0.0",
-    "reflect-metadata": "^0.2.2",
-    "@reduxjs/toolkit": "^2.3.0"
+    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260216-113612-7943dd6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "uuid": "^10.0.0"
   },
   "overrides": {
     "axios": "1.12.0"

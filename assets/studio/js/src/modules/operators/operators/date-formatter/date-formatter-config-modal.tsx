@@ -25,28 +25,32 @@ export const DateFormatterConfigModal = (props: OperatorConfigModalProps<DateFor
   return (
     <OperatorModal
       { ...props }
-      footer={ ({ handleApply, onCancel }) => (
-        <Flex justify="space-between">
-          <IconTextButton
-            icon={ { value: 'help-circle' } }
-            onClick={ openHelp }
-            type="default"
-          >
-            {t('data-hub.help')}
-          </IconTextButton>
+      footer={ ({ handleApply, onCancel, disabled }) => (
+        disabled
+          ? null
+          : (
+            <Flex justify="space-between">
+              <IconTextButton
+                icon={ { value: 'help-circle' } }
+                onClick={ openHelp }
+                type="default"
+              >
+                {t('data-hub.help')}
+              </IconTextButton>
 
-          <Flex gap="small">
-            <Button onClick={ onCancel }>
-              {t('cancel')}
-            </Button>
-            <Button
-              onClick={ () => { void handleApply() } }
-              type="primary"
-            >
-              {t('apply')}
-            </Button>
-          </Flex>
-        </Flex>
+              <Flex gap="small">
+                <Button onClick={ onCancel }>
+                  {t('cancel')}
+                </Button>
+                <Button
+                  onClick={ () => { void handleApply() } }
+                  type="primary"
+                >
+                  {t('apply')}
+                </Button>
+              </Flex>
+            </Flex>
+            )
       ) }
       initialValues={ { format: 'Y-m-d H:i:s' } }
       size="M"

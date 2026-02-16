@@ -20,12 +20,14 @@ interface TreeNodeRendererProps {
   itemData: InternalTreeNode
   initialComponent: React.ReactNode
   hasExpandedChildren: boolean
+  disabled?: boolean
 }
 
 export const TreeNodeRenderer = ({
   itemData,
   initialComponent,
-  hasExpandedChildren
+  hasExpandedChildren,
+  disabled = false
 }: TreeNodeRendererProps): React.JSX.Element => {
   const {
     operatorRegistry,
@@ -102,14 +104,16 @@ export const TreeNodeRenderer = ({
     title: String(itemData.attributes.label ?? itemData.attributes.attribute ?? '')
   }), [nodeKey, itemData, iconProps])
 
-  return (
-    <Draggable info={ dragInfo }>
-      <HotspotDroppable
-        disableDndActiveIndicator
-        hotspots={ hotspots }
-      >
-        {initialComponent}
-      </HotspotDroppable>
-    </Draggable>
-  )
+  return disabled
+    ? <>{initialComponent}</>
+    : (
+      <Draggable info={ dragInfo }>
+        <HotspotDroppable
+          disableDndActiveIndicator
+          hotspots={ hotspots }
+        >
+          {initialComponent}
+        </HotspotDroppable>
+      </Draggable>
+      )
 }

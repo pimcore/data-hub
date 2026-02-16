@@ -1,0 +1,28 @@
+name: "Frontend Build (PR and Feature Branches)"
+
+on:
+  push:
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "feature-*"
+      - "nightly"
+  pull_request_target:
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.x"
+      - "*_actions"
+      - "feature-*"
+      - "nightly"
+  workflow_dispatch:
+  
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    uses: ./.github/workflows/shared-frontend-build.yaml

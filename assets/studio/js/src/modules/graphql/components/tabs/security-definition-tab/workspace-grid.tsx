@@ -20,9 +20,10 @@ interface WorkspaceGridProps {
   type: WorkspaceType
   value?: Workspace[]
   onChange?: (value: Workspace[]) => void
+  isWriteable?: boolean
 }
 
-export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps): React.JSX.Element => {
+export const WorkspaceGrid = ({ type, value = [], onChange, isWriteable = true }: WorkspaceGridProps): React.JSX.Element => {
   const { t } = useTranslation()
 
   // Map workspace type to link type for the column
@@ -36,7 +37,7 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         header: t('data-hub.workspaces.path'),
         size: 300,
         meta: {
-          editable: true,
+          editable: isWriteable,
           type: linkType,
           autoWidth: true
         }
@@ -46,9 +47,10 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -57,9 +59,10 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -68,9 +71,10 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -79,9 +83,10 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         size: 80,
         meta: {
           type: 'checkbox',
-          editable: true,
+          editable: isWriteable,
           config: {
-            align: 'center'
+            align: 'center',
+            disabled: !isWriteable
           }
         }
       }),
@@ -111,7 +116,7 @@ export const WorkspaceGrid = ({ type, value = [], onChange }: WorkspaceGridProps
         enableSorting: false
       }
     ]
-  }, [linkType, t, value, onChange])
+  }, [linkType, t, value, onChange, isWriteable])
 
   return (
     <OperationalGrid

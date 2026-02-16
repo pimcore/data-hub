@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo, useState, useCallback } from 'react'
+import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { TreeElement } from '@pimcore/studio-ui-bundle/components'
 import { type QueryEntityConfig, type PersistedColumnConfig } from '../types'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
@@ -24,6 +24,7 @@ import { useTreeNodes, type TreeNodeData } from './hooks/use-tree-nodes'
 interface AvailableFieldsTreeProps {
   entityConfig?: QueryEntityConfig
   operatorRegistryServiceId: string
+  disabled?: boolean
   onEntityConfigChange: (config: QueryEntityConfig) => void
 }
 
@@ -34,11 +35,13 @@ interface OperatorModalConfig {
 
 interface AvailableFieldsTreeInnerProps {
   operatorModalConfig: OperatorModalConfig | null
+  disabled: boolean
   setOperatorModalConfig: React.Dispatch<React.SetStateAction<OperatorModalConfig | null>>
 }
 
 const AvailableFieldsTreeInner = ({
   operatorModalConfig,
+  disabled,
   setOperatorModalConfig
 }: AvailableFieldsTreeInnerProps): React.JSX.Element => {
   const {
@@ -56,7 +59,8 @@ const AvailableFieldsTreeInner = ({
   const treeData = useTreeNodes({
     items,
     operatorRegistry,
-    fieldDefinitionRegistry
+    fieldDefinitionRegistry,
+    disabled
   })
 
   const allKeys = useMemo(
@@ -64,11 +68,48 @@ const AvailableFieldsTreeInner = ({
     [items]
   )
 
-  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(allKeys)
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([])
+  const prevAllKeysRef = useRef<string[]>([])
 
-  useMemo(() => {
-    setExpandedKeys(allKeys)
-  }, [allKeys])
+  useEffect(() => {
+    const prevKeys = prevAllKeysRef.current
+    const currentKeys = allKeys.map(String)
+
+    if (prevKeys.length === 0 && currentKeys.length > 0) {
+      prevAllKeysRef.current = currentKeys
+      setExpandedKeys(currentKeys)
+      return
+    }
+
+    if (currentKeys.length > prevKeys.length) {
+      const newKeys = currentKeys.filter(k => !prevKeys.includes(k))
+      const keysToExpand = new Set(expandedKeys.map(String))
+
+      newKeys.forEach(newKey => {
+        const path = findPath(newKey)
+        if (path !== null && path.length > 1) {
+          const parentPath = path.slice(0, -1)
+          const parent = getItem(parentPath)
+          if (parent !== null && parent.isOperator) {
+            keysToExpand.add(String(parent.key))
+          }
+        }
+      })
+
+      prevAllKeysRef.current = currentKeys
+      setExpandedKeys(Array.from(keysToExpand))
+      return
+    }
+
+    if (currentKeys.length < prevKeys.length) {
+      const validKeys = expandedKeys.filter(k => currentKeys.includes(String(k)))
+      prevAllKeysRef.current = currentKeys
+      setExpandedKeys(validKeys)
+      return
+    }
+
+    prevAllKeysRef.current = currentKeys
+  }, [allKeys, expandedKeys, findPath, getItem])
 
   const handleExpand = useCallback((keys: React.Key[]): void => {
     setExpandedKeys(keys)
@@ -87,11 +128,12 @@ const AvailableFieldsTreeInner = ({
 
   const handleActionsClick = useCallback((key: string, action: string): void => {
     if (action === 'delete') {
+      if (disabled) return
       deleteByKey(key)
       return
     }
 
-    if (action === 'edit') {
+    if (action === 'edit' || action === 'view') {
       const path = findPath(key)
       if (path === null) return
 
@@ -104,7 +146,7 @@ const AvailableFieldsTreeInner = ({
         operatorId: item.attributes.class
       })
     }
-  }, [deleteByKey, findPath, getItem, setOperatorModalConfig])
+  }, [disabled, deleteByKey, findPath, getItem, setOperatorModalConfig])
 
   const expandedKeysSet = useMemo(() => new Set(expandedKeys), [expandedKeys])
 
@@ -115,24 +157,27 @@ const AvailableFieldsTreeInner = ({
 
     return (
       <TreeNodeRenderer
+        disabled={ disabled }
         hasExpandedChildren={ hasExpandedChildren }
         initialComponent={ initialComponent }
         itemData={ node.itemData }
       />
     )
-  }, [expandedKeysSet])
+  }, [expandedKeysSet, disabled])
 
   return (
     <>
       {items.length === 0
         ? (
-          <EmptyTreeDropZone />
+            disabled
+              ? <div style={ { padding: '16px', textAlign: 'center', color: '#999' } }>No fields configured</div>
+              : <EmptyTreeDropZone />
           )
         : (
           <TreeElement
             blockNode
             className={ styles.treeContainer }
-            expandedKeys={ expandedKeys }
+            defaultExpandedKeys={ expandedKeys }
             onActionsClick={ handleActionsClick }
             onExpand={ handleExpand }
             selectable={ false }
@@ -153,6 +198,7 @@ const AvailableFieldsTreeInner = ({
             attributes: operatorModalConfig.itemData.attributes
           },
           operator: operatorType,
+          disabled,
           onApply: handleModalApply,
           onCancel: handleModalCancel
         })
@@ -164,6 +210,7 @@ const AvailableFieldsTreeInner = ({
 export const AvailableFieldsTree = ({
   entityConfig,
   operatorRegistryServiceId,
+  disabled = false,
   onEntityConfigChange
 }: AvailableFieldsTreeProps): React.JSX.Element => {
   const [operatorModalConfig, setOperatorModalConfig] = useState<OperatorModalConfig | null>(null)
@@ -179,12 +226,14 @@ export const AvailableFieldsTree = ({
 
   return (
     <TreeProvider
+      disabled={ disabled }
       entityConfig={ entityConfig }
       onEntityConfigChange={ onEntityConfigChange }
       onOperatorAdded={ handleOperatorAdded }
       operatorRegistryServiceId={ operatorRegistryServiceId }
     >
       <AvailableFieldsTreeInner
+        disabled={ disabled }
         operatorModalConfig={ operatorModalConfig }
         setOperatorModalConfig={ setOperatorModalConfig }
       />

@@ -19,7 +19,7 @@ interface OperatorModalProps<T = any> extends OperatorConfigModalProps<T> {
   children: (context: { form: FormInstance }) => React.ReactNode
   initialValues?: Partial<T>
   size?: React.ComponentProps<typeof Modal>['size']
-  footer?: (context: { handleApply: () => Promise<void>, onCancel: () => void }) => React.ReactNode
+  footer?: (context: { handleApply: () => Promise<void>, onCancel: () => void, disabled: boolean }) => React.ReactNode
 }
 
 export const OperatorModal = <T = any>({
@@ -27,6 +27,7 @@ export const OperatorModal = <T = any>({
   initialValues,
   size,
   footer,
+  disabled = false,
   ...props
 }: OperatorModalProps<T>): React.JSX.Element => {
   const { onCancel } = props
@@ -40,21 +41,22 @@ export const OperatorModal = <T = any>({
   }, [])
 
   const handleApply = async (): Promise<void> => {
+    if (disabled) return
     const values: Partial<T> = await form.validateFields()
     updateAttributes(values)
   }
 
   return (
     <Modal
-      footer={ footer?.({ handleApply, onCancel }) }
+      footer={ footer?.({ handleApply, onCancel, disabled }) ?? (disabled ? null : undefined) }
       okText={ t('apply') }
       onCancel={ onCancel }
-      onOk={ footer === undefined ? () => { void handleApply() } : undefined }
+      onOk={ footer === undefined && !disabled ? () => { void handleApply() } : undefined }
       open
       size={ size }
       title={ localizedName }
     >
-      <FormKit formProps={ { form } }>
+      <FormKit formProps={ { form, disabled } }>
         {children({ form })}
       </FormKit>
     </Modal>

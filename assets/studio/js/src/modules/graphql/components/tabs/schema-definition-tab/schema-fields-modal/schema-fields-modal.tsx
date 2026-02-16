@@ -24,6 +24,7 @@ interface SchemaFieldsModalProps {
   className: string
   operatorRegistryServiceId: string
   type?: 'query' | 'mutation'
+  disabled?: boolean
   onCancel: () => void
   onApply: () => void
 }
@@ -33,6 +34,7 @@ export const SchemaFieldsModal = ({
   className,
   operatorRegistryServiceId,
   type = 'query',
+  disabled = false,
   onCancel,
   onApply
 }: SchemaFieldsModalProps): React.JSX.Element => {
@@ -78,25 +80,27 @@ export const SchemaFieldsModal = ({
 
   return (
     <Modal
-      footer={ (
-        <Flex
-          gap="small"
-          justify="space-between"
-        >
-          <AddAllDefinitionsButton
-            classId={ classId }
-            enabled={ enabled }
-            entityConfig={ localEntityConfig }
-            onEntityConfigChange={ setLocalEntityConfig }
-          />
-          <Button
-            onClick={ handleApply }
-            type="primary"
+      footer={ disabled
+        ? null
+        : (
+          <Flex
+            gap="small"
+            justify="space-between"
           >
-            {t('button.apply')}
-          </Button>
-        </Flex>
-      ) }
+            <AddAllDefinitionsButton
+              classId={ classId }
+              enabled={ enabled }
+              entityConfig={ localEntityConfig }
+              onEntityConfigChange={ setLocalEntityConfig }
+            />
+            <Button
+              onClick={ handleApply }
+              type="primary"
+            >
+              {t('button.apply')}
+            </Button>
+          </Flex>
+          ) }
       key={ `${className}-${type}` }
       onCancel={ onCancel }
       open={ open }
@@ -105,14 +109,16 @@ export const SchemaFieldsModal = ({
     >
       <ContentLayout
         className={ styles.contentLayout }
-        renderSidebar={ (
-          <SidebarProvider initialActiveTab={ sidebarEntries[0]?.key }>
-            <Sidebar
-              entries={ sidebarEntries }
-              sizing="large"
-            />
-          </SidebarProvider>
-        ) }
+        renderSidebar={ disabled
+          ? undefined
+          : (
+            <SidebarProvider initialActiveTab={ sidebarEntries[0]?.key }>
+              <Sidebar
+                entries={ sidebarEntries }
+                sizing="large"
+              />
+            </SidebarProvider>
+            ) }
       >
         <Content
           padded
@@ -120,6 +126,7 @@ export const SchemaFieldsModal = ({
         >
           <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
           <AvailableFieldsTree
+            disabled={ disabled }
             entityConfig={ localEntityConfig }
             onEntityConfigChange={ setLocalEntityConfig }
             operatorRegistryServiceId={ operatorRegistryServiceId }

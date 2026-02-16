@@ -15,7 +15,11 @@ import { MutationGrid } from './schema-definition-tab/mutation-grid'
 import { GenericTypesGrid } from './schema-definition-tab/generic-types-grid'
 import { FieldWidthContainer } from '../../../config/components/field-width-container'
 
-export const SchemaDefinitionTab = (): React.JSX.Element => {
+interface SchemaDefinitionTabProps {
+  isWriteable?: boolean
+}
+
+export const SchemaDefinitionTab = ({ isWriteable = true }: SchemaDefinitionTabProps): React.JSX.Element => {
   return (
     <FormKit.Panel contentPadding="extra-small">
       <FieldWidthContainer>
@@ -27,21 +31,21 @@ export const SchemaDefinitionTab = (): React.JSX.Element => {
             name={ ['schema', 'query'] }
             noStyle
           >
-            <QueryGrid />
+            <QueryGrid isWriteable={ isWriteable } />
           </Form.Item>
 
           <Form.Item
             name={ ['schema', 'mutation'] }
             noStyle
           >
-            <MutationGrid />
+            <MutationGrid isWriteable={ isWriteable } />
           </Form.Item>
 
           <Form.Item
             name={ ['schema', 'genericTypes'] }
             noStyle
           >
-            <GenericTypesGrid />
+            <GenericTypesGrid isWriteable={ isWriteable } />
           </Form.Item>
         </Flex>
       </FieldWidthContainer>

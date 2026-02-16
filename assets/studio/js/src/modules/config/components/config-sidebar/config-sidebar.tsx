@@ -80,6 +80,24 @@ export const ConfigSidebar = ({
     return isUndefined(adapter) ? undefined : <Icon { ...adapter.getIcon() } />
   }
 
+  const getTreeItemActions = (item: BundleDataHubConfiguration): Array<{ key: string, icon: string }> => {
+    if (item.allowChildren === true) {
+      return []
+    }
+
+    const actions: Array<{ key: string, icon: string }> = [
+      { key: 'clone', icon: 'copy-03' },
+      { key: 'export', icon: 'export' }
+    ]
+
+    // Only add delete action if writeable
+    if (item.writable) {
+      actions.push({ key: 'delete', icon: 'trash' })
+    }
+
+    return actions
+  }
+
   const transformToTreeData = (items: BundleDataHubConfiguration[] | null): TreeDataItem[] => {
     if (isNil(items)) {
       return []
@@ -95,21 +113,13 @@ export const ConfigSidebar = ({
         return a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })
       })
       .map((item) => {
-        const actions = item.allowChildren === true
-          ? []
-          : [
-              { key: 'clone', icon: 'copy-03' },
-              { key: 'export', icon: 'export' },
-              { key: 'delete', icon: 'trash' }
-            ]
-
         return {
           key: isUndefined(item.id) ? '' : String(item.id),
           title: item.text,
           icon: getTreeItemIcon(item),
           children: isUndefined(item.children) ? undefined : transformToTreeData(item.children),
           isLeaf: item.leaf,
-          actions,
+          actions: getTreeItemActions(item),
           allowDrag: false,
           allowDrop: false
         }

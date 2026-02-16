@@ -36,6 +36,7 @@ interface TreeContextValue {
   isValidDragType: (dragInfo: DragInfo) => boolean
   handleDrop: (dragInfo: DragInfo, targetKey: string, position: DropPosition) => void
   handleDropToRoot: (dragInfo: DragInfo) => void
+  onItemInserted?: (targetKey: string, position: DropPosition) => void
 }
 
 const TreeContext = createContext<TreeContextValue | null>(null)
@@ -52,6 +53,7 @@ interface TreeProviderProps {
   children: React.ReactNode
   entityConfig?: QueryEntityConfig
   operatorRegistryServiceId: string
+  disabled?: boolean
   onEntityConfigChange: (config: QueryEntityConfig) => void
   onOperatorAdded?: (item: InternalTreeNode) => void
 }
@@ -60,6 +62,7 @@ export const TreeProvider = ({
   children,
   entityConfig,
   operatorRegistryServiceId,
+  disabled = false,
   onEntityConfigChange,
   onOperatorAdded
 }: TreeProviderProps): React.JSX.Element => {
