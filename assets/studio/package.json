@@ -21,6 +21,10 @@
       "types": "./dist/build/types/src/sdk/*/index.d.ts"
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pimcore/data-hub"
+  },
   "keywords": [
     "pimcore",
     "pimcore-studio-ui",
