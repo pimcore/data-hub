@@ -15,33 +15,22 @@ import { getExportUrl } from '../../utils/get-export-url'
 
 interface ExportButtonProps {
   configName: string
-  variant?: 'toolbar' | 'context-menu'
   disabled?: boolean
 }
 
-export const ExportButton = ({ configName, variant = 'toolbar', disabled }: ExportButtonProps): React.JSX.Element => {
+export const ExportButton = ({ configName, disabled }: ExportButtonProps): React.JSX.Element => {
   const { t } = useTranslation()
 
   const handleExport = (): void => {
     window.location.href = getExportUrl(configName)
   }
 
-  if (variant === 'context-menu') {
-    return (
-      <IconButton
-        disabled={ disabled }
-        icon={ { value: 'download' } }
-        onClick={ handleExport }
-        type="link"
-      />
-    )
-  }
 
   return (
     <Tooltip title={ t('tree.actions.export') }>
       <IconButton
         disabled={ disabled }
-        icon={ { value: 'download' } }
+        icon={ { value: 'export' } }
         onClick={ handleExport }
       />
     </Tooltip>

@@ -29,6 +29,7 @@ import { useConfigContext } from '../../providers/config-provider'
 import { useDataHubConfig } from '../../hooks/use-data-hub-config'
 import { findConfigById, filterConfigsRecursive } from '../../utils/tree-helpers'
 import { hasValidAdapter } from '../../utils/adapter-helpers'
+import { getExportUrl } from '../../utils/get-export-url'
 
 interface ConfigSidebarProps {
   handleOpenConfig: (config: BundleDataHubConfiguration) => void
@@ -98,7 +99,7 @@ export const ConfigSidebar = ({
           ? []
           : [
               { key: 'clone', icon: 'copy-03' },
-              { key: 'export', icon: 'download' },
+              { key: 'export', icon: 'export' },
               { key: 'delete', icon: 'trash' }
             ]
 
@@ -137,7 +138,7 @@ export const ConfigSidebar = ({
   const handleExportWrapper = (key: string): void => {
     const config = findConfigById(key, configListData)
     if (!isNil(config)) {
-      window.location.href = `/pimcore-studio/api/bundle/data-hub/config/${config.text}/export`
+      window.location.href = getExportUrl(config.text)
     }
   }
 
