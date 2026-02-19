@@ -22,7 +22,7 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "0.14.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/2dc23167-c9a5-4af8-98cc-d5e8d9496d03/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/62ed16c7-bb2f-483e-b922-ed32e8e78a28/"
   },
   "shared": [
     {
@@ -91,7 +91,7 @@
       "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "app",
       "usedIn": [
-        "js/src/components/base-detail-view/index.ts + 5 modules",
+        "js/src/components/base-detail-view/index.ts + 7 modules",
         "js/src/modules/config/config-container.tsx + 11 modules",
         "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-abstract.tsx",
         "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry.ts",
@@ -107,7 +107,7 @@
       "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "components",
       "usedIn": [
-        "js/src/components/base-detail-view/index.ts + 5 modules",
+        "js/src/components/base-detail-view/index.ts + 7 modules",
         "js/src/modules/config/config-container.tsx + 11 modules",
         "js/src/modules/graphql/components/tabs/general-tab.tsx",
         "js/src/modules/graphql/components/tabs/permissions-tab.tsx + 3 modules",
@@ -216,8 +216,8 @@
         "js": {
           "sync": [
             "static/js/async/604.be2a8362.js",
-            "static/js/async/64.8cdbd8a3.js",
-            "static/js/async/__federation_expose_plugins.f60ff2e5.js"
+            "static/js/async/544.6dfcaea5.js",
+            "static/js/async/__federation_expose_plugins.b2d4c095.js"
           ],
           "async": []
         },
@@ -237,8 +237,8 @@
         "js": {
           "sync": [
             "static/js/async/604.be2a8362.js",
-            "static/js/async/64.8cdbd8a3.js",
-            "static/js/async/__federation_expose_default_export.46bb7371.js"
+            "static/js/async/544.6dfcaea5.js",
+            "static/js/async/__federation_expose_default_export.a58e3ed5.js"
           ],
           "async": []
         },
