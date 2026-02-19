@@ -11,21 +11,20 @@
 import type React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
-import { type BundleDataHubConfigurationDetail } from '../config-api-slice-enhanced'
 
-export interface AdapterFormProps {
-  config: BundleDataHubConfigurationDetail
+export interface DataHubAdapterDetailViewProps {
   configName: string
   configId: string
-  onChange: (isDirty: boolean) => void
   isActive: boolean
+  onChange: (isDirty: boolean) => void
+  onDelete: () => void
 }
 
 @injectable()
 export abstract class DynamicTypeDataHubAdapterAbstract {
   abstract readonly id: string
   abstract getIcon (): ElementIcon
-  abstract getFormComponent (props: AdapterFormProps): React.JSX.Element
+  abstract renderDetailView (props: DataHubAdapterDetailViewProps): React.JSX.Element
 
   getNameTranslationKey (): string {
     return `data-hub.adapter.${this.id}`
