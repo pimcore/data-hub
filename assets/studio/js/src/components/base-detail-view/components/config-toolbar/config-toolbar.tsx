@@ -11,7 +11,7 @@
 import React, { type ReactNode } from 'react'
 import { Button, ButtonGroup, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { ExportButton } from '../../modules/config/components/export-button'
+import { ExportButton } from '../../../../modules/config/components/export-button'
 
 export interface ConfigToolbarProps {
   configName: string

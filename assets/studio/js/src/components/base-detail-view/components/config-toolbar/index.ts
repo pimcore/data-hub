@@ -8,6 +8,4 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-export * from './base-detail-view'
-export * from './components/config-toolbar'
-export * from './hooks'
+export * from './config-toolbar'
