@@ -15,7 +15,6 @@ namespace Pimcore\Bundle\DataHubBundle\EventSubscriber;
 
 use Pimcore\Bundle\StudioBackendBundle\Perspective\Model\ContextPermissionData;
 use Pimcore\Bundle\StudioBackendBundle\Perspective\Service\ContextPermissionsServiceInterface;
-use Pimcore\Bundle\StudioBackendBundle\Perspective\Util\Constant\ContextPermissionGroups;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
