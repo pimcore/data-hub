@@ -35,3 +35,9 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Hydrator\ThumbnailHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\ThumbnailHydrator
+
+    #
+    # Event Subscriber
+    #
+
+    Pimcore\Bundle\DataHubBundle\EventSubscriber\StudioContextPermissionsSubscriber: ~
