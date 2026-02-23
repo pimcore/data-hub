@@ -80,7 +80,18 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
 
   const handleOpenInTab = (): void => {
     if (explorerUrlData !== undefined && !isEmpty(explorerUrlData.explorerUrl)) {
-      window.open(explorerUrlData.explorerUrl, '_blank')
+      let explorerUrl = explorerUrlData.explorerUrl
+      const securityMethod = form.getFieldValue(['security', 'method']) as string | undefined
+      if (securityMethod === 'datahub_apikey') {
+        const apikey = form.getFieldValue(['security', 'apikey']) as string | undefined
+        if (!isNil(apikey) && !isEmpty(apikey)) {
+          const firstKey = apikey.split('\n')[0]
+          if (!isEmpty(firstKey)) {
+            explorerUrl = `${explorerUrl}?apikey=${firstKey}`
+          }
+        }
+      }
+      window.open(explorerUrl, '_blank')
     }
   }
 
