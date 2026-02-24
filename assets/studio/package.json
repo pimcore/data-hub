@@ -15,10 +15,10 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/build/types/src/sdk/index.d.ts"
+      "types": "./dist/build/types/sdk/index.d.ts"
     },
     "./*": {
-      "types": "./dist/build/types/src/sdk/*/index.d.ts"
+      "types": "./dist/build/types/sdk/*/index.d.ts"
     }
   },
   "repository": {
