@@ -14,9 +14,9 @@ on:
       - "feature-*"
       - "nightly"
   workflow_dispatch:
-  
+
 env:
- BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 permissions:
   contents: read
@@ -25,4 +25,8 @@ jobs:
   build:
     permissions:
       contents: write
-    uses: ./.github/workflows/shared-frontend-build.yaml
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-studio-frontend-build.yaml@reusable-workflows
+    with:
+      working-directory: "assets/studio"
+      node-version: "24"
+      build-output-path: "./src/Resources/public/studio/"
