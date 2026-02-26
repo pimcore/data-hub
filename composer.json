@@ -17,23 +17,21 @@
   "minimum-stability": "dev",
   "require": {
     "nesbot/carbon": "^2.72 || ^3.8.4",
-    "php": "~8.3.0 || ~8.4.0",
-    "pimcore/admin-ui-classic-bundle": "^2.0",
-    "pimcore/pimcore": "^12.3",
-    "pimcore/compatibility-bridge-v10": "^2.0",
+    "php": "~8.4.0 || ~8.5.0",
+    "pimcore/pimcore": "^2026.1",
     "pimcore/studio-backend-bundle": "^1.0",
     "webonyx/graphql-php": "^15.2.3"
   },
   "require-dev": {
     "phpstan/phpstan": "1.12.15",
     "phpunit/phpunit": "^9.6",
-    "symfony/phpunit-bridge": "^6",
+    "symfony/phpunit-bridge": "^7",
     "codeception/codeception": "^5.0.10",
     "codeception/phpunit-wrapper": "^9",
     "codeception/module-asserts": "^2",
     "codeception/module-symfony": "^3.1.0",
-    "symfony/dotenv": "^6.2 || ^7.2",
-    "symfony/runtime": "^6.4"
+    "symfony/dotenv": "^7.2",
+    "symfony/runtime": "^7.4"
   },
   "autoload": {
     "psr-4": {
@@ -51,7 +49,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-2.x": "2.3.x-dev"
+      "dev-2026.x": "2026.1.x-dev"
     },
     "pimcore": {
       "bundles": [
