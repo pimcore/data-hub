@@ -1,5 +1,9 @@
 # Upgrade Notes
 
+## Upgrade to 2026.1.0
+- Added support to `PHP` `8.5`.
+- Removed support to `PHP` `8.3` and Symfony `v6`.
+
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
 
