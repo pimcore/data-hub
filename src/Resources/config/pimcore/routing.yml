@@ -1,16 +1,14 @@
+# todo : RRT - could be removed when removing src/Controller/WebserviceController.php?
 app:
     resource: "@PimcoreDataHubBundle/Controller/"
     exclude: "@PimcoreDataHubBundle/Controller/Studio"
     type: attribute
 
-
-admin_pimcoredatahub_config:
-    path: /pimcore-datahub-webservices/explorer/{clientname}
-    defaults: { _controller: Pimcore\Bundle\DataHubBundle\Controller\GraphQLExplorerController::explorerAction }
-
 admin_pimcoredatahub_webservice:
     path: /pimcore-graphql-webservices/{clientname}
     defaults: { _controller: Pimcore\Bundle\DataHubBundle\Controller\WebserviceController::webonyxAction }
+
+
 
 pimcore_data_hub_studio:
     resource: .
