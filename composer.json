@@ -24,12 +24,12 @@
   },
   "require-dev": {
     "phpstan/phpstan": "1.12.15",
-    "phpunit/phpunit": "^9.6",
+    "phpunit/phpunit": "^10.0",
     "symfony/phpunit-bridge": "^7",
     "codeception/codeception": "^5.1.2",
-    "codeception/phpunit-wrapper": "^9",
+    "codeception/phpunit-wrapper": "^10",
     "codeception/module-asserts": "^3.0",
-    "codeception/module-symfony": "^3.7.1",
+    "codeception/module-symfony": "^4.0",
     "symfony/dotenv": "^7.2",
     "symfony/runtime": "^7.4"
   },
