@@ -66,43 +66,12 @@ final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements Pimcor
 
     public function getCssPaths(): array
     {
-        return [
-            '/bundles/pimcoredatahub/css/icons.css',
-            '/bundles/pimcoredatahub/css/style.css',
-        ];
+        return [];
     }
 
     public function getJsPaths(): array
     {
-        return [
-            '/bundles/pimcoredatahub/js/datahub.js',
-            '/bundles/pimcoredatahub/js/config.js',
-            '/bundles/pimcoredatahub/js/adapter/abstract.js',
-            '/bundles/pimcoredatahub/js/adapter/graphql.js',
-            '/bundles/pimcoredatahub/js/configuration/graphql/configItem.js',
-            '/bundles/pimcoredatahub/js/fieldConfigDialog.js',
-            '/bundles/pimcoredatahub/js/Abstract.js',
-            '/bundles/pimcoredatahub/js/mutationvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/queryvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Alias.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Concatenator.js',
-            '/bundles/pimcoredatahub/js/queryoperator/DateFormatter.js',
-            '/bundles/pimcoredatahub/js/queryoperator/ElementCounter.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Text.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Substring.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Thumbnail.js',
-            '/bundles/pimcoredatahub/js/queryoperator/ThumbnailHtml.js',
-            '/bundles/pimcoredatahub/js/queryoperator/TranslateValue.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Trimmer.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/mutationoperator.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/IfEmpty.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/LocaleSwitcher.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/LocaleCollector.js',
-            '/bundles/pimcoredatahub/js/workspace/abstract.js',
-            '/bundles/pimcoredatahub/js/workspace/document.js',
-            '/bundles/pimcoredatahub/js/workspace/asset.js',
-            '/bundles/pimcoredatahub/js/workspace/object.js',
-        ];
+        return [];
     }
 
     /**
