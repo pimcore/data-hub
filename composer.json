@@ -29,7 +29,7 @@
     "codeception/codeception": "^5.1.2",
     "codeception/phpunit-wrapper": "^10",
     "codeception/module-asserts": "^3.0",
-    "codeception/module-symfony": "^4.0",
+    "codeception/module-symfony": "^3.8",
     "symfony/dotenv": "^7.2",
     "symfony/runtime": "^7.4"
   },
