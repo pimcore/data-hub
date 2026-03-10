@@ -8,8 +8,20 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        pimcore_studio: '%pimcore_studio_backend.firewall_settings%'
+
         # Pimcore WebDAV HTTP basic // DO NOT CHANGE!
         pimcore_webdav:
             pattern: ^/asset/webdav
             provider: pimcore_admin
             http_basic: ~
+
+    access_control:
+        # Pimcore admin ACl  // DO NOT CHANGE!
+        - { path: ^/pimcore-studio/api/(docs|docs/json|translations|user/reset-password)$, roles: PUBLIC_ACCESS }
+        - { path: ^/pimcore-studio/api, roles: ROLE_PIMCORE_USER }
+        - { path: ^/asset/webdav, roles: ROLE_PIMCORE_USER }
+
+    role_hierarchy:
+        # Pimcore admin  // DO NOT CHANGE!
+        ROLE_PIMCORE_ADMIN: [ROLE_PIMCORE_USER]
