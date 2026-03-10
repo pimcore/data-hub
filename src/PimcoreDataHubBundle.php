@@ -18,8 +18,6 @@ use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocato
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\PimcoreDataHubExtension;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
-use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
-use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
@@ -29,9 +27,8 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 /**
  * @internal
  */
-final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
+final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements DependentBundleInterface
 {
-    use BundleAdminClassicTrait;
     use PackageVersionTrait;
 
     const RUNTIME_CONTEXT_KEY = 'datahub_context';
@@ -62,16 +59,6 @@ final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements Pimcor
     protected function getComposerPackageName(): string
     {
         return 'pimcore/data-hub';
-    }
-
-    public function getCssPaths(): array
-    {
-        return [];
-    }
-
-    public function getJsPaths(): array
-    {
-        return [];
     }
 
     /**
