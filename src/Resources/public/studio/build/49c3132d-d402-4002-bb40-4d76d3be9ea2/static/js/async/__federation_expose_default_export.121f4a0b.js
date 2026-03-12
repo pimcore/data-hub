@@ -1,2 +1,0 @@
-/*! For license information please see __federation_expose_default_export.121f4a0b.js.LICENSE.txt */
-"use strict";(self.webpackChunkpimcore_datahub_bundle=self.webpackChunkpimcore_datahub_bundle||[]).push([["525"],{7989(e,a,i){i.r(a),i.d(a,{BaseDetailView:()=>c.Wc,ConfigContainer:()=>r.y,ConfigToolbar:()=>c.MM,DynamicTypeDataHubAdapterAbstract:()=>n.E,DynamicTypeDataHubAdapterRegistry:()=>u.f,GeneralTab:()=>s.a,PermissionsTab:()=>t.K,bundleServiceIds:()=>b.s,useDetailView:()=>c.iO});var r=i(6985),s=i(970),t=i(6427),b=i(17),n=i(5667),u=i(8576),c=i(7952)}}]);
