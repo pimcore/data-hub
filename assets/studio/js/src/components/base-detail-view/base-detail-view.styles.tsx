@@ -10,26 +10,16 @@
 
 import { createStyles } from 'antd-style'
 
-export const useStyles = createStyles(({ css, token }) => {
+export const useStyles = createStyles(({ css }) => {
   return {
-    tabsContainer: css`
-      height: 100%;
+    formWrapper: css`
+      display: contents;
 
-      .ant-tabs-content-holder {
+      > form {
+        display: flex;
+        flex-direction: column;
         flex: 1;
         min-height: 0;
-        overflow: hidden;
-      }
-
-      .ant-tabs-content,
-      .ant-tabs-tabpane {
-        height: 100%;
-      }
-    `,
-
-    tabs: css`
-      .ant-tabs-tab {
-        padding: ${token.paddingSM}px ${token.paddingXXS}px !important;
       }
     `
   }

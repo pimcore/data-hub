@@ -11,6 +11,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { Form, useMessage, type formInstanceType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { ApiError, trackError, isApiErrorData } from '@pimcore/studio-ui-bundle/modules/app'
 import { isNil } from 'lodash'
 
 export interface UseDetailViewProps<TFormValues, TBackendConfig> {
@@ -99,12 +100,15 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
         onChange(false)
         void messageApi.success(t(successMessageKey))
       } catch (error) {
-        console.error('Failed to save configuration:', error)
+        if (isApiErrorData(error)) {
+          trackError(new ApiError(error))
+        }
       } finally {
         isSavingRef.current = false
       }
     }).catch((error) => {
       console.error('Validation failed:', error)
+      void messageApi.error(t('data-hub.save-validation-error'))
     })
   }
 
