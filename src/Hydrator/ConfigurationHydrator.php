@@ -66,32 +66,31 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
         }
 
         // Rule 1: eventsSchema -> dataObjectClasses -> [*] -> columns
-        $eventsDataObjectClasses = $configuration['eventsSchema']['dataObjectClasses'] ?? [];
-        if (is_array($eventsDataObjectClasses)) {
-            foreach ($eventsDataObjectClasses as $class) {
-                if (is_array($class) && array_key_exists('columns', $class)) {
-                    return true;
-                }
-            }
+        if ($this->dataObjectClassesHaveColumns($configuration['eventsSchema']['dataObjectClasses'] ?? [])) {
+            return true;
         }
 
         $schema = $configuration['schema'] ?? [];
+
         if (!is_array($schema)) {
             return false;
         }
 
         // Rule 2: schema -> columns
-        if (array_key_exists('columns', $schema)) {
-            return true;
+        // Rule 3: schema -> dataObjectClasses -> [*] -> columns
+        return array_key_exists('columns', $schema)
+            || $this->dataObjectClassesHaveColumns($schema['dataObjectClasses'] ?? []);
+    }
+
+    private function dataObjectClassesHaveColumns(mixed $dataObjectClasses): bool
+    {
+        if (!is_array($dataObjectClasses)) {
+            return false;
         }
 
-        // Rule 3: schema -> dataObjectClasses -> [*] -> columns
-        $schemaDataObjectClasses = $schema['dataObjectClasses'] ?? [];
-        if (is_array($schemaDataObjectClasses)) {
-            foreach ($schemaDataObjectClasses as $class) {
-                if (is_array($class) && array_key_exists('columns', $class)) {
-                    return true;
-                }
+        foreach ($dataObjectClasses as $class) {
+            if (is_array($class) && array_key_exists('columns', $class)) {
+                return true;
             }
         }
 
