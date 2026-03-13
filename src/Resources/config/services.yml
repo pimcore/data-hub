@@ -27,9 +27,3 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\OutputCacheService
-
-    Pimcore\Bundle\DataHubBundle\Routing\StudioRouteLoader:
-        arguments:
-            - '@kernel'
-        tags:
-            - { name: routing.loader }
