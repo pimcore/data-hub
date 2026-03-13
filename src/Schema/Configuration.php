@@ -27,7 +27,7 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
     title: 'Bundle Data Hub Configuration',
     required: [
         'id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions',
-        'hasStudioColumnConfig'
+        'hasStudioColumnConfig',
         ],
     type: 'object'
 )]
