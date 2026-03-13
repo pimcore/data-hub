@@ -93,7 +93,7 @@ Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This w
 It is possible to customize some behavior of output cache with event listeners. For details 
 see [Events Documentation](./10_Events.md).
 
-### Note on Debugging With iGraplQL Playground
+### Note on Debugging With iGraphQL Playground
 
 Open the settings and change `request.credentials` to `include`. Otherwise the 
 `XDEBUG_SESSION` cookie header will get removed by default.
