@@ -25,7 +25,10 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
 #[Schema(
     schema: 'BundleDataHubConfiguration',
     title: 'Bundle Data Hub Configuration',
-    required: ['id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions', 'hasStudioColumnConfig'],
+    required: [
+        'id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions',
+        'hasStudioColumnConfig'
+        ],
     type: 'object'
 )]
 final class Configuration implements AdditionalAttributesInterface
