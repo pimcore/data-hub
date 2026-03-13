@@ -22,7 +22,11 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "0.14.3",
     "prefetchInterface": false,
+<<<<<<<< HEAD:src/Resources/public/studio/build/f1c215a4-0494-4937-b3a6-ca685e34a3d8/mf-stats.json
     "publicPath": "/bundles/pimcoredatahub/studio/build/f1c215a4-0494-4937-b3a6-ca685e34a3d8/"
+========
+    "publicPath": "/bundles/pimcoredatahub/studio/build/d77fabca-5073-45d1-bf59-f8326af5cbd6/"
+>>>>>>>> origin/2.4:src/Resources/public/studio/build/d77fabca-5073-45d1-bf59-f8326af5cbd6/mf-stats.json
   },
   "shared": [
     {
