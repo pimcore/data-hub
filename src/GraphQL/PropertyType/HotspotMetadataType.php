@@ -77,7 +77,7 @@ final class HotspotMetadataType extends UnionType
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|UnionType|callable|null
     {
         if ($element instanceof MarkerHotspotItem) {
             $type = $element->getType();
