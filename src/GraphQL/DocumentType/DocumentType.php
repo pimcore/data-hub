@@ -104,7 +104,7 @@ final class DocumentType extends UnionType implements ContainerAwareInterface
         return $this->customTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): callable|Deferred|ObjectType|null|string
+    public function resolveType($element, $context, ResolveInfo $info): callable|ObjectType|null
     {
         $element = Document::getById($element['id']);
         if ($element instanceof Document\Page) {

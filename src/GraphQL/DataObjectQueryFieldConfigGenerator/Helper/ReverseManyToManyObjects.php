@@ -62,7 +62,7 @@ final class ReverseManyToManyObjects
      * @param array $args
      * @param array $context
      *
-     * @return array|null
+     * @return array
      *
      * @throws \Exception
      */

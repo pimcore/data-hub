@@ -57,7 +57,7 @@ final class PimcoreDataHubBundle extends AbstractPimcoreBundle
      * If the bundle has an installation routine, an installer is responsible of handling installation related tasks
      *
      */
-    public function getInstaller(): ?InstallerInterface
+    public function getInstaller(): InstallerInterface
     {
         return $this->container->get(Installer::class);
     }

@@ -119,7 +119,7 @@ final class ElementPropertyType extends UnionType
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|string|callable|Deferred|null
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
     {
         if ($element instanceof \Pimcore\Model\Property) {
             $type = $element->getType();

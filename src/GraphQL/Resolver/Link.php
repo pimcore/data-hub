@@ -27,7 +27,7 @@ final class Link
      * @param array $args
      * @param array $context
      *
-     * @return string|null
+     * @return mixed
      *
      * @throws \Exception
      */
@@ -41,7 +41,7 @@ final class Link
      * @param array $args
      * @param array $context
      *
-     * @return string|null
+     * @return mixed
      *
      * @throws \Exception
      */
@@ -52,7 +52,7 @@ final class Link
 
     /**
      *
-     * @return null
+     * @return mixed
      */
     public function resolveTarget($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
@@ -133,7 +133,7 @@ final class Link
 
     /**
      *
-     * @return null
+     * @return mixed
      */
     protected function resolveLinkValue(?\Pimcore\Model\DataObject\Data\Link $value, string $property)
     {
