@@ -77,7 +77,7 @@ final class HotspotMetadataType extends UnionType
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|UnionType|callable|null
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
     {
         if ($element instanceof MarkerHotspotItem) {
             $type = $element->getType();
@@ -98,7 +98,7 @@ final class HotspotMetadataType extends UnionType
                     return $this->documentType;
                 }
                 case 'object': {
-                    return $this->objectType;
+                    return $this->objectType; // @phpstan-ignore return.type
                 }
                 default:
                     throw new ClientSafeException('unkown metadata type: ' . $type);

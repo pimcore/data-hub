@@ -119,7 +119,7 @@ final class ElementPropertyType extends UnionType
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|UnionType|callable|null
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
     {
         if ($element instanceof \Pimcore\Model\Property) {
             $type = $element->getType();
@@ -155,7 +155,7 @@ final class ElementPropertyType extends UnionType
                     if ($object instanceof \Pimcore\Model\DataObject\Folder) {
                         return $this->objectFolderType;
                     } else {
-                        return $this->objectType;
+                        return $this->objectType; // @phpstan-ignore return.type
                     }
                 }
                 default:
