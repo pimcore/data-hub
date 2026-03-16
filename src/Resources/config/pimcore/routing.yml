@@ -1,4 +1,3 @@
-# todo : RRT - could be removed when removing src/Controller/WebserviceController.php?
 pimcore_statistics_explorer_studio:
     resource: "@PimcoreDataHubBundle/Controller/Studio"
     type: attribute
