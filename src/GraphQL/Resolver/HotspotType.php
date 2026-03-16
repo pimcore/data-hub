@@ -65,8 +65,6 @@ final class HotspotType
      * @param array $context
      *
      * @return array
-     *
-     * @throws \Exception
      */
     public function resolveCrop($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
@@ -79,8 +77,6 @@ final class HotspotType
      * @param array $context
      *
      * @return array
-     *
-     * @throws \Exception
      */
     public function resolveHotspots($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {
@@ -93,8 +89,6 @@ final class HotspotType
      * @param array $context
      *
      * @return array
-     *
-     * @throws \Exception
      */
     public function resolveMarker($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null)
     {

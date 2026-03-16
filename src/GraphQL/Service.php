@@ -34,7 +34,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator\Factory\OperatorFactoryI
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\Value\DefaultValue;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
-use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -483,7 +482,7 @@ final class Service
     }
 
     /**
-     * @param ConfigElementInterface $nodeConfig
+     * @param array $nodeConfig
      *
      * @return DefaultValue|Query\Operator\OperatorInterface
      *
@@ -839,9 +838,6 @@ final class Service
         if ($fieldDefinition->isEmpty($value)) {
             $parent = \Pimcore\Model\DataObject\Service::hasInheritableParentObject($object);
             if (!empty($parent)) {
-                if (!($parent instanceof Concrete)) {
-                    $parent = Concrete::getById($parent->getId());
-                }
 
                 return self::getValueForObject($parent, $key, $brickType, $brickKey, $fieldDefinition, $context, $brickDescriptor);
             }
@@ -922,7 +918,6 @@ final class Service
                 $subBrickType = $brickContainer->$subBrickGetter();
 
                 if (!$subBrickType) {
-                    /** @var AbstractData $brickClass */
                     $brickClass = 'Pimcore\\Model\\DataObject\\Objectbrick\\Data\\' . ucfirst($brickType);
                     $subBrickType = new $brickClass($object);
                     $subBrickSetter = 'set' . ucfirst($brickType);

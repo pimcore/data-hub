@@ -44,7 +44,6 @@ final class FieldcollectionType extends UnionType implements ContainerAwareInter
 
     /**
      *
-     * @throws \Exception
      */
     public function getTypes(): array
     {
