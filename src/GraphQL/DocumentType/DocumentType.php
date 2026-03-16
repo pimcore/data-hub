@@ -12,7 +12,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType;
 
-use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;

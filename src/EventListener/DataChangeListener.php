@@ -133,7 +133,6 @@ final class DataChangeListener implements EventSubscriberInterface
     {
         $configList = Configuration::getList();
 
-
         foreach ($configList as $configurationEntity) {
             try {
                 $entity = WorkspaceHelper::modifyWorkspaceRowByType($configurationEntity, $dataType, $modificationType, $searchValue, $replaceValue);

@@ -12,8 +12,8 @@
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
-use Codeception\Test\Unit;
 use Codeception\Attribute\Skip;
+use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\TranslationListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
