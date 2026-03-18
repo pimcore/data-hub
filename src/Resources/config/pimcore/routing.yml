@@ -1,4 +1,4 @@
-pimcore_statistics_explorer_studio:
+pimcore_data_hub_studio:
     resource: "@PimcoreDataHubBundle/Controller/Studio"
     type: attribute
     prefix: '%pimcore_studio_backend.url_prefix%/bundle/data-hub'
@@ -9,6 +9,3 @@ admin_pimcoredatahub_webservice:
     path: /pimcore-graphql-webservices/{clientname}
     defaults: { _controller: Pimcore\Bundle\DataHubBundle\Controller\WebserviceController::webonyxAction }
 
-pimcore_data_hub_studio:
-    resource: .
-    type: pimcore_data_hub_studio
