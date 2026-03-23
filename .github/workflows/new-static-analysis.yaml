@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pimcore/workflows-collection-public
-          ref: reusable-workflows
+          ref: main
           path: reusable-workflows
 
       - name: Parse PHP versions from composer.json
@@ -74,7 +74,7 @@ jobs:
 
   static-analysis:
     needs: setup-matrix
-    uses: pimcore/workflows-collection-public/.github/workflows/reusable-static-analysis-unified.yaml@reusable-workflows
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-static-analysis-unified.yaml@main
     with:
       phpstan_matrix: ${{ needs.setup-matrix.outputs.phpstan_matrix }}
       private_repo: ${{ needs.setup-matrix.outputs.private_repo }}
