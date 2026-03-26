@@ -41,7 +41,7 @@ final class Installer extends SettingsStoreAwareInstaller
     public function install(): void
     {
         try {
-            // create backend permission
+            // create backend permissions
             Definition::create(self::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
             Definition::create(self::DATAHUB_ADAPTER_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
             Definition::create(self::DATAHUB_ADMIN_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
