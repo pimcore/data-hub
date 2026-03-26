@@ -1,8 +1,36 @@
 # Upgrade Notes
 
 ## Upgrade to 2026.1.0
+
+### PHP & Symfony Version Requirements
 - Added support for `PHP` `8.5`.
 - Removed support for `PHP` `8.3` and Symfony `v6`.
+- Minimum required Symfony version is now `^7.2` (dev: `^7.4` for `symfony/runtime`).
+- Minimum required `pimcore/pimcore` version is now `^2026.1`.
+
+### Removed ExtJS / Admin Classic UI
+- Removed all ExtJS-based frontend JavaScript files (`src/Resources/public/js/`), including the full configuration UI, field dialog, adapters, workspace editors, query and mutation operators.
+- Removed `ConfigController` (previously provided the classic admin config API at `/pimcore-datahub-webservices/explorer/{clientname}` and related actions).
+- Removed `GraphQLExplorerController` (previously served the ExtJS-based GraphQL Explorer at `/pimcore-datahub-webservices/explorer/{clientname}`).
+- Removed `AdminListener` (no longer needed without classic admin integration).
+- Removed `StudioRouteLoader` — Studio routes are now registered directly via `routing.yml` using attribute-based routing.
+- Removed `ExportService` and `ImportService` (classic admin import/export, not related to Studio).
+- `PimcoreDataHubBundle` no longer implements `PimcoreBundleAdminClassicInterface` or `DependentBundleInterface` and no longer uses `BundleAdminClassicTrait`.
+- Removed dependency on `pimcore/admin-ui-classic-bundle` and `pimcore/compatibility-bridge-v10` from `composer.json`.
+
+### Routing Changes
+- The Studio routing entry has been renamed from `pimcore_statistics_explorer_studio` to `pimcore_data_hub_studio`. Update any references in custom routing configurations accordingly.
+- The separate `studio_routing.yaml` file has been removed; Studio routes are now defined directly in `routing.yml`.
+
+### Dependency Updates
+- Updated `pimcore/studio-backend-bundle` version constraint to `^1.0 || ^2026.1`.
+- Removed Doctrine `enum` type mapping — the custom `enum: string` mapping is no longer required in Doctrine configuration.
+
+### Development Dependencies
+- `phpunit/phpunit` bumped to `^10.0`.
+- `codeception/codeception` bumped to `^5.1.2`.
+- `codeception/phpunit-wrapper` bumped to `^10`.
+- `codeception/module-asserts` bumped to `^3.0`.
 
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
