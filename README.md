@@ -1,7 +1,7 @@
 ---
 title: Datahub
 ---
-# Pimcore Datahub
+# Pimcore Datahub 
 
 [<img src="https://sonarcloud.io/images/project_badges/sonarcloud-light.svg" alt="SonarQube Cloud" height="30" />](https://sonarcloud.io/summary/new_code?id=pimcore_data-hub)
 
