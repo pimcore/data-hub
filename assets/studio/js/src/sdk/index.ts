@@ -17,3 +17,4 @@ export * from '../modules/config/dynamic-types/dynamic-type-data-hub-adapter-reg
 export * from '../components/base-detail-view'
 export * from './utils/yaml'
 export * from '../modules/config/components/migration-modal'
+export * from '../modules/config/components/column-config-modal'
