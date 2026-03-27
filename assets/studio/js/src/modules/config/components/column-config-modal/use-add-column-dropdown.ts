@@ -20,10 +20,6 @@ export interface AddColumnDropdownMenu {
 
 /**
  * Builds a nested Ant Design dropdown menu from a flat list of GridColumnConfiguration entries.
- * Supports all group formats:
- *  - Single dot-separated string:  "system.id"  →  System > Id
- *  - Simple string array:          ["Attributes", "Engine"]  →  Attributes > Engine
- *  - Multi-placement nested array: [["Attributes", "Engine"], "system"]  →  appears in both
  */
 export const useAddColumnDropdown = (
   availableColumns: GridColumnConfiguration[],

@@ -67,13 +67,6 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
  * Handles both the new-format path (plain Modal + editor) and the legacy
  * migration path (MigrationModal with split view). The adapter-specific
  * editor is injected via the `renderEditor` render prop.
- *
- * Internally manages:
- * - `isLegacy` detection from `columnConfig` presence
- * - `classDefinitionId` resolution via `useClassDefinitions` fallback
- * - Available-columns query (only in legacy mode) for the "Add Column" dropdown
- * - `ColumnEditorHandle` ref to imperatively read draft columns on confirm
- * - "Add Column" dropdown menu via `useAddColumnDropdown`
  */
 export const ColumnConfigModal = <TColumns = SchemaColumn>({
   entity,
@@ -89,7 +82,6 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   const { t } = useTranslation()
   const { getByName } = useClassDefinitions()
 
-  // Resolve the numeric class definition ID needed by the Studio available-columns API
   const resolvedClassId: string = React.useMemo(() => {
     if (classDefinitionId !== undefined) return classDefinitionId
     return getByName(entity)?.id ?? entity
@@ -97,7 +89,6 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   const isLegacy = columnConfig !== undefined
 
-  // ── Migration state ──────────────────────────────────────────────────────
   const [migratedColumns, setMigratedColumns] = useState<TColumns[]>([])
   const columnEditorRef = useRef<ColumnEditorHandle<TColumns>>(null)
 
@@ -124,7 +115,6 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     </ModalTitle>
   )
 
-  // ── Non-legacy (new-format) modal ────────────────────────────────────────
   if (!isLegacy) {
     return (
       <Modal
@@ -150,7 +140,6 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     )
   }
 
-  // ── Legacy: migration modal ──────────────────────────────────────────────
   return (
     <MigrationModal
       legacyConfig={ columnConfig }
