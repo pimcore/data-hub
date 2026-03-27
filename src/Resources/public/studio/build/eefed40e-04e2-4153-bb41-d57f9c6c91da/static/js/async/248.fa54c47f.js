@@ -1,10 +1,5 @@
-<<<<<<<< HEAD:src/Resources/public/studio/build/56d166c1-998d-4c2d-a5c5-c5dbef131154/static/js/async/394.2eeafd9d.js
-/*! For license information please see 394.2eeafd9d.js.LICENSE.txt */
-"use strict";(self["chunk_pimcore_datahub_bundle "]=self["chunk_pimcore_datahub_bundle "]||[]).push([["394"],{6705(e,a,t){t.d(a,{Wc:()=>s,iO:()=>m,MM:()=>c});var i=t(4848),n=t(2812),r=t(2696);let l=(0,t(4316).rU)(e=>{let{css:a}=e;return{formWrapper:a`
-========
-/*! For license information please see 55.91d7dc1c.js.LICENSE.txt */
-"use strict";(self.webpackChunkpimcore_datahub_bundle=self.webpackChunkpimcore_datahub_bundle||[]).push([["55"],{6705(e,a,t){t.d(a,{Wc:()=>s,iO:()=>m,MM:()=>c});var i=t(4848),n=t(6390),r=t(2696);let l=(0,t(4316).rU)(e=>{let{css:a}=e;return{formWrapper:a`
->>>>>>>> 48f60c2 (feat: add MigrationModal component to SDK and expose via federation):src/Resources/public/studio/build/6eb98ca2-9574-4aba-8406-d567ec4536c9/static/js/async/55.91d7dc1c.js
+/*! For license information please see 248.fa54c47f.js.LICENSE.txt */
+"use strict";(self.webpackChunkpimcore_datahub_bundle=self.webpackChunkpimcore_datahub_bundle||[]).push([["248"],{6705(e,a,t){t.d(a,{Wc:()=>s,iO:()=>m,MM:()=>c});var i=t(4848),n=t(6390),r=t(2696);let l=(0,t(4316).rU)(e=>{let{css:a}=e;return{formWrapper:a`
       display: contents;
 
       > form {
