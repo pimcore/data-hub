@@ -6,7 +6,6 @@
 - Added support for `PHP` `8.5`.
 - Removed support for `PHP` `8.3` and Symfony `v6`.
 - Minimum required Symfony version is now `^7.2` (dev: `^7.4` for `symfony/runtime`).
-- Minimum required `pimcore/pimcore` version is now `^2026.1`.
 
 ### Removed ExtJS / Admin Classic UI
 - Removed all ExtJS-based frontend JavaScript files (`src/Resources/public/js/`), including the full configuration UI, field dialog, adapters, workspace editors, query and mutation operators.
@@ -22,15 +21,43 @@
 - The Studio routing entry has been renamed from `pimcore_statistics_explorer_studio` to `pimcore_data_hub_studio`. Update any references in custom routing configurations accordingly.
 - The separate `studio_routing.yaml` file has been removed; Studio routes are now defined directly in `routing.yml`.
 
-### Dependency Updates
-- Updated `pimcore/studio-backend-bundle` version constraint to `^1.0 || ^2026.1`.
-- Removed Doctrine `enum` type mapping — the custom `enum: string` mapping is no longer required in Doctrine configuration.
+### Studio Integration
+- Added full Studio UI integration for GraphQL configurations (browse, create, edit, clone, delete, import, export).
+- New Studio REST API endpoints added under `/studio/api/datahub/config/...` (collection, add, get, update, clone, delete, import, export).
+- New Studio REST API endpoints added: GraphQL Explorer URL (`/studio/api/datahub/graphql/explorer`), thumbnails, and user permissions.
+- New interfaces introduced for Studio services:
+  - `ConfigurationServiceInterface` (`src/Service/Studio/ConfigurationServiceInterface.php`)
+  - `ConfigurationHydratorInterface` (`src/Hydrator/ConfigurationHydratorInterface.php`)
+  - `ConfigurationDehydratorInterface` (`src/Hydrator/ConfigurationDehydratorInterface.php`)
+  - `ConfigurationDetailHydratorInterface` (`src/Hydrator/ConfigurationDetailHydratorInterface.php`)
+  - `GraphQLExplorerServiceInterface` (`src/Service/Studio/GraphQLExplorerServiceInterface.php`)
+  - `ThumbnailHydratorInterface` (`src/Hydrator/ThumbnailHydratorInterface.php`)
+  - `ThumbnailServiceInterface` (`src/Service/Studio/ThumbnailServiceInterface.php`)
+  - `PermissionUserHydratorInterface` (`src/Hydrator/PermissionUserHydratorInterface.php`)
+  - `UserServiceInterface` (`src/Service/Studio/UserServiceInterface.php`)
+- New pre-response events dispatched before Studio API responses:
+  - `ConfigurationEvent`, `ConfigurationDetailEvent`, `PermissionUserEvent`, `ThumbnailEvent`
 
-### Development Dependencies
-- `phpunit/phpunit` bumped to `^10.0`.
-- `codeception/codeception` bumped to `^5.1.2`.
-- `codeception/phpunit-wrapper` bumped to `^10`.
-- `codeception/module-asserts` bumped to `^3.0`.
+### New GraphQL Events
+- Added `ListingEvents::PRE_BUILD` event dispatched before building GraphQL query listings. Implement a listener on this event to modify listing arguments before the query is executed.
+
+### Return Type and PHPDoc Changes
+- `PimcoreDataHubBundle::getInstaller()` return type changed from `?InstallerInterface` to `InstallerInterface` (non-nullable).
+- `ElementPropertyType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null` — `string` and `Deferred` removed from union.
+- `HotspotMetadataType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null` — `string` and `Deferred` removed from union.
+- `DocumentType::resolveType()` return type changed from `callable|Deferred|ObjectType|null|string` to `callable|ObjectType|null`.
+- `AbstractOperator::$children` property PHPDoc type changed from `ConfigElementInterface[]` to `array` — `ConfigElementInterface` from `Pimcore\DataObject\GridColumnConfig` is no longer referenced.
+- `AbstractOperator::getChildren()` return PHPDoc changed from `ConfigElementInterface[]` to `array`.
+- `Service::buildOperator()` parameter PHPDoc changed from `ConfigElementInterface` to `array`.
+- `ReverseManyToManyObjects::resolve()` return PHPDoc changed from `array|null` to `array`.
+- `ElementMetadataKeyValuePairInputType::getInstance()` return PHPDoc changed from `ElementMetadataKeyValuePairInputType|null` to `ElementMetadataKeyValuePairInputType`.
+- `ClassificationstoreFeatureQueryTypeGenerator\Date::getFieldType()` return PHPDoc changed from `DateType|null` to `DateType`.
+- `Thumbnail::getLabeledValue()` and `ThumbnailHtml::getLabeledValue()` return PHPDoc changed from `\stdClass|null` to `\stdClass`.
+- `DateFormatter::format()` return PHPDoc changed from `Carbon|int|string` to `int|string`.
+- `Link::resolveValue()`, `Link::resolveHref()`, `Link::resolveTarget()`, `Link::resolveLinkValue()` return PHPDoc changed from `string|null` / `null` to `mixed`.
+
+### Dependency Updates
+- Removed Doctrine `enum` type mapping — the custom `enum: string` mapping is no longer required in Doctrine configuration.
 
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
