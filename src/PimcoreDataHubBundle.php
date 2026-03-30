@@ -29,7 +29,7 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 /**
  * @internal
  */
-final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
+class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
 {
     use BundleAdminClassicTrait;
     use PackageVersionTrait;
