@@ -45,7 +45,7 @@ final class ThumbnailHtml extends AbstractOperator
     /**
      * @param ElementInterface|null $element
      *
-     * @return \stdClass|null
+     * @return \stdClass
      */
     public function getLabeledValue($element, ?ResolveInfo $resolveInfo = null)
     {

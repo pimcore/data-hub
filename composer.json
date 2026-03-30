@@ -20,10 +20,11 @@
     "php": "~8.4.0 || ~8.5.0",
     "pimcore/pimcore": "^2026.1",
     "pimcore/studio-backend-bundle": "^1.0 || ^2026.1",
+    "pimcore/studio-ui-bundle": "^1.0 || ^2026.1",
     "webonyx/graphql-php": "^15.2.3"
   },
   "require-dev": {
-    "phpstan/phpstan": "1.12.15",
+    "phpstan/phpstan": "2.1.40",
     "phpunit/phpunit": "^10.0",
     "symfony/phpunit-bridge": "^7",
     "codeception/codeception": "^5.1.2",

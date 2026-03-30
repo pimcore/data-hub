@@ -96,6 +96,11 @@ export default defineConfig({
           version: '6.1.x',
           requiredVersion: '6.1.x',
         },
+        'yaml': {
+          singleton: true,
+          eager: true,
+          requiredVersion: packages.dependencies.yaml,
+        },
       },
     })
   ]

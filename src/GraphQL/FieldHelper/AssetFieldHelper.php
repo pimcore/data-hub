@@ -60,8 +60,7 @@ final class AssetFieldHelper extends AbstractFieldHelper
 
         if (
             !($asset instanceof Asset\Video) &&
-            isset($thumb, $thumbNailFormat) &&
-            method_exists($thumb, 'getAsFormat')
+            isset($thumb, $thumbNailFormat)
         ) {
             $thumb = $thumb->getAsFormat($thumbNailFormat);
         }

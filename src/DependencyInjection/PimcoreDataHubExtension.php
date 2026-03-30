@@ -40,11 +40,7 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         );
 
         $loader->load('config.yml');
-
-        $bundles = $container->getParameter('kernel.bundles');
-        if (isset($bundles['PimcoreStudioBackendBundle'])) {
-            $loader->load('studio_backend.yaml');
-        }
+        $loader->load('studio_backend.yaml');
     }
 
     /**
@@ -61,13 +57,8 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             $loader->load('doctrine_migrations.yml');
         }
 
-        if ($container->hasExtension('pimcore_studio_backend')) {
-            $loader->load('pimcore/studio_backend.yaml');
-        }
-
-        if ($container->hasExtension('pimcore_studio_ui')) {
-            $loader->load('studio_ui.yaml');
-        }
+        $loader->load('pimcore/studio_backend.yaml');
+        $loader->load('studio_ui.yaml');
 
         LocationAwareConfigRepository::loadSymfonyConfigFiles(
             $container,

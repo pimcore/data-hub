@@ -14,7 +14,13 @@ export const useStyles = createStyles(({ css, token }) => {
   return {
     tabsContainer: css`
       height: 100%;
-        
+
+      .ant-tabs-content-holder {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
       .ant-tabs-content,
       .ant-tabs-tabpane {
         height: 100%;

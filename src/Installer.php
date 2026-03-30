@@ -12,7 +12,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20230503165847;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\Exception\InstallationException;
@@ -28,6 +27,8 @@ final class Installer extends SettingsStoreAwareInstaller
 {
     const DATAHUB_PERMISSION_CATEGORY = 'Datahub';
 
+    const CONFIG_NAME = 'plugin_datahub_config';
+
     const DATAHUB_ADAPTER_PERMISSION = 'plugin_datahub_adapter_graphql';
 
     const DATAHUB_ADMIN_PERMISSION = 'plugin_datahub_admin';
@@ -40,8 +41,8 @@ final class Installer extends SettingsStoreAwareInstaller
     public function install(): void
     {
         try {
-            // create backend permission
-            Definition::create(ConfigController::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
+            // create backend permissions
+            Definition::create(self::CONFIG_NAME)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
             Definition::create(self::DATAHUB_ADAPTER_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
             Definition::create(self::DATAHUB_ADMIN_PERMISSION)->setCategory(self::DATAHUB_PERMISSION_CATEGORY)->save();
 
@@ -81,7 +82,7 @@ final class Installer extends SettingsStoreAwareInstaller
         $installEntry = SettingsStore::get($this->getSettingsStoreInstallationId(), 'pimcore');
         if (!$installEntry) {
             $db = Db::get();
-            $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [ConfigController::CONFIG_NAME]);
+            $check = $db->fetchOne('SELECT `key` FROM users_permission_definitions where `key` = ?', [self::CONFIG_NAME]);
             if ($check) {
                 SettingsStore::set('BUNDLE_INSTALLED__Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle', true, 'bool', 'pimcore');
 
@@ -92,7 +93,7 @@ final class Installer extends SettingsStoreAwareInstaller
         return parent::isInstalled();
     }
 
-    public function getLastMigrationVersionClassName(): ?string
+    public function getLastMigrationVersionClassName(): string
     {
         return Version20230503165847::class;
     }

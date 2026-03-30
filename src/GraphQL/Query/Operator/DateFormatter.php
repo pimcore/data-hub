@@ -70,7 +70,7 @@ final class DateFormatter extends AbstractOperator
     /**
      * @param int|Carbon $theValue
      *
-     * @return Carbon|int|string
+     * @return int|string
      */
     public function format($theValue)
     {

@@ -1,6 +1,0 @@
-pimcore_statistics_explorer_studio:
-    resource: "@PimcoreDataHubBundle/Controller/Studio"
-    type: attribute
-    prefix: '%pimcore_studio_backend.url_prefix%/bundle/data-hub'
-    options:
-        expose: true
