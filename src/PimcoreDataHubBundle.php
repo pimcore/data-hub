@@ -21,9 +21,6 @@ use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
-/**
- * @internal
- */
 final class PimcoreDataHubBundle extends AbstractPimcoreBundle
 {
     use PackageVersionTrait;
