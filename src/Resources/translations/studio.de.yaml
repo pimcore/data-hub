@@ -1,0 +1,137 @@
+data-hub.configuration: Data Hub Konfiguration
+data-hub.add.button: Konfiguration hinzufügen
+data-hub.add.name: Konfigurationsname eingeben
+data-hub.clone.name: Name für geklonte Konfiguration eingeben
+data-hub.delete.confirm: 'Sind Sie sicher, dass Sie die Konfiguration "{{name}}" löschen möchten?'
+error.data-hub.config-exists: Eine Konfiguration mit diesem Namen existiert bereits
+error.data-hub.import-config-invalid: Die hochgeladene Datei ist keine gültige Konfiguration
+data-hub.config.active: Aktiv
+data-hub.config.type: Typ
+data-hub.config.name: Name
+data-hub.config.name-required: Bitte geben Sie einen Konfigurationsnamen ein
+data-hub.config.name-min-length: Der Name muss mindestens 3 Zeichen lang sein
+data-hub.config.name-max-length: Der Name darf maximal 80 Zeichen lang sein
+data-hub.config.name-pattern: Der Name darf nur alphanumerische Zeichen, Unterstriche und Bindestriche enthalten
+data-hub.config.description: Beschreibung
+data-hub.config.group: Gruppe
+data-hub.adapter.graphql: GraphQL
+data-hub.tabs.general: Allgemein
+data-hub.tabs.schema-definition: Schema-Definition
+data-hub.tabs.security-definition: Sicherheitsdefinition
+data-hub.tabs.permissions: Berechtigungen
+data-hub.security.method: Methode
+data-hub.security.method.apikey: API Key
+data-hub.security.apikey: Datahub-API-Keys
+data-hub.security.apikey-description: API Key für den Webservice-Zugriff erforderlich. Ein API Key pro Zeile erlaubt. Es muss mindestens ein Key mit mindestens 16 Zeichen angegeben werden.
+data-hub.security.generate-apikey: Key generieren
+data-hub.security.skip-permission-check: Berechtigungsprüfung überspringen
+data-hub.security.disable-introspection: Introspection deaktivieren
+data-hub.security.introspection-description: 'Bitte beachten Sie: Bei deaktivierter Introspection funktioniert die Autovervollständigung nicht.'
+data-hub.security.authentication: Authentifizierung
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Dokumente
+data-hub.workspaces.assets: Assets
+data-hub.workspaces.objects: Data Objects
+data-hub.workspaces.path: Pfad
+data-hub.workspaces.create: Erstellen
+data-hub.workspaces.read: Lesen
+data-hub.workspaces.update: Aktualisieren
+data-hub.workspaces.delete: Löschen
+data-hub.workspaces.delete-selected: Ausgewählte löschen
+data-hub.permissions.role-permissions: Rollenberechtigungen
+data-hub.permissions.user-permissions: Benutzerberechtigungen
+data-hub.permissions.role: Rolle
+data-hub.permissions.user: Benutzer
+data-hub.permissions.read: Lesen
+data-hub.permissions.update: Aktualisieren
+data-hub.permissions.delete: Löschen
+data-hub.schema.query-schema: Query-Schema
+data-hub.schema.mutation-schema: Mutation-Schema
+data-hub.schema.generic-types: Generische Typen
+data-hub.schema.entity: Entität
+data-hub.schema.settings: Einstellungen
+data-hub.schema.select-class: Klasse auswählen...
+data-hub.schema.query-modal-title: 'Query-Schema-Felder - {{entity}}'
+data-hub.schema.mutation-modal-title: 'Mutation-Schema-Felder - {{entity}}'
+data-hub.schema.class-attributes: Klassenattribute
+data-hub.schema.available-fields: Verfügbare Felder
+data-hub.schema.drag-class-attributes-or-operators: Klassenattribute oder Operatoren hierher ziehen
+data-hub.schema.add-all-definitions: Alle Definitionen hinzufügen
+data-hub.schema.insert-all-definitions: Alle Definitionen einfügen
+data-hub.schema.data-object-columns: Data-Object-Spalten
+data-hub.schema.system-columns: Systemspalten
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Vollständiger Pfad (fullpath)
+data-hub.schema.system.key: Key (key)
+data-hub.schema.system.published: Veröffentlicht (published)
+data-hub.schema.system.creationDate: Erstellungsdatum (creationDate)
+data-hub.schema.system.modificationDate: Änderungsdatum (modificationDate)
+data-hub.schema.system.filename: Dateiname (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Indiziert (index)
+data-hub.schema.coming-soon: '(Demnächst verfügbar)'
+data-hub.schema.special.document: Dokument
+data-hub.schema.special.document_folder: Dokumentenordner
+data-hub.schema.special.asset: Asset
+data-hub.schema.special.asset_folder: Asset-Ordner
+data-hub.schema.special.asset_listing: Asset-Auflistung
+data-hub.schema.special.object_folder: Objektordner
+data-hub.schema.special.translation: Übersetzung
+data-hub.schema.special.translation_listing: Übersetzungsauflistung
+data-hub.schema.operation-not-implemented: Operation ist nicht implementiert
+data-hub.open-in-tab: In Tab öffnen
+data-hub.label: Bezeichnung
+data-hub.help: Hilfe
+data-hub.locale: Sprache
+data-hub.locale.select: Sprache auswählen...
+data-hub.thumbnail: Thumbnail
+data-hub.prefix: Präfix
+data-hub.operator.group.formatter: Formatierer
+data-hub.operator.group.transformer: Transformer
+data-hub.operator.group.other: Sonstige
+data-hub.operator.subgroup.string: String
+data-hub.operator.subgroup.other: Sonstige
+data-hub.operator.alias: Alias
+data-hub.operator.label: Bezeichnung
+data-hub.operator.glue: Trennzeichen
+data-hub.operator.concatenator: Verkettung
+data-hub.operator.concatenator.config: Verkettungseinstellungen
+data-hub.operator.date-formatter: Datumsformatierer
+data-hub.operator.element-counter: Elementzähler
+data-hub.operator.element-counter.count-empty: Leere zählen
+data-hub.operator.if-empty: Wenn leer
+data-hub.operator.locale-collector: Sprach-Kollektor
+data-hub.operator.locale-switcher: Sprach-Umschalter
+data-hub.operator.substring: Teilzeichenkette
+data-hub.operator.text: Text
+data-hub.operator.thumbnail: Thumbnail
+data-hub.operator.thumbnail-html: Thumbnail-HTML
+data-hub.operator.translate-value: Wert übersetzen
+data-hub.operator.trimmer: Trimmer
+data-hub.operator.dateformatter: Datumsformatierer
+data-hub.operator.dateformatter.format: Datumsformat
+data-hub.operator.dateformatter.format.required: Bitte geben Sie ein Datumsformat ein
+data-hub.operator.if-empty.default-value: Standardwert
+data-hub.operator.locale-collector.locales: Sprachen
+data-hub.operator.locale-collector.select-locales: Sprachen auswählen...
+data-hub.operator.thumbnail.thumbnail-name: Thumbnail-Name
+data-hub.operator.thumbnail-html.thumbnail-name: Thumbnail-Name
+data-hub.operator.start: Start
+data-hub.operator.length: Länge
+data-hub.operator.ellipses: Auslassungszeichen
+data-hub.operator.trim: Trimmen
+data-hub.operator.trim.disabled: Deaktiviert
+data-hub.operator.trim.left: Links
+data-hub.operator.trim.right: Rechts
+data-hub.operator.trim.both: Beide
+tree.actions.clone: Klonen
+tree.actions.delete: Löschen
+tree.actions.edit: Bearbeiten
+tree.actions.export: Exportieren
+tree.actions.import: Importieren
+tree.actions.view: Anzeigen
+data-hub.import.title: Konfiguration importieren
+data-hub.import.drag-drop: Dateien durchsuchen oder eine JSON-Datei hierher ziehen
+data-hub.import.browse-files: Dateien durchsuchen
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Integration
+perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub Konfiguration
