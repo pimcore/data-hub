@@ -1,137 +1,137 @@
-data-hub.configuration: 'Configuration Data Hub'
-data-hub.add.button: 'Ajouter une configuration'
-data-hub.add.name: 'Saisir le nom de la configuration'
-data-hub.clone.name: 'Saisir le nom de la configuration clonée'
+data-hub.configuration: Configuration Data Hub
+data-hub.add.button: Ajouter une configuration
+data-hub.add.name: Saisir le nom de la configuration
+data-hub.clone.name: Saisir le nom de la configuration clonée
 data-hub.delete.confirm: 'Êtes-vous sûr de vouloir supprimer la configuration "{{name}}" ?'
-error.data-hub.config-exists: 'Une configuration avec ce nom existe déjà'
+error.data-hub.config-exists: Une configuration avec ce nom existe déjà
 error.data-hub.import-config-invalid: 'Le fichier téléchargé n''est pas une configuration valide'
-data-hub.config.active: 'Actif'
-data-hub.config.type: 'Type'
-data-hub.config.name: 'Nom'
-data-hub.config.name-required: 'Veuillez saisir un nom de configuration'
-data-hub.config.name-min-length: 'Le nom doit comporter au moins 3 caractères'
-data-hub.config.name-max-length: 'Le nom ne doit pas dépasser 80 caractères'
-data-hub.config.name-pattern: 'Le nom ne peut contenir que des caractères alphanumériques, des tirets bas et des tirets'
-data-hub.config.description: 'Description'
-data-hub.config.group: 'Groupe'
-data-hub.adapter.graphql: 'GraphQL'
-data-hub.tabs.general: 'Général'
-data-hub.tabs.schema-definition: 'Définition du schéma'
-data-hub.tabs.security-definition: 'Définition de la sécurité'
-data-hub.tabs.permissions: 'Permissions'
-data-hub.security.method: 'Méthode'
-data-hub.security.method.apikey: 'API Key'
-data-hub.security.apikey: 'API Keys Datahub'
+data-hub.config.active: Actif
+data-hub.config.type: Type
+data-hub.config.name: Nom
+data-hub.config.name-required: Veuillez saisir un nom de configuration
+data-hub.config.name-min-length: Le nom doit comporter au moins 3 caractères
+data-hub.config.name-max-length: Le nom ne doit pas dépasser 80 caractères
+data-hub.config.name-pattern: Le nom ne peut contenir que des caractères alphanumériques, des tirets bas et des tirets
+data-hub.config.description: Description
+data-hub.config.group: Groupe
+data-hub.adapter.graphql: GraphQL
+data-hub.tabs.general: Général
+data-hub.tabs.schema-definition: Définition du schéma
+data-hub.tabs.security-definition: Définition de la sécurité
+data-hub.tabs.permissions: Permissions
+data-hub.security.method: Méthode
+data-hub.security.method.apikey: API Key
+data-hub.security.apikey: API Keys Datahub
 data-hub.security.apikey-description: 'API Key requis pour l''accès au service web. Un API Key par ligne autorisé. Au moins un Key de 16 caractères minimum doit être fourni.'
-data-hub.security.generate-apikey: 'Générer un Key'
-data-hub.security.skip-permission-check: 'Ignorer la vérification des permissions'
+data-hub.security.generate-apikey: Générer un Key
+data-hub.security.skip-permission-check: Ignorer la vérification des permissions
 data-hub.security.disable-introspection: 'Désactiver l''Introspection'
 data-hub.security.introspection-description: 'Veuillez noter : lorsque l''Introspection est désactivée, la fonctionnalité d''autocomplétion ne fonctionnera pas.'
-data-hub.security.authentication: 'Authentification'
-data-hub.workspaces.title: 'Workspaces'
-data-hub.workspaces.documents: 'Documents'
-data-hub.workspaces.assets: 'Assets'
-data-hub.workspaces.objects: 'Data Objects'
-data-hub.workspaces.path: 'Chemin'
-data-hub.workspaces.create: 'Créer'
-data-hub.workspaces.read: 'Lire'
-data-hub.workspaces.update: 'Mettre à jour'
-data-hub.workspaces.delete: 'Supprimer'
-data-hub.workspaces.delete-selected: 'Supprimer la sélection'
-data-hub.permissions.role-permissions: 'Permissions de rôle'
-data-hub.permissions.user-permissions: 'Permissions utilisateur'
-data-hub.permissions.role: 'Rôle'
-data-hub.permissions.user: 'Utilisateur'
-data-hub.permissions.read: 'Lire'
-data-hub.permissions.update: 'Mettre à jour'
-data-hub.permissions.delete: 'Supprimer'
-data-hub.schema.query-schema: 'Schéma de requête'
-data-hub.schema.mutation-schema: 'Schéma de mutation'
-data-hub.schema.generic-types: 'Types génériques'
-data-hub.schema.entity: 'Entité'
-data-hub.schema.settings: 'Paramètres'
-data-hub.schema.select-class: 'Sélectionner une classe...'
+data-hub.security.authentication: Authentification
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Documents
+data-hub.workspaces.assets: Assets
+data-hub.workspaces.objects: Data Objects
+data-hub.workspaces.path: Chemin
+data-hub.workspaces.create: Créer
+data-hub.workspaces.read: Lire
+data-hub.workspaces.update: Mettre à jour
+data-hub.workspaces.delete: Supprimer
+data-hub.workspaces.delete-selected: Supprimer la sélection
+data-hub.permissions.role-permissions: Permissions de rôle
+data-hub.permissions.user-permissions: Permissions utilisateur
+data-hub.permissions.role: Rôle
+data-hub.permissions.user: Utilisateur
+data-hub.permissions.read: Lire
+data-hub.permissions.update: Mettre à jour
+data-hub.permissions.delete: Supprimer
+data-hub.schema.query-schema: Schéma de requête
+data-hub.schema.mutation-schema: Schéma de mutation
+data-hub.schema.generic-types: Types génériques
+data-hub.schema.entity: Entité
+data-hub.schema.settings: Paramètres
+data-hub.schema.select-class: Sélectionner une classe...
 data-hub.schema.query-modal-title: 'Champs du schéma de requête - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Champs du schéma de mutation - {{entity}}'
-data-hub.schema.class-attributes: 'Attributs de classe'
-data-hub.schema.available-fields: 'Champs disponibles'
-data-hub.schema.drag-class-attributes-or-operators: 'Glissez les attributs de classe ou les opérateurs ici'
-data-hub.schema.add-all-definitions: 'Ajouter toutes les définitions'
-data-hub.schema.insert-all-definitions: 'Insérer toutes les définitions'
-data-hub.schema.data-object-columns: 'Colonnes de Data Objects'
-data-hub.schema.system-columns: 'Colonnes système'
-data-hub.schema.system.id: 'ID (id)'
-data-hub.schema.system.fullpath: 'Chemin complet (fullpath)'
-data-hub.schema.system.key: 'Key (key)'
-data-hub.schema.system.published: 'Publié (published)'
-data-hub.schema.system.creationDate: 'Date de création (creationDate)'
-data-hub.schema.system.modificationDate: 'Date de modification (modificationDate)'
-data-hub.schema.system.filename: 'Nom du fichier (filename)'
-data-hub.schema.system.classname: 'classname (classname)'
-data-hub.schema.system.index: 'Indexé (index)'
+data-hub.schema.class-attributes: Attributs de classe
+data-hub.schema.available-fields: Champs disponibles
+data-hub.schema.drag-class-attributes-or-operators: Glissez les attributs de classe ou les opérateurs ici
+data-hub.schema.add-all-definitions: Ajouter toutes les définitions
+data-hub.schema.insert-all-definitions: Insérer toutes les définitions
+data-hub.schema.data-object-columns: Colonnes de Data Objects
+data-hub.schema.system-columns: Colonnes système
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Chemin complet (fullpath)
+data-hub.schema.system.key: Key (key)
+data-hub.schema.system.published: Publié (published)
+data-hub.schema.system.creationDate: Date de création (creationDate)
+data-hub.schema.system.modificationDate: Date de modification (modificationDate)
+data-hub.schema.system.filename: Nom du fichier (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Indexé (index)
 data-hub.schema.coming-soon: '(Bientôt disponible)'
-data-hub.schema.special.document: 'Document'
-data-hub.schema.special.document_folder: 'Dossier de documents'
-data-hub.schema.special.asset: 'Asset'
+data-hub.schema.special.document: Document
+data-hub.schema.special.document_folder: Dossier de documents
+data-hub.schema.special.asset: Asset
 data-hub.schema.special.asset_folder: 'Dossier d''Assets'
 data-hub.schema.special.asset_listing: 'Liste d''Assets'
 data-hub.schema.special.object_folder: 'Dossier d''objets'
-data-hub.schema.special.translation: 'Traduction'
-data-hub.schema.special.translation_listing: 'Liste de traductions'
+data-hub.schema.special.translation: Traduction
+data-hub.schema.special.translation_listing: Liste de traductions
 data-hub.schema.operation-not-implemented: 'L''opération n''est pas implémentée'
-data-hub.open-in-tab: 'Ouvrir dans un onglet'
-data-hub.label: 'Libellé'
-data-hub.help: 'Aide'
-data-hub.locale: 'Langue'
-data-hub.locale.select: 'Sélectionner une langue...'
-data-hub.thumbnail: 'Miniature'
-data-hub.prefix: 'Préfixe'
-data-hub.operator.group.formatter: 'Formateur'
-data-hub.operator.group.transformer: 'Transformateur'
-data-hub.operator.group.other: 'Autre'
-data-hub.operator.subgroup.string: 'String'
-data-hub.operator.subgroup.other: 'Autre'
-data-hub.operator.alias: 'Alias'
-data-hub.operator.label: 'Libellé'
-data-hub.operator.glue: 'Séparateur'
-data-hub.operator.concatenator: 'Concaténation'
-data-hub.operator.concatenator.config: 'Paramètres de concaténation'
-data-hub.operator.date-formatter: 'Formateur de date'
+data-hub.open-in-tab: Ouvrir dans un onglet
+data-hub.label: Libellé
+data-hub.help: Aide
+data-hub.locale: Langue
+data-hub.locale.select: Sélectionner une langue...
+data-hub.thumbnail: Miniature
+data-hub.prefix: Préfixe
+data-hub.operator.group.formatter: Formateur
+data-hub.operator.group.transformer: Transformateur
+data-hub.operator.group.other: Autre
+data-hub.operator.subgroup.string: String
+data-hub.operator.subgroup.other: Autre
+data-hub.operator.alias: Alias
+data-hub.operator.label: Libellé
+data-hub.operator.glue: Séparateur
+data-hub.operator.concatenator: Concaténation
+data-hub.operator.concatenator.config: Paramètres de concaténation
+data-hub.operator.date-formatter: Formateur de date
 data-hub.operator.element-counter: 'Compteur d''éléments'
-data-hub.operator.element-counter.count-empty: 'Compter les vides'
-data-hub.operator.if-empty: 'Si vide'
-data-hub.operator.locale-collector: 'Collecteur de langues'
-data-hub.operator.locale-switcher: 'Sélecteur de langue'
-data-hub.operator.substring: 'Sous-chaîne'
-data-hub.operator.text: 'Texte'
-data-hub.operator.thumbnail: 'Miniature'
-data-hub.operator.thumbnail-html: 'Miniature HTML'
-data-hub.operator.translate-value: 'Traduire la valeur'
-data-hub.operator.trimmer: 'Trimmer'
-data-hub.operator.dateformatter: 'Formateur de date'
-data-hub.operator.dateformatter.format: 'Format de date'
-data-hub.operator.dateformatter.format.required: 'Veuillez saisir un format de date'
-data-hub.operator.if-empty.default-value: 'Valeur par défaut'
-data-hub.operator.locale-collector.locales: 'Langues'
-data-hub.operator.locale-collector.select-locales: 'Sélectionner les langues...'
-data-hub.operator.thumbnail.thumbnail-name: 'Nom de la miniature'
-data-hub.operator.thumbnail-html.thumbnail-name: 'Nom de la miniature'
-data-hub.operator.start: 'Début'
-data-hub.operator.length: 'Longueur'
-data-hub.operator.ellipses: 'Points de suspension'
-data-hub.operator.trim: 'Élaguer'
-data-hub.operator.trim.disabled: 'Désactivé'
-data-hub.operator.trim.left: 'Gauche'
-data-hub.operator.trim.right: 'Droite'
-data-hub.operator.trim.both: 'Les deux'
-tree.actions.clone: 'Cloner'
-tree.actions.delete: 'Supprimer'
-tree.actions.edit: 'Modifier'
-tree.actions.export: 'Exporter'
-tree.actions.import: 'Importer'
-tree.actions.view: 'Afficher'
-data-hub.import.title: 'Importer une configuration'
-data-hub.import.drag-drop: 'Parcourez vos fichiers ou déposez un JSON directement ici'
-data-hub.import.browse-files: 'Parcourir les fichiers'
-perspective-editor.form.main-nav-permission.category.automationIntegration: "Automation & Intégration"
+data-hub.operator.element-counter.count-empty: Compter les vides
+data-hub.operator.if-empty: Si vide
+data-hub.operator.locale-collector: Collecteur de langues
+data-hub.operator.locale-switcher: Sélecteur de langue
+data-hub.operator.substring: Sous-chaîne
+data-hub.operator.text: Texte
+data-hub.operator.thumbnail: Miniature
+data-hub.operator.thumbnail-html: Miniature HTML
+data-hub.operator.translate-value: Traduire la valeur
+data-hub.operator.trimmer: Trimmer
+data-hub.operator.dateformatter: Formateur de date
+data-hub.operator.dateformatter.format: Format de date
+data-hub.operator.dateformatter.format.required: Veuillez saisir un format de date
+data-hub.operator.if-empty.default-value: Valeur par défaut
+data-hub.operator.locale-collector.locales: Langues
+data-hub.operator.locale-collector.select-locales: Sélectionner les langues...
+data-hub.operator.thumbnail.thumbnail-name: Nom de la miniature
+data-hub.operator.thumbnail-html.thumbnail-name: Nom de la miniature
+data-hub.operator.start: Début
+data-hub.operator.length: Longueur
+data-hub.operator.ellipses: Points de suspension
+data-hub.operator.trim: Élaguer
+data-hub.operator.trim.disabled: Désactivé
+data-hub.operator.trim.left: Gauche
+data-hub.operator.trim.right: Droite
+data-hub.operator.trim.both: Les deux
+tree.actions.clone: Cloner
+tree.actions.delete: Supprimer
+tree.actions.edit: Modifier
+tree.actions.export: Exporter
+tree.actions.import: Importer
+tree.actions.view: Afficher
+data-hub.import.title: Importer une configuration
+data-hub.import.drag-drop: Parcourez vos fichiers ou déposez un JSON directement ici
+data-hub.import.browse-files: Parcourir les fichiers
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Intégration
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Configuration Data Hub

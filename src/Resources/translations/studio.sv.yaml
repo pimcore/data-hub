@@ -1,137 +1,137 @@
-data-hub.configuration: 'Data Hub-konfiguration'
-data-hub.add.button: 'Lägg till konfiguration'
-data-hub.add.name: 'Ange konfigurationsnamn'
-data-hub.clone.name: 'Ange namn för klonad konfiguration'
+data-hub.configuration: Data Hub-konfiguration
+data-hub.add.button: Lägg till konfiguration
+data-hub.add.name: Ange konfigurationsnamn
+data-hub.clone.name: Ange namn för klonad konfiguration
 data-hub.delete.confirm: 'Är du säker på att du vill ta bort konfigurationen "{{name}}"?'
-error.data-hub.config-exists: 'En konfiguration med detta namn finns redan'
-error.data-hub.import-config-invalid: 'Den uppladdade filen är inte en giltig konfiguration'
-data-hub.config.active: 'Aktiv'
-data-hub.config.type: 'Typ'
-data-hub.config.name: 'Namn'
-data-hub.config.name-required: 'Ange ett konfigurationsnamn'
-data-hub.config.name-min-length: 'Namnet måste vara minst 3 tecken långt'
-data-hub.config.name-max-length: 'Namnet får inte överstiga 80 tecken'
-data-hub.config.name-pattern: 'Namnet kan bara innehålla alfanumeriska tecken, understreck och bindestreck'
-data-hub.config.description: 'Beskrivning'
-data-hub.config.group: 'Grupp'
-data-hub.adapter.graphql: 'GraphQL'
-data-hub.tabs.general: 'Allmänt'
-data-hub.tabs.schema-definition: 'Schemadefinition'
-data-hub.tabs.security-definition: 'Säkerhetsdefinition'
-data-hub.tabs.permissions: 'Behörigheter'
-data-hub.security.method: 'Metod'
-data-hub.security.method.apikey: 'API Key'
-data-hub.security.apikey: 'Datahub API Keys'
-data-hub.security.apikey-description: 'API Key krävs för åtkomst till webbtjänsten. En API Key per rad tillåten. Minst en Key med minst 16 tecken måste anges.'
-data-hub.security.generate-apikey: 'Generera Key'
-data-hub.security.skip-permission-check: 'Hoppa över behörighetskontroll'
-data-hub.security.disable-introspection: 'Inaktivera Introspection'
+error.data-hub.config-exists: En konfiguration med detta namn finns redan
+error.data-hub.import-config-invalid: Den uppladdade filen är inte en giltig konfiguration
+data-hub.config.active: Aktiv
+data-hub.config.type: Typ
+data-hub.config.name: Namn
+data-hub.config.name-required: Ange ett konfigurationsnamn
+data-hub.config.name-min-length: Namnet måste vara minst 3 tecken långt
+data-hub.config.name-max-length: Namnet får inte överstiga 80 tecken
+data-hub.config.name-pattern: Namnet kan bara innehålla alfanumeriska tecken, understreck och bindestreck
+data-hub.config.description: Beskrivning
+data-hub.config.group: Grupp
+data-hub.adapter.graphql: GraphQL
+data-hub.tabs.general: Allmänt
+data-hub.tabs.schema-definition: Schemadefinition
+data-hub.tabs.security-definition: Säkerhetsdefinition
+data-hub.tabs.permissions: Behörigheter
+data-hub.security.method: Metod
+data-hub.security.method.apikey: API Key
+data-hub.security.apikey: Datahub API Keys
+data-hub.security.apikey-description: API Key krävs för åtkomst till webbtjänsten. En API Key per rad tillåten. Minst en Key med minst 16 tecken måste anges.
+data-hub.security.generate-apikey: Generera Key
+data-hub.security.skip-permission-check: Hoppa över behörighetskontroll
+data-hub.security.disable-introspection: Inaktivera Introspection
 data-hub.security.introspection-description: 'Observera: när Introspection är inaktiverad fungerar inte autokompletteringsfunktionen.'
-data-hub.security.authentication: 'Autentisering'
-data-hub.workspaces.title: 'Workspaces'
-data-hub.workspaces.documents: 'Dokument'
-data-hub.workspaces.assets: 'Assets'
-data-hub.workspaces.objects: 'Data Objects'
-data-hub.workspaces.path: 'Sökväg'
-data-hub.workspaces.create: 'Skapa'
-data-hub.workspaces.read: 'Läsa'
-data-hub.workspaces.update: 'Uppdatera'
-data-hub.workspaces.delete: 'Ta bort'
-data-hub.workspaces.delete-selected: 'Ta bort markerade'
-data-hub.permissions.role-permissions: 'Rollbehörigheter'
-data-hub.permissions.user-permissions: 'Användarbehörigheter'
-data-hub.permissions.role: 'Roll'
-data-hub.permissions.user: 'Användare'
-data-hub.permissions.read: 'Läsa'
-data-hub.permissions.update: 'Uppdatera'
-data-hub.permissions.delete: 'Ta bort'
-data-hub.schema.query-schema: 'Query-schema'
-data-hub.schema.mutation-schema: 'Mutation-schema'
-data-hub.schema.generic-types: 'Generiska typer'
-data-hub.schema.entity: 'Entitet'
-data-hub.schema.settings: 'Inställningar'
-data-hub.schema.select-class: 'Välj klass...'
+data-hub.security.authentication: Autentisering
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Dokument
+data-hub.workspaces.assets: Assets
+data-hub.workspaces.objects: Data Objects
+data-hub.workspaces.path: Sökväg
+data-hub.workspaces.create: Skapa
+data-hub.workspaces.read: Läsa
+data-hub.workspaces.update: Uppdatera
+data-hub.workspaces.delete: Ta bort
+data-hub.workspaces.delete-selected: Ta bort markerade
+data-hub.permissions.role-permissions: Rollbehörigheter
+data-hub.permissions.user-permissions: Användarbehörigheter
+data-hub.permissions.role: Roll
+data-hub.permissions.user: Användare
+data-hub.permissions.read: Läsa
+data-hub.permissions.update: Uppdatera
+data-hub.permissions.delete: Ta bort
+data-hub.schema.query-schema: Query-schema
+data-hub.schema.mutation-schema: Mutation-schema
+data-hub.schema.generic-types: Generiska typer
+data-hub.schema.entity: Entitet
+data-hub.schema.settings: Inställningar
+data-hub.schema.select-class: Välj klass...
 data-hub.schema.query-modal-title: 'Query-schemafält - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Mutation-schemafält - {{entity}}'
-data-hub.schema.class-attributes: 'Klassattribut'
-data-hub.schema.available-fields: 'Tillgängliga fält'
-data-hub.schema.drag-class-attributes-or-operators: 'Dra klassattribut eller operatorer hit'
-data-hub.schema.add-all-definitions: 'Lägg till alla definitioner'
-data-hub.schema.insert-all-definitions: 'Infoga alla definitioner'
-data-hub.schema.data-object-columns: 'Data Object-kolumner'
-data-hub.schema.system-columns: 'Systemkolumner'
-data-hub.schema.system.id: 'ID (id)'
-data-hub.schema.system.fullpath: 'Fullständig sökväg (fullpath)'
-data-hub.schema.system.key: 'Key (key)'
-data-hub.schema.system.published: 'Publicerad (published)'
-data-hub.schema.system.creationDate: 'Skapandedatum (creationDate)'
-data-hub.schema.system.modificationDate: 'Ändringsdatum (modificationDate)'
-data-hub.schema.system.filename: 'Filnamn (filename)'
-data-hub.schema.system.classname: 'classname (classname)'
-data-hub.schema.system.index: 'Indexerad (index)'
+data-hub.schema.class-attributes: Klassattribut
+data-hub.schema.available-fields: Tillgängliga fält
+data-hub.schema.drag-class-attributes-or-operators: Dra klassattribut eller operatorer hit
+data-hub.schema.add-all-definitions: Lägg till alla definitioner
+data-hub.schema.insert-all-definitions: Infoga alla definitioner
+data-hub.schema.data-object-columns: Data Object-kolumner
+data-hub.schema.system-columns: Systemkolumner
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Fullständig sökväg (fullpath)
+data-hub.schema.system.key: Key (key)
+data-hub.schema.system.published: Publicerad (published)
+data-hub.schema.system.creationDate: Skapandedatum (creationDate)
+data-hub.schema.system.modificationDate: Ändringsdatum (modificationDate)
+data-hub.schema.system.filename: Filnamn (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Indexerad (index)
 data-hub.schema.coming-soon: '(Kommer snart)'
-data-hub.schema.special.document: 'Dokument'
-data-hub.schema.special.document_folder: 'Dokumentmapp'
-data-hub.schema.special.asset: 'Asset'
-data-hub.schema.special.asset_folder: 'Asset-mapp'
-data-hub.schema.special.asset_listing: 'Asset-lista'
-data-hub.schema.special.object_folder: 'Objektmapp'
-data-hub.schema.special.translation: 'Översättning'
-data-hub.schema.special.translation_listing: 'Översättningslista'
-data-hub.schema.operation-not-implemented: 'Operationen är inte implementerad'
-data-hub.open-in-tab: 'Öppna i flik'
-data-hub.label: 'Etikett'
-data-hub.help: 'Hjälp'
-data-hub.locale: 'Språk'
-data-hub.locale.select: 'Välj språk...'
-data-hub.thumbnail: 'Miniatyr'
-data-hub.prefix: 'Prefix'
-data-hub.operator.group.formatter: 'Formaterare'
-data-hub.operator.group.transformer: 'Transformerare'
-data-hub.operator.group.other: 'Övrigt'
-data-hub.operator.subgroup.string: 'String'
-data-hub.operator.subgroup.other: 'Övrigt'
-data-hub.operator.alias: 'Alias'
-data-hub.operator.label: 'Etikett'
-data-hub.operator.glue: 'Separator'
-data-hub.operator.concatenator: 'Sammanfogare'
-data-hub.operator.concatenator.config: 'Sammanfogningsinställningar'
-data-hub.operator.date-formatter: 'Datumformaterare'
-data-hub.operator.element-counter: 'Elementräknare'
-data-hub.operator.element-counter.count-empty: 'Räkna tomma'
-data-hub.operator.if-empty: 'Om tom'
-data-hub.operator.locale-collector: 'Språksamlare'
-data-hub.operator.locale-switcher: 'Språkväljare'
-data-hub.operator.substring: 'Delsträng'
-data-hub.operator.text: 'Text'
-data-hub.operator.thumbnail: 'Miniatyr'
-data-hub.operator.thumbnail-html: 'Miniatyr-HTML'
-data-hub.operator.translate-value: 'Översätt värde'
-data-hub.operator.trimmer: 'Trimmer'
-data-hub.operator.dateformatter: 'Datumformaterare'
-data-hub.operator.dateformatter.format: 'Datumformat'
-data-hub.operator.dateformatter.format.required: 'Ange ett datumformat'
-data-hub.operator.if-empty.default-value: 'Standardvärde'
-data-hub.operator.locale-collector.locales: 'Språk'
-data-hub.operator.locale-collector.select-locales: 'Välj språk...'
-data-hub.operator.thumbnail.thumbnail-name: 'Miniatyrnamn'
-data-hub.operator.thumbnail-html.thumbnail-name: 'Miniatyrnamn'
-data-hub.operator.start: 'Start'
-data-hub.operator.length: 'Längd'
-data-hub.operator.ellipses: 'Ellipser'
-data-hub.operator.trim: 'Trimma'
-data-hub.operator.trim.disabled: 'Inaktiverad'
-data-hub.operator.trim.left: 'Vänster'
-data-hub.operator.trim.right: 'Höger'
-data-hub.operator.trim.both: 'Båda'
-tree.actions.clone: 'Klona'
-tree.actions.delete: 'Ta bort'
-tree.actions.edit: 'Redigera'
-tree.actions.export: 'Exportera'
-tree.actions.import: 'Importera'
-tree.actions.view: 'Visa'
-data-hub.import.title: 'Importera konfiguration'
-data-hub.import.drag-drop: 'Bläddra bland dina filer eller dra och släpp en JSON-fil direkt här'
-data-hub.import.browse-files: 'Bläddra bland filer'
-perspective-editor.form.main-nav-permission.category.automationIntegration: "Automation & Integration"
+data-hub.schema.special.document: Dokument
+data-hub.schema.special.document_folder: Dokumentmapp
+data-hub.schema.special.asset: Asset
+data-hub.schema.special.asset_folder: Asset-mapp
+data-hub.schema.special.asset_listing: Asset-lista
+data-hub.schema.special.object_folder: Objektmapp
+data-hub.schema.special.translation: Översättning
+data-hub.schema.special.translation_listing: Översättningslista
+data-hub.schema.operation-not-implemented: Operationen är inte implementerad
+data-hub.open-in-tab: Öppna i flik
+data-hub.label: Etikett
+data-hub.help: Hjälp
+data-hub.locale: Språk
+data-hub.locale.select: Välj språk...
+data-hub.thumbnail: Miniatyr
+data-hub.prefix: Prefix
+data-hub.operator.group.formatter: Formaterare
+data-hub.operator.group.transformer: Transformerare
+data-hub.operator.group.other: Övrigt
+data-hub.operator.subgroup.string: String
+data-hub.operator.subgroup.other: Övrigt
+data-hub.operator.alias: Alias
+data-hub.operator.label: Etikett
+data-hub.operator.glue: Separator
+data-hub.operator.concatenator: Sammanfogare
+data-hub.operator.concatenator.config: Sammanfogningsinställningar
+data-hub.operator.date-formatter: Datumformaterare
+data-hub.operator.element-counter: Elementräknare
+data-hub.operator.element-counter.count-empty: Räkna tomma
+data-hub.operator.if-empty: Om tom
+data-hub.operator.locale-collector: Språksamlare
+data-hub.operator.locale-switcher: Språkväljare
+data-hub.operator.substring: Delsträng
+data-hub.operator.text: Text
+data-hub.operator.thumbnail: Miniatyr
+data-hub.operator.thumbnail-html: Miniatyr-HTML
+data-hub.operator.translate-value: Översätt värde
+data-hub.operator.trimmer: Trimmer
+data-hub.operator.dateformatter: Datumformaterare
+data-hub.operator.dateformatter.format: Datumformat
+data-hub.operator.dateformatter.format.required: Ange ett datumformat
+data-hub.operator.if-empty.default-value: Standardvärde
+data-hub.operator.locale-collector.locales: Språk
+data-hub.operator.locale-collector.select-locales: Välj språk...
+data-hub.operator.thumbnail.thumbnail-name: Miniatyrnamn
+data-hub.operator.thumbnail-html.thumbnail-name: Miniatyrnamn
+data-hub.operator.start: Start
+data-hub.operator.length: Längd
+data-hub.operator.ellipses: Ellipser
+data-hub.operator.trim: Trimma
+data-hub.operator.trim.disabled: Inaktiverad
+data-hub.operator.trim.left: Vänster
+data-hub.operator.trim.right: Höger
+data-hub.operator.trim.both: Båda
+tree.actions.clone: Klona
+tree.actions.delete: Ta bort
+tree.actions.edit: Redigera
+tree.actions.export: Exportera
+tree.actions.import: Importera
+tree.actions.view: Visa
+data-hub.import.title: Importera konfiguration
+data-hub.import.drag-drop: Bläddra bland dina filer eller dra och släpp en JSON-fil direkt här
+data-hub.import.browse-files: Bläddra bland filer
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Integration
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub-konfiguration
