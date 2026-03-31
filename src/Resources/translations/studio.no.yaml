@@ -1,137 +1,137 @@
-data-hub.configuration: 'Data Hub-konfigurasjon'
-data-hub.add.button: 'Legg til konfigurasjon'
-data-hub.add.name: 'Skriv inn konfigurasjonsnavn'
-data-hub.clone.name: 'Skriv inn navn for klonet konfigurasjon'
+data-hub.configuration: Data Hub-konfigurasjon
+data-hub.add.button: Legg til konfigurasjon
+data-hub.add.name: Skriv inn konfigurasjonsnavn
+data-hub.clone.name: Skriv inn navn for klonet konfigurasjon
 data-hub.delete.confirm: 'Er du sikker på at du vil slette konfigurasjonen "{{name}}"?'
-error.data-hub.config-exists: 'En konfigurasjon med dette navnet finnes allerede'
-error.data-hub.import-config-invalid: 'Den opplastede filen er ikke en gyldig konfigurasjon'
-data-hub.config.active: 'Aktiv'
-data-hub.config.type: 'Type'
-data-hub.config.name: 'Navn'
-data-hub.config.name-required: 'Skriv inn et konfigurasjonsnavn'
-data-hub.config.name-min-length: 'Navnet må være minst 3 tegn langt'
-data-hub.config.name-max-length: 'Navnet kan ikke overskride 80 tegn'
-data-hub.config.name-pattern: 'Navnet kan bare inneholde alfanumeriske tegn, understrek og bindestreker'
-data-hub.config.description: 'Beskrivelse'
-data-hub.config.group: 'Gruppe'
-data-hub.adapter.graphql: 'GraphQL'
-data-hub.tabs.general: 'Generelt'
-data-hub.tabs.schema-definition: 'Skjemadefinisjon'
-data-hub.tabs.security-definition: 'Sikkerhetsdefinisjon'
-data-hub.tabs.permissions: 'Tillatelser'
-data-hub.security.method: 'Metode'
-data-hub.security.method.apikey: 'API Key'
-data-hub.security.apikey: 'Datahub API Keys'
-data-hub.security.apikey-description: 'API Key kreves for tilgang til webtjenesten. Én API Key per linje tillatt. Minst én Key med minimum 16 tegn må oppgis.'
-data-hub.security.generate-apikey: 'Generer Key'
-data-hub.security.skip-permission-check: 'Hopp over tillatelseskontroll'
-data-hub.security.disable-introspection: 'Deaktiver Introspection'
+error.data-hub.config-exists: En konfigurasjon med dette navnet finnes allerede
+error.data-hub.import-config-invalid: Den opplastede filen er ikke en gyldig konfigurasjon
+data-hub.config.active: Aktiv
+data-hub.config.type: Type
+data-hub.config.name: Navn
+data-hub.config.name-required: Skriv inn et konfigurasjonsnavn
+data-hub.config.name-min-length: Navnet må være minst 3 tegn langt
+data-hub.config.name-max-length: Navnet kan ikke overskride 80 tegn
+data-hub.config.name-pattern: Navnet kan bare inneholde alfanumeriske tegn, understrek og bindestreker
+data-hub.config.description: Beskrivelse
+data-hub.config.group: Gruppe
+data-hub.adapter.graphql: GraphQL
+data-hub.tabs.general: Generelt
+data-hub.tabs.schema-definition: Skjemadefinisjon
+data-hub.tabs.security-definition: Sikkerhetsdefinisjon
+data-hub.tabs.permissions: Tillatelser
+data-hub.security.method: Metode
+data-hub.security.method.apikey: API Key
+data-hub.security.apikey: Datahub API Keys
+data-hub.security.apikey-description: API Key kreves for tilgang til webtjenesten. Én API Key per linje tillatt. Minst én Key med minimum 16 tegn må oppgis.
+data-hub.security.generate-apikey: Generer Key
+data-hub.security.skip-permission-check: Hopp over tillatelseskontroll
+data-hub.security.disable-introspection: Deaktiver Introspection
 data-hub.security.introspection-description: 'Vennligst merk: når Introspection er deaktivert, vil autofullføringsfunksjonen ikke fungere.'
-data-hub.security.authentication: 'Autentisering'
-data-hub.workspaces.title: 'Workspaces'
-data-hub.workspaces.documents: 'Dokumenter'
-data-hub.workspaces.assets: 'Assets'
-data-hub.workspaces.objects: 'Data Objects'
-data-hub.workspaces.path: 'Sti'
-data-hub.workspaces.create: 'Opprett'
-data-hub.workspaces.read: 'Les'
-data-hub.workspaces.update: 'Oppdater'
-data-hub.workspaces.delete: 'Slett'
-data-hub.workspaces.delete-selected: 'Slett valgte'
-data-hub.permissions.role-permissions: 'Rolletillatelser'
-data-hub.permissions.user-permissions: 'Brukertillatelser'
-data-hub.permissions.role: 'Rolle'
-data-hub.permissions.user: 'Bruker'
-data-hub.permissions.read: 'Les'
-data-hub.permissions.update: 'Oppdater'
-data-hub.permissions.delete: 'Slett'
-data-hub.schema.query-schema: 'Query-skjema'
-data-hub.schema.mutation-schema: 'Mutation-skjema'
-data-hub.schema.generic-types: 'Generiske typer'
-data-hub.schema.entity: 'Entitet'
-data-hub.schema.settings: 'Innstillinger'
-data-hub.schema.select-class: 'Velg klasse...'
+data-hub.security.authentication: Autentisering
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Dokumenter
+data-hub.workspaces.assets: Assets
+data-hub.workspaces.objects: Data Objects
+data-hub.workspaces.path: Sti
+data-hub.workspaces.create: Opprett
+data-hub.workspaces.read: Les
+data-hub.workspaces.update: Oppdater
+data-hub.workspaces.delete: Slett
+data-hub.workspaces.delete-selected: Slett valgte
+data-hub.permissions.role-permissions: Rolletillatelser
+data-hub.permissions.user-permissions: Brukertillatelser
+data-hub.permissions.role: Rolle
+data-hub.permissions.user: Bruker
+data-hub.permissions.read: Les
+data-hub.permissions.update: Oppdater
+data-hub.permissions.delete: Slett
+data-hub.schema.query-schema: Query-skjema
+data-hub.schema.mutation-schema: Mutation-skjema
+data-hub.schema.generic-types: Generiske typer
+data-hub.schema.entity: Entitet
+data-hub.schema.settings: Innstillinger
+data-hub.schema.select-class: Velg klasse...
 data-hub.schema.query-modal-title: 'Query-skjemafelt - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Mutation-skjemafelt - {{entity}}'
-data-hub.schema.class-attributes: 'Klasseattributter'
-data-hub.schema.available-fields: 'Tilgjengelige felt'
-data-hub.schema.drag-class-attributes-or-operators: 'Dra klasseattributter eller operatorer hit'
-data-hub.schema.add-all-definitions: 'Legg til alle definisjoner'
-data-hub.schema.insert-all-definitions: 'Sett inn alle definisjoner'
-data-hub.schema.data-object-columns: 'Data Object-kolonner'
-data-hub.schema.system-columns: 'Systemkolonner'
-data-hub.schema.system.id: 'ID (id)'
-data-hub.schema.system.fullpath: 'Fullstendig sti (fullpath)'
-data-hub.schema.system.key: 'Key (key)'
-data-hub.schema.system.published: 'Publisert (published)'
-data-hub.schema.system.creationDate: 'Opprettelsesdato (creationDate)'
-data-hub.schema.system.modificationDate: 'Endringsdato (modificationDate)'
-data-hub.schema.system.filename: 'Filnavn (filename)'
-data-hub.schema.system.classname: 'classname (classname)'
-data-hub.schema.system.index: 'Indeksert (index)'
+data-hub.schema.class-attributes: Klasseattributter
+data-hub.schema.available-fields: Tilgjengelige felt
+data-hub.schema.drag-class-attributes-or-operators: Dra klasseattributter eller operatorer hit
+data-hub.schema.add-all-definitions: Legg til alle definisjoner
+data-hub.schema.insert-all-definitions: Sett inn alle definisjoner
+data-hub.schema.data-object-columns: Data Object-kolonner
+data-hub.schema.system-columns: Systemkolonner
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Fullstendig sti (fullpath)
+data-hub.schema.system.key: Key (key)
+data-hub.schema.system.published: Publisert (published)
+data-hub.schema.system.creationDate: Opprettelsesdato (creationDate)
+data-hub.schema.system.modificationDate: Endringsdato (modificationDate)
+data-hub.schema.system.filename: Filnavn (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Indeksert (index)
 data-hub.schema.coming-soon: '(Kommer snart)'
-data-hub.schema.special.document: 'Dokument'
-data-hub.schema.special.document_folder: 'Dokumentmappe'
-data-hub.schema.special.asset: 'Asset'
-data-hub.schema.special.asset_folder: 'Asset-mappe'
-data-hub.schema.special.asset_listing: 'Asset-liste'
-data-hub.schema.special.object_folder: 'Objektmappe'
-data-hub.schema.special.translation: 'Oversettelse'
-data-hub.schema.special.translation_listing: 'Oversettelsesliste'
-data-hub.schema.operation-not-implemented: 'Operasjonen er ikke implementert'
-data-hub.open-in-tab: 'Åpne i fane'
-data-hub.label: 'Etikett'
-data-hub.help: 'Hjelp'
-data-hub.locale: 'Språk'
-data-hub.locale.select: 'Velg språk...'
-data-hub.thumbnail: 'Miniatyrbilde'
-data-hub.prefix: 'Prefiks'
-data-hub.operator.group.formatter: 'Formatterer'
-data-hub.operator.group.transformer: 'Transformerer'
-data-hub.operator.group.other: 'Annet'
-data-hub.operator.subgroup.string: 'String'
-data-hub.operator.subgroup.other: 'Annet'
-data-hub.operator.alias: 'Alias'
-data-hub.operator.label: 'Etikett'
-data-hub.operator.glue: 'Separator'
-data-hub.operator.concatenator: 'Sammenslåer'
-data-hub.operator.concatenator.config: 'Sammenslåingsinnstillinger'
-data-hub.operator.date-formatter: 'Datoformatterer'
-data-hub.operator.element-counter: 'Elementteller'
-data-hub.operator.element-counter.count-empty: 'Tell tomme'
-data-hub.operator.if-empty: 'Hvis tom'
-data-hub.operator.locale-collector: 'Språksamler'
-data-hub.operator.locale-switcher: 'Språkvelger'
-data-hub.operator.substring: 'Delstreng'
-data-hub.operator.text: 'Tekst'
-data-hub.operator.thumbnail: 'Miniatyrbilde'
-data-hub.operator.thumbnail-html: 'Miniatyrbilde-HTML'
-data-hub.operator.translate-value: 'Oversett verdi'
-data-hub.operator.trimmer: 'Trimmer'
-data-hub.operator.dateformatter: 'Datoformatterer'
-data-hub.operator.dateformatter.format: 'Datoformat'
-data-hub.operator.dateformatter.format.required: 'Skriv inn et datoformat'
-data-hub.operator.if-empty.default-value: 'Standardverdi'
-data-hub.operator.locale-collector.locales: 'Språk'
-data-hub.operator.locale-collector.select-locales: 'Velg språk...'
-data-hub.operator.thumbnail.thumbnail-name: 'Miniatyrbildenavn'
-data-hub.operator.thumbnail-html.thumbnail-name: 'Miniatyrbildenavn'
-data-hub.operator.start: 'Start'
-data-hub.operator.length: 'Lengde'
-data-hub.operator.ellipses: 'Ellipser'
-data-hub.operator.trim: 'Trim'
-data-hub.operator.trim.disabled: 'Deaktivert'
-data-hub.operator.trim.left: 'Venstre'
-data-hub.operator.trim.right: 'Høyre'
-data-hub.operator.trim.both: 'Begge'
-tree.actions.clone: 'Klon'
-tree.actions.delete: 'Slett'
-tree.actions.edit: 'Rediger'
-tree.actions.export: 'Eksporter'
-tree.actions.import: 'Importer'
-tree.actions.view: 'Vis'
-data-hub.import.title: 'Importer konfigurasjon'
-data-hub.import.drag-drop: 'Bla gjennom filene dine eller dra og slipp en JSON-fil direkte her'
-data-hub.import.browse-files: 'Bla gjennom filer'
-perspective-editor.form.main-nav-permission.category.automationIntegration: "Automatisering og integrasjon"
+data-hub.schema.special.document: Dokument
+data-hub.schema.special.document_folder: Dokumentmappe
+data-hub.schema.special.asset: Asset
+data-hub.schema.special.asset_folder: Asset-mappe
+data-hub.schema.special.asset_listing: Asset-liste
+data-hub.schema.special.object_folder: Objektmappe
+data-hub.schema.special.translation: Oversettelse
+data-hub.schema.special.translation_listing: Oversettelsesliste
+data-hub.schema.operation-not-implemented: Operasjonen er ikke implementert
+data-hub.open-in-tab: Åpne i fane
+data-hub.label: Etikett
+data-hub.help: Hjelp
+data-hub.locale: Språk
+data-hub.locale.select: Velg språk...
+data-hub.thumbnail: Miniatyrbilde
+data-hub.prefix: Prefiks
+data-hub.operator.group.formatter: Formatterer
+data-hub.operator.group.transformer: Transformerer
+data-hub.operator.group.other: Annet
+data-hub.operator.subgroup.string: String
+data-hub.operator.subgroup.other: Annet
+data-hub.operator.alias: Alias
+data-hub.operator.label: Etikett
+data-hub.operator.glue: Separator
+data-hub.operator.concatenator: Sammenslåer
+data-hub.operator.concatenator.config: Sammenslåingsinnstillinger
+data-hub.operator.date-formatter: Datoformatterer
+data-hub.operator.element-counter: Elementteller
+data-hub.operator.element-counter.count-empty: Tell tomme
+data-hub.operator.if-empty: Hvis tom
+data-hub.operator.locale-collector: Språksamler
+data-hub.operator.locale-switcher: Språkvelger
+data-hub.operator.substring: Delstreng
+data-hub.operator.text: Tekst
+data-hub.operator.thumbnail: Miniatyrbilde
+data-hub.operator.thumbnail-html: Miniatyrbilde-HTML
+data-hub.operator.translate-value: Oversett verdi
+data-hub.operator.trimmer: Trimmer
+data-hub.operator.dateformatter: Datoformatterer
+data-hub.operator.dateformatter.format: Datoformat
+data-hub.operator.dateformatter.format.required: Skriv inn et datoformat
+data-hub.operator.if-empty.default-value: Standardverdi
+data-hub.operator.locale-collector.locales: Språk
+data-hub.operator.locale-collector.select-locales: Velg språk...
+data-hub.operator.thumbnail.thumbnail-name: Miniatyrbildenavn
+data-hub.operator.thumbnail-html.thumbnail-name: Miniatyrbildenavn
+data-hub.operator.start: Start
+data-hub.operator.length: Lengde
+data-hub.operator.ellipses: Ellipser
+data-hub.operator.trim: Trim
+data-hub.operator.trim.disabled: Deaktivert
+data-hub.operator.trim.left: Venstre
+data-hub.operator.trim.right: Høyre
+data-hub.operator.trim.both: Begge
+tree.actions.clone: Klon
+tree.actions.delete: Slett
+tree.actions.edit: Rediger
+tree.actions.export: Eksporter
+tree.actions.import: Importer
+tree.actions.view: Vis
+data-hub.import.title: Importer konfigurasjon
+data-hub.import.drag-drop: Bla gjennom filene dine eller dra og slipp en JSON-fil direkte her
+data-hub.import.browse-files: Bla gjennom filer
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automatisering og integrasjon
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub-konfigurasjon
