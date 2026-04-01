@@ -140,5 +140,5 @@ data-hub.migration-modal.legacy-notice: 'This configuration uses a legacy format
 data-hub.migration-modal.start-migration: 'Start Migration'
 data-hub.migration-modal.cancel: 'Cancel'
 data-hub.migration-modal.confirm-migration: 'Confirm Migration'
-data-hub.column-config-modal.add-column: 'Add Column'
-data-hub.column-config-modal.preview.select-object: 'Select preview object'
+data-hub.column-config-modal.add-column: Add Column
+data-hub.column-config-modal.preview.select-object: Select preview object

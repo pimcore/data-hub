@@ -54,6 +54,7 @@ export const ConfigTabContent = ({ config, onDelete, modifiedConfigs, setModifie
       configName: config.text,
       configId: config.id,
       isActive,
+      hasStudioColumnConfig: config.studioColumnConfig,
       onChange: handleChange,
       onDelete
     })
