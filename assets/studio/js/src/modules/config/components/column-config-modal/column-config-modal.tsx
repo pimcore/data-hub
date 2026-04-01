@@ -96,7 +96,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     { classId: resolvedClassId, folderId: 1 },
     { skip: !isLegacy }
   )
-  const availableFields = availableFieldsData?.columns ?? []
+  const availableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
 
   const handleAddColumn = useCallback((column: GridColumnConfiguration): void => {
     columnEditorRef.current?.addColumn(column)
