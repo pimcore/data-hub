@@ -20,7 +20,7 @@ const injectedRtkApi = api
     });
 export { injectedRtkApi as api };
 export type BundleDataHubThumbnailsCollectionApiResponse =
-    /** status 200 List of available thumbnail configurations */ {
+    /** status 200 bundle_data_hub_thumbnails_collection_success_response */ {
         totalItems: number;
         items: BundleDataHubThumbnail[];
     };

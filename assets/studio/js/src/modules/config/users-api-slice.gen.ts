@@ -21,7 +21,7 @@ const injectedRtkApi = api
     });
 export { injectedRtkApi as api };
 export type BundleDataHubUsersCollectionApiResponse =
-    /** status 200 List of users and roles available for Data Hub permissions */ {
+    /** status 200 bundle_data_hub_users_collection_success_response */ {
         totalItems: number;
         items: BundleDataHubPermissionUser[];
     };

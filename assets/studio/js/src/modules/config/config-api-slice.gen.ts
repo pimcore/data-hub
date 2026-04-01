@@ -99,7 +99,7 @@ const injectedRtkApi = api
     });
 export { injectedRtkApi as api };
 export type BundleDataHubConfigAddApiResponse =
-    /** status 201 Data Hub configuration successfully created */ void;
+    /** status 201 bundle_data_hub_config_add_success_response */ void;
 export type BundleDataHubConfigAddApiArg = {
     /** The name of the configuration */
     name: string;
@@ -109,7 +109,7 @@ export type BundleDataHubConfigAddApiArg = {
     path?: string;
 };
 export type BundleDataHubConfigCloneApiResponse =
-    /** status 201 Data Hub configuration successfully cloned */ void;
+    /** status 201 bundle_data_hub_config_clone_success_response */ void;
 export type BundleDataHubConfigCloneApiArg = {
     /** The name of the new configuration */
     name: string;
@@ -123,32 +123,32 @@ export type BundleDataHubConfigCollectionApiResponse =
     };
 export type BundleDataHubConfigCollectionApiArg = void;
 export type BundleDataHubConfigDeleteApiResponse =
-    /** status 200 Data Hub configuration successfully deleted */ void;
+    /** status 200 bundle_data_hub_config_delete_success_response */ void;
 export type BundleDataHubConfigDeleteApiArg = {
     /** Name of the configuration */
     name: string;
 };
 export type BundleDataHubConfigExportApiResponse =
-    /** status 200 Data Hub configuration successfully exported */ void;
+    /** status 200 bundle_data_hub_config_export_success_response */ void;
 export type BundleDataHubConfigExportApiArg = {
     /** Name of the configuration */
     name: string;
 };
 export type BundleDataHubConfigGetApiResponse =
-    /** status 200 Data Hub configuration details */ BundleDataHubConfigurationDetail;
+    /** status 200 bundle_data_hub_config_get_success_response */ BundleDataHubConfigurationDetail;
 export type BundleDataHubConfigGetApiArg = {
     /** Name of the configuration */
     name: string;
 };
 export type BundleDataHubConfigUpdateApiResponse =
-    /** status 200 Data Hub configuration successfully updated */ BundleDataHubUpdateConfigurationResponse;
+    /** status 200 bundle_data_hub_config_update_success_response */ BundleDataHubUpdateConfigurationResponse;
 export type BundleDataHubConfigUpdateApiArg = {
     /** Name of the configuration */
     name: string;
     bundleDataHubUpdateConfiguration: BundleDataHubUpdateConfiguration;
 };
 export type BundleDataHubConfigImportApiResponse =
-    /** status 201 Data Hub configuration successfully imported */ void;
+    /** status 201 bundle_data_hub_config_import_success_response */ void;
 export type BundleDataHubConfigImportApiArg = {
     /** Configuration file to import */
     body: {
@@ -195,6 +195,8 @@ export type BundleDataHubConfiguration = {
     adapter: any;
     /** Writable */
     writable: boolean;
+    /** Has Studio Column Configuration */
+    studioColumnConfig: boolean;
 };
 export type BundleDataHubConfigurationDetail = {
     /** AdditionalAttributes */
@@ -219,7 +221,7 @@ export type BundleDataHubUpdateConfigurationResponse = {
     modificationDate: number;
 };
 export type BundleDataHubUpdateConfiguration = {
-    /** Configuration data as JSON string containing general settings, schema (queryEntities, mutationEntities, specialEntities), security, workspaces, and permissions */
+    /** JSON-encoded configuration containing general, schema, security, workspaces, and permissions */
     data: string;
     /** Client-side modification date timestamp for conflict detection */
     modificationDate: number;
