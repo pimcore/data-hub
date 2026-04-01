@@ -16,7 +16,6 @@ data-hub.config.description: Descrizione
 data-hub.config.group: Gruppo
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
-data-hub.adapter.fileExport: File Export
 data-hub.tabs.general: Generale
 data-hub.tabs.schema-definition: Definizione dello schema
 data-hub.tabs.security-definition: Definizione della sicurezza
