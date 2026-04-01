@@ -15,6 +15,8 @@ data-hub.config.name-pattern: Le nom ne peut contenir que des caractères alphan
 data-hub.config.description: Description
 data-hub.config.group: Groupe
 data-hub.adapter.graphql: GraphQL
+data-hub.adapter.simpleRest: Simple REST
+data-hub.adapter.fileExport: File Export
 data-hub.tabs.general: Général
 data-hub.tabs.schema-definition: Définition du schéma
 data-hub.tabs.security-definition: Définition de la sécurité

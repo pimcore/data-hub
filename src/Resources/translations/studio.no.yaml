@@ -15,6 +15,8 @@ data-hub.config.name-pattern: Navnet kan bare inneholde alfanumeriske tegn, unde
 data-hub.config.description: Beskrivelse
 data-hub.config.group: Gruppe
 data-hub.adapter.graphql: GraphQL
+data-hub.adapter.simpleRest: Simple REST
+data-hub.adapter.fileExport: File Export
 data-hub.tabs.general: Generelt
 data-hub.tabs.schema-definition: Skjemadefinisjon
 data-hub.tabs.security-definition: Sikkerhetsdefinisjon
