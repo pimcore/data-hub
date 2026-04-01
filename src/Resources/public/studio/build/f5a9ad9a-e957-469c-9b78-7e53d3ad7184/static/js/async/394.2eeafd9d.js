@@ -1,5 +1,5 @@
-/*! For license information please see 353.b47d6a1b.js.LICENSE.txt */
-"use strict";(self["chunk_pimcore_datahub_bundle "]=self["chunk_pimcore_datahub_bundle "]||[]).push([["353"],{6705(e,a,t){t.d(a,{Wc:()=>s,iO:()=>m,MM:()=>c});var i=t(4848),n=t(2812),r=t(2696);let l=(0,t(4316).rU)(e=>{let{css:a}=e;return{formWrapper:a`
+/*! For license information please see 394.2eeafd9d.js.LICENSE.txt */
+"use strict";(self["chunk_pimcore_datahub_bundle "]=self["chunk_pimcore_datahub_bundle "]||[]).push([["394"],{6705(e,a,t){t.d(a,{Wc:()=>s,iO:()=>m,MM:()=>c});var i=t(4848),n=t(2812),r=t(2696);let l=(0,t(4316).rU)(e=>{let{css:a}=e;return{formWrapper:a`
       display: contents;
 
       > form {
