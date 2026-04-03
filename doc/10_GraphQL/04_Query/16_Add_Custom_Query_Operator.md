@@ -15,7 +15,7 @@ Add a section similar to this one to your `services.yml` file.
             - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_queryoperator_mycustomoperator }                        
 ```
 
-For reference, have a look at a look at the 
+For reference, have a look at the
 [`Trimmer operator`](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/Query/Operator/Trimmer.php).
 
 ### Operator Implementation

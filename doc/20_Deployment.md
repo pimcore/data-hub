@@ -66,11 +66,11 @@ pimcore_data_hub:
                 type: '<TYPE>'
                 name: '<NAME>'
                 description: '<DESCRIPTION>'
-                group: '<GROUP>
+                group: '<GROUP>'
                 sqlObjectCondition: '<CONDITION>'
                 modificationDate: <DATE>
                 path: '<PATH>'
-                createDate: <DATE>'
+                createDate: <DATE>
             schema:
                 queryEntities: {  }
                 mutationEntities: {  }

@@ -1,6 +1,6 @@
 # DataObject Queries
 
-## Suppored Data Types
+## Supported Data Types
 
 Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
 
