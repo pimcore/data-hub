@@ -22,7 +22,7 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "2.2.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/61a462fc-70b2-498a-9de8-c270c4a72448/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/f851ae0e-616b-4df4-9729-d8a30ceaba13/"
   },
   "shared": [
     {
