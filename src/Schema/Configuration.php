@@ -27,7 +27,7 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
     title: 'Bundle Data Hub Configuration',
     required: [
         'id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions',
-        'hasStudioColumnConfig',
+        'studioColumnConfig',
         ],
     type: 'object'
 )]
@@ -60,7 +60,7 @@ final class Configuration implements AdditionalAttributesInterface
         private readonly ?string $adapter = null,
         #[Property(description: 'Writable', type: 'bool', example: 'true')]
         private readonly bool $writable = false,
-        #[Property(description: 'Has Studio Column Configuration', type: 'bool', example: 'false')]
+        #[Property(property: 'studioColumnConfig', description: 'Has Studio Column Configuration', type: 'bool', example: 'false')]
         private readonly bool $hasStudioColumnConfig = false,
     ) {
     }

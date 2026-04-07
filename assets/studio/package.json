@@ -58,7 +58,7 @@
     "typescript-eslint": "^8"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260325-113631-293aa9b",
+    "@pimcore/studio-ui-bundle": "1.0.0-canary.20260401-093649-e21cdda",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "uuid": "^10.0.0",

@@ -16,6 +16,7 @@ export interface DataHubAdapterDetailViewProps {
   configName: string
   configId: string
   isActive: boolean
+  hasStudioColumnConfig: boolean
   onChange: (isDirty: boolean) => void
   onDelete: () => void
 }
