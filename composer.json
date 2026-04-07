@@ -21,7 +21,7 @@
     "pimcore/admin-ui-classic-bundle": "^2.0",
     "pimcore/pimcore": "^12.3",
     "pimcore/compatibility-bridge-v10": "^2.0",
-    "pimcore/studio-backend-bundle": "^1.0",
+    "pimcore/studio-backend-bundle": "^2025.4",
     "webonyx/graphql-php": "^15.2.3"
   },
   "require-dev": {
