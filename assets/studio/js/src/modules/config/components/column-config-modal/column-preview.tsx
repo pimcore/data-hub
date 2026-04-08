@@ -88,7 +88,7 @@ const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEd
           ? {
               advancedColumns: pipeline.sourceFields ?? [],
               transformers: pipeline.transformers
-            } as unknown as AdvancedColumnConfig[]
+            } as unknown as AdvancedColumnConfig
           : undefined
       }
     }
