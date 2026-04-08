@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Pimcore\Bundle\DataHubBundle\Controller\Studio\:
-        resource: '../../Controller/Studio'
-        public: true
-        tags: [ 'controller.service_arguments' ]
-
     Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationService
 
