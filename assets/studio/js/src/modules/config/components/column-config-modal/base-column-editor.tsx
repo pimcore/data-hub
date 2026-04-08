@@ -34,7 +34,7 @@ import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
 import {
-  ADVANCED_COLUMN_KEY,
+  ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
   type SchemaColumn,
   type AdvancedEditorColumn
@@ -94,7 +94,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     }), [getColumns, handleAddColumnOfType])
 
     const stackItems: StackListProps['items'] = draft.map(col => {
-      const isAdvanced = col.key === ADVANCED_COLUMN_KEY
+      const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
       const label = getColumnLabel(col)
 
       return {
