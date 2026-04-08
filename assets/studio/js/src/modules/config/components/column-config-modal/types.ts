@@ -12,14 +12,14 @@ import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data
 
 /**
  * Persisted column shape shared across all Data Hub adapter bundles.
+ * For advanced columns (type === ADVANCED_COLUMN_TYPE), `key` holds the user-defined title.
  */
 export interface SchemaColumn {
   key: string
   fieldtype: string
   type: string
-  /** Adapter-specific persisted column data (e.g. { advancedColumns, transformers } for simple-rest). */
+  /** Adapter-specific persisted column data (e.g. { advancedColumns, transformers } for advanced columns). */
   config?: Record<string, any>
-  title?: string
   locale?: string | null
 }
 
@@ -39,6 +39,13 @@ export interface ColumnEditorHandle<TColumns = SchemaColumn> {
  * Advanced columns have a pipeline (sourceFields + transformers) instead of a direct field mapping.
  */
 export const ADVANCED_COLUMN_KEY = 'advanced'
+
+/**
+ * The column type registered by the backend for advanced/pipeline columns.
+ * Used as the reliable discriminator when loading persisted columns, because the key
+ * is now set to the user-defined title rather than the hardcoded sentinel 'advanced'.
+ */
+export const ADVANCED_COLUMN_TYPE = 'dataobject.advanced'
 
 /**
  * Frontend-only draft column type used by adapter column editors that support
@@ -61,8 +68,9 @@ export interface AdvancedEditorColumn {
   pipelineConfig?: Record<string, any>
   /**
    * Draft pipeline value: { title, sourceFields, transformers }.
-   * Present only for advanced columns (key === ADVANCED_COLUMN_KEY).
-   * Never persisted directly — serialised into config.advancedColumns + config.transformers on save.
+   * Present only for advanced columns (type === ADVANCED_COLUMN_TYPE).
+   * Never persisted directly — on save, title becomes the column key and
+   * sourceFields/transformers are packed into config.advancedColumns/config.transformers.
    */
   pipeline?: Record<string, any>
   /** Whether this column supports per-column locale selection. */
@@ -72,8 +80,9 @@ export interface AdvancedEditorColumn {
 
 /**
  * Converts a persisted SchemaColumn into an AdvancedEditorColumn draft.
- * For advanced columns (key === ADVANCED_COLUMN_KEY) the persisted config is
- * unpacked into the frontend `pipeline` working state.
+ * For advanced columns (type === ADVANCED_COLUMN_TYPE) the persisted config is
+ * unpacked into the frontend `pipeline` working state, and the column key
+ * (which holds the user title) is mapped to pipeline.title.
  */
 export const advancedFromSchemaColumn = (col: SchemaColumn): AdvancedEditorColumn => ({
   _id: crypto.randomUUID(),
@@ -81,9 +90,10 @@ export const advancedFromSchemaColumn = (col: SchemaColumn): AdvancedEditorColum
   fieldtype: col.fieldtype,
   type: col.type,
   config: col.config,
-  pipeline: col.key === ADVANCED_COLUMN_KEY
+  pipeline: col.type === ADVANCED_COLUMN_TYPE
     ? {
-        title: col.title,
+        // New format: key holds the title. Legacy format: key === 'advanced', title was a separate field.
+        title: col.key !== ADVANCED_COLUMN_KEY ? col.key : (col as any).title,
         sourceFields: (col.config?.advancedColumns ?? []).map((sf: Record<string, any>) => ({
           ...sf,
           config: sf.config ?? {}
@@ -99,7 +109,9 @@ export const advancedFromSchemaColumn = (col: SchemaColumn): AdvancedEditorColum
  * For advanced columns the frontend `pipeline` is packed into config.advancedColumns + config.transformers.
  */
 export const advancedToSchemaColumn = (col: AdvancedEditorColumn): SchemaColumn => ({
-  key: col.key,
+  key: col.type === ADVANCED_COLUMN_TYPE && col.pipeline?.title !== undefined && col.pipeline.title !== ''
+    ? col.pipeline.title as string
+    : col.key,
   fieldtype: col.fieldtype,
   type: col.type,
   config: col.pipeline !== undefined
@@ -111,6 +123,5 @@ export const advancedToSchemaColumn = (col: AdvancedEditorColumn): SchemaColumn 
         transformers: col.pipeline.transformers
       }
     : col.config,
-  title: col.pipeline?.title,
   locale: col.locale
 })
