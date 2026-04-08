@@ -13,6 +13,11 @@ services:
     Pimcore\Bundle\DataHubBundle\Command\:
         resource: '../../Command'
 
+    Pimcore\Bundle\DataHubBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'controller.service_arguments' ]
+
     Pimcore\Bundle\DataHubBundle\Service\:
         resource: '../../Service'
         exclude: '../../Service/Studio'
