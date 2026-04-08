@@ -86,7 +86,7 @@ export const advancedFromSchemaColumn = (col: SchemaColumn): AdvancedEditorColum
         title: col.title,
         sourceFields: (col.config?.advancedColumns ?? []).map((sf: Record<string, any>) => ({
           ...sf,
-          config: Array.isArray(sf.config) ? (sf.config[0] ?? {}) : (sf.config ?? {})
+          config: sf.config ?? {}
         })),
         transformers: col.config?.transformers
       }
@@ -106,7 +106,7 @@ export const advancedToSchemaColumn = (col: AdvancedEditorColumn): SchemaColumn 
     ? {
         advancedColumns: (col.pipeline.sourceFields ?? []).map((sf: Record<string, any>) => ({
           ...sf,
-          config: sf.config !== undefined && !Array.isArray(sf.config) ? [sf.config] : (sf.config ?? [])
+          config: sf.config ?? {}
         })),
         transformers: col.pipeline.transformers
       }
