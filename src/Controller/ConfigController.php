@@ -367,8 +367,51 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
                 'modificationDate' => $config['general']['modificationDate'],
+                'isStudioFormat' => $this->isStudioFormat($config),
             ]
         );
+    }
+
+    /**
+     * Detects whether the given configuration uses the Studio format.
+     *
+     * A configuration is considered to be in Studio format when:
+     * - eventsSchema.dataObjectClasses[*] has a `columns` key, or
+     * - schema has a top-level `columns` key, or
+     * - schema.dataObjectClasses[*] has a `columns` key
+     */
+    private function isStudioFormat(array $config): bool
+    {
+        // Rule 1: eventsSchema -> dataObjectClasses -> [*] -> columns
+        if ($this->dataObjectClassesHaveColumns($config['eventsSchema']['dataObjectClasses'] ?? [])) {
+            return true;
+        }
+
+        $schema = $config['schema'] ?? [];
+
+        if (!is_array($schema)) {
+            return false;
+        }
+
+        // Rule 2: schema -> columns
+        // Rule 3: schema -> dataObjectClasses -> [*] -> columns
+        return array_key_exists('columns', $schema)
+            || $this->dataObjectClassesHaveColumns($schema['dataObjectClasses'] ?? []);
+    }
+
+    private function dataObjectClassesHaveColumns(mixed $dataObjectClasses): bool
+    {
+        if (!is_array($dataObjectClasses)) {
+            return false;
+        }
+
+        foreach ($dataObjectClasses as $class) {
+            if (is_array($class) && array_key_exists('columns', $class)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #[Route('/save')]
