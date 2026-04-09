@@ -16,6 +16,7 @@ import { isNil } from 'lodash'
 import {
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
+  ADVANCED_COLUMN_TYPE,
   type AdvancedEditorColumn,
   type SchemaColumn
 } from './types'
@@ -117,7 +118,9 @@ export const useColumnEditorState = ({
   useEffect(() => {
     if (availableFields.length === 0) return
     setDraft(prev => prev.map(col => {
-      const available = availableFields.find(f => f.key === col.key)
+      const available = availableFields.find(f =>
+        f.key === col.key || (col.type === ADVANCED_COLUMN_TYPE && f.type === col.type)
+      )
       if (available === undefined) return col
       return {
         ...col,
