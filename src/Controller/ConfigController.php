@@ -369,6 +369,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
                 'modificationDate' => $config['general']['modificationDate'],
+                'isStudioFormat' => $this->isStudioFormat($config),
             ]
         );
     }
