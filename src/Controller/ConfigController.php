@@ -51,7 +51,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     {
         $type = $configuration->getType() ?: 'graphql';
         $name = $configuration->getName();
-        $config = $configuration->getConfiguration() ?? [];
+        $config = $configuration->getConfiguration();
 
         return [
             'id' => $name,
