@@ -28,11 +28,6 @@ pimcore.plugin.datahub.adapter.graphql = Class.create(pimcore.plugin.datahub.ada
 
                 let data = Ext.decode(response.responseText);
 
-                if (data.isStudioFormat) {
-                    this.showStudioFormatMessage(data);
-                    return;
-                }
-
                 pimcore.plugin.datahub.graphql = pimcore.plugin.datahub.graphql || {};
                 pimcore.plugin.datahub.graphql.supportedQueryDataTypes = data.supportedGraphQLQueryDataTypes;
                 pimcore.plugin.datahub.graphql.supportedMutationDataTypes = data.supportedGraphQLMutationDataTypes;

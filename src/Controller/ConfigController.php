@@ -51,6 +51,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
     {
         $type = $configuration->getType() ?: 'graphql';
         $name = $configuration->getName();
+        $config = $configuration->getConfiguration() ?? [];
 
         return [
             'id' => $name,
@@ -61,6 +62,7 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
             'leaf' => true,
             'adapter' => $type,
             'writeable' => $configuration->isWriteable(),
+            'isStudioFormat' => $this->isStudioFormat($config),
             'permissions' => [
                 'delete' => $configuration->isAllowed('delete'),
                 'update' => $configuration->isAllowed('update'),
@@ -367,7 +369,6 @@ class ConfigController extends \Pimcore\Controller\UserAwareController
                 'supportedGraphQLQueryDataTypes' => $supportedQueryDataTypes,
                 'supportedGraphQLMutationDataTypes' => $supportedMutationDataTypes,
                 'modificationDate' => $config['general']['modificationDate'],
-                'isStudioFormat' => $this->isStudioFormat($config),
             ]
         );
     }
