@@ -112,5 +112,45 @@ pimcore.plugin.datahub.adapter.abstract = Class.create({
             return true;
         }
         return false;
+    },
+
+    showStudioFormatMessage: function(data) {
+        let id = data.name;
+        let type = data.configuration && data.configuration.general ? data.configuration.general.type : '';
+
+        let tab = new Ext.Panel({
+            id: "plugin_pimcore_datahub_configpanel_panel_" + id,
+            title: id,
+            closable: true,
+            iconCls: "plugin_pimcore_datahub_icon_" + type,
+            layout: {
+                type: 'vbox',
+                align: 'center',
+                pack: 'center'
+            },
+            items: [
+                {
+                    xtype: 'panel',
+                    border: false,
+                    padding: '20 40',
+                    items: [
+                        {
+                            xtype: 'displayfield',
+                            value: '<div style="font-size: 14px; color: #555; text-align: center;">'
+                                + '<span class="x-fa fa-info-circle" style="font-size: 32px; color: #1890ff; display: block; margin-bottom: 16px;"></span>'
+                                + t('plugin_pimcore_datahub_configpanel_studio_format_message')
+                                + '</div>',
+                            hideLabel: true
+                        }
+                    ]
+                }
+            ]
+        });
+
+        this.configPanel.editPanel.add(tab);
+        this.configPanel.editPanel.setActiveTab(tab);
+        this.configPanel.editPanel.updateLayout();
+
+        pimcore.layout.refresh();
     }
 });
