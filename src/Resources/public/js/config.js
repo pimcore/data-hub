@@ -180,6 +180,14 @@ pimcore.plugin.datahub.config = Class.create({
             return;
         }
 
+        if (record.data.isStudioFormat) {
+            Ext.MessageBox.alert(
+                t('plugin_pimcore_datahub_configpanel_studio_format_title'),
+                t('plugin_pimcore_datahub_configpanel_studio_format_message')
+            );
+            return;
+        }
+
         let adapterType = record.data.adapter;
         let adapterImpl = new pimcore.plugin.datahub.adapter[adapterType](this);
         adapterImpl.openConfiguration(record.id);
