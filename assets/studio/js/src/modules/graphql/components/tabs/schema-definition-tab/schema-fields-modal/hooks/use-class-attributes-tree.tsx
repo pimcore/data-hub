@@ -9,15 +9,21 @@
  */
 
 import React, { useMemo, useCallback } from 'react'
-import { useClassDefinitionGetLayoutByIdQuery, type Layout, type ConfigLayoutDefinition } from '@pimcore/studio-ui-bundle/api/class-definition'
+import { useClassDefinitionGetLayoutByIdQuery, type Layout } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type DynamicTypeFieldDefinitionRegistry, DynamicTypeFieldDefinitionDataAbstract } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { useInjection, serviceIds, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
-import { isNil, flatMap, flatMapDeep } from 'lodash'
+import { isNil, flatMap } from 'lodash'
 import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
 import { type TreeNode } from '../types'
 import { useObjectBrickLayouts } from './use-objectbrick-layouts'
+import {
+  filterTreeNodesRecursive,
+  collectAllKeys,
+  scanForObjectBricksFields,
+  removeObjectBricksNodes
+} from './class-attributes-tree-helpers'
 
 interface UseClassAttributesTreeProps {
   classId: string
@@ -31,102 +37,6 @@ interface UseClassAttributesTreeReturn {
   expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
-}
-
-interface ObjectBricksFieldInfo {
-  name: string
-  title: string | null
-  allowedTypes: string[]
-}
-
-const filterTreeNodesRecursive = (
-  nodes: TreeNode[],
-  searchValue: string
-): TreeNode[] => {
-  if (!Array.isArray(nodes)) {
-    return []
-  }
-
-  return nodes.reduce<TreeNode[]>((acc, node) => {
-    // Only search in field definitions (isFieldDefinition: true)
-    const isFieldDefinition = node.isFieldDefinition === true
-    const matchesSearch = isFieldDefinition &&
-      ((node.title?.toString().toLowerCase().includes(searchValue.toLowerCase()) ?? false) ||
-       (node.attribute?.toLowerCase().includes(searchValue.toLowerCase()) ?? false))
-
-    const filteredChildren = (!isNil(node.children) && Array.isArray(node.children))
-      ? filterTreeNodesRecursive(node.children as TreeNode[], searchValue)
-      : []
-
-    // Include node if:
-    // 1. It's a field definition and matches the search
-    // 2. It has children that match the search (parent nodes)
-    if ((matchesSearch ?? false) || filteredChildren.length > 0) {
-      acc.push({
-        ...node,
-        children: filteredChildren.length > 0 ? filteredChildren : node.children
-      })
-    }
-
-    return acc
-  }, [])
-}
-
-const collectAllKeys = (nodes: TreeNode[]): string[] => {
-  return flatMapDeep(nodes, (node) => [
-    ...(isNil(node.key) ? [] : [String(node.key)]),
-    ...(!isNil(node.children) && Array.isArray(node.children) ? collectAllKeys(node.children as TreeNode[]) : [])
-  ])
-}
-
-/**
- * Recursively walks a raw layout's children to collect all objectbricks fields
- * that have a non-empty allowedTypes list.
- */
-const scanForObjectBricksFields = (layout: Layout): ObjectBricksFieldInfo[] => {
-  const results: ObjectBricksFieldInfo[] = []
-
-  const walk = (children: object[]): void => {
-    children.forEach(child => {
-      const node = child as Record<string, unknown>
-
-      if (node.fieldtype === 'objectbricks') {
-        const allowedTypes = (node.allowedTypes as string[] | undefined) ?? []
-        if (allowedTypes.length > 0) {
-          results.push({
-            name: node.name as string,
-            title: (node.title as string | null | undefined) ?? null,
-            allowedTypes
-          })
-        }
-      }
-
-      if (Array.isArray(node.children)) {
-        walk(node.children as object[])
-      }
-    })
-  }
-
-  if (Array.isArray(layout.children)) {
-    walk(layout.children)
-  }
-
-  return results
-}
-
-/**
- * Recursively removes objectbricks field nodes from the tree.
- * They are replaced by brick group nodes appended at the root level.
- */
-const removeObjectBricksNodes = (nodes: TreeNode[]): TreeNode[] => {
-  return nodes
-    .filter(node => !(node.dataType === 'objectbricks' && node.isFieldDefinition === true))
-    .map(node => ({
-      ...node,
-      children: (!isNil(node.children) && Array.isArray(node.children))
-        ? removeObjectBricksNodes(node.children as TreeNode[])
-        : node.children
-    }))
 }
 
 export const useClassAttributesTree = ({
@@ -144,7 +54,7 @@ export const useClassAttributesTree = ({
 
   // Derive objectbricks fields and their allowed brick types from the raw class layout.
   // Empty allowedTypes means "show no bricks" — those fields are excluded.
-  const objectBricksFields = useMemo((): ObjectBricksFieldInfo[] => {
+  const objectBricksFields = useMemo(() => {
     if (isNil(classLayout)) return []
     return scanForObjectBricksFields(classLayout)
   }, [classLayout])
@@ -160,7 +70,7 @@ export const useClassAttributesTree = ({
     const buildItemCallback = (brickKey?: string) => (
       { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
-      const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype, false)
+      const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
       const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract
 
       const { icon: _icon, ...restTreeItem } = initialTreeItem
@@ -287,8 +197,7 @@ export const useClassAttributesTree = ({
       console.error('Error building class attributes tree:', error)
       return []
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classLayout, brickLayouts])
+  }, [classLayout, brickLayouts, allBrickKeys, fieldDefinitionRegistry, t])
 
   const filteredTree = useMemo(() => {
     if (searchValue === '') {

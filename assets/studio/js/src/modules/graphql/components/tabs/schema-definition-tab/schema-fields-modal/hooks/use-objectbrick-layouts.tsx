@@ -48,7 +48,7 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
       const newLayouts = new Map<string, ConfigLayoutDefinition>()
 
       brickKeys.forEach((key, index) => {
-        const data = responses[index]?.data
+        const data = responses[index]?.data as ConfigLayoutDefinition | undefined
         if (!isNil(data)) {
           newLayouts.set(key, data)
         }
@@ -62,8 +62,7 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
       cancelled = true
       promises.forEach(p => { p.unsubscribe() })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedKeysString])
+  }, [dispatch, sortedKeysString])
 
   return { layouts, isLoading }
 }
