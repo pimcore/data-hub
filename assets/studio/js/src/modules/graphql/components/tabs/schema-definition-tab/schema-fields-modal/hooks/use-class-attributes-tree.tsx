@@ -306,9 +306,6 @@ export const useClassAttributesTree = ({
   }, [searchValue, classAttributesTree, filteredTree])
 
   const getFieldDefinitions = useCallback((): TreeNode[] => {
-    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
-    if (isNil(objectColumnsNode) || isNil(objectColumnsNode.children)) return []
-
     const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
       flatMap(nodes, node => {
         if (node.isFieldDefinition === true) return [node]
@@ -316,14 +313,31 @@ export const useClassAttributesTree = ({
         return []
       })
 
-    return collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+    // Collect from the data object columns node
+    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
+    const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
+      ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+      : []
+
+    // Also collect from brick group nodes (keyed as 'brick-group-<BrickType>')
+    const brickGroupNodes = classAttributesTree.filter(
+      node => typeof node.key === 'string' && node.key.startsWith('brick-group-')
+    )
+    const brickColumnDefs = collectFieldDefinitions(brickGroupNodes)
+
+    return [...objectColumnDefs, ...brickColumnDefs]
   }, [classAttributesTree])
+
+  // Consider still loading if the class layout resolved but we know there are brick keys
+  // to fetch and the brick layouts haven't all been resolved yet. This prevents the
+  // intermediate flash between "class layout done" and "brick fetch effect fires".
+  const pendingBrickFetch = !isLoading && !isFetching && allBrickKeys.length > 0 && brickLayouts.size === 0
 
   return {
     classAttributesTree,
     filteredTree,
     expandedKeys,
     getFieldDefinitions,
-    isLoading: isLoading || isFetching || brickLayoutsLoading
+    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch
   }
 }
