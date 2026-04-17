@@ -158,7 +158,7 @@ export const useClassAttributesTree = ({
 
   const classAttributesTree = useMemo(() => {
     const buildItemCallback = (brickKey?: string) => (
-      { fieldDefinition, initialTreeItem }: { fieldDefinition: any; initialTreeItem: any }
+      { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
       const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype, false)
       const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract

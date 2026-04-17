@@ -26,7 +26,7 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
   const [isLoading, setIsLoading] = useState(brickKeys.length > 0)
 
   // Stable serialization used as effect dependency — avoids re-firing on same keys with new array reference
-  const sortedKeysString = [...brickKeys].sort().join(',')
+  const sortedKeysString = [...brickKeys].sort((a, b) => a.localeCompare(b)).join(',')
 
   useEffect(() => {
     if (brickKeys.length === 0) {
