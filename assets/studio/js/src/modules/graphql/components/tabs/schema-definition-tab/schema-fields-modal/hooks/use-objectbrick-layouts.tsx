@@ -42,13 +42,13 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
       dispatch(api.endpoints.classObjectBrickGetLayoutByKey.initiate({ key }))
     )
 
-    void Promise.all(promises).then(responses => {
+    void Promise.all(promises).then((responses: Array<{ data?: ConfigLayoutDefinition }>) => {
       if (cancelled) return
 
       const newLayouts = new Map<string, ConfigLayoutDefinition>()
 
       brickKeys.forEach((key, index) => {
-        const data = responses[index]?.data as ConfigLayoutDefinition | undefined
+        const data = responses[index]?.data
         if (!isNil(data)) {
           newLayouts.set(key, data)
         }
