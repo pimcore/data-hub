@@ -52,8 +52,6 @@ export const useClassAttributesTree = ({
     { skip: !enabled, refetchOnMountOrArgChange: true }
   )
 
-  // Derive objectbricks fields and their allowed brick types from the raw class layout.
-  // Empty allowedTypes means "show no bricks" — those fields are excluded.
   const objectBricksFields = useMemo(() => {
     if (isNil(classLayout)) return []
     return scanForObjectBricksFields(classLayout)
@@ -63,7 +61,6 @@ export const useClassAttributesTree = ({
     return Array.from(new Set<string>(flatMap(objectBricksFields, f => f.allowedTypes)))
   }, [objectBricksFields])
 
-  // Fetch all required brick layouts in parallel. Spinner stays until all resolve.
   const { layouts: brickLayouts, isLoading: brickLayoutsLoading } = useObjectBrickLayouts(allBrickKeys)
 
   const classAttributesTree = useMemo(() => {
@@ -78,7 +75,6 @@ export const useClassAttributesTree = ({
       const label = fieldDefinition.title ?? fieldDefinition.name
 
       if (!isNil(brickKey) && isFieldDefinition) {
-        // Brick field: prefix attribute with "BrickType~fieldname", display as "Label (BrickType.fieldname)"
         const attributeKey = `${brickKey}~${fieldDefinition.name}`
         const title = `${label} (${brickKey}.${fieldDefinition.name})`
 
@@ -94,7 +90,6 @@ export const useClassAttributesTree = ({
         }
       }
 
-      // Regular class field
       const title = isFieldDefinition
         ? `${label} (${fieldDefinition.name})`
         : initialTreeItem.title
@@ -126,7 +121,6 @@ export const useClassAttributesTree = ({
 
       const children = (tree?.children ?? []) as TreeNode[]
 
-      // Remove objectbricks field nodes — they are surfaced as brick group siblings instead
       return removeObjectBricksNodes(children)
     }
 
@@ -210,7 +204,6 @@ export const useClassAttributesTree = ({
     if (searchValue === '') {
       return collectAllKeys(classAttributesTree)
     }
-    // When searching, expand all nodes to show matched results
     return collectAllKeys(filteredTree)
   }, [searchValue, classAttributesTree, filteredTree])
 
@@ -222,13 +215,11 @@ export const useClassAttributesTree = ({
         return []
       })
 
-    // Collect from the data object columns node
     const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
     const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
       ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
       : []
 
-    // Also collect from brick group nodes (keyed as 'brick-group-<BrickType>')
     const brickGroupNodes = classAttributesTree.filter(
       node => typeof node.key === 'string' && node.key.startsWith('brick-group-')
     )

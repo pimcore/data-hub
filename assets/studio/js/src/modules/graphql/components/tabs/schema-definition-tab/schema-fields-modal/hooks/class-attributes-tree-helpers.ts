@@ -27,7 +27,6 @@ export const filterTreeNodesRecursive = (
   }
 
   return nodes.reduce<TreeNode[]>((acc, node) => {
-    // Only search in field definitions (isFieldDefinition: true)
     const isFieldDefinition = node.isFieldDefinition === true
     const matchesSearch = isFieldDefinition &&
       ((node.title?.toString().toLowerCase().includes(searchValue.toLowerCase()) ?? false) ||
@@ -37,9 +36,6 @@ export const filterTreeNodesRecursive = (
       ? filterTreeNodesRecursive(node.children as TreeNode[], searchValue)
       : []
 
-    // Include node if:
-    // 1. It's a field definition and matches the search
-    // 2. It has children that match the search (parent nodes)
     if ((matchesSearch ?? false) || filteredChildren.length > 0) {
       acc.push({
         ...node,
