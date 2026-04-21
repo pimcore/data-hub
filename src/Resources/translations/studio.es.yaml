@@ -136,3 +136,9 @@ data-hub.import.drag-drop: Explore sus archivos o suelte un JSON directamente aq
 data-hub.import.browse-files: Explorar archivos
 perspective-editor.form.main-nav-permission.category.automationIntegration: Automatización e integración
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Configuración de Data Hub
+user-management.permissions.plugin_datahub_admin: Administración de Datahub
+user-management.permissions.plugin_datahub_config: Configuración de Datahub
+user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - GraphQL
+user-management.permissions.plugin_datahub_permission_delete: Datahub Eliminación
+user-management.permissions.plugin_datahub_permission_read: Datahub Lectura
+user-management.permissions.plugin_datahub_permission_update: Datahub Actualización
