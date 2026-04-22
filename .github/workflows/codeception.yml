@@ -16,6 +16,10 @@ env:
     PIMCORE_PROJECT_ROOT: ${{ github.workspace }}
     PRIVATE_REPO: ${{ github.event.repository.private }}
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+    cancel-in-progress: true
+
 jobs:
     setup-matrix:
         runs-on: ubuntu-latest
