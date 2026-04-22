@@ -1,62 +1,61 @@
 {
-  "name": "pimcore/data-hub",
-  "license": "proprietary",
-  "type": "pimcore-bundle",
-  "description": "Pimcore Datahub",
-  "config": {
-    "sort-packages": true,
-    "preferred-install": {
-      "pimcore/pimcore": "source",
-      "*": "dist"
+    "name": "pimcore/data-hub",
+    "license": "proprietary",
+    "type": "pimcore-bundle",
+    "description": "Pimcore Datahub",
+    "config": {
+        "sort-packages": true,
+        "preferred-install": {
+            "pimcore/pimcore": "source",
+            "*": "dist"
+        },
+        "allow-plugins": {
+            "symfony/runtime": true
+        }
     },
-    "allow-plugins": {
-      "symfony/runtime": true
-    }
-  },
-  "prefer-stable": true,
-  "minimum-stability": "dev",
-  "require": {
-    "nesbot/carbon": "^2.72 || ^3.8.4",
-    "php": "~8.3.0 || ~8.4.0",
-    "pimcore/admin-ui-classic-bundle": "^2.0",
-    "pimcore/pimcore": "^12.3",
-    "pimcore/compatibility-bridge-v10": "^2.0",
-    "pimcore/studio-backend-bundle": "^2025.4",
-    "webonyx/graphql-php": "^15.2.3"
-  },
-  "require-dev": {
-    "phpstan/phpstan": "1.12.15",
-    "phpunit/phpunit": "^9.6",
-    "symfony/phpunit-bridge": "^6",
-    "codeception/codeception": "^5.0.10",
-    "codeception/phpunit-wrapper": "^9",
-    "codeception/module-asserts": "^2",
-    "codeception/module-symfony": "^3.1.0",
-    "symfony/dotenv": "^6.2 || ^7.2",
-    "symfony/runtime": "^6.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "Pimcore\\Bundle\\DataHubBundle\\": "src/",
-      "Pimcore\\": "core-extension/Pimcore/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Pimcore\\Bundle\\DataHubBundle\\Tests\\": "tests"
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "nesbot/carbon": "^2.72 || ^3.8.4",
+        "php": "~8.3.0 || ~8.4.0",
+        "pimcore/admin-ui-classic-bundle": "^2.0",
+        "pimcore/pimcore": "^12.3",
+        "pimcore/compatibility-bridge-v10": "^2.0",
+        "pimcore/studio-backend-bundle": "^2025.4",
+        "webonyx/graphql-php": "^15.2.3"
     },
-    "files": [
-      "kernel/Kernel.php"
-    ]
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-2.x": "2.3.x-dev"
+    "require-dev": {
+        "phpstan/phpstan": "1.12.15",
+        "phpunit/phpunit": "^12.5.23 || ^13.1.7",
+        "symfony/phpunit-bridge": "^6",
+        "codeception/codeception": "^5.3.5",
+        "codeception/module-asserts": "^2",
+        "codeception/module-symfony": "^3.1.0",
+        "symfony/dotenv": "^6.2 || ^7.2",
+        "symfony/runtime": "^6.4"
     },
-    "pimcore": {
-      "bundles": [
-        "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
-      ]
+    "autoload": {
+        "psr-4": {
+            "Pimcore\\Bundle\\DataHubBundle\\": "src/",
+            "Pimcore\\": "core-extension/Pimcore/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pimcore\\Bundle\\DataHubBundle\\Tests\\": "tests"
+        },
+        "files": [
+            "kernel/Kernel.php"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-2.x": "2.3.x-dev"
+        },
+        "pimcore": {
+            "bundles": [
+                "Pimcore\\Bundle\\DataHubBundle\\PimcoreDataHubBundle"
+            ]
+        }
     }
-  }
 }
