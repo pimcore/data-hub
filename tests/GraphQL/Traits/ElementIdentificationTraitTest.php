@@ -46,8 +46,6 @@ class TestTrait
 
 class ElementIdentificationTraitTest extends Unit
 {
-    const TRAIT_TO_TEST = '\Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait';
-
     const TEST_TYPE = 'object';
 
     public function testThrowingClientSafeExceptionIfTypeIsMissing()
@@ -56,7 +54,9 @@ class ElementIdentificationTraitTest extends Unit
         $this->expectExceptionMessageMatches('/type expected/');
         $newValueItemValue = [];
         // System under Test
-        $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
+        $sut = new class {
+            use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
+        };
         // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
@@ -67,7 +67,9 @@ class ElementIdentificationTraitTest extends Unit
         $this->expectExceptionMessageMatches('/The type .* is not supported/');
         $newValueItemValue = ['type' => 'wrong'];
         // System under Test
-        $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
+        $sut = new class {
+            use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
+        };
         // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
@@ -78,7 +80,9 @@ class ElementIdentificationTraitTest extends Unit
         $this->expectExceptionMessageMatches('/either .* or .* expected/');
         $newValueItemValue = ['type' => self::TEST_TYPE];
         // System under Test
-        $sut = $this->getMockForTrait(self::TRAIT_TO_TEST);
+        $sut = new class {
+            use \Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementIdentificationTrait;
+        };
         // Act + Assert
         $sut->getElementByTypeAndIdOrPath($newValueItemValue);
     }
