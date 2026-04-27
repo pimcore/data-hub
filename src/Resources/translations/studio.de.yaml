@@ -5,6 +5,7 @@ data-hub.clone.name: Name für geklonte Konfiguration eingeben
 data-hub.delete.confirm: 'Sind Sie sicher, dass Sie die Konfiguration "{{name}}" löschen möchten?'
 error.data-hub.config-exists: Eine Konfiguration mit diesem Namen existiert bereits
 error.data-hub.import-config-invalid: Die hochgeladene Datei ist keine gültige Konfiguration
+error.data-hub.api-key-validation-failed: Ein oder mehrere API-Keys erfüllen nicht die Mindestlänge von 16 Zeichen.
 data-hub.config.active: Aktiv
 data-hub.config.type: Typ
 data-hub.config.name: Name
