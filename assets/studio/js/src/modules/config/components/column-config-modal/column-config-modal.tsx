@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { Dropdown, Flex, IconTextButton, Modal, ModalTitle } from '@pimcore/studio-ui-bundle/components'
+import { Dropdown, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
@@ -80,6 +80,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
+  const alertModal = useAlertModal()
   const { getByName } = useClassDefinitions()
 
   const resolvedClassId: string = React.useMemo(() => {
@@ -87,10 +88,11 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     return getByName(entity)?.id ?? entity
   }, [classDefinitionId, entity, getByName])
 
-  const isLegacy = columnConfig !== undefined
-
   const [migratedColumns, setMigratedColumns] = useState<TColumns[]>([])
+  const [isMigrated, setIsMigrated] = useState(false)
   const columnEditorRef = useRef<ColumnEditorHandle<TColumns>>(null)
+
+  const isLegacy = columnConfig !== undefined && !isMigrated
 
   const { data: availableFieldsData } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
     { classId: resolvedClassId, folderId: 1 },
@@ -104,9 +106,32 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   const addColumnMenu = useAddColumnDropdown(availableFields, handleAddColumn)
 
+  const commitMigration = (cols: TColumns[]): void => {
+    setMigratedColumns(cols)
+    setIsMigrated(true)
+  }
+
   const handleConfirmMigration = (): void => {
     const cols = columnEditorRef.current?.getColumns() ?? migratedColumns
-    onApply(cols)
+
+    if (cols.length === 0) {
+      alertModal.warn({
+        title: t('data-hub.migration-modal.confirm-empty-columns-title'),
+        content: t('data-hub.migration-modal.confirm-empty-columns-content'),
+        okText: t('data-hub.migration-modal.confirm-empty-columns-ok'),
+        cancelText: t('data-hub.migration-modal.confirm-empty-columns-cancel'),
+        okCancel: true,
+        onOk: () => { commitMigration(cols) }
+      })
+      return
+    }
+
+    commitMigration(cols)
+  }
+
+  const handleCancel = (): void => {
+    setIsMigrated(false)
+    onCancel()
   }
 
   const modalTitle = (
@@ -119,7 +144,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     return (
       <Modal
         footer={ null }
-        onCancel={ onCancel }
+        onCancel={ handleCancel }
         open={ open }
         size="XL"
         title={ modalTitle }
@@ -127,14 +152,14 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
         { renderEditor({
           ref: columnEditorRef,
           classDefinitionId: resolvedClassId,
-          columns,
+          columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
           onApply: (updatedColumns) => {
             onApply(updatedColumns)
-            onCancel()
+            handleCancel()
           },
-          onCancel
+          onCancel: handleCancel
         }) }
       </Modal>
     )
@@ -143,7 +168,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   return (
     <MigrationModal
       legacyConfig={ columnConfig }
-      onClose={ onCancel }
+      onClose={ handleCancel }
       onConfirm={ handleConfirmMigration }
       open={ open }
       renderToolbarLeft={
