@@ -5,6 +5,7 @@ data-hub.clone.name: Skriv inn navn for klonet konfigurasjon
 data-hub.delete.confirm: 'Er du sikker på at du vil slette konfigurasjonen "{{name}}"?'
 error.data-hub.config-exists: En konfigurasjon med dette navnet finnes allerede
 error.data-hub.import-config-invalid: Den opplastede filen er ikke en gyldig konfigurasjon
+error.data-hub.api-key-validation-failed: En eller flere API-nøkler oppfyller ikke minimumslengden på 16 tegn.
 data-hub.config.active: Aktiv
 data-hub.config.type: Type
 data-hub.config.name: Navn

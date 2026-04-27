@@ -32,8 +32,9 @@ const PreviewGrid = ({ value }: { value: Array<{ type: string, value: any }> }):
 
   const columns = value.map((item, index) => {
     const isAdvancedCellType = advancedGridCellRegistry.hasDynamicType(item.type)
+    const safeKey = `${item.type.replace(/\./g, '_')}-${index}`
 
-    return columnHelper.accessor(`${item.type}-${index}`, {
+    return columnHelper.accessor(safeKey, {
       header: item.type,
       meta: {
         editable: false,
@@ -52,7 +53,8 @@ const PreviewGrid = ({ value }: { value: Array<{ type: string, value: any }> }):
 
   const row: Record<string, any> = {}
   value.forEach((item, index) => {
-    row[`${item.type}-${index}`] = item.value
+    const safeKey = `${item.type.replace(/\./g, '_')}-${index}`
+    row[safeKey] = item.value
   })
 
   return (
