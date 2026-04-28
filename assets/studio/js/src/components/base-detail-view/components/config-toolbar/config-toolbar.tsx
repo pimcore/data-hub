@@ -23,6 +23,7 @@ export interface ConfigToolbarProps {
   onRefresh: () => void
   onDelete: () => void
   additionalButtons?: ReactNode[]
+  leftAdditionalContent?: ReactNode
 }
 
 export function ConfigToolbar ({
@@ -34,7 +35,8 @@ export function ConfigToolbar ({
   onSave,
   onRefresh,
   onDelete,
-  additionalButtons = []
+  additionalButtons = [],
+  leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
 
@@ -82,6 +84,12 @@ export function ConfigToolbar ({
           />
         </Tooltip>
         <ExportButton configName={ configName } />
+        {leftAdditionalContent !== undefined && (
+          <>
+            <span style={ { borderLeft: '1px solid currentColor', height: '1em', opacity: 0.2 } } />
+            {leftAdditionalContent}
+          </>
+        )}
       </Space>
       <ButtonGroup items={ rightButtons as any } />
     </Toolbar>
