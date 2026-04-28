@@ -12,6 +12,7 @@ import React, { type ReactNode } from 'react'
 import { Button, ButtonGroup, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { ExportButton } from '../../../../modules/config/components/export-button'
+import { useStyles } from './config-toolbar.styles'
 
 export interface ConfigToolbarProps {
   configName: string
@@ -39,6 +40,7 @@ export function ConfigToolbar ({
   leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
+  const { styles } = useStyles()
 
   const saveButton = (
     <Button
@@ -86,7 +88,7 @@ export function ConfigToolbar ({
         <ExportButton configName={ configName } />
         {leftAdditionalContent !== undefined && (
           <>
-            <span style={ { borderLeft: '1px solid currentColor', height: '1em', opacity: 0.2 } } />
+            <span className={ styles.divider } />
             {leftAdditionalContent}
           </>
         )}
