@@ -22,7 +22,7 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "2.2.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/5a8210a0-2b34-4689-ba51-85d242d32a01/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/b769c9fb-2f00-4065-8feb-5df06dd962bd/"
   },
   "shared": [
     {
@@ -35,7 +35,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/109.13b60f40.js",
+            "static/js/109.62a4c31b.js",
             "static/js/remoteEntry.js"
           ]
         },
@@ -56,7 +56,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/109.13b60f40.js",
+            "static/js/109.62a4c31b.js",
             "static/js/remoteEntry.js"
           ]
         },
@@ -77,7 +77,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/async/346.46b37456.js"
+            "static/js/async/346.60211bf9.js"
           ]
         },
         "css": {
@@ -181,9 +181,9 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/840.3405a9b3.js",
-            "static/js/async/558.baae58a8.js",
-            "static/js/async/__federation_expose_plugins.6232f09b.js"
+            "static/js/async/840.4693a4bb.js",
+            "static/js/async/696.3b1d6da3.js",
+            "static/js/async/__federation_expose_plugins.c4cf01bd.js"
           ],
           "async": []
         },
@@ -200,9 +200,9 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/840.3405a9b3.js",
-            "static/js/async/558.baae58a8.js",
-            "static/js/async/__federation_expose_default_export.a9578b27.js"
+            "static/js/async/840.4693a4bb.js",
+            "static/js/async/696.3b1d6da3.js",
+            "static/js/async/__federation_expose_default_export.d48bf6ed.js"
           ],
           "async": []
         },
