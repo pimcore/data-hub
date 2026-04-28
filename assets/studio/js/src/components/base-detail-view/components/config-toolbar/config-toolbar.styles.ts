@@ -17,7 +17,7 @@ export const useStyles = createStyles(({ css, token }) => {
       align-self: center;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
-      margin-inline: ${token.marginXS}px;
+      margin-inline: ${token.marginXXS}px;
     `
   }
 })
