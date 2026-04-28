@@ -13,11 +13,11 @@ import { createStyles } from 'antd-style'
 export const useStyles = createStyles(({ css, token }) => {
   return {
     divider: css`
-      display: inline-block;
-      width: 1px;
-      height: 1em;
-      background-color: ${token.colorSplit};
-      vertical-align: middle;
+      height: ${token.fontSizeLG}px;
+      align-self: center;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      margin-inline: ${token.marginXS}px;
     `
   }
 })

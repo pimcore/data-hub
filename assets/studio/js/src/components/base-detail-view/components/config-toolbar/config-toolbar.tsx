@@ -9,7 +9,7 @@
  */
 
 import React, { type ReactNode } from 'react'
-import { Button, ButtonGroup, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
+import { Button, ButtonGroup, Divider, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { ExportButton } from '../../../../modules/config/components/export-button'
 import { useStyles } from './config-toolbar.styles'
@@ -88,7 +88,10 @@ export function ConfigToolbar ({
         <ExportButton configName={ configName } />
         {leftAdditionalContent !== undefined && (
           <>
-            <span className={ styles.divider } />
+            <Divider
+              className={ styles.divider }
+              type="vertical"
+            />
             {leftAdditionalContent}
           </>
         )}
