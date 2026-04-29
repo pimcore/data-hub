@@ -130,7 +130,10 @@ export const ColumnPreview = ({ column, objectId, pipelineValue }: ColumnPreview
 
   return (
     <Box padding={ { top: 'small', bottom: 'none', x: 'small' } }>
-      <Flex align='center' gap='small'>
+      <Flex
+        align='center'
+        gap='small'
+      >
         <Text style={ { wordBreak: 'keep-all' } }>{ t('grid.advanced-column.preview') }:</Text>
         { objectId === null
           ? (
