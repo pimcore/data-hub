@@ -8,9 +8,9 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
-import { Grid, GridContentRenderer, Text } from '@pimcore/studio-ui-bundle/components'
+import { Box, Flex, Grid, GridContentRenderer, Text } from '@pimcore/studio-ui-bundle/components'
 import { type DynamicTypeGridCellRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { useLanguageSelection } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { api, type AdvancedColumnConfig } from '@pimcore/studio-ui-bundle/api/data-object'
@@ -79,7 +79,7 @@ const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEd
     ? (column.locale ?? currentLanguage)
     : undefined
 
-  const { data, error, isLoading } = api.endpoints.dataObjectGetGridPreview.useQuery({
+  const { data, error, isFetching } = api.endpoints.dataObjectGetGridPreview.useQuery({
     body: {
       objectId,
       column: {
@@ -96,16 +96,20 @@ const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEd
     }
   })
 
-  if (isLoading) {
-    return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.loading') }</Text>
-  }
+  // Keep the last successful data so re-fetches don't flash "no data"
+  const lastData = useRef(data)
+  if (data !== undefined) lastData.current = data
 
   if (error !== undefined) {
     const message = 'error' in (error as object) ? (error as any).error : t('data-hub.column-config-modal.preview.error')
     return <Text type='danger'>{ message }</Text>
   }
 
-  const value = data?.value
+  if (isFetching && lastData.current === undefined) {
+    return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.loading') }</Text>
+  }
+
+  const value = lastData.current?.value
 
   if (value === undefined || value === null || !Array.isArray(value) || value.length === 0) {
     return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.no-data') }</Text>
@@ -117,21 +121,31 @@ const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEd
 export const ColumnPreview = ({ column, objectId, pipelineValue }: ColumnPreviewProps): React.JSX.Element => {
   const { t } = useTranslation()
 
+  // Debounce pipeline changes so the previous result stays visible during edits
+  const [debouncedPipelineValue, setDebouncedPipelineValue] = useState(pipelineValue)
+  useEffect(() => {
+    const timer = setTimeout(() => { setDebouncedPipelineValue(pipelineValue) }, 300)
+    return () => { clearTimeout(timer) }
+  }, [pipelineValue])
+
   return (
-    <div style={ { minHeight: 60, display: 'flex', alignItems: 'center' } }>
-      { objectId === null
-        ? (
-          <Text type='secondary'>
-            { t('data-hub.column-config-modal.preview.placeholder') }
-          </Text>
-          )
-        : (
-          <PreviewResult
-            column={ column }
-            objectId={ objectId }
-            pipelineValue={ pipelineValue }
-          />
-          ) }
-    </div>
+    <Box padding={ { top: 'small', bottom: 'none', x: 'small' } }>
+      <Flex align='center' gap='small'>
+        <Text style={ { wordBreak: 'keep-all' } }>{ t('grid.advanced-column.preview') }:</Text>
+        { objectId === null
+          ? (
+            <Text type='secondary'>
+              { t('data-hub.column-config-modal.preview.placeholder') }
+            </Text>
+            )
+          : (
+            <PreviewResult
+              column={ column }
+              objectId={ objectId }
+              pipelineValue={ debouncedPipelineValue }
+            />
+            ) }
+      </Flex>
+    </Box>
   )
 }

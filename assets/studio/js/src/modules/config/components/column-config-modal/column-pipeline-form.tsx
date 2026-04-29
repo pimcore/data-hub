@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Form, Input, Pipeline, PipelineConfigProvider, Tabs } from '@pimcore/studio-ui-bundle/components'
+import { Box, Form, Input, Pipeline, PipelineConfigProvider, SplitLayout } from '@pimcore/studio-ui-bundle/components'
 import { isEqual } from 'lodash'
 import { type AdvancedEditorColumn } from './types'
 import { ColumnPreview } from './column-preview'
@@ -66,49 +66,48 @@ export const ColumnPipelineForm = ({
           <Pipeline
             items={ [
               {
+                id: 'title',
+                component: (
+                  <Pipeline.CustomItem>
+                    <Box padding={ { top: 'mini', bottom: 'mini', x: 'none' } }>
+                      <Form.Item name='title'>
+                        <Input
+                          placeholder={ t('data-hub.column-config-modal.pipeline.title') }
+                          style={ { maxWidth: '100%' } }
+                        />
+                      </Form.Item>
+                    </Box>
+                  </Pipeline.CustomItem>
+                )
+              },
+              {
                 id: 'fields',
                 component: (
                   <Pipeline.CustomItem>
-                    <Tabs
-                      items={ [
-                        {
-                          key: 'title',
-                          label: t('data-hub.column-config-modal.pipeline.title'),
-                          forceRender: true,
-                          children: (
-                            <Form.Item
-                              label={ t('data-hub.column-config-modal.pipeline.title') }
-                              name='title'
-                            >
-                              <Input />
-                            </Form.Item>
-                          )
-                        },
-                        {
-                          key: 'sourceFields',
-                          label: t('grid.advanced-column.advancedColumns'),
-                          forceRender: true,
-                          children: (
-                            <Pipeline.DynamicGroupItem
-                              dynamicTypeRegistryId={ sourceFieldsRegistryId }
-                              id='sourceFields'
-                              translationKeyPrefix='data-hub.column-config-modal.pipeline'
-                            />
-                          )
-                        },
-                        {
-                          key: 'transformers',
-                          label: t('grid.advanced-column.transformers'),
-                          forceRender: true,
-                          children: (
-                            <Pipeline.DynamicGroupItem
-                              dynamicTypeRegistryId={ transformersRegistryId }
-                              id='transformers'
-                              translationKeyPrefix='data-hub.column-config-modal.pipeline'
-                            />
-                          )
-                        }
-                      ] }
+                    <SplitLayout
+                      leftItem={ {
+                        children: (
+                          <Pipeline.DynamicGroupItem
+                            dynamicTypeRegistryId={ sourceFieldsRegistryId }
+                            id='sourceFields'
+                            showTitle
+                            translationKeyPrefix='data-hub.column-config-modal.pipeline'
+                          />
+                        ),
+                        size: 50
+                      } }
+                      rightItem={ {
+                        children: (
+                          <Pipeline.DynamicGroupItem
+                            dynamicTypeRegistryId={ transformersRegistryId }
+                            id='transformers'
+                            showTitle
+                            translationKeyPrefix='data-hub.column-config-modal.pipeline'
+                          />
+                        ),
+                        size: 50
+                      } }
+                      withDivider
                     />
                   </Pipeline.CustomItem>
                 )
