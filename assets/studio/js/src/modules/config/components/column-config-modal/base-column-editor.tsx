@@ -83,7 +83,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     // Own the language state here. Initialize once from the prop, falling back to
     // the user's first content language. This is the single source of truth —
     // no synchronization effects needed.
-    const initialLanguage = language ?? user.contentLanguages?.[0] ?? 'en'
+    const initialLanguage = language ?? (user.contentLanguages as string[] | undefined)?.[0] ?? 'en'
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 
