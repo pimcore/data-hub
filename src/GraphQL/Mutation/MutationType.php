@@ -578,6 +578,7 @@ final class MutationType extends ObjectType
                         'parentId' => ['type' => Type::int()],
                         'defaultLanguage' => ['type' => Type::string()],
                         'published' => ['type' => Type::boolean(), 'description' => 'Default is true!'],
+                        'versionNote' => ['type' => Type::string()],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
                         'type' => ['type' => Type::string()],
@@ -730,6 +731,7 @@ final class MutationType extends ObjectType
                         'fullpath' => ['type' => Type::string()],
                         'parentId' => ['type' => Type::int()],
                         'defaultLanguage' => ['type' => Type::string()],
+                        'versionNote' => ['type' => Type::string()],
                         'omitMandatoryCheck' => ['type' => Type::boolean()],
                         'omitVersionCreate' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
@@ -956,6 +958,7 @@ final class MutationType extends ObjectType
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
+                    'versionNote' => ['type' => Type::string()],
                     'assetData' => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
@@ -1093,6 +1096,7 @@ final class MutationType extends ObjectType
                 'fields' => [
                     'success' => ['type' => Type::boolean()],
                     'message' => ['type' => Type::string()],
+                    'versionNote' => ['type' => Type::string()],
                     'assetData' => [
                         'args' => ['defaultLanguage' => ['type' => Type::string()]],
                         'type' => $assetType,
@@ -1595,7 +1599,7 @@ final class MutationType extends ObjectType
             Version::disable();
         }
 
-        $element->save();
+        $element->save(['versionNote' => isset($options['versionNote']) ? $options['versionNote'] : null]);
 
         if (isset($options['omitVersionCreate']) && $options['omitVersionCreate'] && !$omitVersionCreateBefore) {
             Version::enable();
