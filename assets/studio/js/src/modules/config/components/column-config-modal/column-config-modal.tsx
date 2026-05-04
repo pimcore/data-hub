@@ -31,6 +31,10 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   hideToolbar: boolean
   onApply: (columns: TColumns[]) => void
   onCancel: () => void
+  /** The currently persisted preview language for this entity. */
+  language?: string
+  /** Called when the user changes the preview language so the adapter can persist it. */
+  onLanguageChange?: (language: string) => void
 }
 
 export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
@@ -51,6 +55,10 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
   title: string
   onApply: (columns: TColumns[]) => void
   onCancel: () => void
+  /** The currently persisted preview language for this entity. */
+  language?: string
+  /** Called when the user changes the preview language so the adapter can persist it. */
+  onLanguageChange?: (language: string) => void
   /**
    * Render prop that returns the adapter-specific column editor element.
    * The consumer MUST forward the `ref` to their editor component (forwardRef).
@@ -77,6 +85,8 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   title,
   onApply,
   onCancel,
+  language,
+  onLanguageChange,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
@@ -155,6 +165,8 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
+          language,
+          onLanguageChange,
           onApply: (updatedColumns) => {
             onApply(updatedColumns)
             handleCancel()
@@ -190,6 +202,8 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
+          language,
+          onLanguageChange,
           onApply: (cols) => { setMigratedColumns(cols) },
           onCancel: () => {}
         }) }
