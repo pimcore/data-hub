@@ -38,7 +38,7 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
     public function getExplorerUrl(string $clientname): string
     {
         return $this->routingService->generate(
-            'admin_pimcoredatahub_config', ['clientname' => $clientname]
+            'pimcore_studio_api_data_hub_graphql_explorer', ['clientname' => $clientname]
         );
     }
 
