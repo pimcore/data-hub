@@ -9,9 +9,10 @@
  */
 
 import React, { type ReactNode } from 'react'
-import { Button, ButtonGroup, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
+import { Button, ButtonGroup, Divider, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { ExportButton } from '../../../../modules/config/components/export-button'
+import { useStyles } from './config-toolbar.styles'
 
 export interface ConfigToolbarProps {
   configName: string
@@ -23,6 +24,7 @@ export interface ConfigToolbarProps {
   onRefresh: () => void
   onDelete: () => void
   additionalButtons?: ReactNode[]
+  leftAdditionalContent?: ReactNode
 }
 
 export function ConfigToolbar ({
@@ -34,9 +36,11 @@ export function ConfigToolbar ({
   onSave,
   onRefresh,
   onDelete,
-  additionalButtons = []
+  additionalButtons = [],
+  leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
+  const { styles } = useStyles()
 
   const saveButton = (
     <Button
@@ -82,6 +86,15 @@ export function ConfigToolbar ({
           />
         </Tooltip>
         <ExportButton configName={ configName } />
+        {leftAdditionalContent !== undefined && (
+          <>
+            <Divider
+              className={ styles.divider }
+              type="vertical"
+            />
+            {leftAdditionalContent}
+          </>
+        )}
       </Space>
       <ButtonGroup items={ rightButtons as any } />
     </Toolbar>
