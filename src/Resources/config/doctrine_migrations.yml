@@ -1,3 +1,4 @@
 doctrine_migrations:
     migrations_paths:
-        'Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX': '@PimcoreDataHubBundle/Migrations/PimcoreX'
+        'Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX': "@PimcoreDataHubBundle/Migrations/PimcoreX"
+        'Pimcore\Bundle\DataHubBundle\Migrations\Pimcore2026': "@PimcoreDataHubBundle/Migrations/Pimcore2026"

@@ -12,7 +12,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX\Version20230503165847;
+use Pimcore\Bundle\DataHubBundle\Migrations\Pimcore2026\Version20260506124014;
 use Pimcore\Db;
 use Pimcore\Extension\Bundle\Installer\Exception\InstallationException;
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
@@ -95,6 +95,6 @@ final class Installer extends SettingsStoreAwareInstaller
 
     public function getLastMigrationVersionClassName(): string
     {
-        return Version20230503165847::class;
+        return Version20260506124014::class;
     }
 }
