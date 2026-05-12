@@ -16,7 +16,6 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\Pimcore2026;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use Pimcore\Model\Translation;
 
 /**
  * @internal
@@ -36,45 +35,57 @@ final class Version20260506124014 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        foreach (self::KEYS as $key) {
-            $adminTranslation = Translation::getByKey($key, 'admin');
-            if (!$adminTranslation) {
-                continue;
-            }
+        if (empty($this->connection->fetchAllAssociative("SHOW TABLES LIKE 'translations_admin'"))) {
+            $this->write('Skipping migration: translations_admin table does not exist.');
 
-            $backendTranslation = Translation::getByKey($key, Translation::DOMAIN_BACKEND, true);
-            foreach ($adminTranslation->getTranslations() as $locale => $value) {
-                if (!$backendTranslation->hasTranslation($locale)) {
-                    $backendTranslation->addTranslation($locale, $value);
-                }
-            }
-
-            $backendTranslation->save();
-            $adminTranslation->delete();
-
-            $this->write('Migrated translation: ' . $key);
+            return;
         }
+
+        $inList = "'" . implode("', '", self::KEYS) . "'";
+
+        $this->addSql(
+            "INSERT IGNORE INTO `translations_backend` (`key`, `type`, `language`, `text`, `creationDate`, `modificationDate`, `userOwner`, `userModification`)
+             SELECT `key`, `type`, `language`, `text`, `creationDate`, `modificationDate`, `userOwner`, `userModification`
+             FROM `translations_admin`
+             WHERE `key` IN ($inList)"
+        );
+
+        $this->addSql(
+            "UPDATE `translations_backend` tb
+             INNER JOIN `translations_admin` ta ON ta.`key` = tb.`key` AND ta.`language` = tb.`language`
+             SET tb.`text` = ta.`text`, tb.`type` = ta.`type`
+             WHERE tb.`key` IN ($inList)
+               AND (tb.`text` IS NULL OR tb.`text` = '')"
+        );
+
+        $this->addSql("DELETE FROM `translations_admin` WHERE `key` IN ($inList)");
     }
 
     public function down(Schema $schema): void
     {
-        foreach (self::KEYS as $key) {
-            $backendTranslation = Translation::getByKey($key, Translation::DOMAIN_BACKEND);
-            if (!$backendTranslation) {
-                continue;
-            }
+        if (empty($this->connection->fetchAllAssociative("SHOW TABLES LIKE 'translations_admin'"))) {
+            $this->write('Skipping revert: translations_admin table does not exist.');
 
-            $adminTranslation = Translation::getByKey($key, 'admin', true);
-            foreach ($backendTranslation->getTranslations() as $locale => $value) {
-                if (!$adminTranslation->hasTranslation($locale)) {
-                    $adminTranslation->addTranslation($locale, $value);
-                }
-            }
-
-            $adminTranslation->save();
-            $backendTranslation->delete();
-
-            $this->write('Reverted translation: ' . $key);
+            return;
         }
+
+        $inList = "'" . implode("', '", self::KEYS) . "'";
+
+        $this->addSql(
+            "INSERT IGNORE INTO `translations_admin` (`key`, `type`, `language`, `text`, `creationDate`, `modificationDate`, `userOwner`, `userModification`)
+             SELECT `key`, `type`, `language`, `text`, `creationDate`, `modificationDate`, `userOwner`, `userModification`
+             FROM `translations_backend`
+             WHERE `key` IN ($inList)"
+        );
+
+        $this->addSql(
+            "UPDATE `translations_admin` ta
+             INNER JOIN `translations_backend` tb ON tb.`key` = ta.`key` AND tb.`language` = ta.`language`
+             SET ta.`text` = tb.`text`, ta.`type` = tb.`type`
+             WHERE ta.`key` IN ($inList)
+               AND (ta.`text` IS NULL OR ta.`text` = '')"
+        );
+
+        $this->addSql("DELETE FROM `translations_backend` WHERE `key` IN ($inList)");
     }
 }
