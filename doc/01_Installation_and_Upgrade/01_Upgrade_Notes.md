@@ -59,6 +59,9 @@
 ### Dependency Updates
 - Removed Doctrine `enum` type mapping — the custom `enum: string` mapping is no longer required in Doctrine configuration.
 
+## 2026.2.0
+- [MutationType] Added system field `published` as an optional argument for data object mutation
+
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
 
