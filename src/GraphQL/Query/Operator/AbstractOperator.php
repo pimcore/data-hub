@@ -13,7 +13,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\Query\Operator;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 
 abstract class AbstractOperator implements OperatorInterface
 {
@@ -30,7 +29,7 @@ abstract class AbstractOperator implements OperatorInterface
     protected $context;
 
     /**
-     * @var ConfigElementInterface[]
+     * @var array
      */
     protected $children;
 
@@ -45,7 +44,7 @@ abstract class AbstractOperator implements OperatorInterface
     }
 
     /**
-     * @return ConfigElementInterface[]
+     * @return array
      */
     public function getChildren()
     {

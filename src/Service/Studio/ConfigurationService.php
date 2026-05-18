@@ -282,6 +282,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         }
 
         $configuration = $this->configurationDehydrator->dehydrate($configuration);
+        $this->validateApiKeys($configuration);
         $configuration['general']['modificationDate'] = time();
 
         $config->setConfiguration($configuration);
@@ -299,6 +300,45 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         foreach ($permissions as $perm) {
             if (!$configuration->isAllowed($perm)) {
                 throw new ForbiddenException('Permission denied: ' . $perm);
+            }
+        }
+    }
+
+    /**
+     * @throws ValidationFailedException
+     */
+    private function validateApiKeys(array $configuration): void
+    {
+        $isActive = $configuration['general']['active'] ?? false;
+        $securityMethod = $configuration['security']['method'] ?? null;
+
+        if (!$isActive || $securityMethod !== 'datahub_apikey') {
+            return;
+        }
+
+        $apiKeys = $configuration['security']['apikey'] ?? [];
+
+        if (!is_array($apiKeys)) {
+            $apiKeys = [];
+        }
+
+        if (count($apiKeys) === 0) {
+            throw new ValidationFailedException(
+                message: 'At least one API key must be provided when the endpoint is active.',
+                errorKey: 'data-hub.api-key-validation-failed'
+            );
+        }
+
+        foreach ($apiKeys as $apiKey) {
+            $trimmedKey = trim($apiKey);
+            if (mb_strlen($trimmedKey) < 16) {
+                throw new ValidationFailedException(
+                    message: sprintf(
+                        'API key "%s" does not satisfy the minimum length of 16 characters.',
+                        $trimmedKey
+                    ),
+                    errorKey: 'data-hub.api-key-validation-failed'
+                );
             }
         }
     }
@@ -349,7 +389,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         $configuration = Configuration::getByName($name);
         if ($configuration instanceof Configuration) {
-            throw new ElementExistsException('Configuration with name "' . $name . '" already exists.');
+            throw new ElementExistsException(
+                message: 'Configuration with name "' . $name . '" already exists.',
+                errorKey: 'data-hub.config-exists'
+            );
         }
     }
 
@@ -480,7 +523,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (!isset($type, $importData['path'], $name)) {
             throw new ValidationFailedException(
-                'Uploaded configuration data is invalid. Missing keys: type, path, name.'
+                message: 'Uploaded configuration data is invalid. Missing keys: type, path, name.',
+                errorKey: 'data-hub.import-config-invalid'
             );
         }
 

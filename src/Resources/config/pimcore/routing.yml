@@ -1,17 +1,11 @@
-app:
-    resource: "@PimcoreDataHubBundle/Controller/"
-    exclude: "@PimcoreDataHubBundle/Controller/Studio"
+pimcore_data_hub_studio:
+    resource: "@PimcoreDataHubBundle/Controller/Studio"
     type: attribute
-
-
-admin_pimcoredatahub_config:
-    path: /pimcore-datahub-webservices/explorer/{clientname}
-    defaults: { _controller: Pimcore\Bundle\DataHubBundle\Controller\GraphQLExplorerController::explorerAction }
+    prefix: '%pimcore_studio_backend.url_prefix%/bundle/data-hub'
+    options:
+        expose: true
 
 admin_pimcoredatahub_webservice:
     path: /pimcore-graphql-webservices/{clientname}
     defaults: { _controller: Pimcore\Bundle\DataHubBundle\Controller\WebserviceController::webonyxAction }
 
-pimcore_data_hub_studio:
-    resource: .
-    type: pimcore_data_hub_studio

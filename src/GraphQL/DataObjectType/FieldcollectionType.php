@@ -42,10 +42,6 @@ final class FieldcollectionType extends UnionType implements ContainerAwareInter
         parent::__construct($config);
     }
 
-    /**
-     *
-     * @throws \Exception
-     */
     public function getTypes(): array
     {
         return $this->types;

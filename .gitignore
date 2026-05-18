@@ -36,3 +36,10 @@ Thumbs.db
 /.htaccess
 /auth.json
 /config.json
+
+# studio related
+/assets/studio/node_modules
+assets/studio/dist/*
+!assets/studio/dist/.gitkeep
+!assets/studio/dist/types
+!assets/studio/dist/types/*

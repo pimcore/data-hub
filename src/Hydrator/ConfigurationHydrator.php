@@ -53,7 +53,48 @@ final readonly class ConfigurationHydrator implements ConfigurationHydratorInter
             ],
             adapter: $type,
             writable: $config->isWriteable(),
+            hasStudioColumnConfig: $this->hasStudioColumnConfig($config),
         );
+    }
+
+    private function hasStudioColumnConfig(Configuration $config): bool
+    {
+        $configuration = $config->configuration;
+
+        if (!is_array($configuration)) {
+            return false;
+        }
+
+        // Rule 1: eventsSchema -> dataObjectClasses -> [*] -> columns
+        if ($this->dataObjectClassesHaveColumns($configuration['eventsSchema']['dataObjectClasses'] ?? [])) {
+            return true;
+        }
+
+        $schema = $configuration['schema'] ?? [];
+
+        if (!is_array($schema)) {
+            return false;
+        }
+
+        // Rule 2: schema -> columns
+        // Rule 3: schema -> dataObjectClasses -> [*] -> columns
+        return array_key_exists('columns', $schema)
+            || $this->dataObjectClassesHaveColumns($schema['dataObjectClasses'] ?? []);
+    }
+
+    private function dataObjectClassesHaveColumns(mixed $dataObjectClasses): bool
+    {
+        if (!is_array($dataObjectClasses)) {
+            return false;
+        }
+
+        foreach ($dataObjectClasses as $class) {
+            if (is_array($class) && array_key_exists('columns', $class)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

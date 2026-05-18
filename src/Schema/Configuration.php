@@ -25,7 +25,10 @@ use Pimcore\Bundle\StudioBackendBundle\Util\Trait\AdditionalAttributesTrait;
 #[Schema(
     schema: 'BundleDataHubConfiguration',
     title: 'Bundle Data Hub Configuration',
-    required: ['id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions'],
+    required: [
+        'id', 'text', 'type', 'iconCls', 'expandable', 'leaf', 'adapter', 'writable', 'permissions',
+        'studioColumnConfig',
+        ],
     type: 'object'
 )]
 final class Configuration implements AdditionalAttributesInterface
@@ -57,6 +60,8 @@ final class Configuration implements AdditionalAttributesInterface
         private readonly ?string $adapter = null,
         #[Property(description: 'Writable', type: 'bool', example: 'true')]
         private readonly bool $writable = false,
+        #[Property(property: 'studioColumnConfig', description: 'Has Studio Column Configuration', type: 'bool', example: 'false')]
+        private readonly bool $hasStudioColumnConfig = false,
     ) {
     }
 
@@ -98,6 +103,11 @@ final class Configuration implements AdditionalAttributesInterface
     public function isWritable(): bool
     {
         return $this->writable;
+    }
+
+    public function hasStudioColumnConfig(): bool
+    {
+        return $this->hasStudioColumnConfig;
     }
 
     public function getPermissions(): ?array

@@ -29,6 +29,7 @@ use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Translation;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 final class QueryType
 {
@@ -369,6 +370,13 @@ final class QueryType
         if ($args && isset($args['defaultLanguage'])) {
             $this->getGraphQlService()->getLocaleService()->setLocale($args['defaultLanguage']);
         }
+
+        $event = new GenericEvent(
+            arguments: $args,
+        );
+
+        $this->eventDispatcher->dispatch($event, ListingEvents::PRE_BUILD);
+        $args = $event->getArguments();
 
         $modelFactory = $this->getGraphQlService()->getModelFactory();
         $listClass = 'Pimcore\\Model\\DataObject\\' . ucfirst($this->class->getName()) . '\\Listing';

@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\Schema\UpdateConfigurationResponse;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\StudioBackendBundle\Controller\AbstractApiController;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Parameter\Path\IdParameter;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\DefaultResponses;
 use Pimcore\Bundle\StudioBackendBundle\OpenApi\Attribute\Response\SuccessResponse;
@@ -50,7 +51,7 @@ final class UpdateController extends AbstractApiController
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|ValidationFailedException
      */
     #[Route(
         path: self::ROUTE,
