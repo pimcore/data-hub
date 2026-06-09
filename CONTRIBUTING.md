@@ -17,7 +17,7 @@ We gladly accept community pull requests.
 There are a few necessary steps before we can accept a pull request:
 
 * [Fork us!](https://help.github.com/articles/fork-a-repo/)
-* Select the right branch. main(e.g. 2026.x) for features and improvements or latest maintenance branch for bug fixes (e.g. 1.0)
+* Select the right branch. main(e.g. 2026.x) for features and improvements or latest maintenance branch for bug fixes (e.g. 2026.0)
 * Code! Follow the coding standards defined [here](./.php-cs-fixer.dist.php).
 * [Send a pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our default branch.
 * [Sign the CLA](https://cla-assistant.io/pimcore/data-hub) - see also below.
