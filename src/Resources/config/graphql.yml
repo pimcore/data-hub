@@ -269,6 +269,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_relations }
 
+  pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_renderlet:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Renderlet
+    tags:
+      - { name: pimcore.datahub.graphql.documentelementquerytypegenerator, id: typegenerator_documentelementquerydatatype_renderlet }
+
   pimcore.datahub.graphql.documentelementquerytypegenerator_datatype_scheduledblock:
       class: Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementQueryFieldConfigGenerator\Scheduledblock
       tags:
