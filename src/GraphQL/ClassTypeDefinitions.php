@@ -59,7 +59,7 @@ final class ClassTypeDefinitions
     public static function get($class)
     {
         $className = is_string($class) ? $class : $class->getName();
-        $result = self::$definitions[$className];
+        $result = self::$definitions[$className] ?? null;
         if (!$result) {
             throw new ClientSafeException('type definition ' . $className . ' not found');
         }
