@@ -32,10 +32,10 @@ A short introduction video of an output channel based on the GraphQL query langu
 
 ## Further Information
 On Pimcore Datahub adapters:
-- [Datahub Simple Rest API](https://pimcore.com/docs/platform/Datahub_Simple_Rest/)
-- [Datahub File Export](https://pimcore.com/docs/platform/Datahub_File_Export/)
-- [Datahub Productsup](https://pimcore.com/docs/platform/Datahub_Productsup/)
+- [Datahub Simple Rest API](https://docs.pimcore.com/platform/Datahub_Simple_Rest/)
+- [Datahub File Export](https://docs.pimcore.com/platform/Datahub_File_Export/)
+- [Datahub Productsup](https://docs.pimcore.com/platform/Datahub_Productsup/)
   
 ## Contributions
 As Pimcore Datahub is a community project, any contributions highly appreciated.
-For details see our [Contributing guide](https://github.com/pimcore/data-hub/blob/master/CONTRIBUTING.md).
+For details see our [Contributing guide](./CONTRIBUTING.md).
