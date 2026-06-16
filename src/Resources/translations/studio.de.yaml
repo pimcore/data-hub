@@ -15,6 +15,7 @@ data-hub.config.name-max-length: Der Name darf maximal 80 Zeichen lang sein
 data-hub.config.name-pattern: Der Name darf nur alphanumerische Zeichen, Unterstriche und Bindestriche enthalten
 data-hub.config.description: Beschreibung
 data-hub.config.group: Gruppe
+data-hub.config.not-writeable: [de]
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
 data-hub.tabs.general: Allgemein

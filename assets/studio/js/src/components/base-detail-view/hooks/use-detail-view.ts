@@ -20,6 +20,8 @@ export interface UseDetailViewProps<TFormValues, TBackendConfig> {
   modificationDate: number | undefined
   isLoading: boolean
   requestId: string | undefined
+  /** When false, saving is blocked centrally (read-only / location-locked configuration). Defaults to true. */
+  isWriteable?: boolean
   transformToForm: (backendConfig: TBackendConfig, configName: string) => TFormValues
   transformToBackend: (formValues: TFormValues, existingConfig: TBackendConfig) => TBackendConfig
   onSave: (updatedConfig: TBackendConfig, modificationDate: number) => Promise<{ modificationDate?: number }>
@@ -41,6 +43,7 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
   modificationDate,
   isLoading,
   requestId,
+  isWriteable = true,
   transformToForm,
   transformToBackend,
   onSave,
@@ -77,6 +80,12 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
 
   const handleSave = (): void => {
     if (isSavingRef.current) {
+      return
+    }
+
+    // Defense in depth: never attempt to persist a read-only / location-locked configuration.
+    if (!isWriteable) {
+      void messageApi.error(t('data-hub.config.not-writeable'))
       return
     }
 

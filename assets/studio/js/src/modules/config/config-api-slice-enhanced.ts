@@ -10,35 +10,52 @@
 
 import { api as baseApi } from './config-api-slice.gen'
 
-export const api = baseApi.enhanceEndpoints({
-  addTagTypes: ['DataHubConfigs'],
-  endpoints: {
-    bundleDataHubConfigCollection: {
-      providesTags: ['DataHubConfigs']
-    },
-    bundleDataHubConfigAdd: {
-      invalidatesTags: ['DataHubConfigs']
-    },
-    bundleDataHubConfigClone: {
-      invalidatesTags: ['DataHubConfigs']
-    },
-    bundleDataHubConfigDelete: {
-      invalidatesTags: ['DataHubConfigs']
-    },
-    bundleDataHubConfigGet: {
-      providesTags: []
-    },
-    bundleDataHubConfigExport: {
-      providesTags: (result, error, arg) => [{ type: 'DataHubConfigs', id: arg.name }]
-    },
-    bundleDataHubConfigImport: {
-      invalidatesTags: ['DataHubConfigs']
-    },
-    bundleDataHubConfigUpdate: {
-      invalidatesTags: ['DataHubConfigs']
+export interface BundleDataHubConfigWriteableResponse {
+  writeable: boolean
+}
+
+export const api = baseApi
+  .enhanceEndpoints({
+    addTagTypes: ['DataHubConfigs'],
+    endpoints: {
+      bundleDataHubConfigCollection: {
+        providesTags: ['DataHubConfigs']
+      },
+      bundleDataHubConfigAdd: {
+        invalidatesTags: ['DataHubConfigs']
+      },
+      bundleDataHubConfigClone: {
+        invalidatesTags: ['DataHubConfigs']
+      },
+      bundleDataHubConfigDelete: {
+        invalidatesTags: ['DataHubConfigs']
+      },
+      bundleDataHubConfigGet: {
+        providesTags: []
+      },
+      bundleDataHubConfigExport: {
+        providesTags: (result, error, arg) => [{ type: 'DataHubConfigs', id: arg.name }]
+      },
+      bundleDataHubConfigImport: {
+        invalidatesTags: ['DataHubConfigs']
+      },
+      bundleDataHubConfigUpdate: {
+        invalidatesTags: ['DataHubConfigs']
+      }
     }
-  }
-})
+  })
+  .injectEndpoints({
+    endpoints: (build) => ({
+      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      bundleDataHubConfigWriteable: build.query<BundleDataHubConfigWriteableResponse, void>({
+        query: () => ({
+          url: '/pimcore-studio/api/bundle/data-hub/config/writeable'
+        }),
+        providesTags: ['DataHubConfigs']
+      })
+    }),
+    overrideExisting: false
+  })
 
 export type * from './config-api-slice.gen'
 
@@ -50,5 +67,6 @@ export const {
   useBundleDataHubConfigGetQuery,
   useBundleDataHubConfigExportQuery,
   useBundleDataHubConfigImportMutation,
-  useBundleDataHubConfigUpdateMutation
+  useBundleDataHubConfigUpdateMutation,
+  useBundleDataHubConfigWriteableQuery
 } = api

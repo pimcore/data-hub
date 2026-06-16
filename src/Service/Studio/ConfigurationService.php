@@ -43,11 +43,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /** @internal */
 final readonly class ConfigurationService implements ConfigurationServiceInterface
 {
-    private const array REQUIRED_CREATE_PERMISSIONS = [
-        PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-        PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-    ];
-
     private const array REQUIRED_READ_UPDATE_PERMISSIONS = [
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ,
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
@@ -101,6 +96,11 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return array_values($hydratedConfigs);
     }
 
+    public function areConfigurationsWriteable(): bool
+    {
+        return (new Configuration(null, null))->isWriteable();
+    }
+
     public function getConfiguration(string $name): ConfigurationDetail
     {
         $configuration = $this->fetchConfiguration($name);
@@ -133,7 +133,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot create configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
+        $this->checkCreatePermission($type);
 
         $this->ensureConfigDoesNotExist($name);
 
@@ -166,18 +166,11 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot clone configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
-
         $this->ensureConfigDoesNotExist($name);
         $originalConfig = $this->fetchConfiguration($originalName);
 
         $this->checkConfigPermission($originalConfig, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $originalConfig->getType(),
-            ]
-        );
+        $this->checkCreatePermission($originalConfig->getType());
 
         $clonedConfig = new Configuration(
             $originalConfig->getType(),
@@ -198,17 +191,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot import configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
-
         $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $this->validateUploadedConfigurationData($importData);
 
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $importData['type'],
-            ]
-        );
+        $this->checkCreatePermission($importData['type']);
 
         $configuration = new Configuration(
             $importData['type'],
@@ -503,6 +489,36 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
                 throw new ForbiddenException('Permission denied: ' . $perm);
             }
         }
+    }
+
+    /**
+     * Passes if the current user is granted at least one of the given permissions.
+     */
+    private function checkAnyUserPermission(array $permissions): void
+    {
+        $user = $this->securityService->getCurrentUser();
+
+        foreach ($permissions as $perm) {
+            if ($user->isAllowed($perm)) {
+                return;
+            }
+        }
+
+        throw new ForbiddenException('Permission denied: ' . implode(' / ', $permissions));
+    }
+
+    /**
+     * A user may create/clone/import a configuration of the given adapter type when they have
+     * access to the data hub config area and are either a data hub admin or hold the
+     * adapter-specific permission for that type.
+     */
+    private function checkCreatePermission(string $type): void
+    {
+        $this->checkUserPermission(PermissionConstants::PLUGIN_DATA_HUB_CONFIG);
+        $this->checkAnyUserPermission([
+            PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+            PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $type,
+        ]);
     }
 
     private function isBundleInstalled(?string $type): bool

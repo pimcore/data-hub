@@ -17,7 +17,7 @@ import {
   type TreeDataItem
 } from '@pimcore/studio-ui-bundle/components'
 import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { type BundleDataHubConfiguration } from '../../config-api-slice-enhanced'
+import { type BundleDataHubConfiguration, useBundleDataHubConfigWriteableQuery } from '../../config-api-slice-enhanced'
 import { ConfigSidebarToolbar } from './components/config-sidebar-toolbar/toolbar'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { bundleServiceIds } from '../../../../config/service-ids'
@@ -42,6 +42,8 @@ export const ConfigSidebar = ({
   const [treeKey, setTreeKey] = useState(0)
 
   const { handleAdd, handleClone, handleDelete } = useDataHubConfig({ refetch })
+
+  const { data: writeableData } = useBundleDataHubConfigWriteableQuery()
 
   useEffect(() => {
     if (!isNil(configurationsData?.items)) {
@@ -184,6 +186,7 @@ export const ConfigSidebar = ({
     <ContentLayout
       renderToolbar={
         <ConfigSidebarToolbar
+          configurationsWriteable={ writeableData?.writeable }
           handleOpenConfig={ handleOpenConfig }
           isFetching={ isFetching }
           onAdd={ handleAddWrapper }
