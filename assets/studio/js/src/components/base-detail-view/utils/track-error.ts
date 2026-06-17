@@ -21,7 +21,7 @@ const VALIDATION_FAILED_ERROR_KEY = 'error_validation_failed'
  * default ApiError handling. Content is routed through trackError so duplicate reports within the
  * same cycle collapse into a single dialog.
  */
-export function trackDataHubError (error: unknown): void {
+export function trackConfigError (error: unknown): void {
   const details = (error as { data?: { errorKey?: string, message?: string } } | null | undefined)?.data
   const message = details?.message
 

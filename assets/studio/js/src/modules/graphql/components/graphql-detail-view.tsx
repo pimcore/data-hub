@@ -12,7 +12,7 @@ import React, { useEffect } from 'react'
 import { IconTextButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DataHubAdapterDetailViewProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
-import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView, trackDataHubError } from '../../../components/base-detail-view'
+import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView, trackConfigError } from '../../../components/base-detail-view'
 import { GeneralTab } from './tabs/general-tab'
 import { SchemaDefinitionTab } from './tabs/schema-definition-tab'
 import { SecurityDefinitionTab } from './tabs/security-definition-tab'
@@ -39,7 +39,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   // fetch error needs to be reported here.
   useEffect(() => {
     if (!isNil(fetchError)) {
-      trackDataHubError(fetchError)
+      trackConfigError(fetchError)
     }
   }, [fetchError])
 
