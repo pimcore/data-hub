@@ -1,0 +1,45 @@
+{
+  "allFiles": [
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/main.9c3ad8a2.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/remoteEntry.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/__federation_expose_plugins.b638fdbc.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/__federation_expose_default_export.9a5bd5ac.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/840.4693a4bb.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/346.60211bf9.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/109.62a4c31b.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/593.8a34a8bf.js",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/mf-stats.json",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/mf-manifest.json",
+    "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/main.html"
+  ],
+  "entries": {
+    "main": {
+      "html": [
+        "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/main.html"
+      ],
+      "initial": {
+        "js": [
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/109.62a4c31b.js",
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/main.9c3ad8a2.js"
+        ]
+      }
+    },
+    "pimcore_datahub_bundle": {
+      "initial": {
+        "js": [
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/remoteEntry.js"
+        ]
+      },
+      "async": {
+        "js": [
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/593.8a34a8bf.js",
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/346.60211bf9.js",
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/840.4693a4bb.js",
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/__federation_expose_default_export.9a5bd5ac.js",
+          "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/static/js/async/__federation_expose_plugins.b638fdbc.js"
+        ]
+      }
+    }
+  },
+  "integrity": {}
+}

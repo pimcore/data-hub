@@ -22,7 +22,7 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "2.2.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/a67f56f4-3414-4318-acdf-d5f650794e2f/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/bb74b89d-f335-472d-98e0-499e01ec49de/"
   },
   "shared": [
     {
@@ -122,7 +122,7 @@
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "app",
       "usedIn": [
-        "js/src/components/base-detail-view/index.ts + 9 modules",
+        "js/src/components/base-detail-view/index.ts + 10 modules",
         "js/src/modules/config/config-container.tsx + 13 modules",
         "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-abstract.tsx",
         "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry.ts",
@@ -139,7 +139,7 @@
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "components",
       "usedIn": [
-        "js/src/components/base-detail-view/index.ts + 9 modules",
+        "js/src/components/base-detail-view/index.ts + 10 modules",
         "js/src/modules/config/config-container.tsx + 13 modules",
         "js/src/modules/graphql/components/tabs/general-tab.tsx",
         "js/src/modules/graphql/components/tabs/permissions-tab.tsx + 3 modules",
@@ -193,7 +193,7 @@
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/app",
       "usedIn": [
-        "js/src/components/base-detail-view/index.ts + 9 modules",
+        "js/src/components/base-detail-view/index.ts + 10 modules",
         "js/src/modules/config/config-container.tsx + 13 modules",
         "js/src/plugins.ts + 77 modules"
       ],
@@ -284,8 +284,8 @@
         "js": {
           "sync": [
             "static/js/async/840.4693a4bb.js",
-            "static/js/async/511.91a799f7.js",
-            "static/js/async/__federation_expose_plugins.17fc0979.js"
+            "static/js/async/593.8a34a8bf.js",
+            "static/js/async/__federation_expose_plugins.b638fdbc.js"
           ],
           "async": []
         },
@@ -308,8 +308,8 @@
         "js": {
           "sync": [
             "static/js/async/840.4693a4bb.js",
-            "static/js/async/511.91a799f7.js",
-            "static/js/async/__federation_expose_default_export.f97ab7ff.js"
+            "static/js/async/593.8a34a8bf.js",
+            "static/js/async/__federation_expose_default_export.9a5bd5ac.js"
           ],
           "async": []
         },
