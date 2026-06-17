@@ -33,20 +33,15 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
     { refetchOnMountOrArgChange: true }
   )
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
-  const [updateConfig, { error: updateError, isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
+  const [updateConfig, { isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
 
-  // Error tracking
+  // Error tracking. Save errors are surfaced centrally by useDetailView (via .unwrap()); only the
+  // fetch error needs to be reported here.
   useEffect(() => {
     if (!isNil(fetchError)) {
       trackDataHubError(fetchError)
     }
   }, [fetchError])
-
-  useEffect(() => {
-    if (!isNil(updateError)) {
-      trackDataHubError(updateError)
-    }
-  }, [updateError])
 
   const loading = isLoading || isFetching
   const backendConfig = (configData?.configuration ?? {}) as BackendConfiguration
