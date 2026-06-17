@@ -12,7 +12,7 @@ import React, { useEffect } from 'react'
 import { IconTextButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DataHubAdapterDetailViewProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
-import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView } from '../../../components/base-detail-view'
+import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView, trackDataHubError } from '../../../components/base-detail-view'
 import { GeneralTab } from './tabs/general-tab'
 import { SchemaDefinitionTab } from './tabs/schema-definition-tab'
 import { SecurityDefinitionTab } from './tabs/security-definition-tab'
@@ -23,7 +23,6 @@ import { isEmpty, isNil } from 'lodash'
 import { type GraphQLFormValues } from './types'
 import { transformFormToBackend, transformBackendToForm } from '../utils/transformers'
 import { type BackendConfiguration } from './backend-types'
-import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
 
 export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAdapterDetailViewProps): React.JSX.Element => {
   const { t } = useTranslation()
@@ -39,13 +38,13 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   // Error tracking
   useEffect(() => {
     if (!isNil(fetchError)) {
-      trackError(new ApiError(fetchError))
+      trackDataHubError(fetchError)
     }
   }, [fetchError])
 
   useEffect(() => {
     if (!isNil(updateError)) {
-      trackError(new ApiError(updateError))
+      trackDataHubError(updateError)
     }
   }, [updateError])
 
@@ -55,7 +54,9 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   const userPermissions = (configData?.userPermissions ?? {}) as { update?: boolean, delete?: boolean }
   const storeWriteable = backendConfig?.general?.writeable !== false
   const isWriteable = userPermissions.update === true && storeWriteable
-  const canDelete = userPermissions.delete === true && storeWriteable
+  // Delete permission controls whether the delete button is shown; the writeable state controls
+  // whether it is enabled (handled by the toolbar via isWriteable).
+  const canDelete = userPermissions.delete === true
 
   const handleSaveToApi = async (updatedConfig: BackendConfiguration, modificationDate: number): Promise<{ modificationDate?: number }> => {
     const response = await updateConfig({
