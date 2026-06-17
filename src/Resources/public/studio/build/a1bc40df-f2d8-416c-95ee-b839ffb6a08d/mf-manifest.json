@@ -22,7 +22,7 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "2.2.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/696e22f1-a379-4ad4-8309-8a063be07ff2/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/a1bc40df-f2d8-416c-95ee-b839ffb6a08d/"
   },
   "shared": [
     {
@@ -182,8 +182,8 @@
         "js": {
           "sync": [
             "static/js/async/840.4693a4bb.js",
-            "static/js/async/593.4e080255.js",
-            "static/js/async/__federation_expose_plugins.061d6004.js"
+            "static/js/async/593.d9f4b987.js",
+            "static/js/async/__federation_expose_plugins.df9cc4ec.js"
           ],
           "async": []
         },
@@ -201,7 +201,7 @@
         "js": {
           "sync": [
             "static/js/async/840.4693a4bb.js",
-            "static/js/async/593.4e080255.js",
+            "static/js/async/593.d9f4b987.js",
             "static/js/async/__federation_expose_default_export.383ca1be.js"
           ],
           "async": []
