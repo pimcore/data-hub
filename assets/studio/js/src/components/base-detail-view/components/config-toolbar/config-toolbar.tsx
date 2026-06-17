@@ -23,7 +23,7 @@ export interface ConfigToolbarProps {
   onSave: () => void
   onRefresh: () => void
   onDelete: () => void
-  /** Whether the user holds the delete permission. When false the delete button is hidden. Defaults to shown. */
+  /** Whether the configuration can be deleted (delete permission AND writeable). When false the delete button is hidden. Defaults to shown. */
   canDelete?: boolean
   additionalButtons?: ReactNode[]
   leftAdditionalContent?: ReactNode
@@ -45,8 +45,9 @@ export function ConfigToolbar ({
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  // Delete is only offered when the user holds the delete permission; otherwise the button is
-  // hidden. The not-writeable tooltip/disabled state is reserved for the writeable case.
+  // Delete is offered (and enabled) only when the configuration can actually be deleted, i.e. the
+  // user holds the delete permission AND the configuration is writeable. It is independent of the
+  // update permission, so a read+delete user can still delete a writeable config.
   const showDelete = canDelete ?? true
 
   const saveButton = (
@@ -86,9 +87,8 @@ export function ConfigToolbar ({
           />
         </Tooltip>
         {showDelete && (
-          <Tooltip title={ isWriteable ? t('delete') : t('config_not_writeable') }>
+          <Tooltip title={ t('delete') }>
             <IconButton
-              disabled={ !isWriteable }
               icon={ { value: 'trash' } }
               onClick={ onDelete }
             />

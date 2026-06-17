@@ -51,7 +51,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   const isWriteable = userPermissions.update === true && storeWriteable
   // Delete permission controls whether the delete button is shown; the writeable state controls
   // whether it is enabled (handled by the toolbar via isWriteable).
-  const canDelete = userPermissions.delete === true
+  const canDelete = userPermissions.delete === true && storeWriteable
 
   const handleSaveToApi = async (updatedConfig: BackendConfiguration, modificationDate: number): Promise<{ modificationDate?: number }> => {
     const response = await updateConfig({
