@@ -21,6 +21,7 @@ import {
 } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { stringifyYaml } from '../../../../sdk/utils/yaml'
+import { CompactLayoutProvider } from './compact-layout-context'
 
 export interface MigrationModalProps {
   /** Controls modal visibility */
@@ -150,7 +151,9 @@ export const MigrationModal = ({
           style={ { flex: 1, minWidth: 0, overflow: 'hidden' } }
           vertical
         >
-          { children }
+          <CompactLayoutProvider compact>
+            { children }
+          </CompactLayoutProvider>
         </Flex>
 
         <div style={ { width: 1, background: 'var(--ant-color-split, rgba(0,0,0,.06))', flexShrink: 0 } } />

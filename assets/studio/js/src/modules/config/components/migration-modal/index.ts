@@ -9,3 +9,4 @@
  */
 
 export * from './migration-modal'
+export * from './compact-layout-context'
