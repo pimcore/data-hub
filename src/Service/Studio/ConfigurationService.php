@@ -285,7 +285,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         foreach ($permissions as $perm) {
             if (!$configuration->isAllowed($perm)) {
-                throw new ForbiddenException('Permission denied: ' . $perm);
+                $this->denyPermission($perm);
             }
         }
     }
@@ -486,7 +486,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         foreach ($permissions as $perm) {
             if (!$user->isAllowed($perm)) {
-                throw new ForbiddenException('Permission denied: ' . $perm);
+                $this->denyPermission($perm);
             }
         }
     }
@@ -504,6 +504,14 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             }
         }
 
+        $this->denyPermission(...$permissions);
+    }
+
+    /**
+     * @throws ForbiddenException
+     */
+    private function denyPermission(string ...$permissions): never
+    {
         throw new ForbiddenException('Permission denied: ' . implode(' / ', $permissions));
     }
 
