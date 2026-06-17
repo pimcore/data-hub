@@ -85,7 +85,7 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
 
     // Defense in depth: never attempt to persist a read-only / location-locked configuration.
     if (!isWriteable) {
-      void messageApi.error(t('data-hub.config.not-writeable'))
+      void messageApi.error(t('config_not_writeable'))
       return
     }
 
