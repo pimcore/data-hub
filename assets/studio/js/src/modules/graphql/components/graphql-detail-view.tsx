@@ -52,8 +52,10 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   const loading = isLoading || isFetching
   const backendConfig = (configData?.configuration ?? {}) as BackendConfiguration
   // Editable only when the user holds the update permission AND the config is not location-locked.
-  const userPermissions = (configData?.userPermissions ?? {}) as { update?: boolean }
-  const isWriteable = userPermissions.update === true && backendConfig?.general?.writeable !== false
+  const userPermissions = (configData?.userPermissions ?? {}) as { update?: boolean, delete?: boolean }
+  const storeWriteable = backendConfig?.general?.writeable !== false
+  const isWriteable = userPermissions.update === true && storeWriteable
+  const canDelete = userPermissions.delete === true && storeWriteable
 
   const handleSaveToApi = async (updatedConfig: BackendConfiguration, modificationDate: number): Promise<{ modificationDate?: number }> => {
     const response = await updateConfig({
@@ -133,6 +135,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
           {t('data-hub.open-in-tab')}
         </IconTextButton>
       ] }
+      canDelete={ canDelete }
       configName={ configName }
       isDirty={ isDirty }
       isLoading={ loading }

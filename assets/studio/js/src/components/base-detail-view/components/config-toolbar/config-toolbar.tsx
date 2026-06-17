@@ -23,6 +23,8 @@ export interface ConfigToolbarProps {
   onSave: () => void
   onRefresh: () => void
   onDelete: () => void
+  /** Whether the delete action is allowed (delete permission). Defaults to isWriteable. */
+  canDelete?: boolean
   additionalButtons?: ReactNode[]
   leftAdditionalContent?: ReactNode
 }
@@ -36,11 +38,14 @@ export function ConfigToolbar ({
   onSave,
   onRefresh,
   onDelete,
+  canDelete,
   additionalButtons = [],
   leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
   const { styles } = useStyles()
+
+  const deleteAllowed = canDelete ?? isWriteable
 
   const saveButton = (
     <Button
@@ -78,9 +83,9 @@ export function ConfigToolbar ({
             onClick={ onRefresh }
           />
         </Tooltip>
-        <Tooltip title={ isWriteable ? t('delete') : t('config_not_writeable') }>
+        <Tooltip title={ deleteAllowed ? t('delete') : t('config_not_writeable') }>
           <IconButton
-            disabled={ !isWriteable }
+            disabled={ !deleteAllowed }
             icon={ { value: 'trash' } }
             onClick={ onDelete }
           />
