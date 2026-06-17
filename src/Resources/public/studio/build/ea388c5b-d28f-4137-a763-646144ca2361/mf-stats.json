@@ -22,21 +22,23 @@
     "globalName": "pimcore_datahub_bundle",
     "pluginVersion": "2.2.3",
     "prefetchInterface": false,
-    "publicPath": "/bundles/pimcoredatahub/studio/build/6ce54011-db73-4847-b2de-3a0815583179/"
+    "publicPath": "/bundles/pimcoredatahub/studio/build/ea388c5b-d28f-4137-a763-646144ca2361/"
   },
   "shared": [
     {
-      "id": "pimcore_datahub_bundle:react-dom",
+      "singleton": true,
+      "requiredVersion": "^18.3.1",
+      "shareScope": "default",
+      "eager": true,
       "name": "react-dom",
       "version": "18.3.1",
-      "singleton": true,
-      "requiredVersion": "^18.3.1",
+      "id": "pimcore_datahub_bundle:react-dom",
       "assets": {
         "js": {
           "async": [],
           "sync": [
-            "static/js/109.62a4c31b.js",
-            "static/js/remoteEntry.js"
+            "static/js/remoteEntry.js",
+            "static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rspack_plugi-1cd392.js"
           ]
         },
         "css": {
@@ -44,20 +46,24 @@
           "sync": []
         }
       },
+      "usedIn": [],
+      "usedExports": [],
       "fallback": ""
     },
     {
-      "id": "pimcore_datahub_bundle:react",
+      "singleton": true,
+      "requiredVersion": "^18.3.1",
+      "shareScope": "default",
+      "eager": true,
       "name": "react",
       "version": "18.3.1",
-      "singleton": true,
-      "requiredVersion": "^18.3.1",
+      "id": "pimcore_datahub_bundle:react",
       "assets": {
         "js": {
           "async": [],
           "sync": [
-            "static/js/109.62a4c31b.js",
-            "static/js/remoteEntry.js"
+            "static/js/remoteEntry.js",
+            "static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rspack_plugi-1cd392.js"
           ]
         },
         "css": {
@@ -65,19 +71,23 @@
           "sync": []
         }
       },
+      "usedIn": [],
+      "usedExports": [],
       "fallback": ""
     },
     {
-      "id": "pimcore_datahub_bundle:yaml",
-      "name": "yaml",
-      "version": "2.8.3",
       "singleton": true,
       "requiredVersion": "^2.8.3",
+      "shareScope": "default",
+      "eager": true,
+      "name": "yaml",
+      "version": "2.8.3",
+      "id": "pimcore_datahub_bundle:yaml",
       "assets": {
         "js": {
           "async": [],
           "sync": [
-            "static/js/async/346.60211bf9.js"
+            "static/js/async/vendors-node_modules_antd_es_empty_index_js-node_modules_antd_es_tag_index_js-node_modules_ya-e4c7b1.js"
           ]
         },
         "css": {
@@ -85,105 +95,341 @@
           "sync": []
         }
       },
+      "usedIn": [],
+      "usedExports": [],
       "fallback": ""
     }
   ],
   "remotes": [
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": ".",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/index.tsx",
+        "js/src/modules/graphql/index.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "app",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/components/base-detail-view/components/config-toolbar/config-toolbar.tsx",
+        "js/src/components/base-detail-view/hooks/use-detail-view.ts",
+        "js/src/modules/config/components/column-config-modal/base-column-editor.tsx",
+        "js/src/modules/config/components/column-config-modal/column-config-modal.tsx",
+        "js/src/modules/config/components/column-config-modal/column-pipeline-form.tsx",
+        "js/src/modules/config/components/column-config-modal/column-preview.tsx",
+        "js/src/modules/config/components/column-config-modal/use-add-column-dropdown.ts",
+        "js/src/modules/config/components/config-sidebar/components/config-sidebar-toolbar/toolbar.tsx",
+        "js/src/modules/config/components/config-sidebar/config-sidebar.tsx",
+        "js/src/modules/config/components/export-button/export-button.tsx",
+        "js/src/modules/config/components/import-button/import-button.tsx",
+        "js/src/modules/config/components/migration-modal/migration-modal.tsx",
+        "js/src/modules/config/components/tabs/config-tab-content.tsx",
+        "js/src/modules/config/components/tabs/config-tabs.tsx",
+        "js/src/modules/config/dynamic-types/adapters/dynamic-type-data-hub-adapter-graphql.tsx",
+        "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-abstract.tsx",
+        "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry.ts",
+        "js/src/modules/config/hooks/use-data-hub-config.ts",
+        "js/src/modules/config/index.tsx",
+        "js/src/modules/graphql/components/graphql-detail-view.tsx",
+        "js/src/modules/graphql/components/tabs/general-tab.tsx",
+        "js/src/modules/graphql/components/tabs/permissions-tab/permission-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/permissions-tab/permission-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/generic-types-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/mutation-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/query-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/empty-tree-drop-zone.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/hooks/use-tree-context.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/hooks/use-tree-nodes.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/add-all-definitions-button.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/class-attributes-sidebar.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/operators-sidebar.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-class-attributes-tree.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-objectbrick-layouts.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-sidebar-entries.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/schema-fields-modal.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab/workspace-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab/workspace-grid.tsx",
+        "js/src/modules/log-tab/filter-sidebar/filter-sidebar.tsx",
+        "js/src/modules/log-tab/log-tab.tsx",
+        "js/src/modules/operators/components/operator-modal.tsx",
+        "js/src/modules/operators/dynamic-type-operator-abstract.ts",
+        "js/src/modules/operators/dynamic-type-operator-registry.ts",
+        "js/src/modules/operators/hooks/use-operator.tsx",
+        "js/src/modules/operators/operators/alias/alias-config-modal.tsx",
+        "js/src/modules/operators/operators/alias/dynamic-type-operator-alias.tsx",
+        "js/src/modules/operators/operators/concatenator/concatenator-config-modal.tsx",
+        "js/src/modules/operators/operators/concatenator/dynamic-type-operator-concatenator.tsx",
+        "js/src/modules/operators/operators/date-formatter/date-formatter-config-modal.tsx",
+        "js/src/modules/operators/operators/date-formatter/dynamic-type-operator-date-formatter.tsx",
+        "js/src/modules/operators/operators/element-counter/dynamic-type-operator-element-counter.tsx",
+        "js/src/modules/operators/operators/element-counter/element-counter-config-modal.tsx",
+        "js/src/modules/operators/operators/if-empty/dynamic-type-operator-if-empty.tsx",
+        "js/src/modules/operators/operators/if-empty/if-empty-config-modal.tsx",
+        "js/src/modules/operators/operators/locale-collector/dynamic-type-operator-locale-collector.tsx",
+        "js/src/modules/operators/operators/locale-collector/locale-collector-config-modal.tsx",
+        "js/src/modules/operators/operators/locale-switcher/locale-switcher-config-modal.tsx",
+        "js/src/modules/operators/operators/substring/dynamic-type-operator-substring.tsx",
+        "js/src/modules/operators/operators/substring/substring-config-modal.tsx",
+        "js/src/modules/operators/operators/text/dynamic-type-operator-text.tsx",
+        "js/src/modules/operators/operators/text/text-config-modal.tsx",
+        "js/src/modules/operators/operators/thumbnail-html/dynamic-type-operator-thumbnail-html.tsx",
+        "js/src/modules/operators/operators/thumbnail-html/thumbnail-html-config-modal.tsx",
+        "js/src/modules/operators/operators/thumbnail/dynamic-type-operator-thumbnail.tsx",
+        "js/src/modules/operators/operators/thumbnail/thumbnail-config-modal.tsx",
+        "js/src/modules/operators/operators/translate-value/dynamic-type-operator-translate-value.tsx",
+        "js/src/modules/operators/operators/translate-value/translate-value-config-modal.tsx",
+        "js/src/modules/operators/operators/trimmer/dynamic-type-operator-trimmer.tsx",
+        "js/src/modules/operators/operators/trimmer/trimmer-config-modal.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "components",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/components/base-detail-view/base-detail-view.tsx",
+        "js/src/components/base-detail-view/components/config-toolbar/config-toolbar.tsx",
+        "js/src/components/base-detail-view/hooks/use-detail-view.ts",
+        "js/src/modules/config/components/column-config-modal/base-column-editor.tsx",
+        "js/src/modules/config/components/column-config-modal/column-config-modal.tsx",
+        "js/src/modules/config/components/column-config-modal/column-locale-control.tsx",
+        "js/src/modules/config/components/column-config-modal/column-pipeline-form.tsx",
+        "js/src/modules/config/components/column-config-modal/column-preview.tsx",
+        "js/src/modules/config/components/config-sidebar/components/config-sidebar-toolbar/toolbar.tsx",
+        "js/src/modules/config/components/config-sidebar/config-sidebar.tsx",
+        "js/src/modules/config/components/export-button/export-button.tsx",
+        "js/src/modules/config/components/import-button/import-button.tsx",
+        "js/src/modules/config/components/migration-modal/migration-modal.tsx",
+        "js/src/modules/config/components/tabs/config-tabs.tsx",
+        "js/src/modules/config/config-container.tsx",
+        "js/src/modules/config/hooks/use-data-hub-config.ts",
+        "js/src/modules/graphql/components/graphql-detail-view.tsx",
+        "js/src/modules/graphql/components/tabs/general-tab.tsx",
+        "js/src/modules/graphql/components/tabs/permissions-tab.tsx",
+        "js/src/modules/graphql/components/tabs/permissions-tab/permission-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/permissions-tab/permission-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/generic-types-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/mutation-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/query-grid.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/available-fields-tree.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/empty-tree-drop-zone.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/hooks/use-tree-nodes.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/tree-node-renderer.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/add-all-definitions-button.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/class-attributes-sidebar.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/draggable-tree-title.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/operator-grid-item.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/operators-sidebar.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-class-attributes-tree.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-sidebar-entries.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/schema-fields-modal.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab/workspace-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/security-definition-tab/workspace-grid.tsx",
+        "js/src/modules/log-tab/filter-sidebar/filter-sidebar.tsx",
+        "js/src/modules/log-tab/log-tab.tsx",
+        "js/src/modules/log-tab/sidebar-provider/sidebar-provider.tsx",
+        "js/src/modules/operators/components/operator-modal.tsx",
+        "js/src/modules/operators/components/thumbnail-select.tsx",
+        "js/src/modules/operators/operators/alias/alias-config-modal.tsx",
+        "js/src/modules/operators/operators/concatenator/concatenator-config-modal.tsx",
+        "js/src/modules/operators/operators/concatenator/dynamic-type-operator-concatenator.tsx",
+        "js/src/modules/operators/operators/date-formatter/date-formatter-config-modal.tsx",
+        "js/src/modules/operators/operators/date-formatter/dynamic-type-operator-date-formatter.tsx",
+        "js/src/modules/operators/operators/element-counter/element-counter-config-modal.tsx",
+        "js/src/modules/operators/operators/if-empty/if-empty-config-modal.tsx",
+        "js/src/modules/operators/operators/locale-collector/locale-collector-config-modal.tsx",
+        "js/src/modules/operators/operators/locale-switcher/dynamic-type-operator-locale-switcher.tsx",
+        "js/src/modules/operators/operators/locale-switcher/locale-switcher-config-modal.tsx",
+        "js/src/modules/operators/operators/substring/dynamic-type-operator-substring.tsx",
+        "js/src/modules/operators/operators/substring/substring-config-modal.tsx",
+        "js/src/modules/operators/operators/text/text-config-modal.tsx",
+        "js/src/modules/operators/operators/thumbnail-html/dynamic-type-operator-thumbnail-html.tsx",
+        "js/src/modules/operators/operators/thumbnail-html/thumbnail-html-config-modal.tsx",
+        "js/src/modules/operators/operators/thumbnail/dynamic-type-operator-thumbnail.tsx",
+        "js/src/modules/operators/operators/thumbnail/thumbnail-config-modal.tsx",
+        "js/src/modules/operators/operators/translate-value/dynamic-type-operator-translate-value.tsx",
+        "js/src/modules/operators/operators/translate-value/translate-value-config-modal.tsx",
+        "js/src/modules/operators/operators/trimmer/dynamic-type-operator-trimmer.tsx",
+        "js/src/modules/operators/operators/trimmer/trimmer-config-modal.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/element",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/components/column-config-modal/use-column-editor-state.ts",
+        "js/src/modules/config/components/field-width-container.tsx",
+        "js/src/modules/config/dynamic-types/dynamic-type-data-hub-adapter-registry.ts",
+        "js/src/modules/operators/dynamic-type-operator-registry.ts"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "api",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/components/import-button/import-button.tsx",
+        "js/src/modules/config/config-api-slice.gen.ts",
+        "js/src/modules/config/users-api-slice.gen.ts",
+        "js/src/modules/config/utils/get-export-url.ts",
+        "js/src/modules/graphql/graphql-api-slice.gen.ts",
+        "js/src/modules/log-tab/log-tab.tsx",
+        "js/src/modules/operators/thumbnails-api-slice.gen.ts"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/app",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/components/base-detail-view/track-config-error.ts",
+        "js/src/modules/config/hooks/use-data-hub-config.ts",
+        "js/src/modules/graphql/components/graphql-detail-view.tsx",
+        "js/src/modules/operators/operators/locale-switcher/locale-switcher-config-modal.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/data-object",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/components/column-config-modal/base-column-editor.tsx",
+        "js/src/modules/config/components/column-config-modal/column-config-modal.tsx",
+        "js/src/modules/config/components/column-config-modal/column-preview.tsx",
+        "js/src/modules/config/components/column-config-modal/use-column-editor-state.ts",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-accordion.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/schema-fields-modal.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "utils",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/available-fields-tree.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/utils/tree-conversion-utils.ts",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/available-fields-tree/utils/tree-operations.ts",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/add-all-definitions-button.tsx",
+        "js/src/modules/operators/operators/alias/dynamic-type-operator-alias.tsx",
+        "js/src/modules/operators/operators/concatenator/dynamic-type-operator-concatenator.tsx",
+        "js/src/modules/operators/operators/date-formatter/dynamic-type-operator-date-formatter.tsx",
+        "js/src/modules/operators/operators/element-counter/dynamic-type-operator-element-counter.tsx",
+        "js/src/modules/operators/operators/if-empty/dynamic-type-operator-if-empty.tsx",
+        "js/src/modules/operators/operators/locale-collector/dynamic-type-operator-locale-collector.tsx",
+        "js/src/modules/operators/operators/locale-switcher/dynamic-type-operator-locale-switcher.tsx",
+        "js/src/modules/operators/operators/substring/dynamic-type-operator-substring.tsx",
+        "js/src/modules/operators/operators/text/dynamic-type-operator-text.tsx",
+        "js/src/modules/operators/operators/thumbnail-html/dynamic-type-operator-thumbnail-html.tsx",
+        "js/src/modules/operators/operators/thumbnail/dynamic-type-operator-thumbnail.tsx",
+        "js/src/modules/operators/operators/translate-value/dynamic-type-operator-translate-value.tsx",
+        "js/src/modules/operators/operators/trimmer/dynamic-type-operator-trimmer.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "api/data-object",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/components/column-config-modal/column-config-modal.tsx",
+        "js/src/modules/config/components/column-config-modal/column-preview.tsx",
+        "js/src/modules/config/components/column-config-modal/use-column-editor-state.ts"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/auth",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/config/components/column-config-modal/base-column-editor.tsx",
+        "js/src/modules/config/components/column-config-modal/column-locale-control.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/application-logger",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/log-tab/filter-sidebar/filter-sidebar.tsx",
+        "js/src/modules/log-tab/log-tab.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/translations",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/operators/operators/locale-switcher/locale-switcher-config-modal.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "api/class-definition",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-class-attributes-tree.tsx",
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-objectbrick-layouts.tsx"
+      ],
+      "version": "*"
     },
     {
+      "alias": "@pimcore/studio-ui-bundle",
+      "consumingFederationContainerName": "pimcore_datahub_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/field-definitions",
-      "alias": "@pimcore/studio-ui-bundle",
-      "entry": "*"
+      "usedIn": [
+        "js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-class-attributes-tree.tsx"
+      ],
+      "version": "*"
     }
   ],
   "exposes": [
     {
+      "path": "./plugins",
       "id": "pimcore_datahub_bundle:plugins",
       "name": "plugins",
+      "requires": [],
+      "file": "js/src/plugins.ts",
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/840.4693a4bb.js",
-            "static/js/async/696.3b1d6da3.js",
-            "static/js/async/__federation_expose_plugins.c4cf01bd.js"
+            "static/js/async/vendors-node_modules_antd-style_es_functions_index_js-node_modules_lodash_lodash_js-node_modu-60b74f.js",
+            "static/js/async/js_src_components_base-detail-view_index_ts-js_src_modules_config_config-container_tsx-js_src-3b5091.js",
+            "static/js/async/__federation_expose_plugins.js"
           ],
           "async": []
         },
@@ -191,18 +437,20 @@
           "sync": [],
           "async": []
         }
-      },
-      "path": "./plugins"
+      }
     },
     {
+      "path": ".",
       "id": "pimcore_datahub_bundle:.",
       "name": ".",
+      "requires": [],
+      "file": "js/src/sdk/index.ts",
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/840.4693a4bb.js",
-            "static/js/async/696.3b1d6da3.js",
-            "static/js/async/__federation_expose_default_export.87553f32.js"
+            "static/js/async/vendors-node_modules_antd-style_es_functions_index_js-node_modules_lodash_lodash_js-node_modu-60b74f.js",
+            "static/js/async/js_src_components_base-detail-view_index_ts-js_src_modules_config_config-container_tsx-js_src-3b5091.js",
+            "static/js/async/__federation_expose_default_export.js"
           ],
           "async": []
         },
@@ -210,8 +458,7 @@
           "sync": [],
           "async": []
         }
-      },
-      "path": "."
+      }
     }
   ]
 }
