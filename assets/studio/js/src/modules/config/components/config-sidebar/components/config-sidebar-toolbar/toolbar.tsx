@@ -62,15 +62,19 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
           />
         </Tooltip>
 
-        <Tooltip title={ configurationsWriteable ? '' : t('config_not_writeable') }>
-          <span>
-            <ImportButton
-              disabled={ isFetching || !configurationsWriteable }
-              handleOpenConfig={ handleOpenConfig }
-              onRefresh={ onRefresh }
-            />
-          </span>
-        </Tooltip>
+        {/* Import creates a configuration, so it is only offered when the user may create at
+            least one adapter type and the config store is writeable. */}
+        { dropdownItems.length > 0 && (
+          <Tooltip title={ configurationsWriteable ? '' : t('config_not_writeable') }>
+            <span>
+              <ImportButton
+                disabled={ isFetching || !configurationsWriteable }
+                handleOpenConfig={ handleOpenConfig }
+                onRefresh={ onRefresh }
+              />
+            </span>
+          </Tooltip>
+        ) }
       </Flex>
 
       { dropdownItems.length > 0 && (
