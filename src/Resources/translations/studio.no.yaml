@@ -15,6 +15,7 @@ data-hub.config.name-max-length: Navnet kan ikke overskride 80 tegn
 data-hub.config.name-pattern: Navnet kan bare inneholde alfanumeriske tegn, understrek og bindestreker
 data-hub.config.description: Beskrivelse
 data-hub.config.group: Gruppe
+data-hub.config.no-update-permission: [no]
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
 data-hub.tabs.general: Generelt

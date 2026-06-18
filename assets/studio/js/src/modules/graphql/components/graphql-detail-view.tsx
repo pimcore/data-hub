@@ -52,6 +52,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   // Delete permission controls whether the delete button is shown; the writeable state controls
   // whether it is enabled (handled by the toolbar via isWriteable).
   const canDelete = userPermissions.delete === true && storeWriteable
+  const saveDisabledTooltipKey = storeWriteable && userPermissions.update !== true ? 'data-hub.config.no-update-permission' : 'config_not_writeable'
 
   const handleSaveToApi = async (updatedConfig: BackendConfiguration, modificationDate: number): Promise<{ modificationDate?: number }> => {
     const response = await updateConfig({
@@ -140,6 +141,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
       onDelete={ onDelete }
       onRefresh={ refetch }
       onSave={ handleSave }
+      saveDisabledTooltipKey={ saveDisabledTooltipKey }
     />
   )
 
