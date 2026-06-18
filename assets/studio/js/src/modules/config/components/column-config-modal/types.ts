@@ -76,6 +76,12 @@ export interface AdvancedEditorColumn {
   /** Whether this column supports per-column locale selection. */
   localizable?: boolean
   locale?: string | null
+  /**
+   * Frontend-only: true for columns added during the current editing session.
+   * Drives the initial collapse state — only freshly added advanced columns mount
+   * expanded, while columns loaded from the persisted config stay collapsed. Never persisted.
+   */
+  isNew?: boolean
 }
 
 /**

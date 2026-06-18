@@ -29,6 +29,8 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   entity: string
   /** True in the split migration view — the editor should hide its own Apply/Discard toolbar. */
   hideToolbar: boolean
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly: boolean
   onApply: (columns: TColumns[]) => void
   onCancel: () => void
   /** The currently persisted preview language for this entity. */
@@ -59,6 +61,8 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
   language?: string
   /** Called when the user changes the preview language so the adapter can persist it. */
   onLanguageChange?: (language: string) => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
   /**
    * Render prop that returns the adapter-specific column editor element.
    * The consumer MUST forward the `ref` to their editor component (forwardRef).
@@ -87,6 +91,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   onCancel,
   language,
   onLanguageChange,
+  exportableOnly = false,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
@@ -108,7 +113,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     { classId: resolvedClassId, folderId: 1 },
     { skip: !isLegacy }
   )
-  const availableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
+  const allAvailableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
+  const availableFields: GridColumnConfiguration[] = exportableOnly
+    ? allAvailableFields.filter(field => field.exportable === true)
+    : allAvailableFields
 
   const handleAddColumn = useCallback((column: GridColumnConfiguration): void => {
     columnEditorRef.current?.addColumn(column)
@@ -165,6 +173,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
+          exportableOnly,
           language,
           onLanguageChange,
           onApply: (updatedColumns) => {
@@ -202,6 +211,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
+          exportableOnly,
           language,
           onLanguageChange,
           onApply: (cols) => { setMigratedColumns(cols) },

@@ -11,3 +11,4 @@
 export * from './base-detail-view'
 export * from './components/config-toolbar'
 export * from './hooks'
+export * from './track-config-error'

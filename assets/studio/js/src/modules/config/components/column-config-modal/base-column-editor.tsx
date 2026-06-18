@@ -62,6 +62,8 @@ export interface BaseColumnEditorProps {
   language?: string
   /** Called when the user changes the preview language inside the modal. */
   onLanguageChange?: (language: string) => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
 }
 
 export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorProps>(
@@ -75,7 +77,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     sourceFieldsRegistryId,
     transformersRegistryId,
     language,
-    onLanguageChange
+    onLanguageChange,
+    exportableOnly = false
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
     const user = useUser()
@@ -120,7 +123,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       handleLocaleChange,
       handleReorder,
       getColumns
-    } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel })
+    } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel, exportableOnly })
 
     useImperativeHandle(ref, () => ({
       getColumns,
@@ -135,6 +138,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
         id: col._id,
         sortable: true,
         type: isAdvanced ? 'collapse' as const : 'default' as const,
+        defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
           ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
           : <Tag>{ label }</Tag>,

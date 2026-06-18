@@ -11,8 +11,8 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { Form, useMessage, type formInstanceType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { ApiError, trackError, isApiErrorData } from '@pimcore/studio-ui-bundle/modules/app'
 import { isNil } from 'lodash'
+import { trackConfigError } from '../track-config-error'
 
 export interface UseDetailViewProps<TFormValues, TBackendConfig> {
   configName: string
@@ -20,6 +20,8 @@ export interface UseDetailViewProps<TFormValues, TBackendConfig> {
   modificationDate: number | undefined
   isLoading: boolean
   requestId: string | undefined
+  /** When false, saving is blocked centrally (read-only / location-locked configuration). Defaults to true. */
+  isWriteable?: boolean
   transformToForm: (backendConfig: TBackendConfig, configName: string) => TFormValues
   transformToBackend: (formValues: TFormValues, existingConfig: TBackendConfig) => TBackendConfig
   onSave: (updatedConfig: TBackendConfig, modificationDate: number) => Promise<{ modificationDate?: number }>
@@ -41,6 +43,7 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
   modificationDate,
   isLoading,
   requestId,
+  isWriteable = true,
   transformToForm,
   transformToBackend,
   onSave,
@@ -80,6 +83,12 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
       return
     }
 
+    // Defense in depth: never attempt to persist a read-only / location-locked configuration.
+    if (!isWriteable) {
+      void messageApi.error(t('config_not_writeable'))
+      return
+    }
+
     form.validateFields().then(async (values) => {
       isSavingRef.current = true
 
@@ -100,9 +109,7 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
         onChange(false)
         void messageApi.success(t(successMessageKey))
       } catch (error) {
-        if (isApiErrorData(error)) {
-          trackError(new ApiError(error))
-        }
+        trackConfigError(error)
       } finally {
         isSavingRef.current = false
       }

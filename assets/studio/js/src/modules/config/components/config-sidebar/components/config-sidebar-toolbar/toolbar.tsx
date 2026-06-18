@@ -15,6 +15,7 @@ import { bundleServiceIds } from '../../../../../../config/service-ids'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { ImportButton } from '../../../import-button/import-button'
 import { type BundleDataHubConfiguration } from '../../../../config-api-slice.gen'
+import { canCreateAdapter } from '../../../../utils/permission-helpers'
 
 interface ConfigSidebarToolbarProps {
   onAdd: (adapterType: string) => void
@@ -27,9 +28,9 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
   const { t } = useTranslation()
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
-  const adapters = adapterRegistry.getDynamicTypes()
+  const creatableAdapters = adapterRegistry.getDynamicTypes().filter((adapter) => canCreateAdapter(adapter.id))
 
-  const dropdownItems: DropdownProps['menu']['items'] = adapters.map((adapter) => ({
+  const dropdownItems: DropdownProps['menu']['items'] = creatableAdapters.map((adapter) => ({
     key: adapter.id,
     label: t(adapter.getNameTranslationKey()),
     icon: <Icon { ...adapter.getIcon() } />,
@@ -48,27 +49,33 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
           />
         </Tooltip>
 
-        <ImportButton
-          disabled={ isFetching }
-          handleOpenConfig={ handleOpenConfig }
-          onRefresh={ onRefresh }
-        />
+        {/* Import creates a configuration, so it is only offered when the user may create at
+            least one adapter type. */}
+        { dropdownItems.length > 0 && (
+          <ImportButton
+            disabled={ isFetching }
+            handleOpenConfig={ handleOpenConfig }
+            onRefresh={ onRefresh }
+          />
+        ) }
       </Flex>
 
-      <Dropdown
-        menu={ { items: dropdownItems } }
-        trigger={ ['click'] }
-      >
-        <DropdownButton>
-          <Flex
-            align='center'
-            gap='extra-small'
-          >
-            <Icon value="new" />
-            {t('new')}
-          </Flex>
-        </DropdownButton>
-      </Dropdown>
+      { dropdownItems.length > 0 && (
+        <Dropdown
+          menu={ { items: dropdownItems } }
+          trigger={ ['click'] }
+        >
+          <DropdownButton>
+            <Flex
+              align='center'
+              gap='extra-small'
+            >
+              <Icon value="new" />
+              {t('new')}
+            </Flex>
+          </DropdownButton>
+        </Dropdown>
+      ) }
     </Toolbar>
   )
 }
