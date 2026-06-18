@@ -28,11 +28,6 @@ interface ConfigurationServiceInterface
     public function getConfigurations(): array;
 
     /**
-     * Whether the location-aware configuration store currently allows creating new configurations.
-     */
-    public function areConfigurationsWriteable(): bool;
-
-    /**
      * @throws Exception
      */
     public function deleteConfiguration(string $name): void;

@@ -22,10 +22,9 @@ interface ConfigSidebarToolbarProps {
   onRefresh: () => Promise<{ data?: { items?: BundleDataHubConfiguration[] } }>
   handleOpenConfig: (config: BundleDataHubConfiguration) => void
   isFetching: boolean
-  configurationsWriteable?: boolean
 }
 
-export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFetching, configurationsWriteable = true }: ConfigSidebarToolbarProps): React.JSX.Element => {
+export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFetching }: ConfigSidebarToolbarProps): React.JSX.Element => {
   const { t } = useTranslation()
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
@@ -37,18 +36,6 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
     icon: <Icon { ...adapter.getIcon() } />,
     onClick: () => { onAdd(adapter.id) }
   }))
-
-  const newButton = (
-    <DropdownButton disabled={ !configurationsWriteable }>
-      <Flex
-        align='center'
-        gap='extra-small'
-      >
-        <Icon value="new" />
-        {t('new')}
-      </Flex>
-    </DropdownButton>
-  )
 
   return (
     <Toolbar>
@@ -63,35 +50,31 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
         </Tooltip>
 
         {/* Import creates a configuration, so it is only offered when the user may create at
-            least one adapter type and the config store is writeable. */}
+            least one adapter type. */}
         { dropdownItems.length > 0 && (
-          <Tooltip title={ configurationsWriteable ? '' : t('config_not_writeable') }>
-            <span>
-              <ImportButton
-                disabled={ isFetching || !configurationsWriteable }
-                handleOpenConfig={ handleOpenConfig }
-                onRefresh={ onRefresh }
-              />
-            </span>
-          </Tooltip>
+          <ImportButton
+            disabled={ isFetching }
+            handleOpenConfig={ handleOpenConfig }
+            onRefresh={ onRefresh }
+          />
         ) }
       </Flex>
 
       { dropdownItems.length > 0 && (
-        configurationsWriteable
-          ? (
-            <Dropdown
-              menu={ { items: dropdownItems } }
-              trigger={ ['click'] }
+        <Dropdown
+          menu={ { items: dropdownItems } }
+          trigger={ ['click'] }
+        >
+          <DropdownButton>
+            <Flex
+              align='center'
+              gap='extra-small'
             >
-              { newButton }
-            </Dropdown>
-            )
-          : (
-            <Tooltip title={ t('config_not_writeable') }>
-              <span>{ newButton }</span>
-            </Tooltip>
-            )
+              <Icon value="new" />
+              {t('new')}
+            </Flex>
+          </DropdownButton>
+        </Dropdown>
       ) }
     </Toolbar>
   )

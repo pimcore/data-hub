@@ -96,11 +96,6 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return array_values($hydratedConfigs);
     }
 
-    public function areConfigurationsWriteable(): bool
-    {
-        return (new Configuration(null, null))->isWriteable();
-    }
-
     public function getConfiguration(string $name): ConfigurationDetail
     {
         $configuration = $this->fetchConfiguration($name);

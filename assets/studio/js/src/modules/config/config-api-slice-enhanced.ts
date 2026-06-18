@@ -10,10 +10,6 @@
 
 import { api as baseApi } from './config-api-slice.gen'
 
-export interface BundleDataHubConfigWriteableResponse {
-  writeable: boolean
-}
-
 export const api = baseApi
   .enhanceEndpoints({
     addTagTypes: ['DataHubConfigs'],
@@ -44,18 +40,6 @@ export const api = baseApi
       }
     }
   })
-  .injectEndpoints({
-    endpoints: (build) => ({
-      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-      bundleDataHubConfigWriteable: build.query<BundleDataHubConfigWriteableResponse, void>({
-        query: () => ({
-          url: '/pimcore-studio/api/bundle/data-hub/config/writeable'
-        }),
-        providesTags: ['DataHubConfigs']
-      })
-    }),
-    overrideExisting: false
-  })
 
 export type * from './config-api-slice.gen'
 
@@ -67,6 +51,5 @@ export const {
   useBundleDataHubConfigGetQuery,
   useBundleDataHubConfigExportQuery,
   useBundleDataHubConfigImportMutation,
-  useBundleDataHubConfigUpdateMutation,
-  useBundleDataHubConfigWriteableQuery
+  useBundleDataHubConfigUpdateMutation
 } = api

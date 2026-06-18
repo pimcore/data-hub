@@ -18,11 +18,6 @@ bundle_data_hub_config_get: Get Data Hub Configuration
 bundle_data_hub_config_get_description: Get a Data Hub configuration by name
 bundle_data_hub_config_get_summary: Get Data Hub Configuration
 bundle_data_hub_config_get_success_response: Data Hub configuration details
-pimcore_studio_api_data_hub_config_writeable: Data Hub Configurations Writeable
-bundle_data_hub_config_writeable: Data Hub Configurations Writeable
-bundle_data_hub_config_writeable_description: Whether new Data Hub configurations can currently be created
-bundle_data_hub_config_writeable_summary: Data Hub Configurations Writeable
-bundle_data_hub_config_writeable_success_response: Data Hub configurations writeable state
 pimcore_studio_api_data_hub_config_update: Update Data Hub Configuration
 bundle_data_hub_config_update: Update Data Hub Configuration
 bundle_data_hub_config_update_description: Update an existing Data Hub configuration with validation for concurrent modifications
