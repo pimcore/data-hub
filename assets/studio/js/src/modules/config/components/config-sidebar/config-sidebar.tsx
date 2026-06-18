@@ -87,16 +87,13 @@ export const ConfigSidebar = ({
     const permissions = (item.permissions ?? {}) as { delete?: boolean }
     const actions: Array<{ key: string, icon: string }> = []
 
-    // Clone needs create permission for the adapter type and a writeable config; the backend also
-    // enforces that the store can accept a new configuration.
+    // Clone is a create operation, so it needs create permission (not just read) and a writeable config.
     if (item.writable && canCreateAdapter(item.adapter as string)) {
       actions.push({ key: 'clone', icon: 'copy-03' })
     }
 
     actions.push({ key: 'export', icon: 'export' })
 
-    // Delete requires the per-config delete permission and a writeable config
-    // (mirrors ConfigurationService::deleteConfiguration).
     if (item.writable && permissions.delete === true) {
       actions.push({ key: 'delete', icon: 'trash' })
     }

@@ -35,8 +35,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
   const [updateConfig, { isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
 
-  // Error tracking. Save errors are surfaced centrally by useDetailView (via .unwrap()); only the
-  // fetch error needs to be reported here.
+  // Save errors are surfaced centrally by useDetailView; only the fetch error is reported here.
   useEffect(() => {
     if (!isNil(fetchError)) {
       trackConfigError(fetchError)
@@ -45,12 +44,9 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
 
   const loading = isLoading || isFetching
   const backendConfig = (configData?.configuration ?? {}) as BackendConfiguration
-  // Editable only when the user holds the update permission AND the config is not location-locked.
   const userPermissions = (configData?.userPermissions ?? {}) as { update?: boolean, delete?: boolean }
   const storeWriteable = backendConfig?.general?.writeable !== false
   const isWriteable = userPermissions.update === true && storeWriteable
-  // Delete permission controls whether the delete button is shown; the writeable state controls
-  // whether it is enabled (handled by the toolbar via isWriteable).
   const canDelete = userPermissions.delete === true && storeWriteable
   const saveDisabledTooltipKey = storeWriteable && userPermissions.update !== true ? 'data-hub.config.no-update-permission' : 'config_not_writeable'
 
