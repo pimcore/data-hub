@@ -15,7 +15,7 @@ data-hub.config.name-max-length: Il nome non deve superare 80 caratteri
 data-hub.config.name-pattern: Il nome può contenere solo caratteri alfanumerici, trattini bassi e trattini
 data-hub.config.description: Descrizione
 data-hub.config.group: Gruppo
-data-hub.config.no-update-permission: [it]
+data-hub.config.no-update-permission: "Non sei autorizzato a modificare questa configurazione"
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
 data-hub.tabs.general: Generale
