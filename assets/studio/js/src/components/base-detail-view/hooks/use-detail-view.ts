@@ -11,9 +11,8 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { Form, useMessage, type formInstanceType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { isApiErrorData } from '@pimcore/studio-ui-bundle/modules/app'
-import { trackConfigError } from '../utils/track-error'
 import { isNil } from 'lodash'
+import { trackConfigError } from '../track-config-error'
 
 export interface UseDetailViewProps<TFormValues, TBackendConfig> {
   configName: string
@@ -110,9 +109,7 @@ export function useDetailView<TFormValues extends Record<string, any>, TBackendC
         onChange(false)
         void messageApi.success(t(successMessageKey))
       } catch (error) {
-        if (isApiErrorData(error)) {
-          trackConfigError(error)
-        }
+        trackConfigError(error)
       } finally {
         isSavingRef.current = false
       }

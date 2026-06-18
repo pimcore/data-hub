@@ -155,7 +155,9 @@ data-hub.column-config-modal.preview.loading: Loading preview…
 data-hub.column-config-modal.preview.error: Error loading preview.
 data-hub.column-config-modal.preview.no-data: No data for this object.
 data-hub.column-config-modal.pipeline.title: Title
+data-hub.column-config-modal.pipeline.sourceFields: Source fields
 data-hub.column-config-modal.pipeline.sourceFields.add: Add source field
+data-hub.column-config-modal.pipeline.transformers: Transformers
 data-hub.column-config-modal.pipeline.transformers.add: Add transformer
 user-management.permissions.plugin_datahub_admin: Datahub Admin
 user-management.permissions.plugin_datahub_config: Datahub Configuration

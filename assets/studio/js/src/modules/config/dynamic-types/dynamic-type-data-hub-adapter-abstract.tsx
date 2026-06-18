@@ -30,4 +30,11 @@ export abstract class DynamicTypeDataHubAdapterAbstract {
   getNameTranslationKey (): string {
     return `data-hub.adapter.${this.id}`
   }
+
+  /**
+   * Hook invoked after a configuration of this adapter type has been imported.
+   * Adapters can override this to run follow-up work in a separate request once the
+   * imported configuration is resolvable (e.g. building a search index). Defaults to a no-op.
+   */
+  async afterImport (configName: string): Promise<void> {}
 }

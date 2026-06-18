@@ -10,10 +10,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Box, Form, Input, Pipeline, PipelineConfigProvider, SplitLayout } from '@pimcore/studio-ui-bundle/components'
+import { Box, Form, Input, Pipeline, PipelineConfigProvider, SplitLayout, Tabs } from '@pimcore/studio-ui-bundle/components'
 import { isEqual } from 'lodash'
 import { type AdvancedEditorColumn } from './types'
 import { ColumnPreview } from './column-preview'
+import { useCompactLayout } from '../migration-modal'
 
 export interface ColumnPipelineFormProps {
   column?: AdvancedEditorColumn
@@ -40,7 +41,59 @@ export const ColumnPipelineForm = ({
 }: ColumnPipelineFormProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
+  const { compact } = useCompactLayout()
   const [liveValue, setLiveValue] = useState<Record<string, any>>(value ?? {})
+
+  const sourceFieldsGroup = (
+    <Pipeline.DynamicGroupItem
+      dynamicTypeRegistryId={ sourceFieldsRegistryId }
+      id='sourceFields'
+      showTitle={ !compact }
+      translationKeyPrefix='data-hub.column-config-modal.pipeline'
+    />
+  )
+
+  const transformersGroup = (
+    <Pipeline.DynamicGroupItem
+      dynamicTypeRegistryId={ transformersRegistryId }
+      id='transformers'
+      showTitle={ !compact }
+      translationKeyPrefix='data-hub.column-config-modal.pipeline'
+    />
+  )
+
+  const fieldsLayout = compact
+    ? (
+      <Tabs
+        items={ [
+          {
+            key: 'sourceFields',
+            label: t('data-hub.column-config-modal.pipeline.sourceFields'),
+            forceRender: true,
+            children: sourceFieldsGroup
+          },
+          {
+            key: 'transformers',
+            label: t('data-hub.column-config-modal.pipeline.transformers'),
+            forceRender: true,
+            children: transformersGroup
+          }
+        ] }
+      />
+      )
+    : (
+      <SplitLayout
+        leftItem={ {
+          children: sourceFieldsGroup,
+          size: 50
+        } }
+        rightItem={ {
+          children: transformersGroup,
+          size: 50
+        } }
+        withDivider
+      />
+      )
 
   useEffect(() => {
     form.setFieldValue('value', value ?? {})
@@ -84,31 +137,7 @@ export const ColumnPipelineForm = ({
                 id: 'fields',
                 component: (
                   <Pipeline.CustomItem>
-                    <SplitLayout
-                      leftItem={ {
-                        children: (
-                          <Pipeline.DynamicGroupItem
-                            dynamicTypeRegistryId={ sourceFieldsRegistryId }
-                            id='sourceFields'
-                            showTitle
-                            translationKeyPrefix='data-hub.column-config-modal.pipeline'
-                          />
-                        ),
-                        size: 50
-                      } }
-                      rightItem={ {
-                        children: (
-                          <Pipeline.DynamicGroupItem
-                            dynamicTypeRegistryId={ transformersRegistryId }
-                            id='transformers'
-                            showTitle
-                            translationKeyPrefix='data-hub.column-config-modal.pipeline'
-                          />
-                        ),
-                        size: 50
-                      } }
-                      withDivider
-                    />
+                    { fieldsLayout }
                   </Pipeline.CustomItem>
                 )
               },

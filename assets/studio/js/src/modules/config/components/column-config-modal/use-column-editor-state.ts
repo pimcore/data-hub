@@ -33,6 +33,8 @@ interface UseColumnEditorStateOptions {
   columns: SchemaColumn[]
   onApply: (columns: SchemaColumn[]) => void
   onCancel: () => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
 }
 
 interface UseColumnEditorStateResult {
@@ -57,7 +59,8 @@ export const useColumnEditorState = ({
   classDefinitionId,
   columns,
   onApply,
-  onCancel
+  onCancel,
+  exportableOnly = false
 }: UseColumnEditorStateOptions): UseColumnEditorStateResult => {
   const { getByName } = useClassDefinitions()
 
@@ -137,11 +140,20 @@ export const useColumnEditorState = ({
       fieldtype: column.key,
       type: column.type,
       pipelineConfig: column.config as Record<string, any> | undefined,
-      localizable: column.localizable
+      localizable: column.localizable,
+      isNew: true
     }])
   }, [])
 
-  const addColumnMenu = useAddColumnDropdown(availableFields, handleAddColumnOfType)
+  // Only the add-column dropdown is restricted to exportable columns. The full
+  // availableFields list is still used above to hydrate already-configured columns,
+  // so existing schemas containing non-exportable columns keep rendering unchanged.
+  const addColumnFields = useMemo(
+    () => exportableOnly ? availableFields.filter(field => field.exportable === true) : availableFields,
+    [availableFields, exportableOnly]
+  )
+
+  const addColumnMenu = useAddColumnDropdown(addColumnFields, handleAddColumnOfType)
 
   const handlePipelineChange = (id: string, pipeline: Record<string, any>): void => {
     setDraft(prev => prev.map(col =>

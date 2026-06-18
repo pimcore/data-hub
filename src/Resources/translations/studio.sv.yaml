@@ -136,6 +136,8 @@ tree.actions.view: Visa
 data-hub.import.title: Importera konfiguration
 data-hub.import.drag-drop: Bläddra bland dina filer eller dra och släpp en JSON-fil direkt här
 data-hub.import.browse-files: Bläddra bland filer
+data-hub.column-config-modal.pipeline.sourceFields: Källfält
+data-hub.column-config-modal.pipeline.transformers: Transformers
 perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Integration
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub-konfiguration
 user-management.permissions.plugin_datahub_admin: Datahub-administration
