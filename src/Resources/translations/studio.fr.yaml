@@ -15,6 +15,7 @@ data-hub.config.name-max-length: Le nom ne doit pas dépasser 80 caractères
 data-hub.config.name-pattern: Le nom ne peut contenir que des caractères alphanumériques, des tirets bas et des tirets
 data-hub.config.description: Description
 data-hub.config.group: Groupe
+data-hub.config.no-update-permission: "Vous n'êtes pas autorisé à modifier cette configuration"
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
 data-hub.tabs.general: Général
@@ -135,6 +136,8 @@ tree.actions.view: Afficher
 data-hub.import.title: Importer une configuration
 data-hub.import.drag-drop: Parcourez vos fichiers ou déposez un JSON directement ici
 data-hub.import.browse-files: Parcourir les fichiers
+data-hub.column-config-modal.pipeline.sourceFields: Champs source
+data-hub.column-config-modal.pipeline.transformers: Transformateurs
 perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Intégration
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Configuration Data Hub
 user-management.permissions.plugin_datahub_admin: Administration Datahub

@@ -23,6 +23,10 @@ export interface ConfigToolbarProps {
   onSave: () => void
   onRefresh: () => void
   onDelete: () => void
+  /** When false, the delete button is hidden. Defaults to shown. */
+  canDelete?: boolean
+  /** Translation key for the disabled-save tooltip. Defaults to config_not_writeable. */
+  saveDisabledTooltipKey?: string
   additionalButtons?: ReactNode[]
   leftAdditionalContent?: ReactNode
 }
@@ -36,11 +40,16 @@ export function ConfigToolbar ({
   onSave,
   onRefresh,
   onDelete,
+  canDelete,
+  saveDisabledTooltipKey = 'config_not_writeable',
   additionalButtons = [],
   leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
   const { styles } = useStyles()
+
+  // Delete is independent of the update permission: a read+delete user can still delete.
+  const showDelete = canDelete ?? true
 
   const saveButton = (
     <Button
@@ -60,7 +69,7 @@ export function ConfigToolbar ({
       ? (
         <Tooltip
           key="save-tooltip"
-          title={ t('config_not_writeable') }
+          title={ t(saveDisabledTooltipKey) }
         >
           <span>{saveButton}</span>
         </Tooltip>
@@ -78,13 +87,14 @@ export function ConfigToolbar ({
             onClick={ onRefresh }
           />
         </Tooltip>
-        <Tooltip title={ isWriteable ? t('delete') : t('config_not_writeable') }>
-          <IconButton
-            disabled={ !isWriteable }
-            icon={ { value: 'trash' } }
-            onClick={ onDelete }
-          />
-        </Tooltip>
+        {showDelete && (
+          <Tooltip title={ t('delete') }>
+            <IconButton
+              icon={ { value: 'trash' } }
+              onClick={ onDelete }
+            />
+          </Tooltip>
+        )}
         <ExportButton configName={ configName } />
         {leftAdditionalContent !== undefined && (
           <>

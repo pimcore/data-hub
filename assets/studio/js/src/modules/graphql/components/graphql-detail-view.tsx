@@ -12,7 +12,7 @@ import React, { useEffect } from 'react'
 import { IconTextButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DataHubAdapterDetailViewProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
-import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView } from '../../../components/base-detail-view'
+import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView, trackConfigError } from '../../../components/base-detail-view'
 import { GeneralTab } from './tabs/general-tab'
 import { SchemaDefinitionTab } from './tabs/schema-definition-tab'
 import { SecurityDefinitionTab } from './tabs/security-definition-tab'
@@ -23,7 +23,6 @@ import { isEmpty, isNil } from 'lodash'
 import { type GraphQLFormValues } from './types'
 import { transformFormToBackend, transformBackendToForm } from '../utils/transformers'
 import { type BackendConfiguration } from './backend-types'
-import { ApiError, trackError } from '@pimcore/studio-ui-bundle/modules/app'
 
 export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAdapterDetailViewProps): React.JSX.Element => {
   const { t } = useTranslation()
@@ -34,24 +33,22 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
     { refetchOnMountOrArgChange: true }
   )
   const { data: explorerUrlData } = useBundleDataHubGraphqlExplorerUrlQuery({ name: configName })
-  const [updateConfig, { error: updateError, isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
+  const [updateConfig, { isLoading: isSaving }] = useBundleDataHubConfigUpdateMutation()
 
-  // Error tracking
+  // Save errors are surfaced centrally by useDetailView; only the fetch error is reported here.
   useEffect(() => {
     if (!isNil(fetchError)) {
-      trackError(new ApiError(fetchError))
+      trackConfigError(fetchError)
     }
   }, [fetchError])
 
-  useEffect(() => {
-    if (!isNil(updateError)) {
-      trackError(new ApiError(updateError))
-    }
-  }, [updateError])
-
   const loading = isLoading || isFetching
   const backendConfig = (configData?.configuration ?? {}) as BackendConfiguration
-  const isWriteable = backendConfig?.general?.writeable ?? true
+  const userPermissions = (configData?.userPermissions ?? {}) as { update?: boolean, delete?: boolean }
+  const storeWriteable = backendConfig?.general?.writeable !== false
+  const isWriteable = userPermissions.update === true && storeWriteable
+  const canDelete = userPermissions.delete === true && storeWriteable
+  const saveDisabledTooltipKey = storeWriteable && userPermissions.update !== true ? 'data-hub.config.no-update-permission' : 'config_not_writeable'
 
   const handleSaveToApi = async (updatedConfig: BackendConfiguration, modificationDate: number): Promise<{ modificationDate?: number }> => {
     const response = await updateConfig({
@@ -72,6 +69,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
     modificationDate: configData?.modificationDate,
     isLoading: loading,
     requestId,
+    isWriteable,
     transformToForm: transformBackendToForm,
     transformToBackend: transformFormToBackend,
     onSave: handleSaveToApi,
@@ -130,6 +128,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
           {t('data-hub.open-in-tab')}
         </IconTextButton>
       ] }
+      canDelete={ canDelete }
       configName={ configName }
       isDirty={ isDirty }
       isLoading={ loading }
@@ -138,6 +137,7 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
       onDelete={ onDelete }
       onRefresh={ refetch }
       onSave={ handleSave }
+      saveDisabledTooltipKey={ saveDisabledTooltipKey }
     />
   )
 

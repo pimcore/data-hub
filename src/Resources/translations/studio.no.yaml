@@ -15,6 +15,7 @@ data-hub.config.name-max-length: Navnet kan ikke overskride 80 tegn
 data-hub.config.name-pattern: Navnet kan bare inneholde alfanumeriske tegn, understrek og bindestreker
 data-hub.config.description: Beskrivelse
 data-hub.config.group: Gruppe
+data-hub.config.no-update-permission: "Du har ikke tillatelse til å oppdatere denne konfigurasjonen"
 data-hub.adapter.graphql: GraphQL
 data-hub.adapter.simpleRest: Simple REST
 data-hub.tabs.general: Generelt
@@ -135,6 +136,8 @@ tree.actions.view: Vis
 data-hub.import.title: Importer konfigurasjon
 data-hub.import.drag-drop: Bla gjennom filene dine eller dra og slipp en JSON-fil direkte her
 data-hub.import.browse-files: Bla gjennom filer
+data-hub.column-config-modal.pipeline.sourceFields: Kildefelt
+data-hub.column-config-modal.pipeline.transformers: Transformers
 perspective-editor.form.main-nav-permission.category.automationIntegration: Automatisering og integrasjon
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub-konfigurasjon
 user-management.permissions.plugin_datahub_admin: Datahub-administrasjon

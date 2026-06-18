@@ -25,6 +25,7 @@ import { useConfigContext } from '../../providers/config-provider'
 import { useDataHubConfig } from '../../hooks/use-data-hub-config'
 import { findConfigById, filterConfigsRecursive } from '../../utils/tree-helpers'
 import { hasValidAdapter } from '../../utils/adapter-helpers'
+import { canCreateAdapter } from '../../utils/permission-helpers'
 import { getExportUrl } from '../../utils/get-export-url'
 import { useStyles } from './config-sidebar.styles'
 
@@ -83,13 +84,17 @@ export const ConfigSidebar = ({
       return []
     }
 
-    const actions: Array<{ key: string, icon: string }> = [
-      { key: 'clone', icon: 'copy-03' },
-      { key: 'export', icon: 'export' }
-    ]
+    const permissions = (item.permissions ?? {}) as { delete?: boolean }
+    const actions: Array<{ key: string, icon: string }> = []
 
-    // Only add delete action if writeable
-    if (item.writable) {
+    // Clone is a create operation, so it needs create permission (not just read) and a writeable config.
+    if (item.writable && canCreateAdapter(item.adapter as string)) {
+      actions.push({ key: 'clone', icon: 'copy-03' })
+    }
+
+    actions.push({ key: 'export', icon: 'export' })
+
+    if (item.writable && permissions.delete === true) {
       actions.push({ key: 'delete', icon: 'trash' })
     }
 
