@@ -191,7 +191,8 @@ final class AssetType extends ObjectType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'List of property key names to include (if omitted, all properties are returned).',
+                        'description' => 'List of property key names to include '
+                            . '(if omitted, all properties are returned).',
                     ],
                 ],
                 'resolve' => [$elementResolver, 'resolveProperties'],
