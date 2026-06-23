@@ -33,22 +33,6 @@ final class AreablockDataType extends ObjectType
             [
                 'name' => 'document_editableAreablock_data',
                 'fields' => [
-                    '_editableType' => [
-                        'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
-                            if ($value) {
-                                return $value->getType();
-                            }
-                        },
-                    ],
-                    '_editableName' => [
-                        'type' => Type::string(),
-                        'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
-                            if ($value) {
-                                return $value->getName();
-                            }
-                        },
-                    ],
                     'key' => [
                         'type' => Type::string(),
                         'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
