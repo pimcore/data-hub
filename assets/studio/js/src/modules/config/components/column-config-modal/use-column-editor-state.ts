@@ -16,11 +16,13 @@ import { isNil } from 'lodash'
 import {
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
+  ADVANCED_COLUMN_KEY,
   ADVANCED_COLUMN_TYPE,
   type AdvancedEditorColumn,
   type SchemaColumn
 } from './types'
-import { useAddColumnDropdown, type AddColumnDropdownMenu } from './use-add-column-dropdown'
+import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
+import { useAddColumnGroups } from './use-add-column-groups'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
@@ -42,7 +44,9 @@ interface UseColumnEditorStateResult {
   isLoading: boolean
   objectId: number | null
   availableFields: GridColumnConfiguration[]
-  addColumnMenu: AddColumnDropdownMenu
+  columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
+  /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
+  onAddAdvancedColumn?: () => void
   openElementSelector: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
@@ -153,7 +157,16 @@ export const useColumnEditorState = ({
     [availableFields, exportableOnly]
   )
 
-  const addColumnMenu = useAddColumnDropdown(addColumnFields, handleAddColumnOfType)
+  const columnGroups = useAddColumnGroups(addColumnFields)
+
+  const advancedColumn = useMemo(
+    () => addColumnFields.find(field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY),
+    [addColumnFields]
+  )
+
+  const onAddAdvancedColumn = advancedColumn !== undefined
+    ? (): void => { handleAddColumnOfType(advancedColumn) }
+    : undefined
 
   const handlePipelineChange = (id: string, pipeline: Record<string, any>): void => {
     setDraft(prev => prev.map(col =>
@@ -191,7 +204,8 @@ export const useColumnEditorState = ({
     isLoading,
     objectId,
     availableFields,
-    addColumnMenu,
+    columnGroups,
+    onAddAdvancedColumn,
     openElementSelector,
     handleAddColumnOfType,
     handlePipelineChange,
