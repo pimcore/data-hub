@@ -9,13 +9,13 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { Dropdown, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
-import { useAddColumnDropdown } from './use-add-column-dropdown'
-import { type ColumnEditorHandle, type SchemaColumn } from './types'
+import { useAddColumnGroups } from './use-add-column-groups'
+import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 
 /**
  * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
@@ -122,7 +122,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     columnEditorRef.current?.addColumn(column)
   }, [])
 
-  const addColumnMenu = useAddColumnDropdown(availableFields, handleAddColumn)
+  const columnGroups = useAddColumnGroups(availableFields)
+  const advancedColumn = availableFields.find(
+    field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY
+  )
 
   const commitMigration = (cols: TColumns[]): void => {
     setMigratedColumns(cols)
@@ -193,11 +196,30 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
       onConfirm={ handleConfirmMigration }
       open={ open }
       renderToolbarLeft={
-        <Dropdown menu={ addColumnMenu }>
-          <IconTextButton icon={ { value: 'new' } }>
-            { t('data-hub.column-config-modal.add-column') }
-          </IconTextButton>
-        </Dropdown>
+        <Flex gap='mini'>
+          <ColumnPickerPopover<GridColumnConfiguration>
+            groups={ columnGroups }
+            onSelect={ (item: { meta?: GridColumnConfiguration }) => {
+              if (item.meta !== undefined) {
+                handleAddColumn(item.meta)
+              }
+            } }
+            placement="leftBottom"
+          >
+            <IconTextButton icon={ { value: 'new' } }>
+              { t('data-hub.column-config-modal.add-column') }
+            </IconTextButton>
+          </ColumnPickerPopover>
+
+          { advancedColumn !== undefined && (
+            <IconTextButton
+              icon={ { value: 'new' } }
+              onClick={ () => { handleAddColumn(advancedColumn) } }
+            >
+              { t('data-hub.column-config-modal.add-advanced-column') }
+            </IconTextButton>
+          ) }
+        </Flex>
       }
       title={ title }
     >

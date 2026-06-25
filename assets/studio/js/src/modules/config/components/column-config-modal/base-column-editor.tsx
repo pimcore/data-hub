@@ -15,7 +15,6 @@ import {
   Button,
   Content,
   ContentLayout,
-  Dropdown,
   Flex,
   IconButton,
   IconTextButton,
@@ -25,6 +24,8 @@ import {
   Toolbar,
   type StackListProps
 } from '@pimcore/studio-ui-bundle/components'
+import { useStyles } from './base-column-editor.styles'
+import { FieldsToAddPanel } from './fields-to-add-panel'
 import {
   LanguageSelectionContext,
   LanguageSelectionWithProvider
@@ -81,7 +82,9 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     exportableOnly = false
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
+    const { styles } = useStyles()
     const user = useUser()
+    const [fieldsToAddOpen, setFieldsToAddOpen] = useState(true)
 
     // Own the language state here. Initialize once from the prop, falling back to
     // the user's first content language. This is the single source of truth —
@@ -113,7 +116,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       draft,
       isLoading,
       objectId,
-      addColumnMenu,
+      columnGroups,
+      onAddAdvancedColumn,
       openElementSelector,
       handleAddColumnOfType,
       handlePipelineChange,
@@ -198,11 +202,25 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                 padding={ { x: 'none', y: 'small' } }
                 theme='secondary'
               >
-                <Dropdown menu={ addColumnMenu }>
-                  <IconTextButton icon={ { value: 'new' } }>
+                <Flex gap='mini'>
+                  <IconTextButton
+                    icon={ { value: 'new' } }
+                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
+                    type='default'
+                  >
                     { t('data-hub.column-config-modal.add-column') }
                   </IconTextButton>
-                </Dropdown>
+
+                  { onAddAdvancedColumn !== undefined && (
+                    <IconTextButton
+                      icon={ { value: 'new' } }
+                      onClick={ onAddAdvancedColumn }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.add-advanced-column') }
+                    </IconTextButton>
+                  ) }
+                </Flex>
 
                 <Space size='extra-small'>
                   <Button
@@ -240,24 +258,36 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
             padding={ { x: 'none', y: 'small' } }
             style={ { height: 'calc(80vh - 200px)' } }
           >
-            <Space
-              direction='vertical'
-              style={ { width: '100%' } }
-            >
-              { draft.length === 0 && (
-                <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-              ) }
-
-              { draft.length > 0 && (
-                <StackList
-                  items={ stackItems }
-                  onItemsChange={ (items) => {
-                    handleReorder(items.map(item => String(item.id)))
-                  } }
-                  sortable
+            <div className={ styles.body }>
+              { !hideToolbar && fieldsToAddOpen && (
+                <FieldsToAddPanel
+                  groups={ columnGroups }
+                  onClose={ () => { setFieldsToAddOpen(false) } }
+                  onColumnSelect={ handleAddColumnOfType }
                 />
               ) }
-            </Space>
+
+              <div className={ styles.list }>
+                <Space
+                  direction='vertical'
+                  style={ { width: '100%' } }
+                >
+                  { draft.length === 0 && (
+                    <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
+                  ) }
+
+                  { draft.length > 0 && (
+                    <StackList
+                      items={ stackItems }
+                      onItemsChange={ (items) => {
+                        handleReorder(items.map(item => String(item.id)))
+                      } }
+                      sortable
+                    />
+                  ) }
+                </Space>
+              </div>
+            </div>
           </Content>
         </ContentLayout>
       </LanguageSelectionContext.Provider>

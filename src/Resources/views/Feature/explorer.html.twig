@@ -56,7 +56,7 @@
         </div>
 
         <div id="root"/>
-        <script type="text/javascript">
+        <script type="text/javascript" {{ pimcore_studio_csp.getNonceHtmlAttribute()|raw }}>
             function getCookie(name) {
                 var value = "; " + document.cookie;
                 var parts = value.split("; " + name + "=");
