@@ -8,14 +8,13 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useImperativeHandle, forwardRef } from 'react'
+import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
   Button,
   Content,
   ContentLayout,
-  Dropdown,
   Flex,
   IconButton,
   IconTextButton,
@@ -25,10 +24,13 @@ import {
   Toolbar,
   type StackListProps
 } from '@pimcore/studio-ui-bundle/components'
+import { useStyles } from './base-column-editor.styles'
+import { FieldsToAddPanel } from './fields-to-add-panel'
 import {
-  LanguageSelectionProvider,
+  LanguageSelectionContext,
   LanguageSelectionWithProvider
 } from '@pimcore/studio-ui-bundle/modules/data-object'
+import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
@@ -57,6 +59,12 @@ export interface BaseColumnEditorProps {
   sourceFieldsRegistryId: string
   /** Service ID of the DynamicTypePipelineRegistry to use for transformers. */
   transformersRegistryId: string
+  /** The currently selected preview language. When provided, the LanguageSelection is controlled externally. */
+  language?: string
+  /** Called when the user changes the preview language inside the modal. */
+  onLanguageChange?: (language: string) => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
 }
 
 export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorProps>(
@@ -68,15 +76,48 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     onCancel,
     hideToolbar = false,
     sourceFieldsRegistryId,
-    transformersRegistryId
+    transformersRegistryId,
+    language,
+    onLanguageChange,
+    exportableOnly = false
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
+    const { styles } = useStyles()
+    const user = useUser()
+    const [fieldsToAddOpen, setFieldsToAddOpen] = useState(true)
+
+    // Own the language state here. Initialize once from the prop, falling back to
+    // the user's first content language. This is the single source of truth —
+    // no synchronization effects needed.
+    const initialLanguage = language ?? (user.contentLanguages as string[] | undefined)?.[0] ?? 'en'
+    const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
+    const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
+
+    // On mount, persist the resolved initial language to the parent so that
+    // entities that have never had a language set get one saved immediately.
+    useEffect(() => {
+      onLanguageChange?.(currentLanguage)
+    }, [])
+
+    const handleLanguageChange = useCallback((lang: string) => {
+      setCurrentLanguage(lang)
+      onLanguageChange?.(lang)
+    }, [onLanguageChange])
+
+    // Build a stable context value to pass to the provider.
+    const languageContextValue = useMemo(() => ({
+      currentLanguage,
+      setCurrentLanguage: handleLanguageChange,
+      hasLocalizedFields,
+      setHasLocalizedFields
+    }), [currentLanguage, handleLanguageChange, hasLocalizedFields])
 
     const {
       draft,
       isLoading,
       objectId,
-      addColumnMenu,
+      columnGroups,
+      onAddAdvancedColumn,
       openElementSelector,
       handleAddColumnOfType,
       handlePipelineChange,
@@ -86,7 +127,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       handleLocaleChange,
       handleReorder,
       getColumns
-    } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel })
+    } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel, exportableOnly })
 
     useImperativeHandle(ref, () => ({
       getColumns,
@@ -101,6 +142,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
         id: col._id,
         sortable: true,
         type: isAdvanced ? 'collapse' as const : 'default' as const,
+        defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
           ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
           : <Tag>{ label }</Tag>,
@@ -122,7 +164,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
           : {}),
         renderRightToolbar: (
           <Space size='mini'>
-            { col.localizable === true && (
+            { col.localizable === true && isAdvanced && (
               <ColumnLocaleControl
                 onChange={ (locale) => { handleLocaleChange(col._id, locale) } }
                 value={ col.locale }
@@ -151,7 +193,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     }
 
     return (
-      <LanguageSelectionProvider>
+      <LanguageSelectionContext.Provider value={ languageContextValue }>
         <ContentLayout
           renderToolbar={ hideToolbar
             ? undefined
@@ -160,11 +202,25 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                 padding={ { x: 'none', y: 'small' } }
                 theme='secondary'
               >
-                <Dropdown menu={ addColumnMenu }>
-                  <IconTextButton icon={ { value: 'new' } }>
+                <Flex gap='mini'>
+                  <IconTextButton
+                    icon={ { value: 'new' } }
+                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
+                    type='default'
+                  >
                     { t('data-hub.column-config-modal.add-column') }
                   </IconTextButton>
-                </Dropdown>
+
+                  { onAddAdvancedColumn !== undefined && (
+                    <IconTextButton
+                      icon={ { value: 'new' } }
+                      onClick={ onAddAdvancedColumn }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.add-advanced-column') }
+                    </IconTextButton>
+                  ) }
+                </Flex>
 
                 <Space size='extra-small'>
                   <Button
@@ -202,27 +258,39 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
             padding={ { x: 'none', y: 'small' } }
             style={ { height: 'calc(80vh - 200px)' } }
           >
-            <Space
-              direction='vertical'
-              style={ { width: '100%' } }
-            >
-              { draft.length === 0 && (
-                <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-              ) }
-
-              { draft.length > 0 && (
-                <StackList
-                  items={ stackItems }
-                  onItemsChange={ (items) => {
-                    handleReorder(items.map(item => String(item.id)))
-                  } }
-                  sortable
+            <div className={ styles.body }>
+              { !hideToolbar && fieldsToAddOpen && (
+                <FieldsToAddPanel
+                  groups={ columnGroups }
+                  onClose={ () => { setFieldsToAddOpen(false) } }
+                  onColumnSelect={ handleAddColumnOfType }
                 />
               ) }
-            </Space>
+
+              <div className={ styles.list }>
+                <Space
+                  direction='vertical'
+                  style={ { width: '100%' } }
+                >
+                  { draft.length === 0 && (
+                    <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
+                  ) }
+
+                  { draft.length > 0 && (
+                    <StackList
+                      items={ stackItems }
+                      onItemsChange={ (items) => {
+                        handleReorder(items.map(item => String(item.id)))
+                      } }
+                      sortable
+                    />
+                  ) }
+                </Space>
+              </div>
+            </div>
           </Content>
         </ContentLayout>
-      </LanguageSelectionProvider>
+      </LanguageSelectionContext.Provider>
     )
   }
 )

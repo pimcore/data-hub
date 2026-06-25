@@ -7,8 +7,3 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
-
-export * from './base-detail-view'
-export * from './components/config-toolbar'
-export * from './hooks'
-export * from './track-config-error'

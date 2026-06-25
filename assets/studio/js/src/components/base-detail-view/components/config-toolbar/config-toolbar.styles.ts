@@ -8,7 +8,16 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-export * from './base-detail-view'
-export * from './components/config-toolbar'
-export * from './hooks'
-export * from './track-config-error'
+import { createStyles } from 'antd-style'
+
+export const useStyles = createStyles(({ css, token }) => {
+  return {
+    divider: css`
+      height: ${token.fontSizeLG}px;
+      align-self: center;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      margin-inline: ${token.marginXXS}px;
+    `
+  }
+})

@@ -16,11 +16,13 @@ import { isNil } from 'lodash'
 import {
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
+  ADVANCED_COLUMN_KEY,
   ADVANCED_COLUMN_TYPE,
   type AdvancedEditorColumn,
   type SchemaColumn
 } from './types'
-import { useAddColumnDropdown, type AddColumnDropdownMenu } from './use-add-column-dropdown'
+import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
+import { useAddColumnGroups } from './use-add-column-groups'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
@@ -33,6 +35,8 @@ interface UseColumnEditorStateOptions {
   columns: SchemaColumn[]
   onApply: (columns: SchemaColumn[]) => void
   onCancel: () => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
 }
 
 interface UseColumnEditorStateResult {
@@ -40,7 +44,9 @@ interface UseColumnEditorStateResult {
   isLoading: boolean
   objectId: number | null
   availableFields: GridColumnConfiguration[]
-  addColumnMenu: AddColumnDropdownMenu
+  columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
+  /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
+  onAddAdvancedColumn?: () => void
   openElementSelector: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
@@ -57,7 +63,8 @@ export const useColumnEditorState = ({
   classDefinitionId,
   columns,
   onApply,
-  onCancel
+  onCancel,
+  exportableOnly = false
 }: UseColumnEditorStateOptions): UseColumnEditorStateResult => {
   const { getByName } = useClassDefinitions()
 
@@ -137,11 +144,29 @@ export const useColumnEditorState = ({
       fieldtype: column.key,
       type: column.type,
       pipelineConfig: column.config as Record<string, any> | undefined,
-      localizable: column.localizable
+      localizable: column.localizable,
+      isNew: true
     }])
   }, [])
 
-  const addColumnMenu = useAddColumnDropdown(availableFields, handleAddColumnOfType)
+  // Only the add-column dropdown is restricted to exportable columns. The full
+  // availableFields list is still used above to hydrate already-configured columns,
+  // so existing schemas containing non-exportable columns keep rendering unchanged.
+  const addColumnFields = useMemo(
+    () => exportableOnly ? availableFields.filter(field => field.exportable === true) : availableFields,
+    [availableFields, exportableOnly]
+  )
+
+  const columnGroups = useAddColumnGroups(addColumnFields)
+
+  const advancedColumn = useMemo(
+    () => addColumnFields.find(field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY),
+    [addColumnFields]
+  )
+
+  const onAddAdvancedColumn = advancedColumn !== undefined
+    ? (): void => { handleAddColumnOfType(advancedColumn) }
+    : undefined
 
   const handlePipelineChange = (id: string, pipeline: Record<string, any>): void => {
     setDraft(prev => prev.map(col =>
@@ -179,7 +204,8 @@ export const useColumnEditorState = ({
     isLoading,
     objectId,
     availableFields,
-    addColumnMenu,
+    columnGroups,
+    onAddAdvancedColumn,
     openElementSelector,
     handleAddColumnOfType,
     handlePipelineChange,

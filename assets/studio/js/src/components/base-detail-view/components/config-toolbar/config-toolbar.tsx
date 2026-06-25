@@ -9,9 +9,10 @@
  */
 
 import React, { type ReactNode } from 'react'
-import { Button, ButtonGroup, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
+import { Button, ButtonGroup, Divider, Tooltip, Toolbar, IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { ExportButton } from '../../../../modules/config/components/export-button'
+import { useStyles } from './config-toolbar.styles'
 
 export interface ConfigToolbarProps {
   configName: string
@@ -22,7 +23,12 @@ export interface ConfigToolbarProps {
   onSave: () => void
   onRefresh: () => void
   onDelete: () => void
+  /** When false, the delete button is hidden. Defaults to shown. */
+  canDelete?: boolean
+  /** Translation key for the disabled-save tooltip. Defaults to config_not_writeable. */
+  saveDisabledTooltipKey?: string
   additionalButtons?: ReactNode[]
+  leftAdditionalContent?: ReactNode
 }
 
 export function ConfigToolbar ({
@@ -34,9 +40,16 @@ export function ConfigToolbar ({
   onSave,
   onRefresh,
   onDelete,
-  additionalButtons = []
+  canDelete,
+  saveDisabledTooltipKey = 'config_not_writeable',
+  additionalButtons = [],
+  leftAdditionalContent
 }: ConfigToolbarProps): React.JSX.Element {
   const { t } = useTranslation()
+  const { styles } = useStyles()
+
+  // Delete is independent of the update permission: a read+delete user can still delete.
+  const showDelete = canDelete ?? true
 
   const saveButton = (
     <Button
@@ -56,7 +69,7 @@ export function ConfigToolbar ({
       ? (
         <Tooltip
           key="save-tooltip"
-          title={ t('config_not_writeable') }
+          title={ t(saveDisabledTooltipKey) }
         >
           <span>{saveButton}</span>
         </Tooltip>
@@ -74,14 +87,24 @@ export function ConfigToolbar ({
             onClick={ onRefresh }
           />
         </Tooltip>
-        <Tooltip title={ isWriteable ? t('delete') : t('config_not_writeable') }>
-          <IconButton
-            disabled={ !isWriteable }
-            icon={ { value: 'trash' } }
-            onClick={ onDelete }
-          />
-        </Tooltip>
+        {showDelete && (
+          <Tooltip title={ t('delete') }>
+            <IconButton
+              icon={ { value: 'trash' } }
+              onClick={ onDelete }
+            />
+          </Tooltip>
+        )}
         <ExportButton configName={ configName } />
+        {leftAdditionalContent !== undefined && (
+          <>
+            <Divider
+              className={ styles.divider }
+              type="vertical"
+            />
+            {leftAdditionalContent}
+          </>
+        )}
       </Space>
       <ButtonGroup items={ rightButtons as any } />
     </Toolbar>

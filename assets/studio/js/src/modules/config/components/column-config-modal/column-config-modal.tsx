@@ -9,13 +9,13 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { Dropdown, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
-import { useAddColumnDropdown } from './use-add-column-dropdown'
-import { type ColumnEditorHandle, type SchemaColumn } from './types'
+import { useAddColumnGroups } from './use-add-column-groups'
+import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 
 /**
  * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
@@ -29,8 +29,14 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   entity: string
   /** True in the split migration view — the editor should hide its own Apply/Discard toolbar. */
   hideToolbar: boolean
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly: boolean
   onApply: (columns: TColumns[]) => void
   onCancel: () => void
+  /** The currently persisted preview language for this entity. */
+  language?: string
+  /** Called when the user changes the preview language so the adapter can persist it. */
+  onLanguageChange?: (language: string) => void
 }
 
 export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
@@ -51,6 +57,12 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
   title: string
   onApply: (columns: TColumns[]) => void
   onCancel: () => void
+  /** The currently persisted preview language for this entity. */
+  language?: string
+  /** Called when the user changes the preview language so the adapter can persist it. */
+  onLanguageChange?: (language: string) => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
   /**
    * Render prop that returns the adapter-specific column editor element.
    * The consumer MUST forward the `ref` to their editor component (forwardRef).
@@ -77,6 +89,9 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   title,
   onApply,
   onCancel,
+  language,
+  onLanguageChange,
+  exportableOnly = false,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
@@ -98,13 +113,19 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     { classId: resolvedClassId, folderId: 1 },
     { skip: !isLegacy }
   )
-  const availableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
+  const allAvailableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
+  const availableFields: GridColumnConfiguration[] = exportableOnly
+    ? allAvailableFields.filter(field => field.exportable === true)
+    : allAvailableFields
 
   const handleAddColumn = useCallback((column: GridColumnConfiguration): void => {
     columnEditorRef.current?.addColumn(column)
   }, [])
 
-  const addColumnMenu = useAddColumnDropdown(availableFields, handleAddColumn)
+  const columnGroups = useAddColumnGroups(availableFields)
+  const advancedColumn = availableFields.find(
+    field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY
+  )
 
   const commitMigration = (cols: TColumns[]): void => {
     setMigratedColumns(cols)
@@ -155,6 +176,9 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
+          exportableOnly,
+          language,
+          onLanguageChange,
           onApply: (updatedColumns) => {
             onApply(updatedColumns)
             handleCancel()
@@ -172,11 +196,30 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
       onConfirm={ handleConfirmMigration }
       open={ open }
       renderToolbarLeft={
-        <Dropdown menu={ addColumnMenu }>
-          <IconTextButton icon={ { value: 'new' } }>
-            { t('data-hub.column-config-modal.add-column') }
-          </IconTextButton>
-        </Dropdown>
+        <Flex gap='mini'>
+          <ColumnPickerPopover<GridColumnConfiguration>
+            groups={ columnGroups }
+            onSelect={ (item: { meta?: GridColumnConfiguration }) => {
+              if (item.meta !== undefined) {
+                handleAddColumn(item.meta)
+              }
+            } }
+            placement="leftBottom"
+          >
+            <IconTextButton icon={ { value: 'new' } }>
+              { t('data-hub.column-config-modal.add-column') }
+            </IconTextButton>
+          </ColumnPickerPopover>
+
+          { advancedColumn !== undefined && (
+            <IconTextButton
+              icon={ { value: 'new' } }
+              onClick={ () => { handleAddColumn(advancedColumn) } }
+            >
+              { t('data-hub.column-config-modal.add-advanced-column') }
+            </IconTextButton>
+          ) }
+        </Flex>
       }
       title={ title }
     >
@@ -190,6 +233,9 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
+          exportableOnly,
+          language,
+          onLanguageChange,
           onApply: (cols) => { setMigratedColumns(cols) },
           onCancel: () => {}
         }) }
