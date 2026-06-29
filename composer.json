@@ -48,6 +48,9 @@
             "kernel/Kernel.php"
         ]
     },
+    "conflict": {
+        "pimcore/studio-ui-bundle": "<2025.4.6"
+    },
     "extra": {
         "branch-alias": {
             "dev-2.x": "2.3.x-dev"
