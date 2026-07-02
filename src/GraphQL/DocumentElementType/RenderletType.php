@@ -57,7 +57,9 @@ final class RenderletType extends ObjectType
                         ],
                         'type' => [
                             'type' => Type::string(),
-                            'resolve' => self::resolveRenderlet(static fn (Renderlet $r) => $r->getData()['type'] ?? null),
+                            'resolve' => self::resolveRenderlet(
+                                static fn (Renderlet $r) => $r->getData()['type'] ?? null,
+                            ),
                         ],
                         'subtype' => [
                             'type' => Type::string(),
@@ -86,7 +88,10 @@ final class RenderletType extends ObjectType
                                 }
 
                                 // don't leak unpublished elements (Relation::getElement() filters these too)
-                                if (Element\Service::doHideUnpublished($target) && !Element\Service::isPublished($target)) {
+                                if (
+                                    Element\Service::doHideUnpublished($target)
+                                    && !Element\Service::isPublished($target)
+                                ) {
                                     return null;
                                 }
 
