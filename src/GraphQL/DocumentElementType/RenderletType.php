@@ -18,6 +18,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\Document\Editable\Renderlet;
+use Pimcore\Model\Element;
 
 /**
  * @internal
@@ -56,7 +57,7 @@ final class RenderletType extends ObjectType
                         ],
                         'type' => [
                             'type' => Type::string(),
-                            'resolve' => self::resolveRenderlet(static fn (Renderlet $r) => $r->getType()),
+                            'resolve' => self::resolveRenderlet(static fn (Renderlet $r) => $r->getData()['type'] ?? null),
                         ],
                         'subtype' => [
                             'type' => Type::string(),
@@ -74,8 +75,18 @@ final class RenderletType extends ObjectType
                                     return null;
                                 }
 
+                                // getO() does not lazy-load and $o is stripped when the
+                                // document is serialized into the core cache, so resolve
+                                // the target explicitly (like Renderlet::frontend() does).
+                                $value->load();
+
                                 $target = $value->getO();
-                                if (!$target) {
+                                if (!$target instanceof Element\ElementInterface) {
+                                    return null;
+                                }
+
+                                // don't leak unpublished elements (Relation::getElement() filters these too)
+                                if (Element\Service::doHideUnpublished($target) && !Element\Service::isPublished($target)) {
                                     return null;
                                 }
 
