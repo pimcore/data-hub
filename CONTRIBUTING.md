@@ -1,29 +1,50 @@
-# Contributing to Pimcore Datahub
-
-## Bug Reports & Feature Requests
-The Pimcore team heavily uses (and loves!) GitHub for all of our software management. 
-We use GitHub issues exclusively to track all bugs and features.
-
-* [Open an issue](https://github.com/pimcore/data-hub/issues) here on GitHub. 
-If you can, **please provide a fix and create a pull request (PR) instead**; this will automatically create an issue for you.
-* Report security issues only to security@pimcore.org 
-* Please be patient as not all items will be tested immediately - remember, Pimcore Datahub is open core and free of charge. 
-* Occasionally we'll close issues if they appear stale or are too vague - please don't take this personally! 
-Please feel free to re-open issues we've closed if there's something we've missed, and they still need to be addressed.
+# Contributing to Pimcore
+As an open core project we love to work together with our community to improve and develop our products. 
+It's also important for us to make clear that **we're not working for you or your company**, 
+but we enjoy to work together to solve issues or improve the product. 
 
 ## Contributing Pull Requests
-PR's are even better than issues. 
-We gladly accept community pull requests. 
+We gladly accept community pull requests. This is the preferred way to contribute to Pimcore. 
 There are a few necessary steps before we can accept a pull request:
 
+> **Note:** Before opening a PR, also see our [Pull Request Guidelines](https://github.com/orgs/pimcore/discussions/19239) for the automated checks your PR must pass.
+
 * [Fork us!](https://help.github.com/articles/fork-a-repo/)
-* Select the right branch. main(e.g. 1.x) for features and improvements or latest maintenance branch for bug fixes (e.g. 1.0)
-* Code! Follow the coding standards defined [here](https://github.com/pimcore/data-hub/blob/1.x/.php-cs-fixer.dist.php).
-* [Send a pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our `master` branch.
-* [Sign the CLA](https://cla-assistant.io/pimcore/data-hub) - see also below.
+* Select the right branch. `main`(`2026.x`) for features and improvements or latest maintenance branch for bug fixes (`2026.1`)
+* Code! Follow the coding standards defined [here](https://github.com/pimcore/pimcore/blob/2026.x/.php-cs-fixer.dist.php) and [here](https://github.com/pimcore/pimcore/blob/2026.x/doc/19_Development_Tools_and_Details/29_Testing/02_Core_Tests.md#perform-phpstan-analysis)
+* [Send a pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our repo branch.
+* [Sign the CLA](https://cla-assistant.io/pimcore/pimcore) - see also below.
 
 
-### Contributor License Agreement
+## Bug Reports
+**Please provide a fix for the bug as a pull request (PR) whenever possible!**  
+If you've created a pull request, it's not necessary anymore to create an issue for the bug. 
+
+* Only file an issue if you're not able to fix the bug and provide the patch as a pull request.
+* Please keep in mind that the Pimcore team will only work on system critical and security bugs. 
+* [Open an issue](https://github.com/pimcore/platform-versionttps:/issues) here on GitHub.
+* Report security issues only by using [security advisories](https://github.com/pimcore/platform-version/security/advisories). 
+* Please be patient as not all items will be tested immediately - remember, pimcore is open core and free of charge. 
+* Occasionally we'll close issues if they appear stale or are too vague - please don't take this personally! 
+Please feel free to re-open issues we've closed if there's something we've missed and they still need to be addressed.
+
+### Package Types
+Please note that we categorize our packages into two types, as indicated in the 'About' section of each GitHub repository. 
+This categorization helps us prioritize and focus our resources effectively:
+
+* **Core Packages**: These are packages under active development by the Pimcore team, and of course we also welcome and incorporate contributions from the community.
+* **Community Packages**: These packages are not currently being actively developed by the Pimcore team. However, we remain committed to their basic maintenance, as well as to reviewing and accepting pull requests, especially for critical bug fixes, and will release new versions as needed.
+
+### Inactive Issue Closing Policy
+Pimcore uses a bot that closes abandoned issues after a period of inactivity.
+If an issue was not labeled as "Priority" or "Backlog" by us, 
+this means that we're not going to work on that anytime soon.
+In case of a bug report, you can create a pull request fixing the issue instead,
+which will be then reviewed as soon as possible.
+If you're interested in contributing a feature, please contact us first,
+before creating a pull request, we'll then decide whether we'd accept it or not.
+
+## Contributor License Agreement
 The following terms are used throughout this agreement:
 
 * **You** - the person or legal entity including its affiliates asked to accept this agreement. An affiliate is any 
