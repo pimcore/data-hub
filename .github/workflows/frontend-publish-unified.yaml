@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - "[0-9]+.x"
-      - "[0-9]+.[0-9]+"
+      - "[0-9].[0-9]"
     tags:
       - "v*"
   workflow_dispatch:
@@ -36,12 +36,7 @@ jobs:
           BEFORE: ${{ github.event.before }}
         run: |
           publish=false
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            publish=true
-          elif [[ ! "${GITHUB_REF_NAME}" =~ ^[0-9]+\.(x|[0-9]+)$ ]]; then
-            # Canaries only from version branches (e.g. 2026.x, 2026.2, 2.4)
-            publish=false
-          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+          if [[ "${GITHUB_REF}" == refs/tags/* || "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
             publish=true
           elif [[ -z "${BEFORE}" || "${BEFORE}" =~ ^0+$ ]]; then
             # New branch: no base to diff against — publish rather than miss one
@@ -49,12 +44,7 @@ jobs:
           elif ! git fetch --quiet --no-tags --depth=1 origin "${BEFORE}"; then
             # Base commit unavailable (e.g. after a force push) — publish rather than miss one
             publish=true
-          elif CHANGED="$(git diff --name-only "${BEFORE}" "${GITHUB_SHA}" -- assets/studio)"; then
-            if [[ -n "${CHANGED}" ]]; then
-              publish=true
-            fi
-          else
-            # Diff failed — publish rather than miss one
+          elif [[ -n "$(git diff --name-only "${BEFORE}" "${GITHUB_SHA}" -- assets/studio)" ]]; then
             publish=true
           fi
           echo "Frontend changed / must publish: ${publish}"
@@ -62,24 +52,17 @@ jobs:
 
       - name: Determine canary target release
         id: target
-        if: steps.check.outputs.publish == 'true'
         shell: bash
         run: |
-          # Canary base = next release of this branch's line; the branch name
-          # (e.g. "2026.x", "2026.2") is itself a valid semver range
-          BRANCH="${GITHUB_REF_NAME}"
+          # Canary base version = next minor after the latest npm release
           PKG_NAME="$(node -p "require('./assets/studio/package.json').name" 2>/dev/null || true)"
-          LINE_LATEST="$([ -n "${PKG_NAME}" ] && npm view "${PKG_NAME}@${BRANCH}" version --json 2>/dev/null | node -p '(v=>{if(Array.isArray(v))v=v[v.length-1];return typeof v==="string"?v:""})(JSON.parse(require("fs").readFileSync(0,"utf8")))' 2>/dev/null || true)"
-          if [[ "${LINE_LATEST}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            if [[ "${BRANCH}" == *.x ]]; then
-              TARGET="${BASH_REMATCH[1]}.$(( BASH_REMATCH[2] + 1 )).0"
-            else
-              TARGET="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.$(( BASH_REMATCH[3] + 1 ))"
-            fi
+          LATEST="$([ -n "${PKG_NAME}" ] && npm view "${PKG_NAME}" version 2>/dev/null || true)"
+          if [[ "${LATEST}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            TARGET="${BASH_REMATCH[1]}.$(( BASH_REMATCH[2] + 1 )).0"
           else
             TARGET="${FALLBACK_TARGET_RELEASE}"
           fi
-          echo "Canary target release for ${BRANCH}: ${TARGET}"
+          echo "Canary target release: ${TARGET}"
           echo "target-release=${TARGET}" >> "$GITHUB_OUTPUT"
 
   publish:
