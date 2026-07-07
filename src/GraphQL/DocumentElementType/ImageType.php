@@ -74,10 +74,12 @@ final class ImageType extends ObjectType
                                 if ($value instanceof Image) {
                                     $data = $value->getData();
                                     if (isset($data['id'])) {
-                                        $data = new ElementDescriptor(Asset::getById($data['id']));
-                                        $result = $resolver->resolveImage($data, $args, $context, $resolveInfo);
+                                        $asset = Asset::getById($data['id']);
+                                        if ($asset instanceof Asset) {
+                                            $data = new ElementDescriptor($asset);
 
-                                        return $result;
+                                            return $resolver->resolveImage($data, $args, $context, $resolveInfo);
+                                        }
                                     }
                                 }
 
