@@ -9,112 +9,72 @@ on:
       - "v*"
   workflow_dispatch:
 
+concurrency:
+  group: frontend-publish-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  TARGET_RELEASE: 2.4.0
+  FALLBACK_TARGET_RELEASE: "2026.3.0"
 
 permissions:
-  id-token: write  # Required for OIDC
   contents: read
 
 jobs:
-  canary-build:
-    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
-    permissions:
-      contents: write
-    uses: ./.github/workflows/shared-frontend-build.yaml
-
-  canary-generate-version:
-    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
-    needs: canary-build
+  gate:
     runs-on: ubuntu-latest
     outputs:
-      generated_version: ${{ steps.gen.outputs.version }}
+      publish: ${{ steps.check.outputs.publish }}
+      target-release: ${{ steps.target.outputs.target-release }}
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Generate Canary Version
-        id: gen
+      - name: Check for frontend changes
+        id: check
+        shell: bash
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          publish=false
+          if [[ "${GITHUB_REF}" == refs/tags/* || "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            publish=true
+          elif [[ -z "${BEFORE}" || "${BEFORE}" =~ ^0+$ ]]; then
+            # New branch: no base to diff against — publish rather than miss one
+            publish=true
+          elif ! git fetch --quiet --no-tags --depth=1 origin "${BEFORE}"; then
+            # Base commit unavailable (e.g. after a force push) — publish rather than miss one
+            publish=true
+          elif [[ -n "$(git diff --name-only "${BEFORE}" "${GITHUB_SHA}" -- assets/studio)" ]]; then
+            publish=true
+          fi
+          echo "Frontend changed / must publish: ${publish}"
+          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+
+      - name: Determine canary target release
+        id: target
         shell: bash
         run: |
-          # Get the base version (e.g., "1.2.3") from package.json
-          BASE_VERSION=${{ env.TARGET_RELEASE }}
-          # Remove any pre-release suffix if present
-          BASE_VERSION=${BASE_VERSION%%-*}
-          # Create a timestamp (YYYYMMDD--HHMMSS)
-          TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
-          # Get a short commit hash (7 characters)
-          GIT_HASH=$(git rev-parse --short=7 HEAD)
-          NEW_VERSION="${BASE_VERSION}-canary.${TIMESTAMP}-${GIT_HASH}"
-          echo "Computed version: ${NEW_VERSION}"
-          echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          # Canary base version = next minor after the latest npm release
+          PKG_NAME="$(node -p "require('./assets/studio/package.json').name" 2>/dev/null || true)"
+          LATEST="$([ -n "${PKG_NAME}" ] && npm view "${PKG_NAME}" version 2>/dev/null || true)"
+          if [[ "${LATEST}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            TARGET="${BASH_REMATCH[1]}.$(( BASH_REMATCH[2] + 1 )).0"
+          else
+            TARGET="${FALLBACK_TARGET_RELEASE}"
+          fi
+          echo "Canary target release: ${TARGET}"
+          echo "target-release=${TARGET}" >> "$GITHUB_OUTPUT"
 
-  canary-publish:
-    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
-    needs: canary-generate-version
+  publish:
+    needs: gate
+    if: needs.gate.outputs.publish == 'true'
     permissions:
       id-token: write  # Required for OIDC
-      contents: read
-    uses: ./.github/workflows/shared-npm-publish.yaml
+      contents: write
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-frontend-publish-unified.yaml@main
     with:
-      version: "${{ needs.canary-generate-version.outputs.generated_version }}"
-      tag: "canary"
-
-  release-determine-version:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.extract_version.outputs.version }}
-      npm_tag: ${{ steps.extract_npm.outputs.npm_tag }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Extract version from tag
-        id: extract_version
-        shell: bash
-        run: |
-          # In a push event on a tag, github.ref_name contains the tag name (e.g. "v1.2.3")
-          TAG_NAME="${GITHUB_REF_NAME}"  
-          echo "Detected tag: ${TAG_NAME}"
-          # Remove the leading "v" using Bash parameter expansion
-          VERSION="${TAG_NAME#v}"
-          echo "Computed version: ${VERSION}"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Extract npm tag
-        id: extract_npm
-        shell: bash
-        run: |
-          # Retrieve the version from the previous step
-          VERSION="${{ steps.extract_version.outputs.version }}"
-          echo "Using version: ${VERSION}"
-          
-          # Determine the npm tag:
-          # If the version contains a hyphen, assume there is a pre-release identifier.
-          if [[ "$VERSION" == *"-"* ]]; then
-              # Extract text after the first hyphen
-              pre_release="${VERSION#*-}"
-              # Extract only the leading contiguous alphabetical string
-              npm_tag="$(echo "$pre_release" | grep -oE '^[A-Za-z]+' | tr '[:upper:]' '[:lower:]')"
-              
-              # Fallback: if nothing is extracted, default to latest.
-              if [ -z "$npm_tag" ]; then
-                  npm_tag="latest"
-              fi
-          else
-              npm_tag="latest"
-          fi
-          echo "Computed npm tag: ${npm_tag}"
-          
-          # Export the npm tag as an output for downstream steps
-          echo "npm_tag=${npm_tag}" >> "$GITHUB_OUTPUT"
-
-  publish-release:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-    needs: release-determine-version
-    uses: ./.github/workflows/shared-npm-publish.yaml
-    with:
-      version: "${{ needs.release-determine-version.outputs.version }}"
-      tag: "${{ needs.release-determine-version.outputs.npm_tag }}"
+      target-release: ${{ needs.gate.outputs.target-release }}
+      pre-publish-script: generate-types
+      build-output-path: './src/Resources/public/studio/'
+      commit-lint-output: false
+      commit-build-output: false
