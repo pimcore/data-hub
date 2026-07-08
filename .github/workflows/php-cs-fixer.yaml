@@ -1,0 +1,23 @@
+name: "PHP-CS-Fixer"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.x"
+      - "*_actions"
+      - "feature-*"
+
+permissions:
+  contents: write
+
+jobs:
+  php-style:
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-php-cs-fixer.yaml@fix-failed-workflow
+    with:
+      head_ref: ${{ github.head_ref || github.ref_name }}
+      repository: ${{ github.repository }}
+      config_file: ".php-cs-fixer.dist.php"
+    secrets:
+      PHP_CS_FIXER_GITHUB_TOKEN: ${{ secrets.PHP_CS_FIXER_GITHUB_TOKEN }}
