@@ -7,8 +7,7 @@ title: GraphQL
 <!-- This GraphQL extension of Pimcores Datahub makes Assets and Data Objects available through an organized and easy-to-query GraphQL schema and constitutes a powerful and flexible way to connect Pimcore to other systems or frontend applications. -->
 
 With [GraphQL](https://graphql.org/) endpoints, Datahub allows integrating Pimcore to other systems 
-and services via GraphQL and test them with the integrated 
-[GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) tool right away. 
+and services via GraphQL and testing them right away in the integrated GraphQL Playground. 
 
 [![Preview](../img/graphql/intro_preview.png)](../img/graphql/intro.mp4)
 
@@ -59,9 +58,9 @@ See following pages for a general overview of possible mutations:
 - For details on how to add custom mutations see [Add Custom Mutations Documentation](./07_Mutation/27_Add_Custom_Mutations.md).
 
 
-## Hands-On-Testing Using GraphiQL Explorer
-[GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) can be opened
-for an endpoint in an iframe within Pimcore or as an additional browser tab. 
+## Hands-On Testing with the GraphQL Playground
+The GraphQL Playground opens for an endpoint in the browser. Write a query on the left, run it, and the response
+appears on the right.
 
 <div class="image-as-lightbox"></div>
 
