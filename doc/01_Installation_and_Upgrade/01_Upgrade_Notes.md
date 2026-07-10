@@ -1,3 +1,8 @@
+---
+title: Upgrade Notes
+description: Breaking changes and migration steps per release.
+---
+
 # Upgrade Notes
 
 ## Upgrade to 2026.1.0
@@ -12,7 +17,7 @@
 - Removed `ConfigController` (previously provided the classic admin config API at `/pimcore-datahub-webservices/explorer/{clientname}` and related actions).
 - Removed `GraphQLExplorerController` (previously served the ExtJS-based GraphQL Explorer at `/pimcore-datahub-webservices/explorer/{clientname}`).
 - Removed `AdminListener` (no longer needed without classic admin integration).
-- Removed `StudioRouteLoader` — Studio routes are now registered directly via `routing.yml` using attribute-based routing.
+- Removed `StudioRouteLoader`: Studio routes are now registered directly via `routing.yml` using attribute-based routing.
 - Removed `ExportService` and `ImportService` (classic admin import/export, not related to Studio).
 - `PimcoreDataHubBundle` no longer implements `PimcoreBundleAdminClassicInterface` or `DependentBundleInterface` and no longer uses `BundleAdminClassicTrait`.
 - Removed dependency on `pimcore/admin-ui-classic-bundle` and `pimcore/compatibility-bridge-v10` from `composer.json`.
@@ -23,8 +28,8 @@
 
 ### Studio Integration
 - Added full Studio UI integration for GraphQL configurations (browse, create, edit, clone, delete, import, export).
-- New Studio REST API endpoints added under `/studio/api/datahub/config/...` (collection, add, get, update, clone, delete, import, export).
-- New Studio REST API endpoints added: GraphQL Explorer URL (`/studio/api/datahub/graphql/explorer`), thumbnails, and user permissions.
+- New Studio REST API endpoints added under `/pimcore-studio/api/bundle/data-hub/config/...` (collection, add, get, update, clone, delete, import, export).
+- New Studio REST API endpoints added: GraphQL Explorer URL (`/pimcore-studio/api/bundle/data-hub/graphql/explorer-url/{name}`), thumbnails, and user permissions.
 - New interfaces introduced for Studio services:
   - `ConfigurationServiceInterface` (`src/Service/Studio/ConfigurationServiceInterface.php`)
   - `ConfigurationHydratorInterface` (`src/Hydrator/ConfigurationHydratorInterface.php`)
@@ -43,10 +48,10 @@
 
 ### Return Type and PHPDoc Changes
 - `PimcoreDataHubBundle::getInstaller()` return type changed from `?InstallerInterface` to `InstallerInterface` (non-nullable).
-- `ElementPropertyType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null` — `string` and `Deferred` removed from union.
-- `HotspotMetadataType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null` — `string` and `Deferred` removed from union.
+- `ElementPropertyType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null`: `string` and `Deferred` removed from union.
+- `HotspotMetadataType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null`: `string` and `Deferred` removed from union.
 - `DocumentType::resolveType()` return type changed from `callable|Deferred|ObjectType|null|string` to `callable|ObjectType|null`.
-- `AbstractOperator::$children` property PHPDoc type changed from `ConfigElementInterface[]` to `array` — `ConfigElementInterface` from `Pimcore\DataObject\GridColumnConfig` is no longer referenced.
+- `AbstractOperator::$children` property PHPDoc type changed from `ConfigElementInterface[]` to `array`: `ConfigElementInterface` from `Pimcore\DataObject\GridColumnConfig` is no longer referenced.
 - `AbstractOperator::getChildren()` return PHPDoc changed from `ConfigElementInterface[]` to `array`.
 - `Service::buildOperator()` parameter PHPDoc changed from `ConfigElementInterface` to `array`.
 - `ReverseManyToManyObjects::resolve()` return PHPDoc changed from `array|null` to `array`.
@@ -57,7 +62,7 @@
 - `Link::resolveValue()`, `Link::resolveHref()`, `Link::resolveTarget()`, `Link::resolveLinkValue()` return PHPDoc changed from `string|null` / `null` to `mixed`.
 
 ### Dependency Updates
-- Removed Doctrine `enum` type mapping — the custom `enum: string` mapping is no longer required in Doctrine configuration.
+- Removed Doctrine `enum` type mapping. The custom `enum: string` mapping is no longer required in Doctrine configuration.
 
 ## 2026.2.0
 - [MutationType] Added system field `published` as an optional argument for data object mutation
@@ -71,7 +76,7 @@
 - [General] Added timezone indication for date and datetime fields in the GraphQL schema, including creation and modification date.
 Therefore, the type of both date fields in the GraphQL schema have changed from `int` (timestamp) to `string`.
 - [Operator] Removed merge operator
-- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:graphql:rebuild-workspaces`) instead.
+- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:configuration:rebuild-workspaces`) instead.
 - [Config] Removed DatahubConfigLocator class
 - [Config] Removed support for legacy config file (`datahub-configurations.php`)
 - [Config] Removed `getConfigModificationDate` from config dao.

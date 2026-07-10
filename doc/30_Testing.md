@@ -1,3 +1,8 @@
+---
+title: Testing
+description: Run static analysis against the Datahub codebase.
+---
+
 # Testing
 
 ## Perform PHPStan Analysis
