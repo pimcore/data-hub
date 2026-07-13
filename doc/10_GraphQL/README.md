@@ -24,7 +24,8 @@ Configuration takes place in the endpoint configuration and offers following pos
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
 
 ## External Access
-The standard endpoint is
+The API that Datahub exposes to other systems is this configured endpoint itself, not the Pimcore Studio API used by
+the configuration panel. The standard endpoint is
 ```
 /pimcore-graphql-webservices/{configurationname}?apikey={yourApiKey}
 ```

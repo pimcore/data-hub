@@ -26,14 +26,15 @@ A short introduction video of an output channel based on the GraphQL query langu
 ## Documentation Overview
 - [Installation](./doc/01_Installation_and_Upgrade/README.md)
 - [Basic principle](./doc/02_Basic_Principle.md) for configuring an endpoint
-- [Studio Integration](./doc/04_Studio_Integration.md) for the configuration panel and its permissions
+- [Extending](./doc/05_Extending.md) for the Studio API events; permissions for the configuration panel are covered in
+  [Installation](./doc/01_Installation_and_Upgrade/README.md#user-permissions)
 - [GraphQL](./doc/10_GraphQL/README.md) [*default and recommended endpoint*]
 - [Configuration & Deployment](./doc/20_Deployment.md)
 - [Testing](./doc/30_Testing.md)
 
 ## Further Information
 On Pimcore Datahub adapters:
-- [Data Importer](https://github.com/pimcore/data-importer/blob/2026.x/doc/01_Installation.md)
+- [Data Importer](https://github.com/pimcore/data-importer/blob/2026.x/doc/01_Installation/README.md)
 - [Datahub Simple REST API](https://github.com/pimcore/data-hub-simple-rest/blob/2026.x/doc/01_Installation/README.md)
 - [Datahub File Export](https://github.com/pimcore/data-hub-file-export/blob/2026.x/doc/01_Installation/README.md)
 - [Datahub Productsup](https://github.com/pimcore/data-hub-productsup/blob/2026.x/doc/01_Installation/README.md)
