@@ -13,9 +13,6 @@ concurrency:
   group: frontend-publish-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  FALLBACK_TARGET_RELEASE: "2026.3.0"
-
 permissions:
   contents: read
 
@@ -70,6 +67,13 @@ jobs:
         if: steps.check.outputs.publish == 'true'
         shell: bash
         run: |
+          # Tag runs: the reusable workflow derives the release version from the
+          # tag itself, so target-release is unused here — emit a non-empty
+          # placeholder so the publish job still runs.
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "target-release=tag" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # Canary base = next release of this branch's line; the branch name
           # (e.g. "2026.x", "2026.2") is itself a valid semver range
           BRANCH="${GITHUB_REF_NAME}"
@@ -81,15 +85,16 @@ jobs:
             else
               TARGET="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.$(( BASH_REMATCH[3] + 1 ))"
             fi
+            echo "Canary target release for ${BRANCH}: ${TARGET}"
+            echo "target-release=${TARGET}" >> "$GITHUB_OUTPUT"
           else
-            TARGET="${FALLBACK_TARGET_RELEASE}"
+            echo "::warning::Could not derive canary release line for ${BRANCH} (pkg=${PKG_NAME}); skipping canary publish."
+            echo "target-release=" >> "$GITHUB_OUTPUT"
           fi
-          echo "Canary target release for ${BRANCH}: ${TARGET}"
-          echo "target-release=${TARGET}" >> "$GITHUB_OUTPUT"
 
   publish:
     needs: gate
-    if: needs.gate.outputs.publish == 'true'
+    if: needs.gate.outputs.publish == 'true' && needs.gate.outputs.target-release != ''
     permissions:
       id-token: write  # Required for OIDC
       contents: write
