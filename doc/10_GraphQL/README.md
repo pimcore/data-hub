@@ -11,9 +11,11 @@ and services via GraphQL and testing them right away in the integrated GraphQL P
 
 [![Preview](../img/graphql/intro_preview.png)](../img/graphql/intro.mp4)
 
+In the Playground, write a query on the left, run it, and the response appears on the right.
+
 <div class="image-as-lightbox"></div>
 
-![Explorer](../img/graphql/iexplorer.png)
+![GraphQL Playground with a query on the left and the response on the right](../img/graphql/iexplorer.png)
 
 
 ## Configuration
@@ -60,12 +62,11 @@ See following pages for a general overview of possible mutations:
 
 
 ## Hands-On Testing with the GraphQL Playground
-The GraphQL Playground opens for an endpoint in the browser. Write a query on the left, run it, and the response
-appears on the right.
+Open the GraphQL Playground for an endpoint with the `Open in tab` button in the configuration panel footer.
 
 <div class="image-as-lightbox"></div>
 
-![Open iExplorer](../img/graphql/open_explorer.png)
+![Open in tab button in the configuration panel footer](../img/graphql/open_explorer.png)
 
 
 ## Events
