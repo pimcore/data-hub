@@ -39,7 +39,7 @@ bin/console pimcore:bundle:install PimcoreDataHubBundle
 
 ## User Permissions
 
-Open the configuration panel in Pimcore Studio under **Automation & Integration** > **Data Hub Configuration**.
+Open the configuration panel in Pimcore Studio under **Automation & Integration** > **Datahub Configuration**.
 
 To reach it, a user needs to be an `admin`, or hold the `plugin_datahub_config` permission. The entry is additionally
 gated by the `automationIntegration.dataHubConfiguration` perspective permission, so a user holding

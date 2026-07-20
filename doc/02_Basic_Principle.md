@@ -14,7 +14,7 @@ are available as separate bundles.
 
 ## Adding a New Configuration
 
-1. In Pimcore Studio, open the main navigation and choose **Automation & Integration** > **Data Hub Configuration**.
+1. In Pimcore Studio, open the main navigation and choose **Automation & Integration** > **Datahub Configuration**.
 
 <div class="image-as-lightbox"></div>
 
