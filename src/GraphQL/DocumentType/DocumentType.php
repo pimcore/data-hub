@@ -84,7 +84,9 @@ final class DocumentType extends UnionType implements ContainerAwareInterface
      */
     public function getTypes(): array
     {
-        return array_merge($this->types, $this->customTypes);
+        $folderType = $this->getGraphQlService()->getDocumentTypeDefinition('_document_folder');
+
+        return array_merge($this->types, [$folderType], $this->customTypes);
     }
 
     /**
@@ -116,6 +118,8 @@ final class DocumentType extends UnionType implements ContainerAwareInterface
             return $this->hardlinkType;
         } elseif ($element instanceof Document\Snippet) {
             return $this->snippetType;
+        } elseif ($element instanceof Document\Folder) {
+            return $this->getGraphQlService()->getDocumentTypeDefinition('_document_folder');
         }
 
         return null;
