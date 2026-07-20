@@ -44,7 +44,7 @@ Open the configuration panel in Pimcore Studio under **Automation & Integration*
 To reach it, a user needs to be an `admin`, or hold the `plugin_datahub_config` permission. The entry is additionally
 gated by the `automationIntegration.dataHubConfiguration` perspective permission, so a user holding
 `plugin_datahub_config` still will not see it if their perspective hides it. The permission on the navigation entry only
-hides the UI; the API itself is enforced with `#[IsGranted(...)]` on the controllers.
+hides the UI; the configuration-management API enforces it server-side with `#[IsGranted(...)]` on its controllers.
 
 The installer creates three permissions in the Datahub permission category:
 

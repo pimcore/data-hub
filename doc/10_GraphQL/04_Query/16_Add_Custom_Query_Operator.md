@@ -26,14 +26,22 @@ frontend type providing its configuration dialog.
 Provide the server-side implementation first. A sample can be found
 [here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/Query/Operator/Trimmer.php).
 
-For the frontend half, register a Studio dynamic type on the Datahub query operator registry. Extend
-`DynamicTypeOperatorAbstract` and implement `getIcon()`, `getLabel()`, `getConfigModal()` and `getGroup()`, where the
-group is one of `formatter`, `transformer` or `other`. Register it from your bundle's Studio plugin against the
-`DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry` service. The shipped operators under
-`assets/studio/js/src/modules/operators/operators/` are the reference implementations.
+:::warning
 
-See the [Studio UI bundle documentation](https://github.com/pimcore/studio-ui-bundle/blob/1.x/doc/README.md) for how to
-build and load a Studio plugin from your bundle.
+The frontend half is not a public extension point yet. Operators are Pimcore Studio dynamic types extending
+`DynamicTypeOperatorAbstract` (`readonly id`, `getIcon()`, `getLabel()`, `getConfigModal()`, `getGroup()`), registered
+on the `DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry` service. That base class is **not exported** from the
+Datahub Studio SDK (`assets/studio/js/src/sdk/index.ts`), so another bundle's Studio plugin cannot currently import it.
+The shipped operators under `assets/studio/js/src/modules/operators/operators/` show the pattern, but until the
+operator API is exported, a custom operator has no configuration dialog in Pimcore Studio.
+
+:::
+
+An operator whose server-side implementation needs no configuration options still works: it is selectable only if a
+frontend type is registered for it, so plan for the export limitation above.
+
+For general plugin setup, see the Studio UI bundle's
+[Getting Started with Your First Plugin](https://github.com/pimcore/studio-ui-bundle/blob/2026.x/doc/04_Extending/01_Getting_Started_with_Your_First_Plugin.md).
 
 Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:
