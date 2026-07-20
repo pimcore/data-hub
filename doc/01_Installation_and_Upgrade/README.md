@@ -41,7 +41,10 @@ bin/console pimcore:bundle:install PimcoreDataHubBundle
 
 Open the configuration panel in Pimcore Studio under **Automation & Integration** > **Data Hub Configuration**.
 
-To reach it, a user needs to be an `admin`, or hold the `plugin_datahub_config` permission.
+To reach it, a user needs to be an `admin`, or hold the `plugin_datahub_config` permission. The entry is additionally
+gated by the `automationIntegration.dataHubConfiguration` perspective permission, so a user holding
+`plugin_datahub_config` still will not see it if their perspective hides it. The permission on the navigation entry only
+hides the UI; the API itself is enforced with `#[IsGranted(...)]` on the controllers.
 
 The installer creates three permissions in the Datahub permission category:
 
@@ -54,8 +57,10 @@ The installer creates three permissions in the Datahub permission category:
 Access to an individual configuration is then resolved as follows:
 
 1. An `admin` user, or a user holding `plugin_datahub_admin`, is always allowed.
-2. Otherwise, if the configuration defines its own permissions in its **Permissions** tab, only those `create`, `read`,
-   `update` and `delete` entries decide, per user and per role. The adapter permission is ignored.
+2. Otherwise, if the configuration defines its own permissions in its **Permissions** tab, only those `read`, `update`
+   and `delete` entries decide. The adapter permission is ignored. An entry matching the user's own name wins outright;
+   role entries are evaluated only when the user has no entry of their own, and only a role that explicitly grants the
+   permission counts.
 3. If the configuration defines no permissions, the adapter permission (`plugin_datahub_adapter_<type>`) decides.
 
 ## Next Steps

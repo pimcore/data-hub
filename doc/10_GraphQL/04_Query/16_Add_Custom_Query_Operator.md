@@ -20,22 +20,20 @@ For reference, have a look at the
 
 ### Operator Implementation
 
-You have to provide both JavaScript code dealing with the UI configuration aspects specific to  your operator
-and the server-side PHP implementation doing the actual calculations. 
+An operator has two halves: the server-side PHP implementation doing the actual calculation, and a Pimcore Studio
+frontend type providing its configuration dialog.
 
-A JS sample can be found [here](https://github.com/pimcore/data-hub/blob/2.x/src/Resources/public/js/queryoperator/Trimmer.js). 
+Provide the server-side implementation first. A sample can be found
+[here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/Query/Operator/Trimmer.php).
 
-:::info
+For the frontend half, register a Studio dynamic type on the Datahub query operator registry. Extend
+`DynamicTypeOperatorAbstract` and implement `getIcon()`, `getLabel()`, `getConfigModal()` and `getGroup()`, where the
+group is one of `formatter`, `transformer` or `other`. Register it from your bundle's Studio plugin against the
+`DataHub/DynamicTypes/Operator/GraphQL/QueryRegistry` service. The shipped operators under
+`assets/studio/js/src/modules/operators/operators/` are the reference implementations.
 
-Note that the namespace would be `pimcore.plugin.datahub.operator.mycustomoperator`.
-
-:::
-
-Make sure, that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/6.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
-docs page for further details.
-
-Next thing is to provide the server-side implementation.
-A sample can be found [here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/Query/Operator/Trimmer.php). 
+See the [Studio UI bundle documentation](https://github.com/pimcore/studio-ui-bundle/blob/1.x/doc/README.md) for how to
+build and load a Studio plugin from your bundle.
 
 Finally, we have to define how the operator instances get created.
 In most cases we use the `DefaultOperatorFactory` for that:

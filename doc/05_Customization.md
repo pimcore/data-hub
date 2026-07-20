@@ -1,9 +1,9 @@
 ---
-title: Extending
+title: Customization
 description: Hook into the Studio API events dispatched by the Datahub configuration panel.
 ---
 
-# Extending
+# Customization
 
 ## Studio API Events
 

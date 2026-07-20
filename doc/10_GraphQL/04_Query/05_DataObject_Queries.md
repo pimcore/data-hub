@@ -2,13 +2,13 @@
 
 ## Supported Data Types
 
-Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html). 
+Also check out the Pimcore's [data type documentation](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/README.md). 
 
 * Advanced Many-to-Many Relation
 * Advanced Many-to-Many Object Relation
 * Block
 * Boolean Select
-* [Calculated Value](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Calculated_Value_Type.html)
+* [Calculated Value](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/10_Calculated_Value_Type.md)
 * Checkbox
 * Classification Store
 * Country
@@ -18,7 +18,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Email
 * External Image
 * Gender
-* [Field-Collections](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
+* [Field-Collections](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/35_Fieldcollections.md)
 * Firstname
 * Geobounds
 * Geopoint
@@ -45,7 +45,7 @@ Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/
 * Table
 * Textarea
 * Time
-* [URL Slug](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Others.html)
+* [URL Slug](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/65_Others.md)
 * Video
 * Wysiwyg
 
@@ -146,7 +146,7 @@ Sorting can be applied as query parameters, for example sort by name, descending
 #### Filtering
 
 You can use Pimcore's webservice filter logic as described 
-[here](https://pimcore.com/docs/pimcore/6.9/Development_Documentation/Web_Services/Query_Filters.html) 
+in the Pimcore query filter syntax 
 for filtering listing requests.
 
 For details see [filtering documentation page](./10_Filtering.md)

@@ -87,7 +87,7 @@ pimcore_data_hub:
 By default the cache is disabled but if it is enabled and you don't specify a value for `output_cache_lifetime`, its default value is set to 30 seconds.
 
 ### Disable Output Cache for a Single Request (Only in DEBUG MODE)
-Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://pimcore.com/docs/pimcore/current/Development_Documentation/Development_Tools_and_Details/Cache/Full_Page_Cache.html).
+Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://github.com/pimcore/pimcore/blob/2026.x/doc/08_Development_Details/03_Cache/01_Full_Page_Cache.md).
 
 ### Customize the Cache Behaviour
 It is possible to customize some behavior of output cache with event listeners. For details 

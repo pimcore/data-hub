@@ -12,10 +12,10 @@ In the `Query Schema` section, use the gear icon to open the field configuration
 queries. The `Mutation Schema` section works the same way for classes used in mutations.
 
 The dialog lists the exported fields under **Available Fields** on the left. The panel on the right has a vertical icon
-strip: the first icon shows the class attributes, and the others group the operators as **Formatter**, **Transformer**
-and **Other**.
+strip: the first icon shows the class attributes, and the others group the operators. The query schema offers
+**Formatter**, **Transformer** and **Other** in that order; the mutation schema offers **Other** only.
 
 Add an operator by dragging it onto the **Available Fields** side. Depending on the operator, an options dialog opens
 where you configure it. After adding an operator, drag fields under it to apply the operator to them.
 
-Please see the contents of this chapter for more information on the available operators.
+See the pages in this chapter for the available operators.

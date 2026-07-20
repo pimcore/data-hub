@@ -18,7 +18,7 @@ are available as separate bundles.
 
 <div class="image-as-lightbox"></div>
 
-![Configuration Overview](./img/graphql/configuration3.png)
+![Datahub Configuration in the main navigation](./img/graphql/configuration3.png)
 
 2. Add a configuration and choose an endpoint technology.
 

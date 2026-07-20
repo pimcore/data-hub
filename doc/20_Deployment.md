@@ -46,7 +46,7 @@ The configuration user interface utilizes the `LocationAwareConfigRepository` fo
 Config files (yaml), which are only getting revalidated in debug mode. So if you're changing configs in production you
 won't see any update, because these configs are read only.
 
-Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/current/Development_Documentation/Deployment/Configuration_Environments.html#page_Configuration-Storage-Locations-Fallbacks).
+Details also see [Pimcore Docs](https://github.com/pimcore/pimcore/blob/2026.x/doc/08_Development_Details/01_Configuration/01_Configuration_Environments.md#configuration-storage-locations--fallbacks).
 
 #### Example
 ```yaml
@@ -73,7 +73,6 @@ pimcore_data_hub:
                 name: '<NAME>'
                 description: '<DESCRIPTION>'
                 group: '<GROUP>'
-                sqlObjectCondition: '<CONDITION>'
                 modificationDate: <DATE>
                 path: '<PATH>'
                 createDate: <DATE>
