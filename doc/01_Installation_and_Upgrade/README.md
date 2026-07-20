@@ -8,7 +8,9 @@ description: Install the Datahub bundle and grant access to the configuration pa
 ## Prerequisites
 
 Datahub requires Pimcore 2026.1 or later and PHP 8.4 or 8.5. The Studio Backend bundle and the Studio UI bundle are
-Composer dependencies and are pulled in automatically.
+Composer dependencies of Datahub, so Composer installs the packages. A package is not an installed bundle: both must be
+enabled in `config/bundles.php` and installed with `pimcore:bundle:install` in their own right, which a Pimcore Studio
+installation already does.
 
 ## Bundle Installation
 
