@@ -42,4 +42,4 @@ On Pimcore Datahub adapters:
   
 ## Contributions
 As Pimcore Datahub is a community project, any contributions highly appreciated.
-For details see our [Contributing guide](https://github.com/pimcore/data-hub/blob/master/CONTRIBUTING.md).
+For details see our [Contributing guide](./CONTRIBUTING.md).
