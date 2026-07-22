@@ -56,7 +56,8 @@ final class HotspotMarkerType extends ObjectType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names',
+                        'description' => 'List of metadata key names to include '
+                            . '(if omitted, all entries are returned).',
                     ],
                 ],
                 'resolve' => [$resolver, 'resolveMetadata'],
