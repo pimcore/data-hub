@@ -64,7 +64,8 @@ final class AssetFolderType extends FolderType
                 'args' => [
                     'keys' => [
                         'type' => Type::listOf(Type::string()),
-                        'description' => 'comma seperated list of key names',
+                        'description' => 'List of property key names to include '
+                            . '(if omitted, all properties are returned).',
                     ],
                 ],
                 'resolve' => [$elementResolver, 'resolveProperties'],
