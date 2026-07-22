@@ -26,15 +26,19 @@ A short introduction video of an output channel based on the GraphQL query langu
 ## Documentation Overview
 - [Installation](./doc/01_Installation_and_Upgrade/README.md)
 - [Basic principle](./doc/02_Basic_Principle.md) for configuring an endpoint
+- [Customization](./doc/05_Customization.md) for the Studio API events; permissions for the configuration panel are covered in
+  [Installation](./doc/01_Installation_and_Upgrade/README.md#user-permissions)
 - [GraphQL](./doc/10_GraphQL/README.md) [*default and recommended endpoint*]
 - [Configuration & Deployment](./doc/20_Deployment.md)
 - [Testing](./doc/30_Testing.md)
 
 ## Further Information
 On Pimcore Datahub adapters:
-- [Datahub Simple Rest API](https://pimcore.com/docs/platform/Datahub_Simple_Rest/)
-- [Datahub File Export](https://pimcore.com/docs/platform/Datahub_File_Export/)
-- [Datahub Productsup](https://pimcore.com/docs/platform/Datahub_Productsup/)
+- [Data Importer](https://github.com/pimcore/data-importer/blob/2026.x/doc/01_Installation/README.md)
+- [Datahub Simple REST API](https://github.com/pimcore/data-hub-simple-rest/blob/2026.x/doc/01_Installation/README.md)
+- [Datahub File Export](https://github.com/pimcore/data-hub-file-export/blob/2026.x/doc/01_Installation/README.md)
+- [Datahub Productsup](https://github.com/pimcore/data-hub-productsup/blob/2026.x/doc/01_Installation/README.md)
+- [Datahub Webhooks](https://github.com/pimcore/data-hub-webhooks/blob/2026.x/doc/01_Installation/README.md)
   
 ## Contributions
 As Pimcore Datahub is a community project, any contributions highly appreciated.

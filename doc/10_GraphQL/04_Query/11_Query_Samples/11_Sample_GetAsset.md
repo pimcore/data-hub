@@ -8,8 +8,6 @@ Note that the data will be base64 encoded and quite time-consuming to deliver.
 
 :::
 
-Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image)
-
 ### Request
 
 :::info

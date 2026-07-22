@@ -7,14 +7,15 @@ title: GraphQL
 <!-- This GraphQL extension of Pimcores Datahub makes Assets and Data Objects available through an organized and easy-to-query GraphQL schema and constitutes a powerful and flexible way to connect Pimcore to other systems or frontend applications. -->
 
 With [GraphQL](https://graphql.org/) endpoints, Datahub allows integrating Pimcore to other systems 
-and services via GraphQL and test them with the integrated 
-[GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) tool right away. 
+and services via GraphQL and testing them right away in the integrated GraphQL Playground. 
 
 [![Preview](../img/graphql/intro_preview.png)](../img/graphql/intro.mp4)
 
+In the Playground, write a query on the left, run it, and the response appears on the right.
+
 <div class="image-as-lightbox"></div>
 
-![Explorer](../img/graphql/iexplorer.png)
+![GraphQL Playground with a query on the left and the response on the right](../img/graphql/iexplorer.png)
 
 
 ## Configuration
@@ -25,7 +26,8 @@ Configuration takes place in the endpoint configuration and offers following pos
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
 
 ## External Access
-The standard endpoint is
+The API that Datahub exposes to other systems is this configured endpoint itself, not the Pimcore Studio API used by
+the configuration panel. The standard endpoint is
 ```
 /pimcore-graphql-webservices/{configurationname}?apikey={yourApiKey}
 ```
@@ -59,13 +61,12 @@ See following pages for a general overview of possible mutations:
 - For details on how to add custom mutations see [Add Custom Mutations Documentation](./07_Mutation/27_Add_Custom_Mutations.md).
 
 
-## Hands-On-Testing Using GraphiQL Explorer
-[GraphiQL explorer](https://github.com/graphql/graphiql/tree/main/packages/graphiql#readme) can be opened
-for an endpoint in an iframe within Pimcore or as an additional browser tab. 
+## Hands-On Testing with the GraphQL Playground
+Open the GraphQL Playground for an endpoint with the `Open in tab` button in the configuration panel footer.
 
 <div class="image-as-lightbox"></div>
 
-![Open iExplorer](../img/graphql/open_explorer.png)
+![Open in tab button in the configuration panel footer](../img/graphql/open_explorer.png)
 
 
 ## Events
@@ -87,7 +88,7 @@ pimcore_data_hub:
 By default the cache is disabled but if it is enabled and you don't specify a value for `output_cache_lifetime`, its default value is set to 30 seconds.
 
 ### Disable Output Cache for a Single Request (Only in DEBUG MODE)
-Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://pimcore.com/docs/pimcore/current/Development_Documentation/Development_Tools_and_Details/Cache/Full_Page_Cache.html).
+Just add the parameter `?pimcore_outputfilters_disabled=true` to the URL. This works in a similar way as the [Pimcore's Full Page Cache](https://github.com/pimcore/pimcore/blob/2026.x/doc/08_Development_Details/03_Cache/01_Full_Page_Cache.md).
 
 ### Customize the Cache Behaviour
 It is possible to customize some behavior of output cache with event listeners. For details 
