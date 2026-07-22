@@ -2,7 +2,7 @@
 
 <div class="image-as-lightbox"></div>
 
-![Grid](../../../img/graphql/manufacturer_listing.png)
+![Manufacturer grid sorted by name, with the three rows the query returns marked](../../../img/graphql/manufacturer_listing.png)
 
 ### Request
 

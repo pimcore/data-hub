@@ -10,8 +10,6 @@ If you want to run this sample on the [Official Demo Site](https://demo.pimcore.
 
 ### Sample Data
 
-Deeplink: https://demo.pimcore.fun/admin/login/deeplink?object_767_object
-
 <div class="image-as-lightbox"></div>
 
 ![Sample Data](../../../img/graphql/news_sample_data.png)

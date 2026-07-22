@@ -7,15 +7,15 @@ depending on whether they are used in a query or a mutation.
 
 ![Overview](../../img/graphql/queryoperators_overview.png)
 
-Operators can be selected in the GraphQL configuration using the `Schema Definition` tab.
-In the `Query Schema` section use the `gear` icon to open the configuration dialog for a data object class you want to use in queries.
-In the `Mutation Schema` section use the `gear` icon to open the configuration dialog for a data object class you want to use in mutations.
+Operators are selected in the `Schema Definition` tab of a GraphQL configuration.
+In the `Query Schema` section, use the gear icon to open the field configuration dialog for a data object class used in
+queries. The `Mutation Schema` section works the same way for classes used in mutations.
 
-This will open the `Schema Fields` configuration dialog where you can select the fields you want to use in queries or mutations.
-In the tree on the left side you can select th operators you want to use by clicking on one of the 3 tabs: `Formatters`, `Others` or `Transformers`.
+The dialog lists the exported fields under **Available Fields** on the left. The panel on the right has a vertical icon
+strip: the first icon shows the class attributes, and the others group the operators. The query schema offers
+**Formatter**, **Transformer** and **Other** in that order; the mutation schema offers **Other** only.
 
-Add an operator by double-clicking on it or by dragging it to the right side of the dialog. 
-Depending on the operator an options dialog will open where you can configure the operator.
-After adding an operator you can drag & drop fields under the operator to apply the operator to them.
+Add an operator by dragging it onto the **Available Fields** side. Depending on the operator, an options dialog opens
+where you configure it. After adding an operator, drag fields under it to apply the operator to them.
 
-Please see the contents of this chapter for more information on the available operators.
+See the pages in this chapter for the available operators.

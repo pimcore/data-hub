@@ -1,11 +1,16 @@
+---
+title: Configuration & Deployment
+description: Where Datahub stores its configurations, and how to deploy them.
+---
+
 # Configuration & Deployment
 
-The configuration by default is saved in `var/config/data-hub/example.yaml`.
+By default a configuration is stored as `var/config/data_hub/<name>.yaml`.
 Additionally, a workspace permission index is kept in the database for better query performance when 
 checking for permissions.
 
 When deploying configurations following steps are necessary: 
-- Deploy configuration file `/var/config/.../example.yaml` - e.g. check it into your VCS and 
+- Deploy the configuration file `var/config/data_hub/<name>.yaml` - e.g. check it into your VCS and 
   deploy it with your deployment mechanisms. 
 
 - Rebuild workspaces by running `datahub:configuration:rebuild-workspaces`  
@@ -25,7 +30,8 @@ for specific definitions.
 
 :::warning
 
-Note: The command ```datahub:graphql:rebuild-definitions ``` is marked as deprecated and will be removed in a future release.
+The command `datahub:graphql:rebuild-definitions` was removed in Datahub 2.0.0. Use
+`datahub:configuration:rebuild-workspaces` instead.
 
 :::
 
@@ -40,7 +46,7 @@ The configuration user interface utilizes the `LocationAwareConfigRepository` fo
 Config files (yaml), which are only getting revalidated in debug mode. So if you're changing configs in production you
 won't see any update, because these configs are read only.
 
-Details also see [Pimcore Docs](https://pimcore.com/docs/pimcore/current/Development_Documentation/Deployment/Configuration_Environments.html#page_Configuration-Storage-Locations-Fallbacks).
+Details also see [Pimcore Docs](https://github.com/pimcore/pimcore/blob/2026.x/doc/08_Development_Details/01_Configuration/01_Configuration_Environments.md#configuration-storage-locations-and-fallbacks-locationawareconfigrepository).
 
 #### Example
 ```yaml
@@ -67,7 +73,6 @@ pimcore_data_hub:
                 name: '<NAME>'
                 description: '<DESCRIPTION>'
                 group: '<GROUP>'
-                sqlObjectCondition: '<CONDITION>'
                 modificationDate: <DATE>
                 path: '<PATH>'
                 createDate: <DATE>
