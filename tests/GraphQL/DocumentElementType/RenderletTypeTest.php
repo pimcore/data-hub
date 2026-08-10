@@ -19,12 +19,18 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentElementType\RenderletType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Document\Editable\Renderlet;
+use Pimcore\Model\Factory;
+use Pimcore\Translation\Translator;
 use Psr\Container\ContainerInterface;
 
 class RenderletTypeTest extends Unit
@@ -38,7 +44,7 @@ class RenderletTypeTest extends Unit
      */
     private array $extractDataCalls = [];
 
-    protected function _before()
+    protected function _before(): void
     {
         $this->originalHideUnpublishedObjects = AbstractObject::doHideUnpublished();
         $this->originalHideUnpublishedDocuments = Document::doHideUnpublished();
@@ -46,7 +52,7 @@ class RenderletTypeTest extends Unit
         $this->resetSingleton();
     }
 
-    protected function _after()
+    protected function _after(): void
     {
         AbstractObject::setHideUnpublished($this->originalHideUnpublishedObjects);
         Document::setHideUnpublished($this->originalHideUnpublishedDocuments);
@@ -75,17 +81,19 @@ class RenderletTypeTest extends Unit
     {
         $target = $this->createAssetStub(11);
 
-        $loaded = false;
+        $state = new \stdClass();
+        $state->loaded = false;
+
         $renderlet = $this->createMock(Renderlet::class);
         $renderlet->expects($this->once())
             ->method('load')
-            ->willReturnCallback(static function () use (&$loaded): void {
-                $loaded = true;
+            ->willReturnCallback(static function () use ($state): void {
+                $state->loaded = true;
             });
         // simulate a cache-hit document: the target is only available after load()
         $renderlet->method('getO')
-            ->willReturnCallback(static function () use (&$loaded, $target) {
-                return $loaded ? $target : null;
+            ->willReturnCallback(static function () use ($state, $target) {
+                return $state->loaded ? $target : null;
             });
 
         $result = $this->resolveField('relation', $renderlet);
@@ -187,19 +195,18 @@ class RenderletTypeTest extends Unit
      */
     private function resetSingleton(): void
     {
-        $property = new \ReflectionProperty(RenderletType::class, 'instance');
-        $property->setValue(null, null);
+        \Closure::bind(static function (): void {
+            self::$instance = null;
+        }, null, RenderletType::class)();
     }
 
     /**
-     * Builds a Service without its (container-heavy) constructor, providing
-     * just what the RenderletType resolvers use: buildGeneralType('anytarget')
-     * and extractData() via the per-element field helpers.
+     * Builds a Service with stubbed dependencies, providing just what the
+     * RenderletType resolvers use: buildGeneralType('anytarget') and
+     * extractData() via the per-element field helpers.
      */
     private function createServiceStub(): Service
     {
-        $service = (new \ReflectionClass(Service::class))->newInstanceWithoutConstructor();
-
         $anyTargetType = new ObjectType([
             'name' => 'renderlet_test_anytarget',
             'fields' => ['id' => Type::int()],
@@ -244,16 +251,32 @@ class RenderletTypeTest extends Unit
             }
         };
 
-        $reflection = new \ReflectionClass(Service::class);
-        foreach ([
-            'generalTypeGeneratorFactories' => $factories,
-            'assetFieldHelper' => $fieldHelper,
-            'documentFieldHelper' => $fieldHelper,
-            'objectFieldHelper' => $fieldHelper,
-        ] as $propertyName => $stub) {
-            $property = $reflection->getProperty($propertyName);
-            $property->setValue($service, $stub);
-        }
+        $service = new Service(
+            new AssetFieldHelper(),
+            new DocumentFieldHelper(),
+            new DataObjectFieldHelper(),
+            $this->createMock(LocaleServiceInterface::class),
+            new Factory(),
+            $this->createMock(Translator::class),
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+            $factories,
+        );
+
+        // swap in the recording field helper (class-scoped access, the
+        // concrete helper classes are final and cannot be extended or mocked)
+        \Closure::bind(static function (Service $service, object $fieldHelper): void {
+            $service->assetFieldHelper = $fieldHelper;
+            $service->documentFieldHelper = $fieldHelper;
+            $service->objectFieldHelper = $fieldHelper;
+        }, null, Service::class)($service, $fieldHelper);
 
         return $service;
     }
