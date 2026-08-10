@@ -22,6 +22,7 @@
 * Pdf
 * Relation
 * Relations
+* Renderlet
 * Scheduled Block
 * Select
 * Table

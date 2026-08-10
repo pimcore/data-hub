@@ -296,6 +296,11 @@ parameters:
 			path: src/GraphQL/DocumentElementType/RelationsType.php
 
 		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/GraphQL/DocumentElementType/RenderletType.php
+
+		-
 			message: "#^Constructor of class Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\DocumentElementType\\\\ScheduledblockDataInputType has an unused parameter \\$context\\.$#"
 			count: 1
 			path: src/GraphQL/DocumentElementType/ScheduledblockDataInputType.php
