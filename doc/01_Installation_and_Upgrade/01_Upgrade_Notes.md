@@ -5,6 +5,11 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
+## Upgrade to 2026.3.0
+
+### GraphQL
+- Added GraphQL query support for the `Renderlet` document editable. Document queries now expose renderlet editables through the new `document_editableRenderlet` type with the fields `_editableType`, `_editableName`, `id`, `type`, `subtype` and `relation` (the referenced element, resolved as an `anytarget`). This is a purely additive schema change; existing queries are not affected. Note that the `type` field returns the element type of the referenced target (`asset`, `document` or `object`), and unpublished targets resolve to `null` (consistent with the `Relation` editable).
+
 ## Upgrade to 2026.1.0
 
 ### PHP & Symfony Version Requirements
