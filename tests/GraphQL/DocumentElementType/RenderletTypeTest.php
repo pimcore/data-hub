@@ -196,7 +196,7 @@ class RenderletTypeTest extends Unit
     private function resetSingleton(): void
     {
         \Closure::bind(static function (): void {
-            self::$instance = null;
+            RenderletType::$instance = null;
         }, null, RenderletType::class)();
     }
 
