@@ -18,7 +18,7 @@
   "require": {
     "nesbot/carbon": "^2.72 || ^3.8.4",
     "php": "~8.4.0 || ~8.5.0",
-    "pimcore/pimcore": "^2026.1",
+    "pimcore/pimcore": "^2026.3",
     "pimcore/studio-backend-bundle": "^2026.1",
     "pimcore/studio-ui-bundle": "^2026.1.6",
     "webonyx/graphql-php": "^15.2.3"

@@ -1,0 +1,18 @@
+# Telemetry integration: the usage.* provider, the datahub.* collector, and the shared
+# configuration read behind both. Loaded unconditionally by PimcoreDataHubExtension - the core
+# extension points are guaranteed by the pimcore/pimcore constraint in composer.json.
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # One read behind all five Data Hub packages; the satellites autowire this same instance.
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubConfigurationUsage: ~
+
+    # usage.datahub_graphql (L3 - configured) - this bundle's own adapter only
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubGraphQlUsageProvider: ~
+
+    # datahub.* (adapter mix, config counts)
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubSnapshotCollector: ~
