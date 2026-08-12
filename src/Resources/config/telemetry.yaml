@@ -1,6 +1,6 @@
-# Loaded only when the running Pimcore core ships the telemetry extension points - see
-# PimcoreDataHubExtension. The bundle supports ^2026.1, but those interfaces arrived later, so these
-# classes must never be autoloaded on a core that does not have them.
+# Telemetry integration: the usage.* provider, the datahub.* collector, and the shared
+# configuration read behind both. Loaded unconditionally by PimcoreDataHubExtension - the core
+# extension points are guaranteed by the pimcore/pimcore constraint in composer.json.
 services:
 
     _defaults:

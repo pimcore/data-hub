@@ -42,7 +42,7 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         $loader->load('config.yml');
         $loader->load('studio_backend.yaml');
 
-        // usage.* providers and the datahub.* collector; the core telemetry extension points
+        // The usage.* provider and the datahub.* collector; the core telemetry extension points
         // are guaranteed by the pimcore/pimcore constraint in composer.json.
         $loader->load('telemetry.yaml');
     }
