@@ -1,0 +1,18 @@
+# Loaded only when the running Pimcore core ships the telemetry extension points - see
+# PimcoreDataHubExtension. The bundle supports ^2026.1, but those interfaces arrived later, so these
+# classes must never be autoloaded on a core that does not have them.
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # One read behind all five Data Hub packages; the satellites autowire this same instance.
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubConfigurationUsage: ~
+
+    # usage.datahub_graphql (L3 - configured) - this bundle's own adapter only
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubGraphQlUsageProvider: ~
+
+    # datahub.* (adapter mix, config counts)
+    Pimcore\Bundle\DataHubBundle\Telemetry\DataHubSnapshotCollector: ~
