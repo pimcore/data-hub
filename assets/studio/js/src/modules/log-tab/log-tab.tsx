@@ -26,9 +26,11 @@ import {
   api,
   ApplicationLoggerTable,
   FilterProvider,
+  mapSortingToSortFilter,
   useFilter,
   useBundleApplicationLoggerGetCollectionQuery
 } from '@pimcore/studio-ui-bundle/modules/application-logger'
+import { type SortingState } from '@tanstack/react-table'
 import { isNil } from 'lodash'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FilterSidebar } from './filter-sidebar/filter-sidebar'
@@ -69,6 +71,7 @@ const DataHubLogTabInner = (props: DataHubLogTabProps): React.JSX.Element => {
   const dispatch = useAppDispatch()
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(20)
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const { columnFilters, setIsLoading: setFilterLoading } = useFilter()
 
@@ -87,7 +90,8 @@ const DataHubLogTabInner = (props: DataHubLogTabProps): React.JSX.Element => {
       filters: {
         page: currentPage,
         pageSize,
-        columnFilters: mergedFilters
+        columnFilters: mergedFilters,
+        sortFilter: mapSortingToSortFilter(sorting)
       }
     }
   })
@@ -97,6 +101,11 @@ const DataHubLogTabInner = (props: DataHubLogTabProps): React.JSX.Element => {
   const onPagerChange = (page: number, newPageSize: number): void => {
     setCurrentPage(page)
     setPageSize(newPageSize)
+  }
+
+  const onSortingChange = (updatedSorting: SortingState): void => {
+    setSorting(updatedSorting)
+    setCurrentPage(1)
   }
 
   const refreshData = useCallback((): void => {
@@ -183,11 +192,15 @@ const DataHubLogTabInner = (props: DataHubLogTabProps): React.JSX.Element => {
           </Toolbar>
         }
       >
-        <Content
-          loading={ isFetching }
-          padded
-        >
-          <ApplicationLoggerTable items={ data?.items ?? [] } />
+        { /* No `loading` on Content: it unmounts its children, which would tear down the
+              column headers - and the sorting controls with them - on every refetch. */ }
+        <Content padded>
+          <ApplicationLoggerTable
+            isLoading={ isFetching }
+            items={ data?.items ?? [] }
+            onSortingChange={ onSortingChange }
+            sorting={ sorting }
+          />
         </Content>
       </ContentLayout>
     </SidebarProvider>
