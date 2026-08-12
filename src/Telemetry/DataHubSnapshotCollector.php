@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Telemetry;
 
-use Pimcore\Telemetry\Snapshot\SnapshotCollectorInterface;
 use function array_sum;
+use Pimcore\Telemetry\Snapshot\SnapshotCollectorInterface;
 use function preg_replace;
 use function strtolower;
 

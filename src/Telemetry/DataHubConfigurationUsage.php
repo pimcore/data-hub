@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Telemetry;
 
-use Pimcore\Bundle\DataHubBundle\Configuration;
-use Throwable;
 use function array_key_exists;
 use function in_array;
 use function is_string;
+use Pimcore\Bundle\DataHubBundle\Configuration;
+use Throwable;
 
 /**
  * The single read behind every Data Hub usage signal, for this bundle and for the four satellites.
