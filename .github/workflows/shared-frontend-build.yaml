@@ -3,6 +3,14 @@ name: "Shared Frontend Build"
 on:
   workflow_call:
 
+env:
+  # Ref for all checkouts. Fork PRs: the fork can be private (partner orgs),
+  # and this repo's GITHUB_TOKEN cannot read it — fetching the fork directly
+  # fails with "Repository not found". Fetch the PR head as mirrored into the
+  # BASE repo (refs/pull/<n>/head) instead; that ref exists for every PR
+  # regardless of fork visibility. Same-repo runs keep the branch tip.
+  CHECKOUT_REF: ${{ github.event.pull_request && github.event.pull_request.head.repo.full_name != github.repository && format('refs/pull/{0}/head', github.event.pull_request.number) || github.head_ref || github.ref_name }}
+
 permissions:
   contents: write
 
@@ -14,8 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -41,8 +48,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -60,7 +66,10 @@ jobs:
         working-directory: ./assets/studio
         run: npm run lint-fix
 
+      # Pushing to the PR branch is only possible for same-repo PRs; on fork
+      # PRs (detached refs/pull/<n>/head checkout) skip the auto-commit.
       - uses: stefanzweifel/git-auto-commit-action@v5
+        if: ${{ !github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository }}
         with:
             commit_message: Apply eslint-fixer changes
 
@@ -72,8 +81,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -101,8 +109,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -120,7 +127,10 @@ jobs:
         working-directory: ./assets/studio
         run: npm run build
 
+      # Pushing to the PR branch is only possible for same-repo PRs; on fork
+      # PRs (detached refs/pull/<n>/head checkout) skip the auto-commit.
       - uses: stefanzweifel/git-auto-commit-action@v5
+        if: ${{ !github.event.pull_request || github.event.pull_request.head.repo.full_name == github.repository }}
         with:
           file_pattern: './src/Resources/public/studio/'
           commit_message: Automatic frontend build

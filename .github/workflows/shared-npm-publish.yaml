@@ -14,7 +14,12 @@ on:
         default: "latest"
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  # Ref for all checkouts. Fork PRs: the fork can be private (partner orgs),
+  # and this repo's GITHUB_TOKEN cannot read it — fetching the fork directly
+  # fails with "Repository not found". Fetch the PR head as mirrored into the
+  # BASE repo (refs/pull/<n>/head) instead; that ref exists for every PR
+  # regardless of fork visibility. Non-PR runs keep the branch/tag name.
+  CHECKOUT_REF: ${{ github.event.pull_request && github.event.pull_request.head.repo.full_name != github.repository && format('refs/pull/{0}/head', github.event.pull_request.number) || github.head_ref || github.ref_name }}
 
 jobs:
   install:
@@ -23,8 +28,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -54,8 +58,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.CHECKOUT_REF }}
 
       - name: Cache npm dependencies
         uses: actions/cache@v4
