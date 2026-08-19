@@ -10,6 +10,21 @@ description: Breaking changes and migration steps per release.
 ### GraphQL
 - Added GraphQL query support for the `Renderlet` document editable. Document queries now expose renderlet editables through the new `document_editableRenderlet` type with the fields `_editableType`, `_editableName`, `id`, `type`, `subtype` and `relation` (the referenced element, resolved as an `anytarget`). This is a purely additive schema change; existing queries are not affected. Note that the `type` field returns the element type of the referenced target (`asset`, `document` or `object`), and unpublished targets resolve to `null` (consistent with the `Relation` editable).
 
+## Upgrade to 2026.2.6
+
+### GraphQL: `unit` of `QuantityValue` / `InputQuantityValue` is now `null` when no unit is set
+
+Quantity value fields without a selected unit previously returned the `unit` field as an object whose
+subfields were all `null` (e.g. `"unit": {"id": null}`). It is now `null` as the (nullable) schema
+definition implies:
+
+```json
+{ "length": { "value": 8500, "unit": null } }
+```
+
+Clients that access `unit` subfields unconditionally (e.g. `data.length.unit.id`) have to null-check
+`unit` first.
+
 ## Upgrade to 2026.1.0
 
 ### PHP & Symfony Version Requirements
