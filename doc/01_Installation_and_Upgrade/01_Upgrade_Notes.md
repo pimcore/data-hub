@@ -5,6 +5,21 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
+## Upgrade to 2026.2.6
+
+### GraphQL: `unit` of `QuantityValue` / `InputQuantityValue` is now `null` when no unit is set
+
+Quantity value fields without a selected unit previously returned the `unit` field as an object whose
+subfields were all `null` (e.g. `"unit": {"id": null}`). It is now `null` as the (nullable) schema
+definition implies:
+
+```json
+{ "length": { "value": 8500, "unit": null } }
+```
+
+Clients that access `unit` subfields unconditionally (e.g. `data.length.unit.id`) have to null-check
+`unit` first.
+
 ## Upgrade to 2026.1.0
 
 ### PHP & Symfony Version Requirements
