@@ -50,9 +50,9 @@ export const SchemaAccordion = ({
       }))
   }, [availableClasses, currentEntityNames])
 
-  const handleOpen = (): void => {
+  const handleOpenChange = (open: boolean): void => {
     setSelectedClasses([])
-    setOpenDropdown(true)
+    setOpenDropdown(open)
   }
 
   const handleCancel = (): void => {
@@ -89,26 +89,17 @@ export const SchemaAccordion = ({
     id: type,
     title: <>{t(`data-hub.schema.${type}-schema`)}</>,
     info: (
-      <>
-        <IconTextButton
-          icon={ { value: 'add-find' } }
-          onClick={ (e) => {
-            e.stopPropagation()
-            handleOpen()
-          } }
-        >
-          {t('add')}
-        </IconTextButton>
-        {openDropdown && (
-          <InlineDropdownPanel>
+      <InlineDropdownPanel
+        content={
+          <>
             <Select
+              getPopupContainer={ (triggerNode: HTMLElement) => triggerNode.parentElement ?? document.body }
               listHeight={ 150 }
               mode="multiple"
               onChange={ (values) => { setSelectedClasses(values as string[]) } }
               optionFilterProp="searchValue"
               options={ options }
               placeholder={ t('data-hub.schema.select-class') }
-              placement="topLeft"
               showSearch
               style={ { width: '400px' } }
               value={ selectedClasses }
@@ -131,9 +122,18 @@ export const SchemaAccordion = ({
                 {t('button.apply')}
               </Button>
             </Flex>
-          </InlineDropdownPanel>
-        )}
-      </>
+          </>
+        }
+        onOpenChange={ handleOpenChange }
+        open={ openDropdown }
+      >
+        <IconTextButton
+          icon={ { value: 'add-find' } }
+          onClick={ (e) => { e.stopPropagation() } }
+        >
+          {t('add')}
+        </IconTextButton>
+      </InlineDropdownPanel>
     ),
     children: (
       <OperationalGrid.Grid />
