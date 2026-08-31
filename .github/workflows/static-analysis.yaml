@@ -12,6 +12,7 @@ on:
       - 'doc/**'
       - 'install/**'
       - 'src/Resources/public/**'
+      - '**.md'
   push:
     paths-ignore:
       - 'assets/**'
@@ -19,6 +20,7 @@ on:
       - 'doc/**'
       - 'install/**'
       - 'src/Resources/public/**'
+      - '**.md'
     branches:
       - "[0-9]+.[0-9]+"
       - "[0-9]+.x"
