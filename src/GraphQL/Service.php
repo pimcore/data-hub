@@ -1133,6 +1133,11 @@ final class Service
         return $this->dataObjectDataTypes;
     }
 
+    public function getDocumentDataTypes(): array
+    {
+        return $this->documentDataTypes;
+    }
+
     /**
      * @param mixed $data
      * @param ElementInterface $target
