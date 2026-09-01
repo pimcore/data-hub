@@ -24,6 +24,8 @@ class AbstractRelationsTypeTest extends Unit
 {
     private array $backupDefinitions = [];
 
+    private array $backupDataObjectDataTypes = [];
+
     private ObjectType $classType;
 
     private ObjectType $folderType;
@@ -32,21 +34,22 @@ class AbstractRelationsTypeTest extends Unit
 
     protected function setUp(): void
     {
-        $this->backupDefinitions = ClassTypeDefinitions::$definitions;
-
         $this->classType = new ObjectType(['name' => 'object_unittest']);
         $this->folderType = new ObjectType(['name' => 'object_folder']);
 
+        $this->backupDefinitions = ClassTypeDefinitions::$definitions;
         ClassTypeDefinitions::$definitions = ['unittest' => $this->classType];
 
         // the service is only used to look up the already built folder type
-        $this->service = (new \ReflectionClass(Service::class))->newInstanceWithoutConstructor();
+        $this->service = \Pimcore::getContainer()->get(Service::class);
+        $this->backupDataObjectDataTypes = $this->service->getDataObjectDataTypes();
         $this->service->registerDataObjectDataTypes(['_object_folder' => $this->folderType]);
     }
 
     protected function tearDown(): void
     {
         ClassTypeDefinitions::$definitions = $this->backupDefinitions;
+        $this->service->registerDataObjectDataTypes($this->backupDataObjectDataTypes);
     }
 
     public function testUnrestrictedRelationContainsObjectFolderType()
@@ -54,11 +57,9 @@ class AbstractRelationsTypeTest extends Unit
         $types = $this->buildRelationType([])->getTypes();
 
         $this->assertContains($this->classType, $types);
-        $this->assertContains(
-            $this->folderType,
-            $types,
-            'folders are allowed relation targets if no class restriction is configured, so the union has to contain the folder type'
-        );
+        // folders are allowed relation targets if no class restriction is
+        // configured, so the union has to contain the folder type as well
+        $this->assertContains($this->folderType, $types);
     }
 
     public function testRelationRestrictedToFolderContainsObjectFolderType()
