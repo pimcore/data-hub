@@ -9,12 +9,11 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { IconTextButton, Select, Button, Flex, OperationalGrid, Accordion, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
+import { IconTextButton, Select, Modal, OperationalGrid, Accordion, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { type QueryEntity, type MutationEntity } from './types'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
-import { InlineDropdownPanel } from '../../inline-dropdown-panel/inline-dropdown-panel'
 
 interface SchemaAccordionProps {
   type: 'query' | 'mutation'
@@ -28,7 +27,7 @@ export const SchemaAccordion = ({
   onChange
 }: SchemaAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
-  const [openDropdown, setOpenDropdown] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [selectedClasses, setSelectedClasses] = useState<string[]>([])
 
   const { getAllClassDefinitions } = useClassDefinitions()
@@ -50,14 +49,14 @@ export const SchemaAccordion = ({
       }))
   }, [availableClasses, currentEntityNames])
 
-  const handleOpen = (): void => {
+  const handleOpenModal = (): void => {
     setSelectedClasses([])
-    setOpenDropdown(true)
+    setModalOpen(true)
   }
 
   const handleCancel = (): void => {
     setSelectedClasses([])
-    setOpenDropdown(false)
+    setModalOpen(false)
   }
 
   const handleApply = (): void => {
@@ -81,7 +80,7 @@ export const SchemaAccordion = ({
       onChange([...value, ...newEntities])
     }
     setSelectedClasses([])
-    setOpenDropdown(false)
+    setModalOpen(false)
   }
 
   const accordionItem: AccordionItemType = useMemo(() => ({
@@ -89,65 +88,52 @@ export const SchemaAccordion = ({
     id: type,
     title: <>{t(`data-hub.schema.${type}-schema`)}</>,
     info: (
-      <>
-        <IconTextButton
-          icon={ { value: 'add-find' } }
-          onClick={ (e) => {
-            e.stopPropagation()
-            handleOpen()
-          } }
-        >
-          {t('add')}
-        </IconTextButton>
-        {openDropdown && (
-          <InlineDropdownPanel>
-            <Select
-              listHeight={ 150 }
-              mode="multiple"
-              onChange={ (values) => { setSelectedClasses(values as string[]) } }
-              optionFilterProp="searchValue"
-              options={ options }
-              placeholder={ t('data-hub.schema.select-class') }
-              placement="topLeft"
-              showSearch
-              style={ { width: '400px' } }
-              value={ selectedClasses }
-            />
-            <Flex
-              gap="small"
-              justify="flex-end"
-              style={ { marginTop: '12px' } }
-            >
-              <Button
-                onClick={ handleCancel }
-                type="default"
-              >
-                {t('button.cancel')}
-              </Button>
-              <Button
-                onClick={ handleApply }
-                type="primary"
-              >
-                {t('button.apply')}
-              </Button>
-            </Flex>
-          </InlineDropdownPanel>
-        )}
-      </>
+      <IconTextButton
+        icon={ { value: 'add-find' } }
+        onClick={ (e) => {
+          e.stopPropagation()
+          handleOpenModal()
+        } }
+      >
+        {t('add')}
+      </IconTextButton>
     ),
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, openDropdown, options, selectedClasses])
+  }), [type, t])
 
   return (
-    <Accordion
-      activeKey={ type }
-      bordered
-      collapsible="icon"
-      items={ [accordionItem] }
-      size="small"
-      table
-    />
+    <>
+      <Accordion
+        activeKey={ type }
+        bordered
+        collapsible="icon"
+        items={ [accordionItem] }
+        size="small"
+        table
+      />
+      <Modal
+        cancelText={ t('button.cancel') }
+        okText={ t('button.apply') }
+        onCancel={ handleCancel }
+        onOk={ handleApply }
+        open={ modalOpen }
+        size="M"
+        title={ t(`data-hub.schema.${type}-schema`) }
+      >
+        <Select
+          listHeight={ 150 }
+          mode="multiple"
+          onChange={ (values) => { setSelectedClasses(values as string[]) } }
+          optionFilterProp="searchValue"
+          options={ options }
+          placeholder={ t('data-hub.schema.select-class') }
+          showSearch
+          style={ { width: '100%' } }
+          value={ selectedClasses }
+        />
+      </Modal>
+    </>
   )
 }
