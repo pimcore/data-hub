@@ -9,12 +9,11 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { Flex, IconTextButton, Select, Button, Icon, OperationalGrid, Accordion } from '@pimcore/studio-ui-bundle/components'
+import { Flex, IconTextButton, Select, Icon, Modal, OperationalGrid, Accordion } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { type Permission } from './types'
 import { type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
-import { InlineDropdownPanel } from '../../inline-dropdown-panel/inline-dropdown-panel'
 import { useBundleDataHubUsersCollectionQuery } from '../../../../config/users-api-slice.gen'
 
 interface PermissionAccordionProps {
@@ -29,7 +28,7 @@ export const PermissionAccordion = ({
   onChange
 }: PermissionAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
-  const [openDropdown, setOpenDropdown] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [selectedItems, setSelectedItems] = useState<number[]>([])
 
   const isRoles = type === 'roles'
@@ -77,14 +76,14 @@ export const PermissionAccordion = ({
     }
   }
 
-  const handleOpen = (): void => {
+  const handleOpenModal = (): void => {
     setSelectedItems([])
-    setOpenDropdown(true)
+    setModalOpen(true)
   }
 
   const handleCancel = (): void => {
     setSelectedItems([])
-    setOpenDropdown(false)
+    setModalOpen(false)
   }
 
   const handleApply = (): void => {
@@ -98,7 +97,7 @@ export const PermissionAccordion = ({
       }
     }
     setSelectedItems([])
-    setOpenDropdown(false)
+    setModalOpen(false)
   }
 
   const accordionItem: AccordionItemType = useMemo(() => ({
@@ -106,65 +105,52 @@ export const PermissionAccordion = ({
     id: type,
     title: <>{t(isRoles ? 'data-hub.permissions.role-permissions' : 'data-hub.permissions.user-permissions')}</>,
     info: (
-      <>
-        <IconTextButton
-          icon={ { value: 'plus-circle' } }
-          onClick={ (e) => {
-            e.stopPropagation()
-            handleOpen()
-          } }
-        >
-          {t('add')}
-        </IconTextButton>
-        {openDropdown && (
-          <InlineDropdownPanel>
-            <Select
-              listHeight={ 150 }
-              mode="multiple"
-              onChange={ (values) => { setSelectedItems(values as number[]) } }
-              optionFilterProp="searchValue"
-              options={ options }
-              placeholder={ t(isRoles ? 'data-hub.permissions.role' : 'data-hub.permissions.user') }
-              placement="topLeft"
-              showSearch
-              style={ { width: '400px' } }
-              value={ selectedItems }
-            />
-            <Flex
-              gap="small"
-              justify="flex-end"
-              style={ { marginTop: '12px' } }
-            >
-              <Button
-                onClick={ handleCancel }
-                type="default"
-              >
-                {t('button.cancel')}
-              </Button>
-              <Button
-                onClick={ handleApply }
-                type="primary"
-              >
-                {t('button.apply')}
-              </Button>
-            </Flex>
-          </InlineDropdownPanel>
-        )}
-      </>
+      <IconTextButton
+        icon={ { value: 'plus-circle' } }
+        onClick={ (e) => {
+          e.stopPropagation()
+          handleOpenModal()
+        } }
+      >
+        {t('add')}
+      </IconTextButton>
     ),
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, openDropdown, options, selectedItems])
+  }), [type, isRoles, t])
 
   return (
-    <Accordion
-      activeKey={ type }
-      bordered
-      collapsible="icon"
-      items={ [accordionItem] }
-      size="small"
-      table
-    />
+    <>
+      <Accordion
+        activeKey={ type }
+        bordered
+        collapsible="icon"
+        items={ [accordionItem] }
+        size="small"
+        table
+      />
+      <Modal
+        cancelText={ t('button.cancel') }
+        okText={ t('button.apply') }
+        onCancel={ handleCancel }
+        onOk={ handleApply }
+        open={ modalOpen }
+        size="M"
+        title={ t(isRoles ? 'data-hub.permissions.role-permissions' : 'data-hub.permissions.user-permissions') }
+      >
+        <Select
+          listHeight={ 150 }
+          mode="multiple"
+          onChange={ (values) => { setSelectedItems(values as number[]) } }
+          optionFilterProp="searchValue"
+          options={ options }
+          placeholder={ t(isRoles ? 'data-hub.permissions.role' : 'data-hub.permissions.user') }
+          showSearch
+          style={ { width: '100%' } }
+          value={ selectedItems }
+        />
+      </Modal>
+    </>
   )
 }
