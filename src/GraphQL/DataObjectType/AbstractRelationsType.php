@@ -93,6 +93,9 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         if ($fd->getObjectsAllowed()) {
             if (!$fd->getClasses()) {
                 $types = array_merge($types, array_values(ClassTypeDefinitions::getAll()));
+                // without a class restriction folders are valid relation targets as well,
+                // but they are no class definition and therefore not part of getAll()
+                $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
             } else {
                 $classes = $fd->getClasses();
                 if (!is_array($classes)) {
