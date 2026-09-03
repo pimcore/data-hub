@@ -12,6 +12,7 @@ on:
       - 'doc/**'
       - 'install/**'
       - 'src/Resources/public/**'
+      - '**.md'
   push:
     paths-ignore:
       - 'assets/**'
@@ -19,6 +20,7 @@ on:
       - 'doc/**'
       - 'install/**'
       - 'src/Resources/public/**'
+      - '**.md'
     branches:
       - "[0-9]+.[0-9]+"
       - "[0-9]+.x"
@@ -28,12 +30,13 @@ env:
   PRIVATE_REPO: ${{ github.event.repository.private }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   setup-matrix:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       php_versions: ${{ steps.parse-php-versions.outputs.php_versions }}
       phpstan_matrix: ${{ steps.set-matrix.outputs.phpstan_matrix }}
@@ -69,6 +72,10 @@ jobs:
           php_versions="${{ steps.parse-php-versions.outputs.php_versions }}"
           MATRIX_JSON=$(cat reusable-workflows/phpstan-configuration/matrix-config.json)
           FILTERED_MATRIX_JSON=$(echo "$MATRIX_JSON" | jq --arg php_versions "$php_versions" '{ include: [ .configs[] | select(.php_version == $php_versions) | .matrix[] ] }')
+          if [ "$(echo "$FILTERED_MATRIX_JSON" | jq '.include | length')" = "0" ]; then
+            echo "::error::No matrix configuration found for PHP versions '$php_versions'"
+            exit 1
+          fi
           ENCODED_MATRIX_JSON=$(echo "$FILTERED_MATRIX_JSON" | jq -c .)
           echo "phpstan_matrix=$ENCODED_MATRIX_JSON" >> "$GITHUB_OUTPUT"
 
