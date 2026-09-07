@@ -409,9 +409,18 @@ final class AssetType
             return null;
         }
 
+        $x = $asset->getCustomSetting('focalPointX');
+        $y = $asset->getCustomSetting('focalPointY');
+
+        // returning an array of nulls would make the default field resolver resolve every
+        // subfield on its own, so the response would contain {x: null, y: null} instead of null
+        if ($x === null || $y === null) {
+            return null;
+        }
+
         return [
-            'x' => $asset->getCustomSetting('focalPointX'),
-            'y' => $asset->getCustomSetting('focalPointY'),
+            'x' => (float) $x,
+            'y' => (float) $y,
         ];
     }
 
