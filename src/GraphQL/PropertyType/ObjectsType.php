@@ -85,6 +85,10 @@ final class ObjectsType extends UnionType implements ContainerAwareInterface
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
+                    if ($documentType === 'folder') {
+                        return $service->getDocumentTypeDefinition('_document_folder');
+                    }
+
                     $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
 
                     return $typeDefinition;
