@@ -54,6 +54,10 @@ final class ObjectsType extends UnionType implements ContainerAwareInterface
             $types = array_merge($types, $objectTypes);
         }
 
+        if ($service->querySchemaEnabled('object_folder')) {
+            $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+        }
+
         if ($service->querySchemaEnabled('document')) {
             $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
             $supportedDocumentTypes = $documentUnionType->getTypes();
@@ -75,9 +79,11 @@ final class ObjectsType extends UnionType implements ContainerAwareInterface
     {
         if ($element) {
             if ($element['__elementType'] == 'object') {
-                $type = ClassTypeDefinitions::get($element['__elementSubtype']);
+                if ($element['__elementSubtype'] === 'folder') {
+                    return $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+                }
 
-                return $type;
+                return ClassTypeDefinitions::get($element['__elementSubtype']);
             } elseif ($element['__elementType'] == 'asset') {
                 return  $this->getGraphQlService()->buildAssetType('asset');
             } elseif ($element['__elementType'] == 'document') {
@@ -85,6 +91,10 @@ final class ObjectsType extends UnionType implements ContainerAwareInterface
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
+                    if ($documentType === 'folder') {
+                        return $service->getDocumentTypeDefinition('_document_folder');
+                    }
+
                     $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
 
                     return $typeDefinition;

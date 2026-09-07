@@ -93,6 +93,9 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         if ($fd->getObjectsAllowed()) {
             if (!$fd->getClasses()) {
                 $types = array_merge($types, array_values(ClassTypeDefinitions::getAll()));
+                // without a class restriction folders are valid relation targets as well,
+                // but they are no class definition and therefore not part of getAll()
+                $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
             } else {
                 $classes = $fd->getClasses();
                 if (!is_array($classes)) {
@@ -101,6 +104,11 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
                 foreach ($classes as $className) {
                     if (is_array($className)) {
                         $className = $className['classes'];
+                    }
+                    if ($className === 'folder') {
+                        $types[] = $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+
+                        continue;
                     }
                     $types[] = ClassTypeDefinitions::get($className);
                 }
@@ -130,9 +138,11 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
     {
         if ($element) {
             if ($element['__elementType'] == 'object') {
-                $type = ClassTypeDefinitions::get($element['__elementSubtype']);
+                if ($element['__elementSubtype'] === 'folder') {
+                    return $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+                }
 
-                return $type;
+                return ClassTypeDefinitions::get($element['__elementSubtype']);
             } elseif ($element['__elementType'] == 'asset') {
                 return  $this->getGraphQlService()->buildAssetType('asset');
             } elseif ($element['__elementType'] == 'document') {
@@ -140,6 +150,10 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
+                    if ($documentType === 'folder') {
+                        return $service->getDocumentTypeDefinition('_document_folder');
+                    }
+
                     //TODO maybe catch unsupported types for now ?
                     $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
 
