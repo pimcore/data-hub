@@ -8,7 +8,6 @@ on:
   pull_request:
     paths:
       - "assets/studio/**"
-      - "src/Resources/public/studio/build/**"
   workflow_dispatch:
 
 concurrency:
