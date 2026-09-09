@@ -44,17 +44,9 @@ final class AnyDocumentTargetType extends UnionType implements ContainerAwareInt
      */
     public function getTypes(): array
     {
-        $types = [];
-
-        $service = $this->getGraphQlService();
-        $documentFolderType = $service->getDocumentTypeDefinition('_document_folder');
-
-        $types[] = $documentFolderType;
         $documentUnionType = $this->getGraphQlService()->getDocumentTypeDefinition('document');
-        $supportedDocumentTypes = $documentUnionType->getTypes();
-        $types = array_merge($types, $supportedDocumentTypes);
 
-        return $types;
+        return $documentUnionType->getTypes();
     }
 
     public function resolveType($element, $context, ResolveInfo $info): ?string
