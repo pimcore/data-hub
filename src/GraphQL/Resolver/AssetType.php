@@ -397,6 +397,34 @@ final class AssetType
     }
 
     /**
+     * @return array{x: float, y: float}|null
+     *
+     * @throws Exception
+     */
+    public function resolveFocalPoints(?ElementDescriptor $value = null, array $context = []): ?array
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if (!$asset instanceof Asset\Image) {
+            return null;
+        }
+
+        $x = $asset->getCustomSetting('focalPointX');
+        $y = $asset->getCustomSetting('focalPointY');
+
+        // returning an array of nulls would make the default field resolver resolve every
+        // subfield on its own, so the response would contain {x: null, y: null} instead of null
+        if ($x === null || $y === null) {
+            return null;
+        }
+
+        return [
+            'x' => (float) $x,
+            'y' => (float) $y,
+        ];
+    }
+
+    /**
      * @throws Exception
      */
     public function resolveModificationDate(
