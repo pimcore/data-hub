@@ -132,7 +132,7 @@ tree.actions.delete: Usuń
 tree.actions.edit: Edytuj
 tree.actions.export: Eksportuj
 tree.actions.import: Importuj
-tree.actions.view: Widok
+tree.actions.view: Wyświetl
 data-hub.import.title: Importuj konfigurację
 data-hub.import.drag-drop: Przeglądaj pliki lub upuść tutaj plik JSON
 data-hub.import.browse-files: Przeglądaj pliki
