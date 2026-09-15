@@ -23,19 +23,16 @@ const STATUS_COLOUR: Record<ChangeStatus, string> = {
   moved: 'geekblue'
 }
 
-/** this bundle ships the four words, so an adapter needs no translations of its own */
-const DEFAULT_PREFIX = 'data-hub.review.status'
-
 export interface StatusTagProps {
   readonly status: ChangeStatus
-  /**
-   * Where to read the four words from. An adapter that wants its own wording passes its own
-   * prefix; leaving it alone is what keeps the vocabulary the same everywhere.
-   */
-  readonly translationPrefix?: string
 }
 
-export const StatusTag: React.FC<StatusTagProps> = ({ status, translationPrefix = DEFAULT_PREFIX }) => {
+/**
+ * The four words are this bundle's, not the caller's: an adapter that could pass its own
+ * wording is an adapter that can disagree with the next one, which is the thing this exists
+ * to prevent.
+ */
+export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const { t } = useTranslation()
 
   // no trailing margin: the tag ends a row, and antd's default gap would push it off the edge
@@ -45,7 +42,7 @@ export const StatusTag: React.FC<StatusTagProps> = ({ status, translationPrefix 
       data-review-mark=""
       style={ { marginInlineEnd: 0 } }
     >
-      { t(`${translationPrefix}.${status}`) }
+      { t(`data-hub.review.status.${status}`) }
     </Tag>
   )
 }

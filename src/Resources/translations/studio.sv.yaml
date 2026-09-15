@@ -152,3 +152,8 @@ data-hub.review.status.added: Tillagd
 data-hub.review.status.changed: Ändrad
 data-hub.review.status.removed: Borttagen
 data-hub.review.status.moved: Flyttad
+data-hub.review.changed-field: 1 ändrat fält
+data-hub.review.changed-fields: '%s ändrade fält'
+data-hub.review.active: Aktiv
+data-hub.review.inactive: Inaktiv
+data-hub.review.open-section: Öppna i editorn

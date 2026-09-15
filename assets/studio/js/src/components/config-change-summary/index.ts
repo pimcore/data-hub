@@ -8,5 +8,5 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-export * from './proposal-card'
+export * from './config-change-summary'
 export * from './status-tag'

@@ -173,3 +173,8 @@ data-hub.review.status.added: Added
 data-hub.review.status.changed: Changed
 data-hub.review.status.removed: Removed
 data-hub.review.status.moved: Moved
+data-hub.review.changed-field: 1 changed field
+data-hub.review.changed-fields: '%s changed fields'
+data-hub.review.active: Active
+data-hub.review.inactive: Inactive
+data-hub.review.open-section: Open in the editor
