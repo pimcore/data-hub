@@ -93,16 +93,15 @@ export const ConfigChangeSummary: React.FC<ConfigChangeSummaryProps> = ({
 
   return (
     <div className={ styles.summary }>
-      <Flex
-        align="center"
-        gap="small"
+      <Text
+        className={ styles.name }
+        ellipsis={ { tooltip: name } }
+        strong
       >
-        <Text
-          ellipsis
-          strong
-        >
-          { name }
-        </Text>
+        { name }
+      </Text>
+
+      <div className={ styles.marks }>
         { active !== undefined && (
           <Badge
             color={ active ? 'green' : 'default' }
@@ -115,7 +114,7 @@ export const ConfigChangeSummary: React.FC<ConfigChangeSummaryProps> = ({
         >
           { t(changed === 1 ? `${T}.changed-field` : `${T}.changed-fields`).replace('%s', String(changed)) }
         </Tag>
-      </Flex>
+      </div>
 
       { description !== undefined && description !== '' && (
         <Text type="secondary">{ description }</Text>

@@ -21,6 +21,24 @@ export const useStyles = createStyles(({ token, css }) => ({
     min-width: 0;
   `,
 
+  /* the name gets the line to itself: sharing it with the marks truncates the one thing the
+     reader needs to recognise, and at a rail's width it always loses */
+  name: css`
+    display: block;
+    min-width: 0;
+  `,
+
+  marks: css`
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: ${token.marginXS}px;
+    margin-top: ${token.marginXXS}px;
+
+    /* a status badge is dot + word; squeezed, it wraps the word under the dot */
+    .ant-badge-status { white-space: nowrap; }
+  `,
+
   sectionLabel: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};
