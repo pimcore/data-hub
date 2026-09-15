@@ -146,3 +146,9 @@ user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - Gr
 user-management.permissions.plugin_datahub_permission_delete: Datahub Eliminazione
 user-management.permissions.plugin_datahub_permission_read: Datahub Lettura
 user-management.permissions.plugin_datahub_permission_update: Datahub Aggiornamento
+
+# Proposal review: the four words every adapter marks a change with
+data-hub.review.status.added: Aggiunto
+data-hub.review.status.changed: Modificato
+data-hub.review.status.removed: Rimosso
+data-hub.review.status.moved: Spostato
