@@ -1,4 +1,4 @@
-/*! For license information please see __federation_expose_default_export.9895b958.js.LICENSE.txt */
+/*! For license information please see __federation_expose_default_export.b8206b11.js.LICENSE.txt */
 "use strict";(self["chunk_pimcore_datahub_bundle "]=self["chunk_pimcore_datahub_bundle "]||[]).push([["525"],{7673(e,l,i){i.r(l),i.d(l,{BaseDetailView:()=>d.Wc,ColumnLocaleControl:()=>X,stringifyYaml:()=>T,ADVANCED_COLUMN_KEY:()=>A,useCompactLayout:()=>F,advancedToSchemaColumn:()=>E,ADVANCED_COLUMN_TYPE:()=>L,BaseColumnEditor:()=>ee,CompactLayoutProvider:()=>I,ColumnEditorItemBody:()=>W,DynamicTypeDataHubAdapterAbstract:()=>r.E,DynamicTypeDataHubAdapterRegistry:()=>s.f,DataHubLogTab:()=>er,PermissionsTab:()=>a.K,ConfigToolbar:()=>d.MM,advancedFromSchemaColumn:()=>B,GeneralTab:()=>t.a,ColumnConfigModal:()=>z,ConfigSummary:()=>b,parseYaml:()=>S,trackConfigError:()=>d.Mv,useAddColumnGroups:()=>D,StatusTag:()=>x,ColumnPreview:()=>R,ConfigContainer:()=>n.y,isValidYaml:()=>k,bundleServiceIds:()=>o.s,useDetailView:()=>d.iO,MigrationModal:()=>$,ColumnPipelineForm:()=>O});var n=i(6100),t=i(970),a=i(6427),o=i(17),r=i(5667),s=i(8576),d=i(2379),c=i(4848),u=i(2812),p=i.n(u),m=i(4781),g=i(2696);let h={added:"green",changed:"gold",removed:"red",moved:"geekblue"},x=e=>{let{status:l}=e,{t:i}=(0,m.useTranslation)();return(0,c.jsx)(g.Tag,{color:h[l],"data-review-mark":"",style:{marginInlineEnd:0},children:i(`data-hub.review.status.${l}`)})},y=(0,m.createStyles)(e=>{let{token:l,css:i}=e;return{summary:i`
     min-width: 0;
   `,head:i`
@@ -80,7 +80,7 @@
   `,field:i`
     min-height: ${l.controlHeightSM}px;
 
-    /* the marks are tall for their row; without this they read as one block */
+    /* the marks are tall; without a gap the rows read as one block */
     & + & {
       margin-top: ${l.marginXXS}px;
     }
