@@ -8,30 +8,21 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-// the host's createStyles, as Studio's own components use it - antd-style imported directly
-// here resolves to this package's own copy, outside Studio's ThemeProvider, so `token` would
-// be antd's stock palette and the primary the wrong blue
+// antd-style imported directly resolves to this package's copy, outside Studio's theme
 import { createStyles } from '@pimcore/studio-ui-bundle/app'
 
-/**
- * What no Studio primitive draws: the spine and its nodes, the pill, a caption that behaves
- * as a button, and the small-caps typography. Layout, spacing, weight and the secondary colour
- * are Flex, Box and Text in the component - their size names resolve to the same tokens.
- */
 export const useStyles = createStyles(({ token, css }) => ({
-  /* flush in the rail rather than a box inside it: the rail's own edge does the separating */
+  /* min-width 0 throughout: the ellipses need it inside the rail's flex */
   summary: css`
     min-width: 0;
   `,
   head: css`
     border-bottom: 1px solid ${token.colorSplit};
   `,
-  /* the one thing Text cannot say about the name: it is a size up */
   name: css`
     min-width: 0;
     font-size: ${token.fontSizeLG}px;
   `,
-  /* the on/off switch of the configuration, said once and quietly */
   pill: css`
     height: ${token.controlHeightSM - 2}px;
     padding: 0 ${token.paddingXS}px;
@@ -49,20 +40,17 @@ export const useStyles = createStyles(({ token, css }) => ({
   dotOn: css`
     background: ${token.colorSuccess};
   `,
-  /* tighter than body text, so a two-line description reads as one thing */
   description: css`
     line-height: ${token.lineHeightSM};
     color: ${token.colorTextSecondary};
     overflow-wrap: anywhere;
   `,
-  /* a dotted spine down the left, one node per section of the configuration */
   spine: css`
     display: grid;
     grid-template-columns: ${token.marginXS}px minmax(0, 1fr);
     column-gap: ${token.marginSM}px;
   `,
-  /* the node sits on the centre of the heading's first line, whatever the theme makes of the
-     small font: (line box - node) / 2 rather than a fixed margin */
+  /* (line box - node) / 2 centres the node on the heading's first line */
   mark: css`
     padding-top: ${(token.fontSizeSM * token.lineHeightSM - 7) / 2}px;
   `,
@@ -73,7 +61,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     border-radius: 50%;
     background: ${token.colorPrimary};
   `,
-  /* a section the editor is not showing: the same node, hollow */
   nodeMuted: css`
     background: ${token.colorBgContainer};
     box-shadow: inset 0 0 0 1px ${token.colorPrimaryBorder};
@@ -87,7 +74,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   entry: css`
     min-width: 0;
   `,
-  /* the small-caps type of every section label */
   caption: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};
@@ -95,13 +81,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     text-transform: uppercase;
     line-height: ${token.lineHeightSM};
   `,
-  /* the label of a stop: what part it plays, not something to press */
   role: css`
     color: ${token.colorTextTertiary};
   `,
-  /* the label of a section: the one control in the card, it opens the section in the editor.
-     Block-level, not inline: an inline button rides the entry's baseline and lands a few
-     pixels below the row it is meant to head */
+  /* button reset; the font shorthand would undo caption */
   section: css`
     width: fit-content;
     max-width: 100%;
@@ -122,18 +105,16 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
   `,
-  /* the quieter second line, under a value or under the foot */
   note: css`
     font-size: ${token.fontSizeSM}px;
     line-height: ${token.lineHeightSM};
     color: ${token.colorTextTertiary};
     overflow-wrap: anywhere;
   `,
-  /* a changed field: its name, and what became of it */
   field: css`
     min-height: ${token.controlHeightSM}px;
 
-    /* the marks are tall for their row; without this they read as one block */
+    /* the marks are tall; without a gap the rows read as one block */
     & + & {
       margin-top: ${token.marginXXS}px;
     }

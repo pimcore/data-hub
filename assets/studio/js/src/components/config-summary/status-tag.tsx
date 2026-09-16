@@ -14,8 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 
 export type ChangeStatus = 'added' | 'changed' | 'removed' | 'moved'
 
-// the same four words in the same four colours Studio's own form annotation uses, so a
-// reader sees one vocabulary whether they look at the rail, a row header or a field
+// the colours Studio's form annotation uses for the same words
 const STATUS_COLOUR: Record<ChangeStatus, string> = {
   added: 'green',
   changed: 'gold',
@@ -27,15 +26,11 @@ export interface StatusTagProps {
   readonly status: ChangeStatus
 }
 
-/**
- * The four words are this bundle's, not the caller's: an adapter that could pass its own
- * wording is an adapter that can disagree with the next one, which is the thing this exists
- * to prevent.
- */
+/** the status words are this bundle's, so adapters cannot disagree on wording */
 export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const { t } = useTranslation()
 
-  // no trailing margin: the tag ends a row, and antd's default gap would push it off the edge
+  // the tag ends its row; antd's trailing margin would overhang
   return (
     <Tag
       color={ STATUS_COLOUR[status] }

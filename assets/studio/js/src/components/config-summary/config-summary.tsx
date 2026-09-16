@@ -14,87 +14,63 @@ import { Box, Flex, Icon, Tag, Text } from '@pimcore/studio-ui-bundle/components
 import { StatusTag, type ChangeStatus } from './status-tag'
 import { useStyles } from './config-summary.styles'
 
-/**
- * One line of a section.
- *
- * Both of a configuration's summaries are the same shape: a primary line, an optional second
- * line, and an optional mark. Describing a change, the primary line is the field's name and
- * the mark says what became of it; describing a configuration, the primary line is the value
- * and there is no mark.
- */
+/** one line of a section: a label, an optional second line, an optional mark */
 export interface ConfigSummaryRow {
   readonly key: string
   readonly label: string
-  /** a second, quieter line - what the value means, or where it comes from */
+  /** quieter second line */
   readonly note?: string
-  /** the full address, shown on hover; a label alone is often ambiguous */
+  /** shown on hover, e.g. the full path */
   readonly hint?: string
-  /** omit for a row that states a fact rather than a change; only rows with a status count as changes */
+  /** omit for a fact rather than a change; only rows with a status are counted */
   readonly status?: ChangeStatus
 }
 
-/** a part of the configuration, as the editor groups it - usually one tab or one step */
+/** a part of the configuration as the editor groups it, usually a tab */
 export interface ConfigSummarySection {
   readonly key: string
   readonly label: string
   readonly rows: ConfigSummaryRow[]
 }
 
-/**
- * The line under the spine: how much is waiting in the editor, said once. `lead` may mark its
- * own emphasis with `**…**`, so a translator decides what carries it.
- */
+/** the line under the spine; `lead` may mark emphasis with `**…**` */
 export interface ConfigSummaryFoot {
   readonly lead: string
   readonly detail?: string
 }
 
-/**
- * `changes` counts what moved; `description` says what the configuration is, for one that
- * does not exist yet - every leaf of it would be "added", so counting says only "all of it".
- */
+/** `changes` counts what moved; `description` describes a configuration that does not exist yet */
 export type ConfigSummaryVariant = 'changes' | 'description'
 
 export interface ConfigSummaryProps {
-  /** the configuration this is about */
   readonly name: string
   readonly description?: string
-  /** whether it is switched on; omit where the summary should not say */
+  /** omit to show no on/off state */
   readonly active?: boolean
   readonly sections: ConfigSummarySection[]
   readonly variant?: ConfigSummaryVariant
   readonly foot?: ConfigSummaryFoot
   /** the section the editor is currently showing */
   readonly activeKey?: string
-  /** omit to render the section labels as captions rather than as controls */
+  /** omit to render section labels as captions rather than buttons */
   readonly onOpenSection?: (key: string) => void
 }
 
 const ARROW = { width: 12, height: 12 }
 
-// Flex's props do not know button attributes; without this a summary inside a form would submit it
+// FlexProps has no button attributes; without type=button a surrounding form would submit
 const BUTTON = { type: 'button' }
 
 const T = 'data-hub.review'
 
-/** `**…**` in a translated string is the translator's emphasis */
 const emphasised = (value: string): React.ReactNode[] =>
   value.split('**').map((part, index) => (
     index % 2 === 1 ? <b key={ `b${index}` }>{ part }</b> : <React.Fragment key={ `t${index}` }>{ part }</React.Fragment>
   ))
 
 /**
- * What there is to know about one Data Hub configuration before acting on it: the
- * configuration itself, then a dotted spine with a node per section.
- *
- * Presentation over data only. It knows nothing about how a change is stored, reviewed or
- * approved, which is what lets every adapter show the same summary without agreeing on
- * anything beyond these shapes. It decides nothing either - the only control is a section
- * label, which opens that section in the editor.
- *
- * Layout and plain typography are Studio's Flex, Box and Text, whose size names resolve to the
- * same tokens the styles used to spell out. What is left in the style sheet is what has no
- * primitive: the spine, the pill, the caption-as-button, and the small-caps typography.
+ * One Data Hub configuration in brief: the configuration, then a spine with a node per section.
+ * Presentation only; the section label is the only control.
  */
 export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
   name, description, active, sections, variant = 'changes', foot, activeKey, onOpenSection
@@ -102,7 +78,7 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
   const { t } = useTranslation()
   const { styles, cx } = useStyles()
 
-  // counted here rather than passed in, so two adapters cannot disagree about what they count
+  // counted here so adapters cannot disagree about what counts
   const changes = sections.reduce((total, section) => total + section.rows.filter((row) => row.status !== undefined).length, 0)
 
   const heading = (section: ConfigSummarySection): React.ReactNode => {
@@ -129,7 +105,6 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
     )
   }
 
-  // a change is a name and a mark on one line; a fact is a value with its note beneath
   const row = (item: ConfigSummaryRow): React.ReactNode => variant === 'description'
     ? (
       <React.Fragment key={ item.key }>
