@@ -14,10 +14,9 @@
 import { createStyles } from '@pimcore/studio-ui-bundle/app'
 
 /**
- * The summary's own look, for both of its variants: a changed configuration lists what moved,
- * a new one tells what it does, and neither should look like a different product. Studio has
- * no primitive for a marked-up spine or a caption that behaves as a button, so these stay
- * hand-drawn.
+ * What no Studio primitive draws: the spine and its nodes, the pill, a caption that behaves
+ * as a button, and the small-caps typography. Layout, spacing, weight and the secondary colour
+ * are Flex, Box and Text in the component - their size names resolve to the same tokens.
  */
 export const useStyles = createStyles(({ token, css }) => ({
   /* flush in the rail rather than a box inside it: the rail's own edge does the separating */
@@ -25,38 +24,21 @@ export const useStyles = createStyles(({ token, css }) => ({
     min-width: 0;
   `,
   head: css`
-    display: flex;
-    flex-direction: column;
-    gap: ${token.marginXXS}px;
-    padding: ${token.paddingXS}px 0 ${token.paddingSM}px;
     border-bottom: 1px solid ${token.colorSplit};
   `,
-  identity: css`
-    display: flex;
-    align-items: center;
-    gap: ${token.marginXS}px;
-  `,
+  /* the one thing Text cannot say about the name: it is a size up */
   name: css`
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: ${token.fontSizeLG}px;
-    font-weight: ${token.fontWeightStrong};
-    color: ${token.colorText};
   `,
-  /* the on/off switch of the whole pipeline, said once and quietly */
+  /* the on/off switch of the configuration, said once and quietly */
   pill: css`
     flex: none;
-    display: inline-flex;
-    align-items: center;
-    gap: ${token.marginXXS}px;
     height: ${token.controlHeightSM - 2}px;
     padding: 0 ${token.paddingXS}px;
     border-radius: ${token.borderRadiusSM}px;
     background: ${token.colorFillTertiary};
     color: ${token.colorTextSecondary};
-    font-size: ${token.fontSize}px;
     line-height: 1;
   `,
   dot: css`
@@ -68,18 +50,17 @@ export const useStyles = createStyles(({ token, css }) => ({
   dotOn: css`
     background: ${token.colorSuccess};
   `,
+  /* tighter than body text, so a two-line description reads as one thing */
   description: css`
-    font-size: ${token.fontSize}px;
     line-height: ${token.lineHeightSM};
     color: ${token.colorTextSecondary};
     overflow-wrap: anywhere;
   `,
-  /* a dotted spine down the left, one node per section or per step of the pipeline */
+  /* a dotted spine down the left, one node per section of the configuration */
   spine: css`
     display: grid;
     grid-template-columns: ${token.marginXS}px minmax(0, 1fr);
     column-gap: ${token.marginSM}px;
-    padding: ${token.padding}px 0;
   `,
   /* the node sits on the centre of the heading's first line, whatever the theme makes of the
      small font: (line box - node) / 2 rather than a fixed margin */
@@ -109,12 +90,8 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
   entry: css`
     min-width: 0;
-    padding-bottom: ${token.padding}px;
   `,
-  entryLast: css`
-    min-width: 0;
-  `,
-  /* the label of a step: what part it plays, not something to press */
+  /* the label of a stop: what part it plays, not something to press */
   role: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};
@@ -123,10 +100,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     color: ${token.colorTextTertiary};
     line-height: ${token.lineHeightSM};
   `,
-  /* the label of a section: the one control in the card, it opens the section in the editor */
+  /* the label of a section: the one control in the card, it opens the section in the editor.
+     Block-level, not inline: an inline button rides the entry's baseline and lands a few
+     pixels below the row it is meant to head */
   section: css`
-    /* block-level, not inline: an inline button rides the entry's baseline and lands a few
-       pixels below the row it is meant to head */
     display: flex;
     width: fit-content;
     align-items: center;
@@ -163,10 +140,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
   /* a changed field: its name, and what became of it */
   field: css`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: ${token.marginXS}px;
     min-height: ${token.controlHeightSM}px;
 
     /* the marks are tall for their row; without this they read as one block */
@@ -176,22 +149,12 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
   fieldLabel: css`
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: ${token.fontWeightStrong};
-    color: ${token.colorText};
   `,
   foot: css`
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: ${token.paddingSM}px 0;
     border-top: 1px solid ${token.colorSplit};
     font-variant-numeric: tabular-nums;
   `,
   footLead: css`
-    font-size: ${token.fontSize}px;
     line-height: ${token.lineHeightSM};
     color: ${token.colorTextSecondary};
 

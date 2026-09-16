@@ -10,7 +10,7 @@
 
 import React from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Icon, Tag } from '@pimcore/studio-ui-bundle/components'
+import { Box, Flex, Icon, Tag, Text } from '@pimcore/studio-ui-bundle/components'
 import { StatusTag, type ChangeStatus } from './status-tag'
 import { useStyles } from './config-summary.styles'
 
@@ -88,6 +88,10 @@ const emphasised = (value: string): React.ReactNode[] =>
  * approved, which is what lets every adapter show the same summary without agreeing on
  * anything beyond these shapes. It decides nothing either - the only control is a section
  * label, which opens that section in the editor.
+ *
+ * Layout and plain typography are Studio's Flex, Box and Text, whose size names resolve to the
+ * same tokens the styles used to spell out. What is left in the style sheet is what has no
+ * primitive: the spine, the pill, the caption-as-button, and the small-caps typography.
  */
 export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
   name, description, active, sections, variant = 'changes', foot, activeKey, onOpenSection
@@ -133,84 +137,128 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
       </React.Fragment>
       )
     : (
-      <div
+      <Flex
+        align="center"
         className={ styles.field }
+        gap="extra-small"
+        justify="space-between"
         key={ item.key }
         title={ item.hint }
       >
-        <span className={ styles.fieldLabel }>{ item.label }</span>
+        <Text
+          className={ styles.fieldLabel }
+          ellipsis
+          strong
+        >
+          { item.label }
+        </Text>
         { item.status !== undefined && <StatusTag status={ item.status } /> }
-      </div>
+      </Flex>
       )
 
   const pill = active !== undefined && (
-    <span className={ styles.pill }>
+    <Flex
+      align="center"
+      className={ styles.pill }
+      gap="mini"
+    >
       <span className={ cx(styles.dot, active && styles.dotOn) } />
       { t(active ? `${T}.active` : `${T}.inactive`) }
-    </span>
+    </Flex>
   )
 
   return (
     <div className={ styles.summary }>
-      <div className={ styles.head }>
-        <div className={ styles.identity }>
-          <span
-            className={ styles.name }
-            title={ name }
+      <Box
+        className={ styles.head }
+        padding={ { top: 'extra-small', bottom: 'small' } }
+      >
+        <Flex
+          gap="mini"
+          vertical
+        >
+          <Flex
+            align="center"
+            gap="extra-small"
           >
-            { name }
-          </span>
-          { variant === 'description'
-            ? (
-              <>
-                <Tag
-                  color="green"
-                  style={ { marginInlineEnd: 0 } }
-                >
-                  { t(`${T}.new`) }
-                </Tag>
-                { pill }
-              </>
-              )
-            : (
-              <>
-                { pill }
-                <Tag
-                  color="gold"
-                  style={ { marginInlineEnd: 0 } }
-                >
-                  { t(rows === 1 ? `${T}.changed-field` : `${T}.changed-fields`).replace('%s', String(rows)) }
-                </Tag>
-              </>
-              ) }
-        </div>
-        { description !== undefined && description !== '' && (
-          <div className={ styles.description }>{ description }</div>
-        ) }
-      </div>
+            <Text
+              className={ styles.name }
+              ellipsis
+              strong
+              title={ name }
+            >
+              { name }
+            </Text>
+            { variant === 'description'
+              ? (
+                <>
+                  <Tag
+                    color="green"
+                    style={ { marginInlineEnd: 0 } }
+                  >
+                    { t(`${T}.new`) }
+                  </Tag>
+                  { pill }
+                </>
+                )
+              : (
+                <>
+                  { pill }
+                  <Tag
+                    color="gold"
+                    style={ { marginInlineEnd: 0 } }
+                  >
+                    { t(rows === 1 ? `${T}.changed-field` : `${T}.changed-fields`).replace('%s', String(rows)) }
+                  </Tag>
+                </>
+                ) }
+          </Flex>
+          { description !== undefined && description !== '' && (
+            <Text className={ styles.description }>{ description }</Text>
+          ) }
+        </Flex>
+      </Box>
 
-      <div className={ styles.spine }>
-        { sections.map((section, index) => (
-          <React.Fragment key={ section.key }>
-            <div className={ styles.mark }>
-              <span className={ cx(styles.node, section.key !== activeKey && styles.nodeMuted) } />
-              { index < sections.length - 1 && <span className={ styles.line } /> }
-            </div>
-            <div className={ index === sections.length - 1 ? styles.entryLast : styles.entry }>
-              { heading(section) }
-              { section.rows.map(row) }
-            </div>
-          </React.Fragment>
-        )) }
-      </div>
+      <Box
+        className={ styles.spine }
+        padding={ { y: 'normal' } }
+      >
+        { sections.map((section, index) => {
+          const last = index === sections.length - 1
+
+          return (
+            <React.Fragment key={ section.key }>
+              <div className={ styles.mark }>
+                <span className={ cx(styles.node, section.key !== activeKey && styles.nodeMuted) } />
+                { !last && <span className={ styles.line } /> }
+              </div>
+              <Box
+                className={ styles.entry }
+                padding={ last ? undefined : { bottom: 'normal' } }
+              >
+                { heading(section) }
+                { section.rows.map(row) }
+              </Box>
+            </React.Fragment>
+          )
+        }) }
+      </Box>
 
       { foot !== undefined && (
-        <div className={ styles.foot }>
-          <div className={ styles.footLead }>{ emphasised(foot.lead) }</div>
-          { foot.detail !== undefined && foot.detail !== '' && (
-            <div className={ styles.footGroups }>{ foot.detail }</div>
-          ) }
-        </div>
+        <Box
+          className={ styles.foot }
+          padding={ { y: 'small' } }
+        >
+          <Flex
+            gap={ 2 }
+            vertical
+          >
+            <Text className={ styles.footLead }>{ emphasised(foot.lead) }</Text>
+            { foot.detail !== undefined && foot.detail !== '' && (
+              <div className={ styles.footGroups }>{ foot.detail }</div>
+            ) }
+          </Flex>
+        </Box>
       ) }
     </div>
   )
