@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This source file is available under the terms of the
  * Pimcore Open Core License (POCL)
@@ -29,6 +31,8 @@ class AssetTypeFocalPointsTest extends Unit
 
     private ?Asset\Video $video = null;
 
+    private bool $hadContext = false;
+
     private mixed $backupContext = null;
 
     protected function setUp(): void
@@ -36,6 +40,7 @@ class AssetTypeFocalPointsTest extends Unit
         $this->resolver = new AssetTypeResolver();
 
         if (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
+            $this->hadContext = true;
             $this->backupContext = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
         $this->useConfigurationWithoutPermissionCheck();
@@ -45,8 +50,11 @@ class AssetTypeFocalPointsTest extends Unit
 
     protected function tearDown(): void
     {
-        if ($this->backupContext !== null) {
+        if ($this->hadContext) {
             RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->backupContext);
+        } elseif (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
+            // the permission-skipping test context must not leak into later tests in the same process
+            RuntimeCache::getInstance()->offsetUnset(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
 
         $this->image->delete();
