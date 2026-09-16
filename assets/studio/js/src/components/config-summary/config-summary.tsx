@@ -29,7 +29,7 @@ export interface ConfigSummaryRow {
   readonly note?: string
   /** the full address, shown on hover; a label alone is often ambiguous */
   readonly hint?: string
-  /** omit for a row that states a fact rather than a change */
+  /** omit for a row that states a fact rather than a change; only rows with a status count as changes */
   readonly status?: ChangeStatus
 }
 
@@ -103,7 +103,7 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
   const { styles, cx } = useStyles()
 
   // counted here rather than passed in, so two adapters cannot disagree about what they count
-  const rows = sections.reduce((total, section) => total + section.rows.length, 0)
+  const changes = sections.reduce((total, section) => total + section.rows.filter((row) => row.status !== undefined).length, 0)
 
   const heading = (section: ConfigSummarySection): React.ReactNode => {
     if (onOpenSection === undefined) {
@@ -215,7 +215,7 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
                     color="gold"
                     style={ { marginInlineEnd: 0 } }
                   >
-                    { t(rows === 1 ? `${T}.changed-field` : `${T}.changed-fields`).replace('%s', String(rows)) }
+                    { t(changes === 1 ? `${T}.changed-field` : `${T}.changed-fields`).replace('%s', String(changes)) }
                   </Tag>
                 </>
                 ) }
