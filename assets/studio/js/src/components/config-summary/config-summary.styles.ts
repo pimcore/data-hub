@@ -33,7 +33,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
   /* the on/off switch of the configuration, said once and quietly */
   pill: css`
-    flex: none;
     height: ${token.controlHeightSM - 2}px;
     padding: 0 ${token.paddingXS}px;
     border-radius: ${token.borderRadiusSM}px;
@@ -65,9 +64,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   /* the node sits on the centre of the heading's first line, whatever the theme makes of the
      small font: (line box - node) / 2 rather than a fixed margin */
   mark: css`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     padding-top: ${(token.fontSizeSM * token.lineHeightSM - 7) / 2}px;
   `,
   node: css`
@@ -107,10 +103,7 @@ export const useStyles = createStyles(({ token, css }) => ({
      Block-level, not inline: an inline button rides the entry's baseline and lands a few
      pixels below the row it is meant to head */
   section: css`
-    display: flex;
     width: fit-content;
-    align-items: center;
-    gap: ${token.marginXXS}px;
     max-width: 100%;
     margin: 0 0 ${token.marginXXS}px;
     padding: 0;

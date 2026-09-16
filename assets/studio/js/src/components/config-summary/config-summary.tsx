@@ -72,6 +72,9 @@ export interface ConfigSummaryProps {
 
 const ARROW = { width: 12, height: 12 }
 
+// Flex's props do not know button attributes; without this a summary inside a form would submit it
+const BUTTON = { type: 'button' }
+
 const T = 'data-hub.review'
 
 /** `**…**` in a translated string is the translator's emphasis */
@@ -108,18 +111,21 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
     }
 
     return (
-      <button
+      <Flex
+        align="center"
         className={ cx(styles.caption, styles.section) }
+        component="button"
+        gap="mini"
         onClick={ () => { onOpenSection(section.key) } }
         title={ t(`${T}.open-section`) }
-        type="button"
+        { ...BUTTON }
       >
         <span>{ section.label }</span>
         <Icon
           options={ ARROW }
           value="arrow-narrow-right"
         />
-      </button>
+      </Flex>
     )
   }
 
@@ -160,6 +166,7 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
     <Flex
       align="center"
       className={ styles.pill }
+      flex="none"
       gap="mini"
     >
       <span className={ cx(styles.dot, active && styles.dotOn) } />
@@ -228,10 +235,14 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
 
           return (
             <React.Fragment key={ section.key }>
-              <div className={ styles.mark }>
+              <Flex
+                align="center"
+                className={ styles.mark }
+                vertical
+              >
                 <span className={ cx(styles.node, section.key !== activeKey && styles.nodeMuted) } />
                 { !last && <span className={ styles.line } /> }
-              </div>
+              </Flex>
               <Box
                 className={ styles.entry }
                 padding={ last ? undefined : { bottom: 'normal' } }
