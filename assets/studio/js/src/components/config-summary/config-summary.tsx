@@ -104,12 +104,12 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
 
   const heading = (section: ConfigSummarySection): React.ReactNode => {
     if (onOpenSection === undefined) {
-      return <div className={ styles.role }>{ section.label }</div>
+      return <div className={ cx(styles.caption, styles.role) }>{ section.label }</div>
     }
 
     return (
       <button
-        className={ styles.section }
+        className={ cx(styles.caption, styles.section) }
         onClick={ () => { onOpenSection(section.key) } }
         title={ t(`${T}.open-section`) }
         type="button"
@@ -255,7 +255,7 @@ export const ConfigSummary: React.FC<ConfigSummaryProps> = ({
           >
             <Text className={ styles.footLead }>{ emphasised(foot.lead) }</Text>
             { foot.detail !== undefined && foot.detail !== '' && (
-              <div className={ styles.footGroups }>{ foot.detail }</div>
+              <div className={ styles.note }>{ foot.detail }</div>
             ) }
           </Flex>
         </Box>

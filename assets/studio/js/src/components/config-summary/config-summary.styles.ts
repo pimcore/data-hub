@@ -91,14 +91,17 @@ export const useStyles = createStyles(({ token, css }) => ({
   entry: css`
     min-width: 0;
   `,
-  /* the label of a stop: what part it plays, not something to press */
-  role: css`
+  /* the small-caps type of every section label */
+  caption: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};
     letter-spacing: .07em;
     text-transform: uppercase;
-    color: ${token.colorTextTertiary};
     line-height: ${token.lineHeightSM};
+  `,
+  /* the label of a stop: what part it plays, not something to press */
+  role: css`
+    color: ${token.colorTextTertiary};
   `,
   /* the label of a section: the one control in the card, it opens the section in the editor.
      Block-level, not inline: an inline button rides the entry's baseline and lands a few
@@ -113,12 +116,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding: 0;
     border: none;
     background: none;
-    font: inherit;
-    font-size: ${token.fontSizeSM}px;
-    font-weight: ${token.fontWeightStrong};
-    letter-spacing: .07em;
-    text-transform: uppercase;
-    line-height: ${token.lineHeightSM};
+    font-family: inherit;
     color: ${token.colorPrimary};
     cursor: pointer;
 
@@ -128,10 +126,10 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
   value: css`
     font-weight: ${token.fontWeightStrong};
-    color: ${token.colorText};
     font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
   `,
+  /* the quieter second line, under a value or under the foot */
   note: css`
     font-size: ${token.fontSizeSM}px;
     line-height: ${token.lineHeightSM};
@@ -161,10 +159,5 @@ export const useStyles = createStyles(({ token, css }) => ({
     b {
       color: ${token.colorText};
     }
-  `,
-  footGroups: css`
-    font-size: ${token.fontSizeSM}px;
-    line-height: ${token.lineHeightSM};
-    color: ${token.colorTextTertiary};
   `
 }))
