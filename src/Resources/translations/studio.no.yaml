@@ -152,8 +152,10 @@ data-hub.review.status.added: Lagt til
 data-hub.review.status.changed: Endret
 data-hub.review.status.removed: Fjernet
 data-hub.review.status.moved: Flyttet
-data-hub.review.changed-field: 1 endret felt
-data-hub.review.changed-fields: '%s endrede felt'
+data-hub.review.changed-field: 1 endring
+data-hub.review.changed-fields: '%s endringer'
 data-hub.review.active: Aktiv
 data-hub.review.inactive: Inaktiv
 data-hub.review.open-section: Åpne i editoren
+data-hub.review.new-configuration: Ny konfigurasjon
+data-hub.review.new: Ny

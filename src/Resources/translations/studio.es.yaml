@@ -152,8 +152,10 @@ data-hub.review.status.added: Añadido
 data-hub.review.status.changed: Modificado
 data-hub.review.status.removed: Eliminado
 data-hub.review.status.moved: Movido
-data-hub.review.changed-field: 1 campo modificado
-data-hub.review.changed-fields: '%s campos modificados'
+data-hub.review.changed-field: 1 cambio
+data-hub.review.changed-fields: '%s cambios'
 data-hub.review.active: Activo
 data-hub.review.inactive: Inactivo
 data-hub.review.open-section: Abrir en el editor
+data-hub.review.new-configuration: Nueva configuración
+data-hub.review.new: Nuevo
