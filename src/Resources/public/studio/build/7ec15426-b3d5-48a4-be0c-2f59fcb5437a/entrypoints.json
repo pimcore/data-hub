@@ -1,0 +1,28 @@
+{
+  "entrypoints": {
+    "main": {
+      "js": [
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/109.62a4c31b.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/main.9c3ad8a2.js"
+      ],
+      "css": []
+    },
+    "pimcore_datahub_bundle": {
+      "js": [
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/async/499.5c3b9b56.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/async/346.60211bf9.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/async/840.b584be96.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/async/__federation_expose_default_export.aae7635c.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/async/__federation_expose_plugins.61959a04.js",
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/static/js/remoteEntry.js"
+      ],
+      "css": []
+    },
+    "exposeRemote": {
+      "js": [
+        "/bundles/pimcoredatahub/studio/build/7ec15426-b3d5-48a4-be0c-2f59fcb5437a/exposeRemote.js"
+      ],
+      "css": []
+    }
+  }
+}
