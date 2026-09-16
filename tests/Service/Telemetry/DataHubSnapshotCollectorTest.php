@@ -15,10 +15,10 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Telemetry;
 
 use Codeception\Test\Unit;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ConnectionException;
 use Pimcore\Bundle\DataHubBundle\Telemetry\DataHubConfigurationUsage;
 use Pimcore\Bundle\DataHubBundle\Telemetry\DataHubSnapshotCollector;
 use Pimcore\Telemetry\Snapshot\SnapshotQueryRunner;
-use RuntimeException;
 use function str_contains;
 use function str_starts_with;
 
@@ -50,7 +50,8 @@ class DataHubSnapshotCollectorTest extends Unit
             ['data_importer' => 3, 'file_export' => 0, 'productsup' => 1, 'webhooks' => 2],
             $metrics['error_log_count_24h_by_type'] ?? null,
         );
-        $this->assertSame(2, $metrics['schema_version'] ?? null);
+        // the collector has not shipped in a tagged release yet, so its shape is still version 1
+        $this->assertSame(1, $metrics['schema_version'] ?? null);
     }
 
     /**
@@ -95,7 +96,7 @@ class DataHubSnapshotCollectorTest extends Unit
             function (string $sql, array $params = []) use ($countsByPrefix): int {
                 $this->queries[] = [$sql, $params];
                 if ($countsByPrefix === null) {
-                    throw new RuntimeException("Table 'application_logs' doesn't exist");
+                    throw new ConnectionException("Table 'application_logs' doesn't exist");
                 }
                 foreach ($countsByPrefix as $prefix => $count) {
                     if (str_starts_with((string) $params[0], $prefix)) {
