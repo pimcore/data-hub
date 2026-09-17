@@ -59,7 +59,7 @@
     "typescript-eslint": "^8"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^2026.2.10",
+    "@pimcore/studio-ui-bundle": "^2026.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "uuid": "^10.0.0",
