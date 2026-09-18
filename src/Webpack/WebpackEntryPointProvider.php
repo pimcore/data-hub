@@ -24,11 +24,17 @@ final class WebpackEntryPointProvider implements BuildArchiveProviderInterface
 {
     use BuildArchiveExtractionTrait;
 
+    /**
+     * @return string[]
+     */
     public function getEntryPoints(): array
     {
         return ['exposeRemote'];
     }
 
+    /**
+     * @return string[]
+     */
     public function getOptionalEntryPoints(): array
     {
         return [];
