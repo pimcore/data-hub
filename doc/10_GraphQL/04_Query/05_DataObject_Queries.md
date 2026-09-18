@@ -23,6 +23,7 @@ Also check out the Pimcore's [data type documentation](https://github.com/pimcor
 * Geobounds
 * Geopoint
 * Geopolygon
+* Geopolyline
 * Image
 * Image Advanced
 * Input
