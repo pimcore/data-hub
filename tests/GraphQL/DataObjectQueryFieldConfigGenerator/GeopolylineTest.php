@@ -39,22 +39,29 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class GeopolylineTest extends Unit
 {
+    private const TAG = 'pimcore.datahub.graphql.dataobjectquerytypegenerator';
+
+    private const GEOPOLYGON_TAG_ID = 'typegenerator_dataobjectquerydatatype_geopolygon';
+
+    private const GEOPOLYLINE_TAG_ID = 'typegenerator_dataobjectquerydatatype_geopolyline';
+
     public function testGeopolylineTagResolvesToGeopolygonGenerator(): void
     {
         $container = new ContainerBuilder();
         $container->register(Service::class)->setPublic(true);
         $container->register(Geopolygon::class)
-            ->addTag('pimcore.datahub.graphql.dataobjectquerytypegenerator', ['id' => 'typegenerator_dataobjectquerydatatype_geopolygon'])
-            ->addTag('pimcore.datahub.graphql.dataobjectquerytypegenerator', ['id' => 'typegenerator_dataobjectquerydatatype_geopolyline']);
+            ->addTag(self::TAG, ['id' => self::GEOPOLYGON_TAG_ID])
+            ->addTag(self::TAG, ['id' => self::GEOPOLYLINE_TAG_ID]);
 
         (new ImportExportLocatorsPass())->process($container);
 
-        $locatorDefinition = $container->getDefinition(Service::class)->getArgument('$dataObjectQueryTypeGeneratorFactories');
+        $serviceDefinition = $container->getDefinition(Service::class);
+        $locatorDefinition = $serviceDefinition->getArgument('$dataObjectQueryTypeGeneratorFactories');
         $mapping = $locatorDefinition->getArgument(0);
 
-        $this->assertArrayHasKey('typegenerator_dataobjectquerydatatype_geopolyline', $mapping);
+        $this->assertArrayHasKey(self::GEOPOLYLINE_TAG_ID, $mapping);
 
-        $reference = $mapping['typegenerator_dataobjectquerydatatype_geopolyline'];
+        $reference = $mapping[self::GEOPOLYLINE_TAG_ID];
         $this->assertInstanceOf(Reference::class, $reference);
         $this->assertSame(Geopolygon::class, (string) $reference);
     }
