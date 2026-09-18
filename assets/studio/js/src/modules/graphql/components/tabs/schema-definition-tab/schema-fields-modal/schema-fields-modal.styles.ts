@@ -12,13 +12,9 @@ import { createStyles } from 'antd-style'
 
 export const useStyles = createStyles(({ css, token }) => {
   return {
-    contentLayout: css`
+    panes: css`
       height: 60vh;
       border-bottom: 1px solid ${token.colorBorderSecondary};
-      
-      .pimcore-content-layout__content {
-        padding-right: ${token.padding}px;
-      }
     `,
 
     gridContainer: css`
