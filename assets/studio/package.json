@@ -5,6 +5,7 @@
     "dev": "NODE_ENV=development rsbuild build",
     "dev-server": "NODE_ENV=dev-server rsbuild dev",
     "build": "rsbuild build",
+    "package-build": "studio-package-build --build-dir ../../src/Resources/public/studio/build --out-dir ../../build-dist",
     "lint": "eslint ./js",
     "lint-fix": "eslint ./js --fix",
     "lint-fix-watch": "nodemon --watch './js/**/*' --exec \"eslint ./js --fix --cache\" -e js,jsx,ts,tsx",
