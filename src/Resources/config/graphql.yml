@@ -360,6 +360,10 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopolygon
     tags:
       - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopolygon }
+      # A geopolyline is stored identically to a geopolygon (an ordered array of GeoCoordinates),
+      # so it shares this same generator rather than duplicating it - see
+      # tests/GraphQL/DataObjectQueryFieldConfigGenerator/GeopolylineTest.php.
+      - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_geopolyline }
 
   pimcore.datahub.graphql.dataobjectquerytypegenerator_datatype_geopoint:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectQueryFieldConfigGenerator\Geopoint
