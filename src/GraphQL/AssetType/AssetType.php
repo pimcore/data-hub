@@ -71,6 +71,13 @@ final class AssetType extends ObjectType
                 'height' => Type::int(),
             ],
         ]);
+        $focalPointsType = new ObjectType([
+            'name' => 'focalPoints',
+            'fields' => [
+                'x' => Type::float(),
+                'y' => Type::float(),
+            ],
+        ]);
 
         // see https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images#Resolution_switching_Same_size_different_resolutions
         $resolutionsType = Type::listOf(new ObjectType([
@@ -125,6 +132,10 @@ final class AssetType extends ObjectType
             'duration' => [
                 'type' => Type::float(),
                 'resolve' => [$resolver, 'resolveDuration'],
+            ],
+            'focalPoints' => [
+                'type' => $focalPointsType,
+                'resolve' => [$resolver, 'resolveFocalPoints'],
             ],
             'srcset' => [
                 'type' => Type::listOf(new ObjectType([
