@@ -14,7 +14,11 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
+use DateTime;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\AdapterType;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotFoundException;
 use Pimcore\Bundle\StudioBackendBundle\Util\Constant\HttpResponseCodes;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,12 +35,15 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
 {
     public function __construct(
         private RouterInterface $routingService,
-        private Environment $twig
+        private Environment $twig,
+        private AdapterAvailabilityServiceInterface $adapterAvailabilityService
     ) {
     }
 
     public function getExplorerUrl(string $clientname): string
     {
+        $this->ensureGraphQlIsEnabled();
+
         return $this->routingService->generate(
             'pimcore_studio_api_data_hub_graphql_explorer', ['clientname' => $clientname]
         );
@@ -44,10 +51,22 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
 
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response
     {
+        $this->ensureGraphQlIsEnabled();
+
         $graphQLUrl = $this->generateGraphQLUrl($clientname, $urlParams);
         $content = $this->renderExplorerTemplate($graphQLUrl);
 
         return $this->createCachedResponse($content);
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    private function ensureGraphQlIsEnabled(): void
+    {
+        if (!$this->adapterAvailabilityService->isEnabled(AdapterType::GraphQl->value)) {
+            throw new NotFoundException('Datahub adapter', AdapterType::GraphQl->value, 'type');
+        }
     }
 
     /**
@@ -88,7 +107,7 @@ final readonly class GraphQLExplorerService implements GraphQLExplorerServiceInt
         ]);
 
         $response->setPublic();
-        $response->setExpires(new \DateTime('tomorrow'));
+        $response->setExpires(new DateTime('tomorrow'));
 
         return $response;
     }
