@@ -25,6 +25,37 @@ Configuration takes place in the endpoint configuration and offers following pos
 - [Security Settings](./01_Configuration/03_Security_Settings.md)
 - [Custom Permissions](./01_Configuration/04_Custom_Permissions.md)
 
+## Disabling GraphQL
+
+Datahub is a requirement of other bundles, for example the Data Importer, so it is installed on systems
+that do not want to expose GraphQL at all. The adapter can be switched off in the Symfony configuration
+tree:
+```yml
+pimcore_data_hub:
+    graphql:
+        enabled: false
+```
+It is enabled by default. Once disabled:
+
+- the endpoint `/pimcore-graphql-webservices/{configurationname}` answers with `404`, regardless of the
+  API key or whether a configuration is active,
+- the GraphQL Playground is no longer reachable,
+- existing GraphQL configurations are no longer listed in Studio and can no longer be read, created,
+  updated, cloned, imported, exported or deleted,
+- GraphQL is no longer offered as a type when adding a configuration,
+- Data Hub disappears from the Studio navigation entirely if GraphQL was the only adapter type
+  installed. If another adapter bundle is installed, Data Hub stays reachable and only its GraphQL
+  configurations become unavailable.
+
+This is a system level switch and not a permission: it applies to every user, including admins. The
+`plugin_datahub_adapter_graphql` permission stays assignable while the adapter is disabled, it simply
+grants nothing. Existing configurations are kept untouched in the settings store and become available
+again once the adapter is re-enabled.
+
+If you only want to restrict who may work with GraphQL configurations, use the
+`plugin_datahub_adapter_graphql` permission instead, see
+[User Permissions](../01_Installation_and_Upgrade/README.md#user-permissions).
+
 ## External Access
 The API that Datahub exposes to other systems is this configured endpoint itself, not the Pimcore Studio API used by
 the configuration panel. The standard endpoint is
