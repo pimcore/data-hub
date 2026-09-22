@@ -14,3 +14,14 @@
 /CONTRIBUTING.md export-ignore
 /codeception.dist.yml export-ignore
 /phpstan* export-ignore
+
+# The expanded frontend build is no longer committed (see .gitignore). Only the packaged
+# archive build-dist/build-<id>.zip is tracked; it is reconstructed into
+# src/Resources/public/studio/build at runtime. The id is content-derived, so the filename
+# varies — match it with a glob. Mark it generated and binary; git has no built-in "ours"
+# merge driver (merge=ours would silently no-op without one configured on every merging
+# machine), so a forward-merge conflict on this path is resolved manually — keep the
+# target branch's archive (git checkout --ours -- build-dist/) and let CI regenerate it
+# on the next real source change.
+/build-dist/build-*.zip linguist-generated=true linguist-vendored=true
+/build-dist/build-*.zip binary

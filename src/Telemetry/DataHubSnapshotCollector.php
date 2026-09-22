@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Telemetry;
 
+use function addcslashes;
 use function array_sum;
+use Exception;
+use function is_numeric;
 use Pimcore\Telemetry\Snapshot\SnapshotCollectorInterface;
+use Pimcore\Telemetry\Snapshot\SnapshotQueryRunner;
 use function preg_replace;
 use function strtolower;
 
@@ -32,15 +36,36 @@ use function strtolower;
  * `datamodel.class_count` is, not because they escaped the bucketing rule (that governs element
  * volumes, which these are not).
  *
- * Emits nothing at all when the configuration store cannot be read, so an unreachable store never looks
- * like an instance with zero configurations.
+ * Emits no configuration counts when the configuration store cannot be read, so an unreachable store
+ * never looks like an instance with zero configurations.
+ *
+ * `error_log_count_24h_by_type` adds the operational side: how many errors each Data Hub package wrote
+ * to the Application Logger in the last 24 hours, read by the fixed component prefix each package logs
+ * with (a private list here - the satellites' constants are not a dependency Data Hub has). Zeros are
+ * reported, the table being absent (the logger bundle is optional) leaves the map out. The two reads are
+ * independent probes.
  *
  * @internal
  */
 final readonly class DataHubSnapshotCollector implements SnapshotCollectorInterface
 {
+    private const SCHEMA_VERSION = 1;
+
+    /**
+     * Snapshot key => the component prefix the package logs with.
+     */
+    private const ERROR_LOG_COMPONENTS = [
+        'data_importer' => 'DATA-IMPORTER ',
+        'file_export' => 'FileExport :: ',
+        'productsup' => 'ProductSup :: ',
+        'webhooks' => 'WEBHOOKS ',
+    ];
+
+    private const ERROR_PRIORITIES = ['error', 'critical', 'alert', 'emergency'];
+
     public function __construct(
         private DataHubConfigurationUsage $configurationUsage,
+        private SnapshotQueryRunner $queryRunner,
     ) {
     }
 
@@ -51,6 +76,22 @@ final readonly class DataHubSnapshotCollector implements SnapshotCollectorInterf
 
     public function collect(): array
     {
+        $metrics = $this->configurationMetrics();
+        $errors = $this->errorLogCounts24h();
+
+        if ($errors !== null) {
+            $metrics['schema_version'] = self::SCHEMA_VERSION;
+            $metrics['error_log_count_24h_by_type'] = $errors;
+        }
+
+        return $metrics;
+    }
+
+    /**
+     * @return array<string, mixed> empty when the configuration store cannot be read
+     */
+    private function configurationMetrics(): array
+    {
         $active = $this->configurationUsage->activeCountsByType();
         $total = $this->configurationUsage->totalCountsByType();
 
@@ -59,7 +100,7 @@ final readonly class DataHubSnapshotCollector implements SnapshotCollectorInterf
         }
 
         return [
-            'schema_version' => 1,
+            'schema_version' => self::SCHEMA_VERSION,
             'config_count' => array_sum($total),
             'active_config_count' => array_sum($active),
             // The Q5 answer: adapter type -> number of active configurations of that type.
@@ -93,6 +134,33 @@ final readonly class DataHubSnapshotCollector implements SnapshotCollectorInterf
         }
 
         return $flat;
+    }
+
+    /**
+     * @return array<string, int>|null the four counts, or null when the log table cannot be read
+     */
+    private function errorLogCounts24h(): ?array
+    {
+        $sql = 'SELECT COUNT(*) FROM ' . $this->queryRunner->quoteIdentifier('application_logs')
+            . ' WHERE ' . $this->queryRunner->quoteIdentifier('component') . ' LIKE ?'
+            . ' AND ' . $this->queryRunner->quoteIdentifier('priority') . ' IN (?, ?, ?, ?)'
+            . ' AND ' . $this->queryRunner->quoteIdentifier('timestamp') . ' >= NOW() - INTERVAL 1 DAY';
+        $counts = [];
+
+        foreach (self::ERROR_LOG_COMPONENTS as $key => $prefix) {
+            try {
+                $count = $this->queryRunner->fetchOne(
+                    $sql,
+                    [addcslashes($prefix, '%_') . '%', ...self::ERROR_PRIORITIES],
+                );
+            } catch (Exception) {
+                return null;
+            }
+
+            $counts[$key] = is_numeric($count) ? (int) $count : 0;
+        }
+
+        return $counts;
     }
 
     /**
