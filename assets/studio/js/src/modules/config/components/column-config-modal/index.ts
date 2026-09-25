@@ -10,22 +10,24 @@
 
 export * from './column-config-modal'
 
-// The embeddable column editor (base editor, pipeline form, preview, locale control,
-// fields panel, types) now lives in the Studio UI SDK — re-exported here so existing
-// consumers of '@pimcore/data-hub' keep working unchanged.
+// BaseColumnEditor is a local thin wrapper (see base-column-editor.tsx) that resolves
+// `compact` from CompactLayoutContext for adapters that don't pass it explicitly.
+export * from './base-column-editor'
+
+// The rest of the embeddable column editor (pipeline form, preview, locale control, fields
+// panel, types) now lives in the Studio UI SDK — re-exported here so existing consumers of
+// '@pimcore/data-hub' keep working unchanged.
 export {
   ADVANCED_COLUMN_KEY,
   ADVANCED_COLUMN_TYPE,
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
-  BaseColumnEditor,
   ColumnEditorItemBody,
   ColumnLocaleControl,
   ColumnPipelineForm,
   ColumnPreview,
   useAddColumnGroups,
   type AdvancedEditorColumn,
-  type BaseColumnEditorProps,
   type ColumnEditorHandle,
   type ColumnEditorItemBodyProps,
   type ColumnLocaleControlProps,
