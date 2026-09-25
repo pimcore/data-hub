@@ -262,18 +262,7 @@ final readonly class ConfigProposalTools
     ): ?string {
         $checks = [
             fn (): ?string => $sessionId === null ? 'No chat session context.' : null,
-            // a configuration the user may not open is one they may not propose onto either
-            fn (): ?string => $existing !== null
-                && !$existing->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ, $user)
-                ? sprintf('No %s named "%s".', $policy->noun(), $name)
-                : null,
-            fn (): ?string => $existing === null && !ConfigDocument::isValidName($name)
-                ? sprintf(
-                    '"%s" cannot name a configuration: use letters, digits, "-" and "_", '
-                    . 'starting with a letter or digit.',
-                    $name,
-                )
-                : null,
+            fn (): ?string => $this->identityProblem($policy, $user, $name, $existing),
             fn (): ?string => $proposed === null
                 ? 'The configuration must be an object, or a JSON or YAML object string.'
                 : null,
@@ -293,17 +282,7 @@ final readonly class ConfigProposalTools
                 '%s',
                 "\n",
             ),
-            // a proposal that changes nothing would put an empty review in front of the user
-            fn (): ?string => $existing !== null
-                && $state !== null
-                && $state == $this->stateFor($policy, $name, $existing, [])
-                ? sprintf(
-                    'This leaves the %s "%s" exactly as it is, so there is nothing to review. Change '
-                    . 'something, or tell the user that nothing needs changing.',
-                    $policy->noun(),
-                    $name,
-                )
-                : null,
+            fn (): ?string => $this->unchangedProblem($policy, $name, $existing, $state),
         ];
 
         foreach ($checks as $check) {
@@ -314,6 +293,54 @@ final readonly class ConfigProposalTools
         }
 
         return null;
+    }
+
+    /**
+     * A configuration the user may not open is one they may not propose onto either; a new one
+     * needs a name the Data Hub accepts.
+     */
+    private function identityProblem(
+        ConfigProposalPolicyInterface $policy,
+        User $user,
+        string $name,
+        ?Configuration $existing,
+    ): ?string {
+        if ($existing !== null) {
+            return $existing->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ, $user)
+                ? null
+                : sprintf('No %s named "%s".', $policy->noun(), $name);
+        }
+
+        return ConfigDocument::isValidName($name)
+            ? null
+            : sprintf(
+                '"%s" cannot name a configuration: use letters, digits, "-" and "_", starting with a '
+                . 'letter or digit.',
+                $name,
+            );
+    }
+
+    /**
+     * A proposal that changes nothing would put an empty review in front of the user.
+     *
+     * @param array<string, mixed>|null $state
+     */
+    private function unchangedProblem(
+        ConfigProposalPolicyInterface $policy,
+        string $name,
+        ?Configuration $existing,
+        ?array $state,
+    ): ?string {
+        if ($existing === null || $state === null || $state != $this->stateFor($policy, $name, $existing, [])) {
+            return null;
+        }
+
+        return sprintf(
+            'This leaves the %s "%s" exactly as it is, so there is nothing to review. Change '
+            . 'something, or tell the user that nothing needs changing.',
+            $policy->noun(),
+            $name,
+        );
     }
 
     /**
