@@ -12,10 +12,15 @@ import React, { useCallback, useRef, useState } from 'react'
 import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
-import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
+import {
+  ADVANCED_COLUMN_KEY,
+  ADVANCED_COLUMN_TYPE,
+  useAddColumnGroups,
+  useClassDefinitions,
+  type ColumnEditorHandle,
+  type SchemaColumn
+} from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
-import { useAddColumnGroups } from './use-add-column-groups'
-import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 
 /**
  * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
@@ -29,6 +34,12 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   entity: string
   /** True in the split migration view — the editor should hide its own Apply/Discard toolbar. */
   hideToolbar: boolean
+  /**
+   * True in the split migration view, where the editor is rendered in a horizontally
+   * constrained pane. Replaces the former CompactLayoutContext read: the editor now takes
+   * this as an explicit prop instead of reading it from context.
+   */
+  compact: boolean
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly: boolean
   onApply: (columns: TColumns[]) => void
@@ -176,6 +187,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
+          compact: false,
           exportableOnly,
           language,
           onLanguageChange,
@@ -233,6 +245,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
+          // Split migration view: same signal the removed CompactLayoutProvider used to give
+          // the editor via context (MigrationModal always renders its split pane with compact
+          // semantics) — now passed explicitly since the editor takes a `compact` prop.
+          compact: true,
           exportableOnly,
           language,
           onLanguageChange,

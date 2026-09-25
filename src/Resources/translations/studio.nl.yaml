@@ -148,19 +148,6 @@ data-hub.migration-modal.confirm-empty-columns-ok: Toch bevestigen
 data-hub.migration-modal.confirm-empty-columns-cancel: Annuleren
 data-hub.column-config-modal.add-column: Kolom toevoegen
 data-hub.column-config-modal.add-advanced-column: Geavanceerde kolom toevoegen
-data-hub.column-config-modal.fields-to-add: Toe te voegen velden
-data-hub.column-config-modal.apply: Wijzigingen toepassen
-data-hub.column-config-modal.discard: Alle wijzigingen verwerpen
-data-hub.column-config-modal.preview.select-object: Voorbeeldobject selecteren
-data-hub.column-config-modal.preview.placeholder: Selecteer een voorbeeldobject om resultaten te zien.
-data-hub.column-config-modal.preview.loading: Voorbeeld laden…
-data-hub.column-config-modal.preview.error: Fout bij laden van voorbeeld.
-data-hub.column-config-modal.preview.no-data: Geen gegevens voor dit object.
-data-hub.column-config-modal.pipeline.title: Titel
-data-hub.column-config-modal.pipeline.sourceFields: Bronvelden
-data-hub.column-config-modal.pipeline.sourceFields.add: Bronveld toevoegen
-data-hub.column-config-modal.pipeline.transformers: Transformaties
-data-hub.column-config-modal.pipeline.transformers.add: Transformer toevoegen
 user-management.permissions.plugin_datahub_admin: Datahub-beheerder
 user-management.permissions.plugin_datahub_config: Datahub-configuratie
 user-management.permissions.plugin_datahub_adapter_graphql: Datahub-adapter - GraphQL

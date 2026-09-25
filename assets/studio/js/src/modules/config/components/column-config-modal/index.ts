@@ -9,10 +9,27 @@
  */
 
 export * from './column-config-modal'
-export * from './use-add-column-groups'
-export * from './types'
-export * from './column-preview'
-export * from './column-pipeline-form'
-export * from './column-editor-item'
-export * from './column-locale-control'
-export * from './base-column-editor'
+
+// The embeddable column editor (base editor, pipeline form, preview, locale control,
+// fields panel, types) now lives in the Studio UI SDK — re-exported here so existing
+// consumers of '@pimcore/data-hub' keep working unchanged.
+export {
+  ADVANCED_COLUMN_KEY,
+  ADVANCED_COLUMN_TYPE,
+  advancedFromSchemaColumn,
+  advancedToSchemaColumn,
+  BaseColumnEditor,
+  ColumnEditorItemBody,
+  ColumnLocaleControl,
+  ColumnPipelineForm,
+  ColumnPreview,
+  useAddColumnGroups,
+  type AdvancedEditorColumn,
+  type BaseColumnEditorProps,
+  type ColumnEditorHandle,
+  type ColumnEditorItemBodyProps,
+  type ColumnLocaleControlProps,
+  type ColumnPipelineFormProps,
+  type ColumnPreviewProps,
+  type SchemaColumn
+} from '@pimcore/studio-ui-bundle/modules/data-object'
