@@ -293,6 +293,17 @@ final readonly class ConfigProposalTools
                 '%s',
                 "\n",
             ),
+            // a proposal that changes nothing would put an empty review in front of the user
+            fn (): ?string => $existing !== null
+                && $state !== null
+                && $state == $this->stateFor($policy, $name, $existing, [])
+                ? sprintf(
+                    'This leaves the %s "%s" exactly as it is, so there is nothing to review. Change '
+                    . 'something, or tell the user that nothing needs changing.',
+                    $policy->noun(),
+                    $name,
+                )
+                : null,
         ];
 
         foreach ($checks as $check) {
