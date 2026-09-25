@@ -239,7 +239,34 @@ export function configChanges (
     }
   }
 
-  return changes
+  return collapseNewEntities(changes)
+}
+
+/**
+ * A schema entity the proposal adds arrives as one leaf per key — id, name, columns. The
+ * reviewer weighs the entity, so every leaf of one that did not exist before is one row.
+ */
+function collapseNewEntities (changes: ConfigChange[]): ConfigChange[] {
+  const entityOf = (change: ConfigChange): string | undefined => {
+    const segments = change.address.split('.')
+    return segments[0] === 'schema' && segments.length > 3 ? segments.slice(0, 3).join('.') : undefined
+  }
+  const touched = new Set(changes.filter((change) => change.status !== 'added').map(entityOf))
+  const collapsed: ConfigChange[] = []
+  const seen = new Set<string>()
+
+  for (const change of changes) {
+    const entity = entityOf(change)
+    if (entity === undefined || touched.has(entity)) {
+      collapsed.push(change)
+      continue
+    }
+    if (seen.has(entity)) continue
+    seen.add(entity)
+    collapsed.push({ ...change, address: entity, label: entity.split('.').pop() ?? entity, current: undefined, proposed: undefined })
+  }
+
+  return collapsed
 }
 
 /** the review's marks on the fields the form binds: the status alone, the field says the rest */
