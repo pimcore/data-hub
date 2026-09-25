@@ -64,11 +64,12 @@ class GraphQlConfigPolicyTest extends Unit
         $configurations = $this->createMock(ConfigurationServiceInterface::class);
         $configurations->expects($this->once())
             ->method('updateConfiguration')
-            ->willReturnCallback(static function (string $name, array $configuration) use (&$saved): int {
+            ->with($this->anything(), $this->callback(static function (array $configuration) use (&$saved): bool {
                 $saved = $configuration;
 
-                return 1;
-            });
+                return true;
+            }))
+            ->willReturn(1);
 
         (new GraphQlConfigPolicy($configurations))->save('shop', [
             'schema' => ['specialEntities' => ['asset' => ['read' => true, 'create' => false]]],

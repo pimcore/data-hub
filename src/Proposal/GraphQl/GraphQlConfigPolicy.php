@@ -110,21 +110,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     public function problems(array $state, bool $isNew): array
     {
-        $problems = [];
-
-        foreach (['queryEntities', 'mutationEntities'] as $kind) {
-            $entities = $state['schema'][$kind] ?? [];
-            foreach (is_array($entities) ? $entities : [] as $key => $entity) {
-                $class = is_array($entity) && is_string($entity['id'] ?? null) ? $entity['id'] : (string) $key;
-                if (ClassDefinition::getByName($class) === null) {
-                    $problems[] = sprintf(
-                        '"%s" is not the name of a data object class this installation has (schema.%s).',
-                        $class,
-                        $kind,
-                    );
-                }
-            }
-        }
+        $problems = $this->unknownClasses($state);
 
         $granted = array_values(array_diff($this->writeGrants($state), $this->writeGrants($this->stored($state))));
         if ($granted !== []) {
@@ -140,6 +126,31 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             $problems[] = 'A new configuration needs at least one query entity (schema.queryEntities). '
                 . 'Read a similar one with get_graphql_config and send the complete document under '
                 . 'the new name.';
+        }
+
+        return $problems;
+    }
+
+    /**
+     * @param array<string, mixed> $state
+     *
+     * @return list<string>
+     */
+    private function unknownClasses(array $state): array
+    {
+        $problems = [];
+        foreach (['queryEntities', 'mutationEntities'] as $kind) {
+            $entities = is_array($state['schema'][$kind] ?? null) ? $state['schema'][$kind] : [];
+            foreach ($entities as $key => $entity) {
+                $class = is_array($entity) && is_string($entity['id'] ?? null) ? $entity['id'] : (string) $key;
+                if (ClassDefinition::getByName($class) === null) {
+                    $problems[] = sprintf(
+                        '"%s" is not the name of a data object class this installation has (schema.%s).',
+                        $class,
+                        $kind,
+                    );
+                }
+            }
         }
 
         return $problems;
