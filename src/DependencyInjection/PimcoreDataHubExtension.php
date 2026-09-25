@@ -45,6 +45,11 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         // The usage.* provider and the datahub.* collector; the core telemetry extension points
         // are guaranteed by the pimcore/pimcore constraint in composer.json.
         $loader->load('telemetry.yaml');
+
+        // what adapters build their own proposal tools on
+        if (ConfigProposalLane::canPropose($container)) {
+            $loader->load('proposal/mcp.yml');
+        }
     }
 
     /**
