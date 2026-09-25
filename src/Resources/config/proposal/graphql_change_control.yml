@@ -1,0 +1,22 @@
+# Loaded only when the Change Control bundle is installed - see PimcoreDataHubExtension.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: false
+        public: false
+
+    Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy: ~
+
+    pimcore.datahub.graphql.proposal.subject_handler:
+        class: Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler
+        arguments:
+            $policy: '@Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy'
+        tags:
+            - { name: change_control.subject_handler, index: 'data-hub-graphql-config' }
+
+    pimcore.datahub.graphql.proposal.detail_hydrator:
+        class: Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigDetailHydrator
+        arguments:
+            $policy: '@Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy'
+        tags:
+            - { name: change_control.detail_hydrator, index: 'data-hub-graphql-config' }

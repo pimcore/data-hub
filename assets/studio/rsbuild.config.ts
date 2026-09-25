@@ -86,6 +86,9 @@ export default defineConfig({
       dts: false,
       remotes: {
         '@pimcore/studio-ui-bundle': createDynamicRemote('pimcore_studio_ui_bundle'),
+        // optional: with Change Control absent the remote resolves to an empty container, and
+        // only the review surface - which nothing mounts without it - reads from this one
+        '@pimcore/change-control-bundle': createDynamicRemote('pimcore_change_control_bundle', true),
       },
       shared: {
         ...packages.dependencies,
