@@ -69,7 +69,10 @@ class ConfigDocumentTest extends Unit
     {
         $configuration = ConfigDocument::withStored(
             ['delivery' => ['filetype' => 'xml', 'transmitter_sftp' => ['host' => 'forged']]],
-            ['delivery' => ['filetype' => 'csv', 'transmitter_sftp' => ['host' => 'real']], 'permissions' => ['user' => []]],
+            [
+                'delivery' => ['filetype' => 'csv', 'transmitter_sftp' => ['host' => 'real']],
+                'permissions' => ['user' => []],
+            ],
             $this->policy(),
         );
 

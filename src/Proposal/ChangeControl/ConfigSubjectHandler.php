@@ -103,7 +103,9 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
 
         if ($finalData === []) {
             // an empty merged state would be a removal; a configuration is never deleted through a merge
-            throw new LogicException(sprintf('Refusing to apply an empty state to %s "%s".', $this->policy->noun(), $name));
+            throw new LogicException(
+                sprintf('Refusing to apply an empty state to %s "%s".', $this->policy->noun(), $name)
+            );
         }
 
         $existing = $this->load($name);

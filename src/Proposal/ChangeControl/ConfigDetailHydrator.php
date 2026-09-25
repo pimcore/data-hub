@@ -54,8 +54,9 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
 
         // a section no tab names still has to reach the reviewer
         foreach ($tree as $key => $value) {
-            if (!$this->isKnown((string) $key)) {
-                $slots[(string) $key] = new SlotDetail(SlotDetail::SHAPE_RECORD, $this->flatten([(string) $key], $value));
+            $key = (string) $key;
+            if (!$this->isKnown($key)) {
+                $slots[$key] = new SlotDetail(SlotDetail::SHAPE_RECORD, $this->flatten([$key], $value));
             }
         }
 
