@@ -146,3 +146,14 @@ user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - Gr
 user-management.permissions.plugin_datahub_permission_delete: Datahub Suppression
 user-management.permissions.plugin_datahub_permission_read: Datahub Lecture
 user-management.permissions.plugin_datahub_permission_update: Datahub Mise à jour
+data-hub.review.unavailable: 'La configuration proposée n''a pas pu être chargée.'
+data-hub.review.field.query-entity: 'Entité de requête {{name}}'
+data-hub.review.field.mutation-entity: 'Entité de mutation {{name}}'
+data-hub.review.field.generic-type: 'Type générique {{name}}'
+data-hub.review.outline.queries-one: '1 entité de requête'
+data-hub.review.outline.queries: '{{count}} entités de requête'
+data-hub.review.outline.mutations-one: '1 entité de mutation'
+data-hub.review.outline.mutations: '{{count}} entités de mutation'
+data-hub.review.outline.rules-one: '1 règle d''espace de travail'
+data-hub.review.outline.rules: '{{count}} règles d''espace de travail'
+data-hub.review.outline.nothing: 'Rien de lisible pour l''instant'
