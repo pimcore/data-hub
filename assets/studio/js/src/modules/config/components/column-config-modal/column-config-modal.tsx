@@ -9,7 +9,14 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import {
+  ColumnPickerPopover,
+  Flex,
+  IconTextButton,
+  Modal,
+  ModalTitle,
+  useAlertModal
+} from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import {

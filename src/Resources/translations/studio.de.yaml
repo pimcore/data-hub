@@ -138,6 +138,8 @@ data-hub.import.drag-drop: Dateien durchsuchen oder eine JSON-Datei hierher zieh
 data-hub.import.browse-files: Dateien durchsuchen
 perspective-editor.form.main-nav-permission.category.automationIntegration: Automation & Integration
 perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub Konfiguration
+data-hub.column-config-modal.add-column: Spalte hinzufügen
+data-hub.column-config-modal.add-advanced-column: Erweiterte Spalte hinzufügen
 user-management.permissions.plugin_datahub_admin: Datahub-Verwaltung
 user-management.permissions.plugin_datahub_config: Datahub-Konfiguration
 user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - GraphQL
