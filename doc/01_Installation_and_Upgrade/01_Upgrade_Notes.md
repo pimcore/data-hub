@@ -9,7 +9,10 @@ description: Breaking changes and migration steps per release.
 
 ### Column Editor and Column Configuration
 
-The column editor now comes from the Studio SDK and requires `pimcore/studio-ui-bundle` `^2026.4`. Columns added in the schema editor now store their real field type in `fieldtype` ('system' for system columns, 'advanced' for advanced columns) instead of the column key. Existing configurations are unchanged. For Simple REST, re-added numeric or image columns get their proper index mapping, so re-index after changing a schema.
+The column editor now comes from the Studio SDK and requires `pimcore/studio-ui-bundle` `^2026.4`. Columns added in
+the schema editor now store their real field type in `fieldtype` ('system' for system columns, 'advanced' for advanced
+columns) instead of the column key. Existing configurations are unchanged. For Simple REST, re-added numeric or image
+columns get their proper index mapping, so re-index after changing a schema.
 
 ## Upgrade to 2026.3.0
 
