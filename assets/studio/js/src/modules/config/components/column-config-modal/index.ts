@@ -10,28 +10,30 @@
 
 export * from './column-config-modal'
 
-// BaseColumnEditor is a local thin wrapper (see base-column-editor.tsx) that resolves
-// `compact` from CompactLayoutContext for adapters that don't pass it explicitly.
+// BaseColumnEditor, ColumnPipelineForm, and ColumnEditorItemBody are local thin wrappers (see
+// base-column-editor.tsx, column-pipeline-form.tsx, column-editor-item.tsx) that resolve
+// `compact` from CompactLayoutContext for callers that don't pass it explicitly. Before the
+// column editor moved into the Studio UI SDK these three read that context internally; the
+// wrappers keep that behavior for existing '@pimcore/data-hub' consumers built against the
+// pre-move, context-only API.
 export * from './base-column-editor'
+export * from './column-pipeline-form'
+export * from './column-editor-item'
 
-// The rest of the embeddable column editor (pipeline form, preview, locale control, fields
-// panel, types) now lives in the Studio UI SDK — re-exported here so existing consumers of
-// '@pimcore/data-hub' keep working unchanged.
+// The rest of the embeddable column editor (preview, locale control, fields panel, types) now
+// lives in the Studio UI SDK — re-exported here so existing consumers of '@pimcore/data-hub'
+// keep working unchanged.
 export {
   ADVANCED_COLUMN_KEY,
   ADVANCED_COLUMN_TYPE,
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
-  ColumnEditorItemBody,
   ColumnLocaleControl,
-  ColumnPipelineForm,
   ColumnPreview,
   useAddColumnGroups,
   type AdvancedEditorColumn,
   type ColumnEditorHandle,
-  type ColumnEditorItemBodyProps,
   type ColumnLocaleControlProps,
-  type ColumnPipelineFormProps,
   type ColumnPreviewProps,
   type SchemaColumn
 } from '@pimcore/studio-ui-bundle/modules/data-object'
