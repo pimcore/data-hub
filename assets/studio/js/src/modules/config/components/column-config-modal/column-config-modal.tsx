@@ -36,8 +36,11 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   hideToolbar: boolean
   /**
    * True in the split migration view, where the editor is rendered in a horizontally
-   * constrained pane. Replaces the former CompactLayoutContext read: the editor now takes
-   * this as an explicit prop instead of reading it from context.
+   * constrained pane. MigrationModal still wraps that pane in CompactLayoutProvider below (and
+   * '@pimcore/data-hub's BaseColumnEditor/ColumnPipelineForm/ColumnEditorItemBody wrappers still
+   * read it for BC), but `renderEditor` implementations construct the Studio SDK editor
+   * directly, which takes `compact` as an explicit prop rather than reading it from context -
+   * so it is passed here too.
    */
   compact: boolean
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
@@ -245,9 +248,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
-          // Split migration view: same signal the removed CompactLayoutProvider used to give
-          // the editor via context (MigrationModal always renders its split pane with compact
-          // semantics) — now passed explicitly since the editor takes a `compact` prop.
+          // Split migration view: MigrationModal always renders this pane inside
+          // CompactLayoutProvider (see migration-modal.tsx), which still exists and is still
+          // read by the BC wrappers in this directory. `renderEditor` builds the Studio SDK
+          // editor directly though, so `compact` is passed explicitly here as well.
           compact: true,
           exportableOnly,
           language,
