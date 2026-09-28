@@ -14,6 +14,15 @@ import { type BackendConfiguration } from '../components/backend-types'
 import { type ChangeGroup, type ConfigChange } from './config-review-model'
 import { ConfigSummary, type ConfigSummarySection } from '@pimcore/change-control-bundle/sdk'
 
+/**
+ * A list changes as a whole, so its row says how much of it changed: "21 → 7" makes a list that
+ * lost most of its entries impossible to miss.
+ */
+const sizeOf = (change: ConfigChange): string | undefined =>
+  Array.isArray(change.current) && Array.isArray(change.proposed) && change.current.length !== change.proposed.length
+    ? `${change.current.length} → ${change.proposed.length}`
+    : undefined
+
 interface Props {
   readonly configuration: BackendConfiguration
   readonly groups: ChangeGroup[]
@@ -40,6 +49,7 @@ export const ChangeRail: React.FC<Props> = ({
       key: change.address,
       label: labelFor(change),
       hint: change.address,
+      note: sizeOf(change),
       status: change.status
     }))
   }))
