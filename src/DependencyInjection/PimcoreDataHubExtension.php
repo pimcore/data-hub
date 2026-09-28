@@ -46,9 +46,13 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         // are guaranteed by the pimcore/pimcore constraint in composer.json.
         $loader->load('telemetry.yaml');
 
-        // what adapters build their own proposal tools on
+        // the GraphQL adapter's proposal lane, and what every adapter builds its own tools on
+        if (ConfigProposalLane::canReview($container)) {
+            $loader->load('proposal/graphql_change_control.yml');
+        }
         if (ConfigProposalLane::canPropose($container)) {
             $loader->load('proposal/mcp.yml');
+            $loader->load('proposal/graphql_mcp.yml');
         }
     }
 
