@@ -9,13 +9,25 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import {
+  ColumnPickerPopover,
+  Flex,
+  IconTextButton,
+  Modal,
+  ModalTitle,
+  useAlertModal
+} from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
-import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
+import {
+  ADVANCED_COLUMN_KEY,
+  ADVANCED_COLUMN_TYPE,
+  useAddColumnGroups,
+  useClassDefinitions,
+  type ColumnEditorHandle,
+  type SchemaColumn
+} from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
-import { useAddColumnGroups } from './use-add-column-groups'
-import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 
 /**
  * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
@@ -29,6 +41,15 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   entity: string
   /** True in the split migration view — the editor should hide its own Apply/Discard toolbar. */
   hideToolbar: boolean
+  /**
+   * True in the split migration view, where the editor is rendered in a horizontally
+   * constrained pane. MigrationModal still wraps that pane in CompactLayoutProvider below (and
+   * '@pimcore/data-hub's BaseColumnEditor/ColumnPipelineForm/ColumnEditorItemBody wrappers still
+   * read it for BC), but `renderEditor` implementations construct the Studio SDK editor
+   * directly, which takes `compact` as an explicit prop rather than reading it from context -
+   * so it is passed here too.
+   */
+  compact?: boolean
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly: boolean
   onApply: (columns: TColumns[]) => void
@@ -176,6 +197,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: isMigrated ? migratedColumns : columns,
           entity,
           hideToolbar: false,
+          compact: false,
           exportableOnly,
           language,
           onLanguageChange,
@@ -233,6 +255,11 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
           columns: migratedColumns,
           entity,
           hideToolbar: true,
+          // Split migration view: MigrationModal always renders this pane inside
+          // CompactLayoutProvider (see migration-modal.tsx), which still exists and is still
+          // read by the BC wrappers in this directory. `renderEditor` builds the Studio SDK
+          // editor directly though, so `compact` is passed explicitly here as well.
+          compact: true,
           exportableOnly,
           language,
           onLanguageChange,

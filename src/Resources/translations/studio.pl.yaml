@@ -148,19 +148,6 @@ data-hub.migration-modal.confirm-empty-columns-ok: Potwierdź mimo to
 data-hub.migration-modal.confirm-empty-columns-cancel: Anuluj
 data-hub.column-config-modal.add-column: Dodaj kolumnę
 data-hub.column-config-modal.add-advanced-column: Dodaj kolumnę zaawansowaną
-data-hub.column-config-modal.fields-to-add: Pola do dodania
-data-hub.column-config-modal.apply: Zastosuj zmiany
-data-hub.column-config-modal.discard: Odrzuć wszystkie zmiany
-data-hub.column-config-modal.preview.select-object: Wybierz obiekt podglądu
-data-hub.column-config-modal.preview.placeholder: Wybierz obiekt podglądu, aby zobaczyć wyniki.
-data-hub.column-config-modal.preview.loading: Ładowanie podglądu…
-data-hub.column-config-modal.preview.error: Błąd podczas ładowania podglądu.
-data-hub.column-config-modal.preview.no-data: Brak danych dla tego obiektu.
-data-hub.column-config-modal.pipeline.title: Tytuł
-data-hub.column-config-modal.pipeline.sourceFields: Pola źródłowe
-data-hub.column-config-modal.pipeline.sourceFields.add: Dodaj pole źródłowe
-data-hub.column-config-modal.pipeline.transformers: Transformacje
-data-hub.column-config-modal.pipeline.transformers.add: Dodaj transformator
 user-management.permissions.plugin_datahub_admin: Administrator Datahub
 user-management.permissions.plugin_datahub_config: Konfiguracja Datahub
 user-management.permissions.plugin_datahub_adapter_graphql: Adapter Datahub - GraphQL

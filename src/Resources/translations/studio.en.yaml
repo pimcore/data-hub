@@ -146,21 +146,8 @@ data-hub.migration-modal.confirm-empty-columns-title: 'No columns added'
 data-hub.migration-modal.confirm-empty-columns-content: "You haven't added any columns yet. Are you sure you want to confirm the migration with an empty column list?"
 data-hub.migration-modal.confirm-empty-columns-ok: 'Confirm anyway'
 data-hub.migration-modal.confirm-empty-columns-cancel: 'Cancel'
-data-hub.column-config-modal.add-column: Add Column
+data-hub.column-config-modal.add-column: Add column
 data-hub.column-config-modal.add-advanced-column: Add advanced column
-data-hub.column-config-modal.fields-to-add: Fields to add
-data-hub.column-config-modal.apply: Apply changes
-data-hub.column-config-modal.discard: Discard all changes
-data-hub.column-config-modal.preview.select-object: Select preview object
-data-hub.column-config-modal.preview.placeholder: Select a preview object to see results.
-data-hub.column-config-modal.preview.loading: Loading preview…
-data-hub.column-config-modal.preview.error: Error loading preview.
-data-hub.column-config-modal.preview.no-data: No data for this object.
-data-hub.column-config-modal.pipeline.title: Title
-data-hub.column-config-modal.pipeline.sourceFields: Source fields
-data-hub.column-config-modal.pipeline.sourceFields.add: Add source field
-data-hub.column-config-modal.pipeline.transformers: Transformers
-data-hub.column-config-modal.pipeline.transformers.add: Add transformer
 user-management.permissions.plugin_datahub_admin: Datahub Admin
 user-management.permissions.plugin_datahub_config: Datahub Configuration
 user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - GraphQL

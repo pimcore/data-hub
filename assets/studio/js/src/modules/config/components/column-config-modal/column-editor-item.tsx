@@ -9,38 +9,28 @@
  */
 
 import React from 'react'
-import { type AdvancedEditorColumn } from './types'
-import { ColumnPipelineForm } from './column-pipeline-form'
+import {
+  ColumnEditorItemBody as SdkColumnEditorItemBody,
+  type ColumnEditorItemBodyProps
+} from '@pimcore/studio-ui-bundle/modules/data-object'
+import { useCompactLayout } from '../migration-modal'
 
-export interface ColumnEditorItemBodyProps {
-  column: AdvancedEditorColumn
-  entity: string
-  objectId: number | null
-  onPipelineChange: (id: string, pipeline: Record<string, any>) => void
-  /** Service ID of the DynamicTypePipelineRegistry to use for source fields. */
-  sourceFieldsRegistryId: string
-  /** Service ID of the DynamicTypePipelineRegistry to use for transformers. */
-  transformersRegistryId: string
-}
+export type { ColumnEditorItemBodyProps }
 
-export const ColumnEditorItemBody = ({
-  column,
-  entity,
-  objectId,
-  onPipelineChange,
-  sourceFieldsRegistryId,
-  transformersRegistryId
-}: ColumnEditorItemBodyProps): React.JSX.Element => {
+/**
+ * Thin wrapper around the Studio SDK's ColumnEditorItemBody that resolves `compact` from
+ * CompactLayoutContext when the caller doesn't pass it explicitly - the same BC bridge
+ * `base-column-editor.tsx` provides for BaseColumnEditor and `column-pipeline-form.tsx` provides
+ * for ColumnPipelineForm. Kept for direct consumers of '@pimcore/data-hub' that render this
+ * component outside BaseColumnEditor.
+ */
+export const ColumnEditorItemBody = (props: ColumnEditorItemBodyProps): React.JSX.Element => {
+  const { compact: compactFromContext } = useCompactLayout()
+
   return (
-    <ColumnPipelineForm
-      column={ column }
-      config={ column.pipelineConfig }
-      entity={ entity }
-      objectId={ objectId }
-      onChange={ (pipeline) => { onPipelineChange(column._id, pipeline) } }
-      sourceFieldsRegistryId={ sourceFieldsRegistryId }
-      transformersRegistryId={ transformersRegistryId }
-      value={ column.pipeline }
+    <SdkColumnEditorItemBody
+      { ...props }
+      compact={ props.compact ?? compactFromContext }
     />
   )
 }
