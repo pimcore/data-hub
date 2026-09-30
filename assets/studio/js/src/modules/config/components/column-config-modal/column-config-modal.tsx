@@ -49,7 +49,7 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
    * directly, which takes `compact` as an explicit prop rather than reading it from context -
    * so it is passed here too.
    */
-  compact: boolean
+  compact?: boolean
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly: boolean
   onApply: (columns: TColumns[]) => void
