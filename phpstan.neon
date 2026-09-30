@@ -4,6 +4,17 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+    excludePaths:
+        # Change Control is an optional peer, not a composer dependency, so CI cannot install it
+        # and every symbol here is unknown; analysed locally against a full install
+        - src/Proposal/ChangeControl/*
+    ignoreErrors:
+        # same reason, for the agent bundle and the Studio MCP seam (2026.3+) the tools sit on
+        -
+            message: '#Pimcore\\Bundle\\(ChangeControlBundle|PimcoreAgentBundle|StudioBackendBundle\\Mcp)\\#'
+            paths:
+                - src/Proposal/Mcp/ConfigProposalTools.php
+                - src/DependencyInjection/ConfigProposalLane.php
     bootstrapFiles:
         - phpstan-bootstrap.php
 includes:
