@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\EventSubscriber;
 
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\StudioBackendBundle\Perspective\Model\ContextPermissionData;
 use Pimcore\Bundle\StudioBackendBundle\Perspective\Service\ContextPermissionsServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -25,6 +26,7 @@ final readonly class StudioContextPermissionsSubscriber implements EventSubscrib
 {
     public function __construct(
         private ContextPermissionsServiceInterface $permissionsService,
+        private AdapterAvailabilityServiceInterface $adapterAvailabilityService,
     ) {
     }
 
@@ -37,6 +39,12 @@ final readonly class StudioContextPermissionsSubscriber implements EventSubscrib
 
     public function addContextPermissions(): void
     {
+        // Without the context permission the Data Hub entry is dropped from every perspective,
+        // which is what makes a system with no enabled adapter type unreachable in Studio.
+        if ($this->adapterAvailabilityService->getEnabledTypes() === []) {
+            return;
+        }
+
         $this->permissionsService->add(
             new ContextPermissionData('dataHubConfiguration', 'automationIntegration')
         );
