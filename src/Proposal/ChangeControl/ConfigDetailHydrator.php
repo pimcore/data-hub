@@ -36,7 +36,7 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     {
     }
 
-    public function hydrate(SubjectRef $subject, array $tree): array
+    public function hydrate(SubjectRef $subject, array $tree, array $provisional = []): array
     {
         $slots = [];
 
