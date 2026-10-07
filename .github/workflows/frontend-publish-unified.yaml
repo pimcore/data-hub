@@ -105,3 +105,5 @@ jobs:
       build-output-path: './src/Resources/public/studio/'
       commit-lint-output: false
       commit-build-output: false
+    secrets:
+      SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
