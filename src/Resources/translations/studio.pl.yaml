@@ -1,0 +1,169 @@
+data-hub.configuration: Konfiguracja Data Hub
+data-hub.add.button: Dodaj konfigurację
+data-hub.add.name: Wprowadź nazwę konfiguracji
+data-hub.clone.name: Wprowadź nazwę sklonowanej konfiguracji
+data-hub.delete.confirm: 'Czy na pewno chcesz usunąć konfigurację "{{name}}"?'
+error.data-hub.config-exists: Konfiguracja o tej nazwie już istnieje
+error.data-hub.import-config-invalid: Przesłany plik nie jest prawidłową konfiguracją
+error.data-hub.api-key-validation-failed: Co najmniej jeden klucz API nie spełnia minimalnej długości 16 znaków.
+data-hub.config.active: Aktywny
+data-hub.config.type: Typ
+data-hub.config.name: Nazwa
+data-hub.config.name-required: Wprowadź nazwę konfiguracji
+data-hub.config.name-min-length: Nazwa musi mieć co najmniej 3 znaki
+data-hub.config.name-max-length: Nazwa nie może przekraczać 80 znaków
+data-hub.config.name-pattern: Nazwa może zawierać tylko znaki alfanumeryczne, podkreślenia i myślniki
+data-hub.config.description: Opis
+data-hub.config.group: Grupa
+data-hub.config.no-update-permission: Nie masz uprawnień do aktualizacji tej konfiguracji
+data-hub.adapter.graphql: GraphQL
+data-hub.adapter.simpleRest: Simple REST
+data-hub.tabs.general: Ogólne
+data-hub.tabs.schema-definition: Definicja schematu
+data-hub.tabs.security-definition: Definicja zabezpieczeń
+data-hub.tabs.permissions: Uprawnienia
+data-hub.security.method: Metoda
+data-hub.security.method.apikey: Klucz API
+data-hub.security.apikey: Klucze API Datahub
+data-hub.security.apikey-description: Klucz API wymagany do dostępu do usługi internetowej. Dozwolony jeden klucz API na wiersz. Należy podać co najmniej jeden klucz o długości minimum 16 znaków.
+data-hub.security.generate-apikey: Generuj klucz
+data-hub.security.skip-permission-check: Pomiń kontrolę uprawnień
+data-hub.security.disable-introspection: Wyłącz introspekcję
+data-hub.security.introspection-description: "Uwaga: gdy introspekcja jest wyłączona, funkcja autouzupełniania nie działa."
+data-hub.security.authentication: Uwierzytelnianie
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Dokumenty
+data-hub.workspaces.assets: Assety
+data-hub.workspaces.objects: Obiekty danych
+data-hub.workspaces.path: Ścieżka
+data-hub.workspaces.create: Utwórz
+data-hub.workspaces.read: Odczyt
+data-hub.workspaces.update: Aktualizacja
+data-hub.workspaces.delete: Usuń
+data-hub.workspaces.delete-selected: Usuń wybrane
+data-hub.permissions.role-permissions: Uprawnienia ról
+data-hub.permissions.user-permissions: Uprawnienia użytkowników
+data-hub.permissions.role: Rola
+data-hub.permissions.user: Użytkownik
+data-hub.permissions.read: Odczyt
+data-hub.permissions.update: Aktualizacja
+data-hub.permissions.delete: Usuń
+data-hub.schema.query-schema: Schemat zapytań
+data-hub.schema.mutation-schema: Schemat mutacji
+data-hub.schema.generic-types: Typy generyczne
+data-hub.schema.entity: Encja
+data-hub.schema.settings: Ustawienia
+data-hub.schema.select-class: Wybierz klasę...
+data-hub.schema.query-modal-title: "Pola schematu zapytań - {{entity}}"
+data-hub.schema.mutation-modal-title: "Pola schematu mutacji - {{entity}}"
+data-hub.schema.class-attributes: Atrybuty klasy
+data-hub.schema.available-fields: Dostępne pola
+data-hub.schema.drag-class-attributes-or-operators: Przeciągnij tutaj atrybuty klasy lub operatory
+data-hub.schema.add-all-definitions: Dodaj wszystkie definicje
+data-hub.schema.insert-all-definitions: Wstaw wszystkie definicje
+data-hub.schema.data-object-columns: Kolumny obiektu danych
+data-hub.schema.system-columns: Kolumny systemowe
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Pełna ścieżka (fullpath)
+data-hub.schema.system.key: Klucz (key)
+data-hub.schema.system.published: Opublikowane (published)
+data-hub.schema.system.creationDate: Data utworzenia (creationDate)
+data-hub.schema.system.modificationDate: Data modyfikacji (modificationDate)
+data-hub.schema.system.filename: Nazwa pliku (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Indeksowane (index)
+data-hub.schema.coming-soon: (Wkrótce)
+data-hub.schema.special.document: Dokument
+data-hub.schema.special.document_folder: Folder dokumentów
+data-hub.schema.special.asset: Asset
+data-hub.schema.special.asset_folder: Folder assetów
+data-hub.schema.special.asset_listing: Lista assetów
+data-hub.schema.special.object_folder: Folder obiektów
+data-hub.schema.special.translation: Tłumaczenie
+data-hub.schema.special.translation_listing: Lista tłumaczeń
+data-hub.schema.operation-not-implemented: Operacja nie jest zaimplementowana
+data-hub.open-in-tab: Otwórz w karcie
+data-hub.label: Etykieta
+data-hub.help: Pomoc
+data-hub.locale: Lokalizacja
+data-hub.locale.select: Wybierz lokalizację...
+data-hub.thumbnail: Miniatura
+data-hub.prefix: Prefiks
+data-hub.operator.group.formatter: Formater
+data-hub.operator.group.transformer: Transformator
+data-hub.operator.group.other: Pozostałe
+data-hub.operator.subgroup.string: Tekst
+data-hub.operator.subgroup.other: Pozostałe
+data-hub.operator.alias: Alias
+data-hub.operator.label: Etykieta
+data-hub.operator.glue: Łącznik
+data-hub.operator.concatenator: Konkatenator
+data-hub.operator.concatenator.config: Ustawienia konkatenatora
+data-hub.operator.date-formatter: Formater daty
+data-hub.operator.element-counter: Licznik elementów
+data-hub.operator.element-counter.count-empty: Licz puste
+data-hub.operator.if-empty: Jeśli puste
+data-hub.operator.locale-collector: Kolektor lokalizacji
+data-hub.operator.locale-switcher: Przełącznik lokalizacji
+data-hub.operator.substring: Podciąg
+data-hub.operator.text: Tekst
+data-hub.operator.thumbnail: Miniatura
+data-hub.operator.thumbnail-html: HTML miniatury
+data-hub.operator.translate-value: Przetłumacz wartość
+data-hub.operator.trimmer: Przycinanie
+data-hub.operator.dateformatter: Formater daty
+data-hub.operator.dateformatter.format: Format daty
+data-hub.operator.dateformatter.format.required: Wprowadź format daty
+data-hub.operator.if-empty.default-value: Wartość domyślna
+data-hub.operator.locale-collector.locales: Lokalizacje
+data-hub.operator.locale-collector.select-locales: Wybierz lokalizacje...
+data-hub.operator.thumbnail.thumbnail-name: Nazwa miniatury
+data-hub.operator.thumbnail-html.thumbnail-name: Nazwa miniatury
+data-hub.operator.start: Początek
+data-hub.operator.length: Długość
+data-hub.operator.ellipses: Wielokropek
+data-hub.operator.trim: Przytnij
+data-hub.operator.trim.disabled: Wyłączone
+data-hub.operator.trim.left: Lewo
+data-hub.operator.trim.right: Prawo
+data-hub.operator.trim.both: Oba
+tree.actions.clone: Klonuj
+tree.actions.delete: Usuń
+tree.actions.edit: Edytuj
+tree.actions.export: Eksportuj
+tree.actions.import: Importuj
+tree.actions.view: Wyświetl
+data-hub.import.title: Importuj konfigurację
+data-hub.import.drag-drop: Przeglądaj pliki lub upuść tutaj plik JSON
+data-hub.import.browse-files: Przeglądaj pliki
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automatyzacja i integracja
+perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Konfiguracja Data Hub
+data-hub.migration-modal.legacy-notice: Bieżąca konfiguracja jest w trybie drzewa jako YAML (dostępna w Classic UI). Użyj wzorca trybu drzewa, aby zbudować nowy tryb Pipeline. Po naciśnięciu przycisku zastosowania zmian konfiguracja zostanie zapisana w trybie Pipeline.
+data-hub.migration-modal.start-migration: Rozpocznij migrację
+data-hub.migration-modal.cancel: Anuluj
+data-hub.migration-modal.confirm-migration: Potwierdź migrację
+data-hub.migration-modal.confirm-empty-columns-title: Nie dodano kolumn
+data-hub.migration-modal.confirm-empty-columns-content: Nie dodano jeszcze żadnych kolumn. Czy na pewno chcesz potwierdzić migrację z pustą listą kolumn?
+data-hub.migration-modal.confirm-empty-columns-ok: Potwierdź mimo to
+data-hub.migration-modal.confirm-empty-columns-cancel: Anuluj
+data-hub.column-config-modal.add-column: Dodaj kolumnę
+data-hub.column-config-modal.add-advanced-column: Dodaj kolumnę zaawansowaną
+data-hub.column-config-modal.fields-to-add: Pola do dodania
+data-hub.column-config-modal.apply: Zastosuj zmiany
+data-hub.column-config-modal.discard: Odrzuć wszystkie zmiany
+data-hub.column-config-modal.preview.select-object: Wybierz obiekt podglądu
+data-hub.column-config-modal.preview.placeholder: Wybierz obiekt podglądu, aby zobaczyć wyniki.
+data-hub.column-config-modal.preview.loading: Ładowanie podglądu…
+data-hub.column-config-modal.preview.error: Błąd podczas ładowania podglądu.
+data-hub.column-config-modal.preview.no-data: Brak danych dla tego obiektu.
+data-hub.column-config-modal.pipeline.title: Tytuł
+data-hub.column-config-modal.pipeline.sourceFields: Pola źródłowe
+data-hub.column-config-modal.pipeline.sourceFields.add: Dodaj pole źródłowe
+data-hub.column-config-modal.pipeline.transformers: Transformacje
+data-hub.column-config-modal.pipeline.transformers.add: Dodaj transformator
+user-management.permissions.plugin_datahub_admin: Administrator Datahub
+user-management.permissions.plugin_datahub_config: Konfiguracja Datahub
+user-management.permissions.plugin_datahub_adapter_graphql: Adapter Datahub - GraphQL
+user-management.permissions.plugin_datahub_permission_delete: Usuwanie Datahub
+user-management.permissions.plugin_datahub_permission_read: Odczyt Datahub
+user-management.permissions.plugin_datahub_permission_update: Aktualizacja Datahub

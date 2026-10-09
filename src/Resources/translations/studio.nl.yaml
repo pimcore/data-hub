@@ -1,0 +1,169 @@
+data-hub.configuration: Data Hub-configuratie
+data-hub.add.button: Configuratie toevoegen
+data-hub.add.name: Voer een configuratienaam in
+data-hub.clone.name: Voer een naam in voor de gekloonde configuratie
+data-hub.delete.confirm: 'Weet je zeker dat je de configuratie "{{name}}" wilt verwijderen?'
+error.data-hub.config-exists: Er bestaat al een configuratie met deze naam
+error.data-hub.import-config-invalid: Het geüploade bestand is geen geldige configuratie
+error.data-hub.api-key-validation-failed: Een of meer API-keys voldoen niet aan de minimale lengte van 16 tekens.
+data-hub.config.active: Actief
+data-hub.config.type: Type
+data-hub.config.name: Naam
+data-hub.config.name-required: Voer een configuratienaam in
+data-hub.config.name-min-length: De naam moet minimaal 3 tekens lang zijn
+data-hub.config.name-max-length: De naam mag niet langer zijn dan 80 tekens
+data-hub.config.name-pattern: De naam mag alleen alfanumerieke tekens, underscores en koppeltekens bevatten
+data-hub.config.description: Beschrijving
+data-hub.config.group: Groep
+data-hub.config.no-update-permission: Je mag deze configuratie niet bijwerken
+data-hub.adapter.graphql: GraphQL
+data-hub.adapter.simpleRest: Simple REST
+data-hub.tabs.general: Algemeen
+data-hub.tabs.schema-definition: Schemadefinitie
+data-hub.tabs.security-definition: Beveiligingsdefinitie
+data-hub.tabs.permissions: Rechten
+data-hub.security.method: Methode
+data-hub.security.method.apikey: API Key
+data-hub.security.apikey: Datahub API-keys
+data-hub.security.apikey-description: API-key vereist voor toegang tot de webservice. Eén API-key per regel toegestaan. Er moet minimaal één key van minimaal 16 tekens worden opgegeven.
+data-hub.security.generate-apikey: Key genereren
+data-hub.security.skip-permission-check: Toestemmingscontrole overslaan
+data-hub.security.disable-introspection: Introspectie uitschakelen
+data-hub.security.introspection-description: "Let op: als introspectie is uitgeschakeld, werkt de autocomplete-functie niet."
+data-hub.security.authentication: Authenticatie
+data-hub.workspaces.title: Workspaces
+data-hub.workspaces.documents: Documenten
+data-hub.workspaces.assets: Assets
+data-hub.workspaces.objects: Gegevensobjecten
+data-hub.workspaces.path: Pad
+data-hub.workspaces.create: Aanmaken
+data-hub.workspaces.read: Lezen
+data-hub.workspaces.update: Bijwerken
+data-hub.workspaces.delete: Verwijderen
+data-hub.workspaces.delete-selected: Geselecteerde verwijderen
+data-hub.permissions.role-permissions: Rolrechten
+data-hub.permissions.user-permissions: Gebruikersrechten
+data-hub.permissions.role: Rol
+data-hub.permissions.user: Gebruiker
+data-hub.permissions.read: Lezen
+data-hub.permissions.update: Bijwerken
+data-hub.permissions.delete: Verwijderen
+data-hub.schema.query-schema: Queryschema
+data-hub.schema.mutation-schema: Mutatieschema
+data-hub.schema.generic-types: Generieke typen
+data-hub.schema.entity: Entiteit
+data-hub.schema.settings: Instellingen
+data-hub.schema.select-class: Klasse selecteren...
+data-hub.schema.query-modal-title: "Queryschemavelden - {{entity}}"
+data-hub.schema.mutation-modal-title: "Mutatieschemavelden - {{entity}}"
+data-hub.schema.class-attributes: Klasseattributen
+data-hub.schema.available-fields: Beschikbare velden
+data-hub.schema.drag-class-attributes-or-operators: Sleep hier klasseattributen of operatoren naartoe
+data-hub.schema.add-all-definitions: Alle definities toevoegen
+data-hub.schema.insert-all-definitions: Alle definities invoegen
+data-hub.schema.data-object-columns: Gegevensobjectkolommen
+data-hub.schema.system-columns: Systeemkolommen
+data-hub.schema.system.id: ID (id)
+data-hub.schema.system.fullpath: Volledig pad (fullpath)
+data-hub.schema.system.key: Sleutel (key)
+data-hub.schema.system.published: Gepubliceerd (published)
+data-hub.schema.system.creationDate: Aanmaakdatum (creationDate)
+data-hub.schema.system.modificationDate: Wijzigingsdatum (modificationDate)
+data-hub.schema.system.filename: Bestandsnaam (filename)
+data-hub.schema.system.classname: classname (classname)
+data-hub.schema.system.index: Geïndexeerd (index)
+data-hub.schema.coming-soon: (Binnenkort beschikbaar)
+data-hub.schema.special.document: Document
+data-hub.schema.special.document_folder: Documentmap
+data-hub.schema.special.asset: Asset
+data-hub.schema.special.asset_folder: Assetmap
+data-hub.schema.special.asset_listing: Assetlijst
+data-hub.schema.special.object_folder: Objectmap
+data-hub.schema.special.translation: Vertaling
+data-hub.schema.special.translation_listing: Vertalingenlijst
+data-hub.schema.operation-not-implemented: Bewerking is niet geïmplementeerd
+data-hub.open-in-tab: In tabblad openen
+data-hub.label: Label
+data-hub.help: Help
+data-hub.locale: Locale
+data-hub.locale.select: Locale selecteren...
+data-hub.thumbnail: Miniatuur
+data-hub.prefix: Prefix
+data-hub.operator.group.formatter: Formatter
+data-hub.operator.group.transformer: Transformer
+data-hub.operator.group.other: Overige
+data-hub.operator.subgroup.string: Tekst
+data-hub.operator.subgroup.other: Overige
+data-hub.operator.alias: Alias
+data-hub.operator.label: Label
+data-hub.operator.glue: Scheidingsteken
+data-hub.operator.concatenator: Concatenator
+data-hub.operator.concatenator.config: Concatenator-instellingen
+data-hub.operator.date-formatter: Datumformatter
+data-hub.operator.element-counter: Elementteller
+data-hub.operator.element-counter.count-empty: Lege meetellen
+data-hub.operator.if-empty: Indien leeg
+data-hub.operator.locale-collector: Locale-verzamelaar
+data-hub.operator.locale-switcher: Locale-wisselaar
+data-hub.operator.substring: Deelreeks
+data-hub.operator.text: Tekst
+data-hub.operator.thumbnail: Miniatuur
+data-hub.operator.thumbnail-html: Miniatuur-HTML
+data-hub.operator.translate-value: Waarde vertalen
+data-hub.operator.trimmer: Trimmer
+data-hub.operator.dateformatter: Datumformatter
+data-hub.operator.dateformatter.format: Datumformaat
+data-hub.operator.dateformatter.format.required: Voer een datumformaat in
+data-hub.operator.if-empty.default-value: Standaardwaarde
+data-hub.operator.locale-collector.locales: Locales
+data-hub.operator.locale-collector.select-locales: Locales selecteren...
+data-hub.operator.thumbnail.thumbnail-name: Miniatuurnaam
+data-hub.operator.thumbnail-html.thumbnail-name: Miniatuurnaam
+data-hub.operator.start: Begin
+data-hub.operator.length: Lengte
+data-hub.operator.ellipses: Weglatingstekens
+data-hub.operator.trim: Inkorten
+data-hub.operator.trim.disabled: Uitgeschakeld
+data-hub.operator.trim.left: Links
+data-hub.operator.trim.right: Rechts
+data-hub.operator.trim.both: Beide
+tree.actions.clone: Klonen
+tree.actions.delete: Verwijderen
+tree.actions.edit: Bewerken
+tree.actions.export: Exporteren
+tree.actions.import: Importeren
+tree.actions.view: Weergeven
+data-hub.import.title: Configuratie importeren
+data-hub.import.drag-drop: Blader door je bestanden of zet hier direct een JSON neer
+data-hub.import.browse-files: Bestanden bladeren
+perspective-editor.form.main-nav-permission.category.automationIntegration: Automatisering & integratie
+perspective-editor.form.main-nav-permission.automationIntegration.dataHubConfiguration: Data Hub-configuratie
+data-hub.migration-modal.legacy-notice: De huidige configuratie staat in boommodus als YAML (beschikbaar in de Classic UI). Gebruik de blauwdruk van de boommodus om je nieuwe Pipeline-modus op te bouwen. Zodra je op wijzigingen toepassen klikt, is de configuratie in Pipeline-modus opgeslagen.
+data-hub.migration-modal.start-migration: Migratie starten
+data-hub.migration-modal.cancel: Annuleren
+data-hub.migration-modal.confirm-migration: Migratie bevestigen
+data-hub.migration-modal.confirm-empty-columns-title: Geen kolommen toegevoegd
+data-hub.migration-modal.confirm-empty-columns-content: Je hebt nog geen kolommen toegevoegd. Weet je zeker dat je de migratie met een lege kolommenlijst wilt bevestigen?
+data-hub.migration-modal.confirm-empty-columns-ok: Toch bevestigen
+data-hub.migration-modal.confirm-empty-columns-cancel: Annuleren
+data-hub.column-config-modal.add-column: Kolom toevoegen
+data-hub.column-config-modal.add-advanced-column: Geavanceerde kolom toevoegen
+data-hub.column-config-modal.fields-to-add: Toe te voegen velden
+data-hub.column-config-modal.apply: Wijzigingen toepassen
+data-hub.column-config-modal.discard: Alle wijzigingen verwerpen
+data-hub.column-config-modal.preview.select-object: Voorbeeldobject selecteren
+data-hub.column-config-modal.preview.placeholder: Selecteer een voorbeeldobject om resultaten te zien.
+data-hub.column-config-modal.preview.loading: Voorbeeld laden…
+data-hub.column-config-modal.preview.error: Fout bij laden van voorbeeld.
+data-hub.column-config-modal.preview.no-data: Geen gegevens voor dit object.
+data-hub.column-config-modal.pipeline.title: Titel
+data-hub.column-config-modal.pipeline.sourceFields: Bronvelden
+data-hub.column-config-modal.pipeline.sourceFields.add: Bronveld toevoegen
+data-hub.column-config-modal.pipeline.transformers: Transformaties
+data-hub.column-config-modal.pipeline.transformers.add: Transformer toevoegen
+user-management.permissions.plugin_datahub_admin: Datahub-beheerder
+user-management.permissions.plugin_datahub_config: Datahub-configuratie
+user-management.permissions.plugin_datahub_adapter_graphql: Datahub-adapter - GraphQL
+user-management.permissions.plugin_datahub_permission_delete: Datahub verwijderen
+user-management.permissions.plugin_datahub_permission_read: Datahub lezen
+user-management.permissions.plugin_datahub_permission_update: Datahub bijwerken

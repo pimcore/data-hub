@@ -27,10 +27,12 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Query\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\CheckConsumerPermissionsService;
 use Pimcore\Bundle\DataHubBundle\Service\FileUploadService;
 use Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\ResponseServiceInterface;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\AdapterType;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Controller\FrontendController;
 use Pimcore\Helper\LongRunningHelper;
@@ -92,8 +94,13 @@ final class WebserviceController extends FrontendController
         Factory $modelFactory,
         Request $request,
         LongRunningHelper $longRunningHelper,
-        ResponseServiceInterface $responseService
+        ResponseServiceInterface $responseService,
+        AdapterAvailabilityServiceInterface $adapterAvailabilityService
     ) {
+        if (!$adapterAvailabilityService->isEnabled(AdapterType::GraphQl->value)) {
+            throw new NotFoundHttpException('The GraphQL adapter is disabled.');
+        }
+
         $clientname = $request->attributes->getString('clientname');
         $variableValues = null;
 
