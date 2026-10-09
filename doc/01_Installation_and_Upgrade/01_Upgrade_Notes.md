@@ -5,6 +5,11 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
+## Upgrade to 2026.4.0
+
+### GraphQL
+- Added the `focalPoints` field to the asset type. For images with a focal point set in the asset editor it returns `{x, y}` as percentages (`Float`, `0`–`100`) of the image width/height, read from the asset's `focalPointX`/`focalPointY` custom settings; it is `null` for images without a focal point and for all other asset types. This is a purely additive schema change; existing queries are not affected.
+
 ## Upgrade to 2026.3.0
 
 ### GraphQL
