@@ -97,7 +97,12 @@ class AssetListing
         $objectList = $modelFactory->build($listClass);
         $conditionParts = [];
         if (isset($args['ids'])) {
-            $conditionParts[] = '(id IN (' . $args['ids'] . '))';
+            // Explode it and then quote it
+            if (!is_array($args['ids'])) {
+                $args['ids'] = explode(',', $args['ids']);
+            }
+            $ids = implode(', ', array_map([$db, 'quote'], $args['ids']));
+            $conditionParts[] = '(id IN (' . $ids . '))';
         }
 
         if (isset($args['fullpaths'])) {
