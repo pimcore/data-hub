@@ -18,11 +18,13 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyDocumentTargetType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\General\AnyTargetType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\QueryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
 use Pimcore\Tests\Support\Util\TestHelper;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * getDocument() on a folder path resolves to the '_document_folder' type, so the
@@ -118,6 +120,44 @@ class DocumentUnionFolderTest extends Unit
         $types = (new AnyTargetType($this->service))->getTypes();
 
         $this->assertSame(1, $this->countType($types, self::FOLDER_TYPE));
+    }
+
+    public function testGetDocumentReturnsFolderWhenFolderReadIsEnabled()
+    {
+        $this->useConfiguration(['document' => true, 'document_folder' => true]);
+
+        $result = $this->resolveDocumentGetter($this->folder);
+
+        $this->assertSame($this->folder->getId(), $result['id'] ?? null);
+    }
+
+    public function testGetDocumentReturnsNullForFolderWhenFolderReadIsDisabled()
+    {
+        $this->useConfiguration(['document' => true, 'document_folder' => false]);
+
+        // getDocument must not expose folders when the document_folder read setting is off
+        $this->assertNull($this->resolveDocumentGetter($this->folder));
+    }
+
+    public function testGetDocumentReturnsPageWhenFolderReadIsDisabled()
+    {
+        $this->useConfiguration(['document' => true, 'document_folder' => false]);
+
+        $result = $this->resolveDocumentGetter($this->page);
+
+        $this->assertSame($this->page->getId(), $result['id'] ?? null);
+    }
+
+    private function resolveDocumentGetter(Document $document): ?array
+    {
+        // workspace permissions are covered elsewhere, only the folder read setting is under test
+        $resolver = new QueryType(new EventDispatcher(), null, null, true);
+        $resolver->setGraphQLService($this->service);
+
+        $info = $this->createStub(ResolveInfo::class);
+        $info->fieldNodes = new \ArrayObject();
+
+        return $resolver->resolveDocumentGetter(null, ['fullpath' => $document->getRealFullPath()], [], $info);
     }
 
     /**
