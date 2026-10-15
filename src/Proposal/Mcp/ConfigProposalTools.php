@@ -25,6 +25,8 @@ use Mcp\Schema\Result\CallToolResult;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalWidgetEmitter;
 use Pimcore\Bundle\PimcoreAgentBundle\Security\BoundSessionReferenceResolver;
@@ -63,6 +65,8 @@ final readonly class ConfigProposalTools
         private BoundSessionReferenceResolver $boundSessionReferenceResolver,
         private SecurityServiceInterface $securityService,
         private McpToolErrorHandlerInterface $errorHandler,
+        private StoredConfigurationsInterface $stored,
+        private AdapterAvailabilityServiceInterface $adapters,
     ) {
     }
 
@@ -78,7 +82,7 @@ final readonly class ConfigProposalTools
 
         try {
             $configurations = [];
-            foreach (Configuration::getList() as $configuration) {
+            foreach ($this->stored->all() as $configuration) {
                 if ($configuration->getType() !== $policy->configType()
                     || !$configuration->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ, $user)) {
                     continue;
@@ -311,13 +315,32 @@ final readonly class ConfigProposalTools
                 : sprintf('No %s named "%s".', $policy->noun(), $name);
         }
 
-        return ConfigDocument::isValidName($name)
-            ? null
-            : sprintf(
+        if (!ConfigDocument::isValidName($name)) {
+            return sprintf(
                 '"%s" cannot name a configuration: use letters, digits, "-" and "_", starting with a '
                 . 'letter or digit.',
                 $name,
             );
+        }
+
+        // names are unique across adapters, so another adapter's configuration blocks a create
+        if ($this->stored->find($name) !== null) {
+            return sprintf('The name "%s" is taken by another Data Hub configuration: choose another name.', $name);
+        }
+
+        return $this->mayCreate($policy, $user)
+            ? null
+            : sprintf('Missing permission to create a %s.', $policy->noun());
+    }
+
+    /** the Data Hub's own create gate, so a proposal is never one its approval cannot save */
+    private function mayCreate(ConfigProposalPolicyInterface $policy, User $user): bool
+    {
+        $type = $policy->configType();
+
+        return $this->adapters->isEnabled($type)
+            && ($user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
+                || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $type));
     }
 
     /**
@@ -376,15 +399,9 @@ final readonly class ConfigProposalTools
 
     private function load(ConfigProposalPolicyInterface $policy, string $name): ?Configuration
     {
-        try {
-            $configuration = Configuration::getByName($name);
-        } catch (Throwable) {
-            return null;
-        }
+        $configuration = $this->stored->find($name);
 
-        return $configuration?->getName() !== null && $configuration->getType() === $policy->configType()
-            ? $configuration
-            : null;
+        return $configuration?->getType() === $policy->configType() ? $configuration : null;
     }
 
     /**

@@ -78,6 +78,25 @@ class ConfigChangeControlTest extends Unit
         $this->assertSame(1, $slots['somethingNew']->values['somethingNew.a']);
     }
 
+    public function testACreateDehydratesToTheWholePatch(): void
+    {
+        $patch = ['general.active' => false, 'eventsSchema.events' => ['a']];
+
+        $this->assertSame($patch, $this->hydrator()->dehydrate($this->ref(), $patch, []));
+    }
+
+    public function testAChangeDehydratesOnlyToSectionsTheProposalHas(): void
+    {
+        $this->assertSame(
+            ['general.active' => false],
+            $this->hydrator()->dehydrate(
+                $this->ref(),
+                ['general.active' => false, 'workspaces.object' => []],
+                ['general' => ['active' => true]],
+            ),
+        );
+    }
+
     private function hydrator(): ConfigDetailHydrator
     {
         $policy = $this->createStub(ConfigProposalPolicyInterface::class);
