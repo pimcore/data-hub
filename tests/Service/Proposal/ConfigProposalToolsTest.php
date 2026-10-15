@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
+use function array_map;
 use Codeception\Test\Unit;
 use function in_array;
 use function json_decode;
@@ -261,6 +262,31 @@ class ConfigProposalToolsTest extends Unit
         $general = $this->recorded[0][2]['subjectState']['general'];
         $this->assertTrue($general['active']);
         $this->assertSame('shop', $general['path']);
+    }
+
+    public function testProposingWritesNothingUntilTheProposalIsApproved(): void
+    {
+        $existing = $this->createMock(Configuration::class);
+        $existing->method('getName')->willReturn('orders');
+        $existing->method('getType')->willReturn('webhooks');
+        $existing->method('getConfiguration')->willReturn(['general' => ['active' => true, 'description' => 'old']]);
+        $existing->method('isAllowed')->willReturn(true);
+        $existing->expects($this->never())->method('save');
+        $existing->expects($this->never())->method('delete');
+        $this->stored->put($existing);
+        $policy = new RecordingConfigPolicy();
+        $tools = $this->tools($this->admin());
+
+        $tools->propose($policy, self::TOOL, 'orders', ['general' => ['description' => 'new']], null);
+        $tools->propose($policy, self::TOOL, 'invoices', ['general' => ['description' => 'd']], null);
+
+        $this->assertCount(2, $this->recorded);
+        $this->assertSame([], $policy->saved);
+        $this->assertNull($this->stored->find('invoices'));
+        $this->assertSame(['orders'], array_map(
+            static fn (Configuration $configuration): ?string => $configuration->getName(),
+            $this->stored->all(),
+        ));
     }
 
     /**
