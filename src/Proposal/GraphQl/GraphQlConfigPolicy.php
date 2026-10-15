@@ -27,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use function sprintf;
+use function strtolower;
 use Throwable;
 use function time;
 
@@ -277,10 +278,22 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
      */
     private function flagsOf(mixed $entry, string $address): array
     {
-        // any truthy value counts: the save casts these to bool, the mutation entities keep them as sent
+        if (!is_array($entry)) {
+            return [];
+        }
+
+        // any truthy value counts: the save casts these to bool, the mutation entities keep them as sent;
+        // and under any case, as the workspace save calls set<Key>() and PHP method names ignore case
+        $granted = [];
+        foreach ($entry as $key => $value) {
+            if ((bool) $value) {
+                $granted[strtolower((string) $key)] = true;
+            }
+        }
+
         $flags = [];
         foreach (self::WRITE_FLAGS as $flag => $alias) {
-            if (is_array($entry) && ((bool) ($entry[$flag] ?? false) || (bool) ($entry[$alias] ?? false))) {
+            if (isset($granted[$flag]) || isset($granted[strtolower($alias)])) {
                 $flags[] = $address . ' ' . $flag;
             }
         }

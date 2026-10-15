@@ -75,6 +75,38 @@ class GraphQlConfigPolicyTest extends Unit
         $this->assertStringContainsString('schema.mutationEntities.Car create', $refusal);
     }
 
+    public function testAWriteFlagCountsUnderAnyCase(): void
+    {
+        $problems = $this->policy()->problems([
+            'general' => ['name' => 'no-such-endpoint'],
+            'workspaces' => [
+                'object' => [['cpath' => '/', 'read' => true, 'CREATE' => true]],
+                'asset' => [['cpath' => '/', 'read' => true, 'update' => false, 'Update' => 1]],
+            ],
+            'schema' => ['specialEntities' => ['asset' => ['read' => true, 'DeleteAllowed' => true]]],
+        ], false);
+
+        $refusal = $this->problemContaining('Write access cannot be proposed', $problems);
+        $this->assertStringContainsString('workspaces.object / create', $refusal);
+        $this->assertStringContainsString('workspaces.asset / update', $refusal);
+        $this->assertStringContainsString('schema.specialEntities.asset delete', $refusal);
+    }
+
+    public function testSummaryNamesTheQueriesAndCountsTheMutations(): void
+    {
+        $this->assertSame(
+            ['queryEntities' => ['Car', 'Product'], 'mutationEntityCount' => 1],
+            $this->policy()->summarize(['schema' => [
+                'queryEntities' => ['Car' => ['id' => 'Car'], 'Product' => ['id' => 'Product']],
+                'mutationEntities' => ['Car' => ['id' => 'Car']],
+            ]]),
+        );
+        $this->assertSame(
+            ['queryEntities' => [], 'mutationEntityCount' => 0],
+            $this->policy()->summarize(['schema' => ['queryEntities' => 'none', 'mutationEntities' => 'none']]),
+        );
+    }
+
     public function testAWriteGrantTheEndpointAlreadyHasIsKept(): void
     {
         $document = [
@@ -89,7 +121,7 @@ class GraphQlConfigPolicyTest extends Unit
         $problems = $this->policy()->problems($document, false);
         $this->assertCount(1, $problems);
         $this->assertStringContainsString('workspaces.object /Product Data delete', $problems[0]);
-        $this->assertStringNotContainsString('update', $problems[0]);
+        $this->assertStringNotContainsString('/Product Data update', $problems[0]);
     }
 
     public function testANameAnotherAdapterHoldsIsRefused(): void
