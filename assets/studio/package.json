@@ -11,6 +11,7 @@
     "lint-fix-watch": "nodemon --watch './js/**/*' --exec \"eslint ./js --fix --cache\" -e js,jsx,ts,tsx",
     "check-types": "tsc --noEmit",
     "check-types-watch": "tsc --noEmit --watch",
+    "test": "vitest run",
     "build-api-client": "TS_NODE_COMPILER_OPTIONS='{\"moduleResolution\":\"node\"}' npx @rtk-query/codegen-openapi ./build/api/openapi-config.ts",
     "generate-types": "tsc && tsc-alias"
   },
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@eslint/js": "^9",
     "@module-federation/rsbuild-plugin": "^2.2.3",
+    "@pimcore/change-control-bundle": "2026.3.0-canary.20260923-071942-d93beb9",
     "@rsbuild/core": "^1.3.21",
     "@rsbuild/plugin-react": "^1.3.1",
     "@rtk-query/codegen-openapi": "^1.2.0",
@@ -56,7 +58,8 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8"
+    "typescript-eslint": "^8",
+    "vitest": "^4.1.12"
   },
   "dependencies": {
     "@pimcore/studio-ui-bundle": "^2026.3.0-canary.20260918-091920-904fc5e",
