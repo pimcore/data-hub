@@ -41,9 +41,9 @@ final readonly class GetGraphQlConfigTool
         name: self::TOOL_NAME,
         title: 'Get GraphQL Configuration',
         description: 'Read one Data Hub GraphQL endpoint configuration by name. Returns the general, '
-            . 'schema (queryEntities and mutationEntities keyed by class name with their '
-            . 'columnConfig, specialEntities keyed by generic type) and workspaces (asset, document '
-            . 'and object trees with read/create/update/delete flags) sections — the security '
+            . 'schema (queryEntities and mutationEntities keyed by class name, each with that name '
+            . 'as its id and its columnConfig, specialEntities keyed by generic type) and workspaces '
+            . '(asset, document and object trees with read/create/update/delete flags) sections — the security '
             . 'settings with the API keys and per-configuration permissions are withheld and cannot '
             . 'be proposed. Send this document back to propose_graphql_config with your changes '
             . 'applied.',

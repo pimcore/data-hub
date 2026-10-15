@@ -21,6 +21,7 @@ use function count;
 use function implode;
 use function is_array;
 use function is_string;
+use LogicException;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -55,7 +56,12 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     public const array WITHHELD = ['security', 'permissions'];
 
-    private const array WRITE_FLAGS = ['create', 'update', 'delete'];
+    // the Studio save reads the generic types' flags under either name
+    private const array WRITE_FLAGS = [
+        'create' => 'createAllowed',
+        'update' => 'updateAllowed',
+        'delete' => 'deleteAllowed',
+    ];
 
     public function __construct(private ConfigurationServiceInterface $configurations)
     {
@@ -110,7 +116,16 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     public function problems(array $state, bool $isNew): array
     {
-        $problems = $this->unknownClasses($state);
+        $other = $this->otherType($state);
+        if ($other !== null) {
+            return [sprintf(
+                'A %s configuration is already stored under this name; Data Hub names are shared by '
+                . 'every adapter. Choose another name.',
+                $other,
+            )];
+        }
+
+        $problems = [...$this->misnamedEntities($state), ...$this->unknownClasses($state)];
 
         $granted = array_values(array_diff($this->writeGrants($state), $this->writeGrants($this->stored($state))));
         if ($granted !== []) {
@@ -132,6 +147,33 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     }
 
     /**
+     * The save keys an entity by its `id` and drops one without, so a key that is not its id
+     * would be reviewed under one name and stored under another, or not at all.
+     *
+     * @param array<string, mixed> $state
+     *
+     * @return list<string>
+     */
+    private function misnamedEntities(array $state): array
+    {
+        $problems = [];
+        foreach (['queryEntities', 'mutationEntities'] as $kind) {
+            $entities = is_array($state['schema'][$kind] ?? null) ? $state['schema'][$kind] : [];
+            foreach ($entities as $key => $entity) {
+                if (!is_array($entity) || ($entity['id'] ?? null) !== (string) $key) {
+                    $problems[] = sprintf(
+                        'schema.%1$s.%2$s needs "id": "%2$s", the class name it is keyed by.',
+                        $kind,
+                        $key,
+                    );
+                }
+            }
+        }
+
+        return $problems;
+    }
+
+    /**
      * @param array<string, mixed> $state
      *
      * @return list<string>
@@ -141,8 +183,8 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         $problems = [];
         foreach (['queryEntities', 'mutationEntities'] as $kind) {
             $entities = is_array($state['schema'][$kind] ?? null) ? $state['schema'][$kind] : [];
-            foreach ($entities as $key => $entity) {
-                $class = is_array($entity) && is_string($entity['id'] ?? null) ? $entity['id'] : (string) $key;
+            foreach (array_keys($entities) as $key) {
+                $class = (string) $key;
                 if (ClassDefinition::getByName($class) === null) {
                     $problems[] = sprintf(
                         '"%s" is not the name of a data object class this installation has (schema.%s).',
@@ -169,6 +211,17 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     public function save(string $name, array $configuration): void
     {
+        // the subject handler keeps the stored type; a GraphQL document must not land on another adapter's
+        $type = $configuration['general']['type'] ?? self::CONFIG_TYPE;
+        if ($type !== self::CONFIG_TYPE) {
+            throw new LogicException(sprintf(
+                'Refusing to save a %s over the %s configuration "%s".',
+                $this->noun(),
+                is_string($type) ? $type : 'other',
+                $name,
+            ));
+        }
+
         // the Studio save dehydrates what the editor sends, which lists the generic types by
         // name; storage keys them, and a keyed entry would be dropped on the way in
         $special = $configuration['schema']['specialEntities'] ?? null;
@@ -224,9 +277,10 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
      */
     private function flagsOf(mixed $entry, string $address): array
     {
+        // any truthy value counts: the save casts these to bool, the mutation entities keep them as sent
         $flags = [];
-        foreach (self::WRITE_FLAGS as $flag) {
-            if (is_array($entry) && ($entry[$flag] ?? false) === true) {
+        foreach (self::WRITE_FLAGS as $flag => $alias) {
+            if (is_array($entry) && ((bool) ($entry[$flag] ?? false) || (bool) ($entry[$alias] ?? false))) {
                 $flags[] = $address . ' ' . $flag;
             }
         }
@@ -243,14 +297,36 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
      */
     private function stored(array $state): array
     {
+        $configuration = $this->find($state);
+
+        return $configuration?->getType() === self::CONFIG_TYPE ? $configuration->getConfiguration() : [];
+    }
+
+    /**
+     * The adapter type stored under the proposal's name when it is not GraphQL.
+     *
+     * @param array<string, mixed> $state
+     */
+    private function otherType(array $state): ?string
+    {
+        $type = $this->find($state)?->getType();
+
+        return $type !== null && $type !== self::CONFIG_TYPE ? $type : null;
+    }
+
+    /**
+     * @param array<string, mixed> $state
+     */
+    private function find(array $state): ?Configuration
+    {
         $name = $state['general']['name'] ?? null;
 
         try {
             $configuration = is_string($name) ? Configuration::getByName($name) : null;
         } catch (Throwable) {
-            $configuration = null;
+            return null;
         }
 
-        return $configuration?->getType() === self::CONFIG_TYPE ? $configuration->getConfiguration() : [];
+        return $configuration?->getName() !== null ? $configuration : null;
     }
 }
