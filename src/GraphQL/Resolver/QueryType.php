@@ -27,6 +27,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Listing;
 use Pimcore\Model\DataObject\Service;
+use Pimcore\Model\Document;
 use Pimcore\Model\Translation;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -162,6 +163,13 @@ final class QueryType
         $documentElement = $this->getElementByTypeAndIdOrPath($args, 'document');
 
         if (!$documentElement) {
+            return null;
+        }
+
+        // folders are only readable when the document_folder read setting is enabled
+        if ($documentElement instanceof Document\Folder
+            && !$this->getGraphQlService()->querySchemaEnabled('document_folder')
+        ) {
             return null;
         }
 

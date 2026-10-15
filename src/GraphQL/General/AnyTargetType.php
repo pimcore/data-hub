@@ -64,7 +64,9 @@ final class AnyTargetType extends UnionType implements ContainerAwareInterface
             $types[] = $assetFolderType;
         }
 
-        if ($service->querySchemaEnabled('document_folder')) {
+        if ($service->querySchemaEnabled('document_folder') && !$service->querySchemaEnabled('document')) {
+            // The 'document' union already includes _document_folder; only add it
+            // separately when the document union itself is not merged below.
             $documentFolderType = $service->getDocumentTypeDefinition('_document_folder');
             $types[] = $documentFolderType;
         }
