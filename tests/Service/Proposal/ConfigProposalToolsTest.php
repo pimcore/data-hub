@@ -283,10 +283,13 @@ class ConfigProposalToolsTest extends Unit
         $this->assertCount(2, $this->recorded);
         $this->assertSame([], $policy->saved);
         $this->assertNull($this->stored->find('invoices'));
-        $this->assertSame(['orders'], array_map(
-            static fn (Configuration $configuration): ?string => $configuration->getName(),
-            $this->stored->all(),
-        ));
+        $this->assertSame(
+            ['orders'],
+            array_map(
+                static fn (Configuration $configuration): ?string => $configuration->getName(),
+                $this->stored->all(),
+            ),
+        );
     }
 
     /**
