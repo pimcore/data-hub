@@ -231,27 +231,39 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             }
 
             foreach (is_array($entries) ? $entries : [] as $index => $entry) {
-                $path = is_array($entry) ? ($entry['cpath'] ?? null) : null;
-                if (!is_string($path) || $path === '') {
-                    $problems[] = sprintf(
-                        'workspaces.%s entry %s needs "cpath", the full path of the %s it grants.',
-                        $type,
-                        $index,
-                        $type,
-                    );
-                } elseif (ElementService::getElementByPath($type, $path) === null) {
-                    $problems[] = sprintf(
-                        'workspaces.%s %s: no %s exists at this path, and a workspace on a missing '
-                        . 'path is dropped when the configuration is saved.',
-                        $type,
-                        $path,
-                        $type,
-                    );
+                $problem = $this->unresolvedWorkspace((string) $type, $index, $entry);
+                if ($problem !== null) {
+                    $problems[] = $problem;
                 }
             }
         }
 
         return $problems;
+    }
+
+    private function unresolvedWorkspace(string $type, int|string $index, mixed $entry): ?string
+    {
+        $path = is_array($entry) ? ($entry['cpath'] ?? null) : null;
+        if (!is_string($path) || $path === '') {
+            return sprintf(
+                'workspaces.%s entry %s needs "cpath", the full path of the %s it grants.',
+                $type,
+                $index,
+                $type,
+            );
+        }
+
+        if (ElementService::getElementByPath($type, $path) === null) {
+            return sprintf(
+                'workspaces.%s %s: no %s exists at this path, and a workspace on a missing '
+                . 'path is dropped when the configuration is saved.',
+                $type,
+                $path,
+                $type,
+            );
+        }
+
+        return null;
     }
 
     public function summarize(array $configuration): array

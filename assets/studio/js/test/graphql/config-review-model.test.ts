@@ -148,7 +148,7 @@ describe('isNewConfiguration', () => {
     expect(isNewConfiguration(undefined)).toBe(false)
   })
 
-  it('takes the subject\'s own answer over the slots', () => {
+  it('prefers the subject answer over the slots', () => {
     const withSubject = (isNew: boolean): ChangeSetReviewData => ({
       subjectType: 'data-hub-graphql-config',
       subjectRef: 'shop',
