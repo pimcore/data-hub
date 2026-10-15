@@ -28,7 +28,7 @@ import { useStyles } from './graphql-config-review-surface.styles'
 import { useChangeSetReview } from './use-change-set-review'
 
 /** a no-op save: the editor is mounted read-only and nothing here can write */
-const noSave = async (): Promise<{ modificationDate?: number }> => ({})
+const noSave = async (): Promise<{ modificationDate?: number }> => await Promise.resolve({})
 
 /**
  * A GraphQL endpoint reviews as the bundle's own editor: the proposed configuration mounted
