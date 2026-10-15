@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao as WorkspaceDao;
+use Pimcore\Bundle\DataHubBundle\Installer;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
@@ -34,6 +35,13 @@ class GraphQlConfigSaveTest extends Unit
 
     protected function setUp(): void
     {
+        // this suite does not run the bundle's installer, which creates the workspace tables
+        if (!Db::get()->createSchemaManager()->tablesExist([WorkspaceDao::TABLE_NAME_DATAOBJECT])) {
+            $installer = \Pimcore::getContainer()->get(Installer::class);
+            $this->assertInstanceOf(Installer::class, $installer);
+            $installer->install();
+        }
+
         $configuration = new Configuration('graphql', '', self::NAME, [
             'general' => ['name' => self::NAME, 'type' => 'graphql', 'path' => '', 'active' => false],
             'security' => self::SECURITY,
