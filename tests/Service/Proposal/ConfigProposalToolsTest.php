@@ -31,6 +31,7 @@ use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalWidgetEmitter;
 use Pimcore\Bundle\PimcoreAgentBundle\Security\BoundSessionReferenceResolver;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\AgentSessionServiceInterface;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\TaskContextResolverInterface;
+use Pimcore\Bundle\StudioBackendBundle\Mcp\Exception\InvalidMcpToolArgumentException;
 use Pimcore\Bundle\StudioBackendBundle\Mcp\Tool\McpToolErrorHandlerInterface;
 use Pimcore\Bundle\StudioBackendBundle\Security\Authenticator\Mcp\McpAccessTokenAuthenticator;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
@@ -125,6 +126,37 @@ class ConfigProposalToolsTest extends Unit
 
         $this->assertSame(
             ['error' => 'Something went wrong (ref 1).', 'code' => 'internal_error'],
+            $this->payload($result, true),
+        );
+    }
+
+    public function testAFailureWhileReadingIsHandled(): void
+    {
+        $stored = $this->createStub(StoredConfigurationsInterface::class);
+        $stored->method('find')->willThrowException(new RuntimeException('database gone'));
+        $errors = $this->createMock(McpToolErrorHandlerInterface::class);
+        $errors->expects($this->once())->method('handle')
+            ->with($this->isInstanceOf(RuntimeException::class), self::TOOL, ['name' => 'orders'])
+            ->willReturn('Something went wrong (ref 2).');
+
+        $result = $this->tools($this->admin(), null, $errors, $stored)
+            ->get(new RecordingConfigPolicy(), self::TOOL, 'orders');
+
+        $this->assertSame('internal_error', $this->payload($result, true)['code']);
+    }
+
+    public function testAnArgumentErrorWhileProposingIsReportedAsSuch(): void
+    {
+        $stored = $this->createStub(StoredConfigurationsInterface::class);
+        $stored->method('find')->willThrowException(new InvalidMcpToolArgumentException('name is too long'));
+        $errors = $this->createStub(McpToolErrorHandlerInterface::class);
+        $errors->method('handle')->willReturn('name is too long');
+
+        $result = $this->tools($this->admin(), null, $errors, $stored)
+            ->propose(new RecordingConfigPolicy(), self::TOOL, 'orders', ['general' => []], null);
+
+        $this->assertSame(
+            ['error' => 'name is too long', 'code' => 'invalid_request'],
             $this->payload($result, true),
         );
     }

@@ -25,6 +25,7 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\Exception\SubjectAccessDeniedExce
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -254,6 +255,14 @@ class ConfigSubjectHandlerTest extends Unit
         $this->stored->put($this->configuration('orders', ['general' => ['active' => true]], 'graphql'));
 
         $this->assertSame([], $this->handler(new RecordingConfigPolicy())->readState($this->ref()));
+    }
+
+    public function testAConfigurationMergesByTheConfigurationShape(): void
+    {
+        $this->assertInstanceOf(
+            ConfigStateShape::class,
+            $this->handler(new RecordingConfigPolicy())->shape($this->ref()),
+        );
     }
 
     public function testWithheldSectionsAreOutOfDraftScope(): void
