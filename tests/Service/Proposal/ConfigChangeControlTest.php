@@ -112,6 +112,16 @@ class ConfigChangeControlTest extends Unit
         $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, []));
     }
 
+    public function testAnAmendmentOfASectionHoldingAWithheldPathKeepsOnlyTheRest(): void
+    {
+        $hydrator = new ConfigDetailHydrator(new RecordingConfigPolicy());
+        $patch = ['general' => ['apiKey' => 'x', 'active' => false]];
+        $kept = ['general' => ['active' => false]];
+
+        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, ['general' => ['active' => true]]));
+        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, []));
+    }
+
     private function hydrator(): ConfigDetailHydrator
     {
         $policy = $this->createStub(ConfigProposalPolicyInterface::class);
