@@ -182,6 +182,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         $configuration = $this->load($subject->ref);
         $allowed = $user instanceof User
             && $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)
+            // a disabled adapter's configurations are unavailable to everyone, as in the Data Hub
+            && $this->adapters->isEnabled($this->policy->configType())
             && ($configuration === null
                 ? $this->mayCreate($user, $permission)
                 : $configuration->isAllowed($permission, $user));
@@ -202,11 +204,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
      */
     private function mayCreate(User $user, string $permission): bool
     {
-        $type = $this->policy->configType();
-
         return $permission === PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ
-            || ($this->adapters->isEnabled($type)
-                && ($user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
-                    || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $type)));
+            || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
+            || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $this->policy->configType());
     }
 }

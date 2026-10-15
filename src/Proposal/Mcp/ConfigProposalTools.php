@@ -79,6 +79,9 @@ final readonly class ConfigProposalTools
         if ($user === null) {
             return $this->denied();
         }
+        if (!$this->adapters->isEnabled($policy->configType())) {
+            return $this->disabled($policy);
+        }
 
         try {
             $configurations = [];
@@ -116,6 +119,9 @@ final readonly class ConfigProposalTools
         if ($user === null) {
             return $this->denied();
         }
+        if (!$this->adapters->isEnabled($policy->configType())) {
+            return $this->disabled($policy);
+        }
 
         try {
             $configuration = $this->load($policy, $name);
@@ -150,6 +156,9 @@ final readonly class ConfigProposalTools
         $user = $this->allowedUser();
         if ($user === null) {
             return $this->denied();
+        }
+        if (!$this->adapters->isEnabled($policy->configType())) {
+            return $this->disabled($policy);
         }
 
         try {
@@ -336,11 +345,8 @@ final readonly class ConfigProposalTools
     /** the Data Hub's own create gate, so a proposal is never one its approval cannot save */
     private function mayCreate(ConfigProposalPolicyInterface $policy, User $user): bool
     {
-        $type = $policy->configType();
-
-        return $this->adapters->isEnabled($type)
-            && ($user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
-                || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $type));
+        return $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
+            || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $policy->configType());
     }
 
     /**
@@ -418,6 +424,15 @@ final readonly class ConfigProposalTools
         }
 
         return $allowed && $user instanceof User ? $user : null;
+    }
+
+    /** a disabled adapter type is unavailable to everyone, admins included, as in the Data Hub */
+    private function disabled(ConfigProposalPolicyInterface $policy): CallToolResult
+    {
+        return $this->errorResult(
+            sprintf('The %s adapter is not enabled on this installation.', $policy->configType()),
+            self::CODE_NOT_FOUND
+        );
     }
 
     private function denied(): CallToolResult

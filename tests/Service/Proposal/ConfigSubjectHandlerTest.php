@@ -356,6 +356,37 @@ class ConfigSubjectHandlerTest extends Unit
         $this->addToAssertionCount(1);
     }
 
+    public function testAConfigurationTheUserMayNotOpenCannotBeReviewed(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => []]));
+
+        $this->expectException(SubjectAccessDeniedException::class);
+        $this->handler(new RecordingConfigPolicy())->authorizeRead(
+            $this->ref(),
+            $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]),
+        );
+    }
+
+    public function testADisabledAdaptersConfigurationCannotBeReviewedOrApproved(): void
+    {
+        $this->adapterEnabled = false;
+        $this->stored->put($this->configuration('orders', ['general' => []], allowed: ['read', 'update']));
+        $handler = $this->handler(new RecordingConfigPolicy());
+        $user = $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG, PermissionConstants::PLUGIN_DATA_HUB_ADMIN]);
+
+        foreach ([
+            fn () => $handler->authorizeRead($this->ref(), $user),
+            fn () => $handler->authorize($this->ref(), $user, MergeSaveMode::Publish),
+        ] as $probe) {
+            try {
+                $probe();
+                $this->fail('A disabled adapter must not be reviewable.');
+            } catch (SubjectAccessDeniedException) {
+                $this->addToAssertionCount(1);
+            }
+        }
+    }
+
     public function testANewConfigurationOfADisabledAdapterCannotBeApproved(): void
     {
         $this->adapterEnabled = false;

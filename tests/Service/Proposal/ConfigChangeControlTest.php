@@ -97,6 +97,21 @@ class ConfigChangeControlTest extends Unit
         );
     }
 
+    public function testAnAmendmentOfAWithheldPathIsNeverStored(): void
+    {
+        $hydrator = new ConfigDetailHydrator(new RecordingConfigPolicy());
+        $patch = [
+            'general.apiKey' => 'x',
+            'security.method' => 'none',
+            'general.apiKeyHint' => 'kept',
+            'general.active' => false,
+        ];
+        $kept = ['general.apiKeyHint' => 'kept', 'general.active' => false];
+
+        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, ['general' => ['active' => true]]));
+        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, []));
+    }
+
     private function hydrator(): ConfigDetailHydrator
     {
         $policy = $this->createStub(ConfigProposalPolicyInterface::class);

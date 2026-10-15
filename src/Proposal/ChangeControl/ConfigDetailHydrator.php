@@ -18,6 +18,9 @@ use function array_filter;
 use const ARRAY_FILTER_USE_KEY;
 use function array_is_list;
 use function array_key_exists;
+use function array_slice;
+use function count;
+use function explode;
 use function in_array;
 use function is_array;
 use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorInterface;
@@ -65,6 +68,13 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
 
     public function dehydrate(SubjectRef $subject, array $patch, array $proposed, ?UserInterface $user = null): array
     {
+        // a withheld leaf is never stored through a review, so an amendment naming one is refused
+        $patch = array_filter(
+            $patch,
+            fn (int|string $address): bool => !$this->isWithheld(LeafPath::split((string) $address)),
+            ARRAY_FILTER_USE_KEY,
+        );
+
         // a create has no tree yet: the patch IS the document, every section of it
         if ($proposed === []) {
             return $patch;
@@ -77,6 +87,21 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
             static fn (int|string $address): bool => array_key_exists(LeafPath::split((string) $address)[0], $proposed),
             ARRAY_FILTER_USE_KEY,
         );
+    }
+
+    /**
+     * @param list<string> $segments
+     */
+    private function isWithheld(array $segments): bool
+    {
+        foreach ($this->policy->withheld() as $path) {
+            $withheld = explode('.', $path);
+            if (array_slice($segments, 0, count($withheld)) === $withheld) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

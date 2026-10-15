@@ -360,17 +360,25 @@ class ConfigProposalToolsTest extends Unit
         $this->assertSame([], $this->recorded);
     }
 
-    public function testANewConfigurationOfADisabledAdapterCannotBeProposed(): void
+    public function testADisabledAdaptersConfigurationsAreUnavailable(): void
     {
         $this->adapterEnabled = false;
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $tools = $this->tools($this->admin());
+        $policy = new RecordingConfigPolicy();
 
-        $result = $this->tools($this->admin())
-            ->propose(new RecordingConfigPolicy(), self::TOOL, 'orders', ['general' => []], null);
-
-        $this->assertSame(
-            'Missing permission to create a webhook configuration.',
-            $this->payload($result, true)['error'],
-        );
+        foreach ([
+            $tools->list($policy, self::TOOL),
+            $tools->get($policy, self::TOOL, 'orders'),
+            $tools->propose($policy, self::TOOL, 'orders', ['general' => ['active' => false]], null),
+            $tools->propose($policy, self::TOOL, 'fresh', ['general' => []], null),
+        ] as $result) {
+            $this->assertSame(
+                ['error' => 'The webhooks adapter is not enabled on this installation.', 'code' => 'not_found'],
+                $this->payload($result, true),
+            );
+        }
+        $this->assertSame([], $this->recorded);
     }
 
     private function tools(
