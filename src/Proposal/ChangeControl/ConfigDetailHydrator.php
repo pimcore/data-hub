@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl;
 
 use function array_filter;
+use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
 use function array_is_list;
 use function array_key_exists;
@@ -68,16 +69,16 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
 
     public function dehydrate(SubjectRef $subject, array $patch, array $proposed, ?UserInterface $user = null): array
     {
-        // a withheld leaf is never stored through a review, so an amendment naming one is refused,
-        // also inside a section the amendment sends whole
-        $kept = [];
-        foreach ($patch as $address => $value) {
-            $segments = LeafPath::split((string) $address);
-            if (!$this->isWithheld($segments)) {
-                $kept[$address] = $this->withoutWithheld($segments, $value);
-            }
-        }
-        $patch = $kept;
+        // a withheld leaf is never stored through a review: an address naming one, or a section
+        // sent whole that holds one, is dropped, so Change Control refuses the amendment
+        $patch = array_filter(
+            $patch,
+            fn (mixed $value, int|string $address): bool => !$this->isWithheld(
+                LeafPath::split((string) $address),
+                $value,
+            ),
+            ARRAY_FILTER_USE_BOTH,
+        );
 
         // a create has no tree yet: the patch IS the document, every section of it
         if ($proposed === []) {
@@ -96,11 +97,15 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     /**
      * @param list<string> $segments
      */
-    private function isWithheld(array $segments): bool
+    private function isWithheld(array $segments, mixed $value): bool
     {
         foreach ($this->policy->withheld() as $path) {
             $withheld = explode('.', $path);
             if (array_slice($segments, 0, count($withheld)) === $withheld) {
+                return true;
+            }
+            if (array_slice($withheld, 0, count($segments)) === $segments
+                && self::holds($value, array_slice($withheld, count($segments)))) {
                 return true;
             }
         }
@@ -109,37 +114,18 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     }
 
     /**
-     * @param list<string> $segments
-     */
-    private function withoutWithheld(array $segments, mixed $value): mixed
-    {
-        foreach ($this->policy->withheld() as $path) {
-            $withheld = explode('.', $path);
-            if (count($withheld) > count($segments) && array_slice($withheld, 0, count($segments)) === $segments) {
-                $value = self::without($value, array_slice($withheld, count($segments)));
-            }
-        }
-
-        return $value;
-    }
-
-    /**
      * @param list<string> $path
      */
-    private static function without(mixed $value, array $path): mixed
+    private static function holds(mixed $value, array $path): bool
     {
-        $key = array_shift($path);
-        if (!is_array($value) || !array_key_exists($key, $value)) {
-            return $value;
+        foreach ($path as $key) {
+            if (!is_array($value) || !array_key_exists($key, $value)) {
+                return false;
+            }
+            $value = $value[$key];
         }
 
-        if ($path === []) {
-            unset($value[$key]);
-        } else {
-            $value[$key] = self::without($value[$key], $path);
-        }
-
-        return $value;
+        return true;
     }
 
     /**

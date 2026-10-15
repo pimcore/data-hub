@@ -112,14 +112,28 @@ class ConfigChangeControlTest extends Unit
         $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, []));
     }
 
-    public function testAnAmendmentOfASectionHoldingAWithheldPathKeepsOnlyTheRest(): void
+    public function testAnAmendmentOfASectionHoldingAWithheldPathIsNeverStored(): void
     {
         $hydrator = new ConfigDetailHydrator(new RecordingConfigPolicy());
-        $patch = ['general' => ['apiKey' => 'x', 'active' => false]];
-        $kept = ['general' => ['active' => false]];
+        $patch = [
+            'general' => ['apiKey' => 'x', 'active' => false],
+            'workspaces' => ['object' => []],
+        ];
+        $kept = ['workspaces' => ['object' => []]];
+        $existing = ['general' => ['active' => true], 'workspaces' => ['object' => []]];
 
-        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, ['general' => ['active' => true]]));
+        // dropping the address makes Change Control refuse it, as it refuses a withheld leaf
+        $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, $existing));
         $this->assertSame($kept, $hydrator->dehydrate($this->ref(), $patch, []));
+        $this->assertSame([], $hydrator->dehydrate($this->ref(), ['general' => ['apiKey' => 'x']], $existing));
+    }
+
+    public function testASectionWithoutTheWithheldPathIsStoredWhole(): void
+    {
+        $hydrator = new ConfigDetailHydrator(new RecordingConfigPolicy());
+        $patch = ['general' => ['apiKeyHint' => 'kept', 'active' => false], 'security' => 'none'];
+
+        $this->assertSame(['general' => $patch['general']], $hydrator->dehydrate($this->ref(), $patch, ['general' => []]));
     }
 
     private function hydrator(): ConfigDetailHydrator
