@@ -199,8 +199,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
 
     /**
      * Reading a configuration that does not exist yet needs the area permission alone; writing
-     * one is a create, gated as the Data Hub's own create is, so a review never offers an
-     * approval the save would refuse.
+     * one is a create, gated by the Data Hub's own create permission, so a review never offers an
+     * approval the user may not make.
      */
     private function mayCreate(User $user, string $permission): bool
     {

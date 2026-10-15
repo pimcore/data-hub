@@ -342,7 +342,7 @@ final readonly class ConfigProposalTools
             : sprintf('Missing permission to create a %s.', $policy->noun());
     }
 
-    /** the Data Hub's own create gate, so a proposal is never one its approval cannot save */
+    /** the Data Hub's own create permission: an agent proposes no create its user could not make by hand */
     private function mayCreate(ConfigProposalPolicyInterface $policy, User $user): bool
     {
         return $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
