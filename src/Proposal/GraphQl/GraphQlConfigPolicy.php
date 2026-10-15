@@ -29,7 +29,6 @@ use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Element\Service as ElementService;
 use function sprintf;
-use function strtolower;
 use Throwable;
 use function time;
 
@@ -60,13 +59,6 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public const array WITHHELD = ['security', 'permissions'];
 
     private const array WORKSPACE_TYPES = ['document', 'asset', 'object'];
-
-    // the Studio save reads the generic types' flags under either name
-    private const array WRITE_FLAGS = [
-        'create' => 'createAllowed',
-        'update' => 'updateAllowed',
-        'delete' => 'deleteAllowed',
-    ];
 
     public function __construct(private ConfigurationServiceInterface $configurations)
     {
@@ -136,7 +128,8 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             ...$this->unresolvedWorkspaces($state),
         ];
 
-        $granted = array_values(array_diff($this->writeGrants($state), $this->writeGrants($this->stored($state))));
+        $grants = new GraphQlWriteGrants();
+        $granted = array_values(array_diff($grants->of($state), $grants->of($this->stored($state))));
         if ($granted !== []) {
             $problems[] = sprintf(
                 'Write access cannot be proposed (%s). Propose read access only; a person grants '
@@ -309,63 +302,6 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         // the stored modification date is the one the merge just read; passing now defeats the
         // editor's stale-write guard, which a reviewed merge has already answered
         $this->configurations->updateConfiguration($name, $configuration, time());
-    }
-
-    /**
-     * Every write permission a document grants, as a readable address.
-     *
-     * @param array<string, mixed> $document
-     *
-     * @return list<string>
-     */
-    private function writeGrants(array $document): array
-    {
-        $grants = [];
-
-        $workspaces = is_array($document['workspaces'] ?? null) ? $document['workspaces'] : [];
-        foreach ($workspaces as $kind => $entries) {
-            foreach (is_array($entries) ? $entries : [] as $entry) {
-                $path = is_array($entry) && is_string($entry['cpath'] ?? null) ? $entry['cpath'] : '';
-                $grants = [...$grants, ...$this->flagsOf($entry, sprintf('workspaces.%s %s', $kind, $path))];
-            }
-        }
-
-        foreach (['mutationEntities', 'specialEntities'] as $kind) {
-            $entities = is_array($document['schema'][$kind] ?? null) ? $document['schema'][$kind] : [];
-            foreach ($entities as $key => $entity) {
-                $grants = [...$grants, ...$this->flagsOf($entity, sprintf('schema.%s.%s', $kind, $key))];
-            }
-        }
-
-        return $grants;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function flagsOf(mixed $entry, string $address): array
-    {
-        if (!is_array($entry)) {
-            return [];
-        }
-
-        // any truthy value counts: the save casts these to bool, the mutation entities keep them as sent;
-        // and under any case, as the workspace save calls set<Key>() and PHP method names ignore case
-        $granted = [];
-        foreach ($entry as $key => $value) {
-            if ((bool) $value) {
-                $granted[strtolower((string) $key)] = true;
-            }
-        }
-
-        $flags = [];
-        foreach (self::WRITE_FLAGS as $flag => $alias) {
-            if (isset($granted[$flag]) || isset($granted[strtolower($alias)])) {
-                $flags[] = $address . ' ' . $flag;
-            }
-        }
-
-        return $flags;
     }
 
     /**
