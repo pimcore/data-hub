@@ -11,6 +11,7 @@
 import type { ChangeSetReviewData, CompareTarget, ReviewSlotData } from '@pimcore/change-control-bundle/sdk'
 import { type BackendConfiguration } from '../components/backend-types'
 import { type FormAnnotations, type FormItemAnnotationStatus } from './studio-form-annotations'
+import { assign, type Doc, toEditorShape, toStoredShape, unassign } from './document-shape'
 
 const isEqual = (a: unknown, b: unknown): boolean => JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
 
@@ -65,73 +66,9 @@ const SCHEMA_GRIDS: Record<string, string> = {
   specialEntities: 'schema.genericTypes'
 }
 
-type Doc = Record<string, any>
-
-const keyBy = (list: Doc[], key: (item: Doc) => string, value: (item: Doc) => Doc): Doc =>
-  list.reduce<Doc>((keyed, item) => ({ ...keyed, [key(item)]: value(item) }), {})
-
-/**
- * The live document as it is stored: the detail endpoint lists the schema entities and the
- * generic types, while a change set addresses them by class name and by type.
- */
-function toStoredShape (live: Doc): Doc {
-  const doc: Doc = structuredClone(live)
-  const schema: Doc = doc.schema ?? {}
-  for (const key of ['queryEntities', 'mutationEntities']) {
-    if (Array.isArray(schema[key])) {
-      schema[key] = keyBy(schema[key] as Doc[], (entity) => entity.id ?? entity.name, (entity) => entity)
-    }
-  }
-  if (Array.isArray(schema.specialEntities)) {
-    schema.specialEntities = keyBy(schema.specialEntities as Doc[], (setting) => setting.name, (setting) => ({
-      ...setting,
-      read: setting.readAllowed ?? false,
-      create: setting.createAllowed ?? false,
-      update: setting.updateAllowed ?? false,
-      delete: setting.deleteAllowed ?? false
-    }))
-  }
-  doc.schema = schema
-
-  return doc
-}
-
-/** the generic types back as the list the editor reads; the schema entities it reads keyed */
-function toEditorShape (doc: Doc): Doc {
-  const special = doc.schema?.specialEntities
-  if (special !== undefined && special !== null && !Array.isArray(special)) {
-    doc.schema.specialEntities = Object.entries(special as Record<string, Doc>).map(([name, setting]) => ({
-      ...setting,
-      name,
-      readAllowed: setting.read ?? setting.readAllowed ?? false,
-      createAllowed: setting.create ?? setting.createAllowed ?? false,
-      updateAllowed: setting.update ?? setting.updateAllowed ?? false,
-      deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
-    }))
-  }
-
-  return doc
-}
-
-/** Un-flattens `a.b.c` leaves back into a nested object. */
-function assign (target: Record<string, unknown>, address: string, value: unknown): void {
-  const segments = address.split('.')
-  let node = target
-  segments.forEach((segment, index) => {
-    if (index === segments.length - 1) {
-      node[segment] = value
-      return
-    }
-    if (typeof node[segment] !== 'object' || node[segment] === null) {
-      node[segment] = {}
-    }
-    node = node[segment] as Record<string, unknown>
-  })
-}
-
 /**
  * The configuration as the change set proposes it: the live document with the proposed leaves
- * laid over it.
+ * laid over it and the leaves it drops taken out.
  *
  * The live document has to come from the bundle's own endpoint. A review payload carries only
  * the CHANGED subset of the state, which is the right thing for a diff and far too little for
@@ -145,8 +82,13 @@ export function proposedConfiguration (
   const config = toStoredShape((live ?? {}) as Doc)
   if (payload == null) return toEditorShape(config) as BackendConfiguration
 
+  // a proposal replaces whole sections, so a live leaf it does not carry is one approving removes
   for (const slot of Object.values(payload.slots ?? {})) {
-    for (const [address, value] of Object.entries(slot.proposed ?? {})) assign(config, address, value)
+    const proposed = slot.proposed ?? {}
+    for (const address of Object.keys(slot.current ?? {})) {
+      if (!(address in proposed)) unassign(config, address)
+    }
+    for (const [address, value] of Object.entries(proposed)) assign(config, address, value)
   }
 
   return toEditorShape(config) as BackendConfiguration
@@ -220,44 +162,55 @@ export function configChanges (
   if (payload == null) return []
 
   const changes: ConfigChange[] = []
+  // the entities each side holds, so one that exists on one side only reads as a whole
+  const onBothSides = new Set<string>()
   for (const [slotKey, slot] of Object.entries(payload.slots ?? {})) {
     const current = comparedSide(slot, compareAgainst)
+    const proposed = slot.proposed ?? {}
 
-    for (const [address, value] of Object.entries(slot.proposed ?? {})) {
+    for (const address of new Set([...Object.keys(proposed), ...Object.keys(current)])) {
       if (NOT_A_CHANGE.has(address)) continue
-      const before = current[address]
-      if (isEqual(before, value)) continue
+      const inProposed = address in proposed
+      const inCurrent = address in current
+      if (inProposed && inCurrent && isEqual(current[address], proposed[address])) continue
       changes.push({
         address,
         formPath: toFormPath(address),
         label: address.split('.').pop() ?? address,
         section: slotKey,
-        status: before === undefined ? 'added' : 'changed',
-        current: before,
-        proposed: value
+        status: inCurrent ? (inProposed ? 'changed' : 'removed') : 'added',
+        current: current[address],
+        proposed: proposed[address]
       })
+    }
+
+    const proposedEntities = new Set(Object.keys(proposed).map(entityOf))
+    for (const address of Object.keys(current)) {
+      const entity = entityOf(address)
+      if (entity !== undefined && proposedEntities.has(entity)) onBothSides.add(entity)
     }
   }
 
-  return collapseNewEntities(changes)
+  return collapseWholeEntities(changes, onBothSides)
+}
+
+/** `schema.queryEntities.Car` for any leaf inside that entity */
+function entityOf (address: string): string | undefined {
+  const segments = address.split('.')
+  return segments[0] === 'schema' && segments.length > 3 ? segments.slice(0, 3).join('.') : undefined
 }
 
 /**
- * A schema entity the proposal adds arrives as one leaf per key — id, name, columns. The
- * reviewer weighs the entity, so every leaf of one that did not exist before is one row.
+ * A schema entity the proposal adds or drops arrives as one leaf per key — id, name, columns.
+ * The reviewer weighs the entity, so every leaf of one that exists on one side only is one row.
  */
-function collapseNewEntities (changes: ConfigChange[]): ConfigChange[] {
-  const entityOf = (change: ConfigChange): string | undefined => {
-    const segments = change.address.split('.')
-    return segments[0] === 'schema' && segments.length > 3 ? segments.slice(0, 3).join('.') : undefined
-  }
-  const touched = new Set(changes.filter((change) => change.status !== 'added').map(entityOf))
+function collapseWholeEntities (changes: ConfigChange[], onBothSides: Set<string>): ConfigChange[] {
   const collapsed: ConfigChange[] = []
   const seen = new Set<string>()
 
   for (const change of changes) {
-    const entity = entityOf(change)
-    if (entity === undefined || touched.has(entity)) {
+    const entity = entityOf(change.address)
+    if (entity === undefined || onBothSides.has(entity)) {
       collapsed.push(change)
       continue
     }
