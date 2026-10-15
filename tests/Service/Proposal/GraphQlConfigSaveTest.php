@@ -57,9 +57,13 @@ class GraphQlConfigSaveTest extends Unit
             'security' => self::SECURITY,
             'schema' => [
                 'queryEntities' => ['Car' => ['id' => 'Car', 'name' => 'Car', 'columnConfig' => []]],
-                'specialEntities' => ['asset' => ['read' => true, 'create' => false, 'update' => false, 'delete' => false]],
+                'specialEntities' => [
+                    'asset' => ['read' => true, 'create' => false, 'update' => false, 'delete' => false],
+                ],
             ],
-            'workspaces' => ['object' => [['cpath' => '/', 'read' => true, 'create' => false, 'update' => false, 'delete' => false]]],
+            'workspaces' => [
+                'object' => [['cpath' => '/', 'read' => true, 'create' => false, 'update' => false, 'delete' => false]],
+            ],
         ]);
 
         $stored = Configuration::getByName(self::NAME)?->getConfiguration();

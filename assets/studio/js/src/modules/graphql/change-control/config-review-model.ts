@@ -167,31 +167,47 @@ export function configChanges (
   for (const [slotKey, slot] of Object.entries(payload.slots ?? {})) {
     const current = comparedSide(slot, compareAgainst)
     const proposed = slot.proposed ?? {}
-
-    for (const address of new Set([...Object.keys(proposed), ...Object.keys(current)])) {
-      if (NOT_A_CHANGE.has(address)) continue
-      const inProposed = address in proposed
-      const inCurrent = address in current
-      if (inProposed && inCurrent && isEqual(current[address], proposed[address])) continue
-      changes.push({
-        address,
-        formPath: toFormPath(address),
-        label: address.split('.').pop() ?? address,
-        section: slotKey,
-        status: inCurrent ? (inProposed ? 'changed' : 'removed') : 'added',
-        current: current[address],
-        proposed: proposed[address]
-      })
-    }
-
-    const proposedEntities = new Set(Object.keys(proposed).map(entityOf))
-    for (const address of Object.keys(current)) {
-      const entity = entityOf(address)
-      if (entity !== undefined && proposedEntities.has(entity)) onBothSides.add(entity)
-    }
+    changes.push(...slotChanges(slotKey, current, proposed))
+    for (const entity of entitiesOnBothSides(current, proposed)) onBothSides.add(entity)
   }
 
   return collapseWholeEntities(changes, onBothSides)
+}
+
+function slotChanges (
+  section: string,
+  current: Record<string, unknown>,
+  proposed: Record<string, unknown>
+): ConfigChange[] {
+  const changes: ConfigChange[] = []
+  for (const address of new Set([...Object.keys(proposed), ...Object.keys(current)])) {
+    if (NOT_A_CHANGE.has(address)) continue
+    const inProposed = address in proposed
+    const inCurrent = address in current
+    if (inProposed && inCurrent && isEqual(current[address], proposed[address])) continue
+    changes.push({
+      address,
+      formPath: toFormPath(address),
+      label: address.split('.').pop() ?? address,
+      section,
+      status: changeStatus(inCurrent, inProposed),
+      current: current[address],
+      proposed: proposed[address]
+    })
+  }
+  return changes
+}
+
+function changeStatus (inCurrent: boolean, inProposed: boolean): FormItemAnnotationStatus {
+  if (!inCurrent) return 'added'
+  return inProposed ? 'changed' : 'removed'
+}
+
+function entitiesOnBothSides (current: Record<string, unknown>, proposed: Record<string, unknown>): string[] {
+  const proposedEntities = new Set(Object.keys(proposed).map(entityOf))
+  return Object.keys(current)
+    .map(entityOf)
+    .filter((entity): entity is string => entity !== undefined && proposedEntities.has(entity))
 }
 
 /** `schema.queryEntities.Car` for any leaf inside that entity */
