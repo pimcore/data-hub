@@ -31,6 +31,7 @@ use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Model\User;
 use Pimcore\Model\UserInterface;
+use function sprintf;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -407,6 +408,47 @@ class ConfigSubjectHandlerTest extends Unit
             $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG, PermissionConstants::PLUGIN_DATA_HUB_ADMIN]),
             MergeSaveMode::Publish,
         );
+    }
+
+    public function testRejectingAProposalWritesNothing(): void
+    {
+        $existing = $this->configuration('orders', ['general' => ['active' => true, 'description' => 'old']], allowed: [
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ,
+            PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
+        ]);
+        $this->stored->put($existing);
+        $this->configurations->expects($this->never())->method('addConfiguration');
+        $this->configurations->expects($this->never())->method('deleteConfiguration');
+        $policy = new RecordingConfigPolicy();
+        $handler = $this->handler($policy);
+        $user = $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG, PermissionConstants::PLUGIN_DATA_HUB_ADMIN]);
+
+        // what Change Control asks a subject handler when a change set is discarded: read access,
+        // then the right to close it under either write mode; nothing is applied
+        foreach ([$this->ref(), new SubjectRef('data-hub-webhook-config', Uuid::v4(), 'invoices')] as $subject) {
+            $handler->authorizeRead($subject, $user);
+            $this->assertCloseAllowed($handler, $subject, $user);
+        }
+
+        $this->assertSame([], $policy->saved);
+        $this->assertNull($this->stored->find('invoices'));
+        $this->assertSame($existing, $this->stored->find('orders'));
+        $this->assertSame(['general' => ['active' => true, 'description' => 'old']], $handler->readState($this->ref()));
+    }
+
+    private function assertCloseAllowed(ConfigSubjectHandler $handler, SubjectRef $subject, User $user): void
+    {
+        foreach ([MergeSaveMode::Save, MergeSaveMode::Publish] as $mode) {
+            try {
+                $handler->authorize($subject, $user, $mode);
+
+                return;
+            } catch (SubjectAccessDeniedException) {
+                // Change Control tries the next write mode
+            }
+        }
+
+        $this->fail(sprintf('Closing "%s" was refused under every write mode.', $subject->ref));
     }
 
     private function handler(RecordingConfigPolicy $policy): ConfigSubjectHandler
