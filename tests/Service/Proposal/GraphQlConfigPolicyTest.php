@@ -25,6 +25,8 @@ class GraphQlConfigPolicyTest extends Unit
 {
     private const string STORED = 'policy-test-endpoint';
 
+    private const string PATH = '/Product Data';
+
     protected function tearDown(): void
     {
         Configuration::getByName(self::STORED)?->getDao()->delete();
@@ -47,7 +49,7 @@ class GraphQlConfigPolicyTest extends Unit
     {
         $problems = $this->policy()->problems([
             'general' => ['name' => 'no-such-endpoint'],
-            'workspaces' => ['object' => [['cpath' => '/Product Data', 'read' => true, 'update' => true]]],
+            'workspaces' => ['object' => [['cpath' => self::PATH, 'read' => true, 'update' => true]]],
             'schema' => ['specialEntities' => ['asset' => ['read' => true, 'delete' => true]]],
         ], false);
 
@@ -77,7 +79,7 @@ class GraphQlConfigPolicyTest extends Unit
     {
         $document = [
             'general' => ['name' => self::STORED],
-            'workspaces' => ['object' => [['cpath' => '/Product Data', 'read' => true, 'update' => true]]],
+            'workspaces' => ['object' => [['cpath' => self::PATH, 'read' => true, 'update' => true]]],
         ];
         $this->store('graphql', $document);
 
@@ -150,7 +152,7 @@ class GraphQlConfigPolicyTest extends Unit
     {
         $problems = $this->policy()->problems([
             'general' => ['name' => 'no-such-endpoint'],
-            'workspaces' => ['object' => [['cpath' => '/Product Data', 'read' => true, 'update' => false]]],
+            'workspaces' => ['object' => [['cpath' => self::PATH, 'read' => true, 'update' => false]]],
             'schema' => ['specialEntities' => ['asset' => ['read' => true]]],
         ], false);
 
