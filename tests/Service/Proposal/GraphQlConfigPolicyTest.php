@@ -25,7 +25,8 @@ class GraphQlConfigPolicyTest extends Unit
 {
     private const string STORED = 'policy-test-endpoint';
 
-    private const string PATH = '/Product Data';
+    // the root folder: every installation has it, and a workspace on a missing path is refused
+    private const string PATH = '/';
 
     protected function tearDown(): void
     {
@@ -54,7 +55,7 @@ class GraphQlConfigPolicyTest extends Unit
         ], false);
 
         $this->assertCount(1, $problems);
-        $this->assertStringContainsString('workspaces.object /Product Data update', $problems[0]);
+        $this->assertStringContainsString('workspaces.object / update', $problems[0]);
         $this->assertStringContainsString('schema.specialEntities.asset delete', $problems[0]);
     }
 
@@ -62,7 +63,7 @@ class GraphQlConfigPolicyTest extends Unit
     {
         $problems = $this->policy()->problems([
             'general' => ['name' => 'no-such-endpoint'],
-            'workspaces' => ['document' => [['cpath' => '/shop', 'read' => true, 'delete' => 'true']]],
+            'workspaces' => ['document' => [['cpath' => '/', 'read' => true, 'delete' => 'true']]],
             'schema' => [
                 'specialEntities' => ['asset' => ['read' => true, 'createAllowed' => true]],
                 'mutationEntities' => ['Car' => ['id' => 'Car', 'create' => 1]],
@@ -70,7 +71,7 @@ class GraphQlConfigPolicyTest extends Unit
         ], false);
 
         $refusal = $this->problemContaining('Write access cannot be proposed', $problems);
-        $this->assertStringContainsString('workspaces.document /shop delete', $refusal);
+        $this->assertStringContainsString('workspaces.document / delete', $refusal);
         $this->assertStringContainsString('schema.specialEntities.asset create', $refusal);
         $this->assertStringContainsString('schema.mutationEntities.Car create', $refusal);
     }
@@ -120,8 +121,8 @@ class GraphQlConfigPolicyTest extends Unit
         $document['workspaces']['object'][0]['delete'] = true;
         $problems = $this->policy()->problems($document, false);
         $this->assertCount(1, $problems);
-        $this->assertStringContainsString('workspaces.object /Product Data delete', $problems[0]);
-        $this->assertStringNotContainsString('/Product Data update', $problems[0]);
+        $this->assertStringContainsString('workspaces.object / delete', $problems[0]);
+        $this->assertStringNotContainsString('/ update', $problems[0]);
     }
 
     public function testANameAnotherAdapterHoldsIsRefused(): void
@@ -189,6 +190,30 @@ class GraphQlConfigPolicyTest extends Unit
         ], false);
 
         $this->assertSame([], $problems);
+    }
+
+    public function testAWorkspaceTheSaveWouldDropIsRefused(): void
+    {
+        $problems = $this->policy()->problems([
+            'general' => ['name' => 'no-such-endpoint'],
+            'workspaces' => [
+                'object' => [
+                    ['cpath' => '/', 'read' => true],
+                    ['cpath' => '/no-such-folder', 'read' => true],
+                    ['path' => '/', 'read' => true],
+                ],
+                'asset' => ['not-an-entry'],
+                'objects' => [['cpath' => '/', 'read' => true]],
+            ],
+        ], false);
+
+        $this->assertSame([
+            'workspaces.object /no-such-folder: no object exists at this path, and a workspace on a missing '
+            . 'path is dropped when the configuration is saved.',
+            'workspaces.object entry 2 needs "cpath", the full path of the object it grants.',
+            'workspaces.asset entry 0 needs "cpath", the full path of the asset it grants.',
+            'workspaces.objects is not a workspace type; use document, asset, object.',
+        ], $problems);
     }
 
     public function testSavingListsTheGenericTypesTheWayTheEditorSendsThem(): void

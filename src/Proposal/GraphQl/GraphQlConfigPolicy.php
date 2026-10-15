@@ -19,6 +19,7 @@ use function array_keys;
 use function array_values;
 use function count;
 use function implode;
+use function in_array;
 use function is_array;
 use function is_string;
 use LogicException;
@@ -26,6 +27,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\Element\Service as ElementService;
 use function sprintf;
 use function strtolower;
 use Throwable;
@@ -56,6 +58,8 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public const array PROPOSABLE = ['general', 'schema', 'workspaces'];
 
     public const array WITHHELD = ['security', 'permissions'];
+
+    private const array WORKSPACE_TYPES = ['document', 'asset', 'object'];
 
     // the Studio save reads the generic types' flags under either name
     private const array WRITE_FLAGS = [
@@ -126,7 +130,11 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             )];
         }
 
-        $problems = [...$this->misnamedEntities($state), ...$this->unknownClasses($state)];
+        $problems = [
+            ...$this->misnamedEntities($state),
+            ...$this->unknownClasses($state),
+            ...$this->unresolvedWorkspaces($state),
+        ];
 
         $granted = array_values(array_diff($this->writeGrants($state), $this->writeGrants($this->stored($state))));
         if ($granted !== []) {
@@ -191,6 +199,53 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
                         '"%s" is not the name of a data object class this installation has (schema.%s).',
                         $class,
                         $kind,
+                    );
+                }
+            }
+        }
+
+        return $problems;
+    }
+
+    /**
+     * The save keeps a workspace only when its path resolves to an element and reads its path
+     * without a guard, so a reviewed workspace on a missing path would vanish on approval.
+     *
+     * @param array<string, mixed> $state
+     *
+     * @return list<string>
+     */
+    private function unresolvedWorkspaces(array $state): array
+    {
+        $problems = [];
+        $workspaces = is_array($state['workspaces'] ?? null) ? $state['workspaces'] : [];
+        foreach ($workspaces as $type => $entries) {
+            if (!in_array($type, self::WORKSPACE_TYPES, true)) {
+                $problems[] = sprintf(
+                    'workspaces.%s is not a workspace type; use %s.',
+                    $type,
+                    implode(', ', self::WORKSPACE_TYPES),
+                );
+
+                continue;
+            }
+
+            foreach (is_array($entries) ? $entries : [] as $index => $entry) {
+                $path = is_array($entry) ? ($entry['cpath'] ?? null) : null;
+                if (!is_string($path) || $path === '') {
+                    $problems[] = sprintf(
+                        'workspaces.%s entry %s needs "cpath", the full path of the %s it grants.',
+                        $type,
+                        $index,
+                        $type,
+                    );
+                } elseif (ElementService::getElementByPath($type, $path) === null) {
+                    $problems[] = sprintf(
+                        'workspaces.%s %s: no %s exists at this path, and a workspace on a missing '
+                        . 'path is dropped when the configuration is saved.',
+                        $type,
+                        $path,
+                        $type,
                     );
                 }
             }
