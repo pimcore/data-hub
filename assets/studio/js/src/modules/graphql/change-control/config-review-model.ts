@@ -143,11 +143,19 @@ export function groupChanges (changes: ConfigChange[]): ChangeGroup[] {
 /**
  * True when the change set CREATES the configuration rather than changing one. Nothing has a
  * previous value, so enumerating every field says only "all of it" at great length.
+ *
+ * Change Control's own answer wins: the payload carries only the changed sections, so an edit
+ * that touches only sections the live document lacks has nothing to compare against either.
  */
 export function isNewConfiguration (
   payload: ChangeSetReviewData | undefined,
   compareAgainst: CompareTarget = 'current'
 ): boolean {
+  const subject = payload?.subjects?.find(
+    (candidate) => candidate.subjectType === payload.subjectType && candidate.subjectRef === payload.subjectRef
+  )
+  if (subject?.isNew !== undefined) return subject.isNew
+
   const slots = Object.values(payload?.slots ?? {})
   if (slots.length === 0) return false
 

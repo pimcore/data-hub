@@ -147,6 +147,23 @@ describe('isNewConfiguration', () => {
     expect(isNewConfiguration(review({}))).toBe(false)
     expect(isNewConfiguration(undefined)).toBe(false)
   })
+
+  it('takes the subject\'s own answer over the slots', () => {
+    const withSubject = (isNew: boolean): ChangeSetReviewData => ({
+      subjectType: 'data-hub-graphql-config',
+      subjectRef: 'shop',
+      subjects: [
+        { subjectType: 'data-hub-graphql-config', subjectRef: 'other', isNew: !isNew },
+        { subjectType: 'data-hub-graphql-config', subjectRef: 'shop', isNew }
+      ],
+      // an edit that adds a section the live document lacks: nothing to compare against
+      slots: { schema: slot(null, CAR, null) }
+    }) as unknown as ChangeSetReviewData
+
+    expect(isNewConfiguration(withSubject(false))).toBe(false)
+    expect(isNewConfiguration(withSubject(true))).toBe(true)
+    expect(isNewConfiguration(withSubject(false), 'base')).toBe(false)
+  })
 })
 
 describe('groupChanges', () => {
