@@ -47,6 +47,8 @@ class ConfigProposalToolsTest extends Unit
 {
     private const string TOOL = 'webhook_config_propose';
 
+    private const string TOO_LONG = 'name is too long';
+
     private InMemoryStoredConfigurations $stored;
 
     /** @var list<array{string, string, array<string, mixed>, int}> */
@@ -148,15 +150,15 @@ class ConfigProposalToolsTest extends Unit
     public function testAnArgumentErrorWhileProposingIsReportedAsSuch(): void
     {
         $stored = $this->createStub(StoredConfigurationsInterface::class);
-        $stored->method('find')->willThrowException(new InvalidMcpToolArgumentException('name is too long'));
+        $stored->method('find')->willThrowException(new InvalidMcpToolArgumentException(self::TOO_LONG));
         $errors = $this->createStub(McpToolErrorHandlerInterface::class);
-        $errors->method('handle')->willReturn('name is too long');
+        $errors->method('handle')->willReturn(self::TOO_LONG);
 
         $result = $this->tools($this->admin(), null, $errors, $stored)
             ->propose(new RecordingConfigPolicy(), self::TOOL, 'orders', ['general' => []], null);
 
         $this->assertSame(
-            ['error' => 'name is too long', 'code' => 'invalid_request'],
+            ['error' => self::TOO_LONG, 'code' => 'invalid_request'],
             $this->payload($result, true),
         );
     }

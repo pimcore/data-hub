@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
-use RuntimeException;
 
 /**
  * A webhook-like adapter policy that records what it is asked to save.
@@ -87,7 +86,7 @@ final class RecordingConfigPolicy implements ConfigProposalPolicyInterface
     public function save(string $name, array $configuration): void
     {
         if ($this->saveFails) {
-            throw new RuntimeException('The adapter rejected the configuration.');
+            throw new RejectedConfigurationException('The adapter rejected the configuration.');
         }
 
         $this->saved[] = [$name, $configuration];

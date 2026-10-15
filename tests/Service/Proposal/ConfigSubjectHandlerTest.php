@@ -32,7 +32,6 @@ use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Model\User;
 use Pimcore\Model\UserInterface;
-use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -40,6 +39,8 @@ use Symfony\Component\Uid\Uuid;
  */
 class ConfigSubjectHandlerTest extends Unit
 {
+    private const string PATH = 'shop/exports';
+
     private InMemoryStoredConfigurations $stored;
 
     private ConfigurationServiceInterface&MockObject $configurations;
@@ -102,7 +103,7 @@ class ConfigSubjectHandlerTest extends Unit
     public function testANewConfigurationIsCreatedUnderTheAdaptersTypeBeforeItIsSaved(): void
     {
         $this->configurations->expects($this->once())->method('addConfiguration')
-            ->with('orders', 'webhooks', 'shop/exports')
+            ->with('orders', 'webhooks', self::PATH)
             ->willReturnCallback(function (string $name): string {
                 $this->stored->put($this->configuration($name, ['general' => []]));
 
@@ -112,13 +113,13 @@ class ConfigSubjectHandlerTest extends Unit
 
         $this->handler($policy)->applyMerged(
             $this->ref(),
-            ['general' => ['active' => false, 'path' => 'shop/exports']],
+            ['general' => ['active' => false, 'path' => self::PATH]],
             $this->user([]),
             MergeSaveMode::Publish,
         );
 
         $this->assertSame(
-            ['active' => false, 'path' => 'shop/exports', 'name' => 'orders', 'type' => 'webhooks'],
+            ['active' => false, 'path' => self::PATH, 'name' => 'orders', 'type' => 'webhooks'],
             $policy->saved[0][1]['general'],
         );
     }
@@ -142,7 +143,7 @@ class ConfigSubjectHandlerTest extends Unit
                 MergeSaveMode::Publish,
             );
             $this->fail('The failed save must reach the approver.');
-        } catch (RuntimeException $e) {
+        } catch (RejectedConfigurationException $e) {
             $this->assertSame('The adapter rejected the configuration.', $e->getMessage());
         }
 
@@ -173,7 +174,7 @@ class ConfigSubjectHandlerTest extends Unit
         $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
         $this->configurations->expects($this->never())->method('deleteConfiguration');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(RejectedConfigurationException::class);
 
         $this->handler(new RecordingConfigPolicy(saveFails: true))->applyMerged(
             $this->ref(),
