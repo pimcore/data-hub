@@ -133,7 +133,10 @@ class ConfigChangeControlTest extends Unit
         $hydrator = new ConfigDetailHydrator(new RecordingConfigPolicy());
         $patch = ['general' => ['apiKeyHint' => 'kept', 'active' => false], 'security' => 'none'];
 
-        $this->assertSame(['general' => $patch['general']], $hydrator->dehydrate($this->ref(), $patch, ['general' => []]));
+        $this->assertSame(
+            ['general' => $patch['general']],
+            $hydrator->dehydrate($this->ref(), $patch, ['general' => []])
+        );
     }
 
     private function hydrator(): ConfigDetailHydrator
