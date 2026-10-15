@@ -160,14 +160,15 @@ class GraphQlConfigPolicyTest extends Unit
     public function testSavingListsTheGenericTypesTheWayTheEditorSendsThem(): void
     {
         $saved = null;
+        $capture = static function (array $configuration) use (&$saved): bool {
+            $saved = $configuration;
+
+            return true;
+        };
         $configurations = $this->createMock(ConfigurationServiceInterface::class);
         $configurations->expects($this->once())
             ->method('updateConfiguration')
-            ->with($this->anything(), $this->callback(static function (array $configuration) use (&$saved): bool {
-                $saved = $configuration;
-
-                return true;
-            }))
+            ->with($this->anything(), $this->callback($capture))
             ->willReturn(1);
 
         (new GraphQlConfigPolicy($configurations))->save('shop', [
