@@ -19,7 +19,6 @@ use function in_array;
 use function json_decode;
 use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Result\CallToolResult;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
@@ -287,8 +286,9 @@ class ConfigProposalToolsTest extends Unit
 
     /**
      * @param array<string, mixed>|string $document
+     *
+     * @dataProvider refusedDocuments
      */
-    #[DataProvider('refusedDocuments')]
     public function testADocumentThatIsNotAWebhookConfigurationIsRefused(array|string $document, string $refusal): void
     {
         $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));

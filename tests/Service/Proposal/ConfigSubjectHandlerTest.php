@@ -17,7 +17,6 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 use Codeception\Test\Unit;
 use function in_array;
 use LogicException;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Pimcore\Bundle\ChangeControlBundle\Merge\Exception\UnsupportedMergeSaveModeException;
 use Pimcore\Bundle\ChangeControlBundle\Merge\MergeSaveMode;
@@ -354,8 +353,9 @@ class ConfigSubjectHandlerTest extends Unit
 
     /**
      * @param list<string> $permissions
+     *
+     * @dataProvider creators
      */
-    #[DataProvider('creators')]
     public function testAUserWhoMayCreateMayApproveANewConfiguration(array $permissions): void
     {
         $this->handler(new RecordingConfigPolicy())->authorize(
