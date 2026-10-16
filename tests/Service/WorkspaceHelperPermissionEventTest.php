@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This source file is available under the terms of the
  * Pimcore Open Core License (POCL)
@@ -41,12 +43,18 @@ class WorkspaceHelperPermissionEventTest extends Unit
 
     private int $previousPolicy;
 
+    private mixed $previousLookup = null;
+
+    private mixed $previousContext = null;
+
     private EventDispatcher $dispatcher;
 
     protected function setUp(): void
     {
         $this->previousKernel = \Pimcore::getKernel();
         $this->previousPolicy = PimcoreDataHubBundle::$notAllowedPolicy;
+        $this->previousLookup = $this->readCache(self::CACHE_KEY);
+        $this->previousContext = $this->readCache(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
 
         $this->dispatcher = new EventDispatcher();
         $container = new Container();
@@ -63,8 +71,8 @@ class WorkspaceHelperPermissionEventTest extends Unit
     {
         $this->setKernel($this->previousKernel);
         PimcoreDataHubBundle::setNotAllowedPolicy($this->previousPolicy);
-        RuntimeCache::set(self::CACHE_KEY, null);
-        RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, null);
+        $this->restoreCache(self::CACHE_KEY, $this->previousLookup);
+        $this->restoreCache(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->previousContext);
     }
 
     public function testWorkspaceDecidesWithoutListener(): void
@@ -111,6 +119,18 @@ class WorkspaceHelperPermissionEventTest extends Unit
         $this->assertSame([$root, self::READ], $received);
     }
 
+    public function testListenerCannotGrantWhatWorkspaceDenies(): void
+    {
+        RuntimeCache::save([], self::CACHE_KEY);
+        $this->dispatcher->addListener(
+            PermissionEvents::PRE_CHECK,
+            static fn (PermissionEvent $event) => $event->setIsGranted(true)
+        );
+        PimcoreDataHubBundle::setNotAllowedPolicy(PimcoreDataHubBundle::NOT_ALLOWED_POLICY_NULL);
+
+        $this->assertFalse(WorkspaceHelper::checkPermission($this->rootFolder(), self::READ));
+    }
+
     public function testWorkspaceStillDeniesWithoutListener(): void
     {
         RuntimeCache::save([], self::CACHE_KEY);
@@ -144,6 +164,16 @@ class WorkspaceHelperPermissionEventTest extends Unit
         $folder->setParent(null);
 
         return $folder;
+    }
+
+    private function readCache(string $key): mixed
+    {
+        return RuntimeCache::isRegistered($key) ? RuntimeCache::get($key) : null;
+    }
+
+    private function restoreCache(string $key, mixed $value): void
+    {
+        RuntimeCache::set($key, $value);
     }
 
     private function setKernel(?KernelInterface $kernel): void
