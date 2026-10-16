@@ -63,7 +63,12 @@ class WorkspaceHelperPermissionEventTest extends Unit
         $kernel->method('getContainer')->willReturn($container);
         $this->setKernel($kernel);
 
-        $configuration = new Configuration('graphql', '/', self::CONFIG_NAME, ['security' => ['skipPermissionCheck' => false]]);
+        $configuration = new Configuration(
+            'graphql',
+            '/',
+            self::CONFIG_NAME,
+            ['security' => ['skipPermissionCheck' => false]]
+        );
         RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, ['configuration' => $configuration]);
     }
 
