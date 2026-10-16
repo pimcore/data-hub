@@ -9,6 +9,7 @@ All Datahub events are defined as a constant on component classes:
 - [Executor](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ExecutorEvents.php)
 - [Listing](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ListingEvents.php)
 - [Ouput cache](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/OutputCacheEvents.php)
+- [Permission](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/PermissionEvents.php)
 
 ## Event Subscriber Examples
 
@@ -279,6 +280,56 @@ class GraphqlListener implements EventSubscriberInterface
             // modify the response as you want it to be saved...
 
             $event->setResponse($response);
+        }
+    }
+}
+```
+
+#### Example 6: Deny access with a custom permission check
+The `PermissionEvents::PRE_CHECK` event is dispatched for every element access that is checked against the workspace
+permissions (not when `skipPermissionCheck` or `omitPermissionCheck` is active). A listener can deny access with
+`setIsGranted(false)`: the element is then treated as not allowed, regardless of the workspace configuration.
+A listener cannot grant access that the workspaces deny.
+
+What happens with a denied element depends on the not allowed policy and on where it is accessed:
+- `NOT_ALLOWED_POLICY_EXCEPTION`: the request is answered with an error.
+- `NOT_ALLOWED_POLICY_NULL` (default): list entries are dropped, mutations return `success: false` and single getters
+  fail with "permission denied. check your workspace settings".
+
+Note that the `totalCount` of a listing is computed in SQL and still counts items that a listener denies, so a page can
+contain fewer edges than `totalCount` suggests.
+
+The element can be `null` (for example if an asset id of an editable or a mutation argument does not exist), so check it
+before using it.
+
+```php
+<?php
+
+namespace AppBundle\EventListener;
+
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\PermissionEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\PermissionEvents;
+use Pimcore\Model\Element\ElementInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class GraphQlPermissionSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            PermissionEvents::PRE_CHECK => 'onPreCheck',
+        ];
+    }
+
+    public function onPreCheck(PermissionEvent $event): void
+    {
+        $element = $event->getElement();
+
+        if ($event->getType() === 'read'
+            && $element instanceof ElementInterface
+            && $element->getProperty('confidential')
+        ) {
+            $event->setIsGranted(false);
         }
     }
 }

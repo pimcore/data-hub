@@ -5,6 +5,16 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
+## Upgrade to 2026.3.3
+
+### GraphQL: a denying `PermissionEvents::PRE_CHECK` listener is now honoured with the default not allowed policy
+
+`WorkspaceHelper::checkPermission()` ignored `$event->setIsGranted(false)` of a `PermissionEvents::PRE_CHECK` listener
+unless the not allowed policy was `NOT_ALLOWED_POLICY_EXCEPTION`. With the default `NOT_ALLOWED_POLICY_NULL` the denial
+is now applied too: the element is treated like one denied by the workspaces (omitted from lists, `success: false` for
+mutations). Projects that register a denying listener and relied on the denial being ignored will see elements
+disappear. A listener still cannot grant access that the workspaces deny.
+
 ## Upgrade to 2026.3.0
 
 ### GraphQL
