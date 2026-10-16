@@ -9,6 +9,7 @@ All Datahub events are defined as a constant on component classes:
 - [Executor](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ExecutorEvents.php)
 - [Listing](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/ListingEvents.php)
 - [Ouput cache](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/OutputCacheEvents.php)
+- [Permission](https://github.com/pimcore/data-hub/blob/2.x/src/Event/GraphQL/PermissionEvents.php)
 
 ## Event Subscriber Examples
 
@@ -279,6 +280,40 @@ class GraphqlListener implements EventSubscriberInterface
             // modify the response as you want it to be saved...
 
             $event->setResponse($response);
+        }
+    }
+}
+```
+
+#### Example 5: Deny access with a custom permission check
+The `PermissionEvents::PRE_CHECK` event is dispatched before the workspace permissions are evaluated.
+A listener can deny access with `setIsGranted(false)`: the element is then treated as not allowed, regardless of the
+workspace configuration. Depending on the not allowed policy, the request is answered with an error
+(`NOT_ALLOWED_POLICY_EXCEPTION`) or the element is omitted (`NOT_ALLOWED_POLICY_NULL`, default).
+A listener cannot grant access that the workspaces deny.
+
+```php
+<?php
+
+namespace AppBundle\EventListener;
+
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\PermissionEvent;
+use Pimcore\Bundle\DataHubBundle\Event\GraphQL\PermissionEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class GraphQlPermissionSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            PermissionEvents::PRE_CHECK => 'onPreCheck',
+        ];
+    }
+
+    public function onPreCheck(PermissionEvent $event): void
+    {
+        if ($event->getType() === 'read' && $event->getElement()->getProperty('confidential')) {
+            $event->setIsGranted(false);
         }
     }
 }
