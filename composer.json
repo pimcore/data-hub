@@ -32,7 +32,8 @@
     "codeception/module-asserts": "^3.0",
     "codeception/module-symfony": "^3.8",
     "symfony/dotenv": "^7.2",
-    "symfony/runtime": "^7.4"
+    "symfony/runtime": "^7.4",
+    "mcp/sdk": "^0.7"
   },
   "autoload": {
     "psr-4": {

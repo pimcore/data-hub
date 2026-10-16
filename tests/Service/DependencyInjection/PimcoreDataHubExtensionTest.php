@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Codeception\Test\Unit;
+use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
+use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class PimcoreDataHubExtensionTest extends Unit
@@ -62,6 +65,28 @@ class PimcoreDataHubExtensionTest extends Unit
         $container = $this->loadExtension([]);
 
         $this->assertSame([], $container->getParameter('pimcore_data_hub.enabled_adapter_types'));
+    }
+
+    public function testTheProposalToolsAreWiredOnlyWhereAnAgentCanPropose(): void
+    {
+        $container = $this->loadExtension([self::SUPPORTED_TYPES]);
+
+        $this->assertSame(
+            ConfigProposalLane::canPropose(new ContainerBuilder()),
+            $container->hasDefinition(ConfigProposalTools::class)
+        );
+    }
+
+    public function testEachLaneCheckIsRecordedAsAContainerResource(): void
+    {
+        $container = new ContainerBuilder();
+
+        $this->assertSame(
+            interface_exists(SubjectHandlerInterface::class),
+            ConfigProposalLane::canReview($container)
+        );
+        $this->assertContainsOnlyInstancesOf(ClassExistenceResource::class, $container->getResources());
+        $this->assertNotEmpty($container->getResources());
     }
 
     private function loadExtension(array $configs): ContainerBuilder
