@@ -60,7 +60,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
   // from an effect, which could run after an early click and take the reader back
-  const [chosenTab, setActiveTab] = useState<string>()
+  const [chosenTab, setChosenTab] = useState<string>()
   const firstSection = groups[0]?.section
   const activeTab = chosenTab ?? (firstSection === undefined ? undefined : SECTION_TARGET[firstSection]?.tab) ?? GRAPHQL_TABS.general
 
@@ -75,7 +75,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
 
   const jump = (section: string): void => {
     const target = SECTION_TARGET[section]?.tab
-    if (target !== undefined) setActiveTab(target)
+    if (target !== undefined) setChosenTab(target)
   }
 
   const editor = (
@@ -85,7 +85,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
       configuration={ configuration }
       isWriteable={ false }
       onSave={ noSave }
-      onTabChange={ setActiveTab }
+      onTabChange={ setChosenTab }
       requestId={ changeSetId }
     />
   )
