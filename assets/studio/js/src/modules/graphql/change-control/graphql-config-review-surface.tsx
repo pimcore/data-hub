@@ -58,14 +58,11 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   // a new configuration is reviewed whole; marking every field says only "all of it"
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
 
-  const [activeTab, setActiveTab] = useState<string>(GRAPHQL_TABS.general)
-
-  // open the tab the first change sits in, so the reader lands on it rather than on General
-  useEffect(() => {
-    const first = groups[0]?.section
-    const target = first === undefined ? undefined : SECTION_TARGET[first]?.tab
-    if (target !== undefined) setActiveTab(target)
-  }, [groups])
+  // land on the tab the first change sits in until the reader picks one; derived rather than set
+  // from an effect, which could run after an early click and take the reader back
+  const [chosenTab, setActiveTab] = useState<string>()
+  const firstSection = groups[0]?.section
+  const activeTab = chosenTab ?? (firstSection === undefined ? undefined : SECTION_TARGET[firstSection]?.tab) ?? GRAPHQL_TABS.general
 
   useEffect(() => { onStatsChange?.(changes.length) }, [changes.length, onStatsChange])
 

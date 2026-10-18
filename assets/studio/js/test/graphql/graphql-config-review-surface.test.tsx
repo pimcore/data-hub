@@ -165,6 +165,23 @@ describe('GraphQLConfigReviewSurface', () => {
     expect(screen.getByTestId('editor').textContent).toBe('security')
   })
 
+  it('opens on the first change\'s tab and keeps the tab the reader picks', async () => {
+    respond(payload(false, {
+      schema: { shape: 'record', current: {}, proposed: CAR },
+      security: { shape: 'record', current: { 'workspaces.object': [] }, proposed: { 'workspaces.object': WORKSPACE } }
+    }))
+
+    mount()
+
+    await waitFor(() => { expect(screen.getByTestId('editor').textContent).toBe('schema') })
+
+    fireEvent.click(within(screen.getByTestId('rail-security')).getByRole('button'))
+    expect(screen.getByTestId('editor').textContent).toBe('security')
+
+    fireEvent.click(within(screen.getByTestId('rail-schema')).getByRole('button'))
+    expect(screen.getByTestId('editor').textContent).toBe('schema')
+  })
+
   it('tells a new configuration per tab instead of marking every field', async () => {
     respond(payload(true, {
       general: { shape: 'record', current: null, proposed: { 'general.name': 'shop', 'general.active': false, 'general.group': 'cars' } },
