@@ -12,7 +12,7 @@ import { describe, expect, it } from 'vitest'
 import type { ChangeSetReviewData, ReviewSlotData } from '@pimcore/change-control-bundle/sdk'
 import { type BackendConfiguration } from '../../src/modules/graphql/components/backend-types'
 import {
-  annotationsFor, configChanges, groupChanges, isNewConfiguration, proposedConfiguration, toFormPath
+  annotationsFor, configChanges, groupChanges, isNewConfiguration, listSizeChange, proposedConfiguration, toFormPath
 } from '../../src/modules/graphql/change-control/config-review-model'
 
 type Leaves = Record<string, unknown>
@@ -163,6 +163,22 @@ describe('isNewConfiguration', () => {
     expect(isNewConfiguration(withSubject(false))).toBe(false)
     expect(isNewConfiguration(withSubject(true))).toBe(true)
     expect(isNewConfiguration(withSubject(false), 'base')).toBe(false)
+  })
+})
+
+describe('listSizeChange', () => {
+  const change = (current: unknown, proposed: unknown): Parameters<typeof listSizeChange>[0] =>
+    ({ address: 'workspaces.object', label: 'object', section: 'security', status: 'changed', current, proposed })
+
+  it('says how many entries a changed list had and has', () => {
+    expect(listSizeChange(change([1, 2, 3], [1]))).toBe('3 → 1')
+    expect(listSizeChange(change([], [{ cpath: '/' }]))).toBe('0 → 1')
+  })
+
+  it('says nothing when the size stays or one side is no list', () => {
+    expect(listSizeChange(change([1, 2], [2, 3]))).toBeUndefined()
+    expect(listSizeChange(change(undefined, [1]))).toBeUndefined()
+    expect(listSizeChange(change('a', 'b'))).toBeUndefined()
   })
 })
 

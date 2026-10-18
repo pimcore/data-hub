@@ -37,6 +37,15 @@ export interface ConfigChange {
   readonly proposed: unknown
 }
 
+/**
+ * A list changes as a whole, so its row says how much of it changed: "21 → 7" makes a list that
+ * lost most of its entries impossible to miss.
+ */
+export const listSizeChange = (change: ConfigChange): string | undefined =>
+  Array.isArray(change.current) && Array.isArray(change.proposed) && change.current.length !== change.proposed.length
+    ? `${change.current.length} → ${change.proposed.length}`
+    : undefined
+
 /** the general.* keys the editor's form lifts to its root; see transformBackendToForm */
 const FLATTENED = new Set(['active', 'description', 'group'])
 
