@@ -16,10 +16,14 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use Codeception\Test\Unit;
 use LogicException;
+use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
+use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class GraphQlConfigPolicyTest extends Unit
 {
@@ -178,7 +182,7 @@ class GraphQlConfigPolicyTest extends Unit
 
         $this->expectException(LogicException::class);
 
-        (new GraphQlConfigPolicy($configurations))->save('orders', ['general' => ['type' => 'webhook']]);
+        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('orders', ['general' => ['type' => 'webhook']]);
     }
 
     public function testReadAccessIsProposable(): void
@@ -230,13 +234,109 @@ class GraphQlConfigPolicyTest extends Unit
             ->with($this->anything(), $this->callback($capture))
             ->willReturn(1);
 
-        (new GraphQlConfigPolicy($configurations))->save('shop', [
+        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('shop', [
             'schema' => ['specialEntities' => ['asset' => ['read' => true, 'create' => false]]],
         ]);
 
         $this->assertSame(
             [[
                 'name' => 'asset',
+                'readAllowed' => true,
+                'createAllowed' => false,
+                'updateAllowed' => false,
+                'deleteAllowed' => false,
+            ]],
+            $saved['schema']['specialEntities'],
+        );
+    }
+
+    public function testGenericTypesSentAsAListAreRefused(): void
+    {
+        $problems = $this->policy()->problems([
+            'general' => ['name' => 'no-such-endpoint'],
+            'schema' => ['specialEntities' => [
+                ['name' => 'document', 'readAllowed' => true],
+                ['name' => 'asset', 'readAllowed' => true],
+            ]],
+        ], false);
+
+        $this->assertCount(2, $problems);
+        $this->problemContaining('schema.specialEntities.0 needs the generic type\'s name as its key', $problems);
+        $this->problemContaining('schema.specialEntities.1 needs the generic type\'s name as its key', $problems);
+    }
+
+    public function testABareGenericTypeFlagOrAnUnknownGenericTypeIsRefused(): void
+    {
+        $problems = $this->policy()->problems([
+            'general' => ['name' => 'no-such-endpoint'],
+            'schema' => ['specialEntities' => [
+                'asset' => true,
+                'documents' => ['read' => true],
+                'document' => ['read' => true],
+            ]],
+        ], false);
+
+        $this->assertCount(2, $problems);
+        $this->problemContaining('schema.specialEntities.asset needs the generic type\'s name as its key', $problems);
+        $this->problemContaining('schema.specialEntities.documents is not a generic type; use document,', $problems);
+        $this->assertSame(
+            ['schema.specialEntities needs the generic types keyed by name, e.g. {"asset": {"read": true}}.'],
+            $this->policy()->problems([
+                'general' => ['name' => 'no-such-endpoint'],
+                'schema' => ['specialEntities' => 'asset'],
+            ], false),
+        );
+    }
+
+    public function testAGenericTypeAListenerAddsIsProposable(): void
+    {
+        $events = new EventDispatcher();
+        $events->addListener(ConfigEvents::SPECIAL_ENTITIES, static function (SpecialEntitiesEvent $event): void {
+            $event->addSpecialSetting(
+                new SpecialEntitySetting('vendor_keyed_state', true, false, false, false, false, false, false, false),
+            );
+        });
+
+        $problems = $this->policy($events)->problems([
+            'general' => ['name' => 'no-such-endpoint'],
+            'schema' => ['specialEntities' => ['vendor_keyed_state' => ['read' => true]]],
+        ], false);
+
+        $this->assertSame([], $problems);
+        $this->problemContaining(
+            'schema.specialEntities.vendor_keyed_state is not a generic type',
+            $this->policy()->problems([
+                'general' => ['name' => 'no-such-endpoint'],
+                'schema' => ['specialEntities' => ['vendor_keyed_state' => ['read' => true]]],
+            ], false),
+        );
+    }
+
+    public function testSavingGenericTypesSentAsAListKeepsTheirNames(): void
+    {
+        $saved = null;
+        $capture = static function (array $configuration) use (&$saved): bool {
+            $saved = $configuration;
+
+            return true;
+        };
+        $configurations = $this->createMock(ConfigurationServiceInterface::class);
+        $configurations->expects($this->once())
+            ->method('updateConfiguration')
+            ->with($this->anything(), $this->callback($capture))
+            ->willReturn(1);
+
+        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('shop', [
+            'schema' => ['specialEntities' => [
+                ['name' => 'document', 'readAllowed' => true],
+                ['readAllowed' => true],
+                'asset' => true,
+            ]],
+        ]);
+
+        $this->assertSame(
+            [[
+                'name' => 'document',
                 'readAllowed' => true,
                 'createAllowed' => false,
                 'updateAllowed' => false,
@@ -273,8 +373,11 @@ class GraphQlConfigPolicyTest extends Unit
         $configuration->getDao()->save();
     }
 
-    private function policy(): GraphQlConfigPolicy
+    private function policy(?EventDispatcher $events = null): GraphQlConfigPolicy
     {
-        return new GraphQlConfigPolicy($this->createStub(ConfigurationServiceInterface::class));
+        return new GraphQlConfigPolicy(
+            $this->createStub(ConfigurationServiceInterface::class),
+            $events ?? new EventDispatcher(),
+        );
     }
 }

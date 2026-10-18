@@ -16,19 +16,25 @@ namespace Pimcore\Bundle\DataHubBundle\Proposal\GraphQl;
 
 use function array_diff;
 use function array_keys;
+use function array_map;
 use function array_values;
 use function count;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_int;
 use function is_string;
 use LogicException;
+use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
+use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Element\Service as ElementService;
 use function sprintf;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use function time;
 
@@ -60,8 +66,22 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     private const array WORKSPACE_TYPES = ['document', 'asset', 'object'];
 
-    public function __construct(private ConfigurationServiceInterface $configurations)
-    {
+    // the generic types the Studio editor offers before listeners add their own
+    private const array GENERIC_TYPES = [
+        'document',
+        'document_folder',
+        'asset',
+        'asset_folder',
+        'asset_listing',
+        'object_folder',
+        'translation',
+        'translation_listing',
+    ];
+
+    public function __construct(
+        private ConfigurationServiceInterface $configurations,
+        private EventDispatcherInterface $events,
+    ) {
     }
 
     public function configType(): string
@@ -124,6 +144,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
         $problems = [
             ...$this->misnamedEntities($state),
+            ...$this->misshapenGenericTypes($state),
             ...$this->unknownClasses($state),
             ...$this->unresolvedWorkspaces($state),
         ];
@@ -173,6 +194,77 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         }
 
         return $problems;
+    }
+
+    /**
+     * Storage keys the generic types by name and drops a name the editor does not offer, so a
+     * list, a bare flag or an unknown name would be reviewed as access and stored as none.
+     *
+     * @param array<string, mixed> $state
+     *
+     * @return list<string>
+     */
+    private function misshapenGenericTypes(array $state): array
+    {
+        $special = $state['schema']['specialEntities'] ?? [];
+        if (!is_array($special)) {
+            return ['schema.specialEntities needs the generic types keyed by name, e.g. {"asset": {"read": true}}.'];
+        }
+
+        $problems = [];
+        $known = null;
+        foreach ($special as $type => $flags) {
+            if (is_int($type) || !is_array($flags)) {
+                $problems[] = sprintf(
+                    'schema.specialEntities.%s needs the generic type\'s name as its key and its flags as '
+                    . 'an object, e.g. {"asset": {"read": true}}.',
+                    $type,
+                );
+
+                continue;
+            }
+
+            $known ??= $this->genericTypes($state);
+            if (!in_array($type, $known, true)) {
+                $problems[] = sprintf(
+                    'schema.specialEntities.%s is not a generic type; use %s.',
+                    $type,
+                    implode(', ', $known),
+                );
+            }
+        }
+
+        return $problems;
+    }
+
+    /**
+     * @param array<string, mixed> $state
+     *
+     * @return list<string>
+     */
+    private function genericTypes(array $state): array
+    {
+        $core = array_map(
+            static fn (string $name): SpecialEntitySetting => new SpecialEntitySetting(
+                $name,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+            ),
+            self::GENERIC_TYPES,
+        );
+        $event = new SpecialEntitiesEvent($core, $state);
+        $this->events->dispatch($event, ConfigEvents::SPECIAL_ENTITIES);
+
+        return array_values(array_map(
+            static fn (SpecialEntitySetting $setting): string => (string) $setting->getName(),
+            $event->getSpecialSettings(),
+        ));
     }
 
     /**
@@ -289,8 +381,14 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         if (is_array($special)) {
             $configuration['schema']['specialEntities'] = [];
             foreach ($special as $type => $flags) {
+                // an entry already in the editor's form names itself; a list index is no type
+                $name = is_array($flags) && is_int($type) ? ($flags['name'] ?? null) : $type;
+                if (!is_array($flags) || !is_string($name) || $name === '') {
+                    continue;
+                }
+
                 $configuration['schema']['specialEntities'][] = [
-                    'name' => (string) $type,
+                    'name' => $name,
                     'readAllowed' => (bool) ($flags['read'] ?? $flags['readAllowed'] ?? false),
                     'createAllowed' => (bool) ($flags['create'] ?? $flags['createAllowed'] ?? false),
                     'updateAllowed' => (bool) ($flags['update'] ?? $flags['updateAllowed'] ?? false),

@@ -22,6 +22,7 @@ use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * An approved proposal written through the real Studio save: dehydrator, model save and
@@ -98,6 +99,28 @@ class GraphQlConfigSaveTest extends Unit
         $this->assertSame(0, (int) $rows[0]['delete']);
     }
 
+    public function testGenericTypesSentAsAListAreStoredUnderTheirNames(): void
+    {
+        $this->policy()->save(self::NAME, [
+            'general' => ['name' => self::NAME, 'type' => 'graphql', 'active' => false],
+            'security' => self::SECURITY,
+            'schema' => ['specialEntities' => [
+                ['name' => 'document', 'readAllowed' => true],
+                ['name' => 'asset', 'readAllowed' => true],
+            ]],
+        ]);
+
+        $stored = Configuration::getByName(self::NAME)?->getConfiguration();
+        $this->assertIsArray($stored);
+        $this->assertEquals(
+            [
+                'document' => ['read' => true, 'create' => false, 'update' => false, 'delete' => false],
+                'asset' => ['read' => true, 'create' => false, 'update' => false, 'delete' => false],
+            ],
+            $stored['schema']['specialEntities'],
+        );
+    }
+
     private function policy(): GraphQlConfigPolicy
     {
         $container = \Pimcore::getContainer();
@@ -105,6 +128,9 @@ class GraphQlConfigSaveTest extends Unit
         $configurations = $services->get(ConfigurationServiceInterface::class);
         $this->assertInstanceOf(ConfigurationServiceInterface::class, $configurations);
 
-        return new GraphQlConfigPolicy($configurations);
+        $events = $services->get('event_dispatcher');
+        $this->assertInstanceOf(EventDispatcherInterface::class, $events);
+
+        return new GraphQlConfigPolicy($configurations, $events);
     }
 }
