@@ -313,6 +313,28 @@ class GraphQlConfigPolicyTest extends Unit
         );
     }
 
+    public function testAGenericTypeTheEndpointAlreadyStoresIsNotRefused(): void
+    {
+        // stored while a listener offered it; that listener is gone now
+        $this->store(GraphQlConfigPolicy::CONFIG_TYPE, [
+            'general' => [],
+            'schema' => ['specialEntities' => ['vendor_keyed_state' => ['read' => true]]],
+        ]);
+
+        $state = [
+            'general' => ['name' => self::STORED, 'description' => 'changed'],
+            'schema' => ['specialEntities' => ['vendor_keyed_state' => ['read' => true]]],
+        ];
+        $this->assertSame([], $this->policy()->problems($state, false));
+
+        $state['schema']['specialEntities']['vendor_other_state'] = ['read' => true];
+        $this->assertSame(
+            ['schema.specialEntities.vendor_other_state is not a generic type; use document, document_folder, asset, '
+                . 'asset_folder, asset_listing, object_folder, translation, translation_listing.'],
+            $this->policy()->problems($state, false),
+        );
+    }
+
     public function testSavingGenericTypesSentAsAListKeepsTheirNames(): void
     {
         $saved = null;

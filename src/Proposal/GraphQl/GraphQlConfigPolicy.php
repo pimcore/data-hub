@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Proposal\GraphQl;
 
 use function array_diff;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_values;
@@ -208,6 +209,9 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             return ['schema.specialEntities needs the generic types keyed by name, e.g. {"asset": {"read": true}}.'];
         }
 
+        // a type stored before its listener went away is the endpoint's, not the proposal's
+        $stored = $this->stored($state)['schema']['specialEntities'] ?? [];
+
         $problems = [];
         $known = null;
         foreach ($special as $type => $flags) {
@@ -218,6 +222,10 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
                     $type,
                 );
 
+                continue;
+            }
+
+            if (is_array($stored) && array_key_exists($type, $stored)) {
                 continue;
             }
 
