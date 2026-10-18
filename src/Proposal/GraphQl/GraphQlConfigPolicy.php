@@ -326,15 +326,15 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         $special = $configuration['schema']['specialEntities'] ?? null;
         if (is_array($special)) {
             $configuration['schema']['specialEntities'] = [];
-            foreach ($special as $type => $flags) {
+            foreach ($special as $key => $flags) {
                 // an entry already in the editor's form names itself; a list index is no type
-                $name = is_array($flags) && is_int($type) ? ($flags['name'] ?? null) : $type;
-                if (!is_array($flags) || !is_string($name) || $name === '') {
+                $entity = is_array($flags) && is_int($key) ? ($flags['name'] ?? null) : $key;
+                if (!is_array($flags) || !is_string($entity) || $entity === '') {
                     continue;
                 }
 
                 $configuration['schema']['specialEntities'][] = [
-                    'name' => $name,
+                    'name' => $entity,
                     'readAllowed' => (bool) ($flags['read'] ?? $flags['readAllowed'] ?? false),
                     'createAllowed' => (bool) ($flags['create'] ?? $flags['createAllowed'] ?? false),
                     'updateAllowed' => (bool) ($flags['update'] ?? $flags['updateAllowed'] ?? false),
