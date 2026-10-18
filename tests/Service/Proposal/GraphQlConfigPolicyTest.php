@@ -182,7 +182,8 @@ class GraphQlConfigPolicyTest extends Unit
 
         $this->expectException(LogicException::class);
 
-        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('orders', ['general' => ['type' => 'webhook']]);
+        $policy = new GraphQlConfigPolicy($configurations, new EventDispatcher());
+        $policy->save('orders', ['general' => ['type' => 'webhook']]);
     }
 
     public function testReadAccessIsProposable(): void

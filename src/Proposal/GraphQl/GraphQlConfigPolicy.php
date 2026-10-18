@@ -32,7 +32,6 @@ use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
-use Pimcore\Model\Element\Service as ElementService;
 use function sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
@@ -63,8 +62,6 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public const array PROPOSABLE = ['general', 'schema', 'workspaces'];
 
     public const array WITHHELD = ['security', 'permissions'];
-
-    private const array WORKSPACE_TYPES = ['document', 'asset', 'object'];
 
     // the generic types the Studio editor offers before listeners add their own
     private const array GENERIC_TYPES = [
@@ -146,7 +143,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             ...$this->misnamedEntities($state),
             ...$this->misshapenGenericTypes($state),
             ...$this->unknownClasses($state),
-            ...$this->unresolvedWorkspaces($state),
+            ...(new GraphQlWorkspacePaths())->unresolved($state),
         ];
 
         $grants = new GraphQlWriteGrants();
@@ -290,65 +287,6 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         }
 
         return $problems;
-    }
-
-    /**
-     * The save keeps a workspace only when its path resolves to an element and reads its path
-     * without a guard, so a reviewed workspace on a missing path would vanish on approval.
-     *
-     * @param array<string, mixed> $state
-     *
-     * @return list<string>
-     */
-    private function unresolvedWorkspaces(array $state): array
-    {
-        $problems = [];
-        $workspaces = is_array($state['workspaces'] ?? null) ? $state['workspaces'] : [];
-        foreach ($workspaces as $type => $entries) {
-            if (!in_array($type, self::WORKSPACE_TYPES, true)) {
-                $problems[] = sprintf(
-                    'workspaces.%s is not a workspace type; use %s.',
-                    $type,
-                    implode(', ', self::WORKSPACE_TYPES),
-                );
-
-                continue;
-            }
-
-            foreach (is_array($entries) ? $entries : [] as $index => $entry) {
-                $problem = $this->unresolvedWorkspace((string) $type, $index, $entry);
-                if ($problem !== null) {
-                    $problems[] = $problem;
-                }
-            }
-        }
-
-        return $problems;
-    }
-
-    private function unresolvedWorkspace(string $type, int|string $index, mixed $entry): ?string
-    {
-        $path = is_array($entry) ? ($entry['cpath'] ?? null) : null;
-        if (!is_string($path) || $path === '') {
-            return sprintf(
-                'workspaces.%s entry %s needs "cpath", the full path of the %s it grants.',
-                $type,
-                $index,
-                $type,
-            );
-        }
-
-        if (ElementService::getElementByPath($type, $path) === null) {
-            return sprintf(
-                'workspaces.%s %s: no %s exists at this path, and a workspace on a missing '
-                . 'path is dropped when the configuration is saved.',
-                $type,
-                $path,
-                $type,
-            );
-        }
-
-        return null;
     }
 
     public function summarize(array $configuration): array
