@@ -1116,6 +1116,7 @@ final class MutationType extends ObjectType
             $opName = 'updateAsset';
 
             $me = $this;
+            $omitPermissionCheck = $this->omitPermissionCheck;
             $updateField = [
                 'type' => $updateResultType,
                 'args' => [
@@ -1124,9 +1125,43 @@ final class MutationType extends ObjectType
                     'omitVersionCreate' => ['type' => Type::boolean()],
                     'userId' => ['type' => Type::int()],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
-                    /** @var Asset $element */
+                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck, $me) {
+                    /** @var Asset|null $element */
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
+
+                    if (!$element) {
+                        return [
+                            'success' => false,
+                            'message' => 'unable to update asset. Unknown id or fullpath',
+                        ];
+                    }
+
+                    if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'update')) {
+                        return [
+                            'success' => false,
+                            'message' => 'permission denied.',
+                        ];
+                    }
+
+                    $newParentId = $args['input']['parentId'] ?? null;
+                    if ($newParentId !== null && $newParentId !== $element->getParentId()) {
+                        $newParent = Asset::getById($newParentId);
+
+                        if (!$newParent) {
+                            return [
+                                'success' => false,
+                                'message' => 'unable to resolve parent',
+                            ];
+                        }
+
+                        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($newParent, 'create')) {
+                            return [
+                                'success' => false,
+                                'message' => 'not allowed to move asset to the given parent',
+                            ];
+                        }
+                    }
+
                     $tags = [];
 
                     if (isset($args['input'])) {
