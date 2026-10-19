@@ -14,6 +14,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Model;
 
 use Pimcore;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\EventListener\DataChangeListener;
 use Pimcore\Db;
 use Pimcore\Event\Model\DataObjectEvent;
@@ -57,6 +58,8 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
         $user->setPermissions(['objects']);
         $user->save();
         $this->restrictedUser = $user;
+
+        $this->resetConfigurationCatalog();
     }
 
     public function tearDown(): void
@@ -64,6 +67,7 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
         $this->tokenStorage()->setToken($this->originalToken);
 
         Configuration::getByName(self::CONFIG_NAME)?->delete();
+        $this->resetConfigurationCatalog();
         $this->restrictedUser?->delete();
         $this->restrictedUser = null;
         TestHelper::cleanUp();
@@ -140,6 +144,7 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
         ]);
         // no user is logged in on the command line, so saving the fixture is allowed
         $configuration->save();
+        $this->resetConfigurationCatalog();
 
         return $folder;
     }
@@ -152,6 +157,13 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
         $configuration = Configuration::getByName(self::CONFIG_NAME);
 
         return array_column($configuration->getConfiguration()['workspaces']['object'] ?? [], 'cpath');
+    }
+
+    private function resetConfigurationCatalog(): void
+    {
+        // The list of configurations is cached statically and neither save() nor delete() invalidate it, so
+        // a catalog built before or after this fixture existed would hide it or still name it later on.
+        (new ReflectionProperty(Dao::class, '_config'))->setValue(null, null);
     }
 
     private function loginAs(User $user): void

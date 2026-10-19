@@ -111,13 +111,14 @@ final class WorkspaceHelper
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
                 }
-            } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
+            } elseif (str_starts_with($cTrailingPath, $cTrailingSearchValue)) {
 
                 // it's a sub element
                 $changed = true;
 
                 if ($modificationType === self::MODIFY_TYPE_REPLACE) {
-                    $space['cpath'] = str_replace($cTrailingSearchValue, $cTrailingReplaceValue, $space['cpath']);
+                    // only the leading path of the element changed, repeated segments further down stay as they are
+                    $space['cpath'] = $cTrailingReplaceValue . substr($space['cpath'], strlen($cTrailingSearchValue));
                 } elseif ($modificationType === self::MODIFY_TYPE_DELETE) {
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
