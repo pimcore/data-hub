@@ -24,6 +24,7 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
+import { buildBrickAttribute, buildBrickColumnTitle, getAmbiguousBrickKeys } from './brick-container-helpers'
 
 interface UseClassAttributesTreeProps {
   classId: string
@@ -61,10 +62,12 @@ export const useClassAttributesTree = ({
     return Array.from(new Set<string>(flatMap(objectBricksFields, f => f.allowedTypes)))
   }, [objectBricksFields])
 
+  const ambiguousBrickKeys = useMemo(() => getAmbiguousBrickKeys(objectBricksFields), [objectBricksFields])
+
   const { layouts: brickLayouts, isLoading: brickLayoutsLoading } = useObjectBrickLayouts(allBrickKeys)
 
   const classAttributesTree = useMemo(() => {
-    const buildItemCallback = (brickKey?: string) => (
+    const buildItemCallback = (brickKey?: string, containerName?: string) => (
       { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
       const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
@@ -74,9 +77,9 @@ export const useClassAttributesTree = ({
 
       const label = fieldDefinition.title ?? fieldDefinition.name
 
-      if (!isNil(brickKey) && isFieldDefinition) {
-        const attributeKey = `${brickKey}~${fieldDefinition.name}`
-        const title = `${label} (${brickKey}.${fieldDefinition.name})`
+      if (!isNil(brickKey) && !isNil(containerName) && isFieldDefinition) {
+        const attributeKey = buildBrickAttribute(brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
+        const title = buildBrickColumnTitle(label as string, brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
 
         return {
           ...restTreeItem,
@@ -124,35 +127,49 @@ export const useClassAttributesTree = ({
       return removeObjectBricksNodes(children)
     }
 
-    const buildBrickGroupNodes = (): TreeNode[] => {
+    const buildBrickGroupNode = (brickKey: string, containerName: string): TreeNode[] => {
+      const brickLayout = brickLayouts.get(brickKey)
+      if (isNil(brickLayout)) return []
+
+      // Cast: ConfigLayoutDefinition is structurally compatible with Layout for reduce/buildTree
+      const reduced = reduce({ layout: brickLayout as unknown as Layout })
+      if (isNil(reduced?.structure)) return []
+
+      const { structure, fieldDefinitions } = reduced
+      const brickTree = buildTree({
+        structure,
+        fieldDefinitions,
+        itemCallback: buildItemCallback(brickKey, containerName)
+      })
+
+      return [{
+        key: `brick-group-${containerName}-${brickKey}`,
+        title: `${brickKey} Columns`,
+        isLeaf: false,
+        icon: <Icon value="object-bricks" />,
+        iconProps: { value: 'object-bricks' },
+        // Use brickTree.children directly to skip the redundant root Panel node
+        children: (brickTree?.children ?? []) as TreeNode[]
+      }]
+    }
+
+    // The bricks are nested under the objectbricks field they belong to, so that a brick allowed in
+    // several fields can be added once per field.
+    const buildBrickContainerNodes = (): TreeNode[] => {
       if (isNil(classLayout) || brickLayouts.size === 0) return []
 
-      return flatMap(allBrickKeys, brickKey => {
-        const brickLayout = brickLayouts.get(brickKey)
-        if (isNil(brickLayout)) return []
+      return flatMap(objectBricksFields, (field): TreeNode[] => {
+        const brickGroups = flatMap(field.allowedTypes, brickKey => buildBrickGroupNode(brickKey, field.name))
+        if (brickGroups.length === 0) return []
 
-        // Cast: ConfigLayoutDefinition is structurally compatible with Layout for reduce/buildTree
-        const reduced = reduce({ layout: brickLayout as unknown as Layout })
-        if (isNil(reduced?.structure)) return []
-
-        const { structure, fieldDefinitions } = reduced
-        const brickTree = buildTree({
-          structure,
-          fieldDefinitions,
-          itemCallback: buildItemCallback(brickKey)
-        })
-
-        const brickGroupNode: TreeNode = {
-          key: `brick-group-${brickKey}`,
-          title: `${brickKey} Columns`,
+        return [{
+          key: `brick-container-${field.name}`,
+          title: `${field.title ?? field.name} (${field.name})`,
           isLeaf: false,
           icon: <Icon value="object-bricks" />,
           iconProps: { value: 'object-bricks' },
-          // Use brickTree.children directly to skip the redundant root Panel node
-          children: (brickTree?.children ?? []) as TreeNode[]
-        }
-
-        return [brickGroupNode]
+          children: brickGroups
+        }]
       })
     }
 
@@ -186,12 +203,12 @@ export const useClassAttributesTree = ({
         children: dataObjectColumnsData
       }
 
-      return [dataObjectColumns, buildSystemColumns(), ...buildBrickGroupNodes()]
+      return [dataObjectColumns, buildSystemColumns(), ...buildBrickContainerNodes()]
     } catch (error) {
       console.error('Error building class attributes tree:', error)
       return []
     }
-  }, [classLayout, brickLayouts, allBrickKeys, fieldDefinitionRegistry, t])
+  }, [classLayout, brickLayouts, objectBricksFields, ambiguousBrickKeys, fieldDefinitionRegistry, t])
 
   const filteredTree = useMemo(() => {
     if (searchValue === '') {
@@ -220,10 +237,10 @@ export const useClassAttributesTree = ({
       ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
       : []
 
-    const brickGroupNodes = classAttributesTree.filter(
-      node => typeof node.key === 'string' && node.key.startsWith('brick-group-')
+    const brickContainerNodes = classAttributesTree.filter(
+      node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
     )
-    const brickColumnDefs = collectFieldDefinitions(brickGroupNodes)
+    const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
 
     return [...objectColumnDefs, ...brickColumnDefs]
   }, [classAttributesTree])

@@ -1,0 +1,48 @@
+{
+    "key": "BrickContainerTestBrick",
+    "parentClass": "",
+    "title": "",
+    "group": "",
+    "layoutDefinitions": {
+        "fieldtype": "panel",
+        "name": "BrickContainerTestBrick",
+        "type": null,
+        "region": null,
+        "title": null,
+        "width": 0,
+        "height": 0,
+        "collapsible": false,
+        "collapsed": false,
+        "bodyStyle": null,
+        "datatype": "layout",
+        "permissions": null,
+        "children": [
+            {
+                "fieldtype": "input",
+                "width": null,
+                "defaultValue": null,
+                "columnLength": 190,
+                "regex": "",
+                "regexFlags": [],
+                "unique": false,
+                "showCharCount": false,
+                "name": "label",
+                "title": "Label",
+                "tooltip": "",
+                "mandatory": false,
+                "noteditable": false,
+                "index": false,
+                "locked": false,
+                "style": "",
+                "permissions": null,
+                "datatype": "data",
+                "relationType": false,
+                "invisible": false,
+                "visibleGridView": false,
+                "visibleSearch": false
+            }
+        ],
+        "locked": false
+    },
+    "classDefinitions": []
+}

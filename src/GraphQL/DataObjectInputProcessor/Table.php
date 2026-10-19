@@ -54,7 +54,9 @@ final class Table extends Base
                 $object,
                 $objectBrickParts['brickType'],
                 $objectBrickParts['brickKey'],
-                $objectBrickParts['brickDescriptor'] ?? null
+                $objectBrickParts['brickDescriptor'] ?? null,
+                [],
+                $objectBrickParts['containerField'] ?? null
             );
         }
 

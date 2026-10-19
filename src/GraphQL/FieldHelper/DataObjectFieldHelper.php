@@ -16,6 +16,7 @@ use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -91,15 +92,17 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 }
 
                 if ($this->supportsGraphQL($fieldDefinition, 'query')) {
-                    $fieldName = $fieldDefinition->getName();
+                    $fieldName = $this->getBrickColumnName($key, $fieldDefinition->getName());
 
-                    $result = ['key' => $fieldName,
-                        'config' => $this->getGraphQlQueryFieldConfig(
-                            $key,
-                            $fieldDefinition,
-                            $class,
-                            $container
-                        )];
+                    $config = $this->getGraphQlQueryFieldConfig(
+                        $key,
+                        $fieldDefinition,
+                        $class,
+                        $container
+                    );
+                    $config['name'] = $fieldName;
+
+                    $result = ['key' => $fieldName, 'config' => $config];
                 }
             }
         }
@@ -178,6 +181,21 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         return $fieldDefinition;
+    }
+
+    /**
+     * A brick column which selects its containing objectbricks field (`Brick~field~containerField`) is named
+     * after the container too, so that the same brick of several fields can be used side by side.
+     */
+    private function getBrickColumnName(string $attribute, string $defaultName): string
+    {
+        $brickParts = Service::parseObjectBrickFieldName($attribute);
+
+        if (empty($brickParts['containerField'])) {
+            return $defaultName;
+        }
+
+        return $brickParts['containerField'] . '_' . $brickParts['brickType'] . '_' . $brickParts['brickKey'];
     }
 
     /**
@@ -278,7 +296,7 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 }
 
                 if ($this->supportsGraphQL($fieldDefinition, 'mutation')) {
-                    $fieldName = $fieldDefinition->getName();
+                    $fieldName = $this->getBrickColumnName($key, $fieldDefinition->getName());
 
                     $result = $this->getGraphQlMutationFieldConfig(
                         $nodeDef,
