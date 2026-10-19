@@ -18,12 +18,16 @@ use function array_map;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Configuration\Dao;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurations;
+use Pimcore\Model\Tool\SettingsStore;
 use Pimcore\Tests\Support\Test\ModelTestCase;
 use ReflectionProperty;
+use TypeError;
 
 class StoredConfigurationsTest extends ModelTestCase
 {
     private const string NAME = 'stored-configurations-lookup';
+
+    private const string UNREADABLE = 'stored-configurations-unreadable';
 
     protected function setUp(): void
     {
@@ -34,6 +38,7 @@ class StoredConfigurationsTest extends ModelTestCase
     protected function tearDown(): void
     {
         Configuration::getByName(self::NAME)?->delete();
+        SettingsStore::delete(self::UNREADABLE, 'pimcore_data_hub');
         $this->forgetListedConfigurations();
 
         parent::tearDown();
@@ -60,6 +65,24 @@ class StoredConfigurationsTest extends ModelTestCase
             self::NAME,
             array_map(static fn (Configuration $listed): ?string => $listed->getName(), $stored->all()),
         );
+    }
+
+    public function testAStoredEntryThatCannotBeReadIsNotFound(): void
+    {
+        SettingsStore::set(
+            self::UNREADABLE,
+            '{"general":{"name":"' . self::UNREADABLE . '","type":[]}}',
+            SettingsStore::TYPE_STRING,
+            'pimcore_data_hub',
+        );
+
+        try {
+            Configuration::getByName(self::UNREADABLE);
+            $this->fail('the stored entry was not read');
+        } catch (TypeError) {
+        }
+
+        $this->assertNull((new StoredConfigurations())->find(self::UNREADABLE));
     }
 
     /** the list is cached per process, and neither a save nor a delete resets it */
