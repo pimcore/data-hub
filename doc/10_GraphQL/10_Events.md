@@ -289,13 +289,14 @@ class GraphqlListener implements EventSubscriberInterface
 The `PermissionEvents::PRE_CHECK` event is dispatched for every element access that is checked against the workspace
 permissions, except when `skipPermissionCheck` is active. Most resolvers also skip the check (and the event) with
 `omitPermissionCheck`, but some still dispatch it, for example asset listings, relations and related elements,
-properties and document mutations. A listener can deny access with `setIsGranted(false)`: the element is then treated
-as not allowed, regardless of the workspace configuration. A listener cannot grant access that the workspaces deny.
+properties and document create and update mutations. A listener can deny access with `setIsGranted(false)`: the
+element is then treated as not allowed, regardless of the workspace configuration. A listener cannot grant access that
+the workspaces deny.
 
 What happens with a denied element depends on the not allowed policy and on where it is accessed:
 - `NOT_ALLOWED_POLICY_EXCEPTION`: the access fails with the error `access for <path> denied`. Most update and delete
   mutations (for example `updateObject`, `deleteObject`) catch it and return `success: false` with that message.
-  Create mutations and all document mutations return it as a GraphQL error instead.
+  Create mutations and the document create and update mutations return it as a GraphQL error instead.
 - `NOT_ALLOWED_POLICY_NULL` (default): list entries are dropped and mutations return `success: false`. Of the single
   getters only `getObject` fails with "permission denied. check your workspace settings"; `getAsset`, `getDocument`
   and the folder getters return `null`. A denied asset of an image editable in a document create or update is not
