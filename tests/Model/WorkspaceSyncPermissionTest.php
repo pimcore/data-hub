@@ -106,11 +106,12 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
 
     private function createFolderWithWorkspace(string $key): Folder
     {
-        $folder = new Folder();
-        $folder->setKey($key);
-        $folder->setParentId(1);
-        $folder->setPublished(true);
-        $folder->save();
+        $folder = Folder::create([
+            'parentId' => 1,
+            'key' => $key,
+            'userOwner' => 1,
+            'userModification' => 1,
+        ]);
 
         $configuration = new Configuration('graphql', null, self::CONFIG_NAME, [
             'general' => ['active' => false],
