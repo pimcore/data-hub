@@ -14,6 +14,9 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Model;
 
 use Pimcore;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\EventListener\DataChangeListener;
+use Pimcore\Db;
+use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Model\DataObject\Folder;
 use Pimcore\Model\User;
 use Pimcore\Security\User\TokenStorageUserResolver;
@@ -71,10 +74,17 @@ class WorkspaceSyncPermissionTest extends ModelTestCase
     public function testRenameByUserWithoutDataHubPermissionUpdatesWorkspacePath(): void
     {
         $folder = $this->createFolderWithWorkspace('sync-source');
+        $oldPath = $folder->getRealFullPath();
+
+        // The element is renamed in the database and the event is dispatched the way Pimcore does after a
+        // path change, which keeps the search index subscribers of a real save out of this test.
+        $db = Db::get();
+        $db->update('objects', [$db->quoteIdentifier('key') => 'sync-renamed'], ['id' => $folder->getId()]);
+        $folder = Folder::getById($folder->getId(), ['force' => true]);
+        $event = new DataObjectEvent($folder, ['oldPath' => $oldPath]);
 
         $this->loginAs($this->restrictedUser);
-        $folder->setKey('sync-renamed');
-        $folder->save();
+        (new DataChangeListener())->onObjectUpdate($event);
 
         $this->assertSame(
             ['/sync-renamed'],
