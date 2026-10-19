@@ -96,7 +96,11 @@ final class Block extends Base
                 $brickKey = $attributeParts[1];
                 $brickContainer = $attributeParts[2] ?? null;
 
-                $key = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getBrickContainerField($object->getclass(), $brickType, $brickContainer);
+                $key = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getBrickContainerField(
+                    $object->getclass(),
+                    $brickType,
+                    $brickContainer
+                );
 
                 $brickClass = Definition::getByKey($brickType);
 

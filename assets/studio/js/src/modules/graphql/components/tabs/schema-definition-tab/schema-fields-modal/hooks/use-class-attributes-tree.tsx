@@ -24,7 +24,12 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
-import { buildBrickAttribute, buildBrickColumnTitle, getAmbiguousBrickKeys } from './brick-container-helpers'
+import {
+  buildBrickAttribute,
+  buildBrickColumnTitle,
+  getAmbiguousBrickKeys,
+  type ObjectBricksFieldInfo
+} from './brick-container-helpers'
 
 interface UseClassAttributesTreeProps {
   classId: string
@@ -38,6 +43,23 @@ interface UseClassAttributesTreeReturn {
   expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
+}
+
+const buildBrickContainerNode = (
+  field: ObjectBricksFieldInfo,
+  buildBrickGroupNode: (brickKey: string, containerName: string) => TreeNode[]
+): TreeNode[] => {
+  const brickGroups = flatMap(field.allowedTypes, brickKey => buildBrickGroupNode(brickKey, field.name))
+  if (brickGroups.length === 0) return []
+
+  return [{
+    key: `brick-container-${field.name}`,
+    title: `${field.title ?? field.name} (${field.name})`,
+    isLeaf: false,
+    icon: <Icon value="object-bricks" />,
+    iconProps: { value: 'object-bricks' },
+    children: brickGroups
+  }]
 }
 
 export const useClassAttributesTree = ({
@@ -158,19 +180,7 @@ export const useClassAttributesTree = ({
     const buildBrickContainerNodes = (): TreeNode[] => {
       if (isNil(classLayout) || brickLayouts.size === 0) return []
 
-      return flatMap(objectBricksFields, (field): TreeNode[] => {
-        const brickGroups = flatMap(field.allowedTypes, brickKey => buildBrickGroupNode(brickKey, field.name))
-        if (brickGroups.length === 0) return []
-
-        return [{
-          key: `brick-container-${field.name}`,
-          title: `${field.title ?? field.name} (${field.name})`,
-          isLeaf: false,
-          icon: <Icon value="object-bricks" />,
-          iconProps: { value: 'object-bricks' },
-          children: brickGroups
-        }]
-      })
+      return flatMap(objectBricksFields, field => buildBrickContainerNode(field, buildBrickGroupNode))
     }
 
     const buildSystemColumns = (): TreeNode => ({

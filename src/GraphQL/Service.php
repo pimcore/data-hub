@@ -1232,7 +1232,10 @@ final class Service
         if ($containerField !== null && $containerField !== '') {
             $fieldDefinition = $class->getFieldDefinition($containerField);
 
-            if ($fieldDefinition instanceof Data\Objectbricks && in_array($brickType, $fieldDefinition->getAllowedTypes(), true)) {
+            if (
+                $fieldDefinition instanceof Data\Objectbricks
+                && in_array($brickType, $fieldDefinition->getAllowedTypes(), true)
+            ) {
                 return $containerField;
             }
         }

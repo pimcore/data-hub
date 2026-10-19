@@ -101,19 +101,24 @@ class BrickContainerResolveTest extends Unit
         return BrickContainerTestEntity::getById($object->getId(), ['force' => true]);
     }
 
+    private function readLabel(BrickContainerTestEntity $object, ?string $containerField = null): mixed
+    {
+        return Service::getValueFromObjectBrick($object, self::BRICK_KEY, 'label', null, [], $containerField);
+    }
+
     public function testValueIsReadFromTheSelectedContainer(): void
     {
         $object = $this->createObject();
 
-        $this->assertSame('A-value', Service::getValueFromObjectBrick($object, self::BRICK_KEY, 'label', null, [], 'slotA'));
-        $this->assertSame('B-value', Service::getValueFromObjectBrick($object, self::BRICK_KEY, 'label', null, [], 'slotB'));
+        $this->assertSame('A-value', $this->readLabel($object, 'slotA'));
+        $this->assertSame('B-value', $this->readLabel($object, 'slotB'));
     }
 
     public function testValueIsReadFromTheFirstContainerWithoutSelection(): void
     {
         $object = $this->createObject();
 
-        $this->assertSame('A-value', Service::getValueFromObjectBrick($object, self::BRICK_KEY, 'label'));
+        $this->assertSame('A-value', $this->readLabel($object));
     }
 
     public function testValueIsWrittenToTheSelectedContainer(): void
