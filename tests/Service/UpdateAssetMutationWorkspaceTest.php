@@ -135,10 +135,11 @@ class UpdateAssetMutationWorkspaceTest extends Unit
         $result = $this->update(['id' => self::ASSET_OUTSIDE, 'input' => ['filename' => 'renamed.txt']]);
 
         $this->assertFalse($result['success']);
+        $this->assertSame('permission denied.', $result['message']);
         $this->assertNotSame('renamed.txt', $this->assets[self::ASSET_OUTSIDE]->getFilename());
     }
 
-    public function testRejectedUpdateNeitherSavesNorChangesTags(): void
+    public function testRejectedUpdateNeitherSavesNorChangesData(): void
     {
         $this->assets[self::ASSET_IN_DENIED]->expects($this->never())->method('save');
         $this->assets[self::ASSET_IN_DENIED]->expects($this->never())->method('setData');
@@ -162,6 +163,7 @@ class UpdateAssetMutationWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
+        $this->assertSame('not allowed to move asset to the given parent', $result['message']);
         $this->assertSame(self::ALLOWED_FOLDER_ID, $this->assets[self::ASSET_IN_ALLOWED]->getParentId());
     }
 
@@ -173,6 +175,7 @@ class UpdateAssetMutationWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
+        $this->assertSame('not allowed to move asset to the given parent', $result['message']);
         $this->assertSame(self::ALLOWED_FOLDER_ID, $this->assets[self::ASSET_IN_ALLOWED]->getParentId());
     }
 
