@@ -236,7 +236,9 @@ final class WorkspaceHelper
         $eventDispatcher->dispatch($event, PermissionEvents::PRE_CHECK);
         if (!$event->isGranted()) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new ClientSafeException('access for ' . ($element?->getFullPath() ?? 'unknown element') . ' denied');
+                $path = $element?->getFullPath() ?? 'unknown element';
+
+                throw new ClientSafeException('access for ' . $path . ' denied');
             }
 
             return false;
