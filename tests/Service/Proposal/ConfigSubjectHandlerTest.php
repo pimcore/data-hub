@@ -15,24 +15,38 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use Codeception\Test\Unit;
+use Doctrine\DBAL\Connection;
 use function in_array;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
+use Pimcore\Bundle\ChangeControlBundle\ChangeSet\Hydrator\ReviewHydrator;
+use Pimcore\Bundle\ChangeControlBundle\ChangeSet\Service\ChangeSetService;
+use Pimcore\Bundle\ChangeControlBundle\Contract\ChangeControlAuthoringInterface;
+use Pimcore\Bundle\ChangeControlBundle\Draft\BranchVisibility;
+use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorRegistry;
 use Pimcore\Bundle\ChangeControlBundle\Merge\Exception\UnsupportedMergeSaveModeException;
 use Pimcore\Bundle\ChangeControlBundle\Merge\MergeSaveMode;
+use Pimcore\Bundle\ChangeControlBundle\Storage\BranchMergeRepository;
+use Pimcore\Bundle\ChangeControlBundle\Storage\BranchRepository;
+use Pimcore\Bundle\ChangeControlBundle\Storage\Schema;
+use Pimcore\Bundle\ChangeControlBundle\Storage\SubjectIdentityRepository;
 use Pimcore\Bundle\ChangeControlBundle\Subject\Exception\SubjectAccessDeniedException;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
+use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRegistry;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
+use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
 use Pimcore\Model\User;
 use Pimcore\Model\UserInterface;
-use function sprintf;
+use ReflectionClass;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Change Control is an optional peer, so these skip rather than fail where it is not installed.
@@ -410,6 +424,10 @@ class ConfigSubjectHandlerTest extends Unit
         );
     }
 
+    /**
+     * A reviewer's reject runs through Change Control's own discard, on an agent proposal for a
+     * changed and for a new configuration: the change set closes, nothing reaches the adapter.
+     */
     public function testRejectingAProposalWritesNothing(): void
     {
         $existing = $this->configuration('orders', ['general' => ['active' => true, 'description' => 'old']], allowed: [
@@ -422,12 +440,13 @@ class ConfigSubjectHandlerTest extends Unit
         $policy = new RecordingConfigPolicy();
         $handler = $this->handler($policy);
         $user = $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG, PermissionConstants::PLUGIN_DATA_HUB_ADMIN]);
+        $discarded = [];
 
-        // what Change Control asks a subject handler when a change set is discarded: read access,
-        // then the right to close it under either write mode; nothing is applied
-        foreach ([$this->ref(), new SubjectRef('data-hub-webhook-config', Uuid::v4(), 'invoices')] as $subject) {
-            $handler->authorizeRead($subject, $user);
-            $this->assertCloseAllowed($handler, $subject, $user);
+        foreach (['orders', 'invoices'] as $name) {
+            $subject = new SubjectRef('data-hub-webhook-config', Uuid::v4(), $name);
+            $branch = Uuid::v4();
+            $this->changeSets($handler, $subject, $branch, $user, $discarded)->discard($branch->toRfc4122(), 'session-1');
+            $this->assertSame([$branch->toRfc4122(), 7, 'session-1'], $discarded[$name] ?? null);
         }
 
         $this->assertSame([], $policy->saved);
@@ -436,19 +455,72 @@ class ConfigSubjectHandlerTest extends Unit
         $this->assertSame(['general' => ['active' => true, 'description' => 'old']], $handler->readState($this->ref()));
     }
 
-    private function assertCloseAllowed(ConfigSubjectHandler $handler, SubjectRef $subject, User $user): void
-    {
-        foreach ([MergeSaveMode::Save, MergeSaveMode::Publish] as $mode) {
-            try {
-                $handler->authorize($subject, $user, $mode);
+    /**
+     * Change Control's change set service over one open agent proposal on $subject.
+     *
+     * @param array<string, array{string, ?int, ?string}> $discarded by configuration name
+     */
+    private function changeSets(
+        ConfigSubjectHandler $handler,
+        SubjectRef $subject,
+        Uuid $branch,
+        User $user,
+        array &$discarded,
+    ): ChangeSetService {
+        $authoring = $this->createStub(ChangeControlAuthoringInterface::class);
+        $authoring->method('subjectsOf')->willReturn([$subject]);
+        $authoring->method('discard')->willReturnCallback(
+            static function (Uuid $closed, ?int $closedBy, ?string $contextRef) use (&$discarded, $subject): bool {
+                $discarded[$subject->ref] = [$closed->toRfc4122(), $closedBy, $contextRef];
 
-                return;
-            } catch (SubjectAccessDeniedException) {
-                // Change Control tries the next write mode
+                return true;
             }
-        }
+        );
+        $db = $this->createStub(Connection::class);
+        $db->method('fetchAssociative')->willReturn([
+            'id' => 1,
+            'uuid' => $branch->toBinary(),
+            'kind' => 0,
+            'state' => Schema::STATE_DRAFT,
+            'name' => 'Webhook configuration',
+            'subject_uuid' => $subject->uuid->toBinary(),
+            's_type' => $subject->subjectType,
+            's_ref' => $subject->ref,
+            'created_via' => 'agent',
+            'created_by' => 3,
+            'context_ref' => 'session-1',
+            'context' => null,
+            'closed_at' => null,
+        ]);
+        $security = $this->createStub(SecurityServiceInterface::class);
+        $security->method('getCurrentUser')->willReturn($user);
 
-        $this->fail(sprintf('Closing "%s" was refused under every write mode.', $subject->ref));
+        return new ChangeSetService(
+            $authoring,
+            new BranchRepository($db),
+            new BranchVisibility(),
+            $this->unused(SubjectIdentityRepository::class),
+            new SubjectRegistry(new ServiceLocator([$subject->subjectType => static fn () => $handler])),
+            $this->unused(DetailHydratorRegistry::class),
+            $this->unused(ReviewHydrator::class),
+            $security,
+            $this->createStub(EventDispatcherInterface::class),
+            $this->unused(BranchMergeRepository::class),
+        );
+    }
+
+    /**
+     * A collaborator a discard never asks; built without its own wiring, which is not this test's.
+     *
+     * @template T of object
+     *
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
+    private function unused(string $class): object
+    {
+        return (new ReflectionClass($class))->newInstanceWithoutConstructor();
     }
 
     private function handler(RecordingConfigPolicy $policy): ConfigSubjectHandler
