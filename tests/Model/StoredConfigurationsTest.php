@@ -76,11 +76,14 @@ class StoredConfigurationsTest extends ModelTestCase
             'pimcore_data_hub',
         );
 
+        $thrown = null;
+
         try {
             Configuration::getByName(self::UNREADABLE);
-            $this->fail('the stored entry was not read');
-        } catch (TypeError) {
+        } catch (TypeError $error) {
+            $thrown = $error;
         }
+        $this->assertInstanceOf(TypeError::class, $thrown, 'the stored entry must be unreadable');
 
         $this->assertNull((new StoredConfigurations())->find(self::UNREADABLE));
     }
