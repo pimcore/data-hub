@@ -445,7 +445,8 @@ class ConfigSubjectHandlerTest extends Unit
         foreach (['orders', 'invoices'] as $name) {
             $subject = new SubjectRef('data-hub-webhook-config', Uuid::v4(), $name);
             $branch = Uuid::v4();
-            $this->changeSets($handler, $subject, $branch, $user, $discarded)->discard($branch->toRfc4122(), 'session-1');
+            $changeSets = $this->changeSets($handler, $subject, $branch, $user, $discarded);
+            $changeSets->discard($branch->toRfc4122(), 'session-1');
             $this->assertSame([$branch->toRfc4122(), 7, 'session-1'], $discarded[$name] ?? null);
         }
 
