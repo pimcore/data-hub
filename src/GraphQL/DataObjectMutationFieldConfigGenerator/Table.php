@@ -14,6 +14,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
@@ -42,23 +43,31 @@ final class Table extends Base
             $inputItems['col' . $i] = Type::string();
         }
 
-        $rowInput = new InputObjectType([
-            'name' => 'RowInput',
-            'fields' => $inputItems,
-        ]);
+        // the input types are the same for every table with this many columns, so they are shared instead of
+        // registering a second type of the same name (e.g. for the same brick in several objectbricks fields)
+        $cacheKey = 'graphql_table_input_' . $numCols;
 
-        $inputType = new InputObjectType([
-            'name' => 'TableInput',
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => 'if true then the entire table will be overwritten',
+        if (!RuntimeCache::isRegistered($cacheKey)) {
+            $rowInput = new InputObjectType([
+                'name' => 'RowInput',
+                'fields' => $inputItems,
+            ]);
+
+            RuntimeCache::set($cacheKey, new InputObjectType([
+                'name' => 'TableInput',
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => 'if true then the entire table will be overwritten',
+                    ],
+                    'rows' => [
+                        'type' => Type::listOf($rowInput),
+                    ],
                 ],
-                'rows' => [
-                    'type' => Type::listOf($rowInput),
-                ],
-            ],
-        ]);
+            ]));
+        }
+
+        $inputType = RuntimeCache::get($cacheKey);
 
         return [
             'arg' => $inputType,

@@ -13,6 +13,9 @@
 namespace Pimcore\Tests\Model\DataObject;
 
 use Codeception\Test\Unit;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Schema;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\BrickContainerTestEntity;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -159,5 +162,42 @@ class BrickContainerResolveTest extends Unit
         $this->assertSame('label', $keyOf(self::BRICK_KEY . '~label'));
         $this->assertSame('slotA_' . self::BRICK_KEY . '_label', $keyOf(self::BRICK_KEY . '~label~slotA'));
         $this->assertSame('slotB_' . self::BRICK_KEY . '_label', $keyOf(self::BRICK_KEY . '~label~slotB'));
+    }
+
+    public function testSchemaWithTheSameBrickTableOfBothContainersIsValid(): void
+    {
+        $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
+        $class = ClassDefinition::getByName(self::CLASS_NAME);
+
+        $queryFields = [];
+        $mutationArgs = [];
+        foreach (['slotA', 'slotB'] as $containerField) {
+            $nodeDef = [
+                'isOperator' => false,
+                'attributes' => ['attribute' => self::BRICK_KEY . '~rows~' . $containerField, 'dataType' => 'table'],
+            ];
+
+            $query = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class);
+            $queryFields[$query['key']] = $query['config'];
+
+            $mutation = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $class);
+            $mutationArgs[$mutation['key']] = ['type' => $mutation['arg']];
+        }
+
+        $this->assertCount(2, $queryFields);
+        $this->assertCount(2, $mutationArgs);
+
+        // a schema must not contain two different types of the same name
+        (new Schema([
+            'query' => new ObjectType(['name' => 'Query', 'fields' => $queryFields]),
+        ]))->assertValid();
+
+        (new Schema([
+            'query' => new ObjectType(['name' => 'Query', 'fields' => ['id' => Type::string()]]),
+            'mutation' => new ObjectType([
+                'name' => 'Mutation',
+                'fields' => ['update' => ['type' => Type::string(), 'args' => $mutationArgs]],
+            ]),
+        ]))->assertValid();
     }
 }

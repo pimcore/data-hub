@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\StringType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition as FieldcollectionDefinition;
@@ -90,14 +91,20 @@ abstract class AbstractTable extends Base
             return Type::string();
         }
 
-        $type = new ObjectType(
-            [
-                'name' => $name,
-                'fields' => $columns,
-            ]
-        );
+        // shared by name, so that selecting the same table more than once (e.g. the same brick in several
+        // objectbricks fields) does not register two types of the same name
+        $cacheKey = 'graphql_table_type_' . $name;
 
-        return Type::listOf($type);
+        if (!RuntimeCache::isRegistered($cacheKey)) {
+            RuntimeCache::set($cacheKey, new ObjectType(
+                [
+                    'name' => $name,
+                    'fields' => $columns,
+                ]
+            ));
+        }
+
+        return Type::listOf(RuntimeCache::get($cacheKey));
     }
 
     abstract protected function getTableColumns(Data $fieldDefinition): array;

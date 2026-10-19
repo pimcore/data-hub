@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\BlockDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\BlockEntryType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldcollectionDescriptor;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
@@ -52,7 +53,16 @@ final class Block extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        return Type::listOf(new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
+        // the entry type is named after the block, so it is shared when the block is selected more than once,
+        // e.g. for the same brick in several objectbricks fields
+        $ownerName = $class instanceof Definition ? $class->getKey() : $class->getName();
+        $cacheKey = 'graphql_block_entry_' . $ownerName . '_' . $fieldDefinition->getName();
+
+        if (!RuntimeCache::isRegistered($cacheKey)) {
+            RuntimeCache::set($cacheKey, new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
+        }
+
+        return Type::listOf(RuntimeCache::get($cacheKey));
     }
 
     /**

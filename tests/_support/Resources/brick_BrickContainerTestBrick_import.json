@@ -40,6 +40,30 @@
                 "invisible": false,
                 "visibleGridView": false,
                 "visibleSearch": false
+            },
+            {
+                "fieldtype": "table",
+                "width": null,
+                "height": null,
+                "cols": 2,
+                "rows": 0,
+                "rowsFixed": false,
+                "colsFixed": false,
+                "data": "",
+                "name": "rows",
+                "title": "Rows",
+                "tooltip": "",
+                "mandatory": false,
+                "noteditable": false,
+                "index": false,
+                "locked": false,
+                "style": "",
+                "permissions": null,
+                "datatype": "data",
+                "relationType": false,
+                "invisible": false,
+                "visibleGridView": false,
+                "visibleSearch": false
             }
         ],
         "locked": false
