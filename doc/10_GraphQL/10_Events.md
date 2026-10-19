@@ -288,17 +288,18 @@ class GraphqlListener implements EventSubscriberInterface
 #### Example 6: Deny access with a custom permission check
 The `PermissionEvents::PRE_CHECK` event is dispatched for every element access that is checked against the workspace
 permissions, except when `skipPermissionCheck` is active. Most resolvers also skip the check (and the event) with
-`omitPermissionCheck`, but asset listings, relations and document mutations still dispatch it. A listener can deny
-access with `setIsGranted(false)`: the element is then treated as not allowed, regardless of the workspace
-configuration. A listener cannot grant access that the workspaces deny.
+`omitPermissionCheck`, but some still dispatch it, for example asset listings, relations and related elements,
+properties and document mutations. A listener can deny access with `setIsGranted(false)`: the element is then treated
+as not allowed, regardless of the workspace configuration. A listener cannot grant access that the workspaces deny.
 
 What happens with a denied element depends on the not allowed policy and on where it is accessed:
-- `NOT_ALLOWED_POLICY_EXCEPTION`: the access fails with the error "access for <path> denied". Most mutations catch it
-  and return `success: false` with that message instead of a GraphQL error.
+- `NOT_ALLOWED_POLICY_EXCEPTION`: the access fails with the error `access for <path> denied`. Most update and delete
+  mutations (for example `updateObject`, `deleteObject`) catch it and return `success: false` with that message.
+  Create mutations and all document mutations return it as a GraphQL error instead.
 - `NOT_ALLOWED_POLICY_NULL` (default): list entries are dropped and mutations return `success: false`. Of the single
   getters only `getObject` fails with "permission denied. check your workspace settings"; `getAsset`, `getDocument`
-  and the folder getters return `null`. A denied asset of an image editable in a document update is not rejected:
-  the image is silently cleared and the mutation still succeeds.
+  and the folder getters return `null`. A denied asset of an image editable in a document create or update is not
+  rejected: the image is silently cleared and the mutation still succeeds.
 
 Note that the `totalCount` of a listing is computed in SQL and still counts items that a listener denies, so a page can
 contain fewer edges than `totalCount` suggests.
