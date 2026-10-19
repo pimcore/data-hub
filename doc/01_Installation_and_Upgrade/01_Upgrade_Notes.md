@@ -12,7 +12,8 @@ description: Breaking changes and migration steps per release.
 `WorkspaceHelper::checkPermission()` ignored `$event->setIsGranted(false)` of a `PermissionEvents::PRE_CHECK` listener
 unless the not allowed policy was `NOT_ALLOWED_POLICY_EXCEPTION`. With the default `NOT_ALLOWED_POLICY_NULL` the denial
 is now applied too: the element is treated like one denied by the workspaces (omitted from lists, `success: false` for
-mutations). Projects that register a denying listener and relied on the denial being ignored will see elements
+mutations, `null` from `getAsset`/`getDocument`, an error from `getObject`; a denied image of an image editable in a
+document update is cleared without failing the mutation). Projects that register a denying listener and relied on the denial being ignored will see elements
 disappear. A listener still cannot grant access that the workspaces deny.
 
 ## Upgrade to 2026.3.0

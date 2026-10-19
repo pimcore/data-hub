@@ -43,7 +43,11 @@ class WorkspaceHelperPermissionEventTest extends Unit
 
     private int $previousPolicy;
 
+    private bool $lookupWasRegistered;
+
     private mixed $previousLookup = null;
+
+    private bool $contextWasRegistered;
 
     private mixed $previousContext = null;
 
@@ -53,7 +57,9 @@ class WorkspaceHelperPermissionEventTest extends Unit
     {
         $this->previousKernel = \Pimcore::getKernel();
         $this->previousPolicy = PimcoreDataHubBundle::$notAllowedPolicy;
+        $this->lookupWasRegistered = RuntimeCache::isRegistered(self::CACHE_KEY);
         $this->previousLookup = $this->readCache(self::CACHE_KEY);
+        $this->contextWasRegistered = RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         $this->previousContext = $this->readCache(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
 
         $this->dispatcher = new EventDispatcher();
@@ -76,8 +82,12 @@ class WorkspaceHelperPermissionEventTest extends Unit
     {
         $this->setKernel($this->previousKernel);
         PimcoreDataHubBundle::setNotAllowedPolicy($this->previousPolicy);
-        $this->restoreCache(self::CACHE_KEY, $this->previousLookup);
-        $this->restoreCache(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->previousContext);
+        $this->restoreCache(self::CACHE_KEY, $this->lookupWasRegistered, $this->previousLookup);
+        $this->restoreCache(
+            PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY,
+            $this->contextWasRegistered,
+            $this->previousContext
+        );
     }
 
     public function testWorkspaceDecidesWithoutListener(): void
@@ -106,6 +116,17 @@ class WorkspaceHelperPermissionEventTest extends Unit
         $this->expectException(ClientSafeException::class);
 
         WorkspaceHelper::checkPermission($this->rootFolder(), self::READ);
+    }
+
+    public function testDenyingListenerOnMissingElementThrowsClientSafeExceptionWithExceptionPolicy(): void
+    {
+        $this->denyInListener();
+        PimcoreDataHubBundle::setNotAllowedPolicy(PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION);
+
+        $this->expectException(ClientSafeException::class);
+        $this->expectExceptionMessage('access for unknown element denied');
+
+        WorkspaceHelper::checkPermission(null, self::READ);
     }
 
     public function testListenerReceivesElementAndType(): void
@@ -176,9 +197,13 @@ class WorkspaceHelperPermissionEventTest extends Unit
         return RuntimeCache::isRegistered($key) ? RuntimeCache::get($key) : null;
     }
 
-    private function restoreCache(string $key, mixed $value): void
+    private function restoreCache(string $key, bool $wasRegistered, mixed $value): void
     {
-        RuntimeCache::set($key, $value);
+        if ($wasRegistered) {
+            RuntimeCache::set($key, $value);
+        } elseif (RuntimeCache::isRegistered($key)) {
+            RuntimeCache::getInstance()->offsetUnset($key);
+        }
     }
 
     private function setKernel(?KernelInterface $kernel): void

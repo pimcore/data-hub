@@ -213,7 +213,7 @@ final class WorkspaceHelper
     }
 
     /**
-     * @param ElementInterface|OwnerAwareFieldInterface $element
+     * @param ElementInterface|OwnerAwareFieldInterface|null $element
      * @param string $type
      *
      * @return bool
@@ -236,7 +236,7 @@ final class WorkspaceHelper
         $eventDispatcher->dispatch($event, PermissionEvents::PRE_CHECK);
         if (!$event->isGranted()) {
             if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-                throw new ClientSafeException('access for '.  $element->getFullPath() . ' denied');
+                throw new ClientSafeException('access for ' . ($element?->getFullPath() ?? 'unknown element') . ' denied');
             }
 
             return false;
