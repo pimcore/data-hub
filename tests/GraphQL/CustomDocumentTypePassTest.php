@@ -33,7 +33,8 @@ class CustomDocumentTypePassTest extends TestCase
         $container->setDefinition(DocumentType::class, new Definition(DocumentType::class));
         $container->setDefinition(
             'pme.test.custom_type',
-            (new Definition(\stdClass::class))->addTag('pimcore.datahub.graphql.documenttype.customtype', ['id' => 'document_custom'])
+            (new Definition(\stdClass::class))
+                ->addTag('pimcore.datahub.graphql.documenttype.customtype', ['id' => 'document_custom'])
         );
 
         (new CustomDocumentTypePass())->process($container);

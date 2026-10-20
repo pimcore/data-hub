@@ -48,7 +48,10 @@ class ImportExportLocatorsPassTest extends TestCase
     {
         $container = new ContainerBuilder();
         $container->setDefinition(Service::class, new Definition(Service::class));
-        $container->setDefinition('pme.test.type', (new Definition(\stdClass::class))->addTag($tag, ['id' => 'document_email']));
+        $container->setDefinition(
+            'pme.test.type',
+            (new Definition(\stdClass::class))->addTag($tag, ['id' => 'document_email'])
+        );
 
         (new ImportExportLocatorsPass())->process($container);
 
