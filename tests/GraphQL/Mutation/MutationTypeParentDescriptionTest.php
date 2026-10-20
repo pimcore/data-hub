@@ -14,7 +14,13 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Mutation;
 
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
+use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Cache\RuntimeCache;
+use Pimcore\Model\Element\ElementInterface;
+use Pimcore\Tests\Support\Util\TestHelper;
 
 /**
  * The "not allowed to create ..." messages name the parent the caller asked for,
@@ -22,6 +28,35 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
  */
 class MutationTypeParentDescriptionTest extends Unit
 {
+    private mixed $backupContext = null;
+
+    private ?ElementInterface $parent = null;
+
+    protected function setUp(): void
+    {
+        if (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
+            $this->backupContext = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        }
+
+        // a configuration without workspace entries denies every create
+        $configuration = new Configuration('graphql', '/1', 'datahub-parent-description-test');
+        $configuration->setConfiguration([]);
+        RuntimeCache::set(
+            PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY,
+            ['clientname' => 'datahub-parent-description-test', 'configuration' => $configuration]
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->backupContext !== null) {
+            RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->backupContext);
+        }
+
+        $this->parent?->delete();
+        $this->parent = null;
+    }
+
     public static function parentArgs(): array
     {
         return [
@@ -38,5 +73,46 @@ class MutationTypeParentDescriptionTest extends Unit
         $method = new \ReflectionMethod(MutationType::class, 'describeParent');
 
         $this->assertSame($expected, $method->invoke(null, $args));
+    }
+
+    public static function elementTypes(): array
+    {
+        return [
+            'asset' => ['asset', 'assetfolder'],
+            'object' => ['object', 'objectfolder'],
+            'document' => ['document', 'documentfolder'],
+        ];
+    }
+
+    /**
+     * Guards that the folder resolver appends the parent to its message, not only that the helper works.
+     */
+    #[DataProvider('elementTypes')]
+    public function testCreateFolderDeniedMessageNamesParentIdAndPath(string $elementType, string $folderType): void
+    {
+        $this->parent = match ($elementType) {
+            'asset' => TestHelper::createAssetFolder('pme_t0444_'),
+            'object' => TestHelper::createObjectFolder('pme_t0444_'),
+            'document' => TestHelper::createDocumentFolder('pme_t0444_'),
+        };
+
+        $resolver = $this->createFolderResolver($elementType);
+
+        $byId = $resolver(null, ['parentId' => $this->parent->getId(), 'key' => 'x', 'filename' => 'x'], [], $this->createStub(ResolveInfo::class));
+        $this->assertFalse($byId['success']);
+        $this->assertSame('not allowed to create ' . $folderType . ' in parent id ' . $this->parent->getId(), $byId['message']);
+
+        $path = $this->parent->getRealFullPath();
+        $byPath = $resolver(null, ['path' => $path, 'key' => 'x', 'filename' => 'x'], [], $this->createStub(ResolveInfo::class));
+        $this->assertFalse($byPath['success']);
+        $this->assertSame('not allowed to create ' . $folderType . " in parent path '" . $path . "'", $byPath['message']);
+    }
+
+    private function createFolderResolver(string $elementType): callable
+    {
+        // the constructor builds the whole schema; the folder resolver only needs the (default) permission check flag
+        $mutationType = (new \ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
+
+        return $mutationType->getCreateFolderResolver($elementType);
     }
 }

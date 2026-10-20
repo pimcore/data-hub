@@ -1217,7 +1217,8 @@ final class MutationType extends ObjectType
     /**
      * Names the parent the caller asked for, in the same precedence the create resolvers use (`parentId` before `path`).
      * It echoes the caller's own input and never the resolved parent's full path, which could belong to an element
-     * outside the workspace.
+     * outside the workspace (with the default not-allowed policy; the `exception` policy throws earlier, in
+     * WorkspaceHelper::checkPermission()).
      *
      * @param array<string, mixed> $args
      */
