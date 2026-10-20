@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
 use Exception;
+use JsonException;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -186,7 +187,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot import configuration as configurations are not writeable.'
         );
 
-        $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $importData = $this->decodeImportData($json);
         $this->validateUploadedConfigurationData($importData);
 
         $this->checkCreatePermission($importData['type']);
@@ -533,6 +534,27 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         }
 
         return array_key_exists($type, $registeredBundles['supported_types']);
+    }
+
+    /**
+     * @throws ValidationFailedException
+     */
+    private function decodeImportData(string $json): array
+    {
+        try {
+            $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            $importData = null;
+        }
+
+        if (!is_array($importData)) {
+            throw new ValidationFailedException(
+                message: 'Uploaded file is not a valid JSON configuration.',
+                errorKey: 'data-hub.import-config-invalid'
+            );
+        }
+
+        return $importData;
     }
 
     private function validateUploadedConfigurationData(array $importData): void
