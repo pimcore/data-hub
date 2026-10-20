@@ -254,7 +254,7 @@ final class MutationType extends ObjectType
                         if (!WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create document',
+                                'message' => 'not allowed to create document' . self::describeParent($args),
                             ];
                         }
 
@@ -604,7 +604,7 @@ final class MutationType extends ObjectType
                         if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create object ' . $entity,
+                                'message' => 'not allowed to create object ' . $entity . self::describeParent($args),
                             ];
                         }
 
@@ -1008,7 +1008,7 @@ final class MutationType extends ObjectType
                     if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                         return [
                             'success' => false,
-                            'message' => 'not allowed to create asset',
+                            'message' => 'not allowed to create asset' . self::describeParent($args),
                         ];
                     }
 
@@ -1215,6 +1215,26 @@ final class MutationType extends ObjectType
     }
 
     /**
+     * Names the parent the caller asked for, in the same precedence the create resolvers use (`parentId` before `path`).
+     * It echoes the caller's own input and never the resolved parent's full path, which could belong to an element
+     * outside the workspace.
+     *
+     * @param array<string, mixed> $args
+     */
+    private static function describeParent(array $args): string
+    {
+        if (isset($args['parentId'])) {
+            return ' in parent id ' . $args['parentId'];
+        }
+
+        if (isset($args['path'])) {
+            return " in parent path '" . $args['path'] . "'";
+        }
+
+        return '';
+    }
+
+    /**
      * @param string $elementType
      *
      * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
@@ -1242,7 +1262,7 @@ final class MutationType extends ObjectType
             if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                 return [
                     'success' => false,
-                    'message' => 'not allowed to create ' . $elementType . 'folder ',
+                    'message' => 'not allowed to create ' . $elementType . 'folder' . self::describeParent($args),
                 ];
             }
 
