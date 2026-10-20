@@ -31,6 +31,7 @@ use Pimcore\Model\Document;
 use Pimcore\Model\Document\Editable\Relation;
 use Pimcore\Model\Document\Editable\Relations;
 use Pimcore\Model\Document\Editable\Renderlet;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Property;
 
 /**
@@ -79,8 +80,11 @@ class FolderReadSettingTest extends Unit
     /**
      * @dataProvider folderProvider
      */
-    public function testFolderIsOnlyReadableIfItsReadSettingIsEnabled(string $folderClass, string $setting, string $otherSetting): void
-    {
+    public function testFolderIsOnlyReadableIfItsReadSettingIsEnabled(
+        string $folderClass,
+        string $setting,
+        string $otherSetting
+    ): void {
         $folder = new $folderClass();
 
         $this->useConfiguration([]);
@@ -110,8 +114,10 @@ class FolderReadSettingTest extends Unit
     /**
      * @dataProvider folderProvider
      */
-    public function testReadPermissionIsDeniedForFolderOfDisabledTypeEvenIfPermissionCheckIsSkipped(string $folderClass, string $setting): void
-    {
+    public function testReadPermissionIsDeniedForDisabledFolderTypeEvenIfPermissionCheckIsSkipped(
+        string $folderClass,
+        string $setting
+    ): void {
         $this->useConfiguration([$setting => false], true);
 
         $this->assertFalse(WorkspaceHelper::checkPermission(new $folderClass(), 'read'));
@@ -120,8 +126,10 @@ class FolderReadSettingTest extends Unit
     /**
      * @dataProvider folderProvider
      */
-    public function testReadPermissionIsGrantedForFolderOfEnabledTypeIfPermissionCheckIsSkipped(string $folderClass, string $setting): void
-    {
+    public function testReadPermissionIsGrantedForEnabledFolderTypeIfPermissionCheckIsSkipped(
+        string $folderClass,
+        string $setting
+    ): void {
         $this->useConfiguration([$setting => true], true);
 
         $this->assertTrue(WorkspaceHelper::checkPermission(new $folderClass(), 'read'));
@@ -144,7 +152,7 @@ class FolderReadSettingTest extends Unit
     {
         $this->useConfiguration([$setting => false]);
 
-        $this->assertNull(RelationHelper::processRelation(new $folderClass(), $this->createServiceStub(), [], [], $this->resolveInfo()));
+        $this->assertNull($this->processRelation(new $folderClass()));
         $this->assertCount(0, $this->extractDataCalls, 'a disabled folder must not be hydrated');
     }
 
@@ -155,7 +163,7 @@ class FolderReadSettingTest extends Unit
     {
         $this->useConfiguration([$setting => true]);
 
-        $result = RelationHelper::processRelation(new $folderClass(), $this->createServiceStub(), [], [], $this->resolveInfo());
+        $result = $this->processRelation(new $folderClass());
 
         $this->assertInstanceOf(ElementDescriptor::class, $result);
         $this->assertSame('folder', $result['__elementSubtype']);
@@ -169,7 +177,9 @@ class FolderReadSettingTest extends Unit
     {
         $this->useConfiguration([$setting => false]);
 
-        $this->assertNull($this->resolveRelationField(RelationType::class, 'relation', $this->relationEditable(new $folderClass())));
+        $editable = $this->relationEditable(new $folderClass());
+
+        $this->assertNull($this->resolveRelationField(RelationType::class, 'relation', $editable));
         $this->assertCount(0, $this->extractDataCalls);
     }
 
@@ -180,7 +190,9 @@ class FolderReadSettingTest extends Unit
     {
         $this->useConfiguration([$setting => true]);
 
-        $result = $this->resolveRelationField(RelationType::class, 'relation', $this->relationEditable(new $folderClass()));
+        $editable = $this->relationEditable(new $folderClass());
+
+        $result = $this->resolveRelationField(RelationType::class, 'relation', $editable);
 
         $this->assertInstanceOf(ElementDescriptor::class, $result);
         $this->assertCount(1, $this->extractDataCalls);
@@ -220,64 +232,36 @@ class FolderReadSettingTest extends Unit
     {
         $this->useConfiguration([self::OBJECT_FOLDER => false]);
 
-        $propertyType = $this->buildPropertyType();
-
-        $this->assertSame(
-            'property_object',
-            $propertyType->resolveType($this->property('object', new DataObject\Folder()), [], $this->resolveInfo())->name
-        );
+        $this->assertSame('property_object', $this->propertyTypeName('object', new DataObject\Folder()));
     }
 
     public function testObjectPropertyOfEnabledFolderIsResolvedByTheFolderPropertyType(): void
     {
         $this->useConfiguration([self::OBJECT_FOLDER => true]);
 
-        $propertyType = $this->buildPropertyType();
-
-        $this->assertSame(
-            'property_objectfolder',
-            $propertyType->resolveType($this->property('object', new DataObject\Folder()), [], $this->resolveInfo())->name
-        );
+        $this->assertSame('property_objectfolder', $this->propertyTypeName('object', new DataObject\Folder()));
     }
 
     public function testDocumentPropertyOfDisabledFolderIsResolvedByTheGenericPropertyType(): void
     {
         $this->useConfiguration([self::DOCUMENT_FOLDER => false]);
 
-        $propertyType = $this->buildPropertyType();
-
-        $this->assertSame(
-            'property_document',
-            $propertyType->resolveType($this->property('document', new Document\Folder()), [], $this->resolveInfo())->name
-        );
+        $this->assertSame('property_document', $this->propertyTypeName('document', new Document\Folder()));
     }
 
     public function testDocumentPropertyOfEnabledFolderIsResolvedByTheFolderPropertyType(): void
     {
         $this->useConfiguration([self::DOCUMENT_FOLDER => true]);
 
-        $propertyType = $this->buildPropertyType();
-
-        $this->assertSame(
-            'property_documentfolder',
-            $propertyType->resolveType($this->property('document', new Document\Folder()), [], $this->resolveInfo())->name
-        );
+        $this->assertSame('property_documentfolder', $this->propertyTypeName('document', new Document\Folder()));
     }
 
     public function testPropertyOfNonFolderIsNotAffectedByTheReadSetting(): void
     {
         $this->useConfiguration([self::OBJECT_FOLDER => false, self::DOCUMENT_FOLDER => false]);
 
-        $propertyType = $this->buildPropertyType();
-
-        $this->assertSame(
-            'property_object',
-            $propertyType->resolveType($this->property('object', new DataObject\Concrete()), [], $this->resolveInfo())->name
-        );
-        $this->assertSame(
-            'property_document',
-            $propertyType->resolveType($this->property('document', new Document\Page()), [], $this->resolveInfo())->name
-        );
+        $this->assertSame('property_object', $this->propertyTypeName('object', new DataObject\Concrete()));
+        $this->assertSame('property_document', $this->propertyTypeName('document', new Document\Page()));
     }
 
     /**
@@ -326,8 +310,13 @@ class FolderReadSettingTest extends Unit
 
         // the types are looked up while the schema is built, the resolver only picks one of them
         $types = [];
-        foreach (['objectType' => 'property_object', 'objectFolderType' => 'property_objectfolder',
-            'documentType' => 'property_document', 'documentFolderType' => 'property_documentfolder'] as $property => $name) {
+        $names = [
+            'objectType' => 'property_object',
+            'objectFolderType' => 'property_objectfolder',
+            'documentType' => 'property_document',
+            'documentFolderType' => 'property_documentfolder',
+        ];
+        foreach ($names as $property => $name) {
             $types[$property] = new ObjectType(['name' => $name]);
         }
         \Closure::bind(static function (ElementPropertyType $propertyType, array $types): void {
@@ -337,6 +326,18 @@ class FolderReadSettingTest extends Unit
         }, null, ElementPropertyType::class)($propertyType, $types);
 
         return $propertyType;
+    }
+
+    private function processRelation(ElementInterface $relation): ?ElementDescriptor
+    {
+        return RelationHelper::processRelation($relation, $this->createServiceStub(), [], [], $this->resolveInfo());
+    }
+
+    private function propertyTypeName(string $type, DataObject\AbstractObject|Document $data): string
+    {
+        $resolved = $this->buildPropertyType()->resolveType($this->property($type, $data), [], $this->resolveInfo());
+
+        return $resolved->name;
     }
 
     private function property(string $type, DataObject\AbstractObject|Document $data): Property

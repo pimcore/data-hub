@@ -143,22 +143,10 @@ final class ElementPropertyType extends UnionType
                     }
                 }
                 case 'document': {
-                    $doc = $element->getData();
-                    // with the folder read setting disabled the folder type is not part of the union, the
-                    // generic type is used instead and resolves the folder to null
-                    if ($doc instanceof Document\Folder && WorkspaceHelper::isFolderReadAllowed($doc)) {
-                        return $this->documentFolderType;
-                    } else {
-                        return $this->documentType;
-                    }
+                    return $this->resolveDocumentType($element->getData());
                 }
                 case 'object': {
-                    $object = $element->getData();
-                    if ($object instanceof \Pimcore\Model\DataObject\Folder && WorkspaceHelper::isFolderReadAllowed($object)) {
-                        return $this->objectFolderType;
-                    } else {
-                        return $this->objectType; // @phpstan-ignore return.type
-                    }
+                    return $this->resolveObjectType($element->getData());
                 }
                 default:
                     throw new ClientSafeException('unkown property type: ' . $type);
@@ -166,5 +154,30 @@ final class ElementPropertyType extends UnionType
         }
 
         return null;
+    }
+
+    /**
+     * With the folder read setting disabled the folder type is not part of the union, the generic type is
+     * used instead and resolves the folder to null.
+     */
+    private function resolveDocumentType(mixed $document): ObjectType
+    {
+        if ($document instanceof Document\Folder && WorkspaceHelper::isFolderReadAllowed($document)) {
+            return $this->documentFolderType;
+        }
+
+        return $this->documentType;
+    }
+
+    /**
+     * @see resolveDocumentType()
+     */
+    private function resolveObjectType(mixed $object): ObjectType
+    {
+        if ($object instanceof \Pimcore\Model\DataObject\Folder && WorkspaceHelper::isFolderReadAllowed($object)) {
+            return $this->objectFolderType;
+        }
+
+        return $this->objectType; // @phpstan-ignore return.type
     }
 }

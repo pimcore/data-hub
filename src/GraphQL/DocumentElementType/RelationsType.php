@@ -62,23 +62,23 @@ final class RelationsType extends ObjectType
                         'relations' => [
                             'type' => Type::listOf($anyTargetType),
                             'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($graphQlService) {
-                                if ($value instanceof Relations) {
-                                    $targets = $value->getElements();
-                                    if ($targets) {
-                                        $result = [];
-                                        foreach ($targets as $target) {
-                                            if (!WorkspaceHelper::isFolderReadAllowed($target)) {
-                                                continue;
-                                            }
-
-                                            $data = new ElementDescriptor($target);
-                                            $graphQlService->extractData($data, $target, $args, $context, $resolveInfo);
-                                            $result[] = $data;
-                                        }
-
-                                        return $result;
-                                    }
+                                $targets = $value instanceof Relations ? $value->getElements() : null;
+                                if (!$targets) {
+                                    return null;
                                 }
+
+                                $result = [];
+                                foreach ($targets as $target) {
+                                    if (!WorkspaceHelper::isFolderReadAllowed($target)) {
+                                        continue;
+                                    }
+
+                                    $data = new ElementDescriptor($target);
+                                    $graphQlService->extractData($data, $target, $args, $context, $resolveInfo);
+                                    $result[] = $data;
+                                }
+
+                                return $result;
                             },
                         ],
                     ],
