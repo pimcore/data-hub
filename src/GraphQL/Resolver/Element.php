@@ -98,7 +98,9 @@ class Element
             $result = $element->getProperties();
         }
 
-        return array_values(array_filter($result, static fn (Property $property) => ElementPropertyType::isReadable($property)));
+        $readable = array_filter($result, static fn (Property $property) => ElementPropertyType::isReadable($property));
+
+        return array_values($readable);
     }
 
     /**
