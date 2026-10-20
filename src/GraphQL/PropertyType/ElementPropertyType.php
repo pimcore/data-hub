@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset\Folder;
 use Pimcore\Model\Document;
 
@@ -143,7 +144,9 @@ final class ElementPropertyType extends UnionType
                 }
                 case 'document': {
                     $doc = $element->getData();
-                    if ($doc instanceof Document\Folder) {
+                    // with the folder read setting disabled the folder type is not part of the union, the
+                    // generic type is used instead and resolves the folder to null
+                    if ($doc instanceof Document\Folder && WorkspaceHelper::isFolderReadAllowed($doc)) {
                         return $this->documentFolderType;
                     } else {
                         return $this->documentType;
@@ -151,7 +154,7 @@ final class ElementPropertyType extends UnionType
                 }
                 case 'object': {
                     $object = $element->getData();
-                    if ($object instanceof \Pimcore\Model\DataObject\Folder) {
+                    if ($object instanceof \Pimcore\Model\DataObject\Folder && WorkspaceHelper::isFolderReadAllowed($object)) {
                         return $this->objectFolderType;
                     } else {
                         return $this->objectType; // @phpstan-ignore return.type

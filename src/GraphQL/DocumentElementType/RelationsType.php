@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Document\Editable\Relations;
 
 /**
@@ -66,6 +67,10 @@ final class RelationsType extends ObjectType
                                     if ($targets) {
                                         $result = [];
                                         foreach ($targets as $target) {
+                                            if (!WorkspaceHelper::isFolderReadAllowed($target)) {
+                                                continue;
+                                            }
+
                                             $data = new ElementDescriptor($target);
                                             $graphQlService->extractData($data, $target, $args, $context, $resolveInfo);
                                             $result[] = $data;

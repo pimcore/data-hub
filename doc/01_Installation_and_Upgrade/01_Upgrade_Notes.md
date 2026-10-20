@@ -5,6 +5,18 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
+## Upgrade to 2026.3.3
+
+### GraphQL: the read settings of the folder types are applied everywhere
+
+The `read` setting of `Object Folder` and `Document Folder` was only respected by some fields. A folder of a disabled
+type is now resolved to `null` (or left out of a list) in every position: `parent`, `children` and `_siblings`,
+relations, relation editables of documents and element properties. Before, relations and the document tree returned the
+folder anyway, and unions of element properties could fail with a schema error for such a folder.
+
+Endpoints that rely on folders being returned from relations or the document tree have to enable the `read` setting of
+the `Object Folder` / `Document Folder` type. See [Folder Read Settings](../10_GraphQL/01_Configuration/02_Schema_Settings.md#folder-read-settings).
+
 ## Upgrade to 2026.3.0
 
 ### GraphQL
