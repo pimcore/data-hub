@@ -1125,7 +1125,8 @@ final class MutationType extends ObjectType
                     'omitVersionCreate' => ['type' => Type::boolean()],
                     'userId' => ['type' => Type::int()],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($omitPermissionCheck, $me) {
+                ],
+                'resolve' => static function ($value, $args) use ($omitPermissionCheck, $me) {
                     /** @var Asset|null $element */
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
 

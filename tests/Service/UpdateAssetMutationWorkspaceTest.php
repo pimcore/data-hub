@@ -248,12 +248,13 @@ class UpdateAssetMutationWorkspaceTest extends Unit
         // the service is final and needs the whole container: set just the two lookups the mutation builder uses
         $graphQlService = (new \ReflectionClass(Service::class))->newInstanceWithoutConstructor();
         $assetTypes = new Container();
-        $assetTypes->set('asset', new class() {
+        $assetTypeFactory = new class() {
             public function build(): Type
             {
                 return Type::string();
             }
-        });
+        };
+        $assetTypes->set('asset', $assetTypeFactory);
         $this->setProperty($graphQlService, 'assetTypeGeneratorFactories', $assetTypes);
         $this->setProperty($graphQlService, 'assetDataTypes', ['asset_input' => Type::string()]);
 
@@ -276,7 +277,14 @@ class UpdateAssetMutationWorkspaceTest extends Unit
 
     private function row(int $id, int $create, int $update): array
     {
-        return ['cid' => $id, 'cpath' => '/' . $id, 'create' => $create, 'read' => 1, 'update' => $update, 'delete' => 0];
+        return [
+            'cid' => $id,
+            'cpath' => '/' . $id,
+            'create' => $create,
+            'read' => 1,
+            'update' => $update,
+            'delete' => 0,
+        ];
     }
 
     /**
