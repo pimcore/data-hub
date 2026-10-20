@@ -19,6 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
+use Pimcore\Db;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Tests\Support\Util\TestHelper;
 
@@ -34,6 +35,22 @@ class MutationTypeParentDescriptionTest extends Unit
 
     protected function setUp(): void
     {
+        // the workspace lookup behind the permission check needs the bundle's tables, which the CI database lacks
+        foreach (['document', 'asset', 'object'] as $type) {
+            Db::get()->executeStatement(
+                'CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_' . $type . '` (
+                    `cid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+                    `cpath` VARCHAR(765) NULL DEFAULT NULL,
+                    `configuration` VARCHAR(80) NOT NULL DEFAULT \'0\',
+                    `create` TINYINT(1) UNSIGNED NULL DEFAULT 0,
+                    `read` TINYINT(1) UNSIGNED NULL DEFAULT 0,
+                    `update` TINYINT(1) UNSIGNED NULL DEFAULT 0,
+                    `delete` TINYINT(1) UNSIGNED NULL DEFAULT 0,
+                    PRIMARY KEY (`cid`, `configuration`)
+                )'
+            );
+        }
+
         if (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
             $this->backupContext = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
@@ -98,14 +115,23 @@ class MutationTypeParentDescriptionTest extends Unit
 
         $resolver = $this->createFolderResolver($elementType);
 
-        $byId = $resolver(null, ['parentId' => $this->parent->getId(), 'key' => 'x', 'filename' => 'x'], [], $this->createStub(ResolveInfo::class));
+        $info = $this->createStub(ResolveInfo::class);
+        $parentId = $this->parent->getId();
+
+        $byId = $resolver(null, ['parentId' => $parentId, 'key' => 'x', 'filename' => 'x'], [], $info);
         $this->assertFalse($byId['success']);
-        $this->assertSame('not allowed to create ' . $folderType . ' in parent id ' . $this->parent->getId(), $byId['message']);
+        $this->assertSame(
+            'not allowed to create ' . $folderType . ' in parent id ' . $parentId,
+            $byId['message']
+        );
 
         $path = $this->parent->getRealFullPath();
-        $byPath = $resolver(null, ['path' => $path, 'key' => 'x', 'filename' => 'x'], [], $this->createStub(ResolveInfo::class));
+        $byPath = $resolver(null, ['path' => $path, 'key' => 'x', 'filename' => 'x'], [], $info);
         $this->assertFalse($byPath['success']);
-        $this->assertSame('not allowed to create ' . $folderType . " in parent path '" . $path . "'", $byPath['message']);
+        $this->assertSame(
+            'not allowed to create ' . $folderType . " in parent path '" . $path . "'",
+            $byPath['message']
+        );
     }
 
     private function createFolderResolver(string $elementType): callable
