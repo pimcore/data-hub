@@ -15,15 +15,19 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * @internal
  */
-final class Table extends Base
+final class Table extends Base implements ResetInterface
 {
     /**
      * Input types by column count, shared across all table fields: webonyx/graphql-php rejects
      * a schema containing several distinct type instances with the same name.
+     * The first type created per schema build keeps the plain names (`TableInput`, `RowInput`), the
+     * others get the column count appended (`TableInput3`). The cache is cleared on `reset()`
+     * (kernel.reset) so every schema build starts again with the plain names.
      *
      * @var array<int, InputObjectType>
      */
@@ -51,6 +55,11 @@ final class Table extends Base
             'arg' => $inputType,
             'processor' => [$processor, 'process'],
         ];
+    }
+
+    public function reset(): void
+    {
+        $this->inputTypes = [];
     }
 
     private function getInputType(int $numCols): InputObjectType

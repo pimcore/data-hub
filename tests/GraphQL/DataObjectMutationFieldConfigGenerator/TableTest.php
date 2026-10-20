@@ -67,12 +67,30 @@ class TableTest extends Unit
         // the first table keeps the plain names, so single-table schemas are unchanged
         $this->assertSame('TableInput', $types['foo']->name);
         $this->assertSame('RowInput', $this->getRowInput($types['foo'])->name);
-        $this->assertNotSame($types['foo']->name, $types['bar']->name);
+        $this->assertSame('TableInput3', $types['bar']->name);
+        $this->assertSame('RowInput3', $this->getRowInput($types['bar'])->name);
         $this->assertSame($types['foo'], $types['baz']);
         $this->assertSame(['col0', 'col1'], array_keys($this->getRowInput($types['foo'])->getFields()));
         $this->assertSame(['col0', 'col1', 'col2'], array_keys($this->getRowInput($types['bar'])->getFields()));
 
         $this->assertValidSchema(array_values($types));
+    }
+
+    public function testResetStartsANewSchemaBuildWithPlainNames(): void
+    {
+        $class = $this->createClass(['foo' => 3, 'bar' => 2]);
+        $generator = new Table($this->createService());
+
+        $three = $generator->getGraphQlMutationFieldConfig(['attributes' => ['attribute' => 'foo']], $class)['arg'];
+        $this->assertSame('TableInput', $three->name);
+
+        $generator->reset();
+
+        // the next schema build (e.g. another endpoint in a worker) must not depend on the previous one
+        $two = $generator->getGraphQlMutationFieldConfig(['attributes' => ['attribute' => 'bar']], $class)['arg'];
+        $this->assertSame('TableInput', $two->name);
+        $this->assertSame('RowInput', $this->getRowInput($two)->name);
+        $this->assertSame(['col0', 'col1'], array_keys($this->getRowInput($two)->getFields()));
     }
 
     /**
