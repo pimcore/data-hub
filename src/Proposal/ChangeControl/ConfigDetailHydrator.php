@@ -15,9 +15,13 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl;
 
 use function array_filter;
+use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
 use function array_is_list;
 use function array_key_exists;
+use function array_slice;
+use function count;
+use function explode;
 use function in_array;
 use function is_array;
 use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorInterface;
@@ -36,7 +40,7 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     {
     }
 
-    public function hydrate(SubjectRef $subject, array $tree): array
+    public function hydrate(SubjectRef $subject, array $tree, array $provisional = []): array
     {
         $slots = [];
 
@@ -65,6 +69,17 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
 
     public function dehydrate(SubjectRef $subject, array $patch, array $proposed, ?UserInterface $user = null): array
     {
+        // a withheld leaf is never stored through a review: an address naming one, or a section
+        // sent whole that holds one, is dropped, so Change Control refuses the amendment
+        $patch = array_filter(
+            $patch,
+            fn (mixed $value, int|string $address): bool => !$this->isWithheld(
+                LeafPath::split((string) $address),
+                $value,
+            ),
+            ARRAY_FILTER_USE_BOTH,
+        );
+
         // a create has no tree yet: the patch IS the document, every section of it
         if ($proposed === []) {
             return $patch;
@@ -77,6 +92,40 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
             static fn (int|string $address): bool => array_key_exists(LeafPath::split((string) $address)[0], $proposed),
             ARRAY_FILTER_USE_KEY,
         );
+    }
+
+    /**
+     * @param list<string> $segments
+     */
+    private function isWithheld(array $segments, mixed $value): bool
+    {
+        foreach ($this->policy->withheld() as $path) {
+            $withheld = explode('.', $path);
+            if (array_slice($segments, 0, count($withheld)) === $withheld) {
+                return true;
+            }
+            if (array_slice($withheld, 0, count($segments)) === $segments
+                && self::holds($value, array_slice($withheld, count($segments)))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param list<string> $path
+     */
+    private static function holds(mixed $value, array $path): bool
+    {
+        foreach ($path as $key) {
+            if (!is_array($value) || !array_key_exists($key, $value)) {
+                return false;
+            }
+            $value = $value[$key];
+        }
+
+        return true;
     }
 
     /**

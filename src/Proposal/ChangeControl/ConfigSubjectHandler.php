@@ -24,6 +24,8 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Model\User;
@@ -40,6 +42,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
     public function __construct(
         private ConfigProposalPolicyInterface $policy,
         private ConfigurationServiceInterface $configurations,
+        private StoredConfigurationsInterface $stored,
+        private AdapterAvailabilityServiceInterface $adapters,
     ) {
     }
 
@@ -108,37 +112,65 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             );
         }
 
-        $existing = $this->load($name);
-        if ($existing === null) {
+        $stored = $this->stored->find($name);
+        if ($stored !== null && $stored->getType() !== $this->policy->configType()) {
+            // names are unique across adapters: saving here would overwrite another adapter's configuration
+            throw new LogicException(sprintf(
+                'Refusing to apply a %s to "%s": that name belongs to a %s configuration.',
+                $this->policy->noun(),
+                $name,
+                $stored->getType(),
+            ));
+        }
+
+        $isNew = $stored === null;
+        if ($isNew) {
             $this->configurations->addConfiguration(
                 $name,
                 $this->policy->configType(),
                 (string) ($finalData['general']['path'] ?? '')
             );
-            $existing = $this->load($name);
+            $stored = $this->load($name);
         }
 
-        $configuration = ConfigDocument::withStored($finalData, $existing?->getConfiguration() ?? [], $this->policy);
+        $configuration = ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy);
 
-        // identity and adapter type are the subject's, not the draft's — an existing
-        // configuration keeps whatever type it was created with
+        // identity and adapter type are the subject's, not the draft's
         $configuration['general']['name'] = $name;
-        $configuration['general']['type'] = $existing?->getType() ?? $this->policy->configType();
+        $configuration['general']['type'] = $this->policy->configType();
 
-        $this->policy->save($name, $configuration);
+        try {
+            $this->policy->save($name, $configuration);
+        } catch (Throwable $e) {
+            if ($isNew) {
+                $this->removeCreated($name);
+            }
+
+            throw $e;
+        }
 
         return [];
     }
 
+    /** the configuration stored under this name when it is one of this adapter's */
     private function load(string $name): ?Configuration
     {
-        try {
-            $configuration = Configuration::getByName($name);
-        } catch (Throwable) {
-            return null;
-        }
+        $configuration = $this->stored->find($name);
 
-        return $configuration?->getName() !== null ? $configuration : null;
+        return $configuration?->getType() === $this->policy->configType() ? $configuration : null;
+    }
+
+    /**
+     * A create whose save failed leaves no empty configuration behind: the approval failed, so
+     * the name must stay free and a retry must create again.
+     */
+    private function removeCreated(string $name): void
+    {
+        try {
+            $this->configurations->deleteConfiguration($name);
+        } catch (Throwable) {
+            // the failed save is what the approver has to see
+        }
     }
 
     /**
@@ -150,8 +182,11 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         $configuration = $this->load($subject->ref);
         $allowed = $user instanceof User
             && $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_CONFIG)
-            // a configuration that does not exist yet is gated by the area permission alone
-            && ($configuration === null || $configuration->isAllowed($permission, $user));
+            // a disabled adapter's configurations are unavailable to everyone, as in the Data Hub
+            && $this->adapters->isEnabled($this->policy->configType())
+            && ($configuration === null
+                ? $this->mayCreate($user, $permission)
+                : $configuration->isAllowed($permission, $user));
 
         if (!$allowed) {
             throw SubjectAccessDeniedException::forRef(
@@ -160,5 +195,17 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
                 PermissionConstants::PLUGIN_DATA_HUB_CONFIG
             );
         }
+    }
+
+    /**
+     * Reading a configuration that does not exist yet needs the area permission alone; writing
+     * one is a create, gated by the Data Hub's own create permission, so a review never offers an
+     * approval the user may not make.
+     */
+    private function mayCreate(User $user, string $permission): bool
+    {
+        return $permission === PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ
+            || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADMIN)
+            || $user->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $this->policy->configType());
     }
 }

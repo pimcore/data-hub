@@ -93,6 +93,17 @@ class ConfigDocumentTest extends Unit
         $this->assertSame(['delivery' => []], $configuration);
     }
 
+    public function testWithStoredRestoresAWithheldKeyUnderASectionTheStateLacks(): void
+    {
+        $configuration = ConfigDocument::withStored(
+            ['delivery' => 'flat'],
+            ['delivery' => ['transmitter_sftp' => ['host' => 'real']]],
+            $this->policy(),
+        );
+
+        $this->assertSame(['delivery' => ['transmitter_sftp' => ['host' => 'real']]], $configuration);
+    }
+
     public function testNameValidation(): void
     {
         $this->assertTrue(ConfigDocument::isValidName('feed-2_b'));
