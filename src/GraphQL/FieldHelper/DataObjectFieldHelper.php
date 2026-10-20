@@ -85,7 +85,10 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    // fields inside a block (also block -> localizedfields) are served by the block entry type
+                    if (!$this->isBlockChildField($class, $key)) {
+                        Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    }
 
                     return false;
                 }
@@ -181,6 +184,28 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     */
+    private function isBlockChildField($class, string $key): bool
+    {
+        foreach ($class->getFieldDefinitions() as $fieldDefinition) {
+            if (!$fieldDefinition instanceof Data\Block) {
+                continue;
+            }
+
+            foreach ($fieldDefinition->getFieldDefinitions(['suppressEnrichment' => true]) as $blockChild) {
+                if ($blockChild->getName() === $key
+                    || ($blockChild instanceof Data\Localizedfields && $blockChild->getFieldDefinition($key))
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      *
      * @return bool
      *
@@ -272,7 +297,10 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field ' . $key);
+                    // fields inside a block (also block -> localizedfields) are handled by the block itself
+                    if (!$this->isBlockChildField($class, $key)) {
+                        Logger::error('could not resolve field ' . $key);
+                    }
 
                     return false;
                 }
