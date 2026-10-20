@@ -61,7 +61,8 @@ class TableTest extends Unit
 
         $types = [];
         foreach (['foo', 'bar', 'baz'] as $field) {
-            $types[$field] = $generator->getGraphQlMutationFieldConfig(['attributes' => ['attribute' => $field]], $class)['arg'];
+            $config = $generator->getGraphQlMutationFieldConfig(['attributes' => ['attribute' => $field]], $class);
+            $types[$field] = $config['arg'];
         }
 
         // the first table keeps the plain names, so single-table schemas are unchanged
