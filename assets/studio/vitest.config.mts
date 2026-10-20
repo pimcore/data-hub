@@ -17,6 +17,7 @@ const federated = (name: string): string => fileURLToPath(new URL(`./js/test/fed
 export default defineConfig({
   resolve: {
     alias: [
+      { find: /^@pimcore\/studio-ui-bundle$/, replacement: federated('studio-ui') },
       { find: /^@pimcore\/studio-ui-bundle\/app$/, replacement: federated('studio-ui-app') },
       { find: /^@pimcore\/studio-ui-bundle\/components$/, replacement: federated('studio-ui-components') },
       { find: /^@pimcore\/change-control-bundle\/sdk$/, replacement: federated('change-control-sdk') }
