@@ -37,6 +37,25 @@ class GraphQlConfigPolicyTest extends Unit
         Configuration::getByName(self::STORED)?->getDao()->delete();
     }
 
+    /**
+     * The review surface registers for this subject type and opens the editor's tabs by these
+     * slots; an agent told a section is refused is pointed at the read tool and given the reason.
+     */
+    public function testTheLaneSpeaksTheEditorsTermsAndNamesItsTools(): void
+    {
+        $policy = $this->policy();
+
+        $this->assertSame('data-hub-graphql-config', $policy->subjectType());
+        $this->assertSame('get_graphql_config', $policy->readToolName());
+        $this->assertSame(['general', 'schema', 'workspaces'], $policy->proposable());
+        $this->assertSame(
+            ['general' => ['general'], 'schema' => ['schema'], 'security' => ['workspaces']],
+            $policy->slots(),
+        );
+        $this->assertStringContainsString('API keys', $policy->withheldReason());
+        $this->assertStringContainsString('Data Hub editor', $policy->withheldReason());
+    }
+
     public function testSecurityAndPermissionsAreRefusedAndWithheld(): void
     {
         $document = [

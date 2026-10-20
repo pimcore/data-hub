@@ -210,4 +210,20 @@ describe('GraphQLConfigReviewSurface', () => {
     expect(await screen.findByText('data-hub.review.unavailable')).toBeTruthy()
     expect(screen.queryByTestId('editor')).toBeNull()
   })
+
+  it('says the review is unavailable without a change set to read, and asks for none', async () => {
+    const fetch = vi.fn()
+    vi.stubGlobal('fetch', fetch)
+
+    render(
+      <GraphQLConfigReviewSurface
+        {
+          ...({ subjectRef: 'shop' } as unknown as React.ComponentProps<typeof GraphQLConfigReviewSurface>)
+        }
+      />
+    )
+
+    expect(await screen.findByText('data-hub.review.unavailable')).toBeTruthy()
+    expect(fetch).not.toHaveBeenCalled()
+  })
 })
