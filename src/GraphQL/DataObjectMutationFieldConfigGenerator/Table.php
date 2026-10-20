@@ -21,12 +21,19 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
  */
 final class Table extends Base
 {
+    /**
+     * Input types by column count, shared across all table fields: webonyx/graphql-php rejects
+     * a schema containing several distinct type instances with the same name.
+     *
+     * @var array<int, InputObjectType>
+     */
+    private array $inputTypes = [];
+
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $fieldName = $nodeDef['attributes']['attribute'];
         $tableDef = $this->getGraphQlService()->getObjectFieldHelper()->getFieldDefinitionFromKey($class, $fieldName);
-        $inputItems = [];
         $numCols = 0;
 
         if ($tableDef instanceof Data\Table) {
@@ -38,32 +45,46 @@ final class Table extends Base
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Table($nodeDef, $processors);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        foreach (range(0, $numCols - 1) as $i) {
-            $inputItems['col' . $i] = Type::string();
-        }
-
-        $rowInput = new InputObjectType([
-            'name' => 'RowInput',
-            'fields' => $inputItems,
-        ]);
-
-        $inputType = new InputObjectType([
-            'name' => 'TableInput',
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => 'if true then the entire table will be overwritten',
-                ],
-                'rows' => [
-                    'type' => Type::listOf($rowInput),
-                ],
-            ],
-        ]);
+        $inputType = $this->getInputType($numCols);
 
         return [
             'arg' => $inputType,
             'processor' => [$processor, 'process'],
         ];
+    }
+
+    private function getInputType(int $numCols): InputObjectType
+    {
+        if (!isset($this->inputTypes[$numCols])) {
+            // The type names depend on the column count; the first table keeps the plain names
+            // so schemas with a single table (or equal column counts) are unchanged.
+            $suffix = $this->inputTypes === [] ? '' : (string) $numCols;
+
+            $inputItems = [];
+            foreach (range(0, $numCols - 1) as $i) {
+                $inputItems['col' . $i] = Type::string();
+            }
+
+            $rowInput = new InputObjectType([
+                'name' => 'RowInput' . $suffix,
+                'fields' => $inputItems,
+            ]);
+
+            $this->inputTypes[$numCols] = new InputObjectType([
+                'name' => 'TableInput' . $suffix,
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => 'if true then the entire table will be overwritten',
+                    ],
+                    'rows' => [
+                        'type' => Type::listOf($rowInput),
+                    ],
+                ],
+            ]);
+        }
+
+        return $this->inputTypes[$numCols];
     }
 
     public function getProcessors(&$processors, $tableDef)
