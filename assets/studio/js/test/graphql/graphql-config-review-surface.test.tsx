@@ -182,6 +182,36 @@ describe('GraphQLConfigReviewSurface', () => {
     expect(screen.getByTestId('editor').textContent).toBe('schema')
   })
 
+  it('lands on the first change of another change set the surface is reused for', async () => {
+    const bodies: Record<string, unknown> = {
+      'change-set-1': payload(false, {
+        schema: { shape: 'record', current: {}, proposed: CAR },
+        security: { shape: 'record', current: { 'workspaces.object': [] }, proposed: { 'workspaces.object': WORKSPACE } }
+      }),
+      'change-set-2': payload(false, {
+        schema: { shape: 'record', current: {}, proposed: CAR }
+      })
+    }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      const id = Object.keys(bodies).find((key) => url.includes(`/${key}/`)) ?? ''
+      return await Promise.resolve({ ok: true, json: async () => await Promise.resolve(bodies[id]) })
+    }))
+
+    const props = (changeSetId: string): React.ComponentProps<typeof GraphQLConfigReviewSurface> =>
+      ({ subjectRef: 'shop', changeSetId } as unknown as React.ComponentProps<typeof GraphQLConfigReviewSurface>)
+
+    const { rerender } = render(<GraphQLConfigReviewSurface { ...props('change-set-1') } />)
+
+    await waitFor(() => { expect(screen.getByTestId('editor').textContent).toBe('schema') })
+    fireEvent.click(within(screen.getByTestId('rail-security')).getByRole('button'))
+    expect(screen.getByTestId('editor').textContent).toBe('security')
+
+    rerender(<GraphQLConfigReviewSurface { ...props('change-set-2') } />)
+
+    await waitFor(() => { expect(screen.queryByTestId('rail-security')).toBeNull() })
+    expect(screen.getByTestId('editor').textContent).toBe('schema')
+  })
+
   it('tells a new configuration per tab instead of marking every field', async () => {
     respond(payload(true, {
       general: { shape: 'record', current: null, proposed: { 'general.name': 'shop', 'general.active': false, 'general.group': 'cars' } },

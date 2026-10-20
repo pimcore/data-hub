@@ -59,8 +59,11 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
-  // from an effect, which could run after an early click and take the reader back
-  const [chosenTab, setChosenTab] = useState<string>()
+  // from an effect, which could run after an early click and take the reader back. A pick holds
+  // only for its change set, should the host reuse the surface for another one
+  const [chosen, setChosen] = useState<{ changeSetId?: string, tab: string }>()
+  const chosenTab = chosen !== undefined && chosen.changeSetId === changeSetId ? chosen.tab : undefined
+  const setChosenTab = (tab: string): void => { setChosen({ changeSetId, tab }) }
   const firstSection = groups[0]?.section
   const activeTab = chosenTab ?? (firstSection === undefined ? undefined : SECTION_TARGET[firstSection]?.tab) ?? GRAPHQL_TABS.general
 
