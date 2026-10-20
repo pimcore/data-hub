@@ -15,6 +15,10 @@ namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Codeception\Test\Unit;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
+use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\GetGraphQlConfigTool;
+use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ListGraphQlConfigsTool;
+use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ProposeGraphQlConfigTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -75,6 +79,32 @@ class PimcoreDataHubExtensionTest extends Unit
             ConfigProposalLane::canPropose(new ContainerBuilder()),
             $container->hasDefinition(ConfigProposalTools::class)
         );
+    }
+
+    public function testTheGraphQlReviewLaneIsWiredOnlyWhereChangeControlCanReviewIt(): void
+    {
+        $container = $this->loadExtension([self::SUPPORTED_TYPES]);
+        $canReview = ConfigProposalLane::canReview(new ContainerBuilder());
+
+        $this->assertSame($canReview, $container->hasDefinition(GraphQlConfigPolicy::class));
+        $this->assertSame(
+            $canReview,
+            $container->hasDefinition('pimcore.datahub.graphql.proposal.subject_handler')
+        );
+        $this->assertSame(
+            $canReview,
+            $container->hasDefinition('pimcore.datahub.graphql.proposal.detail_hydrator')
+        );
+    }
+
+    public function testTheGraphQlToolsAreWiredOnlyWhereAnAgentCanPropose(): void
+    {
+        $container = $this->loadExtension([self::SUPPORTED_TYPES]);
+        $canPropose = ConfigProposalLane::canPropose(new ContainerBuilder());
+
+        foreach ([ListGraphQlConfigsTool::class, GetGraphQlConfigTool::class, ProposeGraphQlConfigTool::class] as $tool) {
+            $this->assertSame($canPropose, $container->hasDefinition($tool), $tool);
+        }
     }
 
     public function testEachLaneCheckIsRecordedAsAContainerResource(): void
