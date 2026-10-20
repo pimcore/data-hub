@@ -119,6 +119,19 @@ final class ElementPropertyType extends UnionType
         return $supportedTypes;
     }
 
+    /**
+     * A property pointing to a folder of a type whose read setting is disabled is not readable: the property
+     * type of that folder is not part of the union, so the property could not be resolved.
+     */
+    public static function isReadable(\Pimcore\Model\Property $property): bool
+    {
+        if (!in_array($property->getType(), ['object', 'document'], true)) {
+            return true;
+        }
+
+        return WorkspaceHelper::isFolderReadAllowed($property->getData());
+    }
+
     public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
     {
         if ($element instanceof \Pimcore\Model\Property) {
@@ -143,10 +156,20 @@ final class ElementPropertyType extends UnionType
                     }
                 }
                 case 'document': {
-                    return $this->resolveDocumentType($element->getData());
+                    $doc = $element->getData();
+                    if ($doc instanceof Document\Folder) {
+                        return $this->documentFolderType;
+                    } else {
+                        return $this->documentType;
+                    }
                 }
                 case 'object': {
-                    return $this->resolveObjectType($element->getData());
+                    $object = $element->getData();
+                    if ($object instanceof \Pimcore\Model\DataObject\Folder) {
+                        return $this->objectFolderType;
+                    } else {
+                        return $this->objectType; // @phpstan-ignore return.type
+                    }
                 }
                 default:
                     throw new ClientSafeException('unkown property type: ' . $type);
@@ -154,30 +177,5 @@ final class ElementPropertyType extends UnionType
         }
 
         return null;
-    }
-
-    /**
-     * With the folder read setting disabled the folder type is not part of the union, the generic type is
-     * used instead and resolves the folder to null.
-     */
-    private function resolveDocumentType(mixed $document): ObjectType
-    {
-        if ($document instanceof Document\Folder && WorkspaceHelper::isFolderReadAllowed($document)) {
-            return $this->documentFolderType;
-        }
-
-        return $this->documentType;
-    }
-
-    /**
-     * @see resolveDocumentType()
-     */
-    private function resolveObjectType(mixed $object): ObjectType
-    {
-        if ($object instanceof \Pimcore\Model\DataObject\Folder && WorkspaceHelper::isFolderReadAllowed($object)) {
-            return $this->objectFolderType;
-        }
-
-        return $this->objectType; // @phpstan-ignore return.type
     }
 }
