@@ -20,7 +20,6 @@ export interface ColumnPipelineFormProps {
   column?: AdvancedEditorColumn
   entity?: string
   config?: Record<string, any>
-  objectId?: number | null
   value?: Record<string, any>
   onChange?: (value: Record<string, any>) => void
   /** Service ID of the DynamicTypePipelineRegistry to use for source fields. */
@@ -33,7 +32,6 @@ export const ColumnPipelineForm = ({
   column,
   entity,
   config,
-  objectId,
   value,
   onChange,
   sourceFieldsRegistryId,
@@ -148,7 +146,6 @@ export const ColumnPipelineForm = ({
                     { column !== undefined && (
                       <ColumnPreview
                         column={ column }
-                        objectId={ objectId ?? null }
                         pipelineValue={ liveValue }
                       />
                     ) }

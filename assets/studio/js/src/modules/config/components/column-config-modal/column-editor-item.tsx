@@ -15,7 +15,6 @@ import { ColumnPipelineForm } from './column-pipeline-form'
 export interface ColumnEditorItemBodyProps {
   column: AdvancedEditorColumn
   entity: string
-  objectId: number | null
   onPipelineChange: (id: string, pipeline: Record<string, any>) => void
   /** Service ID of the DynamicTypePipelineRegistry to use for source fields. */
   sourceFieldsRegistryId: string
@@ -26,7 +25,6 @@ export interface ColumnEditorItemBodyProps {
 export const ColumnEditorItemBody = ({
   column,
   entity,
-  objectId,
   onPipelineChange,
   sourceFieldsRegistryId,
   transformersRegistryId
@@ -36,7 +34,6 @@ export const ColumnEditorItemBody = ({
       column={ column }
       config={ column.pipelineConfig }
       entity={ entity }
-      objectId={ objectId }
       onChange={ (pipeline) => { onPipelineChange(column._id, pipeline) } }
       sourceFieldsRegistryId={ sourceFieldsRegistryId }
       transformersRegistryId={ transformersRegistryId }

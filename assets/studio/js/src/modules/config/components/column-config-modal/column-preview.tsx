@@ -10,7 +10,15 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
-import { Box, Flex, Grid, GridContentRenderer, Text } from '@pimcore/studio-ui-bundle/components'
+import {
+  Box,
+  ColumnPreview as PreviewModeColumnPreview,
+  Flex,
+  Grid,
+  GridContentRenderer,
+  Text,
+  usePreviewMode
+} from '@pimcore/studio-ui-bundle/components'
 import { type DynamicTypeGridCellRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { useLanguageSelection } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { api, type AdvancedColumnConfig } from '@pimcore/studio-ui-bundle/api/data-object'
@@ -19,13 +27,12 @@ import { type AdvancedEditorColumn } from './types'
 
 export interface ColumnPreviewProps {
   column: AdvancedEditorColumn
-  objectId: number | null
   pipelineValue?: Record<string, any>
 }
 
 const columnHelper = createColumnHelper()
 
-const PreviewGrid = ({ value }: { value: Array<{ type: string, value: any }> }): React.JSX.Element => {
+export const PreviewGrid = ({ value }: { value: Array<{ type: string, value: any }> }): React.JSX.Element => {
   const advancedGridCellRegistry = useInjection<DynamicTypeGridCellRegistry>(
     serviceIds['DynamicTypes/AdvancedGridCellRegistry']
   )
@@ -118,8 +125,15 @@ const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEd
   return <PreviewGrid value={ value } />
 }
 
-export const ColumnPreview = ({ column, objectId, pipelineValue }: ColumnPreviewProps): React.JSX.Element => {
+const getPreviewItemId = (item: ReturnType<typeof usePreviewMode>['item']): number | undefined => {
+  const id = item?.data?.id
+  return id === undefined ? undefined : Number(id)
+}
+
+export const ColumnPreview = ({ column, pipelineValue }: ColumnPreviewProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const { item } = usePreviewMode()
+  const objectId = getPreviewItemId(item)
 
   // Debounce pipeline changes so the previous result stays visible during edits
   const [debouncedPipelineValue, setDebouncedPipelineValue] = useState(pipelineValue)
@@ -128,27 +142,32 @@ export const ColumnPreview = ({ column, objectId, pipelineValue }: ColumnPreview
     return () => { clearTimeout(timer) }
   }, [pipelineValue])
 
+  // The shared slot renders its child only while preview mode is on, so nothing is requested while it is off
   return (
-    <Box padding={ { top: 'small', bottom: 'none', x: 'small' } }>
-      <Flex
-        align='center'
-        gap='small'
-      >
-        <Text style={ { wordBreak: 'keep-all' } }>{ t('grid.advanced-column.preview') }:</Text>
-        { objectId === null
-          ? (
-            <Text type='secondary'>
-              { t('data-hub.column-config-modal.preview.placeholder') }
-            </Text>
-            )
-          : (
-            <PreviewResult
-              column={ column }
-              objectId={ objectId }
-              pipelineValue={ debouncedPipelineValue }
-            />
-            ) }
-      </Flex>
-    </Box>
+    <PreviewModeColumnPreview>
+      { () => (
+        <Box padding={ { top: 'small', bottom: 'none', x: 'small' } }>
+          <Flex
+            align='center'
+            gap='small'
+          >
+            <Text style={ { wordBreak: 'keep-all' } }>{ t('grid.advanced-column.preview') }:</Text>
+            { objectId === undefined
+              ? (
+                <Text type='secondary'>
+                  { t('data-hub.column-config-modal.preview.no-item') }
+                </Text>
+                )
+              : (
+                <PreviewResult
+                  column={ column }
+                  objectId={ objectId }
+                  pipelineValue={ debouncedPipelineValue }
+                />
+                ) }
+          </Flex>
+        </Box>
+      ) }
+    </PreviewModeColumnPreview>
   )
 }

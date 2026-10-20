@@ -35,6 +35,9 @@ import { isNil } from 'lodash'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
+import { PreviewTopBar } from './preview-top-bar'
+import { usePreviewItemPreselect } from './use-preview-item-preselect'
+import { SimpleColumnLabel, SimpleColumnPreviewsProvider } from './simple-column-previews'
 import {
   ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
@@ -115,10 +118,10 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const {
       draft,
       isLoading,
-      objectId,
+      resolvedClassId,
+      availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      openElementSelector,
       handleAddColumnOfType,
       handlePipelineChange,
       handleRemove,
@@ -128,6 +131,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       handleReorder,
       getColumns
     } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel, exportableOnly })
+
+    const previewEnabled = usePreviewItemPreselect(resolvedClassId)
 
     useImperativeHandle(ref, () => ({
       getColumns,
@@ -145,7 +150,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
         defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
           ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
-          : <Tag>{ label }</Tag>,
+          : (
+            <SimpleColumnLabel
+              availableField={ availableFields.find(field => field.key === col.key) }
+              column={ col }
+              label={ label }
+            />
+            ),
         ...(isAdvanced
           ? {
               body: col.pipelineConfig !== undefined
@@ -153,7 +164,6 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                   <ColumnEditorItemBody
                     column={ col }
                     entity={ entity }
-                    objectId={ objectId }
                     onPipelineChange={ handlePipelineChange }
                     sourceFieldsRegistryId={ sourceFieldsRegistryId }
                     transformersRegistryId={ transformersRegistryId }
@@ -194,24 +204,29 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     return (
       <LanguageSelectionContext.Provider value={ languageContextValue }>
-        <ContentLayout
-          renderToolbar={ hideToolbar
-            ? undefined
-            : (
-              <Toolbar
-                padding={ { x: 'none', y: 'small' } }
-                theme='secondary'
-              >
-                <Flex gap='mini'>
-                  <IconTextButton
-                    icon={ { value: 'new' } }
-                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.add-column') }
-                  </IconTextButton>
+        <SimpleColumnPreviewsProvider
+          availableFields={ availableFields }
+          classId={ resolvedClassId }
+          columns={ draft }
+        >
+          <ContentLayout
+            renderToolbar={ hideToolbar
+              ? undefined
+              : (
+                <Toolbar
+                  padding={ { x: 'none', y: 'small' } }
+                  theme='secondary'
+                >
+                  <Flex gap='mini'>
+                    <IconTextButton
+                      icon={ { value: 'new' } }
+                      onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.add-column') }
+                    </IconTextButton>
 
-                  { onAddAdvancedColumn !== undefined && (
+                    { onAddAdvancedColumn !== undefined && (
                     <IconTextButton
                       icon={ { value: 'new' } }
                       onClick={ onAddAdvancedColumn }
@@ -219,64 +234,52 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     >
                       { t('data-hub.column-config-modal.add-advanced-column') }
                     </IconTextButton>
-                  ) }
-                </Flex>
+                    ) }
+                  </Flex>
 
-                <Space size='extra-small'>
-                  <Button
-                    onClick={ handleDiscard }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.discard') }
-                  </Button>
+                  <Space size='extra-small'>
+                    <Button
+                      onClick={ handleDiscard }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.discard') }
+                    </Button>
 
-                  <Button
-                    onClick={ handleApply }
-                    type='primary'
-                  >
-                    { t('data-hub.column-config-modal.apply') }
-                  </Button>
-                </Space>
-              </Toolbar>
-              ) }
-          renderTopBar={ (
-            <Toolbar
-              align='center'
-              position='content'
-              theme='secondary'
-            >
-              <Button onClick={ openElementSelector }>
-                { t('data-hub.column-config-modal.preview.select-object') }
-              </Button>
-
-              <LanguageSelectionWithProvider />
-            </Toolbar>
-          ) }
-        >
-          <Content
-            padded
-            padding={ { x: 'none', y: 'small' } }
-            style={ { height: 'calc(80vh - 200px)' } }
+                    <Button
+                      onClick={ handleApply }
+                      type='primary'
+                    >
+                      { t('data-hub.column-config-modal.apply') }
+                    </Button>
+                  </Space>
+                </Toolbar>
+                ) }
+            renderTopBar={ previewEnabled ? <PreviewTopBar entity={ entity } /> : undefined }
           >
-            <div className={ styles.body }>
-              { !hideToolbar && fieldsToAddOpen && (
+            <Content
+              padded
+              padding={ { x: 'none', y: 'small' } }
+              style={ { height: 'calc(80vh - 200px)' } }
+            >
+              <div className={ styles.body }>
+                { !hideToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
                   groups={ columnGroups }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
                 />
-              ) }
+                ) }
 
-              <div className={ styles.list }>
-                <Space
-                  direction='vertical'
-                  style={ { width: '100%' } }
-                >
-                  { draft.length === 0 && (
+                <div className={ styles.list }>
+                  <Space
+                    direction='vertical'
+                    style={ { width: '100%' } }
+                  >
+                    { draft.length === 0 && (
                     <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-                  ) }
+                    ) }
 
-                  { draft.length > 0 && (
+                    { draft.length > 0 && (
                     <StackList
                       items={ stackItems }
                       onItemsChange={ (items) => {
@@ -284,12 +287,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                       } }
                       sortable
                     />
-                  ) }
-                </Space>
+                    ) }
+                  </Space>
+                </div>
               </div>
-            </div>
-          </Content>
-        </ContentLayout>
+            </Content>
+          </ContentLayout>
+        </SimpleColumnPreviewsProvider>
       </LanguageSelectionContext.Provider>
     )
   }
