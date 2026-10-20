@@ -102,7 +102,8 @@ class PimcoreDataHubExtensionTest extends Unit
         $container = $this->loadExtension([self::SUPPORTED_TYPES]);
         $canPropose = ConfigProposalLane::canPropose(new ContainerBuilder());
 
-        foreach ([ListGraphQlConfigsTool::class, GetGraphQlConfigTool::class, ProposeGraphQlConfigTool::class] as $tool) {
+        $tools = [ListGraphQlConfigsTool::class, GetGraphQlConfigTool::class, ProposeGraphQlConfigTool::class];
+        foreach ($tools as $tool) {
             $this->assertSame($canPropose, $container->hasDefinition($tool), $tool);
         }
     }
