@@ -87,7 +87,16 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    // fields inside a block (also block -> localizedfields) are served by the block entry type
+                    $blockName = $this->findBlockOfChildField($class, $key);
+                    if ($blockName !== null) {
+                        Logger::debug(
+                            'skipping column "' . $key . '", it is a field of block "' . $blockName
+                            . '" in class ' . $class->getName()
+                        );
+                    } else {
+                        Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    }
 
                     return false;
                 }
@@ -225,6 +234,31 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         return $brickParts['containerField'] . '_' . $brickParts['brickType'] . '_' . $brickParts['brickKey'];
+    }
+
+    /**
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     *
+     * @return string|null name of the block containing the field $key, null if there is none
+     */
+    private function findBlockOfChildField($class, string $key): ?string
+    {
+        foreach ($class->getFieldDefinitions(['suppressEnrichment' => true]) as $fieldDefinition) {
+            if (!$fieldDefinition instanceof Data\Block) {
+                continue;
+            }
+
+            foreach ($fieldDefinition->getFieldDefinitions(['suppressEnrichment' => true]) as $blockChild) {
+                if ($blockChild->getName() === $key
+                    || ($blockChild instanceof Data\Localizedfields
+                        && $blockChild->getFieldDefinition($key, ['suppressEnrichment' => true]))
+                ) {
+                    return $fieldDefinition->getName();
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
