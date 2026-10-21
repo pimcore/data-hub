@@ -21,6 +21,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\BrickContainerTestEntity;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\ClassDefinition\Data\AdvancedManyToManyRelation;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Block;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Input;
 use Pimcore\Model\DataObject\ClassDefinition\Service as ClassDefinitionService;
@@ -361,7 +363,7 @@ class BrickContainerResolveTest extends Unit
 
         $type = $schema->getQueryType()->getField('slotA_' . self::BRICK_KEY . '_details')->getType();
 
-        $this->assertSame('block_' . self::BRICK_KEY . '_details_entry', $type->getWrappedType()->name);
+        $this->assertSame('block_objectbrick_' . self::BRICK_KEY . '_details_entry', $type->getWrappedType()->name);
     }
 
     public function testQueryReturnsTheValuesOfTheSelectedContainer(): void
@@ -389,6 +391,62 @@ class BrickContainerResolveTest extends Unit
             'slotA_' . self::BRICK_KEY . '_details' => [['note' => 'A-note']],
             'slotB_' . self::BRICK_KEY . '_details' => [['note' => 'B-note']],
         ], $result['data']);
+    }
+
+    /**
+     * @return string[] the names of the query types of the field for an object class, a brick and a field collection
+     *                  which all have the same name
+     */
+    private function typeNamesOfSameNamedOwners(string $attribute, Data $field): array
+    {
+        $class = new ClassDefinition();
+        $class->setName('BrickContainerTestSameName');
+
+        $brick = new Objectbrick\Definition();
+        $brick->setKey('BrickContainerTestSameName');
+
+        $fieldcollection = new Fieldcollection\Definition();
+        $fieldcollection->setKey('BrickContainerTestSameName');
+
+        $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
+
+        $names = [];
+        $owners = ['class' => $class, 'brick' => $brick, 'fieldcollection' => $fieldcollection];
+        foreach ($owners as $owner => $definition) {
+            $type = $fieldHelper->getGraphQlQueryFieldConfig($attribute, $field, $definition, null)['type'];
+            $names[$owner] = Type::getNamedType($type)->toString();
+        }
+
+        return $names;
+    }
+
+    public function testBlockTypesOfABrickDoNotCollideWithThoseOfASameNamedClassOrFieldcollection(): void
+    {
+        $input = new Input();
+        $input->setName('note');
+
+        $block = new Block();
+        $block->setName('details');
+        $block->setChildren([$input]);
+
+        $names = $this->typeNamesOfSameNamedOwners('details', $block);
+
+        $this->assertSame('block_BrickContainerTestSameName_details_entry', $names['class']);
+        $this->assertSame('block_objectbrick_BrickContainerTestSameName_details_entry', $names['brick']);
+        $this->assertNotSame($names['class'], $names['brick']);
+        $this->assertNotSame($names['fieldcollection'], $names['brick']);
+    }
+
+    public function testMetadataTypesOfABrickDoNotCollideWithThoseOfASameNamedClass(): void
+    {
+        $relation = new AdvancedManyToManyRelation();
+        $relation->setName('related');
+
+        $names = $this->typeNamesOfSameNamedOwners('related', $relation);
+
+        $this->assertSame('objectbrick_BrickContainerTestSameName_related', $names['brick']);
+        $this->assertSame('object_BrickContainerTestSameName_related', $names['class']);
+        $this->assertNotSame($names['brick'], $names['class']);
     }
 
     public function testBlockOfAFieldcollectionKeepsItsEntryType(): void

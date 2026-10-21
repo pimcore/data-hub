@@ -23,6 +23,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
 
 /**
  * @internal
@@ -63,7 +64,10 @@ final class BlockEntryType extends ObjectType implements ContainerAwareInterface
      */
     public function build(&$config)
     {
-        if ($this->class instanceof Definition) {
+        if ($this->class instanceof ObjectbrickDefinition) {
+            // named apart from the blocks of a class or field collection of the same name
+            $name = 'objectbrick_' . $this->class->getKey();
+        } elseif ($this->class instanceof Definition) {
             $name = $this->class->getKey();
         } else {
             $name = $this->class->getName();
