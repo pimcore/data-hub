@@ -71,30 +71,28 @@ final class ImageType extends ObjectType
                         'image' => [
                             'type' => $assetType,
                             'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) use ($resolver) {
-                                if ($value instanceof Image) {
-                                    $data = $value->getData();
-                                    if (isset($data['id'])) {
-                                        $asset = Asset::getById($data['id']);
-                                        if ($asset instanceof Asset) {
-                                            $data = new ElementDescriptor($asset);
-
-                                            $image = $resolver->resolveImage($data, $args, $context, $resolveInfo);
-                                            if ($image instanceof ElementDescriptor && $value->getCropPercent()) {
-                                                // the asset resolvers apply the area the user selected in the editable
-                                                $image['editableCrop'] = [
-                                                    'width' => $value->getCropWidth(),
-                                                    'height' => $value->getCropHeight(),
-                                                    'top' => $value->getCropTop(),
-                                                    'left' => $value->getCropLeft(),
-                                                ];
-                                            }
-
-                                            return $image;
-                                        }
-                                    }
+                                if (!$value instanceof Image) {
+                                    return null;
                                 }
 
-                                return null;
+                                $data = $value->getData();
+                                $asset = isset($data['id']) ? Asset::getById($data['id']) : null;
+                                if (!$asset instanceof Asset) {
+                                    return null;
+                                }
+
+                                $image = $resolver->resolveImage(new ElementDescriptor($asset), $args, $context, $resolveInfo);
+                                if ($image instanceof ElementDescriptor && $value->getCropPercent()) {
+                                    // the asset resolvers apply the area the user selected in the editable
+                                    $image['editableCrop'] = [
+                                        'width' => $value->getCropWidth(),
+                                        'height' => $value->getCropHeight(),
+                                        'top' => $value->getCropTop(),
+                                        'left' => $value->getCropLeft(),
+                                    ];
+                                }
+
+                                return $image;
                             },
                         ],
                         'alt' => [
