@@ -1378,11 +1378,7 @@ final class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                        $folderClass = match ($type) {
-                            'asset' => Folder::class,
-                            'document' => Document\Folder::class,
-                            default => DataObject\Folder::class,
-                        };
+                        $folderClass = $me->getFolderClass($type);
                         if (!$element instanceof $folderClass) {
                             return [
                                 'success' => false,
@@ -1562,6 +1558,14 @@ final class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
+                        $folderClass = $me->getFolderClass($type);
+                        if (!$element instanceof $folderClass) {
+                            return [
+                                'success' => false,
+                                'message' => 'unable to delete folder. Unknown id or fullpath',
+                            ];
+                        }
+
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
                                 'success' => false,
@@ -1644,6 +1648,20 @@ final class MutationType extends ObjectType
     public function isEmpty()
     {
         return !$this->config['fields'];
+    }
+
+    /**
+     * @param string $type asset|object|document
+     *
+     * @return class-string<Folder|DataObject\Folder|Document\Folder>
+     */
+    private function getFolderClass(string $type): string
+    {
+        return match ($type) {
+            'asset' => Folder::class,
+            'document' => Document\Folder::class,
+            default => DataObject\Folder::class,
+        };
     }
 
     /**

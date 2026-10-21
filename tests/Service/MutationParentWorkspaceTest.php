@@ -36,7 +36,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateDocumentFolder, updateObject, createAsset)
  * have to check the workspace for the 'update' right on the element where it is and for the 'create' right on the
- * parent it ends up in, before anything is applied.
+ * parent it ends up in, before anything is applied. The folder mutations (also deleteAssetFolder, deleteObjectFolder,
+ * deleteDocumentFolder) only act on folders.
  */
 class MutationParentWorkspaceTest extends Unit
 {
@@ -85,7 +86,7 @@ class MutationParentWorkspaceTest extends Unit
             $key = 'datahub_workspace_permissions_' . self::CONFIG_NAME . '_' . $type;
             $this->rememberCache($key);
             RuntimeCache::save([
-                self::ALLOWED_FOLDER_ID => $this->row(self::ALLOWED_FOLDER_ID, 1, 1),
+                self::ALLOWED_FOLDER_ID => $this->row(self::ALLOWED_FOLDER_ID, 1, 1, 1),
                 self::TARGET_FOLDER_ID => $this->row(self::TARGET_FOLDER_ID, 1, 0),
                 self::DENIED_FOLDER_ID => $this->row(self::DENIED_FOLDER_ID, 0, 0),
             ], $key);
@@ -237,6 +238,64 @@ class MutationParentWorkspaceTest extends Unit
         $this->assertTrue($result['success']);
     }
 
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderInAllowedFolderCanBeDeleted(string $type): void
+    {
+        $this->elements[$type . self::FOLDER_IN_ALLOWED]->expects($this->once())->method('delete');
+
+        $result = $this->deleteFolder($type, ['id' => self::FOLDER_IN_ALLOWED]);
+
+        $this->assertTrue($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderOutsideTheWorkspaceCannotBeDeleted(string $type): void
+    {
+        $this->elements[$type . self::OUTSIDE_FOLDER_ID]->expects($this->never())->method('delete');
+
+        $result = $this->deleteFolder($type, ['id' => self::OUTSIDE_FOLDER_ID]);
+
+        $this->assertFalse($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderDeleteDoesNotTouchElementsThatAreNoFolders(string $type): void
+    {
+        $this->elements[$type . self::ELEMENT_IN_ALLOWED]->expects($this->never())->method('delete');
+
+        $result = $this->deleteFolder($type, ['id' => self::ELEMENT_IN_ALLOWED]);
+
+        $this->assertFalse($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderDeleteWithUnknownIdIsRejected(string $type): void
+    {
+        $result = $this->deleteFolder($type, ['id' => -1]);
+
+        $this->assertFalse($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderDeleteOmitPermissionCheckSkipsTheWorkspace(string $type): void
+    {
+        $this->elements[$type . self::OUTSIDE_FOLDER_ID]->expects($this->once())->method('delete');
+
+        $result = $this->deleteFolder($type, ['id' => self::OUTSIDE_FOLDER_ID], true);
+
+        $this->assertTrue($result['success']);
+    }
+
     public function testUpdateObjectInDeniedFolderCannotBeMovedIntoAllowedFolder(): void
     {
         $object = $this->elements['object302'];
@@ -347,6 +406,26 @@ class MutationParentWorkspaceTest extends Unit
     /**
      * @return array<string, mixed>
      */
+    private function deleteFolder(string $type, array $args, bool $omitPermissionCheck = false): array
+    {
+        $config = ['fields' => []];
+        $this->mutationType($omitPermissionCheck)->buildDeleteFolderMutation(
+            $type,
+            $config,
+            ['configuration' => $this->configuration()]
+        );
+
+        return $config['fields']['delete' . ucfirst($type) . 'Folder']['resolve'](
+            null,
+            $args,
+            ['configuration' => $this->configuration()],
+            $this->createMock(ResolveInfo::class)
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     private function updateObject(array $args): array
     {
         $resolver = $this->mutationType(false)->getUpdateObjectResolver(
@@ -396,15 +475,15 @@ class MutationParentWorkspaceTest extends Unit
         return new Configuration('graphql', '/', self::CONFIG_NAME, [
             'schema' => ['specialEntities' => [
                 'asset' => ['create' => true],
-                'asset_folder' => ['update' => true],
-                'object_folder' => ['update' => true],
-                'document_folder' => ['update' => true],
+                'asset_folder' => ['update' => true, 'delete' => true],
+                'object_folder' => ['update' => true, 'delete' => true],
+                'document_folder' => ['update' => true, 'delete' => true],
             ]],
             'security' => ['skipPermissionCheck' => false],
         ]);
     }
 
-    private function row(int $id, int $create, int $update): array
+    private function row(int $id, int $create, int $update, int $delete = 0): array
     {
         return [
             'cid' => $id,
@@ -412,7 +491,7 @@ class MutationParentWorkspaceTest extends Unit
             'create' => $create,
             'read' => 1,
             'update' => $update,
-            'delete' => 0,
+            'delete' => $delete,
         ];
     }
 
@@ -423,7 +502,7 @@ class MutationParentWorkspaceTest extends Unit
      */
     private function element(string $type, string $class, int $id, int $parentId, ?ElementInterface $parent): ElementInterface
     {
-        $element = $this->getMockBuilder($class)->onlyMethods(['save', 'getParent'])->getMock();
+        $element = $this->getMockBuilder($class)->onlyMethods(['save', 'delete', 'getParent'])->getMock();
         $element->method('getParent')->willReturn($parent);
         $element->setId($id);
         $element->setParentId($parentId);
