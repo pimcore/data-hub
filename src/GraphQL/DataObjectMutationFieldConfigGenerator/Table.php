@@ -30,7 +30,8 @@ final class Table extends Base implements ResetInterface
      * a schema containing several distinct type instances with the same name.
      * The first type created per schema build keeps the plain names (`TableInput`, `RowInput`), the
      * others get the column count appended (`TableInput3`). The cache is cleared on `reset()`
-     * (kernel.reset), together with the parents' static input type caches, so every schema build starts again with the plain names.
+     * (kernel.reset), together with the parents' static input type caches, so every schema build
+     * starts again with the plain names.
      *
      * @var array<int, InputObjectType>
      */
@@ -65,7 +66,11 @@ final class Table extends Base implements ResetInterface
             if (!RuntimeCache::isRegistered($cacheKey)) {
                 RuntimeCache::set(
                     $cacheKey,
-                    $this->createInputType('TableInput_' . $suffix, 'RowInput_' . $suffix, $this->getRowFields($numCols))
+                    $this->createInputType(
+                        'TableInput_' . $suffix,
+                        'RowInput_' . $suffix,
+                        $this->getRowFields($numCols)
+                    )
                 );
             }
 
