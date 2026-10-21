@@ -189,19 +189,20 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
     }
 
     /**
-     * The type of a brick column which selects its objectbricks field (`Brick~field~containerField`) does not depend
-     * on that field. It is shared by the columns of all containers of the brick, because a schema must not contain
-     * two instances of a type of the same name.
+     * The type of a brick column does not depend on the objectbricks field of the column (`Brick~field` and
+     * `Brick~field~containerField`). The columns of the same brick field which produce a type of the same name get
+     * the same instance, because a schema must not contain two instances of a type of that name.
      */
     private function shareBrickColumnType(string $attribute, Data $fieldDefinition, mixed $type): mixed
     {
-        $brick = Service::getContainerSelectingBrick($attribute);
+        $brickType = Service::parseObjectBrickFieldName($attribute)['brickType'] ?? null;
 
-        if ($brick === null) {
+        if ($brickType === null || !$type instanceof Type) {
             return $type;
         }
 
-        $cacheKey = 'graphql_brick_column_type_' . $brick->getKey() . '_' . $fieldDefinition->getName();
+        $cacheKey = 'graphql_brick_column_type_' . $brickType . '_' . $fieldDefinition->getName()
+            . '_' . Type::getNamedType($type)->toString();
 
         if (!RuntimeCache::isRegistered($cacheKey)) {
             RuntimeCache::set($cacheKey, $type);

@@ -272,6 +272,21 @@ class BrickContainerResolveTest extends Unit
         return array_keys($type->getFields());
     }
 
+    public function testSchemaWithLegacyAndContainerSelectingColumnsOfTheSameBrickIsValid(): void
+    {
+        $tableSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~rows',
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotB'),
+        ], 'table');
+        $this->assertCount(2, $tableSchema->getQueryType()->getFields());
+
+        $blockSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~details',
+            $this->attribute(self::BRICK_KEY, 'details', 'slotB'),
+        ], 'block');
+        $this->assertCount(2, $blockSchema->getQueryType()->getFields());
+    }
+
     public function testSameNamedTablesAndBlocksOfDifferentBricksKeepTheirOwnShape(): void
     {
         $tableSchema = $this->buildQuerySchema([
@@ -315,22 +330,26 @@ class BrickContainerResolveTest extends Unit
         );
     }
 
-    public function testTheSameBrickRelationOfBothContainersSharesItsType(): void
+    public function testTheSameBrickRelationOfBothContainersAndTheLegacyColumnShareTheirType(): void
     {
         $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
         $class = ClassDefinition::getByName(self::CLASS_NAME);
 
+        $attributes = [
+            self::BRICK_KEY . '~related',
+            $this->attribute(self::BRICK_KEY, 'related', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'related', 'slotB'),
+        ];
+
         $types = [];
-        foreach (['slotA', 'slotB'] as $containerField) {
-            $nodeDef = $this->buildNodeDef(
-                $this->attribute(self::BRICK_KEY, 'related', $containerField),
-                'manyToOneRelation'
-            );
+        foreach ($attributes as $attribute) {
+            $nodeDef = $this->buildNodeDef($attribute, 'manyToOneRelation');
             $types[] = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class)['config']['type'];
         }
 
         // a schema must not contain two instances of a type of the same name
         $this->assertSame($types[0], $types[1]);
+        $this->assertSame($types[0], $types[2]);
     }
 
     public function testBlockEntryTypeOfABrickIsNamedAfterTheBrick(): void
