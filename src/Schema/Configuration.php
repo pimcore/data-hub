@@ -48,15 +48,20 @@ final class Configuration implements AdditionalAttributesInterface
         private readonly bool $expandable,
         #[Property(description: 'Leaf', type: 'bool', example: 'true')]
         private readonly bool $leaf,
-        #[Property(description: 'Permissions', type: 'object', example: '{"delete": true, "update": true}')]
+        #[Property(
+            description: 'Permissions',
+            type: 'object',
+            example: '{"delete": true, "update": true}',
+            nullable: true
+        )]
         private readonly ?array $permissions = null,
         #[Property(description: 'Allow children', type: 'bool', example: 'false')]
         private readonly bool $allowChildren = false,
-        #[Property(description: 'Group', type: 'string', example: 'General Folder')]
+        #[Property(description: 'Group', type: 'string', example: 'General Folder', nullable: true)]
         private readonly ?string $group = null,
-        #[Property(description: 'Children', type: 'array', items: new Items(self::class))]
+        #[Property(description: 'Children', type: 'array', items: new Items(self::class), nullable: true)]
         private readonly ?array $children = null,
-        #[Property(description: 'Adapter', type: 'string', example: 'graphql')]
+        #[Property(description: 'Adapter', type: 'string', example: 'graphql', nullable: true)]
         private readonly ?string $adapter = null,
         #[Property(description: 'Writable', type: 'bool', example: 'true')]
         private readonly bool $writable = false,

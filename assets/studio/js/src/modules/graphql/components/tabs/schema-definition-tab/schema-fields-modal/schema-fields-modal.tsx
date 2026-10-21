@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Flex, Button, Form, Content, ContentLayout, Sidebar, SidebarProvider, Title } from '@pimcore/studio-ui-bundle/components'
+import { Modal, Flex, Button, Form, Content, Sidebar, SidebarProvider, SplitLayout, Title } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
@@ -18,6 +18,10 @@ import { isNil, cloneDeep } from 'lodash'
 import { useStyles } from './schema-fields-modal.styles'
 import { useSidebarEntries } from './hooks/use-sidebar-entries'
 import { AddAllDefinitionsButton } from './components/add-all-definitions-button'
+
+/** Enough for the rail plus a readable attribute panel, and for the field tree beside it. */
+const SIDEBAR_MIN_WIDTH = 320
+const FIELD_TREE_MIN_WIDTH = 240
 
 interface SchemaFieldsModalProps {
   open: boolean
@@ -107,32 +111,43 @@ export const SchemaFieldsModal = ({
       size="XL"
       title={ t(`data-hub.schema.${type}-modal-title`, { entity: className }) }
     >
-      <ContentLayout
-        className={ styles.contentLayout }
-        renderSidebar={ disabled
-          ? undefined
-          : (
-            <SidebarProvider initialActiveTab={ sidebarEntries[0]?.key }>
-              <Sidebar
-                entries={ sidebarEntries }
-                sizing="large"
-              />
-            </SidebarProvider>
-            ) }
-      >
-        <Content
-          padded
-          padding={ { right: 'medium' } }
-        >
-          <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
-          <AvailableFieldsTree
-            disabled={ disabled }
-            entityConfig={ localEntityConfig }
-            onEntityConfigChange={ setLocalEntityConfig }
-            operatorRegistryServiceId={ operatorRegistryServiceId }
-          />
-        </Content>
-      </ContentLayout>
+      <div className={ styles.panes }>
+        <SplitLayout
+          leftItem={ {
+            size: 50,
+            minSize: SIDEBAR_MIN_WIDTH,
+            children: (
+              <SidebarProvider initialActiveTab={ sidebarEntries[0]?.key }>
+                <Sidebar
+                  collapsible={ false }
+                  entries={ sidebarEntries }
+                  resizable={ false }
+                  sizing="large"
+                  tooltipPlacement="right"
+                />
+              </SidebarProvider>
+            )
+          } }
+          resizeAble
+          rightItem={ {
+            size: 50,
+            minSize: FIELD_TREE_MIN_WIDTH,
+            children: (
+              <Content padded>
+                <Title level={ 3 }>{t('data-hub.schema.available-fields')}</Title>
+                <AvailableFieldsTree
+                  disabled={ disabled }
+                  entityConfig={ localEntityConfig }
+                  onEntityConfigChange={ setLocalEntityConfig }
+                  operatorRegistryServiceId={ operatorRegistryServiceId }
+                />
+              </Content>
+            )
+          } }
+          rightItemFullWidth={ disabled }
+          withDivider
+        />
+      </div>
     </Modal>
   )
 }

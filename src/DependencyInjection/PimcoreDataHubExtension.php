@@ -13,6 +13,7 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Exception;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\AdapterType;
 use Pimcore\Config\LocationAwareConfigRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -33,6 +34,7 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter('pimcore_data_hub', $config);
+        $container->setParameter('pimcore_data_hub.enabled_adapter_types', $this->resolveEnabledAdapterTypes($config));
 
         $loader = new YamlFileLoader(
             $container,
@@ -45,6 +47,27 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         // The usage.* provider and the datahub.* collector; the core telemetry extension points
         // are guaranteed by the pimcore/pimcore constraint in composer.json.
         $loader->load('telemetry.yaml');
+    }
+
+    /**
+     * An adapter type exists once its bundle registers itself under `supported_types`. Only GraphQL,
+     * the adapter this bundle ships itself, carries a switch - adapter types of other bundles are
+     * available as soon as they are installed.
+     *
+     * @return string[]
+     */
+    private function resolveEnabledAdapterTypes(array $config): array
+    {
+        // a numeric type name arrives as an int array key
+        $types = array_map(strval(...), array_keys($config['supported_types'] ?? []));
+
+        if ($config['graphql']['enabled']) {
+            return $types;
+        }
+
+        return array_values(
+            array_filter($types, static fn (string $type): bool => $type !== AdapterType::GraphQl->value)
+        );
     }
 
     /**
