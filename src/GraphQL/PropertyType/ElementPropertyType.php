@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\Property;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Asset\Folder;
 use Pimcore\Model\Document;
 
@@ -116,6 +117,19 @@ final class ElementPropertyType extends UnionType
         }
 
         return $supportedTypes;
+    }
+
+    /**
+     * A property pointing to a folder of a type whose read setting is disabled is not readable: the property
+     * type of that folder is not part of the union, so the property could not be resolved.
+     */
+    public static function isReadable(\Pimcore\Model\Property $property): bool
+    {
+        if (!in_array($property->getType(), ['object', 'document'], true)) {
+            return true;
+        }
+
+        return WorkspaceHelper::isFolderReadAllowed($property->getData());
     }
 
     public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
