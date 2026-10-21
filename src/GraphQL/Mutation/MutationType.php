@@ -1378,7 +1378,11 @@ final class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
-                        $folderClass = $type === 'asset' ? Folder::class : DataObject\Folder::class;
+                        $folderClass = match ($type) {
+                            'asset' => Folder::class,
+                            'document' => Document\Folder::class,
+                            default => DataObject\Folder::class,
+                        };
                         if (!$element instanceof $folderClass) {
                             return [
                                 'success' => false,
@@ -1645,14 +1649,11 @@ final class MutationType extends ObjectType
     /**
      * Checks the 'create' right on the parent an element is moved to or created in. An unchanged parent needs no check.
      *
-     * @param string $type asset|object
-     * @param int|null $newParentId
-     * @param int|null $currentParentId
-     * @param bool $omitPermissionCheck
+     * @param string $type asset|object|document
      *
      * @return array{success: false, message: string}|null the failure result, null when the parent may be used
      */
-    private function checkNewParent(string $type, $newParentId, $currentParentId, $omitPermissionCheck, string $deniedMessage): ?array
+    private function checkNewParent(string $type, ?int $newParentId, ?int $currentParentId, bool $omitPermissionCheck, string $deniedMessage): ?array
     {
         if ($newParentId === null || $newParentId === $currentParentId) {
             return null;

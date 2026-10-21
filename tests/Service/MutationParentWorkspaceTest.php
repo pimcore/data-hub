@@ -25,6 +25,7 @@ use Pimcore\Cache\RuntimeCache;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use ReflectionProperty;
 use Symfony\Component\DependencyInjection\Container;
@@ -80,7 +81,7 @@ class MutationParentWorkspaceTest extends Unit
         RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, ['configuration' => $this->configuration()]);
 
         // workspace: update + create on the allowed folder, create only on the target, read only on the denied one
-        foreach (['asset', 'object'] as $type) {
+        foreach (['asset', 'object', 'document'] as $type) {
             $key = 'datahub_workspace_permissions_' . self::CONFIG_NAME . '_' . $type;
             $this->rememberCache($key);
             RuntimeCache::save([
@@ -90,7 +91,7 @@ class MutationParentWorkspaceTest extends Unit
             ], $key);
         }
 
-        foreach (['asset' => Asset\Folder::class, 'object' => DataObject\Folder::class] as $type => $folderClass) {
+        foreach (['asset' => Asset\Folder::class, 'object' => DataObject\Folder::class, 'document' => Document\Folder::class] as $type => $folderClass) {
             $allowed = $this->element($type, $folderClass, self::ALLOWED_FOLDER_ID, 1, null);
             $denied = $this->element($type, $folderClass, self::DENIED_FOLDER_ID, 1, null);
             $this->element($type, $folderClass, self::TARGET_FOLDER_ID, 1, null);
@@ -105,6 +106,7 @@ class MutationParentWorkspaceTest extends Unit
         $this->element('asset', Asset\Text::class, 302, self::DENIED_FOLDER_ID, $deniedAsset);
         $this->element('object', DataObject\Concrete::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowedObject);
         $this->element('object', DataObject\Concrete::class, 302, self::DENIED_FOLDER_ID, $deniedObject);
+        $this->element('document', Document\Page::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $this->elements['document' . self::ALLOWED_FOLDER_ID]);
     }
 
     protected function tearDown(): void
@@ -125,7 +127,7 @@ class MutationParentWorkspaceTest extends Unit
      */
     public static function folderTypes(): array
     {
-        return ['asset folder' => ['asset'], 'object folder' => ['object']];
+        return ['asset folder' => ['asset'], 'object folder' => ['object'], 'document folder' => ['document']];
     }
 
     /**
@@ -396,6 +398,7 @@ class MutationParentWorkspaceTest extends Unit
                 'asset' => ['create' => true],
                 'asset_folder' => ['update' => true],
                 'object_folder' => ['update' => true],
+                'document_folder' => ['update' => true],
             ]],
             'security' => ['skipPermissionCheck' => false],
         ]);
