@@ -78,9 +78,13 @@ class AssetTypeEditableCropTest extends Unit
 
     protected function _after(): void
     {
-        RuntimeCache::set(ElementService::getElementCacheTag('asset', self::ASSET_ID), null);
+        $cache = RuntimeCache::getInstance();
+        $cache->offsetUnset(ElementService::getElementCacheTag('asset', self::ASSET_ID));
+        $cache->offsetUnset('imagethumb_' . crc32('editable_crop_test'));
         if ($this->hadContext) {
             RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->backupContext);
+        } else {
+            $cache->offsetUnset(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
     }
 

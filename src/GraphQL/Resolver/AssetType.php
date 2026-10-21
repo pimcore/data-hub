@@ -273,8 +273,8 @@ final class AssetType
                 return null;
             }
 
-            // the media thumbnail has no media queries left and, for a cropped editable, an auto generated name
-            // that cannot be loaded again, so the resolutions are taken from the thumbnail srcset resolved
+            // The media thumbnail has no media queries left and, for a cropped editable, an auto generated
+            // name that cannot be loaded again: take the resolutions from the thumbnail the srcset was built from.
             $parent = $value['thumbnail'] ?? null;
             $thumbnail = $parent instanceof Asset\Image\Thumbnail ? $parent : $asset->getThumbnail(
                 $thumbnail->getConfig()->getName(),
