@@ -164,7 +164,13 @@ final class AssetType
             return $asset->getFullPath();
         }
 
-        return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        return $assetFieldHelper->getAssetThumbnail(
+            $asset,
+            $thumbNailConfig,
+            $thumbNailFormat,
+            $deferred,
+            $value['editableCrop'] ?? null
+        );
     }
 
     /**
@@ -190,7 +196,13 @@ final class AssetType
         if (!isset($thumbNailConfig)) {
             return base64_encode(stream_get_contents($asset->getStream()));
         }
-        $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        $thumb = $assetFieldHelper->getAssetThumbnail(
+            $asset,
+            $thumbNailConfig,
+            $thumbNailFormat,
+            $deferred,
+            $value['editableCrop'] ?? null
+        );
 
         return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
     }
@@ -215,7 +227,13 @@ final class AssetType
             $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
             $mediaQueries = [];
-            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+            $thumbnail = $assetFieldHelper->getAssetThumbnail(
+                $asset,
+                $thumbNailConfig,
+                $thumbNailFormat,
+                $deferred,
+                $value['editableCrop'] ?? null
+            );
             $thumbnailConfig = $asset->getThumbnail($args['thumbnail'], $deferred)->getConfig();
             if ($thumbnailConfig) {
                 foreach ($thumbnailConfig->getMedias() as $key => $val) {
@@ -281,7 +299,13 @@ final class AssetType
                 return null;
             }
 
-            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
+            $thumbnail = $assetFieldHelper->getAssetThumbnail(
+                $asset,
+                $thumbnailName,
+                $thumbnailFormat,
+                false,
+                $value['editableCrop'] ?? null
+            );
             if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
                 foreach ($types as $type) {
@@ -346,7 +370,8 @@ final class AssetType
                 ];
             }
 
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            $thumbnail = $this->getGraphQlService()->getAssetFieldHelper()
+                ->getAssetThumbnail($asset, $thumbnailName, null, false, $value['editableCrop'] ?? null);
 
             $width = $thumbnail->getWidth();
             $height = $thumbnail->getHeight();
