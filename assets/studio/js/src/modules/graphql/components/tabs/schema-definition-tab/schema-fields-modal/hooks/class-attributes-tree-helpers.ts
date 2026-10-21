@@ -11,12 +11,9 @@
 import { type Layout } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { isNil, flatMapDeep } from 'lodash'
 import { type TreeNode } from '../types'
+import { type ObjectBricksFieldInfo } from './brick-container-helpers'
 
-export interface ObjectBricksFieldInfo {
-  name: string
-  title: string | null
-  allowedTypes: string[]
-}
+export type { ObjectBricksFieldInfo }
 
 export const filterTreeNodesRecursive = (
   nodes: TreeNode[],

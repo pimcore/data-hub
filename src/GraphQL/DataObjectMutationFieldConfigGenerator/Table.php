@@ -14,6 +14,9 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -27,7 +30,7 @@ final class Table extends Base implements ResetInterface
      * a schema containing several distinct type instances with the same name.
      * The first type created per schema build keeps the plain names (`TableInput`, `RowInput`), the
      * others get the column count appended (`TableInput3`). The cache is cleared on `reset()`
-     * (kernel.reset) so every schema build starts again with the plain names.
+     * (kernel.reset), together with the parents' static input type caches, so every schema build starts again with the plain names.
      *
      * @var array<int, InputObjectType>
      */
@@ -49,7 +52,25 @@ final class Table extends Base implements ResetInterface
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\Table($nodeDef, $processors);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        $inputType = $this->getInputType($numCols);
+        $brick = Service::getContainerSelectingBrick($fieldName);
+
+        if ($brick === null) {
+            $inputType = $this->getInputType($numCols);
+        } else {
+            // the input types of a brick table which is selected together with its objectbricks field are named after
+            // the brick table and shared, so that the same table of several fields does not register them twice
+            $suffix = $brick->getKey() . '_' . $tableDef->getName();
+            $cacheKey = 'graphql_table_input_' . $suffix;
+
+            if (!RuntimeCache::isRegistered($cacheKey)) {
+                RuntimeCache::set(
+                    $cacheKey,
+                    $this->createInputType('TableInput_' . $suffix, 'RowInput_' . $suffix, $this->getRowFields($numCols))
+                );
+            }
+
+            $inputType = RuntimeCache::get($cacheKey);
+        }
 
         return [
             'arg' => $inputType,
@@ -57,9 +78,48 @@ final class Table extends Base implements ResetInterface
         ];
     }
 
+    /**
+     * @return array<string, Type>
+     */
+    private function getRowFields(int $numCols): array
+    {
+        $fields = [];
+        foreach (range(0, $numCols - 1) as $i) {
+            $fields['col' . $i] = Type::string();
+        }
+
+        return $fields;
+    }
+
+    private function createInputType(string $tableName, string $rowName, array $inputItems): InputObjectType
+    {
+        $rowInput = new InputObjectType([
+            'name' => $rowName,
+            'fields' => $inputItems,
+        ]);
+
+        return new InputObjectType([
+            'name' => $tableName,
+            'fields' => [
+                'replace' => [
+                    'type' => Type::boolean(),
+                    'description' => 'if true then the entire table will be overwritten',
+                ],
+                'rows' => [
+                    'type' => Type::listOf($rowInput),
+                ],
+            ],
+        ]);
+    }
+
     public function reset(): void
     {
         $this->inputTypes = [];
+
+        // input types cached by the parents embed the table types of the previous schema build; they have to go
+        // along with them, otherwise a new build mixes old and new instances of the same type name
+        MutationType::$typeCache = [];
+        Fieldcollections::$typeCache = [];
     }
 
     private function getInputType(int $numCols): InputObjectType
@@ -69,28 +129,11 @@ final class Table extends Base implements ResetInterface
             // so schemas with a single table (or equal column counts) are unchanged.
             $suffix = $this->inputTypes === [] ? '' : (string) $numCols;
 
-            $inputItems = [];
-            foreach (range(0, $numCols - 1) as $i) {
-                $inputItems['col' . $i] = Type::string();
-            }
-
-            $rowInput = new InputObjectType([
-                'name' => 'RowInput' . $suffix,
-                'fields' => $inputItems,
-            ]);
-
-            $this->inputTypes[$numCols] = new InputObjectType([
-                'name' => 'TableInput' . $suffix,
-                'fields' => [
-                    'replace' => [
-                        'type' => Type::boolean(),
-                        'description' => 'if true then the entire table will be overwritten',
-                    ],
-                    'rows' => [
-                        'type' => Type::listOf($rowInput),
-                    ],
-                ],
-            ]);
+            $this->inputTypes[$numCols] = $this->createInputType(
+                'TableInput' . $suffix,
+                'RowInput' . $suffix,
+                $this->getRowFields($numCols)
+            );
         }
 
         return $this->inputTypes[$numCols];

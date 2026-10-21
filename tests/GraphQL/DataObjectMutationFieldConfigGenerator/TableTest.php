@@ -19,10 +19,12 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
+use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Fieldcollections;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Table;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -92,6 +94,18 @@ class TableTest extends Unit
         $this->assertSame('TableInput', $two->name);
         $this->assertSame('RowInput', $this->getRowInput($two)->name);
         $this->assertSame(['col0', 'col1'], array_keys($this->getRowInput($two)->getFields()));
+    }
+
+    public function testResetClearsTheParentInputTypeCaches(): void
+    {
+        MutationType::$typeCache = ['UpdateFooInput' => Type::string()];
+        Fieldcollections::$typeCache = ['fieldcollections_foo_input' => Type::string()];
+
+        (new Table($this->createService()))->reset();
+
+        // cached parent inputs reference the table types of the previous build and must not outlive them
+        $this->assertSame([], MutationType::$typeCache);
+        $this->assertSame([], Fieldcollections::$typeCache);
     }
 
     /**
