@@ -26,6 +26,7 @@ namespace Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler;
 use Pimcore\Bundle\DataHubBundle\GraphQL\DocumentType\DocumentType;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class CustomDocumentTypePass implements CompilerPassInterface
 {
@@ -39,8 +40,8 @@ class CustomDocumentTypePass implements CompilerPassInterface
 
         foreach ($resolvers as $id => $tagEntries) {
             foreach ($tagEntries as $tagEntry) {
-                $typeDef = $container->getDefinition($id);
-                $dataTypes[$tagEntry['id']] = $typeDef;
+                // a Reference, not the Definition: a Definition would be built as a second, inline instance
+                $dataTypes[$tagEntry['id']] = new Reference($id);
             }
         }
 

@@ -443,8 +443,8 @@ class ImportExportLocatorsPass implements CompilerPassInterface
 
         foreach ($resolvers as $id => $tagEntries) {
             foreach ($tagEntries as $tagEntry) {
-                $typeDef = $container->getDefinition($id);
-                $dataTypes[$tagEntry['id']] = $typeDef;
+                // a Reference, not the Definition: a Definition would be built as a second, inline instance
+                $dataTypes[$tagEntry['id']] = new Reference($id);
             }
         }
 
