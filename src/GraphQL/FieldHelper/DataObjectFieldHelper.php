@@ -88,7 +88,10 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                     // fields inside a block (also block -> localizedfields) are served by the block entry type
                     $blockName = $this->findBlockOfChildField($class, $key);
                     if ($blockName !== null) {
-                        Logger::debug('skipping column "' . $key . '", it is a field of block "' . $blockName . '" in class ' . $class->getName());
+                        Logger::debug(
+                            'skipping column "' . $key . '", it is a field of block "' . $blockName
+                            . '" in class ' . $class->getName()
+                        );
                     } else {
                         Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
                     }
@@ -200,7 +203,8 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
 
             foreach ($fieldDefinition->getFieldDefinitions(['suppressEnrichment' => true]) as $blockChild) {
                 if ($blockChild->getName() === $key
-                    || ($blockChild instanceof Data\Localizedfields && $blockChild->getFieldDefinition($key, ['suppressEnrichment' => true]))
+                    || ($blockChild instanceof Data\Localizedfields
+                        && $blockChild->getFieldDefinition($key, ['suppressEnrichment' => true]))
                 ) {
                     return $fieldDefinition->getName();
                 }
