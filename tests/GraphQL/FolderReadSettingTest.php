@@ -61,6 +61,9 @@ class FolderReadSettingTest extends Unit
     {
         if ($this->backupContext !== null) {
             RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->backupContext);
+        } else {
+            // do not leak the configuration of the last test into tests that expect no context
+            RuntimeCache::getInstance()->offsetUnset(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
         $this->resetSingletons();
     }
