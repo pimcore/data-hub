@@ -34,7 +34,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateObject, createAsset)
+ * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateDocumentFolder, updateObject, createAsset)
  * have to check the workspace for the 'update' right on the element where it is and for the 'create' right on the
  * parent it ends up in, before anything is applied.
  */
