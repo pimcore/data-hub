@@ -9,6 +9,7 @@ description: Breaking changes and migration steps per release.
 
 ### GraphQL
 - The `updateAsset` mutation now follows the workspace of the configuration, like `updateObject` and `updateAssetFolder`: the `update` right is required on the asset, and moving it to a new `parentId` additionally requires the `create` right on the new parent. Without the right the mutation answers with `success: false` (or throws with the exception policy enabled). Configurations whose asset workspace entries are narrower than the assets they update through `updateAsset` need wider entries if that access is intended.
+- The mutations that move or create elements apply the workspace to the target parent as well: `updateAssetFolder` and `updateObjectFolder` only act on folders and require the `create` right on a new `parentId`; `updateObject` checks the `update` right on the object where it is and the `create` right on a new `parentId` before changing anything; `createAsset` requires the `create` right on a `parentId` given inside `input` too. Requests that relied on moving or creating elements outside the workspace now answer with `success: false`.
 
 ## Upgrade to 2026.3.0
 

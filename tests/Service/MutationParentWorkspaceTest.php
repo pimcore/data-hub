@@ -1,0 +1,454 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * This source file is available under the terms of the
+ * Pimcore Open Core License (POCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
+ *  @license    Pimcore Open Core License (POCL)
+ */
+
+namespace Pimcore\Bundle\DataHubBundle\Tests\Service;
+
+use Codeception\Test\Unit;
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Cache\RuntimeCache;
+use Pimcore\Localization\LocaleServiceInterface;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
+use Pimcore\Model\Element\ElementInterface;
+use ReflectionProperty;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\KernelInterface;
+
+/**
+ * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateObject, createAsset)
+ * have to check the workspace for the 'update' right on the element where it is and for the 'create' right on the
+ * parent it ends up in, before anything is applied.
+ */
+class MutationParentWorkspaceTest extends Unit
+{
+    private const CONFIG_NAME = 'mutation_parent_workspace_test';
+
+    private const ALLOWED_FOLDER_ID = 20;
+
+    private const DENIED_FOLDER_ID = 30;
+
+    private const TARGET_FOLDER_ID = 40;
+
+    private const OUTSIDE_FOLDER_ID = 50;
+
+    private const ELEMENT_IN_ALLOWED = 201;
+
+    private const FOLDER_IN_ALLOWED = 202;
+
+    private ?KernelInterface $previousKernel;
+
+    private int $previousPolicy;
+
+    /** @var array<string, array{bool, mixed}> */
+    private array $previousCache = [];
+
+    /** @var array<string, ElementInterface&\PHPUnit\Framework\MockObject\MockObject> */
+    private array $elements = [];
+
+    protected function setUp(): void
+    {
+        $this->previousKernel = \Pimcore::getKernel();
+        $this->previousPolicy = PimcoreDataHubBundle::$notAllowedPolicy;
+        PimcoreDataHubBundle::setNotAllowedPolicy(PimcoreDataHubBundle::NOT_ALLOWED_POLICY_NULL);
+
+        $container = new Container();
+        $container->set('event_dispatcher', new EventDispatcher());
+        $container->set('request_stack', new RequestStack());
+        $kernel = $this->createMock(KernelInterface::class);
+        $kernel->method('getContainer')->willReturn($container);
+        $this->setKernel($kernel);
+
+        $this->rememberCache(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, ['configuration' => $this->configuration()]);
+
+        // workspace: update + create on the allowed folder, create only on the target, read only on the denied one
+        foreach (['asset', 'object'] as $type) {
+            $key = 'datahub_workspace_permissions_' . self::CONFIG_NAME . '_' . $type;
+            $this->rememberCache($key);
+            RuntimeCache::save([
+                self::ALLOWED_FOLDER_ID => $this->row(self::ALLOWED_FOLDER_ID, 1, 1),
+                self::TARGET_FOLDER_ID => $this->row(self::TARGET_FOLDER_ID, 1, 0),
+                self::DENIED_FOLDER_ID => $this->row(self::DENIED_FOLDER_ID, 0, 0),
+            ], $key);
+        }
+
+        foreach (['asset' => Asset\Folder::class, 'object' => DataObject\Folder::class] as $type => $folderClass) {
+            $allowed = $this->element($type, $folderClass, self::ALLOWED_FOLDER_ID, 1, null);
+            $denied = $this->element($type, $folderClass, self::DENIED_FOLDER_ID, 1, null);
+            $this->element($type, $folderClass, self::TARGET_FOLDER_ID, 1, null);
+            $this->element($type, $folderClass, self::OUTSIDE_FOLDER_ID, 1, null);
+            $this->element($type, $folderClass, self::FOLDER_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowed);
+        }
+        $allowedAsset = $this->elements['asset' . self::ALLOWED_FOLDER_ID];
+        $deniedAsset = $this->elements['asset' . self::DENIED_FOLDER_ID];
+        $allowedObject = $this->elements['object' . self::ALLOWED_FOLDER_ID];
+        $deniedObject = $this->elements['object' . self::DENIED_FOLDER_ID];
+        $this->element('asset', Asset\Text::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowedAsset);
+        $this->element('asset', Asset\Text::class, 302, self::DENIED_FOLDER_ID, $deniedAsset);
+        $this->element('object', DataObject\Concrete::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowedObject);
+        $this->element('object', DataObject\Concrete::class, 302, self::DENIED_FOLDER_ID, $deniedObject);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->setKernel($this->previousKernel);
+        PimcoreDataHubBundle::setNotAllowedPolicy($this->previousPolicy);
+        foreach ($this->previousCache as $key => [$wasRegistered, $value]) {
+            if ($wasRegistered) {
+                RuntimeCache::set($key, $value);
+            } elseif (RuntimeCache::isRegistered($key)) {
+                RuntimeCache::getInstance()->offsetUnset($key);
+            }
+        }
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function folderTypes(): array
+    {
+        return ['asset folder' => ['asset'], 'object folder' => ['object']];
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderInAllowedFolderCanBeRenamed(string $type): void
+    {
+        $key = $type === 'asset' ? 'filename' : 'key';
+        $this->elements[$type . self::FOLDER_IN_ALLOWED]->expects($this->once())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => [$key => 'renamed']]);
+
+        $this->assertTrue($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderCannotBeMovedToParentWithoutCreateRight(string $type): void
+    {
+        $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
+        $folder->expects($this->never())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame(self::ALLOWED_FOLDER_ID, $folder->getParentId());
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderCannotBeMovedToParentOutsideTheWorkspace(string $type): void
+    {
+        $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
+        $folder->expects($this->never())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::OUTSIDE_FOLDER_ID]]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame(self::ALLOWED_FOLDER_ID, $folder->getParentId());
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderCanBeMovedToParentWithCreateRight(string $type): void
+    {
+        $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
+        $folder->expects($this->once())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::TARGET_FOLDER_ID]]);
+
+        $this->assertTrue($result['success']);
+        $this->assertSame(self::TARGET_FOLDER_ID, $folder->getParentId());
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderMoveToUnknownParentIsRejected(string $type): void
+    {
+        $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
+        $folder->expects($this->never())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => -1]]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame(self::ALLOWED_FOLDER_ID, $folder->getParentId());
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testUnchangedParentNeedsNoCreateRight(string $type): void
+    {
+        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::ALLOWED_FOLDER_ID]]);
+
+        $this->assertTrue($result['success']);
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderMutationDoesNotTouchElementsThatAreNoFolders(string $type): void
+    {
+        $element = $this->elements[$type . self::ELEMENT_IN_ALLOWED];
+        $element->expects($this->never())->method('save');
+
+        $result = $this->updateFolder($type, ['id' => self::ELEMENT_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame(self::ALLOWED_FOLDER_ID, $element->getParentId());
+    }
+
+    /**
+     * @dataProvider folderTypes
+     */
+    public function testFolderMutationOmitPermissionCheckSkipsTheWorkspace(string $type): void
+    {
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]],
+            true
+        );
+
+        $this->assertTrue($result['success']);
+    }
+
+    public function testUpdateObjectInDeniedFolderCannotBeMovedIntoAllowedFolder(): void
+    {
+        $object = $this->elements['object302'];
+        $object->expects($this->never())->method('save');
+
+        $result = $this->updateObject(['id' => 302, 'parentId' => self::ALLOWED_FOLDER_ID]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('permission denied.', $result['message']);
+        $this->assertSame(self::DENIED_FOLDER_ID, $object->getParentId());
+    }
+
+    public function testUpdateObjectCannotBeMovedToParentWithoutCreateRight(): void
+    {
+        $object = $this->elements['object' . self::ELEMENT_IN_ALLOWED];
+        $object->expects($this->never())->method('save');
+
+        $result = $this->updateObject(['id' => self::ELEMENT_IN_ALLOWED, 'parentId' => self::DENIED_FOLDER_ID]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame(self::ALLOWED_FOLDER_ID, $object->getParentId());
+    }
+
+    public function testUpdateObjectCanBeMovedToParentWithCreateRight(): void
+    {
+        $object = $this->elements['object' . self::ELEMENT_IN_ALLOWED];
+        $object->expects($this->once())->method('save');
+
+        $result = $this->updateObject(['id' => self::ELEMENT_IN_ALLOWED, 'parentId' => self::TARGET_FOLDER_ID]);
+
+        $this->assertTrue($result['success']);
+        $this->assertSame(self::TARGET_FOLDER_ID, $object->getParentId());
+    }
+
+    public function testUpdateObjectWithUnchangedParentNeedsNoCreateRight(): void
+    {
+        $result = $this->updateObject(['id' => self::ELEMENT_IN_ALLOWED, 'parentId' => self::ALLOWED_FOLDER_ID]);
+
+        $this->assertTrue($result['success']);
+    }
+
+    public function testUpdateUnknownObjectWithParentIsReported(): void
+    {
+        $result = $this->updateObject(['id' => -1, 'parentId' => self::ALLOWED_FOLDER_ID]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('unable to update object. Unknown id or fullpath', $result['message']);
+    }
+
+    public function testCreateAssetInputParentCannotOverrideTheCheckedParent(): void
+    {
+        $result = $this->createAsset([
+            'parentId' => self::TARGET_FOLDER_ID,
+            'filename' => 'new.txt',
+            'type' => 'text',
+            'input' => ['parentId' => self::DENIED_FOLDER_ID],
+        ]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('not allowed to create asset', $result['message']);
+    }
+
+    public function testCreateAssetInputParentOutsideTheWorkspaceIsRejected(): void
+    {
+        $result = $this->createAsset([
+            'parentId' => self::TARGET_FOLDER_ID,
+            'filename' => 'new.txt',
+            'type' => 'text',
+            'input' => ['parentId' => self::OUTSIDE_FOLDER_ID],
+        ]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('not allowed to create asset', $result['message']);
+    }
+
+    public function testCreateAssetInDeniedParentIsStillRejected(): void
+    {
+        $result = $this->createAsset([
+            'parentId' => self::DENIED_FOLDER_ID,
+            'filename' => 'new.txt',
+            'type' => 'text',
+        ]);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('not allowed to create asset', $result['message']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function updateFolder(string $type, array $args, bool $omitPermissionCheck = false): array
+    {
+        $config = ['fields' => []];
+        $this->mutationType($omitPermissionCheck)->buildUpdateFolderMutation(
+            $type,
+            $config,
+            ['configuration' => $this->configuration()]
+        );
+
+        return $config['fields']['update' . ucfirst($type) . 'Folder']['resolve'](
+            null,
+            $args,
+            ['configuration' => $this->configuration()],
+            $this->createMock(ResolveInfo::class)
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function updateObject(array $args): array
+    {
+        $resolver = $this->mutationType(false)->getUpdateObjectResolver(
+            [],
+            $this->createMock(LocaleServiceInterface::class)
+        );
+
+        return $resolver(null, $args, [], $this->createMock(ResolveInfo::class));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function createAsset(array $args): array
+    {
+        $config = ['fields' => []];
+        $this->mutationType(false)->buildCreateAssetMutation($config, ['configuration' => $this->configuration()]);
+
+        return $config['fields']['createAsset']['resolve'](null, $args, [], $this->createMock(ResolveInfo::class));
+    }
+
+    private function mutationType(bool $omitPermissionCheck): MutationType
+    {
+        // the service is final and needs the whole container: set just the lookups the mutation builders use
+        $graphQlService = (new \ReflectionClass(Service::class))->newInstanceWithoutConstructor();
+        $assetTypes = new Container();
+        $assetTypes->set('asset', new class() {
+            public function build(): Type
+            {
+                return Type::string();
+            }
+        });
+        $this->setProperty($graphQlService, 'assetTypeGeneratorFactories', $assetTypes);
+        $this->setProperty($graphQlService, 'assetDataTypes', ['asset_input' => Type::string()]);
+
+        // the constructor would need the whole service container; the mutation is built by hand instead
+        $mutationType = (new \ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
+        $mutationType->setGraphQLService($graphQlService);
+        $mutationType->setOmitPermissionCheck($omitPermissionCheck);
+        $this->setProperty($mutationType, 'eventDispatcher', new EventDispatcher());
+
+        return $mutationType;
+    }
+
+    private function configuration(): Configuration
+    {
+        return new Configuration('graphql', '/', self::CONFIG_NAME, [
+            'schema' => ['specialEntities' => [
+                'asset' => ['create' => true],
+                'asset_folder' => ['update' => true],
+                'object_folder' => ['update' => true],
+            ]],
+            'security' => ['skipPermissionCheck' => false],
+        ]);
+    }
+
+    private function row(int $id, int $create, int $update): array
+    {
+        return [
+            'cid' => $id,
+            'cpath' => '/' . $id,
+            'create' => $create,
+            'read' => 1,
+            'update' => $update,
+            'delete' => 0,
+        ];
+    }
+
+    /**
+     * An in-memory element that getById() finds in the runtime cache; saving is a no-op.
+     *
+     * @param class-string<ElementInterface> $class
+     */
+    private function element(string $type, string $class, int $id, int $parentId, ?ElementInterface $parent): ElementInterface
+    {
+        $element = $this->getMockBuilder($class)->onlyMethods(['save', 'getParent'])->getMock();
+        $element->method('getParent')->willReturn($parent);
+        $element->setId($id);
+        $element->setParentId($parentId);
+        $element->setPath('/');
+        $type === 'asset' ? $element->setFilename('element-' . $id) : $element->setKey('element-' . $id);
+
+        $key = $type . '_' . $id;
+        $this->rememberCache($key);
+        RuntimeCache::set($key, $element);
+        $this->elements[$type . $id] = $element;
+
+        return $element;
+    }
+
+    private function rememberCache(string $key): void
+    {
+        $registered = RuntimeCache::isRegistered($key);
+        $this->previousCache[$key] ??= [$registered, $registered ? RuntimeCache::get($key) : null];
+    }
+
+    private function setProperty(object $object, string $name, mixed $value): void
+    {
+        (new ReflectionProperty($object, $name))->setValue($object, $value);
+    }
+
+    private function setKernel(?KernelInterface $kernel): void
+    {
+        $property = new ReflectionProperty(\Pimcore::class, 'kernel');
+        $property->setValue(null, $kernel);
+    }
+}
