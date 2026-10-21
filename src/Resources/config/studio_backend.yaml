@@ -25,6 +25,10 @@ services:
     Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydratorInterface:
         class: Pimcore\Bundle\DataHubBundle\Hydrator\PermissionUserHydrator
 
+    Pimcore\Bundle\DataHubBundle\Service\Studio\DataHubSettingsProvider:
+        tags:
+            - { name: pimcore.studio_backend.settings_provider }
+
     Pimcore\Bundle\DataHubBundle\Service\Studio\ThumbnailServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\Studio\ThumbnailService
 

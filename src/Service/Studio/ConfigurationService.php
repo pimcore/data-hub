@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
-use Exception;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -28,14 +27,15 @@ use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
 use Pimcore\Bundle\DataHubBundle\Schema\ConfigurationDetail;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ElementExistsException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotFoundException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -55,7 +55,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         private ConfigurationDehydratorInterface $configurationDehydrator,
         private Service $graphQlService,
         private SecurityServiceInterface $securityService,
-        private ContainerBagInterface $parameterBag
+        private AdapterAvailabilityServiceInterface $adapterAvailabilityService
     ) {
     }
 
@@ -67,6 +67,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         foreach ($configs as $config) {
             if (
                 !$config instanceof Configuration ||
+                !$this->adapterAvailabilityService->isEnabled($config->getType()) ||
                 !$config->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ)
             ) {
                 continue;
@@ -361,6 +362,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             throw new NotFoundHttpException('Datahub configuration ' . $name . ' does not exist.');
         }
 
+        $this->ensureAdapterIsEnabled($configuration->getType());
+
         $this->checkConfigPermission($configuration, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
 
         return $configuration;
@@ -517,6 +520,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
      */
     private function checkCreatePermission(string $type): void
     {
+        $this->ensureAdapterIsEnabled($type);
+
         $this->checkUserPermission(PermissionConstants::PLUGIN_DATA_HUB_CONFIG);
         $this->checkAnyUserPermission([
             PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
@@ -524,15 +529,17 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ]);
     }
 
-    private function isBundleInstalled(?string $type): bool
+    /**
+     * A disabled adapter type is unavailable to everyone, admins included, so it is reported the
+     * same way as a type whose bundle was never installed.
+     *
+     * @throws NotFoundException
+     */
+    private function ensureAdapterIsEnabled(string $type): void
     {
-        try {
-            $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
-        } catch (Exception) {
-            return false;
+        if (!$this->adapterAvailabilityService->isEnabled($type)) {
+            throw new NotFoundException('Datahub adapter', $type, 'type');
         }
-
-        return array_key_exists($type, $registeredBundles['supported_types']);
     }
 
     private function validateUploadedConfigurationData(array $importData): void
@@ -549,9 +556,9 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         $this->ensureConfigDoesNotExist($name);
 
-        if (!$this->isBundleInstalled($type)) {
+        if (!$this->adapterAvailabilityService->isEnabled($type)) {
             throw new ValidationFailedException(sprintf(
-                'Cannot handle type "%s". According bundle is not installed!',
+                'Cannot handle type "%s". The corresponding bundle is not installed, or the type is disabled.',
                 $type
             ));
         }

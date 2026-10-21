@@ -225,6 +225,20 @@ class Configuration extends AbstractModel
             throw new \Exception('Permissions missing to save the configuration');
         }
 
+        $this->persist();
+    }
+
+    /**
+     * Saves the configuration without checking the permissions of the current user. Only meant for changes
+     * that are a consequence of another action (e.g. adjusting workspace paths after an element was moved), not
+     * for edits requested by a user - those have to go through {@see save()}.
+     *
+     * @internal
+     *
+     * @throws \Exception
+     */
+    public function persist(): void
+    {
         $event = new GenericEvent($this);
         $event->setArgument('configuration', $this);
         \Pimcore::getEventDispatcher()->dispatch($event, ConfigurationEvents::CONFIGURATION_PRE_SAVE);

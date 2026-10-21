@@ -20,7 +20,10 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Service\:
         resource: '../../Service'
-        exclude: '../../Service/Studio'
+        exclude:
+            - '../../Service/Studio'
+            # takes an explicitly wired argument, registered under its interface below
+            - '../../Service/AdapterAvailabilityService.php'
         public: true
         autowire: true
         autoconfigure: true
@@ -32,3 +35,8 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\OutputCacheService
+
+    Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityService
+        arguments:
+            $enabledTypes: '%pimcore_data_hub.enabled_adapter_types%'
