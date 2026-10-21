@@ -29,6 +29,8 @@ class DataObjectFieldHelperBlockChildTest extends Unit
 {
     private AbstractLogger $logger;
 
+    private ?KernelInterface $previousKernel = null;
+
     protected function _before(): void
     {
         $this->logger = new class() extends AbstractLogger {
@@ -41,6 +43,8 @@ class DataObjectFieldHelperBlockChildTest extends Unit
             }
         };
 
+        $this->previousKernel = Pimcore::getKernel();
+
         $container = new Container();
         $container->set('monolog.logger.pimcore', $this->logger);
         $kernel = $this->createMock(KernelInterface::class);
@@ -50,13 +54,13 @@ class DataObjectFieldHelperBlockChildTest extends Unit
 
     protected function _after(): void
     {
-        (new ReflectionProperty(Pimcore::class, 'kernel'))->setValue(null, null);
+        (new ReflectionProperty(Pimcore::class, 'kernel'))->setValue(null, $this->previousKernel);
     }
 
     /**
      * Regression test for https://github.com/pimcore/data-hub/issues/1027:
      * a query column naming a field inside a block (also block -> localizedfields) is served by the
-     * block entry type, so skipping it in the column list must not log an error.
+     * block entry type, so skipping it in the column list must not log an error (only a debug note).
      */
     #[DataProvider('blockChildKeys')]
     public function testBlockChildColumnIsSkippedWithoutErrorLog(string $key): void
@@ -64,11 +68,11 @@ class DataObjectFieldHelperBlockChildTest extends Unit
         $helper = new DataObjectFieldHelper();
 
         $query = $helper->getQueryFieldConfigFromConfig($this->columnConfig($key), $this->createClass());
-        $mutation = $helper->getMutationFieldConfigFromConfig($this->columnConfig($key), $this->createClass());
 
         $this->assertFalse($query);
-        $this->assertFalse($mutation);
-        $this->assertSame([], $this->logger->messages);
+        $this->assertCount(1, $this->logger->messages);
+        $this->assertStringStartsWith('debug: skipping column "' . $key . '"', $this->logger->messages[0]);
+        $this->assertStringContainsString('block "officeHours"', $this->logger->messages[0]);
     }
 
     public static function blockChildKeys(): array

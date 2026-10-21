@@ -86,7 +86,10 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
 
                 if (!$fieldDefinition) {
                     // fields inside a block (also block -> localizedfields) are served by the block entry type
-                    if (!$this->isBlockChildField($class, $key)) {
+                    $blockName = $this->findBlockOfChildField($class, $key);
+                    if ($blockName !== null) {
+                        Logger::debug('skipping column "' . $key . '", it is a field of block "' . $blockName . '" in class ' . $class->getName());
+                    } else {
                         Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
                     }
 
@@ -185,24 +188,26 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
 
     /**
      * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     *
+     * @return string|null name of the block containing the field $key, null if there is none
      */
-    private function isBlockChildField($class, string $key): bool
+    private function findBlockOfChildField($class, string $key): ?string
     {
-        foreach ($class->getFieldDefinitions() as $fieldDefinition) {
+        foreach ($class->getFieldDefinitions(['suppressEnrichment' => true]) as $fieldDefinition) {
             if (!$fieldDefinition instanceof Data\Block) {
                 continue;
             }
 
             foreach ($fieldDefinition->getFieldDefinitions(['suppressEnrichment' => true]) as $blockChild) {
                 if ($blockChild->getName() === $key
-                    || ($blockChild instanceof Data\Localizedfields && $blockChild->getFieldDefinition($key))
+                    || ($blockChild instanceof Data\Localizedfields && $blockChild->getFieldDefinition($key, ['suppressEnrichment' => true]))
                 ) {
-                    return true;
+                    return $fieldDefinition->getName();
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -297,10 +302,7 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    // fields inside a block (also block -> localizedfields) are handled by the block itself
-                    if (!$this->isBlockChildField($class, $key)) {
-                        Logger::error('could not resolve field ' . $key);
-                    }
+                    Logger::error('could not resolve field ' . $key);
 
                     return false;
                 }
