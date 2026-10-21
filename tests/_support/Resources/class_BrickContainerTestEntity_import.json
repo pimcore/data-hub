@@ -118,7 +118,8 @@
                         "fieldtype": "objectbricks",
                         "phpdocType": "\\Pimcore\\Model\\DataObject\\Objectbrick",
                         "allowedTypes": [
-                            "BrickContainerTestBrick"
+                            "BrickContainerTestBrick",
+                            "BrickContainerTestOtherBrick"
                         ],
                         "maxItems": null,
                         "border": false,

@@ -38,9 +38,13 @@ final class Block extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
+        $brick = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getContainerSelectingBrick($attribute);
+
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $class, $container),
+            'type' => $brick === null
+                ? $this->getFieldType($fieldDefinition, $class, $container)
+                : $this->getBrickFieldType($fieldDefinition, $brick),
             'resolve' => $this->getResolver($attribute, $fieldDefinition, $class),
         ], $container);
     }
@@ -53,13 +57,22 @@ final class Block extends Base
      */
     public function getFieldType(Data $fieldDefinition, $class = null, $container = null)
     {
-        // the entry type is named after the block, so it is shared when the block is selected more than once,
-        // e.g. for the same brick in several objectbricks fields
-        $ownerName = $class instanceof Definition ? $class->getKey() : $class->getName();
-        $cacheKey = 'graphql_block_entry_' . $ownerName . '_' . $fieldDefinition->getName();
+        return Type::listOf(new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
+    }
+
+    /**
+     * The entry type of a block of a brick which is selected together with its objectbricks field is named after the
+     * brick and shared, so that the same brick block of several fields does not register two types of the same name.
+     */
+    private function getBrickFieldType(Data $fieldDefinition, Definition $brick): Type
+    {
+        $cacheKey = 'graphql_block_entry_' . $brick->getKey() . '_' . $fieldDefinition->getName();
 
         if (!RuntimeCache::isRegistered($cacheKey)) {
-            RuntimeCache::set($cacheKey, new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $class, []));
+            RuntimeCache::set(
+                $cacheKey,
+                new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $brick, [])
+            );
         }
 
         return Type::listOf(RuntimeCache::get($cacheKey));

@@ -14,6 +14,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
@@ -43,36 +44,51 @@ final class Table extends Base
             $inputItems['col' . $i] = Type::string();
         }
 
-        // the input types are the same for every table with this many columns, so they are shared instead of
-        // registering a second type of the same name (e.g. for the same brick in several objectbricks fields)
-        $cacheKey = 'graphql_table_input_' . $numCols;
+        $brick = Service::getContainerSelectingBrick($fieldName);
 
-        if (!RuntimeCache::isRegistered($cacheKey)) {
-            $rowInput = new InputObjectType([
-                'name' => 'RowInput',
-                'fields' => $inputItems,
-            ]);
+        if ($brick === null) {
+            $inputType = $this->createInputType('TableInput', 'RowInput', $inputItems);
+        } else {
+            // the input types of a brick table which is selected together with its objectbricks field are named after
+            // the brick table and shared, so that the same table of several fields does not register them twice
+            $suffix = $brick->getKey() . '_' . $tableDef->getName();
+            $cacheKey = 'graphql_table_input_' . $suffix;
 
-            RuntimeCache::set($cacheKey, new InputObjectType([
-                'name' => 'TableInput',
-                'fields' => [
-                    'replace' => [
-                        'type' => Type::boolean(),
-                        'description' => 'if true then the entire table will be overwritten',
-                    ],
-                    'rows' => [
-                        'type' => Type::listOf($rowInput),
-                    ],
-                ],
-            ]));
+            if (!RuntimeCache::isRegistered($cacheKey)) {
+                RuntimeCache::set(
+                    $cacheKey,
+                    $this->createInputType('TableInput_' . $suffix, 'RowInput_' . $suffix, $inputItems)
+                );
+            }
+
+            $inputType = RuntimeCache::get($cacheKey);
         }
-
-        $inputType = RuntimeCache::get($cacheKey);
 
         return [
             'arg' => $inputType,
             'processor' => [$processor, 'process'],
         ];
+    }
+
+    private function createInputType(string $tableName, string $rowName, array $inputItems): InputObjectType
+    {
+        $rowInput = new InputObjectType([
+            'name' => $rowName,
+            'fields' => $inputItems,
+        ]);
+
+        return new InputObjectType([
+            'name' => $tableName,
+            'fields' => [
+                'replace' => [
+                    'type' => Type::boolean(),
+                    'description' => 'if true then the entire table will be overwritten',
+                ],
+                'rows' => [
+                    'type' => Type::listOf($rowInput),
+                ],
+            ],
+        ]);
     }
 
     public function getProcessors(&$processors, $tableDef)

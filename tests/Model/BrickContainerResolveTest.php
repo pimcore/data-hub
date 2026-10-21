@@ -19,7 +19,10 @@ use GraphQL\Type\Schema;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\BrickContainerTestEntity;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Block;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Input;
 use Pimcore\Model\DataObject\ClassDefinition\Service as ClassDefinitionService;
+use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Objectbrick;
 use Pimcore\Model\DataObject\Objectbrick\Data\BrickContainerTestBrick;
 
@@ -32,6 +35,8 @@ class BrickContainerResolveTest extends Unit
 
     private const BRICK_KEY = 'BrickContainerTestBrick';
 
+    private const OTHER_BRICK_KEY = 'BrickContainerTestOtherBrick';
+
     private static ?int $objectId = null;
 
     public static function setUpBeforeClass(): void
@@ -40,14 +45,16 @@ class BrickContainerResolveTest extends Unit
 
         $resources = __DIR__ . '/../_support/Resources/';
 
-        // the brick has to exist before the class references it, and is mapped to the class afterwards
-        $brick = new Objectbrick\Definition();
-        $brick->setKey(self::BRICK_KEY);
-        ClassDefinitionService::importObjectBrickFromJson(
-            $brick,
-            file_get_contents($resources . 'brick_BrickContainerTestBrick_import.json'),
-            true
-        );
+        // the bricks have to exist before the class references them, and are mapped to the class afterwards
+        foreach ([self::BRICK_KEY, self::OTHER_BRICK_KEY] as $brickKey) {
+            $brick = new Objectbrick\Definition();
+            $brick->setKey($brickKey);
+            ClassDefinitionService::importObjectBrickFromJson(
+                $brick,
+                file_get_contents($resources . 'brick_' . $brickKey . '_import.json'),
+                true
+            );
+        }
 
         $class = new ClassDefinition();
         $class->setName(self::CLASS_NAME);
@@ -64,6 +71,13 @@ class BrickContainerResolveTest extends Unit
             ['classname' => self::CLASS_NAME, 'fieldname' => 'slotB'],
         ]);
         $brick->save();
+
+        $otherBrick = Objectbrick\Definition::getByKey(self::OTHER_BRICK_KEY);
+        $otherBrick->setClassDefinitions([
+            ['classname' => self::CLASS_NAME, 'fieldname' => 'slotB'],
+        ]);
+        $otherBrick->save();
+
         ClassDefinition::getByName(self::CLASS_NAME)->save();
     }
 
@@ -74,6 +88,7 @@ class BrickContainerResolveTest extends Unit
         }
         ClassDefinition::getByName(self::CLASS_NAME)?->delete();
         Objectbrick\Definition::getByKey(self::BRICK_KEY)?->delete();
+        Objectbrick\Definition::getByKey(self::OTHER_BRICK_KEY)?->delete();
 
         parent::tearDownAfterClass();
     }
@@ -164,40 +179,150 @@ class BrickContainerResolveTest extends Unit
         $this->assertSame('slotB_' . self::BRICK_KEY . '_label', $keyOf(self::BRICK_KEY . '~label~slotB'));
     }
 
-    public function testSchemaWithTheSameBrickTableOfBothContainersIsValid(): void
+    private function buildNodeDef(string $attribute, string $dataType): array
+    {
+        return ['isOperator' => false, 'attributes' => ['attribute' => $attribute, 'dataType' => $dataType]];
+    }
+
+    /**
+     * @param string[] $attributes
+     */
+    private function buildQuerySchema(array $attributes, string $dataType): Schema
     {
         $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
         $class = ClassDefinition::getByName(self::CLASS_NAME);
 
-        $queryFields = [];
-        $mutationArgs = [];
-        foreach (['slotA', 'slotB'] as $containerField) {
-            $nodeDef = [
-                'isOperator' => false,
-                'attributes' => ['attribute' => self::BRICK_KEY . '~rows~' . $containerField, 'dataType' => 'table'],
-            ];
-
-            $query = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class);
-            $queryFields[$query['key']] = $query['config'];
-
-            $mutation = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $class);
-            $mutationArgs[$mutation['key']] = ['type' => $mutation['arg']];
+        $fields = [];
+        foreach ($attributes as $attribute) {
+            $query = $fieldHelper->getQueryFieldConfigFromConfig($this->buildNodeDef($attribute, $dataType), $class);
+            $fields[$query['key']] = $query['config'];
         }
 
-        $this->assertCount(2, $queryFields);
-        $this->assertCount(2, $mutationArgs);
+        $schema = new Schema(['query' => new ObjectType(['name' => 'Query', 'fields' => $fields])]);
+        $schema->assertValid();
 
-        // a schema must not contain two different types of the same name
-        (new Schema([
-            'query' => new ObjectType(['name' => 'Query', 'fields' => $queryFields]),
-        ]))->assertValid();
+        return $schema;
+    }
 
-        (new Schema([
+    /**
+     * @param string[] $attributes
+     */
+    private function buildMutationSchema(array $attributes): Schema
+    {
+        $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
+        $class = ClassDefinition::getByName(self::CLASS_NAME);
+
+        $args = [];
+        foreach ($attributes as $attribute) {
+            $nodeDef = $this->buildNodeDef($attribute, 'table');
+            $mutation = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $class);
+            $args[$mutation['key']] = ['type' => $mutation['arg']];
+        }
+
+        $schema = new Schema([
             'query' => new ObjectType(['name' => 'Query', 'fields' => ['id' => Type::string()]]),
             'mutation' => new ObjectType([
                 'name' => 'Mutation',
-                'fields' => ['update' => ['type' => Type::string(), 'args' => $mutationArgs]],
+                'fields' => ['update' => ['type' => Type::string(), 'args' => $args]],
             ]),
-        ]))->assertValid();
+        ]);
+        $schema->assertValid();
+
+        return $schema;
+    }
+
+    public function testSchemaWithTheSameBrickTableAndBlockOfBothContainersIsValid(): void
+    {
+        $tableSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~rows~slotA',
+            self::BRICK_KEY . '~rows~slotB',
+        ], 'table');
+        $this->assertCount(2, $tableSchema->getQueryType()->getFields());
+
+        $blockSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~details~slotA',
+            self::BRICK_KEY . '~details~slotB',
+        ], 'block');
+        $this->assertCount(2, $blockSchema->getQueryType()->getFields());
+
+        $mutationSchema = $this->buildMutationSchema([
+            self::BRICK_KEY . '~rows~slotA',
+            self::BRICK_KEY . '~rows~slotB',
+        ]);
+        $this->assertCount(2, $mutationSchema->getMutationType()->getField('update')->args);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function queryTypeFieldNames(Schema $schema, string $queryField): array
+    {
+        $type = $schema->getQueryType()->getField($queryField)->getType()->getWrappedType();
+
+        return array_keys($type->getFields());
+    }
+
+    public function testSameNamedTablesAndBlocksOfDifferentBricksKeepTheirOwnShape(): void
+    {
+        $tableSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~rows~slotA',
+            self::OTHER_BRICK_KEY . '~rows~slotB',
+        ], 'table');
+        $this->assertSame(
+            ['col0', 'col1'],
+            $this->queryTypeFieldNames($tableSchema, 'slotA_' . self::BRICK_KEY . '_rows')
+        );
+        $this->assertSame(
+            ['col0', 'col1', 'col2'],
+            $this->queryTypeFieldNames($tableSchema, 'slotB_' . self::OTHER_BRICK_KEY . '_rows')
+        );
+
+        $blockSchema = $this->buildQuerySchema([
+            self::BRICK_KEY . '~details~slotA',
+            self::OTHER_BRICK_KEY . '~details~slotB',
+        ], 'block');
+        $this->assertSame(
+            ['note'],
+            $this->queryTypeFieldNames($blockSchema, 'slotA_' . self::BRICK_KEY . '_details')
+        );
+        $this->assertSame(
+            ['other'],
+            $this->queryTypeFieldNames($blockSchema, 'slotB_' . self::OTHER_BRICK_KEY . '_details')
+        );
+
+        // the mutation input types of tables with a different number of columns must not share a name either
+        $mutationSchema = $this->buildMutationSchema([
+            self::BRICK_KEY . '~rows~slotA',
+            self::OTHER_BRICK_KEY . '~rows~slotB',
+        ]);
+        $this->assertSame(
+            ['col0', 'col1'],
+            array_keys($mutationSchema->getType('RowInput_' . self::BRICK_KEY . '_rows')->getFields())
+        );
+        $this->assertSame(
+            ['col0', 'col1', 'col2'],
+            array_keys($mutationSchema->getType('RowInput_' . self::OTHER_BRICK_KEY . '_rows')->getFields())
+        );
+    }
+
+    public function testBlockOfAFieldcollectionKeepsItsEntryType(): void
+    {
+        $input = new Input();
+        $input->setName('note');
+
+        $block = new Block();
+        $block->setName('details');
+        $block->setChildren([$input]);
+
+        $fieldcollection = new Fieldcollection\Definition();
+        $fieldcollection->setKey('BrickContainerTestCollection');
+
+        $config = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper()
+            ->getGraphQlQueryFieldConfig('details', $block, $fieldcollection, null);
+
+        $this->assertSame(
+            'block_BrickContainerTestCollection_details_entry',
+            $config['type']->getWrappedType()->name
+        );
     }
 }

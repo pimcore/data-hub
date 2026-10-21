@@ -34,9 +34,12 @@ abstract class AbstractTable extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
+        // a column which selects its objectbricks field gets the type of its brick, which is shared (see getFieldType)
+        $brick = Service::getContainerSelectingBrick($attribute);
+
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $class, $container),
+            'type' => $this->getFieldType($fieldDefinition, $brick ?? $class, $container),
             'resolve' => function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) use ($fieldDefinition, $attribute) {
                 $result = Service::resolveValue($value, $fieldDefinition, $attribute, $args);
 
@@ -91,8 +94,17 @@ abstract class AbstractTable extends Base
             return Type::string();
         }
 
-        // shared by name, so that selecting the same table more than once (e.g. the same brick in several
-        // objectbricks fields) does not register two types of the same name
+        if (!$class instanceof ObjectbrickDefinition) {
+            return Type::listOf(new ObjectType(
+                [
+                    'name' => $name,
+                    'fields' => $columns,
+                ]
+            ));
+        }
+
+        // the name of a brick table identifies its definition, so the type is shared when the same brick table
+        // is selected more than once (e.g. for the same brick in several objectbricks fields)
         $cacheKey = 'graphql_table_type_' . $name;
 
         if (!RuntimeCache::isRegistered($cacheKey)) {

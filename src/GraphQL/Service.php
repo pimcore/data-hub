@@ -1243,6 +1243,21 @@ final class Service
         return \Pimcore\Model\DataObject\Service::getFieldForBrickType($class, $brickType);
     }
 
+    /**
+     * The brick definition of a brick attribute which selects its objectbricks field (`Brick~field~containerField`),
+     * null for every other attribute.
+     */
+    public static function getContainerSelectingBrick(string $attribute): ?Definition
+    {
+        $brickParts = self::parseObjectBrickFieldName($attribute);
+
+        if (empty($brickParts['containerField'])) {
+            return null;
+        }
+
+        return Definition::getByKey($brickParts['brickType']);
+    }
+
     public static function parseObjectBrickFieldName(
         string $fieldName
     ): array {
