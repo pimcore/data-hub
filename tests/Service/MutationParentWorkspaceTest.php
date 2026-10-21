@@ -34,9 +34,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateDocumentFolder, updateObject, createAsset)
- * have to check the workspace for the 'update' right on the element where it is and for the 'create' right on the
- * parent it ends up in, before anything is applied. The folder mutations (also deleteAssetFolder, deleteObjectFolder,
+ * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateDocumentFolder,
+ * updateObject, createAsset) have to check the workspace for the 'update' right on the element where it is and
+ * for the 'create' right on the parent it ends up in, before anything is applied. The folder mutations (also deleteAssetFolder, deleteObjectFolder,
  * deleteDocumentFolder) only act on folders.
  */
 class MutationParentWorkspaceTest extends Unit
@@ -54,6 +54,8 @@ class MutationParentWorkspaceTest extends Unit
     private const ELEMENT_IN_ALLOWED = 201;
 
     private const FOLDER_IN_ALLOWED = 202;
+
+    private const CREATE_ASSET_DENIED = 'not allowed to create asset';
 
     private ?KernelInterface $previousKernel;
 
@@ -92,9 +94,14 @@ class MutationParentWorkspaceTest extends Unit
             ], $key);
         }
 
-        foreach (['asset' => Asset\Folder::class, 'object' => DataObject\Folder::class, 'document' => Document\Folder::class] as $type => $folderClass) {
+        $folderClasses = [
+            'asset' => Asset\Folder::class,
+            'object' => DataObject\Folder::class,
+            'document' => Document\Folder::class,
+        ];
+        foreach ($folderClasses as $type => $folderClass) {
             $allowed = $this->element($type, $folderClass, self::ALLOWED_FOLDER_ID, 1, null);
-            $denied = $this->element($type, $folderClass, self::DENIED_FOLDER_ID, 1, null);
+            $this->element($type, $folderClass, self::DENIED_FOLDER_ID, 1, null);
             $this->element($type, $folderClass, self::TARGET_FOLDER_ID, 1, null);
             $this->element($type, $folderClass, self::OUTSIDE_FOLDER_ID, 1, null);
             $this->element($type, $folderClass, self::FOLDER_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowed);
@@ -105,9 +112,21 @@ class MutationParentWorkspaceTest extends Unit
         $deniedObject = $this->elements['object' . self::DENIED_FOLDER_ID];
         $this->element('asset', Asset\Text::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowedAsset);
         $this->element('asset', Asset\Text::class, 302, self::DENIED_FOLDER_ID, $deniedAsset);
-        $this->element('object', DataObject\Concrete::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $allowedObject);
+        $this->element(
+            'object',
+            DataObject\Concrete::class,
+            self::ELEMENT_IN_ALLOWED,
+            self::ALLOWED_FOLDER_ID,
+            $allowedObject
+        );
         $this->element('object', DataObject\Concrete::class, 302, self::DENIED_FOLDER_ID, $deniedObject);
-        $this->element('document', Document\Page::class, self::ELEMENT_IN_ALLOWED, self::ALLOWED_FOLDER_ID, $this->elements['document' . self::ALLOWED_FOLDER_ID]);
+        $this->element(
+            'document',
+            Document\Page::class,
+            self::ELEMENT_IN_ALLOWED,
+            self::ALLOWED_FOLDER_ID,
+            $this->elements['document' . self::ALLOWED_FOLDER_ID]
+        );
     }
 
     protected function tearDown(): void
@@ -152,7 +171,10 @@ class MutationParentWorkspaceTest extends Unit
         $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
         $folder->expects($this->never())->method('save');
 
-        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]);
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]
+        );
 
         $this->assertFalse($result['success']);
         $this->assertSame(self::ALLOWED_FOLDER_ID, $folder->getParentId());
@@ -166,7 +188,10 @@ class MutationParentWorkspaceTest extends Unit
         $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
         $folder->expects($this->never())->method('save');
 
-        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::OUTSIDE_FOLDER_ID]]);
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::OUTSIDE_FOLDER_ID]]
+        );
 
         $this->assertFalse($result['success']);
         $this->assertSame(self::ALLOWED_FOLDER_ID, $folder->getParentId());
@@ -180,7 +205,10 @@ class MutationParentWorkspaceTest extends Unit
         $folder = $this->elements[$type . self::FOLDER_IN_ALLOWED];
         $folder->expects($this->once())->method('save');
 
-        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::TARGET_FOLDER_ID]]);
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::TARGET_FOLDER_ID]]
+        );
 
         $this->assertTrue($result['success']);
         $this->assertSame(self::TARGET_FOLDER_ID, $folder->getParentId());
@@ -205,7 +233,10 @@ class MutationParentWorkspaceTest extends Unit
      */
     public function testUnchangedParentNeedsNoCreateRight(string $type): void
     {
-        $result = $this->updateFolder($type, ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::ALLOWED_FOLDER_ID]]);
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::ALLOWED_FOLDER_ID]]
+        );
 
         $this->assertTrue($result['success']);
     }
@@ -218,7 +249,10 @@ class MutationParentWorkspaceTest extends Unit
         $element = $this->elements[$type . self::ELEMENT_IN_ALLOWED];
         $element->expects($this->never())->method('save');
 
-        $result = $this->updateFolder($type, ['id' => self::ELEMENT_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]);
+        $result = $this->updateFolder(
+            $type,
+            ['id' => self::ELEMENT_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]
+        );
 
         $this->assertFalse($result['success']);
         $this->assertSame(self::ALLOWED_FOLDER_ID, $element->getParentId());
@@ -355,7 +389,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('not allowed to create asset', $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED, $result['message']);
     }
 
     public function testCreateAssetInputParentOutsideTheWorkspaceIsRejected(): void
@@ -368,7 +402,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('not allowed to create asset', $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED, $result['message']);
     }
 
     public function testCreateAssetInDeniedParentIsStillRejected(): void
@@ -380,7 +414,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('not allowed to create asset', $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED, $result['message']);
     }
 
     /**
@@ -500,7 +534,13 @@ class MutationParentWorkspaceTest extends Unit
      *
      * @param class-string<ElementInterface> $class
      */
-    private function element(string $type, string $class, int $id, int $parentId, ?ElementInterface $parent): ElementInterface
+    private function element(
+        string $type,
+        string $class,
+        int $id,
+        int $parentId,
+        ?ElementInterface $parent
+    ): ElementInterface
     {
         $element = $this->getMockBuilder($class)->onlyMethods(['save', 'delete', 'getParent'])->getMock();
         $element->method('getParent')->willReturn($parent);

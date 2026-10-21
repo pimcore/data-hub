@@ -872,18 +872,9 @@ final class MutationType extends ObjectType
                     ];
                 }
 
-                $rejection = $me->checkNewParent(
-                    'object',
-                    $parent?->getId(),
-                    $object->getParentId(),
-                    $omitPermissionCheck,
-                    'not allowed to move object to the given parent'
-                );
+                $rejection = $me->applyNewObjectParent($object, $parent, $omitPermissionCheck);
                 if ($rejection) {
                     return $rejection;
-                }
-                if ($parent) {
-                    $object->setParent($parent);
                 }
 
                 if (isset($args['defaultLanguage'])) {
@@ -1665,13 +1656,44 @@ final class MutationType extends ObjectType
     }
 
     /**
+     * Moves the object below the given parent when the parent may be used.
+     *
+     * @return array{success: false, message: string}|null the failure result, null when moved or no new parent
+     */
+    private function applyNewObjectParent(DataObject $object, ?DataObject $parent, bool $omitPermissionCheck): ?array
+    {
+        if (!$parent) {
+            return null;
+        }
+
+        $rejection = $this->checkNewParent(
+            'object',
+            $parent->getId(),
+            $object->getParentId(),
+            $omitPermissionCheck,
+            'not allowed to move object to the given parent'
+        );
+        if (!$rejection) {
+            $object->setParent($parent);
+        }
+
+        return $rejection;
+    }
+
+    /**
      * Checks the 'create' right on the parent an element is moved to or created in. An unchanged parent needs no check.
      *
      * @param string $type asset|object|document
      *
      * @return array{success: false, message: string}|null the failure result, null when the parent may be used
      */
-    private function checkNewParent(string $type, ?int $newParentId, ?int $currentParentId, bool $omitPermissionCheck, string $deniedMessage): ?array
+    private function checkNewParent(
+        string $type,
+        ?int $newParentId,
+        ?int $currentParentId,
+        bool $omitPermissionCheck,
+        string $deniedMessage
+    ): ?array
     {
         if ($newParentId === null || $newParentId === $currentParentId) {
             return null;
