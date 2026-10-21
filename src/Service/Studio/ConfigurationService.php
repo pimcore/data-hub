@@ -543,8 +543,12 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
     {
         try {
             $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            $importData = null;
+        } catch (JsonException $e) {
+            throw new ValidationFailedException(
+                message: 'Uploaded file is not a valid JSON configuration.',
+                previous: $e,
+                errorKey: 'data-hub.import-config-invalid'
+            );
         }
 
         if (!is_array($importData)) {
