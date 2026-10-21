@@ -95,10 +95,11 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 if ($this->supportsGraphQL($fieldDefinition, 'query')) {
                     $fieldName = $this->getBrickColumnName($key, $fieldDefinition->getName());
 
+                    // the types of a column which selects its objectbricks field are named after its brick
                     $config = $this->getGraphQlQueryFieldConfig(
                         $key,
                         $fieldDefinition,
-                        $class,
+                        Service::getContainerSelectingBrick($key) ?? $class,
                         $container
                     );
                     $config['name'] = $fieldName;

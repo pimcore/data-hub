@@ -33,12 +33,9 @@ abstract class AbstractTable extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        // a column which selects its objectbricks field gets a type named after its brick
-        $brick = Service::getContainerSelectingBrick($attribute);
-
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
-            'type' => $this->getFieldType($fieldDefinition, $brick ?? $class, $container),
+            'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'resolve' => function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) use ($fieldDefinition, $attribute) {
                 $result = Service::resolveValue($value, $fieldDefinition, $attribute, $args);
 

@@ -330,26 +330,29 @@ class BrickContainerResolveTest extends Unit
         );
     }
 
-    public function testTheSameBrickRelationOfBothContainersAndTheLegacyColumnShareTheirType(): void
+    public function testTheSameBrickRelationOfBothContainersSharesItsTypeAndKeepsLegacyNames(): void
     {
         $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
         $class = ClassDefinition::getByName(self::CLASS_NAME);
 
-        $attributes = [
-            self::BRICK_KEY . '~related',
-            $this->attribute(self::BRICK_KEY, 'related', 'slotA'),
-            $this->attribute(self::BRICK_KEY, 'related', 'slotB'),
-        ];
-
         $types = [];
-        foreach ($attributes as $attribute) {
+        $attributes = [
+            'legacy' => self::BRICK_KEY . '~related',
+            'slotA' => $this->attribute(self::BRICK_KEY, 'related', 'slotA'),
+            'slotB' => $this->attribute(self::BRICK_KEY, 'related', 'slotB'),
+        ];
+        foreach ($attributes as $name => $attribute) {
             $nodeDef = $this->buildNodeDef($attribute, 'manyToOneRelation');
-            $types[] = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class)['config']['type'];
+            $types[$name] = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class)['config']['type'];
         }
 
         // a schema must not contain two instances of a type of the same name
-        $this->assertSame($types[0], $types[1]);
-        $this->assertSame($types[0], $types[2]);
+        $this->assertSame($types['slotA'], $types['slotB']);
+
+        // the name of the existing format is unchanged, the container selecting columns are named after the brick, so
+        // they do not collide with a relation field of the class or the existing format either
+        $this->assertSame('object_' . self::CLASS_NAME . '_related', $types['legacy']->name);
+        $this->assertSame('objectbrick_' . self::BRICK_KEY . '_related', $types['slotA']->name);
     }
 
     public function testBlockEntryTypeOfABrickIsNamedAfterTheBrick(): void

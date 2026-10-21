@@ -37,13 +37,9 @@ final class Block extends Base
      */
     public function getGraphQlFieldConfig($attribute, Data $fieldDefinition, $class = null, $container = null)
     {
-        $brick = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getContainerSelectingBrick($attribute);
-
         return $this->enrichConfig($fieldDefinition, $class, $attribute, [
             'name' => $fieldDefinition->getName(),
-            'type' => $brick === null
-                ? $this->getFieldType($fieldDefinition, $class, $container)
-                : Type::listOf(new BlockEntryType($this->getGraphQlService(), $fieldDefinition, $brick, [])),
+            'type' => $this->getFieldType($fieldDefinition, $class, $container),
             'resolve' => $this->getResolver($attribute, $fieldDefinition, $class),
         ], $container);
     }
