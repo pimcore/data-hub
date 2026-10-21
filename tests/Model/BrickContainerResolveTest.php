@@ -17,6 +17,7 @@ namespace Pimcore\Tests\Model\DataObject;
 use Codeception\Test\Unit;
 use GraphQL\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
@@ -100,7 +101,7 @@ class BrickContainerResolveTest extends Unit
         parent::tearDownAfterClass();
     }
 
-    private function createObject(): BrickContainerTestEntity
+    private function createObject(bool $withSlotB = true): BrickContainerTestEntity
     {
         $object = new BrickContainerTestEntity();
         $object->setParentId(1);
@@ -115,12 +116,15 @@ class BrickContainerResolveTest extends Unit
         $brickA = new BrickContainerTestBrick($object);
         $brickA->setLabel('A-value');
         $brickA->setDetails([['note' => new BlockElement('note', 'input', 'A-note')]]);
+        $brickA->setRows([['a0', 'a1']]);
         $object->getSlotA()->setBrickContainerTestBrick($brickA);
 
         $brickB = new BrickContainerTestBrick($object);
         $brickB->setLabel('B-value');
         $brickB->setDetails([['note' => new BlockElement('note', 'input', 'B-note')]]);
-        $object->getSlotB()->setBrickContainerTestBrick($brickB);
+        if ($withSlotB) {
+            $object->getSlotB()->setBrickContainerTestBrick($brickB);
+        }
 
         $object->save();
         self::$objectId = $object->getId();
@@ -332,6 +336,22 @@ class BrickContainerResolveTest extends Unit
             ['col0', 'col1', 'col2'],
             array_keys($mutationSchema->getType('RowInput_' . self::OTHER_BRICK_KEY . '_rows')->getFields())
         );
+    }
+
+    public function testRowsAreAppendedToAnEmptyContainerAndTheOtherContainerStaysUnchanged(): void
+    {
+        $object = $this->createObject(false);
+        $this->assertNull($object->getSlotB()->getBrickContainerTestBrick());
+
+        $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
+        $nodeDef = $this->buildNodeDef($this->attribute(self::BRICK_KEY, 'rows', 'slotB'), 'table');
+        $class = ClassDefinition::getByName(self::CLASS_NAME);
+        $mutation = $fieldHelper->getMutationFieldConfigFromConfig($nodeDef, $class);
+
+        $mutation['processor']($object, ['rows' => [['b0', 'b1']]], [], [], $this->createStub(ResolveInfo::class));
+
+        $this->assertSame([['b0', 'b1']], $object->getSlotB()->getBrickContainerTestBrick()->getRows());
+        $this->assertSame([['a0', 'a1']], $object->getSlotA()->getBrickContainerTestBrick()->getRows());
     }
 
     public function testTheSameBrickRelationOfBothContainersSharesItsTypeAndKeepsLegacyNames(): void
