@@ -25,6 +25,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
 use Pimcore\Model\Document;
 
 abstract class AbstractRelationsType extends UnionType implements ContainerAwareInterface
@@ -52,6 +53,8 @@ abstract class AbstractRelationsType extends UnionType implements ContainerAware
         if ($fieldDefinition && $class) {
             if ($class instanceof ClassDefinition) {
                 $name = 'object_' . $class->getName() . '_' . $fieldDefinition->getName();
+            } elseif ($class instanceof ObjectbrickDefinition) {
+                $name = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
             } elseif ($class instanceof Definition) {
                 $name = 'fieldcollection_' . $class->getKey() . '_' . $fieldDefinition->getName();
             }

@@ -13,6 +13,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Element\ElementInterface;
 
 /**
@@ -24,10 +25,14 @@ final class RelationHelper
      * @param array $args
      * @param array $context
      *
-     * @return ElementDescriptor
+     * @return ElementDescriptor|null
      */
     public static function processRelation(ElementInterface $relation, Service $graphQlService, $args, $context, ResolveInfo $resolveInfo)
     {
+        if (!WorkspaceHelper::isFolderReadAllowed($relation)) {
+            return null;
+        }
+
         $data = new ElementDescriptor($relation);
         $graphQlService->extractData($data, $relation, $args, $context, $resolveInfo);
 

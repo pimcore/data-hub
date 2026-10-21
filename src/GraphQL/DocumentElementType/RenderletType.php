@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Model\Document\Editable\Renderlet;
 use Pimcore\Model\Element;
 
@@ -92,6 +93,10 @@ final class RenderletType extends ObjectType
                                     Element\Service::doHideUnpublished($target)
                                     && !Element\Service::isPublished($target)
                                 ) {
+                                    return null;
+                                }
+
+                                if (!WorkspaceHelper::isFolderReadAllowed($target)) {
                                     return null;
                                 }
 

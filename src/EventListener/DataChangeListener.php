@@ -145,7 +145,8 @@ final class DataChangeListener implements EventSubscriberInterface
             }
 
             try {
-                $entity->save();
+                // the workspace paths follow the element, whatever the permissions of the acting user are
+                $entity->persist();
             } catch (\Throwable $e) {
                 throw new ValidationException(sprintf('Could not save configuration: %s', $e->getMessage()), 0, $e);
             }
