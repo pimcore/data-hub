@@ -139,6 +139,35 @@ class AssetTypeEditableCropTest extends Unit
         $this->assertEquals(2, $resolutions[1]['url']->getConfig()->getHighResolution());
     }
 
+    /**
+     * @return array<string, array{bool}>
+     */
+    public static function cropProvider(): array
+    {
+        return ['with crop' => [true], 'without crop' => [false]];
+    }
+
+    /**
+     * @dataProvider cropProvider
+     */
+    public function testSrcSetEntriesAndTheirResolutionsKeepTheRequestedFormat(bool $withCrop): void
+    {
+        $mediaQueries = $this->resolver->resolveSrcSet(
+            $this->descriptor($withCrop),
+            ['thumbnail' => 'editable_crop_test', 'format' => 'webp', 'deferred' => false]
+        );
+
+        $this->assertCount(1, $mediaQueries);
+        $this->assertSame('webp', $mediaQueries[0]['url']->getConfig()->getFormat());
+
+        $resolutions = $this->resolver->resolveResolutions($mediaQueries[0], ['types' => [1, 2]], []);
+
+        $this->assertCount(2, $resolutions);
+        foreach ($resolutions as $resolution) {
+            $this->assertSame('webp', $resolution['url']->getConfig()->getFormat());
+        }
+    }
+
     public function testResolutionsOfAnImageUseTheCrop(): void
     {
         $resolutions = $this->resolver->resolveResolutions(
