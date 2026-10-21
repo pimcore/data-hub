@@ -114,6 +114,32 @@
                         "visibleSearch": false
                     }
                 ]
+            },
+            {
+                "fieldtype": "manyToOneRelation",
+                "width": null,
+                "height": null,
+                "assetUploadPath": "",
+                "relationType": true,
+                "objectsAllowed": true,
+                "assetsAllowed": false,
+                "documentsAllowed": false,
+                "classes": [],
+                "assetTypes": [],
+                "documentTypes": [],
+                "name": "related",
+                "title": "Related",
+                "tooltip": "",
+                "mandatory": false,
+                "noteditable": false,
+                "index": false,
+                "locked": false,
+                "style": "",
+                "permissions": null,
+                "datatype": "data",
+                "invisible": false,
+                "visibleGridView": false,
+                "visibleSearch": false
             }
         ],
         "locked": false

@@ -13,15 +13,18 @@
 namespace Pimcore\Tests\Model\DataObject;
 
 use Codeception\Test\Unit;
+use GraphQL\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Model\DataObject\BrickContainerTestEntity;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Block;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Input;
 use Pimcore\Model\DataObject\ClassDefinition\Service as ClassDefinitionService;
+use Pimcore\Model\DataObject\Data\BlockElement;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Objectbrick;
 use Pimcore\Model\DataObject\Objectbrick\Data\BrickContainerTestBrick;
@@ -107,10 +110,12 @@ class BrickContainerResolveTest extends Unit
 
         $brickA = new BrickContainerTestBrick($object);
         $brickA->setLabel('A-value');
+        $brickA->setDetails([['note' => new BlockElement('note', 'input', 'A-note')]]);
         $object->getSlotA()->setBrickContainerTestBrick($brickA);
 
         $brickB = new BrickContainerTestBrick($object);
         $brickB->setLabel('B-value');
+        $brickB->setDetails([['note' => new BlockElement('note', 'input', 'B-note')]]);
         $object->getSlotB()->setBrickContainerTestBrick($brickB);
 
         $object->save();
@@ -308,6 +313,60 @@ class BrickContainerResolveTest extends Unit
             ['col0', 'col1', 'col2'],
             array_keys($mutationSchema->getType('RowInput_' . self::OTHER_BRICK_KEY . '_rows')->getFields())
         );
+    }
+
+    public function testTheSameBrickRelationOfBothContainersSharesItsType(): void
+    {
+        $fieldHelper = \Pimcore::getContainer()->get(Service::class)->getObjectFieldHelper();
+        $class = ClassDefinition::getByName(self::CLASS_NAME);
+
+        $types = [];
+        foreach (['slotA', 'slotB'] as $containerField) {
+            $nodeDef = $this->buildNodeDef(
+                $this->attribute(self::BRICK_KEY, 'related', $containerField),
+                'manyToOneRelation'
+            );
+            $types[] = $fieldHelper->getQueryFieldConfigFromConfig($nodeDef, $class)['config']['type'];
+        }
+
+        // a schema must not contain two instances of a type of the same name
+        $this->assertSame($types[0], $types[1]);
+    }
+
+    public function testBlockEntryTypeOfABrickIsNamedAfterTheBrick(): void
+    {
+        $schema = $this->buildQuerySchema([$this->attribute(self::BRICK_KEY, 'details', 'slotA')], 'block');
+
+        $type = $schema->getQueryType()->getField('slotA_' . self::BRICK_KEY . '_details')->getType();
+
+        $this->assertSame('block_' . self::BRICK_KEY . '_details_entry', $type->getWrappedType()->name);
+    }
+
+    public function testQueryReturnsTheValuesOfTheSelectedContainer(): void
+    {
+        $object = $this->createObject();
+
+        $schema = $this->buildQuerySchema([
+            $this->attribute(self::BRICK_KEY, 'label', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'label', 'slotB'),
+            $this->attribute(self::BRICK_KEY, 'details', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'details', 'slotB'),
+        ], 'input');
+
+        $result = GraphQL::executeQuery(
+            $schema,
+            '{ slotA_' . self::BRICK_KEY . '_label slotB_' . self::BRICK_KEY . '_label'
+            . ' slotA_' . self::BRICK_KEY . '_details { note } slotB_' . self::BRICK_KEY . '_details { note } }',
+            new ElementDescriptor($object)
+        )->toArray();
+
+        $this->assertArrayNotHasKey('errors', $result);
+        $this->assertSame([
+            'slotA_' . self::BRICK_KEY . '_label' => 'A-value',
+            'slotB_' . self::BRICK_KEY . '_label' => 'B-value',
+            'slotA_' . self::BRICK_KEY . '_details' => [['note' => 'A-note']],
+            'slotB_' . self::BRICK_KEY . '_details' => [['note' => 'B-note']],
+        ], $result['data']);
     }
 
     public function testBlockOfAFieldcollectionKeepsItsEntryType(): void

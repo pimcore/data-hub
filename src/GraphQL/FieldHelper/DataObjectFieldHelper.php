@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -102,6 +103,10 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                     );
                     $config['name'] = $fieldName;
 
+                    if (isset($config['type'])) {
+                        $config['type'] = $this->shareBrickColumnType($key, $fieldDefinition, $config['type']);
+                    }
+
                     $result = ['key' => $fieldName, 'config' => $config];
                 }
             }
@@ -181,6 +186,28 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         return $fieldDefinition;
+    }
+
+    /**
+     * The type of a brick column which selects its objectbricks field (`Brick~field~containerField`) does not depend
+     * on that field. It is shared by the columns of all containers of the brick, because a schema must not contain
+     * two instances of a type of the same name.
+     */
+    private function shareBrickColumnType(string $attribute, Data $fieldDefinition, mixed $type): mixed
+    {
+        $brick = Service::getContainerSelectingBrick($attribute);
+
+        if ($brick === null) {
+            return $type;
+        }
+
+        $cacheKey = 'graphql_brick_column_type_' . $brick->getKey() . '_' . $fieldDefinition->getName();
+
+        if (!RuntimeCache::isRegistered($cacheKey)) {
+            RuntimeCache::set($cacheKey, $type);
+        }
+
+        return RuntimeCache::get($cacheKey);
     }
 
     /**
