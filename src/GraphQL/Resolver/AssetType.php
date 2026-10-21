@@ -240,6 +240,7 @@ final class AssetType
                     $mediaQueries[] = [
                         'descriptor' => $key,
                         'url' => $thumbnail->getMedia($key),
+                        'thumbnail' => $thumbnail,
                     ];
                 }
             }
@@ -266,14 +267,19 @@ final class AssetType
 
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
             $resolutions = [];
-            $thumbnailName = $thumbnail->getConfig()->getName();
             /** @var Asset\Image $asset */
             $asset = $thumbnail->getAsset();
             if (!WorkspaceHelper::checkPermission($asset, 'read')) {
                 return null;
             }
 
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            // the media thumbnail has no media queries left and, for a cropped editable, an auto generated name
+            // that cannot be loaded again, so the resolutions are taken from the thumbnail srcset resolved
+            $parent = $value['thumbnail'] ?? null;
+            $thumbnail = $parent instanceof Asset\Image\Thumbnail ? $parent : $asset->getThumbnail(
+                $thumbnail->getConfig()->getName(),
+                false
+            );
             if ($thumbnail->getConfig()->hasMedias()) {
                 foreach ($types as $type) {
                     $key = $value['descriptor'];

@@ -74,11 +74,12 @@ final class AssetFieldHelper extends AbstractFieldHelper
 
     /**
      * Applies the crop selected in a document image editable to a thumbnail config,
-     * the same way Document\Editable\Image does for the frontend.
+     * the same way Document\Editable\Image does for the frontend (core keeps that
+     * method private, so it is repeated here; keep both in sync).
      *
      * @param array{width: float|int, height: float|int, top: float|int, left: float|int} $crop percent values
      */
-    public function applyEditableCrop(Image\Thumbnail\Config $thumbNailConfig, array $crop): Image\Thumbnail\Config
+    private function applyEditableCrop(Image\Thumbnail\Config $thumbNailConfig, array $crop): Image\Thumbnail\Config
     {
         $thumbNailConfig = clone $thumbNailConfig;
         $cropConfig = [
@@ -97,7 +98,7 @@ final class AssetFieldHelper extends AbstractFieldHelper
         return $thumbNailConfig;
     }
 
-    public function getCroppedThumbnailConfig(
+    private function getCroppedThumbnailConfig(
         Asset\Image $asset,
         string | Image\Thumbnail\Config $thumbNailConfig,
         array $crop
