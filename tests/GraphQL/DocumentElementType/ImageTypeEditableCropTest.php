@@ -188,7 +188,7 @@ class ImageTypeEditableCropTest extends Unit
 
         // the resolver only needs extractData() to be harmless (the concrete helper classes are final)
         $fieldHelper = new class() {
-            public function extractData(mixed ...$args): void
+            public function extractData(): void
             {
                 // intentionally empty: the stub only has to accept the call
             }

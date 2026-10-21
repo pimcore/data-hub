@@ -81,7 +81,12 @@ final class ImageType extends ObjectType
                                     return null;
                                 }
 
-                                $image = $resolver->resolveImage(new ElementDescriptor($asset), $args, $context, $resolveInfo);
+                                $image = $resolver->resolveImage(
+                                    new ElementDescriptor($asset),
+                                    $args,
+                                    $context,
+                                    $resolveInfo
+                                );
                                 if ($image instanceof ElementDescriptor && $value->getCropPercent()) {
                                     // the asset resolvers apply the area the user selected in the editable
                                     $image['editableCrop'] = [
