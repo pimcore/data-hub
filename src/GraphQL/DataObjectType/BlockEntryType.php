@@ -37,14 +37,14 @@ final class BlockEntryType extends ObjectType implements ContainerAwareInterface
     use ContainerAwareTrait;
     use ServiceTrait;
 
-    /** @var ClassDefinition */
+    /** @var ClassDefinition|Definition */
     protected $class;
 
     /** @var Data */
     protected $fieldDefinition;
 
     /**
-     * @param ClassDefinition|null $class
+     * @param ClassDefinition|Definition|null $class
      * @param array $config
      */
     public function __construct(Service $graphQlService, Data $fieldDefinition, $class = null, $config = [])

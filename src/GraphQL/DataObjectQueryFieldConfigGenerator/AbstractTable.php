@@ -108,12 +108,12 @@ abstract class AbstractTable extends Base
         $cacheKey = 'graphql_table_type_' . $name;
 
         if (!RuntimeCache::isRegistered($cacheKey)) {
-            RuntimeCache::set($cacheKey, new ObjectType(
-                [
-                    'name' => $name,
-                    'fields' => $columns,
-                ]
-            ));
+            $type = new ObjectType([
+                'name' => $name,
+                'fields' => $columns,
+            ]);
+
+            RuntimeCache::set($cacheKey, $type);
         }
 
         return Type::listOf(RuntimeCache::get($cacheKey));

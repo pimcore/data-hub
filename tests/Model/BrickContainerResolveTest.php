@@ -179,6 +179,11 @@ class BrickContainerResolveTest extends Unit
         $this->assertSame('slotB_' . self::BRICK_KEY . '_label', $keyOf(self::BRICK_KEY . '~label~slotB'));
     }
 
+    private function attribute(string $brickKey, string $brickField, string $containerField): string
+    {
+        return $brickKey . '~' . $brickField . '~' . $containerField;
+    }
+
     private function buildNodeDef(string $attribute, string $dataType): array
     {
         return ['isOperator' => false, 'attributes' => ['attribute' => $attribute, 'dataType' => $dataType]];
@@ -234,20 +239,20 @@ class BrickContainerResolveTest extends Unit
     public function testSchemaWithTheSameBrickTableAndBlockOfBothContainersIsValid(): void
     {
         $tableSchema = $this->buildQuerySchema([
-            self::BRICK_KEY . '~rows~slotA',
-            self::BRICK_KEY . '~rows~slotB',
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotB'),
         ], 'table');
         $this->assertCount(2, $tableSchema->getQueryType()->getFields());
 
         $blockSchema = $this->buildQuerySchema([
-            self::BRICK_KEY . '~details~slotA',
-            self::BRICK_KEY . '~details~slotB',
+            $this->attribute(self::BRICK_KEY, 'details', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'details', 'slotB'),
         ], 'block');
         $this->assertCount(2, $blockSchema->getQueryType()->getFields());
 
         $mutationSchema = $this->buildMutationSchema([
-            self::BRICK_KEY . '~rows~slotA',
-            self::BRICK_KEY . '~rows~slotB',
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotA'),
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotB'),
         ]);
         $this->assertCount(2, $mutationSchema->getMutationType()->getField('update')->args);
     }
@@ -265,8 +270,8 @@ class BrickContainerResolveTest extends Unit
     public function testSameNamedTablesAndBlocksOfDifferentBricksKeepTheirOwnShape(): void
     {
         $tableSchema = $this->buildQuerySchema([
-            self::BRICK_KEY . '~rows~slotA',
-            self::OTHER_BRICK_KEY . '~rows~slotB',
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotA'),
+            $this->attribute(self::OTHER_BRICK_KEY, 'rows', 'slotB'),
         ], 'table');
         $this->assertSame(
             ['col0', 'col1'],
@@ -278,8 +283,8 @@ class BrickContainerResolveTest extends Unit
         );
 
         $blockSchema = $this->buildQuerySchema([
-            self::BRICK_KEY . '~details~slotA',
-            self::OTHER_BRICK_KEY . '~details~slotB',
+            $this->attribute(self::BRICK_KEY, 'details', 'slotA'),
+            $this->attribute(self::OTHER_BRICK_KEY, 'details', 'slotB'),
         ], 'block');
         $this->assertSame(
             ['note'],
@@ -292,8 +297,8 @@ class BrickContainerResolveTest extends Unit
 
         // the mutation input types of tables with a different number of columns must not share a name either
         $mutationSchema = $this->buildMutationSchema([
-            self::BRICK_KEY . '~rows~slotA',
-            self::OTHER_BRICK_KEY . '~rows~slotB',
+            $this->attribute(self::BRICK_KEY, 'rows', 'slotA'),
+            $this->attribute(self::OTHER_BRICK_KEY, 'rows', 'slotB'),
         ]);
         $this->assertSame(
             ['col0', 'col1'],
