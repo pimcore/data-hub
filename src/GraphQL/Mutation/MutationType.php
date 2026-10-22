@@ -1693,8 +1693,7 @@ final class MutationType extends ObjectType
         ?int $currentParentId,
         bool $omitPermissionCheck,
         string $deniedMessage
-    ): ?array
-    {
+    ): ?array {
         if ($newParentId === null || $newParentId === $currentParentId) {
             return null;
         }

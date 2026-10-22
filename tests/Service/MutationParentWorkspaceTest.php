@@ -555,8 +555,7 @@ class MutationParentWorkspaceTest extends Unit
         int $id,
         int $parentId,
         ?ElementInterface $parent
-    ): ElementInterface
-    {
+    ): ElementInterface {
         $element = $this->getMockBuilder($class)->onlyMethods(['save', 'delete', 'getParent'])->getMock();
         $element->method('getParent')->willReturn($parent);
         $element->setId($id);
