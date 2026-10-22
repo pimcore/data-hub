@@ -164,7 +164,13 @@ final class AssetType
             return $asset->getFullPath();
         }
 
-        return $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        return $assetFieldHelper->getAssetThumbnail(
+            $asset,
+            $thumbNailConfig,
+            $thumbNailFormat,
+            $deferred,
+            $value['editableCrop'] ?? null
+        );
     }
 
     /**
@@ -190,7 +196,13 @@ final class AssetType
         if (!isset($thumbNailConfig)) {
             return base64_encode(stream_get_contents($asset->getStream()));
         }
-        $thumb = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+        $thumb = $assetFieldHelper->getAssetThumbnail(
+            $asset,
+            $thumbNailConfig,
+            $thumbNailFormat,
+            $deferred,
+            $value['editableCrop'] ?? null
+        );
 
         return $thumb ? base64_encode(stream_get_contents($thumb->getStream())) : base64_encode(stream_get_contents($asset->getStream()));
     }
@@ -215,13 +227,20 @@ final class AssetType
             $assetFieldHelper = $this->getGraphQLService()->getAssetFieldHelper();
 
             $mediaQueries = [];
-            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+            $thumbnail = $assetFieldHelper->getAssetThumbnail(
+                $asset,
+                $thumbNailConfig,
+                $thumbNailFormat,
+                $deferred,
+                $value['editableCrop'] ?? null
+            );
             $thumbnailConfig = $asset->getThumbnail($args['thumbnail'], $deferred)->getConfig();
             if ($thumbnailConfig) {
                 foreach ($thumbnailConfig->getMedias() as $key => $val) {
                     $mediaQueries[] = [
                         'descriptor' => $key,
                         'url' => $thumbnail->getMedia($key),
+                        'thumbnail' => $thumbnail,
                     ];
                 }
             }
@@ -248,14 +267,19 @@ final class AssetType
 
         if ($thumbnail instanceof Asset\Image\Thumbnail) {
             $resolutions = [];
-            $thumbnailName = $thumbnail->getConfig()->getName();
             /** @var Asset\Image $asset */
             $asset = $thumbnail->getAsset();
             if (!WorkspaceHelper::checkPermission($asset, 'read')) {
                 return null;
             }
 
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            // The media thumbnail has no media queries left and, for a cropped editable, an auto generated
+            // name that cannot be loaded again: take the resolutions from the thumbnail the srcset was built from.
+            $parent = $value['thumbnail'] ?? null;
+            $thumbnail = $parent instanceof Asset\Image\Thumbnail ? $parent : $asset->getThumbnail(
+                $thumbnail->getConfig()->getName(),
+                false
+            );
             if ($thumbnail->getConfig()->hasMedias()) {
                 foreach ($types as $type) {
                     $key = $value['descriptor'];
@@ -281,7 +305,13 @@ final class AssetType
                 return null;
             }
 
-            $thumbnail = $assetFieldHelper->getAssetThumbnail($asset, $thumbnailName, $thumbnailFormat);
+            $thumbnail = $assetFieldHelper->getAssetThumbnail(
+                $asset,
+                $thumbnailName,
+                $thumbnailFormat,
+                false,
+                $value['editableCrop'] ?? null
+            );
             if (isset($thumbnail)) {
                 $thumbnailConfig = $thumbnail->getConfig();
                 foreach ($types as $type) {
@@ -346,7 +376,8 @@ final class AssetType
                 ];
             }
 
-            $thumbnail = $asset->getThumbnail($thumbnailName, false);
+            $thumbnail = $this->getGraphQlService()->getAssetFieldHelper()
+                ->getAssetThumbnail($asset, $thumbnailName, null, false, $value['editableCrop'] ?? null);
 
             $width = $thumbnail->getWidth();
             $height = $thumbnail->getHeight();
@@ -394,6 +425,34 @@ final class AssetType
         }
 
         return null;
+    }
+
+    /**
+     * @return array{x: float, y: float}|null
+     *
+     * @throws Exception
+     */
+    public function resolveFocalPoints(?ElementDescriptor $value = null, array $context = []): ?array
+    {
+        $asset = $this->getAssetFromValue($value, $context);
+
+        if (!$asset instanceof Asset\Image) {
+            return null;
+        }
+
+        $x = $asset->getCustomSetting('focalPointX');
+        $y = $asset->getCustomSetting('focalPointY');
+
+        // returning an array of nulls would make the default field resolver resolve every
+        // subfield on its own, so the response would contain {x: null, y: null} instead of null
+        if ($x === null || $y === null) {
+            return null;
+        }
+
+        return [
+            'x' => (float) $x,
+            'y' => (float) $y,
+        ];
     }
 
     /**

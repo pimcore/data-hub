@@ -65,6 +65,10 @@ Access to an individual configuration is then resolved as follows:
    permission counts.
 3. If the configuration defines no permissions, the adapter permission (`plugin_datahub_adapter_<type>`) decides.
 
+Permissions decide who may use an adapter that the system offers at all. Whether GraphQL is offered is a
+separate, system level decision that no permission can override, see
+[Disabling GraphQL](../10_GraphQL/README.md#disabling-graphql).
+
 ## Next Steps
 
 - [Basic Principle](../02_Basic_Principle.md): how an endpoint configuration is put together.
