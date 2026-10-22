@@ -233,6 +233,8 @@ class MutationParentWorkspaceTest extends Unit
      */
     public function testUnchangedParentNeedsNoCreateRight(string $type): void
     {
+        $this->restrictAllowedFolderToUpdate($type);
+
         $result = $this->updateFolder(
             $type,
             ['id' => self::FOLDER_IN_ALLOWED, 'input' => ['parentId' => self::ALLOWED_FOLDER_ID]]
@@ -251,7 +253,7 @@ class MutationParentWorkspaceTest extends Unit
 
         $result = $this->updateFolder(
             $type,
-            ['id' => self::ELEMENT_IN_ALLOWED, 'input' => ['parentId' => self::DENIED_FOLDER_ID]]
+            ['id' => self::ELEMENT_IN_ALLOWED, 'input' => ['parentId' => self::TARGET_FOLDER_ID]]
         );
 
         $this->assertFalse($result['success']);
@@ -366,6 +368,8 @@ class MutationParentWorkspaceTest extends Unit
 
     public function testUpdateObjectWithUnchangedParentNeedsNoCreateRight(): void
     {
+        $this->restrictAllowedFolderToUpdate('object');
+
         $result = $this->updateObject(['id' => self::ELEMENT_IN_ALLOWED, 'parentId' => self::ALLOWED_FOLDER_ID]);
 
         $this->assertTrue($result['success']);
@@ -515,6 +519,17 @@ class MutationParentWorkspaceTest extends Unit
             ]],
             'security' => ['skipPermissionCheck' => false],
         ]);
+    }
+
+    /**
+     * The allowed folder keeps `update` but loses `create`, so only the unchanged-parent exception can let a save pass.
+     */
+    private function restrictAllowedFolderToUpdate(string $type): void
+    {
+        RuntimeCache::save(
+            [self::ALLOWED_FOLDER_ID => $this->row(self::ALLOWED_FOLDER_ID, 0, 1)],
+            'datahub_workspace_permissions_' . self::CONFIG_NAME . '_' . $type
+        );
     }
 
     private function row(int $id, int $create, int $update, int $delete = 0): array
