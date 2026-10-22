@@ -5,7 +5,7 @@ description: Breaking changes and migration steps per release.
 
 # Upgrade Notes
 
-## Upgrade to 2026.3.x
+## Upgrade to 2026.3.4
 
 ### GraphQL
 - The `updateAsset` mutation now follows the workspace of the configuration, like `updateObject` and `updateAssetFolder`: the `update` right is required on the asset, and moving it to a new `parentId` additionally requires the `create` right on the new parent. Without the right the mutation answers with `success: false` (or throws with the exception policy enabled). Configurations whose asset workspace entries are narrower than the assets they update through `updateAsset` need wider entries if that access is intended.
