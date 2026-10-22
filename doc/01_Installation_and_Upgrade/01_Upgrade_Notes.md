@@ -12,6 +12,11 @@ description: Breaking changes and migration steps per release.
 - The `read` settings of `Object Folder` and `Document Folder` are now applied in every position a folder can show up. A folder of a disabled type resolves to `null` (or is left out of a list) in `parent`, `children` and `_siblings`, relations, relation editables of documents and element properties. Before, relations and the document tree returned the folder anyway, and unions of element properties could fail with a schema error for such a folder. Endpoints that rely on folders being returned from these positions have to enable the `read` setting of the `Object Folder` / `Document Folder` type. See [Folder Read Settings](../10_GraphQL/01_Configuration/02_Schema_Settings.md#folder-read-settings).
 - Thumbnails of image editables with a user selected crop are now cropped. For a `document_editableImage` whose crop area was set in the editor, the thumbnail fields (`fullpath`, `data`, `srcset`, `dimensions` and `resolutions` with a `thumbnail` argument) apply that area, the way the frontend does. Without a `thumbnail` argument `fullpath` still returns the original image. Clients that already read the `crop` field and crop the thumbnail themselves must stop doing so, otherwise the crop is applied twice. The `resolutions` of a `srcset` entry now follow the requested `format` argument like the `srcset` urls do (before they were always in the original format).
 
+## Upgrade to 2026.3.x
+
+### GraphQL
+- The `updateAsset` mutation now follows the workspace of the configuration, like `updateObject` and `updateAssetFolder`: the `update` right is required on the asset, and moving it to a new `parentId` additionally requires the `create` right on the new parent. Without the right the mutation answers with `success: false` (or throws with the exception policy enabled). Configurations whose asset workspace entries are narrower than the assets they update through `updateAsset` need wider entries if that access is intended.
+
 ## Upgrade to 2026.3.0
 
 ### GraphQL
