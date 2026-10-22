@@ -42,7 +42,8 @@ final class AssetFieldHelper extends AbstractFieldHelper
         Asset $asset,
         string | Image\Thumbnail\Config $thumbNailConfig,
         ?string $thumbNailFormat = null,
-        bool $deferred = false
+        bool $deferred = false,
+        ?array $editableCrop = null
     ): mixed {
         $thumb = null;
 
@@ -55,6 +56,9 @@ final class AssetFieldHelper extends AbstractFieldHelper
         }
 
         if ($asset instanceof Asset\Image) {
+            if ($editableCrop) {
+                $thumbNailConfig = $this->getCroppedThumbnailConfig($asset, $thumbNailConfig, $editableCrop);
+            }
             $thumb = $asset->getThumbnail($thumbNailConfig, $deferred);
         }
 
@@ -68,16 +72,63 @@ final class AssetFieldHelper extends AbstractFieldHelper
         return $thumb;
     }
 
+    /**
+     * Applies the crop selected in a document image editable to a thumbnail config,
+     * the same way Document\Editable\Image does for the frontend (core keeps that
+     * method private, so it is repeated here; keep both in sync).
+     *
+     * @param array{width: float|int, height: float|int, top: float|int, left: float|int} $crop percent values
+     */
+    private function applyEditableCrop(Image\Thumbnail\Config $thumbNailConfig, array $crop): Image\Thumbnail\Config
+    {
+        $thumbNailConfig = clone $thumbNailConfig;
+        $cropConfig = [
+            'width' => $crop['width'],
+            'height' => $crop['height'],
+            'y' => $crop['top'],
+            'x' => $crop['left'],
+        ];
+
+        $thumbNailConfig->addItemAt(0, 'cropPercent', $cropConfig);
+        foreach (array_keys($thumbNailConfig->getMedias()) as $mediaName) {
+            $thumbNailConfig->addItemAt(0, 'cropPercent', $cropConfig, $mediaName);
+        }
+        $thumbNailConfig->generateAutoName();
+
+        return $thumbNailConfig;
+    }
+
+    private function getCroppedThumbnailConfig(
+        Asset\Image $asset,
+        string | Image\Thumbnail\Config $thumbNailConfig,
+        array $crop
+    ): string | Image\Thumbnail\Config {
+        if (is_string($thumbNailConfig)) {
+            $thumbNailConfig = $asset->getThumbnail($thumbNailConfig)->getConfig() ?? $thumbNailConfig;
+        }
+
+        return $thumbNailConfig instanceof Image\Thumbnail\Config
+            ? $this->applyEditableCrop($thumbNailConfig, $crop)
+            : $thumbNailConfig;
+    }
+
     public function getAssetThumbnail(
         Asset $asset,
         string | Image\Thumbnail\Config | Video\Thumbnail\Config $thumbNailConfig,
         ?string $thumbNailFormat = null,
-        bool $deferred = false
+        bool $deferred = false,
+        ?array $editableCrop = null
     ): mixed {
         if (($asset instanceof Asset\Video) && (is_string($thumbNailConfig) || $thumbNailConfig instanceof Video\Thumbnail\Config)) {
             return $this->getVideoThumbnail($asset, $thumbNailConfig, $thumbNailFormat);
         } else {
-            return $this->getImageDocumentThumbnail($asset, $thumbNailConfig, $thumbNailFormat, $deferred);
+            return $this->getImageDocumentThumbnail(
+                $asset,
+                $thumbNailConfig,
+                $thumbNailFormat,
+                $deferred,
+                $editableCrop
+            );
         }
     }
 
