@@ -54,7 +54,9 @@ final class Table extends Base
                 $object,
                 $objectBrickParts['brickType'],
                 $objectBrickParts['brickKey'],
-                $objectBrickParts['brickDescriptor'] ?? null
+                $objectBrickParts['brickDescriptor'] ?? null,
+                [],
+                $objectBrickParts['containerField'] ?? null
             );
         }
 
@@ -66,7 +68,8 @@ final class Table extends Base
             }
 
             if (! ($newValue['replace'] ?? false)) {
-                if (count($currentTable) > 0) {
+                // the selected container of a brick may not hold the brick yet, so there is no table to append to
+                if (!empty($currentTable)) {
                     foreach ($currentTable as $row) {
                         $newTable[] = $row;
                     }

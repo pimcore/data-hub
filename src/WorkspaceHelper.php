@@ -20,7 +20,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Cache;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -111,13 +113,14 @@ final class WorkspaceHelper
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
                 }
-            } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
+            } elseif (str_starts_with($cTrailingPath, $cTrailingSearchValue)) {
 
                 // it's a sub element
                 $changed = true;
 
                 if ($modificationType === self::MODIFY_TYPE_REPLACE) {
-                    $space['cpath'] = str_replace($cTrailingSearchValue, $cTrailingReplaceValue, $space['cpath']);
+                    // only the leading path of the element changed, repeated segments further down stay as they are
+                    $space['cpath'] = $cTrailingReplaceValue . substr($space['cpath'], strlen($cTrailingSearchValue));
                 } elseif ($modificationType === self::MODIFY_TYPE_DELETE) {
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
@@ -213,6 +216,30 @@ final class WorkspaceHelper
     }
 
     /**
+     * A folder is only readable if the read setting of its folder type (object_folder / document_folder)
+     * is enabled in the schema of the configuration. This applies in every position a folder can show up
+     * in (tree, relations, properties, ...) and is independent of the workspaces.
+     *
+     * @param ElementInterface|OwnerAwareFieldInterface|null $element
+     */
+    public static function isFolderReadAllowed($element): bool
+    {
+        if ($element instanceof DataObject\Folder) {
+            $setting = 'object_folder';
+        } elseif ($element instanceof Document\Folder) {
+            $setting = 'document_folder';
+        } else {
+            return true;
+        }
+
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        /** @var Configuration $configuration */
+        $configuration = $context['configuration'];
+
+        return (bool) ($configuration->getSpecialEntities()[$setting]['read'] ?? false);
+    }
+
+    /**
      * @param ElementInterface|OwnerAwareFieldInterface $element
      * @param string $type
      *
@@ -225,6 +252,12 @@ final class WorkspaceHelper
         $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
+
+        // a disabled folder read setting is not a workspace permission: it is not lifted by skipPermissionCheck
+        // and not turned into an exception by the not-allowed policy, the folder simply resolves to null
+        if ($type === 'read' && !self::isFolderReadAllowed($element)) {
+            return false;
+        }
 
         if ($configuration->skipPermisssionCheck()) {
             return true;

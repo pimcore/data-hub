@@ -14,6 +14,8 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGene
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 /**
@@ -42,13 +44,41 @@ final class Table extends Base
             $inputItems['col' . $i] = Type::string();
         }
 
+        $brick = Service::getContainerSelectingBrick($fieldName);
+
+        if ($brick === null) {
+            $inputType = $this->createInputType('TableInput', 'RowInput', $inputItems);
+        } else {
+            // the input types of a brick table which is selected together with its objectbricks field are named after
+            // the brick table and shared, so that the same table of several fields does not register them twice
+            $suffix = $brick->getKey() . '_' . $tableDef->getName();
+            $cacheKey = 'graphql_table_input_' . $suffix;
+
+            if (!RuntimeCache::isRegistered($cacheKey)) {
+                RuntimeCache::set(
+                    $cacheKey,
+                    $this->createInputType('TableInput_' . $suffix, 'RowInput_' . $suffix, $inputItems)
+                );
+            }
+
+            $inputType = RuntimeCache::get($cacheKey);
+        }
+
+        return [
+            'arg' => $inputType,
+            'processor' => [$processor, 'process'],
+        ];
+    }
+
+    private function createInputType(string $tableName, string $rowName, array $inputItems): InputObjectType
+    {
         $rowInput = new InputObjectType([
-            'name' => 'RowInput',
+            'name' => $rowName,
             'fields' => $inputItems,
         ]);
 
-        $inputType = new InputObjectType([
-            'name' => 'TableInput',
+        return new InputObjectType([
+            'name' => $tableName,
             'fields' => [
                 'replace' => [
                     'type' => Type::boolean(),
@@ -59,11 +89,6 @@ final class Table extends Base
                 ],
             ],
         ]);
-
-        return [
-            'arg' => $inputType,
-            'processor' => [$processor, 'process'],
-        ];
     }
 
     public function getProcessors(&$processors, $tableDef)
