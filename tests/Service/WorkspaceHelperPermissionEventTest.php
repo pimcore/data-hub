@@ -73,7 +73,10 @@ class WorkspaceHelperPermissionEventTest extends Unit
             'graphql',
             '/',
             self::CONFIG_NAME,
-            ['security' => ['skipPermissionCheck' => false]]
+            [
+                'schema' => ['specialEntities' => ['object_folder' => ['read' => true]]],
+                'security' => ['skipPermissionCheck' => false],
+            ]
         );
         RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, ['configuration' => $configuration]);
     }
