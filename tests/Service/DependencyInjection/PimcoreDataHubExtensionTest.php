@@ -25,6 +25,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 class PimcoreDataHubExtensionTest extends Unit
 {
@@ -144,7 +145,34 @@ class PimcoreDataHubExtensionTest extends Unit
         );
     }
 
-    private function prependExtension(Extension ...$peers): ContainerBuilder
+    public function testNothingIsContributedToAnAgentBundleWithoutAConfigurationTree(): void
+    {
+        $agent = new class() implements ExtensionInterface {
+            public function load(array $configs, ContainerBuilder $container): void
+            {
+                // only its missing configuration tree matters to the prepend
+            }
+
+            public function getNamespace(): string
+            {
+                return '';
+            }
+
+            public function getXsdValidationBasePath(): string|false
+            {
+                return false;
+            }
+
+            public function getAlias(): string
+            {
+                return 'pimcore_agent';
+            }
+        };
+
+        $this->assertSame([], $this->prependExtension($agent)->getExtensionConfig('pimcore_agent'));
+    }
+
+    private function prependExtension(ExtensionInterface ...$peers): ContainerBuilder
     {
         $container = new ContainerBuilder();
         $extension = new PimcoreDataHubExtension();
