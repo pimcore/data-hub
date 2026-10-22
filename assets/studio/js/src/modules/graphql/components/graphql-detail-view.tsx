@@ -12,17 +12,12 @@ import React, { useEffect } from 'react'
 import { IconTextButton } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type DataHubAdapterDetailViewProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
-import { BaseDetailView, type TabItem, ConfigToolbar, useDetailView, trackConfigError } from '../../../components/base-detail-view'
-import { GeneralTab } from './tabs/general-tab'
-import { SchemaDefinitionTab } from './tabs/schema-definition-tab'
-import { SecurityDefinitionTab } from './tabs/security-definition-tab'
-import { PermissionsTab } from './tabs/permissions-tab'
+import { ConfigToolbar, trackConfigError } from '../../../components/base-detail-view'
 import { useBundleDataHubGraphqlExplorerUrlQuery } from '../graphql-api-slice-enhanced'
 import { useBundleDataHubConfigGetQuery, useBundleDataHubConfigUpdateMutation } from '../../config/config-api-slice-enhanced'
 import { isEmpty, isNil } from 'lodash'
-import { type GraphQLFormValues } from './types'
-import { transformFormToBackend, transformBackendToForm } from '../utils/transformers'
 import { type BackendConfiguration } from './backend-types'
+import { GraphQLConfigEditor, type GraphQLEditorToolbarState } from './graphql-config-editor'
 
 export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAdapterDetailViewProps): React.JSX.Element => {
   const { t } = useTranslation()
@@ -62,26 +57,12 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
     return { modificationDate: response?.modificationDate }
   }
 
-  // Shared form state management
-  const { form, isDirty, initialValues, handleSave, handleValuesChange } = useDetailView<GraphQLFormValues, BackendConfiguration>({
-    configName,
-    configData: backendConfig,
-    modificationDate: configData?.modificationDate,
-    isLoading: loading,
-    requestId,
-    isWriteable,
-    transformToForm: transformBackendToForm,
-    transformToBackend: transformFormToBackend,
-    onSave: handleSaveToApi,
-    onChange
-  })
-
-  const handleOpenInTab = (): void => {
+  const handleOpenInTab = (fieldValue: GraphQLEditorToolbarState['fieldValue']): void => {
     if (explorerUrlData !== undefined && !isEmpty(explorerUrlData.explorerUrl)) {
       let explorerUrl = explorerUrlData.explorerUrl
-      const securityMethod = form.getFieldValue(['security', 'method']) as string | undefined
+      const securityMethod = fieldValue(['security', 'method']) as string | undefined
       if (securityMethod === 'datahub_apikey') {
-        const apikey = form.getFieldValue(['security', 'apikey']) as string | undefined
+        const apikey = fieldValue(['security', 'apikey']) as string | undefined
         if (!isNil(apikey) && !isEmpty(apikey)) {
           const firstKey = apikey.split('\n')[0]
           if (!isEmpty(firstKey)) {
@@ -93,37 +74,14 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
     }
   }
 
-  const tabs: TabItem[] = [
-    {
-      key: 'general',
-      label: t('data-hub.tabs.general'),
-      children: <GeneralTab adapterTypeLabel={ t('data-hub.adapter.graphql') } />
-    },
-    {
-      key: 'schema',
-      label: t('data-hub.tabs.schema-definition'),
-      children: <SchemaDefinitionTab isWriteable={ isWriteable } />
-    },
-    {
-      key: 'security',
-      label: t('data-hub.tabs.security-definition'),
-      children: <SecurityDefinitionTab isWriteable={ isWriteable } />
-    },
-    {
-      key: 'permissions',
-      label: t('data-hub.tabs.permissions'),
-      children: <PermissionsTab isWriteable={ isWriteable } />
-    }
-  ]
-
-  const toolbar = (
+  const renderToolbar = ({ isDirty, onSave, fieldValue }: GraphQLEditorToolbarState): React.ReactNode => (
     <ConfigToolbar
       additionalButtons={ [
         <IconTextButton
           disabled={ false }
           icon={ { value: 'graphql', colorToken: 'colorCodingViolet4' } }
           key="open-in-tab"
-          onClick={ handleOpenInTab }
+          onClick={ () => { handleOpenInTab(fieldValue) } }
         >
           {t('data-hub.open-in-tab')}
         </IconTextButton>
@@ -136,21 +94,22 @@ export const GraphQLDetailView = ({ configName, onChange, onDelete }: DataHubAda
       isWriteable={ isWriteable }
       onDelete={ onDelete }
       onRefresh={ refetch }
-      onSave={ handleSave }
+      onSave={ onSave }
       saveDisabledTooltipKey={ saveDisabledTooltipKey }
     />
   )
 
   return (
-    <BaseDetailView
-      disabled={ !isWriteable }
-      form={ form }
-      initialValues={ initialValues }
+    <GraphQLConfigEditor
+      configName={ configName }
+      configuration={ backendConfig }
       isLoading={ loading }
-      onValuesChange={ handleValuesChange }
+      isWriteable={ isWriteable }
+      modificationDate={ configData?.modificationDate }
+      onChange={ onChange }
+      onSave={ handleSaveToApi }
+      renderToolbar={ renderToolbar }
       requestId={ requestId ?? '' }
-      tabs={ tabs }
-      toolbar={ toolbar }
     />
   )
 }
