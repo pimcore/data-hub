@@ -165,6 +165,11 @@ final class QueryType
             return null;
         }
 
+        // folders are only readable when the document_folder read setting is enabled
+        if (!WorkspaceHelper::isFolderReadAllowed($documentElement)) {
+            return null;
+        }
+
         if (!$this->omitPermissionCheck) {
             if (!WorkspaceHelper::checkPermission($documentElement, 'read')) {
                 return null;

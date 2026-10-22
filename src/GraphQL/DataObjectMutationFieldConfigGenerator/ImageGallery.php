@@ -20,35 +20,48 @@ use GraphQL\Type\Definition\Type;
  */
 final class ImageGallery extends Base
 {
+    /**
+     * Shared across all image gallery fields: webonyx/graphql-php rejects a schema
+     * containing several distinct type instances with the same name.
+     */
+    private static ?InputObjectType $inputType = null;
+
     /** {@inheritdoc } */
     public function getGraphQlMutationFieldConfig($nodeDef, $class, $container = null, $params = [])
     {
         $processor = new \Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectInputProcessor\ImageGallery($nodeDef);
         $processor->setGraphQLService($this->getGraphQlService());
 
-        $imageInput = new InputObjectType([
-            'name' => 'GalleryImageInput',
-            'fields' => [
-                'id' => Type::int(),
-            ],
-        ]);
-
-        $inputType = new InputObjectType([
-            'name' => 'ImageGalleryInput',
-            'fields' => [
-                'replace' => [
-                    'type' => Type::boolean(),
-                    'description' => 'if true then the entire gallery list will be overwritten',
-                ],
-                'images' => [
-                    'type' => Type::listOf($imageInput),
-                ],
-            ],
-        ]);
-
         return [
-            'arg' => $inputType,
+            'arg' => self::getInputType(),
             'processor' => [$processor, 'process'],
         ];
+    }
+
+    private static function getInputType(): InputObjectType
+    {
+        if (self::$inputType === null) {
+            $imageInput = new InputObjectType([
+                'name' => 'GalleryImageInput',
+                'fields' => [
+                    'id' => Type::int(),
+                ],
+            ]);
+
+            self::$inputType = new InputObjectType([
+                'name' => 'ImageGalleryInput',
+                'fields' => [
+                    'replace' => [
+                        'type' => Type::boolean(),
+                        'description' => 'if true then the entire gallery list will be overwritten',
+                    ],
+                    'images' => [
+                        'type' => Type::listOf($imageInput),
+                    ],
+                ],
+            ]);
+        }
+
+        return self::$inputType;
     }
 }
