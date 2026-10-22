@@ -167,6 +167,7 @@ class PimcoreDataHubExtensionTest extends Unit
 
             public function load(array $configs, ContainerBuilder $container): void
             {
+                // only its configuration tree matters to the prepend
             }
 
             public function getAlias(): string
@@ -177,8 +178,10 @@ class PimcoreDataHubExtensionTest extends Unit
             public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
             {
                 return new class($this->withContributions, $this->alias) implements ConfigurationInterface {
-                    public function __construct(private readonly bool $withContributions, private readonly string $alias)
-                    {
+                    public function __construct(
+                        private readonly bool $withContributions,
+                        private readonly string $alias
+                    ) {
                     }
 
                     public function getConfigTreeBuilder(): TreeBuilder
