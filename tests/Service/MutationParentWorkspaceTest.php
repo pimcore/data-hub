@@ -36,8 +36,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * Mutations that change the parent of an element (updateAssetFolder, updateObjectFolder, updateDocumentFolder,
  * updateObject, createAsset) have to check the workspace for the 'update' right on the element where it is and
- * for the 'create' right on the parent it ends up in, before anything is applied. The folder mutations (also deleteAssetFolder, deleteObjectFolder,
- * deleteDocumentFolder) only act on folders.
+ * for the 'create' right on the parent it ends up in, before anything is applied. The folder mutations (also
+ * deleteAssetFolder, deleteObjectFolder, deleteDocumentFolder) only act on folders.
  */
 class MutationParentWorkspaceTest extends Unit
 {
