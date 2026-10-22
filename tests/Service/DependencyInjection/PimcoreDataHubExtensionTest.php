@@ -20,8 +20,11 @@ use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\GetGraphQlConfigTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ListGraphQlConfigsTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ProposeGraphQlConfigTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 class PimcoreDataHubExtensionTest extends Unit
 {
@@ -118,6 +121,79 @@ class PimcoreDataHubExtensionTest extends Unit
         );
         $this->assertContainsOnlyInstancesOf(ClassExistenceResource::class, $container->getResources());
         $this->assertNotEmpty($container->getResources());
+    }
+
+    public function testTheGraphQlGroupsAreContributedToTheConfigurationAgentWhereAnAgentCanPropose(): void
+    {
+        $container = $this->prependExtension(self::peerExtension('pimcore_agent', withContributions: true));
+
+        $expected = ConfigProposalLane::canPropose(new ContainerBuilder())
+            ? [['agents' => ['contributions' => ['configuration' => [
+                'pimcoreMcpServers' => ['pimcore-data-hub-graphql-read', 'pimcore-data-hub-graphql-propose'],
+            ]]]]]
+            : [];
+        $this->assertSame($expected, $container->getExtensionConfig('pimcore_agent'));
+    }
+
+    public function testNothingIsContributedWithoutAnAgentBundleThatTakesContributions(): void
+    {
+        $this->assertSame([], $this->prependExtension()->getExtensionConfig('pimcore_agent'));
+        $this->assertSame(
+            [],
+            $this->prependExtension(self::peerExtension('pimcore_agent'))->getExtensionConfig('pimcore_agent')
+        );
+    }
+
+    private function prependExtension(Extension ...$peers): ContainerBuilder
+    {
+        $container = new ContainerBuilder();
+        $extension = new PimcoreDataHubExtension();
+        $container->registerExtension($extension);
+        $container->registerExtension(self::peerExtension('pimcore_studio_backend'));
+        foreach ($peers as $peer) {
+            $container->registerExtension($peer);
+        }
+        $extension->prepend($container);
+
+        return $container;
+    }
+
+    private static function peerExtension(string $alias, bool $withContributions = false): Extension
+    {
+        return new class($withContributions, $alias) extends Extension {
+            public function __construct(private readonly bool $withContributions, private readonly string $alias)
+            {
+            }
+
+            public function load(array $configs, ContainerBuilder $container): void
+            {
+            }
+
+            public function getAlias(): string
+            {
+                return $this->alias;
+            }
+
+            public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+            {
+                return new class($this->withContributions, $this->alias) implements ConfigurationInterface {
+                    public function __construct(private readonly bool $withContributions, private readonly string $alias)
+                    {
+                    }
+
+                    public function getConfigTreeBuilder(): TreeBuilder
+                    {
+                        $treeBuilder = new TreeBuilder($this->alias);
+                        $agents = $treeBuilder->getRootNode()->children()->arrayNode('agents')->children();
+                        if ($this->withContributions) {
+                            $agents->arrayNode('contributions')->variablePrototype()->end()->end();
+                        }
+
+                        return $treeBuilder;
+                    }
+                };
+            }
+        };
     }
 
     private function loadExtension(array $configs): ContainerBuilder

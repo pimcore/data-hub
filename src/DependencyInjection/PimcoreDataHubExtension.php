@@ -15,8 +15,11 @@ namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 use Exception;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\AdapterType;
 use Pimcore\Config\LocationAwareConfigRepository;
+use Symfony\Component\Config\Definition\ArrayNode;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -93,6 +96,16 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             $loader->load('doctrine_migrations.yml');
         }
 
+        // the Configuration agent takes its configuration kinds from the bundles that own them
+        if ($container->hasExtension('pimcore_agent')
+            && ConfigProposalLane::canPropose($container)
+            && self::takesAgentContributions($container)
+        ) {
+            $container->prependExtensionConfig('pimcore_agent', ['agents' => ['contributions' => ['configuration' => [
+                'pimcoreMcpServers' => ['pimcore-data-hub-graphql-read', 'pimcore-data-hub-graphql-propose'],
+            ]]]]);
+        }
+
         $loader->load('pimcore/studio_backend.yaml');
         $loader->load('studio_ui.yaml');
 
@@ -101,5 +114,22 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             'pimcore_data_hub',
             'data_hub'
         );
+    }
+
+    /** an agent bundle released before the contributions node rejects the key */
+    private static function takesAgentContributions(ContainerBuilder $container): bool
+    {
+        $extension = $container->getExtension('pimcore_agent');
+        $configuration = $extension instanceof ConfigurationExtensionInterface
+            ? $extension->getConfiguration([], $container)
+            : null;
+        if (!$configuration instanceof ConfigurationInterface) {
+            return false;
+        }
+
+        $root = $configuration->getConfigTreeBuilder()->buildTree();
+        $agents = $root instanceof ArrayNode ? ($root->getChildren()['agents'] ?? null) : null;
+
+        return $agents instanceof ArrayNode && isset($agents->getChildren()['contributions']);
     }
 }
