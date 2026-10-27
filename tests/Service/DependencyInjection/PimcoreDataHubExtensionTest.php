@@ -98,8 +98,14 @@ class PimcoreDataHubExtensionTest extends Unit
         $this->assertFalse(ConfigProposalLane::canPropose($withoutChangeControl));
 
         $withChangeControl = new ContainerBuilder();
-        $withChangeControl->setParameter('kernel.bundles', ['PimcoreChangeControlBundle' => 'Pimcore\\Bundle\\ChangeControlBundle\\PimcoreChangeControlBundle']);
-        $this->assertSame(interface_exists(SubjectHandlerInterface::class), ConfigProposalLane::canReview($withChangeControl));
+        $withChangeControl->setParameter(
+            'kernel.bundles',
+            ['PimcoreChangeControlBundle' => 'Pimcore\\Bundle\\ChangeControlBundle\\PimcoreChangeControlBundle']
+        );
+        $this->assertSame(
+            interface_exists(SubjectHandlerInterface::class),
+            ConfigProposalLane::canReview($withChangeControl)
+        );
         $this->assertFalse(ConfigProposalLane::canPropose($withChangeControl), 'the agent bundle is not registered');
     }
 
