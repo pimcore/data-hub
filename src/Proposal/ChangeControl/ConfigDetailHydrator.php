@@ -71,14 +71,17 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     public function dehydrate(SubjectRef $subject, array $patch, array $proposed, ?UserInterface $user = null): array
     {
         // a withheld leaf is never stored through a review: an address naming one, or a section
-        // sent whole that holds one, is dropped, so Change Control refuses the amendment; so is
-        // the create marker, which is the proposal's and not the reviewer's
+        // sent whole that holds one, is dropped, so Change Control refuses the amendment; the
+        // create marker is stored only as the proposal sets it, so a review can never clear it
         $patch = array_filter(
             $patch,
             function (mixed $value, int|string $address): bool {
                 $segments = LeafPath::split((string) $address);
+                if ($segments[0] === ConfigDocument::CREATE_MARKER) {
+                    return $segments === [ConfigDocument::CREATE_MARKER] && $value === true;
+                }
 
-                return $segments[0] !== ConfigDocument::CREATE_MARKER && !$this->isWithheld($segments, $value);
+                return !$this->isWithheld($segments, $value);
             },
             ARRAY_FILTER_USE_BOTH,
         );

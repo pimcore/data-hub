@@ -101,7 +101,33 @@ class ConfigChangeControlTest extends Unit
                 $proposed,
             ),
         );
+        $this->assertSame(
+            [],
+            $this->hydrator()->dehydrate($this->ref(), [ConfigDocument::CREATE_MARKER => null], $proposed),
+        );
         $this->assertSame([], $this->hydrator()->dehydrate($this->ref(), [ConfigDocument::CREATE_MARKER => false], []));
+    }
+
+    public function testAChangeCannotBeMarkedAsACreate(): void
+    {
+        $this->assertSame(
+            [],
+            $this->hydrator()->dehydrate(
+                $this->ref(),
+                [ConfigDocument::CREATE_MARKER => true],
+                ['general' => ['active' => true]],
+            ),
+        );
+    }
+
+    public function testACreateProposalIsStoredWithItsMarker(): void
+    {
+        // the propose tool's state as the agent bundle records it: an address dehydrate drops refuses the proposal
+        $state = ['general' => ['active' => false, 'path' => ''], ConfigDocument::CREATE_MARKER => true];
+
+        $this->assertSame($state, $this->hydrator()->dehydrate($this->ref(), $state, []));
+        // a refinement of the create dehydrates against what the branch already proposes
+        $this->assertSame($state, $this->hydrator()->dehydrate($this->ref(), $state, $state));
     }
 
     public function testACreateDehydratesToTheWholePatch(): void
