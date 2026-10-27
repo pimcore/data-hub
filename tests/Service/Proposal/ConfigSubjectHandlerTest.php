@@ -382,7 +382,10 @@ class ConfigSubjectHandlerTest extends Unit
         $adapters = $this->createStub(AdapterAvailabilityServiceInterface::class);
         $adapters->method('isEnabled')->willReturn(true);
         $handler = new ConfigSubjectHandler(new RecordingConfigPolicy(), $this->configurations, $stored, $adapters);
-        $creator = $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG, PermissionConstants::PLUGIN_DATA_HUB_ADMIN]);
+        $creator = $this->user([
+            PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+            PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+        ]);
 
         foreach ([
             fn () => $handler->authorizeRead($this->ref(), $creator),

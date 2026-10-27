@@ -14,14 +14,12 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Proposal\Mcp;
 
-use function array_is_list;
 use function bin2hex;
 use function implode;
 use function is_array;
 use function json_decode;
 use function json_encode;
 use const JSON_INVALID_UTF8_SUBSTITUTE;
-use function ksort;
 use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Result\CallToolResult;
 use Pimcore\Bundle\DataHubBundle\Configuration;
@@ -38,7 +36,6 @@ use Pimcore\Bundle\StudioBackendBundle\Mcp\Tool\McpToolErrorHandlerInterface;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
 use Pimcore\Model\User;
 use function random_bytes;
-use const SORT_STRING;
 use function sprintf;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -365,7 +362,8 @@ final readonly class ConfigProposalTools
     ): ?string {
         if ($existing === null
             || $state === null
-            || self::normalized($state) !== self::normalized($this->stateFor($policy, $name, $existing, []))) {
+            || ConfigDocument::normalized($state)
+                !== ConfigDocument::normalized($this->stateFor($policy, $name, $existing, []))) {
             return null;
         }
 
@@ -375,27 +373,6 @@ final readonly class ConfigProposalTools
             $policy->noun(),
             $name,
         );
-    }
-
-    /**
-     * Compared strictly, "01" and "1" differ; a map's key order is no change.
-     *
-     * @param array<array-key, mixed> $document
-     *
-     * @return array<array-key, mixed>
-     */
-    private static function normalized(array $document): array
-    {
-        if (!array_is_list($document)) {
-            ksort($document, SORT_STRING);
-        }
-        foreach ($document as $key => $value) {
-            if (is_array($value)) {
-                $document[$key] = self::normalized($value);
-            }
-        }
-
-        return $document;
     }
 
     /**

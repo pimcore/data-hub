@@ -112,6 +112,16 @@ class ConfigDocumentTest extends Unit
         $this->assertFalse(ConfigDocument::isValidName('über'));
     }
 
+    public function testNormalizedIgnoresKeyOrderButKeepsListOrderAndTypes(): void
+    {
+        $this->assertSame(
+            ConfigDocument::normalized(['b' => 1, 'a' => ['y' => 2, 'x' => 1]]),
+            ConfigDocument::normalized(['a' => ['x' => 1, 'y' => 2], 'b' => 1]),
+        );
+        $this->assertNotSame(ConfigDocument::normalized(['l' => [1, 2]]), ConfigDocument::normalized(['l' => [2, 1]]));
+        $this->assertNotSame(ConfigDocument::normalized(['v' => '01']), ConfigDocument::normalized(['v' => '1']));
+    }
+
     private function policy(): ConfigProposalPolicyInterface
     {
         $policy = $this->createStub(ConfigProposalPolicyInterface::class);
