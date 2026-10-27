@@ -146,3 +146,14 @@ user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - Gr
 user-management.permissions.plugin_datahub_permission_delete: Datahub Sletting
 user-management.permissions.plugin_datahub_permission_read: Datahub Lesing
 user-management.permissions.plugin_datahub_permission_update: Datahub Oppdatering
+data-hub.review.unavailable: Den foreslåtte konfigurasjonen kunne ikke lastes.
+data-hub.review.field.query-entity: 'Spørringsentitet {{name}}'
+data-hub.review.field.mutation-entity: 'Mutasjonsentitet {{name}}'
+data-hub.review.field.generic-type: 'Generisk type {{name}}'
+data-hub.review.outline.queries-one: '1 spørringsentitet'
+data-hub.review.outline.queries: '{{count}} spørringsentiteter'
+data-hub.review.outline.mutations-one: '1 mutasjonsentitet'
+data-hub.review.outline.mutations: '{{count}} mutasjonsentiteter'
+data-hub.review.outline.rules-one: '1 arbeidsområderegel'
+data-hub.review.outline.rules: '{{count}} arbeidsområderegler'
+data-hub.review.outline.nothing: Ingenting lesbart ennå
