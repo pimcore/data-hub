@@ -21,6 +21,7 @@ use function json_decode;
 use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Result\CallToolResult;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
@@ -271,6 +272,23 @@ class ConfigProposalToolsTest extends Unit
             ['description' => 'd', 'name' => 'orders', 'type' => 'webhooks', 'active' => false, 'path' => ''],
             $data['subjectState']['general'],
         );
+        $this->assertTrue($data['subjectState'][ConfigDocument::CREATE_MARKER]);
+    }
+
+    public function testAnAgentCannotMarkItsOwnProposalAsACreate(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+
+        $result = $this->tools($this->admin())->propose(
+            new RecordingConfigPolicy(),
+            self::TOOL,
+            'orders',
+            ['general' => ['description' => 'new'], ConfigDocument::CREATE_MARKER => false],
+            null,
+        );
+
+        $this->assertTrue($result->isError);
+        $this->assertSame([], $this->recorded);
     }
 
     public function testANewConfigurationKeepsAnActiveFlagAndPathItWasProposedWith(): void

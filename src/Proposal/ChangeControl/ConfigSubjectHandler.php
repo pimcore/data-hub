@@ -62,7 +62,7 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
     {
         $configuration = $this->load($subject->ref);
 
-        // no configuration yet: the create lane has no base and merges last-write-wins
+        // no configuration yet: an empty base, and an approval once the name is taken is refused
         return $configuration === null
             ? []
             : ConfigDocument::readable($configuration->getConfiguration(), $this->policy);
@@ -105,6 +105,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         }
 
         $name = $subject->ref;
+        $proposedAsNew = ($finalData[ConfigDocument::CREATE_MARKER] ?? false) === true;
+        unset($finalData[ConfigDocument::CREATE_MARKER]);
 
         if ($finalData === []) {
             // an empty merged state would be a removal; a configuration is never deleted through a merge
@@ -121,6 +123,16 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
                 $this->policy->noun(),
                 $name,
                 $stored->getType(),
+            ));
+        }
+
+        if ($proposedAsNew && $stored !== null) {
+            // two creates of one name share an empty base, so the later one would merge onto the first
+            throw new LogicException(sprintf(
+                'Refusing to create the %s "%s": a configuration of that name was saved since it was proposed. '
+                . 'Propose it again as a change.',
+                $this->policy->noun(),
+                $name,
             ));
         }
 

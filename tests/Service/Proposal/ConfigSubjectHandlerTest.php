@@ -37,6 +37,7 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRegistry;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -137,6 +138,77 @@ class ConfigSubjectHandlerTest extends Unit
         $this->assertSame(
             ['active' => false, 'path' => self::PATH, 'name' => 'orders', 'type' => 'webhooks'],
             $policy->saved[0][1]['general'],
+        );
+    }
+
+    public function testASecondCreateOfOneNameIsRefusedAndKeepsTheFirstConfiguration(): void
+    {
+        $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
+            $this->stored->put(
+                $this->configuration($name, ['general' => ['active' => true, 'description' => 'first']])
+            );
+
+            return $name;
+        });
+        $policy = new RecordingConfigPolicy();
+        $handler = $this->handler($policy);
+
+        $handler->applyMerged($this->ref(), [
+            'general' => ['active' => true, 'description' => 'first'],
+            ConfigDocument::CREATE_MARKER => true,
+        ], $this->user([]), MergeSaveMode::Publish);
+        $this->assertCount(1, $policy->saved);
+
+        // both were proposed while the name was free; the empty base merges the second onto the first
+        try {
+            $handler->applyMerged($this->ref(), [
+                'general' => ['active' => true, 'description' => 'first'],
+                'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
+                ConfigDocument::CREATE_MARKER => true,
+            ], $this->user([]), MergeSaveMode::Publish);
+            $this->fail('A create approved after the name was taken must not change the stored configuration.');
+        } catch (LogicException $e) {
+            $this->assertStringContainsString('Propose it again as a change', $e->getMessage());
+        }
+
+        $this->assertCount(1, $policy->saved);
+        $this->assertSame(
+            ['general' => ['active' => true, 'description' => 'first']],
+            $this->stored->find('orders')?->getConfiguration(),
+        );
+    }
+
+    public function testTheCreateMarkerIsNeverSaved(): void
+    {
+        $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
+            $this->stored->put($this->configuration($name, ['general' => []]));
+
+            return $name;
+        });
+        $policy = new RecordingConfigPolicy();
+
+        $this->handler($policy)->applyMerged(
+            $this->ref(),
+            ['general' => ['active' => false], ConfigDocument::CREATE_MARKER => true],
+            $this->user([]),
+            MergeSaveMode::Publish,
+        );
+
+        $this->assertArrayNotHasKey(ConfigDocument::CREATE_MARKER, $policy->saved[0][1]);
+        $this->assertArrayNotHasKey(ConfigDocument::CREATE_MARKER, $policy->checked[0][0]);
+    }
+
+    public function testACreateMarkerAloneIsAnEmptyState(): void
+    {
+        $this->configurations->expects($this->never())->method('addConfiguration');
+
+        $this->expectExceptionMessage('Refusing to apply an empty state');
+
+        $this->handler(new RecordingConfigPolicy())->applyMerged(
+            $this->ref(),
+            [ConfigDocument::CREATE_MARKER => true],
+            $this->user([]),
+            MergeSaveMode::Publish,
         );
     }
 

@@ -199,6 +199,7 @@ final readonly class ConfigProposalTools
             // a configuration nobody switched on must not go live because it was reviewed
             $state['general']['active'] ??= false;
             $state['general']['path'] ??= '';
+            $state[ConfigDocument::CREATE_MARKER] = true;
         }
 
         $proposalId = bin2hex(random_bytes(16));

@@ -20,6 +20,7 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigDetailHydrator;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -76,6 +77,31 @@ class ConfigChangeControlTest extends Unit
         $slots = $this->hydrator()->hydrate($this->ref(), ['somethingNew' => ['a' => 1]]);
 
         $this->assertSame(1, $slots['somethingNew']->values['somethingNew.a']);
+    }
+
+    public function testTheCreateMarkerIsNoSlotOfTheReview(): void
+    {
+        $slots = $this->hydrator()->hydrate($this->ref(), [
+            'general' => ['active' => false],
+            ConfigDocument::CREATE_MARKER => true,
+        ]);
+
+        $this->assertSame(['general'], array_keys($slots));
+    }
+
+    public function testAReviewCannotAmendTheCreateMarker(): void
+    {
+        $proposed = ['general' => ['active' => false], ConfigDocument::CREATE_MARKER => true];
+
+        $this->assertSame(
+            ['general.active' => true],
+            $this->hydrator()->dehydrate(
+                $this->ref(),
+                ['general.active' => true, ConfigDocument::CREATE_MARKER => false],
+                $proposed,
+            ),
+        );
+        $this->assertSame([], $this->hydrator()->dehydrate($this->ref(), [ConfigDocument::CREATE_MARKER => false], []));
     }
 
     public function testACreateDehydratesToTheWholePatch(): void

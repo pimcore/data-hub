@@ -34,6 +34,12 @@ use function str_contains;
 final class ConfigDocument
 {
     /**
+     * Marks a proposal made while nothing was stored under its name. Change Control hands the
+     * subject only the merged state, so this is how an approval tells a create from a change.
+     */
+    public const string CREATE_MARKER = '__new';
+
+    /**
      * Bookkeeping the editor never binds and a draft must never carry: it changes on every
      * save, so a draft holding it would report a change nobody made.
      */
