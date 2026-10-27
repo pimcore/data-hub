@@ -62,7 +62,8 @@ interface ConfigProposalPolicyInterface
 
     /**
      * What this adapter refuses in the configuration a proposal would produce: names the
-     * installation does not have, essentials a new configuration lacks.
+     * installation does not have, essentials a new configuration lacks. Asked when the proposal
+     * is made and again on the merged state when it is approved.
      *
      * @param array<string, mixed> $state
      *

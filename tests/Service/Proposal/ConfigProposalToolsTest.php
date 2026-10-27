@@ -116,6 +116,25 @@ class ConfigProposalToolsTest extends Unit
         ]]], $this->payload($result));
     }
 
+    public function testTheListLeavesWithheldPathsOut(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['group' => 'shop', 'description' => 'internal note', 'active' => true],
+            'security' => ['method' => 'header'],
+            'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
+        ]));
+        $policy = new RecordingConfigPolicy(withheld: ['security', 'general.description']);
+
+        $result = $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))
+            ->list($policy, self::TOOL);
+
+        $this->assertSame('', $this->payload($result)['configurations'][0]['description']);
+        $this->assertSame([[
+            'general' => ['group' => 'shop', 'active' => true],
+            'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
+        ]], $policy->summarized);
+    }
+
     public function testAFailureWhileListingIsHandled(): void
     {
         $stored = $this->createStub(StoredConfigurationsInterface::class);
@@ -357,6 +376,44 @@ class ConfigProposalToolsTest extends Unit
             self::TOOL,
             'orders',
             ['general' => ['active' => true, 'modificationDate' => 9], 'eventsSchema' => ['events' => ['a']]],
+            null,
+        );
+
+        $this->assertStringStartsWith(
+            'This leaves the webhook configuration "orders" exactly as it is',
+            $this->payload($result, true)['error'],
+        );
+        $this->assertSame([], $this->recorded);
+    }
+
+    public function testAChangeOnlyALooseComparisonMissesIsRecorded(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true, 'description' => '01']]));
+
+        $result = $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
+            new RecordingConfigPolicy(),
+            self::TOOL,
+            'orders',
+            ['general' => ['description' => '1']],
+            null,
+        );
+
+        $this->assertArrayHasKey('proposalId', $this->payload($result));
+        $this->assertSame('1', $this->recorded[0][2]['subjectState']['general']['description']);
+    }
+
+    public function testAProposalThatOnlyReordersAMapChangesNothing(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true],
+            'eventsSchema' => ['options' => ['retries' => 3, 'timeout' => 10]],
+        ]));
+
+        $result = $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
+            new RecordingConfigPolicy(),
+            self::TOOL,
+            'orders',
+            ['eventsSchema' => ['options' => ['timeout' => 10, 'retries' => 3]]],
             null,
         );
 

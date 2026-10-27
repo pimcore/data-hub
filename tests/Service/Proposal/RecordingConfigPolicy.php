@@ -24,12 +24,20 @@ final class RecordingConfigPolicy implements ConfigProposalPolicyInterface
     /** @var list<array{string, array<string, mixed>}> */
     public array $saved = [];
 
+    /** @var list<array<string, mixed>> */
+    public array $summarized = [];
+
+    /** @var list<array{array<string, mixed>, bool}> */
+    public array $checked = [];
+
     /**
      * @param list<string> $problems
+     * @param list<string> $withheld
      */
     public function __construct(
         private readonly array $problems = [],
         private readonly bool $saveFails = false,
+        private readonly array $withheld = ['security', 'general.apiKey'],
     ) {
     }
 
@@ -60,7 +68,7 @@ final class RecordingConfigPolicy implements ConfigProposalPolicyInterface
 
     public function withheld(): array
     {
-        return ['security', 'general.apiKey'];
+        return $this->withheld;
     }
 
     public function withheldReason(): string
@@ -75,11 +83,15 @@ final class RecordingConfigPolicy implements ConfigProposalPolicyInterface
 
     public function problems(array $state, bool $isNew): array
     {
+        $this->checked[] = [$state, $isNew];
+
         return $this->problems;
     }
 
     public function summarize(array $configuration): array
     {
+        $this->summarized[] = $configuration;
+
         return ['events' => $configuration['eventsSchema']['events'] ?? []];
     }
 

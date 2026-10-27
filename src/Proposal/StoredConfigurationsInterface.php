@@ -23,7 +23,10 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
  */
 interface StoredConfigurationsInterface
 {
-    /** the configuration stored under this name, of whatever adapter type; null when there is none */
+    /**
+     * The configuration stored under this name, of whatever adapter type; null when there is none.
+     * An entry that cannot be read throws rather than pass for a free name.
+     */
     public function find(string $name): ?Configuration;
 
     /**
