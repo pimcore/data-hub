@@ -15,6 +15,7 @@ namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Codeception\Test\Unit;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectHandlerInterface;
+use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -87,6 +88,19 @@ class PimcoreDataHubExtensionTest extends Unit
         );
         $this->assertContainsOnlyInstancesOf(ClassExistenceResource::class, $container->getResources());
         $this->assertNotEmpty($container->getResources());
+    }
+
+    public function testALaneNeedsItsBundleRegisteredNotOnlyInstalled(): void
+    {
+        $withoutChangeControl = new ContainerBuilder();
+        $withoutChangeControl->setParameter('kernel.bundles', ['PimcoreDataHubBundle' => PimcoreDataHubBundle::class]);
+        $this->assertFalse(ConfigProposalLane::canReview($withoutChangeControl));
+        $this->assertFalse(ConfigProposalLane::canPropose($withoutChangeControl));
+
+        $withChangeControl = new ContainerBuilder();
+        $withChangeControl->setParameter('kernel.bundles', ['PimcoreChangeControlBundle' => 'Pimcore\\Bundle\\ChangeControlBundle\\PimcoreChangeControlBundle']);
+        $this->assertSame(interface_exists(SubjectHandlerInterface::class), ConfigProposalLane::canReview($withChangeControl));
+        $this->assertFalse(ConfigProposalLane::canPropose($withChangeControl), 'the agent bundle is not registered');
     }
 
     private function loadExtension(array $configs): ContainerBuilder
