@@ -25,12 +25,15 @@ class HelperTest extends Unit
 {
     public function testBuildSqlConditionQuotesFieldConditions(): void
     {
-        $filter = json_decode('{"modificationDate": {"$gt": "1000"}, "$or": [{"id": "3"}, {"key": {"$like": "%lorem%"}}]}');
+        $filter = json_decode(
+            '{"modificationDate": {"$gt": "1000"}, "$or": [{"id": "3"}, {"key": {"$like": "%lorem%"}}]}'
+        );
 
         $condition = Helper::buildSqlCondition('objects', $filter);
 
         $this->assertSame(
-            " ((`objects`.`modificationDate` > '1000') AND  ((`objects`.`id` = '3') )  OR  ((`objects`.`key` LIKE '%lorem%') )  ) ",
+            " ((`objects`.`modificationDate` > '1000') AND  ((`objects`.`id` = '3') )  OR  "
+            . "((`objects`.`key` LIKE '%lorem%') )  ) ",
             $condition
         );
     }
@@ -76,6 +79,8 @@ class HelperTest extends Unit
             'string as $or value' => ['{"$or": "1=1"}'],
             'string in field array' => ['{"id": ["1=1"]}'],
             'string next to objects in $and' => ['{"$and": [{"id": "1"}, "1=1"]}'],
+            'string in top-level array' => ['["1=1"]'],
+            'string next to objects in top-level array' => ['[{"id": "1"}, "1=1"]'],
         ];
     }
 }

@@ -112,8 +112,15 @@ class Helper
 
         $db = Db::get();
 
-        if (!$q instanceof \stdClass && !is_array($q)) {
+        if (!self::isCondition($q)) {
             throw new ClientSafeException('invalid filter: conditions must be JSON objects');
+        }
+        if (is_array($q)) {
+            foreach ($q as $entry) {
+                if (!self::isCondition($entry)) {
+                    throw new ClientSafeException('invalid filter: conditions must be JSON objects');
+                }
+            }
         }
 
         $parts = [];
@@ -225,6 +232,11 @@ class Helper
         $subCondition = ' (' . implode(' ' . $op . ' ', $parts) . ' ) ';
 
         return $subCondition;
+    }
+
+    private static function isCondition(mixed $q): bool
+    {
+        return $q instanceof \stdClass || is_array($q);
     }
 
     /**
