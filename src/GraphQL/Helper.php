@@ -15,6 +15,7 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Layout;
@@ -36,6 +37,10 @@ class Helper
         $filterEntries = is_array($filter) ? $filter : [$filter];
 
         foreach ($filterEntries as $entry) {
+            if (!$entry instanceof \stdClass) {
+                continue;
+            }
+
             $parts = get_object_vars($entry);
 
             foreach ($parts as $key => $value) {
@@ -60,7 +65,7 @@ class Helper
 
     /**
      * @param string $defaultTable
-     * @param string|array|\stdClass $q
+     * @param mixed $q decoded JSON filter, only objects and arrays of objects are accepted
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
@@ -107,11 +112,11 @@ class Helper
 
         $db = Db::get();
 
-        $parts = [];
-        if (is_string($q)) {
-            return $q;
+        if (!$q instanceof \stdClass && !is_array($q)) {
+            throw new ClientSafeException('invalid filter: conditions must be JSON objects');
         }
 
+        $parts = [];
         foreach ($q as $key => $value) {
             if (array_search(strtolower($key), ['$and', '$or']) !== false) {
                 $childOp = strtolower($key) == '$and' ? 'AND' : 'OR';

@@ -19,6 +19,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Resolver;
 
 use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Resolver\AssetListing;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
@@ -89,5 +90,26 @@ class AssetListingTest extends Unit
 
         $this->assertSame(0, $result['totalCount']);
         $this->assertCount(0, $result['edges']);
+    }
+
+    public function testResolveListingWithObjectFilterReturnsMatchingAssets(): void
+    {
+        $assetListing = new AssetListing($this->service, new EventDispatcher());
+
+        $filter = json_encode(['filename' => 'datahub-asset-listing-two.txt']);
+        $result = $assetListing->resolveListing([], ['filter' => $filter], $this->context);
+
+        $returnedIds = array_map(static fn (array $edge) => $edge['node']->getId(), $result['edges']);
+
+        $this->assertSame([$this->assetIds[1]], $returnedIds);
+    }
+
+    public function testResolveListingRejectsFilterThatIsNotAnObject(): void
+    {
+        $assetListing = new AssetListing($this->service, new EventDispatcher());
+
+        $this->expectException(ClientSafeException::class);
+
+        $assetListing->resolveListing([], ['filter' => json_encode('1=1')], $this->context);
     }
 }
