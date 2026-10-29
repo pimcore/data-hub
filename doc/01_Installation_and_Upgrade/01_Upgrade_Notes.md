@@ -1,5 +1,12 @@
 # Upgrade Notes
 
+## 2.4.7
+- [GraphQL] The `filter` argument of `getAssetListing` and the data object listing queries only accepts the documented
+JSON syntax: an object, or an array of objects, at every level (including inside `$and` / `$or` and field arrays).
+Any other value, such as a plain JSON string, is rejected with the error `invalid filter: conditions must be JSON objects`
+instead of being added to the listing condition. Filters written in the documented syntax are not affected.
+See [Filtering](../10_GraphQL/04_Query/10_Filtering.md).
+
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
 
