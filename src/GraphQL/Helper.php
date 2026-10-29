@@ -15,10 +15,12 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
+use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Layout;
 use Pimcore\Model\DataObject\Listing;
+use stdClass;
 
 /**
  * @internal
@@ -36,6 +38,10 @@ class Helper
         $filterEntries = is_array($filter) ? $filter : [$filter];
 
         foreach ($filterEntries as $entry) {
+            if (!$entry instanceof stdClass) {
+                continue;
+            }
+
             $parts = get_object_vars($entry);
 
             foreach ($parts as $key => $value) {
@@ -60,12 +66,14 @@ class Helper
 
     /**
      * @param string $defaultTable
-     * @param string|array|\stdClass $q
+     * @param mixed $q decoded JSON filter, only objects and arrays of objects are accepted
      * @param string|null $op
      * @param string|null $subject
      * @param array $fieldMappingTable
      *
      * @return string
+     *
+     * @throws ClientSafeException
      */
     public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null, $fieldMappingTable = [])
     {
@@ -107,11 +115,14 @@ class Helper
 
         $db = Db::get();
 
-        $parts = [];
-        if (is_string($q)) {
-            return $q;
+        self::assertIsCondition($q);
+        if (is_array($q)) {
+            foreach ($q as $entry) {
+                self::assertIsCondition($entry);
+            }
         }
 
+        $parts = [];
         foreach ($q as $key => $value) {
             if (array_search(strtolower($key), ['$and', '$or']) !== false) {
                 $childOp = strtolower($key) == '$and' ? 'AND' : 'OR';
@@ -220,6 +231,16 @@ class Helper
         $subCondition = ' (' . implode(' ' . $op . ' ', $parts) . ' ) ';
 
         return $subCondition;
+    }
+
+    /**
+     * @throws ClientSafeException
+     */
+    private static function assertIsCondition(mixed $q): void
+    {
+        if (!$q instanceof stdClass && !is_array($q)) {
+            throw new ClientSafeException('invalid filter: conditions must be JSON objects');
+        }
     }
 
     /**
