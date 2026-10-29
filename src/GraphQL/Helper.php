@@ -20,6 +20,7 @@ use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\ClassDefinition\Layout;
 use Pimcore\Model\DataObject\Listing;
+use stdClass;
 
 /**
  * @internal
@@ -37,7 +38,7 @@ class Helper
         $filterEntries = is_array($filter) ? $filter : [$filter];
 
         foreach ($filterEntries as $entry) {
-            if (!$entry instanceof \stdClass) {
+            if (!$entry instanceof stdClass) {
                 continue;
             }
 
@@ -71,6 +72,8 @@ class Helper
      * @param array $fieldMappingTable
      *
      * @return string
+     *
+     * @throws ClientSafeException
      */
     public static function buildSqlCondition($defaultTable, $q, $op = null, $subject = null, $fieldMappingTable = [])
     {
@@ -112,14 +115,10 @@ class Helper
 
         $db = Db::get();
 
-        if (!self::isCondition($q)) {
-            throw new ClientSafeException('invalid filter: conditions must be JSON objects');
-        }
+        self::assertIsCondition($q);
         if (is_array($q)) {
             foreach ($q as $entry) {
-                if (!self::isCondition($entry)) {
-                    throw new ClientSafeException('invalid filter: conditions must be JSON objects');
-                }
+                self::assertIsCondition($entry);
             }
         }
 
@@ -234,9 +233,14 @@ class Helper
         return $subCondition;
     }
 
-    private static function isCondition(mixed $q): bool
+    /**
+     * @throws ClientSafeException
+     */
+    private static function assertIsCondition(mixed $q): void
     {
-        return $q instanceof \stdClass || is_array($q);
+        if (!$q instanceof stdClass && !is_array($q)) {
+            throw new ClientSafeException('invalid filter: conditions must be JSON objects');
+        }
     }
 
     /**
