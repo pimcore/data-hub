@@ -70,16 +70,24 @@ export const Grid = ({ columns, data }: Props): React.JSX.Element => (
   </div>
 )
 
-// Same contract as studio-ui-bundle's preview mode module (F2-F4).
+// Same contract as studio-ui-bundle's preview mode module (F2-F4, F8).
 interface Item { elementType?: string, data: { id?: string | number, fullpath?: string } }
-interface PreviewModeValue { enabled: boolean, setEnabled: (enabled: boolean) => void, item: Item | null, setItem: (item: Item | null) => void }
+interface PreviewModeValue {
+  enabled: boolean
+  setEnabled: (enabled: boolean) => void
+  item: Item | null
+  setItem: (item: Item | null) => void
+  language: string | undefined
+  setLanguage: (language: string) => void
+}
 const PreviewModeContext = createContext<PreviewModeValue | undefined>(undefined)
-const inactive: PreviewModeValue = { enabled: false, setEnabled: () => {}, item: null, setItem: () => {} }
+const inactive: PreviewModeValue = { enabled: false, setEnabled: () => {}, item: null, setItem: () => {}, language: undefined, setLanguage: () => {} }
 
 export const PreviewModeProvider = ({ children }: Props): React.JSX.Element => {
   const [enabled, setEnabled] = useState(false)
   const [item, setItem] = useState<Item | null>(null)
-  const value = useMemo(() => ({ enabled, setEnabled, item, setItem }), [enabled, item])
+  const [language, setLanguage] = useState<string | undefined>(undefined)
+  const value = useMemo(() => ({ enabled, setEnabled, item, setItem, language, setLanguage }), [enabled, item, language])
   return <PreviewModeContext.Provider value={ value }>{ children }</PreviewModeContext.Provider>
 }
 
@@ -102,8 +110,9 @@ export const PreviewModeSwitch = (): React.JSX.Element => {
   )
 }
 
+// One row: "Preview item" button, "ID: <id> | path" and the language switch (only while preview mode is on)
 export const PreviewModeBar = ({ allowedClasses }: { allowedClasses?: string[] }): React.JSX.Element => {
-  const { item, setItem } = usePreviewMode()
+  const { enabled, item, setItem, language, setLanguage } = usePreviewMode()
   return (
     <div
       data-classes={ allowedClasses?.join(',') }
@@ -114,14 +123,34 @@ export const PreviewModeBar = ({ allowedClasses }: { allowedClasses?: string[] }
         type='button'
       >preview-mode.preview-item</button>
       <span>{ item?.data.id === undefined ? 'preview-mode.no-item' : `ID: ${item.data.id}` }</span>
+      { enabled && (
+        <select
+          aria-label='preview-language'
+          onChange={ (event) => { setLanguage(event.target.value) } }
+          value={ language ?? 'en' }
+        >
+          <option value='en'>en</option>
+          <option value='de'>de</option>
+        </select>
+      ) }
     </div>
   )
 }
 
+// The shared slot: a divider and a body row with the label "Preview" and the value
 export const ColumnPreview = ({ source, children }: { source?: any, children?: () => React.ReactNode }): React.JSX.Element | null => {
   const { enabled } = useContext(PreviewModeContext) ?? inactive
   if (!enabled) return null
-  if (children !== undefined) return <>{ children() }</>
-  if (source?.isLoading === true) return <span>column-preview-loading</span>
-  return <>{ source?.value ?? null }</>
+  let content: React.ReactNode = source?.value ?? null
+  if (children !== undefined) content = children()
+  else if (source?.isLoading === true) content = <span>column-preview-loading</span>
+  return (
+    <>
+      <hr data-testid='preview-mode-column-preview-divider' />
+      <div data-testid='preview-mode-column-preview-row'>
+        <span>preview-mode.preview</span>
+        <div>{ content }</div>
+      </div>
+    </>
+  )
 }
