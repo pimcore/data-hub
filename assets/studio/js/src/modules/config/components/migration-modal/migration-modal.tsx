@@ -146,7 +146,10 @@ export const MigrationModal = ({
       title={ modalTitle }
     >
       { renderBelowTitle !== undefined && (
-        <Flex style={ { paddingBottom: 8 } }>
+        <Flex
+          style={ { paddingBottom: 8 } }
+          vertical
+        >
           { renderBelowTitle }
         </Flex>
       ) }

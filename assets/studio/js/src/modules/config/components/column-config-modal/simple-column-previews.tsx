@@ -10,10 +10,8 @@
 
 import React, { createContext, useContext, useMemo } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Tag } from 'antd'
 import {
   ColumnPreview as PreviewModeColumnPreview,
-  Flex,
   Grid,
   GridContentRenderer,
   Text,
@@ -56,8 +54,9 @@ export const SimpleColumnPreviewsProvider = ({
   availableFields,
   children
 }: SimpleColumnPreviewsProviderProps): React.JSX.Element => {
-  const { enabled, item } = usePreviewMode()
-  const { currentLanguage } = useLanguageSelection()
+  const { enabled, item, language: previewLanguage } = usePreviewMode()
+  const { currentLanguage: contextLanguage } = useLanguageSelection()
+  const currentLanguage = previewLanguage ?? contextLanguage
   const itemId = item?.data?.id
 
   const getLocale = (column: AdvancedEditorColumn): string | null | undefined => {
@@ -166,21 +165,3 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
     </PreviewModeColumnPreview>
   )
 }
-
-export interface SimpleColumnLabelProps extends SimpleColumnPreviewProps {
-  label: string
-}
-
-/** A simple column's tag with its preview value underneath */
-export const SimpleColumnLabel = ({ label, column, availableField }: SimpleColumnLabelProps): React.JSX.Element => (
-  <Flex
-    gap='mini'
-    vertical
-  >
-    <Tag>{ label }</Tag>
-    <SimpleColumnPreview
-      availableField={ availableField }
-      column={ column }
-    />
-  </Flex>
-)

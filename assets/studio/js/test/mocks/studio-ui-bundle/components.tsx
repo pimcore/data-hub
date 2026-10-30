@@ -11,7 +11,7 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
 
 type Props = { children?: React.ReactNode } & Record<string, any>
-const passthrough = ({ children }: Props): React.JSX.Element => <div>{ children }</div>
+const passthrough = ({ children, 'data-testid': testId }: Props): React.JSX.Element => <div data-testid={ testId }>{ children }</div>
 
 export const Box = passthrough
 export const Flex = passthrough

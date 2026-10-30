@@ -11,9 +11,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
 import {
-  Box,
   ColumnPreview as PreviewModeColumnPreview,
-  Flex,
   Grid,
   GridContentRenderer,
   Text,
@@ -77,7 +75,9 @@ export const PreviewGrid = ({ value }: { value: Array<{ type: string, value: any
 
 const PreviewResult = ({ column, objectId, pipelineValue }: { column: AdvancedEditorColumn, objectId: number, pipelineValue?: Record<string, any> }): React.JSX.Element => {
   const { t } = useTranslation()
-  const { currentLanguage } = useLanguageSelection()
+  const { currentLanguage: contextLanguage } = useLanguageSelection()
+  const { language: previewLanguage } = usePreviewMode()
+  const currentLanguage = previewLanguage ?? contextLanguage
 
   const pipeline = (pipelineValue !== undefined && Object.keys(pipelineValue).length > 0) ? pipelineValue : column.pipeline
 
@@ -145,29 +145,19 @@ export const ColumnPreview = ({ column, pipelineValue }: ColumnPreviewProps): Re
   // The shared slot renders its child only while preview mode is on, so nothing is requested while it is off
   return (
     <PreviewModeColumnPreview>
-      { () => (
-        <Box padding={ { top: 'small', bottom: 'none', x: 'small' } }>
-          <Flex
-            align='center'
-            gap='small'
-          >
-            <Text style={ { wordBreak: 'keep-all' } }>{ t('grid.advanced-column.preview') }:</Text>
-            { objectId === undefined
-              ? (
-                <Text type='secondary'>
-                  { t('data-hub.column-config-modal.preview.no-item') }
-                </Text>
-                )
-              : (
-                <PreviewResult
-                  column={ column }
-                  objectId={ objectId }
-                  pipelineValue={ debouncedPipelineValue }
-                />
-                ) }
-          </Flex>
-        </Box>
-      ) }
+      { () => objectId === undefined
+        ? (
+          <Text type='secondary'>
+            { t('data-hub.column-config-modal.preview.no-item') }
+          </Text>
+          )
+        : (
+          <PreviewResult
+            column={ column }
+            objectId={ objectId }
+            pipelineValue={ debouncedPipelineValue }
+          />
+          ) }
     </PreviewModeColumnPreview>
   )
 }

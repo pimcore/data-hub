@@ -9,11 +9,12 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, PreviewModeSwitch, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
+import { PreviewHeader } from './preview-header'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 
@@ -161,7 +162,13 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     </ModalTitle>
   )
 
-  const previewSwitch = <PreviewModeSwitch />
+  const previewSwitch = (
+    <PreviewHeader
+      entity={ entity }
+      language={ language }
+      onLanguageChange={ onLanguageChange }
+    />
+  )
 
   // The provider is keyed by `open`, so preview mode is off every time the modal opens (DR-P2)
   const withPreviewMode = (content: React.ReactNode): React.JSX.Element => (

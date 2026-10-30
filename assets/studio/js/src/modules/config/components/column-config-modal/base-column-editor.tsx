@@ -35,9 +35,8 @@ import { isNil } from 'lodash'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
-import { PreviewTopBar } from './preview-top-bar'
 import { usePreviewItemPreselect } from './use-preview-item-preselect'
-import { SimpleColumnLabel, SimpleColumnPreviewsProvider } from './simple-column-previews'
+import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
 import {
   ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
@@ -150,13 +149,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
         defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
           ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
-          : (
-            <SimpleColumnLabel
-              availableField={ availableFields.find(field => field.key === col.key) }
-              column={ col }
-              label={ label }
-            />
-            ),
+          : <Tag>{ label }</Tag>,
         ...(isAdvanced
           ? {
               body: col.pipelineConfig !== undefined
@@ -171,7 +164,14 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                   )
                 : <Spin />
             }
-          : {}),
+          : previewEnabled
+            ? {
+                body: <SimpleColumnPreview
+                  availableField={ availableFields.find(field => field.key === col.key) }
+                  column={ col }
+                      /> 
+              }
+            : {}),
         renderRightToolbar: (
           <Space size='mini'>
             { col.localizable === true && isAdvanced && (
@@ -254,7 +254,6 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                   </Space>
                 </Toolbar>
                 ) }
-            renderTopBar={ previewEnabled ? <PreviewTopBar entity={ entity } /> : undefined }
           >
             <Content
               padded
