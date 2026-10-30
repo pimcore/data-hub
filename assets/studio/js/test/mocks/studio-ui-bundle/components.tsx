@@ -110,20 +110,24 @@ export const PreviewModeSwitch = (): React.JSX.Element => {
   )
 }
 
-// One row: "Preview item" button, "ID: <id> | path" and the language switch (only while preview mode is on)
-export const PreviewModeBar = ({ allowedClasses }: { allowedClasses?: string[] }): React.JSX.Element => {
-  const { enabled, item, setItem, language, setLanguage } = usePreviewMode()
+// One row: "Preview item" button, "ID: <id> | path" (showItem) and the language switch (showLanguageSwitch), both default on
+export const PreviewModeBar = ({ allowedClasses, showItem = true, showLanguageSwitch = true }: { allowedClasses?: string[], showItem?: boolean, showLanguageSwitch?: boolean }): React.JSX.Element => {
+  const { item, setItem, language, setLanguage } = usePreviewMode()
   return (
     <div
       data-classes={ allowedClasses?.join(',') }
       data-testid='preview-bar'
     >
-      <button
-        onClick={ () => { setItem({ elementType: 'data-object', data: { id: 9, fullpath: '/picked' } }) } }
-        type='button'
-      >preview-mode.preview-item</button>
-      <span>{ item?.data.id === undefined ? 'preview-mode.no-item' : `ID: ${item.data.id}` }</span>
-      { enabled && (
+      { showItem && (
+        <>
+          <button
+            onClick={ () => { setItem({ elementType: 'data-object', data: { id: 9, fullpath: '/picked' } }) } }
+            type='button'
+          >preview-mode.preview-item</button>
+          <span>{ item?.data.id === undefined ? 'preview-mode.no-item' : `ID: ${item.data.id}` }</span>
+        </>
+      ) }
+      { showLanguageSwitch && (
         <select
           aria-label='preview-language'
           onChange={ (event) => { setLanguage(event.target.value) } }
