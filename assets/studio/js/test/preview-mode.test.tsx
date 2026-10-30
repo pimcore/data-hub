@@ -101,10 +101,9 @@ describe('schema modal preview mode', () => {
   test('AC2: with preview mode off there is no bar, no preview and no preview request', () => {
     render(modal())
 
-    expect(screen.queryByTestId('preview-bar')).not.toBeInTheDocument()
     expect(screen.queryByText('preview-mode.preview-item')).not.toBeInTheDocument()
     expect(screen.queryByText('data-hub.column-config-modal.preview.select-object')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('preview-language')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('preview-language')).toBeInTheDocument()
     expect(screen.queryByTestId('preview-grid')).not.toBeInTheDocument()
     expect(apiState.calls.grid).toHaveLength(0)
     expect(apiState.calls.gridPreview).toHaveLength(0)
@@ -206,7 +205,7 @@ describe('schema modal preview mode', () => {
 
     fireEvent.click(screen.getByText('data-hub.migration-modal.start-migration'))
     expect(screen.getByRole('switch')).not.toBeChecked()
-    expect(screen.queryByTestId('preview-bar')).not.toBeInTheDocument()
+    expect(screen.queryByText('preview-mode.preview-item')).not.toBeInTheDocument()
 
     turnOn()
     expect(screen.getByTestId('preview-bar')).toHaveAttribute('data-classes', 'Product')

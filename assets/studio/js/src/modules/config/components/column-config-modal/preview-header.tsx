@@ -19,7 +19,7 @@ export interface PreviewHeaderProps {
   onLanguageChange?: (language: string) => void
 }
 
-/** The row below the modal title: the switch and, while preview mode is on, the bar with the language switch, then a divider (DR-P7) */
+/** The row below the modal title: the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on, then a divider while it is on (DR-P7, F11) */
 export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHeaderProps): React.JSX.Element => {
   const { enabled, language: previewLanguage, setLanguage } = usePreviewMode()
 
@@ -40,11 +40,12 @@ export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHea
       >
         <PreviewModeSwitch />
 
-        { enabled && (
-          <div style={ { flex: 1, minWidth: 0 } }>
-            <PreviewModeBar allowedClasses={ [entity] } />
-          </div>
-        ) }
+        <div style={ { flex: 1, minWidth: 0 } }>
+          <PreviewModeBar
+            allowedClasses={ [entity] }
+            showItem={ enabled }
+          />
+        </div>
       </Flex>
 
       { enabled && (

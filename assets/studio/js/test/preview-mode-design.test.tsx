@@ -132,11 +132,12 @@ describe('schema modal preview mode design', () => {
     expect(within(rows[2]).getByText('Boom')).toBeInTheDocument()
   })
 
-  test('AC3: with preview mode off there is only the switch, no divider, no "Preview" row and no request', () => {
+  test('AC3: with preview mode off there is the switch and the language switch, no item picker, no divider, no "Preview" row and no request', () => {
     render(modal())
 
     expect(screen.getByRole('switch')).toBeInTheDocument()
-    expect(screen.queryByTestId('preview-bar')).not.toBeInTheDocument()
+    expect(screen.queryByText('preview-mode.preview-item')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('preview-language')).toBeInTheDocument()
     expect(screen.queryByTestId('preview-mode-header-divider')).not.toBeInTheDocument()
     expect(screen.queryByTestId('preview-mode-column-preview-divider')).not.toBeInTheDocument()
     expect(screen.queryByTestId('preview-mode-column-preview-row')).not.toBeInTheDocument()
@@ -146,7 +147,7 @@ describe('schema modal preview mode design', () => {
 
   test('AC4: the bar and the "Preview" rows come from one switch, F6 behaviour stays', () => {
     render(modal())
-    expect(screen.queryByTestId('preview-bar')).not.toBeInTheDocument()
+    expect(screen.queryByText('preview-mode.preview-item')).not.toBeInTheDocument()
     turnOn()
     expect(screen.getAllByTestId('preview-bar')).toHaveLength(1)
     expect(screen.getAllByTestId('preview-mode-column-preview-row')).toHaveLength(3)
