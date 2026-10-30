@@ -82,7 +82,7 @@ describe('schema modal language switch with preview off', () => {
 
     const header = screen.getByTestId('preview-mode-header')
     expect(within(header).getByRole('switch')).toBeInTheDocument()
-    expect((within(header).getByLabelText('preview-language') as HTMLSelectElement).value).toBe('de')
+    expect((within(header).getByLabelText('preview-language')).value).toBe('de')
     expect(within(header).queryByText('preview-mode.preview-item')).not.toBeInTheDocument()
     expect(screen.queryByTestId('preview-mode-header-divider')).not.toBeInTheDocument()
   })
@@ -100,12 +100,12 @@ describe('schema modal language switch with preview off', () => {
     fireEvent.change(screen.getByLabelText('preview-language'), { target: { value: 'en' } })
     fireEvent.click(screen.getByRole('switch'))
 
-    expect((screen.getByLabelText('preview-language') as HTMLSelectElement).value).toBe('en')
+    expect((screen.getByLabelText('preview-language')).value).toBe('en')
     const last = apiState.calls.grid.filter(isSimpleRequest).slice(-1)[0]
     expect(last.body.columns.find((column: any) => column.key === 'name').locale).toBe('en')
 
     fireEvent.click(screen.getByRole('switch'))
-    expect((screen.getByLabelText('preview-language') as HTMLSelectElement).value).toBe('en')
+    expect((screen.getByLabelText('preview-language')).value).toBe('en')
   })
 
   test('AC3: the values sit in the shared preview row, with no border or background of their own', () => {
