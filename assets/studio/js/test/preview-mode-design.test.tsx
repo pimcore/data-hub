@@ -143,4 +143,19 @@ describe('schema modal preview mode design', () => {
     expect(apiState.calls.grid).toHaveLength(0)
     expect(apiState.calls.gridPreview).toHaveLength(0)
   })
+
+  test('AC4: the bar and the "Preview" rows come from one switch, F6 behaviour stays', () => {
+    render(modal())
+    expect(screen.queryByTestId('preview-bar')).not.toBeInTheDocument()
+    turnOn()
+    expect(screen.getAllByTestId('preview-bar')).toHaveLength(1)
+    expect(screen.getAllByTestId('preview-mode-column-preview-row')).toHaveLength(3)
+  })
+
+  test('AC5: the state of the screenshots renders: bar, divider and a "Preview" row per column', () => {
+    render(modal())
+    turnOn()
+    expect(screen.getByTestId('preview-mode-header-divider')).toBeInTheDocument()
+    expect(screen.getAllByTestId('preview-mode-column-preview-divider')).toHaveLength(3)
+  })
 })
