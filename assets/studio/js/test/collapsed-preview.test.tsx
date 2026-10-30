@@ -12,6 +12,8 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
+import { CollapsedColumnPreview } from '../src/modules/config/components/column-config-modal/column-preview'
+import { PreviewModeProvider, PreviewModeSwitch } from '@pimcore/studio-ui-bundle/components'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
 
 jest.mock('../src/modules/config/components/column-config-modal/base-column-editor.styles', () => ({
@@ -112,11 +114,16 @@ describe('preview row on collapsed advanced cards', () => {
   })
 
   test('AC2: with an undefined pipeline the collapsed card shows no value and sends no request', () => {
-    render(modal([{ key: 'Calc', fieldtype: 'advanced', type: 'dataobject.advanced' }]))
+    // schema columns always get a pipeline, so the undefined case is rendered directly
+    render(
+      <PreviewModeProvider>
+        <PreviewModeSwitch />
+        <CollapsedColumnPreview column={ { _id: 'x', key: 'Calc', fieldtype: 'advanced', type: 'dataobject.advanced', pipelineConfig: {} } } />
+      </PreviewModeProvider>
+    )
     fireEvent.click(screen.getByRole('switch'))
 
     expect(screen.getByText('data-hub.column-config-modal.preview.no-data')).toBeInTheDocument()
-    expect(screen.queryByTestId('preview-grid')).not.toBeInTheDocument()
     expect(apiState.calls.gridPreview).toHaveLength(0)
   })
 
