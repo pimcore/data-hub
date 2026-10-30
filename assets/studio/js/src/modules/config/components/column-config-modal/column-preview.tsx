@@ -161,3 +161,24 @@ export const ColumnPreview = ({ column, pipelineValue }: ColumnPreviewProps): Re
     </PreviewModeColumnPreview>
   )
 }
+
+/** Preview row of a collapsed advanced card: value from the stored pipeline, no request without a config. */
+export const CollapsedColumnPreview = ({ column }: { column: AdvancedEditorColumn }): React.JSX.Element => {
+  const { t } = useTranslation()
+
+  if (column.pipelineConfig === undefined || column.pipeline === undefined) {
+    const key = column.pipelineConfig === undefined ? 'loading' : 'no-data'
+    return (
+      <PreviewModeColumnPreview>
+        { () => <Text type='secondary'>{ t(`data-hub.column-config-modal.preview.${key}`) }</Text> }
+      </PreviewModeColumnPreview>
+    )
+  }
+
+  return (
+    <ColumnPreview
+      column={ column }
+      pipelineValue={ column.pipeline }
+    />
+  )
+}

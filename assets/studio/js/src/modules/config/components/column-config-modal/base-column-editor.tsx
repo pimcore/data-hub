@@ -32,6 +32,7 @@ import {
 } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
+import { CollapsedColumnPreview } from './column-preview'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
@@ -162,7 +163,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     transformersRegistryId={ transformersRegistryId }
                   />
                   )
-                : <Spin />
+                : <Spin />,
+              collapsedBody: <CollapsedColumnPreview column={ col } />
             }
           : previewEnabled
             ? {
