@@ -26,10 +26,7 @@ import {
 } from '@pimcore/studio-ui-bundle/components'
 import { useStyles } from './base-column-editor.styles'
 import { FieldsToAddPanel } from './fields-to-add-panel'
-import {
-  LanguageSelectionContext,
-  LanguageSelectionWithProvider
-} from '@pimcore/studio-ui-bundle/modules/data-object'
+import { LanguageSelectionContext, LanguageSelectionWithProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
 import { CollapsedColumnPreview } from './column-preview'
@@ -106,6 +103,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       setCurrentLanguage(lang)
       onLanguageChange?.(lang)
     }, [onLanguageChange])
+
     // Build a stable context value to pass to the provider.
     const languageContextValue = useMemo(() => ({
       currentLanguage,
