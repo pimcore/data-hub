@@ -18,6 +18,9 @@ mutation {
 }
 ```
 
+The parent has to be covered by the workspace of the GraphQL configuration with the `create` right. This also applies
+to a `parentId` given inside `input`.
+
 ## Update Asset
 
 This will rename the Asset and update the data.
