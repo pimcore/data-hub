@@ -106,7 +106,6 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       setCurrentLanguage(lang)
       onLanguageChange?.(lang)
     }, [onLanguageChange])
-
     // Build a stable context value to pass to the provider.
     const languageContextValue = useMemo(() => ({
       currentLanguage,
