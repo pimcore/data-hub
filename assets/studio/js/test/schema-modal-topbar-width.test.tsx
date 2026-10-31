@@ -91,3 +91,12 @@ describe('schema modal top bar width', () => {
     expectFullWidth()
   })
 })
+
+describe('schema modal top bar, shots of both modals', () => {
+  test('AC3: the top bar slot is the same in both preview states, so the shots of both modals compare', () => {
+    render(modal())
+    expectFullWidth()
+    fireEvent.click(screen.getByRole('switch'))
+    expectFullWidth()
+  })
+})
