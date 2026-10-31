@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
@@ -64,8 +64,7 @@ beforeEach(() => {
 })
 
 const expectGridModalBorder = (): void => {
-  const bar = within(screen.getByTestId('preview-mode-header')).queryByTestId('toolbar')
-    ?? screen.getByTestId('preview-mode-header').closest('[data-testid="toolbar"]')
+  const bar = screen.getByTestId('preview-mode-header').closest('[data-testid="toolbar"]')
   expect(bar).not.toBeNull()
   // the grid modal's top bar: <Toolbar position="content" theme="secondary">
   expect(bar).toHaveAttribute('data-position', 'content')
