@@ -34,6 +34,7 @@ export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHea
   return (
     <>
       <Toolbar
+        padding={ { x: 'none' } }
         position='content'
         theme='secondary'
       >

@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import { ColumnPickerPopover, ContentLayout, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
@@ -189,11 +189,8 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
         size="XL"
         title={ modalTitle }
       >
-        <Flex
-          gap='small'
-          vertical
-        >
-          { previewSwitch }
+        { /* the top bar goes in the layout's full-width slot, like the Grid Configuration modal's */ }
+        <ContentLayout renderTopBar={ previewSwitch }>
           { renderEditor({
             ref: columnEditorRef,
             classDefinitionId: resolvedClassId,
@@ -209,7 +206,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
             },
             onCancel: handleCancel
           }) }
-        </Flex>
+        </ContentLayout>
       </Modal>
     )
   }
