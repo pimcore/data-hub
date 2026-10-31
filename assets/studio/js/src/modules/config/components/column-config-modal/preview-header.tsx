@@ -10,7 +10,7 @@
 
 import React, { useEffect } from 'react'
 import { Divider } from 'antd'
-import { Flex, PreviewModeBar, PreviewModeSwitch, usePreviewMode } from '@pimcore/studio-ui-bundle/components'
+import { Flex, PreviewModeBar, PreviewModeSwitch, Toolbar, usePreviewMode } from '@pimcore/studio-ui-bundle/components'
 
 export interface PreviewHeaderProps {
   entity: string
@@ -19,7 +19,7 @@ export interface PreviewHeaderProps {
   onLanguageChange?: (language: string) => void
 }
 
-/** The row below the modal title: the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on, then a divider while it is on (DR-P7, F11) */
+/** The row below the modal title, in the same Toolbar as the Grid Configuration modal's (its border): the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on, then a divider while it is on (DR-P7, F11) */
 export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHeaderProps): React.JSX.Element => {
   const { enabled, language: previewLanguage, setLanguage } = usePreviewMode()
 
@@ -33,20 +33,25 @@ export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHea
 
   return (
     <>
-      <Flex
-        align='center'
-        data-testid='preview-mode-header'
-        gap='small'
+      <Toolbar
+        position='content'
+        theme='secondary'
       >
-        <PreviewModeSwitch />
+        <Flex
+          align='center'
+          data-testid='preview-mode-header'
+          gap='small'
+        >
+          <PreviewModeSwitch />
 
-        <div style={ { flex: 1, minWidth: 0 } }>
-          <PreviewModeBar
-            allowedClasses={ [entity] }
-            showItem={ enabled }
-          />
-        </div>
-      </Flex>
+          <div style={ { flex: 1, minWidth: 0 } }>
+            <PreviewModeBar
+              allowedClasses={ [entity] }
+              showItem={ enabled }
+            />
+          </div>
+        </Flex>
+      </Toolbar>
 
       { enabled && (
         <Divider
