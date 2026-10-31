@@ -82,4 +82,15 @@ describe('schema modal top bar', () => {
     fireEvent.click(screen.getByRole('switch'))
     expectGridModalBorder()
   })
+
+  test('AC3: the border is the same in both preview states, so the shots of both modals compare', () => {
+    render(modal())
+    const attributes = (): Array<string | null> => {
+      const bar = screen.getByTestId('preview-mode-header').closest('[data-testid="toolbar"]')
+      return [bar?.getAttribute('data-position') ?? null, bar?.getAttribute('data-theme') ?? null]
+    }
+    const off = attributes()
+    fireEvent.click(screen.getByRole('switch'))
+    expect(attributes()).toEqual(off)
+  })
 })
