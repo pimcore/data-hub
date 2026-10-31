@@ -33,7 +33,7 @@ jest.mock('../src/modules/config/components/column-config-modal/column-pipeline-
 // The shared mock's layout drops the toolbar; the Save button lives in it.
 jest.mock('@pimcore/studio-ui-bundle/components', () => ({
   ...jest.requireActual('./mocks/studio-ui-bundle/components'),
-  ContentLayout: ({ renderToolbar, children }: any) => <div>{ renderToolbar }{ children }</div>
+  ContentLayout: ({ renderTopBar, renderToolbar, children }: any) => <div>{ renderTopBar }{ renderToolbar }{ children }</div>
 }))
 
 const AVAILABLE = {
