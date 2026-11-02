@@ -61,6 +61,51 @@ final readonly class GraphQlWriteGrants
     }
 
     /**
+     * The mutation entities whose input fields change while they may create or update: the
+     * fields are what those grants write, so a changed list widens write access as a new flag
+     * would.
+     *
+     * @param array<string, mixed> $document
+     * @param array<string, mixed> $stored
+     *
+     * @return list<string>
+     */
+    public function changedWriteInputs(array $document, array $stored): array
+    {
+        $entities = is_array($document['schema']['mutationEntities'] ?? null) ? $document['schema']['mutationEntities'] : [];
+        $before = is_array($stored['schema']['mutationEntities'] ?? null) ? $stored['schema']['mutationEntities'] : [];
+
+        $changed = [];
+        foreach ($entities as $key => $entity) {
+            $storedEntity = $before[$key] ?? null;
+            if (!is_array($entity) || !is_array($storedEntity)
+                || !$this->writesInputs($entity) || !$this->writesInputs($storedEntity)) {
+                continue;
+            }
+
+            if (($entity['columnConfig'] ?? null) !== ($storedEntity['columnConfig'] ?? null)) {
+                $changed[] = sprintf('schema.mutationEntities.%s columnConfig', $key);
+            }
+        }
+
+        return $changed;
+    }
+
+    /**
+     * @param array<mixed> $entity
+     */
+    private function writesInputs(array $entity): bool
+    {
+        foreach ($this->flagsOf($entity, '') as $flag) {
+            if ($flag === ' create' || $flag === ' update') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return list<string>
      */
     private function flagsOf(mixed $entry, string $address): array

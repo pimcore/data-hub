@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Proposal\GraphQl;
 
+use function array_is_list;
 use function implode;
 use function in_array;
 use function is_array;
@@ -38,8 +39,12 @@ final readonly class GraphQlWorkspacePaths
      */
     public function unresolved(array $document): array
     {
+        $workspaces = $document['workspaces'] ?? [];
+        if (!is_array($workspaces)) {
+            return ['workspaces needs the workspace types keyed by type, e.g. {"object": [{"cpath": "/", "read": true}]}.'];
+        }
+
         $problems = [];
-        $workspaces = is_array($document['workspaces'] ?? null) ? $document['workspaces'] : [];
         foreach ($workspaces as $type => $entries) {
             if (!in_array($type, self::WORKSPACE_TYPES, true)) {
                 $problems[] = sprintf(
@@ -51,7 +56,17 @@ final readonly class GraphQlWorkspacePaths
                 continue;
             }
 
-            foreach (is_array($entries) ? $entries : [] as $index => $entry) {
+            // the editor maps over each type's entries, so anything but a list breaks the review
+            if (!is_array($entries) || !array_is_list($entries)) {
+                $problems[] = sprintf(
+                    'workspaces.%s needs a list of entries, e.g. [{"cpath": "/", "read": true}].',
+                    $type,
+                );
+
+                continue;
+            }
+
+            foreach ($entries as $index => $entry) {
                 $problem = $this->unresolvedEntry((string) $type, $index, $entry);
                 if ($problem !== null) {
                     $problems[] = $problem;

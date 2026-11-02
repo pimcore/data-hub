@@ -148,6 +148,28 @@ class GraphQlConfigPolicyTest extends Unit
         $this->assertStringNotContainsString('/ update', $problems[0]);
     }
 
+    public function testChangedInputFieldsOfAMutationEntityThatMayUpdateAreRefused(): void
+    {
+        $document = [
+            'general' => ['name' => self::STORED],
+            'schema' => ['mutationEntities' => ['Car' => [
+                'id' => 'Car',
+                'update' => true,
+                'columnConfig' => ['columns' => [['attributes' => ['attribute' => 'model']]]],
+            ]]],
+        ];
+        $this->store('graphql', $document);
+
+        $this->assertSame([], array_values(array_filter(
+            $this->policy()->problems($document, false),
+            static fn (string $problem): bool => str_contains($problem, 'input fields'),
+        )));
+
+        $document['schema']['mutationEntities']['Car']['columnConfig']['columns'][] = ['attributes' => ['attribute' => 'price']];
+        $refusal = $this->problemContaining('input fields', $this->policy()->problems($document, false));
+        $this->assertStringContainsString('schema.mutationEntities.Car columnConfig', $refusal);
+    }
+
     public function testANameAnotherAdapterHoldsIsRefused(): void
     {
         $this->store('webhook', ['general' => ['name' => self::STORED]]);

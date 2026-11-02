@@ -35,7 +35,6 @@ use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use function sprintf;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Throwable;
 use function time;
 
 /**
@@ -148,12 +147,23 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         ];
 
         $grants = new GraphQlWriteGrants();
-        $granted = array_values(array_diff($grants->of($state), $grants->of($this->stored($state))));
+        $stored = $this->stored($state);
+        $granted = array_values(array_diff($grants->of($state), $grants->of($stored)));
         if ($granted !== []) {
             $problems[] = sprintf(
                 'Write access cannot be proposed (%s). Propose read access only; a person grants '
                 . 'create, update and delete in the Data Hub editor.',
                 implode(', ', $granted),
+            );
+        }
+
+        $widened = $grants->changedWriteInputs($state, $stored);
+        if ($widened !== []) {
+            $problems[] = sprintf(
+                'The input fields of a mutation entity that may create or update cannot be proposed (%s): '
+                . 'they decide what the API writes. Keep its columnConfig as stored; a person changes it in '
+                . 'the Data Hub editor.',
+                implode(', ', $widened),
             );
         }
 
@@ -380,12 +390,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     private function find(array $state): ?Configuration
     {
         $name = $state['general']['name'] ?? null;
-
-        try {
-            $configuration = is_string($name) ? Configuration::getByName($name) : null;
-        } catch (Throwable) {
-            return null;
-        }
+        $configuration = is_string($name) ? Configuration::getByName($name) : null;
 
         return $configuration?->getName() !== null ? $configuration : null;
     }
