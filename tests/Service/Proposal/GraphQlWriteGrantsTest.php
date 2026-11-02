@@ -19,6 +19,8 @@ use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlWriteGrants;
 
 class GraphQlWriteGrantsTest extends Unit
 {
+    private const string CAR_COLUMNS = 'schema.mutationEntities.Car columnConfig';
+
     private const array COLUMNS = ['columns' => [['attributes' => ['attribute' => 'model']]]];
 
     private const array WIDER = ['columns' => [
@@ -31,14 +33,14 @@ class GraphQlWriteGrantsTest extends Unit
         $stored = $this->document(['update' => true, 'columnConfig' => self::COLUMNS]);
 
         $this->assertSame(
-            ['schema.mutationEntities.Car columnConfig'],
+            [self::CAR_COLUMNS],
             (new GraphQlWriteGrants())->changedWriteInputs(
                 $this->document(['update' => true, 'columnConfig' => self::WIDER]),
                 $stored,
             ),
         );
         $this->assertSame(
-            ['schema.mutationEntities.Car columnConfig'],
+            [self::CAR_COLUMNS],
             (new GraphQlWriteGrants())->changedWriteInputs(
                 $this->document(['createAllowed' => 1, 'update' => true]),
                 $this->document(['CREATE' => true, 'columnConfig' => self::COLUMNS]),
@@ -72,14 +74,17 @@ class GraphQlWriteGrantsTest extends Unit
         $reordered = ['columns' => [['isOperator' => false, 'attributes' => array_reverse($model)]]];
         $grants = new GraphQlWriteGrants();
 
-        $this->assertSame([], $grants->changedWriteInputs(
-            $this->document(['update' => true, 'columnConfig' => $reordered]),
-            $this->document(['columnConfig' => $columns, 'update' => true]),
-        ));
+        $this->assertSame(
+            [],
+            $grants->changedWriteInputs(
+                $this->document(['update' => true, 'columnConfig' => $reordered]),
+                $this->document(['columnConfig' => $columns, 'update' => true]),
+            ),
+        );
         // a list's order is the fields' order, so it still counts
         $reversed = ['columns' => array_reverse(self::WIDER['columns'])];
         $this->assertSame(
-            ['schema.mutationEntities.Car columnConfig'],
+            [self::CAR_COLUMNS],
             $grants->changedWriteInputs(
                 $this->document(['update' => true, 'columnConfig' => $reversed]),
                 $this->document(['update' => true, 'columnConfig' => self::WIDER]),
