@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl;
 
+use function implode;
 use LogicException;
 use Pimcore\Bundle\ChangeControlBundle\Merge\Exception\UnsupportedMergeSaveModeException;
 use Pimcore\Bundle\ChangeControlBundle\Merge\MergeSaveMode;
@@ -61,7 +62,7 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
     {
         $configuration = $this->load($subject->ref);
 
-        // no configuration yet: the create lane has no base and merges last-write-wins
+        // no configuration yet: an empty base, and an approval once the name is taken is refused
         return $configuration === null
             ? []
             : ConfigDocument::readable($configuration->getConfiguration(), $this->policy);
@@ -104,6 +105,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         }
 
         $name = $subject->ref;
+        $proposedAsNew = ($finalData[ConfigDocument::CREATE_MARKER] ?? false) === true;
+        unset($finalData[ConfigDocument::CREATE_MARKER]);
 
         if ($finalData === []) {
             // an empty merged state would be a removal; a configuration is never deleted through a merge
@@ -123,7 +126,31 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             ));
         }
 
+        if ($proposedAsNew && $stored !== null) {
+            // two creates of one name share an empty base, so the later one would merge onto the first
+            throw new LogicException(sprintf(
+                'Refusing to create the %s "%s": a configuration of that name was saved since it was proposed. '
+                . 'Propose it again as a change.',
+                $this->policy->noun(),
+                $name,
+            ));
+        }
+
         $isNew = $stored === null;
+        // an amendment made in the review, or a reference removed while it waited, never met the propose tool's checks
+        $problems = $this->policy->problems(
+            ConfigDocument::readable($this->withIdentity($finalData, $name), $this->policy),
+            $isNew,
+        );
+        if ($problems !== []) {
+            throw new LogicException(sprintf(
+                'Refusing to apply the %s "%s": %s',
+                $this->policy->noun(),
+                $name,
+                implode(' ', $problems),
+            ));
+        }
+
         if ($isNew) {
             $this->configurations->addConfiguration(
                 $name,
@@ -133,11 +160,10 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             $stored = $this->load($name);
         }
 
-        $configuration = ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy);
-
-        // identity and adapter type are the subject's, not the draft's
-        $configuration['general']['name'] = $name;
-        $configuration['general']['type'] = $this->policy->configType();
+        $configuration = $this->withIdentity(
+            ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy),
+            $name,
+        );
 
         try {
             $this->policy->save($name, $configuration);
@@ -150,6 +176,21 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         }
 
         return [];
+    }
+
+    /**
+     * Identity and adapter type are the subject's, not the draft's.
+     *
+     * @param array<string, mixed> $state
+     *
+     * @return array<string, mixed>
+     */
+    private function withIdentity(array $state, string $name): array
+    {
+        $state['general']['name'] = $name;
+        $state['general']['type'] = $this->policy->configType();
+
+        return $state;
     }
 
     /** the configuration stored under this name when it is one of this adapter's */

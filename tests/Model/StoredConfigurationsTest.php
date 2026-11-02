@@ -67,7 +67,7 @@ class StoredConfigurationsTest extends ModelTestCase
         );
     }
 
-    public function testAStoredEntryThatCannotBeReadIsNotFound(): void
+    public function testAStoredEntryThatCannotBeReadIsNoFreeName(): void
     {
         SettingsStore::set(
             self::UNREADABLE,
@@ -76,16 +76,9 @@ class StoredConfigurationsTest extends ModelTestCase
             'pimcore_data_hub',
         );
 
-        $thrown = null;
+        $this->expectException(TypeError::class);
 
-        try {
-            Configuration::getByName(self::UNREADABLE);
-        } catch (TypeError $error) {
-            $thrown = $error;
-        }
-        $this->assertInstanceOf(TypeError::class, $thrown, 'the stored entry must be unreadable');
-
-        $this->assertNull((new StoredConfigurations())->find(self::UNREADABLE));
+        (new StoredConfigurations())->find(self::UNREADABLE);
     }
 
     /** the list is cached per process, and neither a save nor a delete resets it */

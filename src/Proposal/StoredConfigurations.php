@@ -16,7 +16,6 @@ namespace Pimcore\Bundle\DataHubBundle\Proposal;
 
 use function array_values;
 use Pimcore\Bundle\DataHubBundle\Configuration;
-use Throwable;
 
 /**
  * @internal
@@ -25,11 +24,8 @@ final class StoredConfigurations implements StoredConfigurationsInterface
 {
     public function find(string $name): ?Configuration
     {
-        try {
-            $configuration = Configuration::getByName($name);
-        } catch (Throwable) {
-            return null;
-        }
+        // an unreadable entry is not an absent one: it must fail closed, not pass for a free name
+        $configuration = Configuration::getByName($name);
 
         return $configuration?->getName() !== null ? $configuration : null;
     }

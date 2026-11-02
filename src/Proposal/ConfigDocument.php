@@ -21,7 +21,9 @@ use function array_pop;
 use function explode;
 use function in_array;
 use function is_array;
+use function ksort;
 use function preg_match;
+use const SORT_STRING;
 use function str_contains;
 
 /**
@@ -31,6 +33,12 @@ use function str_contains;
  */
 final class ConfigDocument
 {
+    /**
+     * Marks a proposal made while nothing was stored under its name. Change Control hands the
+     * subject only the merged state, so this is how an approval tells a create from a change.
+     */
+    public const string CREATE_MARKER = '__new';
+
     /**
      * Bookkeeping the editor never binds and a draft must never carry: it changes on every
      * save, so a draft holding it would report a change nobody made.
@@ -170,6 +178,27 @@ final class ConfigDocument
         }
 
         return $configuration;
+    }
+
+    /**
+     * Compared strictly, "01" and "1" differ; a map's key order is no change.
+     *
+     * @param array<array-key, mixed> $document
+     *
+     * @return array<array-key, mixed>
+     */
+    public static function normalized(array $document): array
+    {
+        if (!array_is_list($document)) {
+            ksort($document, SORT_STRING);
+        }
+        foreach ($document as $key => $value) {
+            if (is_array($value)) {
+                $document[$key] = self::normalized($value);
+            }
+        }
+
+        return $document;
     }
 
     /**

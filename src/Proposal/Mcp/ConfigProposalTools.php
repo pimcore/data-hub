@@ -91,7 +91,7 @@ final readonly class ConfigProposalTools
                     continue;
                 }
 
-                $document = $configuration->getConfiguration();
+                $document = ConfigDocument::readable($configuration->getConfiguration(), $policy);
                 $general = $document['general'] ?? [];
                 $configurations[] = [
                     'name' => $configuration->getName(),
@@ -199,6 +199,7 @@ final readonly class ConfigProposalTools
             // a configuration nobody switched on must not go live because it was reviewed
             $state['general']['active'] ??= false;
             $state['general']['path'] ??= '';
+            $state[ConfigDocument::CREATE_MARKER] = true;
         }
 
         $proposalId = bin2hex(random_bytes(16));
@@ -360,7 +361,10 @@ final readonly class ConfigProposalTools
         ?Configuration $existing,
         ?array $state,
     ): ?string {
-        if ($existing === null || $state === null || $state != $this->stateFor($policy, $name, $existing, [])) {
+        if ($existing === null
+            || $state === null
+            || ConfigDocument::normalized($state)
+                !== ConfigDocument::normalized($this->stateFor($policy, $name, $existing, []))) {
             return null;
         }
 

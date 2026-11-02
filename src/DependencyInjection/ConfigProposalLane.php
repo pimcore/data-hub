@@ -31,7 +31,8 @@ final class ConfigProposalLane
     /** Change Control is installed, so a configuration can be a reviewed subject */
     public static function canReview(ContainerBuilder $container): bool
     {
-        return self::exists($container, SubjectHandlerInterface::class);
+        return self::exists($container, SubjectHandlerInterface::class)
+            && self::enabled($container, 'Pimcore\\Bundle\\ChangeControlBundle\\PimcoreChangeControlBundle');
     }
 
     /** an agent can also author proposals: there is something to review them with and to record them in */
@@ -40,7 +41,22 @@ final class ConfigProposalLane
         return self::canReview($container)
             && self::exists($container, McpTool::class)
             && self::exists($container, McpToolErrorHandlerInterface::class)
-            && self::exists($container, ProposalWidgetEmitter::class);
+            && self::exists($container, ProposalWidgetEmitter::class)
+            && self::enabled($container, 'Pimcore\\Bundle\\PimcoreAgentBundle\\PimcoreAgentBundle');
+    }
+
+    /**
+     * A bundle Composer installed but the kernel does not register has no services: its classes alone would wire
+     * the lane against services that do not exist (nightly-agentic's profile, 2026-10-22). Without the kernel's
+     * bundle list (a bare container) the class check decides alone.
+     */
+    private static function enabled(ContainerBuilder $container, string $bundle): bool
+    {
+        if (!$container->hasParameter('kernel.bundles')) {
+            return true;
+        }
+
+        return in_array($bundle, (array) $container->getParameter('kernel.bundles'), true);
     }
 
     private static function exists(ContainerBuilder $container, string $class): bool

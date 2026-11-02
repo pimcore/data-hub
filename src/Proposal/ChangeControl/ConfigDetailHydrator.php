@@ -28,6 +28,7 @@ use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorInterface;
 use Pimcore\Bundle\ChangeControlBundle\Hydrator\SlotDetail;
 use Pimcore\Bundle\ChangeControlBundle\Merge\LeafPath;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Model\UserInterface;
 
@@ -59,7 +60,7 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
         // a section no tab names still has to reach the reviewer
         foreach ($tree as $key => $value) {
             $key = (string) $key;
-            if (!$this->isKnown($key)) {
+            if ($key !== ConfigDocument::CREATE_MARKER && !$this->isKnown($key)) {
                 $slots[$key] = new SlotDetail(SlotDetail::SHAPE_RECORD, $this->flatten([$key], $value));
             }
         }
@@ -70,13 +71,18 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
     public function dehydrate(SubjectRef $subject, array $patch, array $proposed, ?UserInterface $user = null): array
     {
         // a withheld leaf is never stored through a review: an address naming one, or a section
-        // sent whole that holds one, is dropped, so Change Control refuses the amendment
+        // sent whole that holds one, is dropped, so Change Control refuses the amendment; the
+        // create marker is stored only as the proposal sets it, so a review can never clear it
         $patch = array_filter(
             $patch,
-            fn (mixed $value, int|string $address): bool => !$this->isWithheld(
-                LeafPath::split((string) $address),
-                $value,
-            ),
+            function (mixed $value, int|string $address): bool {
+                $segments = LeafPath::split((string) $address);
+                if ($segments[0] === ConfigDocument::CREATE_MARKER) {
+                    return $segments === [ConfigDocument::CREATE_MARKER] && $value === true;
+                }
+
+                return !$this->isWithheld($segments, $value);
+            },
             ARRAY_FILTER_USE_BOTH,
         );
 

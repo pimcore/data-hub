@@ -37,6 +37,8 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRegistry;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
+use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
@@ -44,6 +46,7 @@ use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface
 use Pimcore\Model\User;
 use Pimcore\Model\UserInterface;
 use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -138,6 +141,77 @@ class ConfigSubjectHandlerTest extends Unit
         );
     }
 
+    public function testASecondCreateOfOneNameIsRefusedAndKeepsTheFirstConfiguration(): void
+    {
+        $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
+            $this->stored->put(
+                $this->configuration($name, ['general' => ['active' => true, 'description' => 'first']])
+            );
+
+            return $name;
+        });
+        $policy = new RecordingConfigPolicy();
+        $handler = $this->handler($policy);
+
+        $handler->applyMerged($this->ref(), [
+            'general' => ['active' => true, 'description' => 'first'],
+            ConfigDocument::CREATE_MARKER => true,
+        ], $this->user([]), MergeSaveMode::Publish);
+        $this->assertCount(1, $policy->saved);
+
+        // both were proposed while the name was free; the empty base merges the second onto the first
+        try {
+            $handler->applyMerged($this->ref(), [
+                'general' => ['active' => true, 'description' => 'first'],
+                'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
+                ConfigDocument::CREATE_MARKER => true,
+            ], $this->user([]), MergeSaveMode::Publish);
+            $this->fail('A create approved after the name was taken must not change the stored configuration.');
+        } catch (LogicException $e) {
+            $this->assertStringContainsString('Propose it again as a change', $e->getMessage());
+        }
+
+        $this->assertCount(1, $policy->saved);
+        $this->assertSame(
+            ['general' => ['active' => true, 'description' => 'first']],
+            $this->stored->find('orders')?->getConfiguration(),
+        );
+    }
+
+    public function testTheCreateMarkerIsNeverSaved(): void
+    {
+        $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
+            $this->stored->put($this->configuration($name, ['general' => []]));
+
+            return $name;
+        });
+        $policy = new RecordingConfigPolicy();
+
+        $this->handler($policy)->applyMerged(
+            $this->ref(),
+            ['general' => ['active' => false], ConfigDocument::CREATE_MARKER => true],
+            $this->user([]),
+            MergeSaveMode::Publish,
+        );
+
+        $this->assertArrayNotHasKey(ConfigDocument::CREATE_MARKER, $policy->saved[0][1]);
+        $this->assertArrayNotHasKey(ConfigDocument::CREATE_MARKER, $policy->checked[0][0]);
+    }
+
+    public function testACreateMarkerAloneIsAnEmptyState(): void
+    {
+        $this->configurations->expects($this->never())->method('addConfiguration');
+
+        $this->expectExceptionMessage('Refusing to apply an empty state');
+
+        $this->handler(new RecordingConfigPolicy())->applyMerged(
+            $this->ref(),
+            [ConfigDocument::CREATE_MARKER => true],
+            $this->user([]),
+            MergeSaveMode::Publish,
+        );
+    }
+
     public function testACreateWhoseSaveFailsLeavesNoConfigurationBehind(): void
     {
         $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
@@ -216,6 +290,62 @@ class ConfigSubjectHandlerTest extends Unit
             $this->assertStringContainsString('belongs to a graphql configuration', $e->getMessage());
         }
 
+        $this->assertSame([], $policy->saved);
+    }
+
+    public function testAMergedStateTheAdapterRefusesIsNeverSaved(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true, 'apiKey' => 'stored-key'],
+        ]));
+        $policy = new RecordingConfigPolicy(['Unknown event "x".']);
+
+        try {
+            $this->handler($policy)->applyMerged(
+                $this->ref(),
+                [
+                    'general' => ['active' => true, 'apiKey' => 'proposed-key', 'modificationDate' => 3],
+                    'eventsSchema' => ['events' => ['x']],
+                ],
+                $this->user([]),
+                MergeSaveMode::Publish,
+            );
+            $this->fail('A reviewer\'s amendment must meet the adapter\'s checks too.');
+        } catch (LogicException $e) {
+            $this->assertSame(
+                'Refusing to apply the webhook configuration "orders": Unknown event "x".',
+                $e->getMessage(),
+            );
+        }
+
+        $this->assertSame([], $policy->saved);
+        $this->assertSame([[
+            [
+                'general' => ['active' => true, 'name' => 'orders', 'type' => 'webhooks'],
+                'eventsSchema' => ['events' => ['x']],
+            ],
+            false,
+        ]], $policy->checked);
+    }
+
+    public function testANewConfigurationTheAdapterRefusesIsNeverCreated(): void
+    {
+        $this->configurations->expects($this->never())->method('addConfiguration');
+        $policy = new RecordingConfigPolicy(['Unknown class "y".']);
+
+        try {
+            $this->handler($policy)->applyMerged(
+                $this->ref(),
+                ['general' => ['active' => false]],
+                $this->user([]),
+                MergeSaveMode::Publish,
+            );
+            $this->fail('A reference that went away while the proposal waited must not be created.');
+        } catch (LogicException $e) {
+            $this->assertStringEndsWith('Unknown class "y".', $e->getMessage());
+        }
+
+        $this->assertTrue($policy->checked[0][1]);
         $this->assertSame([], $policy->saved);
     }
 
@@ -315,6 +445,31 @@ class ConfigSubjectHandlerTest extends Unit
 
         $this->expectException(SubjectAccessDeniedException::class);
         $this->handler(new RecordingConfigPolicy())->authorizeRead($this->ref(), $this->user([]));
+    }
+
+    public function testAConfigurationThatCannotBeLookedUpIsNeitherReviewedNorApproved(): void
+    {
+        $stored = $this->createStub(StoredConfigurationsInterface::class);
+        $stored->method('find')->willThrowException(new RuntimeException('unreadable entry'));
+        $adapters = $this->createStub(AdapterAvailabilityServiceInterface::class);
+        $adapters->method('isEnabled')->willReturn(true);
+        $handler = new ConfigSubjectHandler(new RecordingConfigPolicy(), $this->configurations, $stored, $adapters);
+        $creator = $this->user([
+            PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
+            PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+        ]);
+
+        foreach ([
+            fn () => $handler->authorizeRead($this->ref(), $creator),
+            fn () => $handler->authorize($this->ref(), $creator, MergeSaveMode::Publish),
+        ] as $check) {
+            try {
+                $check();
+                $this->fail('An unreadable configuration must not pass for a new one.');
+            } catch (RuntimeException $e) {
+                $this->assertSame('unreadable entry', $e->getMessage());
+            }
+        }
     }
 
     public function testAnActorThatIsNoUserModelIsDenied(): void
