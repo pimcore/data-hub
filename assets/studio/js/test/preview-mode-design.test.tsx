@@ -86,7 +86,7 @@ beforeEach(() => {
 })
 
 describe('schema modal preview mode design', () => {
-  test('AC1: the switch, the bar and the language switch are in one row, followed by a divider', () => {
+  test('AC1: the switch, the bar and the language switch are in one row', () => {
     render(modal())
     turnOn()
 
@@ -96,7 +96,7 @@ describe('schema modal preview mode design', () => {
     expect(within(header).getByText('ID: 5')).toBeInTheDocument()
     expect(within(header).getByLabelText('preview-language')).toBeInTheDocument()
     expect(screen.getAllByTestId('preview-bar')).toHaveLength(1)
-    expect(screen.getByTestId('preview-mode-header-divider')).toBeInTheDocument()
+    expect(screen.queryByTestId('preview-mode-header-divider')).not.toBeInTheDocument()
   })
 
   test('AC1: the language of the bar decides the language of the values', () => {
@@ -156,7 +156,7 @@ describe('schema modal preview mode design', () => {
   test('AC5: the state of the screenshots renders: bar, divider and a "Preview" row per column', () => {
     render(modal())
     turnOn()
-    expect(screen.getByTestId('preview-mode-header-divider')).toBeInTheDocument()
+    expect(screen.queryByTestId('preview-mode-header-divider')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('preview-mode-column-preview-divider')).toHaveLength(3)
   })
 })

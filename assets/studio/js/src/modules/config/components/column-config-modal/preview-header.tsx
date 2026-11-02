@@ -9,7 +9,6 @@
  */
 
 import React, { useEffect } from 'react'
-import { Divider } from 'antd'
 import { Flex, PreviewModeBar, PreviewModeSwitch, Toolbar, usePreviewMode } from '@pimcore/studio-ui-bundle/components'
 
 export interface PreviewHeaderProps {
@@ -19,7 +18,7 @@ export interface PreviewHeaderProps {
   onLanguageChange?: (language: string) => void
 }
 
-/** The row below the modal title, in the same Toolbar as the Grid Configuration modal's (its border): the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on, then a divider while it is on (DR-P7, F11) */
+/** The row below the modal title, in the same Toolbar as the Grid Configuration modal's (its border): the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on; laid out as the grid modal's row, the flag at the right end (DR-P11, F24) */
 export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHeaderProps): React.JSX.Element => {
   const { enabled, language: previewLanguage, setLanguage } = usePreviewMode()
 
@@ -32,34 +31,24 @@ export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHea
   }, [previewLanguage])
 
   return (
-    <>
-      <Toolbar
-        padding={ { x: 'none' } }
-        position='content'
-        theme='secondary'
+    <Toolbar
+      padding={ { x: 'none' } }
+      position='content'
+      theme='secondary'
+    >
+      <Flex
+        align='center'
+        data-testid='preview-mode-header'
+        gap='small'
+        style={ { width: '100%' } }
       >
-        <Flex
-          align='center'
-          data-testid='preview-mode-header'
-          gap='small'
-        >
-          <PreviewModeSwitch />
+        <PreviewModeSwitch />
 
-          <div style={ { flex: 1, minWidth: 0 } }>
-            <PreviewModeBar
-              allowedClasses={ [entity] }
-              showItem={ enabled }
-            />
-          </div>
-        </Flex>
-      </Toolbar>
-
-      { enabled && (
-        <Divider
-          data-testid='preview-mode-header-divider'
-          style={ { margin: '8px 0' } }
+        <PreviewModeBar
+          allowedClasses={ [entity] }
+          showItem={ enabled }
         />
-      ) }
-    </>
+      </Flex>
+    </Toolbar>
   )
 }
