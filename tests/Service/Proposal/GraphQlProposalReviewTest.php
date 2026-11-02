@@ -24,6 +24,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration\Workspace\Dao as WorkspaceDao;
 use Pimcore\Bundle\DataHubBundle\Installer;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Db;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\User;
 use Pimcore\Security\User\User as SecurityUser;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,6 +44,11 @@ class GraphQlProposalReviewTest extends Unit
     private const string APPROVED = 'proposal-review-approved';
 
     private const string REJECTED = 'proposal-review-rejected';
+
+    /** approving checks the query entities against the installation's classes again */
+    private const string CLASS_NAME = 'ProposalReviewCar';
+
+    private ?ClassDefinition $class = null;
 
     private ?User $reviewer = null;
 
@@ -67,6 +73,23 @@ class GraphQlProposalReviewTest extends Unit
             $installer->install();
         }
 
+        if (ClassDefinition::getByName(self::CLASS_NAME) === null) {
+            $input = new ClassDefinition\Data\Input();
+            $input->setName('model');
+            $input->setTitle('Model');
+            $panel = new ClassDefinition\Layout\Panel();
+            $panel->setName('main');
+            $panel->addChild($input);
+            $root = new ClassDefinition\Layout\Panel();
+            $root->setName('pimcore_root');
+            $root->addChild($panel);
+
+            $this->class = new ClassDefinition();
+            $this->class->setName(self::CLASS_NAME);
+            $this->class->setLayoutDefinitions($root);
+            $this->class->save();
+        }
+
         $this->session = 'chat-' . bin2hex(random_bytes(8));
         $this->reviewer = User::create([
             'parentId' => 0,
@@ -88,6 +111,8 @@ class GraphQlProposalReviewTest extends Unit
                 $configuration->getDao()->delete();
             }
         }
+
+        $this->class?->delete();
 
         if ($this->reviewer !== null) {
             $this->tokens()->setToken(null);
@@ -112,8 +137,8 @@ class GraphQlProposalReviewTest extends Unit
         $this->assertSame(self::APPROVED, $stored['general']['name']);
         $this->assertSame('Cars', $stored['general']['description']);
         $this->assertFalse($stored['general']['active']);
-        $this->assertSame(['Car'], array_keys($stored['schema']['queryEntities']));
-        $this->assertSame('Car', $stored['schema']['queryEntities']['Car']['id']);
+        $this->assertSame([self::CLASS_NAME], array_keys($stored['schema']['queryEntities']));
+        $this->assertSame(self::CLASS_NAME, $stored['schema']['queryEntities'][self::CLASS_NAME]['id']);
 
         $rows = $this->workspaceRows(self::APPROVED);
         $this->assertCount(1, $rows);
@@ -153,7 +178,9 @@ class GraphQlProposalReviewTest extends Unit
                 'description' => 'Cars',
             ],
             'schema' => [
-                'queryEntities' => ['Car' => ['id' => 'Car', 'name' => 'Car', 'columnConfig' => []]],
+                'queryEntities' => [
+                    self::CLASS_NAME => ['id' => self::CLASS_NAME, 'name' => self::CLASS_NAME, 'columnConfig' => []],
+                ],
             ],
             'workspaces' => [
                 'object' => [['cpath' => '/', 'read' => true, 'create' => false, 'update' => false, 'delete' => false]],
