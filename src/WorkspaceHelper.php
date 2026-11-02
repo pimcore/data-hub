@@ -354,8 +354,11 @@ final class WorkspaceHelper
      *
      * @param string $fullPathExpression SQL expression evaluating to the listed element's full path
      */
-    public static function getReadPermissionCondition(Configuration $configuration, string $elementType, string $fullPathExpression): string
-    {
+    public static function getReadPermissionCondition(
+        Configuration $configuration,
+        string $elementType,
+        string $fullPathExpression
+    ): string {
         $db = Db::get();
         $workspaces = $db->fetchAllAssociative(
             'SELECT cpath, `read` FROM ' . $db->quoteIdentifier('plugin_datahub_workspaces_' . $elementType) . '

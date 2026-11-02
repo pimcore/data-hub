@@ -145,7 +145,8 @@ final class AssetListing
             $conditionParts[] = WorkspaceHelper::getReadPermissionCondition(
                 $configuration,
                 'asset',
-                'CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.filename)'
+                'CONCAT(' . $db->quoteIdentifier($tableName) . '.path,'
+                . $db->quoteIdentifier($tableName) . '.filename)'
             );
         }
 
