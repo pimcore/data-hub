@@ -14,6 +14,7 @@ import { type BackendConfiguration } from '../../src/modules/graphql/components/
 import {
   annotationsFor, configChanges, groupChanges, isNewConfiguration, listSizeChange, proposedConfiguration, toFormPath
 } from '../../src/modules/graphql/change-control/config-review-model'
+import { assign, unassign } from '../../src/modules/graphql/change-control/document-shape'
 
 type Leaves = Record<string, unknown>
 
@@ -131,6 +132,58 @@ describe('proposedConfiguration', () => {
     expect(configuration.schema?.queryEntities).toEqual({ Product: { id: 'Product', name: 'Product' } })
     expect(configuration.general).not.toHaveProperty('group')
     expect(configuration.general?.name).toBe('shop')
+  })
+
+  it('shows a generic-type flag the proposal removes as off and keeps what the editor offers', () => {
+    const configuration = proposedConfiguration(review({
+      schema: slot(
+        { 'schema.specialEntities.translation.read': true, 'schema.specialEntities.translation.create': true },
+        { 'schema.specialEntities.translation.create': true }
+      )
+    }), {
+      schema: {
+        specialEntities: [{
+          name: 'translation',
+          readAllowed: true,
+          createAllowed: true,
+          updateAllowed: false,
+          deleteAllowed: false,
+          readPossible: true,
+          createPossible: true
+        }]
+      }
+    } as unknown as BackendConfiguration)
+
+    expect(configuration.schema?.specialEntities).toEqual([expect.objectContaining({
+      name: 'translation', readAllowed: false, createAllowed: true, readPossible: true, createPossible: true
+    })])
+  })
+
+  it('never reaches a prototype through a proposed address', () => {
+    const configuration = proposedConfiguration(review({
+      general: slot(
+        { 'general.__proto__.name': 'live' },
+        { 'general.__proto__.polluted': 'yes', 'general.constructor.prototype.polluted': 'yes', 'prototype.polluted': 'yes' }
+      )
+    }), { general: { name: 'shop' } } as unknown as BackendConfiguration)
+
+    expect(Reflect.get({}, 'polluted')).toBeUndefined()
+    expect(configuration).toEqual({ general: { name: 'shop' }, schema: {} })
+  })
+
+  it('assigns and removes own properties only', () => {
+    const target: Record<string, unknown> = {}
+    assign(target, '__proto__.polluted', 'yes')
+    assign(target, 'a.constructor.prototype.polluted', 'yes')
+    assign(target, 'toString.polluted', 'yes')
+    unassign(target, '__proto__.hasOwnProperty')
+    unassign(target, 'constructor.prototype.toString')
+
+    expect(Reflect.get({}, 'polluted')).toBeUndefined()
+    expect(Object.prototype.hasOwnProperty).toBeTypeOf('function')
+    expect(Object.prototype.toString).toBeTypeOf('function')
+    expect((Function.prototype as unknown as Record<string, unknown>).polluted).toBeUndefined()
+    expect(target).toEqual({ toString: { polluted: 'yes' } })
   })
 
   it('is the live document without a payload, and the proposal alone without a live one', () => {

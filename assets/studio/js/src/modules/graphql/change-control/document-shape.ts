@@ -27,12 +27,15 @@ export function toStoredShape (live: Doc): Doc {
     }
   }
   if (Array.isArray(schema.specialEntities)) {
-    schema.specialEntities = keyBy(schema.specialEntities as Doc[], (setting) => setting.name, (setting) => ({
+    // the aliases go: a flag the proposal removes must not come back from the live alias
+    schema.specialEntities = keyBy(schema.specialEntities as Doc[], (setting) => setting.name, ({
+      readAllowed, createAllowed, updateAllowed, deleteAllowed, ...setting
+    }) => ({
       ...setting,
-      read: setting.readAllowed ?? false,
-      create: setting.createAllowed ?? false,
-      update: setting.updateAllowed ?? false,
-      delete: setting.deleteAllowed ?? false
+      read: readAllowed ?? false,
+      create: createAllowed ?? false,
+      update: updateAllowed ?? false,
+      delete: deleteAllowed ?? false
     }))
   }
   doc.schema = schema
@@ -57,16 +60,28 @@ export function toEditorShape (doc: Doc): Doc {
   return doc
 }
 
+/** a proposed address is untrusted: none of these may reach a prototype */
+const UNSAFE_SEGMENTS = new Set(['__proto__', 'prototype', 'constructor'])
+
+const safeSegments = (address: string): string[] | undefined => {
+  const segments = address.split('.')
+  return segments.some((segment) => UNSAFE_SEGMENTS.has(segment)) ? undefined : segments
+}
+
+const ownObject = (node: Record<string, unknown>, segment: string): boolean =>
+  Object.prototype.hasOwnProperty.call(node, segment) && typeof node[segment] === 'object' && node[segment] !== null
+
 /** Un-flattens `a.b.c` leaves back into a nested object. */
 export function assign (target: Record<string, unknown>, address: string, value: unknown): void {
-  const segments = address.split('.')
+  const segments = safeSegments(address)
+  if (segments === undefined) return
   let node = target
   segments.forEach((segment, index) => {
     if (index === segments.length - 1) {
       node[segment] = value
       return
     }
-    if (typeof node[segment] !== 'object' || node[segment] === null) {
+    if (!ownObject(node, segment)) {
       node[segment] = {}
     }
     node = node[segment] as Record<string, unknown>
@@ -75,11 +90,12 @@ export function assign (target: Record<string, unknown>, address: string, value:
 
 /** Removes an `a.b.c` leaf, and every object it leaves empty under its section. */
 export function unassign (target: Record<string, unknown>, address: string): void {
-  const segments = address.split('.')
+  const segments = safeSegments(address)
+  if (segments === undefined) return
   const parents: Array<Record<string, unknown>> = []
   let node = target
   for (const segment of segments.slice(0, -1)) {
-    if (typeof node[segment] !== 'object' || node[segment] === null) return
+    if (!ownObject(node, segment)) return
     parents.push(node)
     node = node[segment] as Record<string, unknown>
   }
