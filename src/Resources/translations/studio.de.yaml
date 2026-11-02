@@ -156,4 +156,3 @@ data-hub.review.outline.mutations-one: '1 Mutation-Entität'
 data-hub.review.outline.mutations: '{{count}} Mutation-Entitäten'
 data-hub.review.outline.rules-one: '1 Workspace-Regel'
 data-hub.review.outline.rules: '{{count}} Workspace-Regeln'
-data-hub.review.outline.nothing: Noch nichts lesbar

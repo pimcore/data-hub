@@ -72,8 +72,8 @@ export function configBrief (configuration: BackendConfiguration, t: Translate):
           value: queries.length <= 2 ? queries.join(', ') : plural(t, 'queries', queries.length),
           note: mutations.length === 0 ? undefined : plural(t, 'mutations', mutations.length)
         },
-    // no workspace means the endpoint can read nothing yet, which is worth saying out loud
-    { key: 'security', label: SECTION_LABELS.security, value: rules === 0 ? t(`${T}.nothing`) : plural(t, 'rules', rules) }
+    // a count, not "nothing readable": generic types such as translations read without a workspace
+    { key: 'security', label: SECTION_LABELS.security, value: plural(t, 'rules', rules) }
   ]
 
   return {

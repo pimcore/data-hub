@@ -177,4 +177,3 @@ data-hub.review.outline.mutations-one: '1 encja mutacji'
 data-hub.review.outline.mutations: '{{count}} encji mutacji'
 data-hub.review.outline.rules-one: '1 reguła obszaru roboczego'
 data-hub.review.outline.rules: '{{count}} reguł obszaru roboczego'
-data-hub.review.outline.nothing: Jeszcze nic do odczytu

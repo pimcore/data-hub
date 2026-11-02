@@ -177,4 +177,3 @@ data-hub.review.outline.mutations-one: '1 mutation entity'
 data-hub.review.outline.mutations: '{{count}} mutation entities'
 data-hub.review.outline.rules-one: '1 workspace rule'
 data-hub.review.outline.rules: '{{count}} workspace rules'
-data-hub.review.outline.nothing: Nothing readable yet

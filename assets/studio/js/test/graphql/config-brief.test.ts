@@ -62,14 +62,14 @@ describe('configBrief', () => {
     ])
   })
 
-  it('says out loud that an endpoint without a workspace reads nothing', () => {
+  it('counts zero workspace rules rather than calling the endpoint unreadable', () => {
     const brief = configBrief({} as unknown as BackendConfiguration, t)
 
     expect(brief).toEqual({
       name: '',
       active: false,
       description: undefined,
-      sections: [{ key: 'security', label: 'data-hub.tabs.security-definition', value: 'data-hub.review.outline.nothing' }]
+      sections: [{ key: 'security', label: 'data-hub.tabs.security-definition', value: 'data-hub.review.outline.rules:0' }]
     })
   })
 })
