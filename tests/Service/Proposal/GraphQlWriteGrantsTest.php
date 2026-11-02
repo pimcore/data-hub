@@ -65,6 +65,28 @@ class GraphQlWriteGrantsTest extends Unit
         $this->assertSame([], $grants->changedWriteInputs(['schema' => ['mutationEntities' => 'none']], $stored));
     }
 
+    public function testInputFieldsThatDifferOnlyInKeyOrderAreNotReported(): void
+    {
+        $model = ['attribute' => 'model', 'label' => 'Model'];
+        $columns = ['columns' => [['attributes' => $model, 'isOperator' => false]]];
+        $reordered = ['columns' => [['isOperator' => false, 'attributes' => array_reverse($model)]]];
+        $grants = new GraphQlWriteGrants();
+
+        $this->assertSame([], $grants->changedWriteInputs(
+            $this->document(['update' => true, 'columnConfig' => $reordered]),
+            $this->document(['columnConfig' => $columns, 'update' => true]),
+        ));
+        // a list's order is the fields' order, so it still counts
+        $reversed = ['columns' => array_reverse(self::WIDER['columns'])];
+        $this->assertSame(
+            ['schema.mutationEntities.Car columnConfig'],
+            $grants->changedWriteInputs(
+                $this->document(['update' => true, 'columnConfig' => $reversed]),
+                $this->document(['update' => true, 'columnConfig' => self::WIDER]),
+            ),
+        );
+    }
+
     /**
      * @param array<string, mixed> $car
      *

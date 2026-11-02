@@ -16,6 +16,7 @@ namespace Pimcore\Bundle\DataHubBundle\Proposal\GraphQl;
 
 use function is_array;
 use function is_string;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use function sprintf;
 use function strtolower;
 
@@ -85,12 +86,22 @@ final readonly class GraphQlWriteGrants
                 continue;
             }
 
-            if (($entity['columnConfig'] ?? null) !== ($storedEntity['columnConfig'] ?? null)) {
+            if ($this->inputsOf($entity) !== $this->inputsOf($storedEntity)) {
                 $changed[] = sprintf('schema.mutationEntities.%s columnConfig', $key);
             }
         }
 
         return $changed;
+    }
+
+    /**
+     * @param array<mixed> $entity
+     */
+    private function inputsOf(array $entity): mixed
+    {
+        $columns = $entity['columnConfig'] ?? null;
+
+        return is_array($columns) ? ConfigDocument::normalized($columns) : $columns;
     }
 
     /**
