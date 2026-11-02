@@ -20,6 +20,7 @@ jest.mock('@pimcore/studio-ui-bundle/components', () => ({
     <div
       data-testid={ testId }
       data-width={ style?.width }
+      data-min-width={ style?.minWidth }
     >{ children }</div>
   ),
   Toolbar: ({ children }: any) => <div>{ children }</div>,
@@ -35,6 +36,12 @@ describe('preview header flag placement', () => {
     const header = screen.getByTestId('preview-mode-header')
     expect(header).toHaveAttribute('data-width', '100%')
     expect(Array.from(header.children).map(child => child.getAttribute('data-testid'))).toEqual(['switch', 'bar'])
+  })
+
+  test('AC7: the row may shrink (minWidth 0) so a long item name does not push the flag off', () => {
+    render(<PreviewHeader entity='Product' />)
+
+    expect(screen.getByTestId('preview-mode-header')).toHaveAttribute('data-min-width', '0')
   })
 
   test('AC2: no divider below the row while preview mode is on', () => {
