@@ -18,9 +18,9 @@ let previewEnabled = false
 jest.mock('@pimcore/studio-ui-bundle/components', () => ({
   Flex: ({ children, style, 'data-testid': testId }: any) => (
     <div
+      data-min-width={ style?.minWidth }
       data-testid={ testId }
       data-width={ style?.width }
-      data-min-width={ style?.minWidth }
     >{ children }</div>
   ),
   Toolbar: ({ children }: any) => <div>{ children }</div>,
