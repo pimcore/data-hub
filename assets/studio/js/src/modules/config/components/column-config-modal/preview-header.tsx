@@ -40,7 +40,7 @@ export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHea
         align='center'
         data-testid='preview-mode-header'
         gap='small'
-        style={ { width: '100%' } }
+        style={ { width: '100%', minWidth: 0 } }
       >
         <PreviewModeSwitch />
 
