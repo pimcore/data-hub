@@ -92,6 +92,30 @@ class GraphQlWriteGrantsTest extends Unit
         );
     }
 
+    public function testInputFieldsThatDifferOnlyInIntegralNumberTypeAreNotReported(): void
+    {
+        $grants = new GraphQlWriteGrants();
+        $stored = $this->document(['update' => true, 'columnConfig' => ['columns' => [['width' => 200]]]]);
+
+        $this->assertSame(
+            [],
+            $grants->changedWriteInputs(
+                $this->document(['update' => true, 'columnConfig' => ['columns' => [['width' => 200.0]]]]),
+                $stored,
+            ),
+        );
+        // a different number or a string is still a change
+        foreach ([200.5, '200'] as $width) {
+            $this->assertSame(
+                [self::CAR_COLUMNS],
+                $grants->changedWriteInputs(
+                    $this->document(['update' => true, 'columnConfig' => ['columns' => [['width' => $width]]]]),
+                    $stored,
+                ),
+            );
+        }
+    }
+
     /**
      * @param array<string, mixed> $car
      *

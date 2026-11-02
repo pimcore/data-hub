@@ -14,8 +14,14 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Proposal\GraphQl;
 
+use function array_map;
+use function floor;
 use function is_array;
+use function is_finite;
+use function is_float;
 use function is_string;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use function sprintf;
 use function strtolower;
@@ -101,7 +107,24 @@ final readonly class GraphQlWriteGrants
     {
         $columns = $entity['columnConfig'] ?? null;
 
-        return is_array($columns) ? ConfigDocument::normalized($columns) : $columns;
+        return $this->integral(is_array($columns) ? ConfigDocument::normalized($columns) : $columns);
+    }
+
+    /**
+     * 200.0 and 200 are the same setting; a JSON round trip may turn one into the other.
+     */
+    private function integral(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map($this->integral(...), $value);
+        }
+
+        if (is_float($value) && is_finite($value) && floor($value) === $value
+            && $value >= PHP_INT_MIN && $value < PHP_INT_MAX) {
+            return (int) $value;
+        }
+
+        return $value;
     }
 
     /**
