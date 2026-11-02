@@ -160,12 +160,15 @@ class GraphQlConfigPolicyTest extends Unit
         ];
         $this->store('graphql', $document);
 
-        $this->assertSame([], array_values(array_filter(
+        $inputProblems = array_filter(
             $this->policy()->problems($document, false),
             static fn (string $problem): bool => str_contains($problem, 'input fields'),
-        )));
+        );
+        $this->assertSame([], array_values($inputProblems));
 
-        $document['schema']['mutationEntities']['Car']['columnConfig']['columns'][] = ['attributes' => ['attribute' => 'price']];
+        $document['schema']['mutationEntities']['Car']['columnConfig']['columns'][] = [
+            'attributes' => ['attribute' => 'price'],
+        ];
         $refusal = $this->problemContaining('input fields', $this->policy()->problems($document, false));
         $this->assertStringContainsString('schema.mutationEntities.Car columnConfig', $refusal);
     }

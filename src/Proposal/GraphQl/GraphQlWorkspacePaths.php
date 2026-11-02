@@ -41,7 +41,9 @@ final readonly class GraphQlWorkspacePaths
     {
         $workspaces = $document['workspaces'] ?? [];
         if (!is_array($workspaces)) {
-            return ['workspaces needs the workspace types keyed by type, e.g. {"object": [{"cpath": "/", "read": true}]}.'];
+            return [
+                'workspaces needs the workspace types keyed by type, e.g. {"object": [{"cpath": "/", "read": true}]}.',
+            ];
         }
 
         $problems = [];

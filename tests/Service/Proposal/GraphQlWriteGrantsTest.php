@@ -54,19 +54,14 @@ class GraphQlWriteGrantsTest extends Unit
         // the same fields; read-only or delete-only after the change; an entity not stored yet
         $this->assertSame([], $grants->changedWriteInputs($stored, $stored));
         $this->assertSame([], $grants->changedWriteInputs($this->document(['columnConfig' => self::WIDER]), $stored));
-        $this->assertSame([], $grants->changedWriteInputs(
-            $this->document(['update' => false, 'delete' => true, 'columnConfig' => self::WIDER]),
-            $stored,
-        ));
-        $this->assertSame([], $grants->changedWriteInputs(
-            $this->document(['update' => true, 'columnConfig' => self::WIDER]),
-            $this->document(['delete' => true, 'columnConfig' => self::COLUMNS]),
-        ));
-        $this->assertSame([], $grants->changedWriteInputs(
-            $this->document(['update' => true, 'columnConfig' => self::WIDER]),
-            [],
-        ));
-        $this->assertSame([], $grants->changedWriteInputs(['schema' => ['mutationEntities' => ['Car' => 'x']]], $stored));
+        $wider = $this->document(['update' => true, 'columnConfig' => self::WIDER]);
+        $deleteOnly = $this->document(['update' => false, 'delete' => true, 'columnConfig' => self::WIDER]);
+        $storedDeleteOnly = $this->document(['delete' => true, 'columnConfig' => self::COLUMNS]);
+        $this->assertSame([], $grants->changedWriteInputs($deleteOnly, $stored));
+        $this->assertSame([], $grants->changedWriteInputs($wider, $storedDeleteOnly));
+        $this->assertSame([], $grants->changedWriteInputs($wider, []));
+        $notAnEntity = ['schema' => ['mutationEntities' => ['Car' => 'x']]];
+        $this->assertSame([], $grants->changedWriteInputs($notAnEntity, $stored));
         $this->assertSame([], $grants->changedWriteInputs(['schema' => ['mutationEntities' => 'none']], $stored));
     }
 

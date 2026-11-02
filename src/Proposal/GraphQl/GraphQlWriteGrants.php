@@ -72,8 +72,10 @@ final readonly class GraphQlWriteGrants
      */
     public function changedWriteInputs(array $document, array $stored): array
     {
-        $entities = is_array($document['schema']['mutationEntities'] ?? null) ? $document['schema']['mutationEntities'] : [];
-        $before = is_array($stored['schema']['mutationEntities'] ?? null) ? $stored['schema']['mutationEntities'] : [];
+        $entities = $document['schema']['mutationEntities'] ?? null;
+        $entities = is_array($entities) ? $entities : [];
+        $before = $stored['schema']['mutationEntities'] ?? null;
+        $before = is_array($before) ? $before : [];
 
         $changed = [];
         foreach ($entities as $key => $entity) {
