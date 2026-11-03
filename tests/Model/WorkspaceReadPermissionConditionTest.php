@@ -59,7 +59,7 @@ class WorkspaceReadPermissionConditionTest extends Unit
         'nested read=0 under read=1' => self::NESTED_RULES,
         'LIKE wildcards, backslash and quote in paths' => self::PATTERN_RULES,
         'read=0 next to LIKE wildcards' => [['/a', 1], ['/a/b_c/d', 0], ['/a/b_c/d/e', 1], ['/a/b%d/e', 1]],
-        'case' => [['/A/upper', 1]],
+        'case' => [['/C/upper', 1]],
         'longest by bytes, not characters' => [['/ééé', 0], ['/abcde', 1]],
         'read is NULL' => [['/n', null], ['/n/m', 1]],
         'root' => [['/', 1], ['/s', 0]],
@@ -70,10 +70,15 @@ class WorkspaceReadPermissionConditionTest extends Unit
      * Listed paths in addition to the workspace paths: their descendants, string prefixes, and
      * lookalikes that only match if a path were treated as a LIKE pattern or compared
      * case-insensitively.
+     *
+     * The case lookalikes have a subtree of their own: whether they match depends on how the
+     * database compares the paths, and that differs (in CI the MySQL jobs match them
+     * case-insensitively, the MariaDB jobs do not). The oracle test holds either way; the fixed
+     * expectations below must not depend on it.
      */
     private const OTHER_PATHS = [
         '/a/b', '/a/b_', '/a/b_c/d/e/f', '/a/bxc', '/a/bxc/d', '/a/b%d/e/f', '/a/bzzd/e', '/a/bzzd/e/f',
-        '/x', '/x\\y/z', '/xy', "/it's/x", '/A', '/a/upper', '/A/upper/x', '/A/UPPER/x', '/ab', '/abc',
+        '/x', '/x\\y/z', '/xy', "/it's/x", '/C', '/c/upper', '/C/upper/x', '/C/UPPER/x', '/ab', '/abc',
         '/abcde/x', '/q', '/p/q/r/s', '/p/qq', '/p/q/x', '/p/x', '/é', '/ééé/x', '/n/x', '/s/t',
     ];
 
