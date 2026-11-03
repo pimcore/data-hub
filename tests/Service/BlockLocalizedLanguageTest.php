@@ -179,7 +179,8 @@ class BlockLocalizedLanguageTest extends Unit
                 $elements = array_combine(
                     array_keys($row),
                     array_map(
-                        static fn (string $name, string $value): BlockElement => new BlockElement($name, 'input', $value),
+                        static fn (string $name, string $value): BlockElement =>
+                            new BlockElement($name, 'input', $value),
                         array_keys($row),
                         $row
                     )
