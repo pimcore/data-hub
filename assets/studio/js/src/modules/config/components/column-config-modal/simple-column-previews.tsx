@@ -14,6 +14,7 @@ import {
   ColumnPreview as PreviewModeColumnPreview,
   Grid,
   GridContentRenderer,
+  Spin,
   Text,
   usePreviewMode
 } from '@pimcore/studio-ui-bundle/components'
@@ -127,7 +128,7 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
           return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.no-item') }</Text>
         }
         if (isLoading) {
-          return <PreviewModeColumnPreview source={ { isLoading: true } } />
+          return <Spin size='small' />
         }
         if (hasError) {
           return <Text type='danger'>{ t('data-hub.column-config-modal.preview.error') }</Text>
