@@ -1004,7 +1004,8 @@ final class Service
                 );
             } else {
                 $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);
-                $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
+                // the block, not the child, decides: children with their own resolver pass their own definition
+                $isLocalizedField = self::isLocalizedField($container, $descriptorData['__blockName']);
                 if ($isLocalizedField) {
                     $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
                 } else {
