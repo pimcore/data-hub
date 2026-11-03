@@ -22,6 +22,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\BlockElement;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\Element\Service as ElementService;
 
 /**
@@ -38,15 +39,19 @@ class BlockLocalizedLanguageTest extends Unit
 
     private mixed $previousObject = null;
 
+    private bool $fallbackBefore;
+
     protected function setUp(): void
     {
         $this->cacheKey = ElementService::getElementCacheTag('object', self::OBJECT_ID);
         $this->wasRegistered = RuntimeCache::isRegistered($this->cacheKey);
         $this->previousObject = $this->wasRegistered ? RuntimeCache::get($this->cacheKey) : null;
+        $this->fallbackBefore = Localizedfield::getGetFallbackValues();
     }
 
     protected function tearDown(): void
     {
+        Localizedfield::setGetFallbackValues($this->fallbackBefore);
         if ($this->wasRegistered) {
             RuntimeCache::set($this->cacheKey, $this->previousObject);
         } elseif (RuntimeCache::isRegistered($this->cacheKey)) {
@@ -63,7 +68,7 @@ class BlockLocalizedLanguageTest extends Unit
         $this->assertSame('2025-01-22', $date);
     }
 
-    public function testRelationChildOfLocalizedBlockUsesRequestedLanguage(): void
+    public function testChildWithRelationDefinitionOfLocalizedBlockUsesRequestedLanguage(): void
     {
         $this->storeObject(true);
 
@@ -86,7 +91,33 @@ class BlockLocalizedLanguageTest extends Unit
         $this->assertSame('2024-02-15', $this->resolve('testDate', new Data\Date(), 'de'));
     }
 
-    private function resolve(string $child, Data $definition, ?string $language): mixed
+    public function testChildOfLocalizedBlockPassesGetFallbackLanguageValueToTheGetter(): void
+    {
+        $object = $this->storeObject(true);
+
+        Localizedfield::setGetFallbackValues(false);
+        $this->resolve('testDate', new Data\Date(), 'de', true);
+        $this->resolve('testDate', new Data\Date(), 'de', false);
+        $this->resolve('testDate', new Data\Date(), 'de');
+
+        $this->assertSame([true, false, false], $object->fallbackSeen);
+    }
+
+    public function testFallbackSettingIsRestoredAfterTheGetterFails(): void
+    {
+        $object = $this->storeObject(true);
+        $object->failing = true;
+        Localizedfield::setGetFallbackValues(false);
+
+        try {
+            $this->resolve('testDate', new Data\Date(), 'de', true);
+            $this->fail('the getter should have thrown');
+        } catch (\RuntimeException) {
+            $this->assertFalse(Localizedfield::getGetFallbackValues());
+        }
+    }
+
+    private function resolve(string $child, Data $definition, ?string $language, ?bool $fallback = null): mixed
     {
         $definition->setName($child);
 
@@ -96,6 +127,9 @@ class BlockLocalizedLanguageTest extends Unit
         $descriptor['__blockIndex'] = 0;
         $descriptor['__blockFieldName'] = $child;
         $descriptor['args'] = $language === null ? [] : ['language' => $language];
+        if ($fallback !== null) {
+            $descriptor['args']['getFallbackLanguageValue'] = $fallback;
+        }
 
         return Service::resolveValue($descriptor, $definition, $child);
     }
@@ -104,7 +138,7 @@ class BlockLocalizedLanguageTest extends Unit
      * Stores an object whose getLabTests() returns one row per language; a block outside localized fields has a
      * getter without a language and always returns the default row.
      */
-    private function storeObject(bool $localized): void
+    private function storeObject(bool $localized): Concrete
     {
         $rows = [
             'en' => ['testDate' => '2024-02-15', 'document' => 'report-en'],
@@ -127,8 +161,18 @@ class BlockLocalizedLanguageTest extends Unit
             /** @var array<string, array<string, string>> */
             public array $rows = [];
 
+            /** @var list<bool> */
+            public array $fallbackSeen = [];
+
+            public bool $failing = false;
+
             public function getLabTests(?string $language = null): array
             {
+                $this->fallbackSeen[] = Localizedfield::getGetFallbackValues();
+                if ($this->failing) {
+                    throw new \RuntimeException('getter failed');
+                }
+
                 $elements = [];
                 foreach ($this->rows[$language ?? 'en'] as $name => $value) {
                     $elements[$name] = new BlockElement($name, 'input', $value);
@@ -142,5 +186,7 @@ class BlockLocalizedLanguageTest extends Unit
         $object->setClass($class);
 
         RuntimeCache::set($this->cacheKey, $object);
+
+        return $object;
     }
 }

@@ -40,6 +40,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
@@ -1007,7 +1008,17 @@ final class Service
                 // the block, not the child, decides: children with their own resolver pass their own definition
                 $isLocalizedField = self::isLocalizedField($container, $descriptorData['__blockName']);
                 if ($isLocalizedField) {
-                    $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
+                    // like the block rows, the children honour getFallbackLanguageValue
+                    $orgUseFallbackValues = Localizedfield::getGetFallbackValues();
+                    Localizedfield::setGetFallbackValues(
+                        $descriptorData['args']['getFallbackLanguageValue'] ?? $orgUseFallbackValues
+                    );
+
+                    try {
+                        $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
+                    } finally {
+                        Localizedfield::setGetFallbackValues($orgUseFallbackValues);
+                    }
                 } else {
                     $blockData = $object->$blockGetter();
                 }
