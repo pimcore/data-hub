@@ -33,6 +33,8 @@ class BlockLocalizedLanguageTest extends Unit
 {
     private const OBJECT_ID = 4301;
 
+    private const DEFAULT_DATE = '2024-02-15';
+
     private string $cacheKey;
 
     private bool $wasRegistered = false;
@@ -81,14 +83,14 @@ class BlockLocalizedLanguageTest extends Unit
     {
         $this->storeObject(true);
 
-        $this->assertSame('2024-02-15', $this->resolve('testDate', new Data\Date(), null));
+        $this->assertSame(self::DEFAULT_DATE, $this->resolve('testDate', new Data\Date(), null));
     }
 
     public function testBlockOutsideLocalizedFieldsIsReadWithoutLanguage(): void
     {
         $this->storeObject(false);
 
-        $this->assertSame('2024-02-15', $this->resolve('testDate', new Data\Date(), 'de'));
+        $this->assertSame(self::DEFAULT_DATE, $this->resolve('testDate', new Data\Date(), 'de'));
     }
 
     public function testChildOfLocalizedBlockPassesGetFallbackLanguageValueToTheGetter(): void
@@ -112,7 +114,7 @@ class BlockLocalizedLanguageTest extends Unit
         try {
             $this->resolve('testDate', new Data\Date(), 'de', true);
             $this->fail('the getter should have thrown');
-        } catch (\RuntimeException) {
+        } catch (\LogicException) {
             $this->assertFalse(Localizedfield::getGetFallbackValues());
         }
     }
@@ -141,7 +143,7 @@ class BlockLocalizedLanguageTest extends Unit
     private function storeObject(bool $localized): Concrete
     {
         $rows = [
-            'en' => ['testDate' => '2024-02-15', 'document' => 'report-en'],
+            'en' => ['testDate' => self::DEFAULT_DATE, 'document' => 'report-en'],
             'de' => ['testDate' => '2025-01-22', 'document' => 'report-de'],
         ];
 
@@ -170,11 +172,12 @@ class BlockLocalizedLanguageTest extends Unit
             {
                 $this->fallbackSeen[] = Localizedfield::getGetFallbackValues();
                 if ($this->failing) {
-                    throw new \RuntimeException('getter failed');
+                    throw new \LogicException('getter failed');
                 }
 
                 $elements = [];
-                foreach ($this->rows[$language ?? 'en'] as $name => $value) {
+                $row = $this->rows[$language ?? 'en'] ?? [];
+                foreach ($row as $name => $value) {
                     $elements[$name] = new BlockElement($name, 'input', $value);
                 }
 
