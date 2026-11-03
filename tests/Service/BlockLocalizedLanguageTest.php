@@ -175,11 +175,15 @@ class BlockLocalizedLanguageTest extends Unit
                     throw new \LogicException('getter failed');
                 }
 
-                $elements = [];
                 $row = $this->rows[$language ?? 'en'] ?? [];
-                foreach ($row as $name => $value) {
-                    $elements[$name] = new BlockElement($name, 'input', $value);
-                }
+                $elements = array_combine(
+                    array_keys($row),
+                    array_map(
+                        static fn (string $name, string $value): BlockElement => new BlockElement($name, 'input', $value),
+                        array_keys($row),
+                        $row
+                    )
+                );
 
                 return [$elements];
             }
