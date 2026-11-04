@@ -79,7 +79,7 @@ export const SimpleColumnPreviewsProvider = ({
 
   const skip = !enabled || itemId === undefined || requestColumns.length === 0
 
-  const { data, isFetching, error } = api.endpoints.dataObjectGetGrid.useQuery({
+  const { currentData, isFetching, error } = api.endpoints.dataObjectGetGrid.useQuery({
     classId,
     body: {
       folderId: 1,
@@ -95,11 +95,11 @@ export const SimpleColumnPreviewsProvider = ({
 
   const value = useMemo(() => {
     const values = new Map<string, unknown>()
-    ;(data?.items?.[0]?.columns ?? []).forEach((column: any) => {
+    ;(currentData?.items?.[0]?.columns ?? []).forEach((column: any) => {
       values.set(valueKey(String(column.key), column.locale as string | null | undefined), column.value)
     })
-    return { isLoading: isFetching && data === undefined, hasError: error !== undefined, values, hasItem: itemId !== undefined, getLocale }
-  }, [isFetching, data, error, itemId, currentLanguage])
+    return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, hasItem: itemId !== undefined, getLocale }
+  }, [isFetching, currentData, error, itemId, currentLanguage])
 
   return <SimpleColumnPreviewsContext.Provider value={ value }>{ children }</SimpleColumnPreviewsContext.Provider>
 }

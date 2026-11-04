@@ -24,12 +24,12 @@ const SYSTEM_COLUMNS = [
 export const usePreviewItemPreselect = (classId: string): boolean => {
   const { enabled, item, setItem } = usePreviewMode()
 
-  const { data } = api.endpoints.dataObjectGetGrid.useQuery(
+  const { currentData } = api.endpoints.dataObjectGetGrid.useQuery(
     { classId, body: { folderId: 1, columns: SYSTEM_COLUMNS, filters: { includeDescendants: true, page: 1, pageSize: 1 } } },
     { skip: !enabled || item !== null }
   )
 
-  const first = data?.items?.[0]
+  const first = currentData?.items?.[0]
 
   useEffect(() => {
     if (!enabled || item !== null || first?.id === undefined) return
