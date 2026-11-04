@@ -39,6 +39,13 @@ export const makeEndpoint = (
   useQuery: (arg: any, options?: { skip?: boolean }): QueryResult => {
     if (options?.skip === true) return {}
     apiState.calls[name].push(arg)
-    return respond(arg)
+    const r = respond(arg)
+    // Handlers that return only `data` keep their meaning: current data is the data, fetching follows loading.
+    // Only a missing key is filled, so an explicit `currentData: undefined` stays.
+    return {
+      ...r,
+      ...(!('currentData' in r) ? { currentData: r.data } : {}),
+      ...(!('isFetching' in r) ? { isFetching: r.isLoading === true } : {})
+    }
   }
 })
