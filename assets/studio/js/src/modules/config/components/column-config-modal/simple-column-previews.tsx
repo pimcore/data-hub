@@ -16,7 +16,7 @@ import {
   GridContentRenderer,
   Spin,
   Text,
-  usePreviewMode
+  usePreviewModeOptional
 } from '@pimcore/studio-ui-bundle/components'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useLanguageSelection } from '@pimcore/studio-ui-bundle/modules/data-object'
@@ -63,7 +63,7 @@ export const SimpleColumnPreviewsProvider = ({
   availableFields,
   children
 }: SimpleColumnPreviewsProviderProps): React.JSX.Element => {
-  const { enabled, item, language: previewLanguage } = usePreviewMode()
+  const { enabled, item, language: previewLanguage } = usePreviewModeOptional()
   const { currentLanguage: contextLanguage } = useLanguageSelection()
   const currentLanguage = previewLanguage ?? contextLanguage
   const itemId = item?.data?.id

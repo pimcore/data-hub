@@ -11,7 +11,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { resolvePreviewLanguage } from './preview-language'
-import { Flex, PreviewModeBar, PreviewModeSwitch, Toolbar, usePreviewMode } from '@pimcore/studio-ui-bundle/components'
+import { Flex, PreviewModeBar, PreviewModeSwitch, Toolbar, usePreviewModeOptional } from '@pimcore/studio-ui-bundle/components'
 
 export interface PreviewHeaderProps {
   entity: string
@@ -22,7 +22,7 @@ export interface PreviewHeaderProps {
 
 /** The row below the modal title, in the same Toolbar as the Grid Configuration modal's (its border): the switch and the bar: the language switch always (the saved language), the item picker while preview mode is on; laid out as the grid modal's row, the flag at the right end (DR-P11, F24) */
 export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHeaderProps): React.JSX.Element => {
-  const { enabled, language: previewLanguage, setLanguage } = usePreviewMode()
+  const { enabled, language: previewLanguage, setLanguage } = usePreviewModeOptional()
 
   const user = useUser()
   // The language the header put into the preview state itself: not the user's choice, so it is not saved

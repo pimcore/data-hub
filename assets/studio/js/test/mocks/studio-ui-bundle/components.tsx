@@ -105,6 +105,9 @@ export const usePreviewMode = (): PreviewModeValue => {
   return context
 }
 
+// As the real export: undefined outside a provider is turned into an inactive preview mode
+export const usePreviewModeOptional = (): PreviewModeValue => useContext(PreviewModeContext) ?? inactive
+
 export const PreviewModeSwitch = (): React.JSX.Element => {
   const { enabled, setEnabled } = usePreviewMode()
   return (

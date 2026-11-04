@@ -20,6 +20,8 @@ export interface ColumnEditorItemBodyProps {
   sourceFieldsRegistryId: string
   /** Service ID of the DynamicTypePipelineRegistry to use for transformers. */
   transformersRegistryId: string
+  /** @deprecated Passed to ColumnPipelineForm / ColumnPreview. */
+  objectId?: number | null
 }
 
 export const ColumnEditorItemBody = ({
@@ -27,13 +29,15 @@ export const ColumnEditorItemBody = ({
   entity,
   onPipelineChange,
   sourceFieldsRegistryId,
-  transformersRegistryId
+  transformersRegistryId,
+  objectId
 }: ColumnEditorItemBodyProps): React.JSX.Element => {
   return (
     <ColumnPipelineForm
       column={ column }
       config={ column.pipelineConfig }
       entity={ entity }
+      objectId={ objectId }
       onChange={ (pipeline) => { onPipelineChange(column._id, pipeline) } }
       sourceFieldsRegistryId={ sourceFieldsRegistryId }
       transformersRegistryId={ transformersRegistryId }

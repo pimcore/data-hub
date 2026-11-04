@@ -26,6 +26,8 @@ export interface ColumnPipelineFormProps {
   sourceFieldsRegistryId: string
   /** Service ID of the DynamicTypePipelineRegistry to use for transformers. */
   transformersRegistryId: string
+  /** @deprecated Passed to ColumnPreview, which takes the item from the preview mode otherwise. */
+  objectId?: number | null
 }
 
 export const ColumnPipelineForm = ({
@@ -35,7 +37,8 @@ export const ColumnPipelineForm = ({
   value,
   onChange,
   sourceFieldsRegistryId,
-  transformersRegistryId
+  transformersRegistryId,
+  objectId
 }: ColumnPipelineFormProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
@@ -146,6 +149,7 @@ export const ColumnPipelineForm = ({
                     { column !== undefined && (
                       <ColumnPreview
                         column={ column }
+                        objectId={ objectId }
                         pipelineValue={ liveValue }
                       />
                     ) }

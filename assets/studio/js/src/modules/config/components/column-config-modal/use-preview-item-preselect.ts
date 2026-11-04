@@ -9,7 +9,7 @@
  */
 
 import { useEffect } from 'react'
-import { usePreviewMode } from '@pimcore/studio-ui-bundle/components'
+import { usePreviewModeOptional } from '@pimcore/studio-ui-bundle/components'
 import { api } from '@pimcore/studio-ui-bundle/api/data-object'
 
 const SYSTEM_COLUMNS = [
@@ -22,7 +22,7 @@ const SYSTEM_COLUMNS = [
  * Nothing is requested while preview mode is off or an item is picked. Returns whether preview mode is on.
  */
 export const usePreviewItemPreselect = (classId: string): boolean => {
-  const { enabled, item, setItem } = usePreviewMode()
+  const { enabled, item, setItem } = usePreviewModeOptional()
 
   const { currentData } = api.endpoints.dataObjectGetGrid.useQuery(
     { classId, body: { folderId: 1, columns: SYSTEM_COLUMNS, filters: { includeDescendants: true, page: 1, pageSize: 1 } } },
