@@ -24,6 +24,14 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { columnIdentity, findAvailableField, isClassificationStore, responseIdentity } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type AdvancedEditorColumn } from './types'
 
+interface ResponseEntry {
+  key: string
+  type?: string
+  locale?: string | null
+  value: unknown
+  additionalAttributes?: Record<string, any>
+}
+
 interface SimpleColumnPreviewsContextValue {
   isLoading: boolean
   hasError: boolean
@@ -94,7 +102,8 @@ export const SimpleColumnPreviewsProvider = ({
 
   const value = useMemo(() => {
     const values = new Map<string, unknown>()
-    ;(currentData?.items?.[0]?.columns ?? []).forEach((column: any) => {
+    ;(currentData?.items?.[0]?.columns ?? []).forEach((entry: any) => {
+      const column = entry as ResponseEntry
       values.set(responseIdentity(column, isClassificationStore(column.type) || column.additionalAttributes?.keyId !== undefined), column.value)
     })
     return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, hasItem: itemId !== undefined, getLocale }
