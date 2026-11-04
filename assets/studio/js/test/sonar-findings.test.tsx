@@ -71,7 +71,12 @@ describe('sonar findings', () => {
   })
 
   test('AC2: the open mock Modal is a dialog element with the open attribute and its children', () => {
-    render(<Modal open title='T'><p>body</p></Modal>)
+    render(
+      <Modal
+        open
+        title='T'
+      ><p>body</p></Modal>
+    )
 
     const dialog = screen.getByRole('dialog')
     expect(dialog.tagName).toBe('DIALOG')

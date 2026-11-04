@@ -33,7 +33,7 @@ interface SimpleColumnPreviewsContextValue {
 
 const SimpleColumnPreviewsContext = createContext<SimpleColumnPreviewsContextValue | undefined>(undefined)
 
-const ADAPTER_TYPES = ['dataobject.adapter', 'dataobject.objectbrick', 'dataobject.classificationstore']
+const ADAPTER_TYPES = new Set(['dataobject.adapter', 'dataobject.objectbrick', 'dataobject.classificationstore'])
 
 export const isSimpleColumn = (column: { key: string, type: string }): boolean =>
   column.key !== ADVANCED_COLUMN_KEY && column.type !== ADVANCED_COLUMN_TYPE
@@ -137,7 +137,7 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
           return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.no-data') }</Text>
         }
 
-        const isAdapter = ADAPTER_TYPES.includes(column.type)
+        const isAdapter = ADAPTER_TYPES.has(column.type)
         const config = availableField?.config as Record<string, any> | undefined
         const gridColumn = columnHelper.accessor('value', {
           meta: {

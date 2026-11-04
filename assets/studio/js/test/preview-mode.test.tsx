@@ -190,7 +190,7 @@ describe('schema modal preview mode', () => {
     apiState.grid = (arg) => isSimpleRequest(arg) ? { error: { status: 500 } } : { data: FIRST_OBJECT }
     const { unmount } = render(modal())
     turnOn()
-    expect(screen.getAllByText('data-hub.column-config-modal.preview.error').length).toBe(2)
+    expect(screen.getAllByText('data-hub.column-config-modal.preview.error')).toHaveLength(2)
     unmount()
 
     apiState.grid = (arg) => isSimpleRequest(arg) ? { data: { items: [{ id: 5, columns: [] }] } } : { data: FIRST_OBJECT }

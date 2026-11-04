@@ -10,8 +10,9 @@
 
 import React, { createContext, useContext, useMemo, useState } from 'react'
 
-type Props = { children?: React.ReactNode } & Record<string, any>
-const passthrough = ({ children, 'data-testid': testId }: Props): React.JSX.Element => <div data-testid={ testId }>{ children }</div>
+type Props = Record<string, any>
+type PropsWithChildren = { children?: React.ReactNode } & Props
+const passthrough = ({ children, 'data-testid': testId }: PropsWithChildren): React.JSX.Element => <div data-testid={ testId }>{ children }</div>
 
 export const Box = passthrough
 export const Flex = passthrough
@@ -20,8 +21,8 @@ export const Content = passthrough
 export const Toolbar = passthrough
 export const GridContentRenderer = passthrough
 export const Spin = (): React.JSX.Element => <span>spin</span>
-export const Text = ({ children }: Props): React.JSX.Element => <span>{ children }</span>
-export const Button = ({ children, onClick }: Props): React.JSX.Element => (
+export const Text = ({ children }: PropsWithChildren): React.JSX.Element => <span>{ children }</span>
+export const Button = ({ children, onClick }: PropsWithChildren): React.JSX.Element => (
   <button
     onClick={ onClick }
     type='button'
@@ -34,7 +35,7 @@ export const IconButton = ({ onClick }: Props): React.JSX.Element => (
   >icon</button>
 )
 export const IconTextButton = Button
-export const ColumnPickerPopover = ({ children }: Props): React.JSX.Element => <>{ children }</>
+export const ColumnPickerPopover = ({ children }: PropsWithChildren): React.JSX.Element => <>{ children }</>
 export const ColumnPicker = (): null => null
 export const Header = passthrough
 export const Alert = passthrough
@@ -43,10 +44,10 @@ export const LanguageSelection = (): null => null
 export const ModalTitle = passthrough
 export const useAlertModal = (): { warn: () => void } => ({ warn: () => {} })
 
-export const Modal = ({ open, title, children }: Props): React.JSX.Element | null =>
-  open === true ? <div role='dialog'>{ title }{ children }</div> : null
+export const Modal = ({ open, title, children }: PropsWithChildren): React.JSX.Element | null =>
+  open === true ? <dialog open>{ title }{ children }</dialog> : null
 
-export const ContentLayout = ({ renderTopBar, children }: Props): React.JSX.Element => (
+export const ContentLayout = ({ renderTopBar, children }: PropsWithChildren): React.JSX.Element => (
   <div>{ renderTopBar }{ children }</div>
 )
 
@@ -64,8 +65,8 @@ export const StackList = ({ items }: Props): React.JSX.Element => (
 // A cell is shown as "type:dataObjectType=value" so tests can read what was rendered.
 export const Grid = ({ columns, data }: Props): React.JSX.Element => (
   <div data-testid='preview-grid'>
-    { columns.map((column: any, index: number) => (
-      <span key={ index }>{ `${column.meta.type}:${column.meta.config.dataObjectType ?? ''}=${JSON.stringify(data[0][column.accessorKey])}` }</span>
+    { columns.map((column: any) => (
+      <span key={ column.accessorKey }>{ `${column.meta.type}:${column.meta.config.dataObjectType ?? ''}=${JSON.stringify(data[0][column.accessorKey])}` }</span>
     )) }
   </div>
 )
@@ -83,7 +84,7 @@ interface PreviewModeValue {
 const PreviewModeContext = createContext<PreviewModeValue | undefined>(undefined)
 const inactive: PreviewModeValue = { enabled: false, setEnabled: () => {}, item: null, setItem: () => {}, language: undefined, setLanguage: () => {} }
 
-export const PreviewModeProvider = ({ children }: Props): React.JSX.Element => {
+export const PreviewModeProvider = ({ children }: PropsWithChildren): React.JSX.Element => {
   const [enabled, setEnabled] = useState(false)
   const [item, setItem] = useState<Item | null>(null)
   const [language, setLanguage] = useState<string | undefined>(undefined)
