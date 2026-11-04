@@ -27,6 +27,7 @@ import {
 } from '@pimcore/studio-ui-bundle/components'
 import { useStyles } from './base-column-editor.styles'
 import { FieldsToAddPanel } from './fields-to-add-panel'
+import { resolvePreviewLanguage } from './preview-language'
 import { LanguageSelectionContext } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
@@ -90,7 +91,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     // Own the language state here. Initialize once from the prop, falling back to
     // the user's first content language. This is the single source of truth —
     // no synchronization effects needed.
-    const initialLanguage = language ?? (user.contentLanguages as string[] | undefined)?.[0] ?? 'en'
+    const initialLanguage = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 

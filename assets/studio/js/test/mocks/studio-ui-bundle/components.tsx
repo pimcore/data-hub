@@ -9,6 +9,7 @@
  */
 
 import React, { createContext, useContext, useMemo, useState } from 'react'
+import { useLanguageSelection } from './modules-data-object'
 
 type Props = Record<string, any>
 type PropsWithChildren = { children?: React.ReactNode } & Props
@@ -120,6 +121,8 @@ export const PreviewModeSwitch = (): React.JSX.Element => {
 // One row: "Preview item" button, "ID: <id> | path" (showItem) and the language switch (showLanguageSwitch), both default on
 export const PreviewModeBar = ({ allowedClasses, showItem = true, showLanguageSwitch = true }: { allowedClasses?: string[], showItem?: boolean, showLanguageSwitch?: boolean }): React.JSX.Element => {
   const { item, setItem, language, setLanguage } = usePreviewMode()
+  // As the real bar (preview-mode-bar.tsx:101): without a preview language it shows the surrounding context's
+  const { currentLanguage } = useLanguageSelection()
   return (
     <div
       data-classes={ allowedClasses?.join(',') }
@@ -138,7 +141,7 @@ export const PreviewModeBar = ({ allowedClasses, showItem = true, showLanguageSw
         <select
           aria-label='preview-language'
           onChange={ (event) => { setLanguage(event.target.value) } }
-          value={ language ?? 'en' }
+          value={ language ?? currentLanguage }
         >
           <option value='en'>en</option>
           <option value='de'>de</option>

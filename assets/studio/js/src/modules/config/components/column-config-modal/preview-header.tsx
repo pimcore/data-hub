@@ -8,7 +8,9 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
+import { resolvePreviewLanguage } from './preview-language'
 import { Flex, PreviewModeBar, PreviewModeSwitch, Toolbar, usePreviewMode } from '@pimcore/studio-ui-bundle/components'
 
 export interface PreviewHeaderProps {
@@ -22,12 +24,22 @@ export interface PreviewHeaderProps {
 export const PreviewHeader = ({ entity, language, onLanguageChange }: PreviewHeaderProps): React.JSX.Element => {
   const { enabled, language: previewLanguage, setLanguage } = usePreviewMode()
 
+  const user = useUser()
+  // The language the header put into the preview state itself: not the user's choice, so it is not saved
+  const seeded = useRef<string | undefined>(undefined)
+
   useEffect(() => {
-    if (language !== undefined && previewLanguage === undefined) setLanguage(language)
+    if (previewLanguage !== undefined) return
+    const resolved = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
+    seeded.current = resolved
+    setLanguage(resolved)
   }, [language, previewLanguage])
 
   useEffect(() => {
-    if (previewLanguage !== undefined && previewLanguage !== language) onLanguageChange?.(previewLanguage)
+    if (previewLanguage === undefined) return
+    if (previewLanguage === seeded.current) return
+    seeded.current = undefined
+    if (previewLanguage !== language) onLanguageChange?.(previewLanguage)
   }, [previewLanguage])
 
   return (
