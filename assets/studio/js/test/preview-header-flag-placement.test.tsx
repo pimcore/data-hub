@@ -26,7 +26,7 @@ jest.mock('@pimcore/studio-ui-bundle/components', () => ({
   Toolbar: ({ children }: any) => <div>{ children }</div>,
   PreviewModeSwitch: () => <span data-testid='switch' />,
   PreviewModeBar: () => <span data-testid='bar' />,
-  usePreviewMode: () => ({ enabled: previewEnabled, language: 'en', setLanguage: () => {} })
+  usePreviewModeOptional: () => ({ enabled: previewEnabled, language: 'en', setLanguage: () => {} })
 }))
 
 describe('preview header flag placement', () => {
