@@ -8,5 +8,6 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 /** The language previews use: the saved one, else the user's first content language, else English. Shared by the editor and the preview bar so both agree. */
+
 export const resolvePreviewLanguage = (language: string | undefined, contentLanguages: string[] | undefined): string =>
   language ?? contentLanguages?.[0] ?? 'en'
