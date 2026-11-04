@@ -8,6 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
@@ -166,7 +167,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
           : previewEnabled
             ? {
                 body: <SimpleColumnPreview
-                  availableField={ availableFields.find(field => field.key === col.key) }
+                  availableField={ findAvailableField(col, availableFields) }
                   column={ col }
                       /> 
               }

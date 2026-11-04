@@ -21,6 +21,7 @@ import {
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useLanguageSelection } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { createColumnHelper } from '@tanstack/react-table'
+import { columnIdentity, findAvailableField, isClassificationStore, responseIdentity } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type AdvancedEditorColumn } from './types'
 
 interface SimpleColumnPreviewsContextValue {
@@ -37,8 +38,6 @@ const ADAPTER_TYPES = new Set(['dataobject.adapter', 'dataobject.objectbrick', '
 
 export const isSimpleColumn = (column: { key: string, type: string }): boolean =>
   column.key !== ADVANCED_COLUMN_KEY && column.type !== ADVANCED_COLUMN_TYPE
-
-const valueKey = (key: string, locale: string | null | undefined): string => `${key}|${locale ?? ''}`
 
 export interface SimpleColumnPreviewsProviderProps {
   classId: string
@@ -67,7 +66,7 @@ export const SimpleColumnPreviewsProvider = ({
   }
 
   const requestColumns = useMemo(() => columns.filter(isSimpleColumn).map(column => {
-    const available = availableFields.find(field => field.key === column.key)
+    const available = findAvailableField(column, availableFields)
     return {
       key: column.key,
       type: column.type,
@@ -96,7 +95,7 @@ export const SimpleColumnPreviewsProvider = ({
   const value = useMemo(() => {
     const values = new Map<string, unknown>()
     ;(currentData?.items?.[0]?.columns ?? []).forEach((column: any) => {
-      values.set(valueKey(String(column.key), column.locale as string | null | undefined), column.value)
+      values.set(responseIdentity(column, isClassificationStore(column.type) || column.additionalAttributes?.keyId !== undefined), column.value)
     })
     return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, hasItem: itemId !== undefined, getLocale }
   }, [isFetching, currentData, error, itemId, currentLanguage])
@@ -119,7 +118,7 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
   if (context === undefined) return null
 
   const { isLoading, hasError, values, hasItem, getLocale } = context
-  const key = valueKey(column.key, getLocale(column))
+  const key = columnIdentity(column, getLocale(column))
 
   return (
     <PreviewModeColumnPreview>
