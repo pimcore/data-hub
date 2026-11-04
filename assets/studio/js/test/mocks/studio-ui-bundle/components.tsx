@@ -84,9 +84,15 @@ interface PreviewModeValue {
 const PreviewModeContext = createContext<PreviewModeValue | undefined>(undefined)
 const inactive: PreviewModeValue = { enabled: false, setEnabled: () => {}, item: null, setItem: () => {}, language: undefined, setLanguage: () => {} }
 
-export const PreviewModeProvider = ({ children }: PropsWithChildren): React.JSX.Element => {
+export const PreviewModeProvider = ({ children, resetKey }: { children?: React.ReactNode, resetKey?: string }): React.JSX.Element => {
   const [enabled, setEnabled] = useState(false)
   const [item, setItem] = useState<Item | null>(null)
+  // As the real provider: a changed resetKey clears the item (before the children render with it)
+  const [seenKey, setSeenKey] = useState(resetKey)
+  if (seenKey !== resetKey) {
+    setSeenKey(resetKey)
+    setItem(null)
+  }
   const [language, setLanguage] = useState<string | undefined>(undefined)
   const value = useMemo(() => ({ enabled, setEnabled, item, setItem, language, setLanguage }), [enabled, item, language])
   return <PreviewModeContext.Provider value={ value }>{ children }</PreviewModeContext.Provider>

@@ -82,7 +82,7 @@ describe('preview reads currentData', () => {
   test('AC3: after a class change the previous class row is not preselected; the new one is once current', () => {
     let current = true
     apiState.grid = (arg) => {
-      if (isSimpleRequest(arg)) return { data: rowFor(arg.body.filters.columnFilters[0].filterValue[0], 'V'), isFetching: false }
+      if (isSimpleRequest(arg)) return { data: rowFor(arg.body.filters.columnFilters[0].filterValue[0] as number, 'V'), isFetching: false }
       if (arg.classId === 'class-Product') return { data: rowFor(5, 'V') }
       return current ? { data: rowFor(7, 'V') } : { data: rowFor(5, 'V'), currentData: undefined, isFetching: true }
     }
