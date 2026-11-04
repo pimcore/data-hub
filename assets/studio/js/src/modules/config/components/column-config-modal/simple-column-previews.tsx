@@ -36,6 +36,7 @@ interface SimpleColumnPreviewsContextValue {
   isLoading: boolean
   hasError: boolean
   values: Map<string, unknown>
+  apiRow?: Record<string, any>
   hasItem: boolean
   getLocale: (column: AdvancedEditorColumn) => string | null | undefined
 }
@@ -102,11 +103,12 @@ export const SimpleColumnPreviewsProvider = ({
 
   const value = useMemo(() => {
     const values = new Map<string, unknown>()
+    const apiRow = currentData?.items?.[0] as Record<string, any> | undefined
     ;(currentData?.items?.[0]?.columns ?? []).forEach((entry: any) => {
       const column = entry as ResponseEntry
       values.set(responseIdentity(column, isClassificationStore(column.type) || column.additionalAttributes?.keyId !== undefined), column.value)
     })
-    return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, hasItem: itemId !== undefined, getLocale }
+    return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, apiRow, hasItem: itemId !== undefined, getLocale }
   }, [isFetching, currentData, error, itemId, currentLanguage])
 
   return <SimpleColumnPreviewsContext.Provider value={ value }>{ children }</SimpleColumnPreviewsContext.Provider>
@@ -126,7 +128,7 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
 
   if (context === undefined) return null
 
-  const { isLoading, hasError, values, hasItem, getLocale } = context
+  const { isLoading, hasError, values, apiRow, hasItem, getLocale } = context
   const key = columnIdentity(column, getLocale(column))
 
   return (
@@ -165,7 +167,13 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
             <Grid
               autoWidth
               columns={ [gridColumn] }
-              data={ [{ value: values.get(key) }] }
+              data={ [{
+                id: apiRow?.id,
+                isLocked: apiRow?.isLocked,
+                permissions: apiRow?.permissions,
+                '__api-data': apiRow,
+                value: values.get(key)
+              }] }
               hideColumnHeaders
             />
           </GridContentRenderer>
