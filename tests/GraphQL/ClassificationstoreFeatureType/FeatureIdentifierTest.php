@@ -248,8 +248,17 @@ class FeatureIdentifierTest extends Unit
         $keyConfig->setStoreId($this->store->getId());
         $keyConfig->setName('datahub-feature-identifier-' . uniqid());
         $keyConfig->setType('checkbox');
-        $keyConfig->setIdentifier($identifier);
-        $keyConfig->save();
+
+        if ($identifier === null) {
+            // KeyConfig::save() generates an identifier for every entity it creates, and
+            // setIdentifier() takes a non-nullable string, so the one row shape this fixture is
+            // about - a key an installation carries from before the backfill, with a NULL
+            // identifier - is only reachable through the DAO.
+            $keyConfig->getDao()->save();
+        } else {
+            $keyConfig->setIdentifier($identifier);
+            $keyConfig->save();
+        }
 
         $this->keyConfigs[] = $keyConfig;
 

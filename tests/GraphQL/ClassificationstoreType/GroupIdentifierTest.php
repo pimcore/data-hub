@@ -125,8 +125,17 @@ class GroupIdentifierTest extends Unit
         $groupConfig = new GroupConfig();
         $groupConfig->setStoreId($this->store->getId());
         $groupConfig->setName('datahub-group-identifier-' . uniqid());
-        $groupConfig->setIdentifier($identifier);
-        $groupConfig->save();
+
+        if ($identifier === null) {
+            // GroupConfig::save() generates an identifier for every entity it creates, and
+            // setIdentifier() takes a non-nullable string, so the one row shape this fixture is
+            // about - a group an installation carries from before the backfill, with a NULL
+            // identifier - is only reachable through the DAO.
+            $groupConfig->getDao()->save();
+        } else {
+            $groupConfig->setIdentifier($identifier);
+            $groupConfig->save();
+        }
 
         $this->groupConfigs[] = $groupConfig;
 
