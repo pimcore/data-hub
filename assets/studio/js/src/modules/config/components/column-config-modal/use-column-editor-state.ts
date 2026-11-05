@@ -64,8 +64,12 @@ interface UseColumnEditorStateResult {
   handleDiscard: () => void
   handleLocaleChange: (id: string, locale: string | null) => void
   handleReorder: (ids: string[]) => void
-  /** The draft as persistable columns, or undefined while it is not hydrated. See `isHydrated`. */
-  getColumns: () => SchemaColumn[] | undefined
+  /**
+   * The draft as persistable columns. It carries resolved field definition types only once the draft is
+   * hydrated, so a caller which persists the result must check `isHydrated` first — `handleApply` and
+   * the modal's Confirm Migration both do.
+   */
+  getColumns: () => SchemaColumn[]
 }
 
 export const useColumnEditorState = ({
@@ -193,10 +197,11 @@ export const useColumnEditorState = ({
     setDraft(prev => prev.filter(col => col._id !== id))
   }
 
-  // Both submission paths — this one and getColumns below — are gated on hydration. Without the
-  // payload every persisted column still carries the token an earlier save wrote into it, so a save
-  // here would write a legacy field name back into `fieldtype`, which is the defect this ticket fixes.
-  // The toolbar disables Apply on the same flag; the guard holds for a caller that renders its own.
+  // Both submission paths are gated on hydration: this one directly, and the modal's Confirm Migration
+  // through the handle's isHydrated probe. Without the payload every persisted column still carries the
+  // token an earlier save wrote into it, so a save here would write a legacy field name back into
+  // `fieldtype`, which is the defect this ticket fixes. The toolbar disables Apply on the same flag;
+  // the guard holds for a caller that renders its own.
   const handleApply = (): void => {
     if (!isHydrated) {
       return
@@ -242,8 +247,6 @@ export const useColumnEditorState = ({
     handleDiscard,
     handleLocaleChange,
     handleReorder,
-    getColumns: () => isHydrated
-      ? draft.filter(col => col.key !== '').map(advancedToSchemaColumn)
-      : undefined
+    getColumns: () => draft.filter(col => col.key !== '').map(advancedToSchemaColumn)
   }
 }

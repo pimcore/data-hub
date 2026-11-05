@@ -132,8 +132,11 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     useImperativeHandle(ref, () => ({
       getColumns,
-      addColumn: handleAddColumnOfType
-    }), [getColumns, handleAddColumnOfType])
+      addColumn: handleAddColumnOfType,
+      // The readiness probe the modal refuses Confirm Migration on: getColumns carries resolved
+      // field definition types only once the available columns of this class have loaded.
+      isHydrated: () => isHydrated
+    }), [getColumns, handleAddColumnOfType, isHydrated])
 
     const stackItems: StackListProps['items'] = draft.map(col => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE

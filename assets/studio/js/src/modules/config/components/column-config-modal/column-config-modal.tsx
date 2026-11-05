@@ -141,15 +141,18 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   const handleConfirmMigration = (): void => {
     const editor = columnEditorRef.current
-    // A null ref means no editor exposed the handle, and migratedColumns — what its onApply wrote —
-    // is the only state there is. A handle returning undefined is the different case: the editor is
-    // mounted but has not hydrated its draft, so the tokens it would hand back are the stored ones.
-    // Refuse rather than migrate; the Confirm button is disabled on the same condition.
-    const cols = editor === null ? migratedColumns : editor.getColumns()
 
-    if (cols === undefined) {
+    // An editor which reports itself unhydrated is mounted but has not resolved its draft against the
+    // available columns of this class, so the tokens it would hand back are the stored ones. Refuse
+    // rather than migrate; the Confirm button is disabled on the same condition. An editor which does
+    // not implement the probe is treated as ready, as it was before the probe existed.
+    if (editor?.isHydrated?.() === false) {
       return
     }
+
+    // A null ref means no editor exposed the handle, and migratedColumns — what its onApply wrote —
+    // is the only state there is.
+    const cols = editor === null ? migratedColumns : editor.getColumns()
 
     if (cols.length === 0) {
       alertModal.warn({

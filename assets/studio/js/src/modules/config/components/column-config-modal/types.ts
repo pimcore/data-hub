@@ -28,17 +28,20 @@ export interface SchemaColumn {
  * Allows ColumnConfigModal to imperatively read the current draft and add a column.
  */
 export interface ColumnEditorHandle<TColumns = SchemaColumn> {
-  /**
-   * Returns the current list of columns from the editor draft, or undefined while the editor has not
-   * hydrated that draft against the available columns of the selected class.
-   *
-   * Undefined is not an empty configuration: it means the field definition types in the draft are
-   * still the ones the stored configuration carried, so persisting it would write a legacy field name
-   * back into `fieldtype`. A caller must refuse to submit on undefined rather than fall back to it.
-   */
-  getColumns: () => TColumns[] | undefined
+  /** Returns the current list of columns from the editor draft. */
+  getColumns: () => TColumns[]
   /** Programmatically adds a column from the available-columns list. */
   addColumn: (column: GridColumnConfiguration) => void
+  /**
+   * Readiness probe: whether the editor has hydrated its draft against the available columns of the
+   * selected class, so the field definition types it would hand back are resolved rather than the ones
+   * the stored configuration carried.
+   *
+   * False means a submission would write a legacy field name back into `fieldtype`, so a caller which
+   * persists `getColumns()` must refuse while it is false. Optional, and an editor which does not
+   * implement it is treated as ready — the behaviour before the probe existed.
+   */
+  isHydrated?: () => boolean
 }
 
 /**
