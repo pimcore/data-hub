@@ -25,32 +25,12 @@ import {
 } from './types'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
-import { deriveColumnFieldtype, matchesAvailableColumn, resolveColumnFieldtype } from './column-fieldtype'
+import { deriveColumnFieldtype, hydrateDraft } from './column-fieldtype'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
   { key: 'fullpath', type: 'system.string', group: ['system'] as string[], config: [] as never[] }
 ]
-
-/**
- * One draft column hydrated against the available-columns payload: its field definition type taken from
- * the available column it was configured from, and the two frontend-only fields filled in from the same
- * column when the draft does not carry them yet.
- */
-const hydrateAgainstPayload = (
-  column: AdvancedEditorColumn,
-  payloadColumns: GridColumnConfiguration[],
-  isKnownFieldtype: (name: string) => boolean
-): AdvancedEditorColumn => {
-  const available = payloadColumns.find(field => matchesAvailableColumn(field, column, ADVANCED_COLUMN_TYPE))
-
-  return {
-    ...column,
-    fieldtype: resolveColumnFieldtype(column, available, isKnownFieldtype),
-    localizable: column.localizable ?? available?.localizable,
-    pipelineConfig: column.pipelineConfig ?? (available?.config as Record<string, any> | undefined)
-  }
-}
 
 interface UseColumnEditorStateOptions {
   entity: string
@@ -155,10 +135,10 @@ export const useColumnEditorState = ({
   const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
   const availableFields: GridColumnConfiguration[] = useMemo(() => payloadColumns ?? [], [payloadColumns])
 
-  // Without the payload there is no oracle for the token, so the stored one is left exactly as it is.
+  // Runs on the draft the reset effect above has just rebuilt from `columns`, and again when the payload
+  // arrives. Without the payload hydrateDraft hands the draft back untouched, stored token and all.
   useEffect(() => {
-    if (isUndefined(payloadColumns)) return
-    setDraft(prev => prev.map(col => hydrateAgainstPayload(col, payloadColumns, isKnownFieldtype)))
+    setDraft(prev => hydrateDraft(prev, payloadColumns, ADVANCED_COLUMN_TYPE, isKnownFieldtype))
   }, [payloadColumns, columns, isKnownFieldtype])
 
   const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
@@ -209,8 +189,12 @@ export const useColumnEditorState = ({
     onApply(draft.filter(col => col.key !== '').map(advancedToSchemaColumn))
   }
 
+  // Hydrated, not raw: the editor stays mounted after a discard, so with unchanged props and a cached
+  // payload no effect reruns and an un-hydrated draft would survive into the next Apply.
   const handleDiscard = (): void => {
-    setDraft(columns.map(advancedFromSchemaColumn))
+    setDraft(
+      hydrateDraft(columns.map(advancedFromSchemaColumn), payloadColumns, ADVANCED_COLUMN_TYPE, isKnownFieldtype)
+    )
     onCancel()
   }
 

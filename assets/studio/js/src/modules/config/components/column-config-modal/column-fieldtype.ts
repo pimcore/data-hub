@@ -8,6 +8,8 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import type { AdvancedEditorColumn } from './types'
+
 /**
  * The part of a column the fieldtype token is read from. Structurally satisfied by
  * GridColumnConfiguration from the available-columns payload and by SchemaColumn.
@@ -16,6 +18,11 @@ export interface FieldtypeColumn {
   key: string
   type: string
   config?: unknown
+}
+
+/** As much of an available column from the payload as hydrating a draft column reads. */
+export interface AvailableColumn extends FieldtypeColumn {
+  localizable?: boolean
 }
 
 /**
@@ -104,3 +111,43 @@ export const resolveColumnFieldtype = (
 
   return readStoredFieldtype(column.fieldtype, isKnownType) ?? ''
 }
+
+/**
+ * One draft column hydrated against the available-columns payload: its field definition type taken from
+ * the available column it was configured from, and the two frontend-only fields filled in from the same
+ * column when the draft does not carry them yet.
+ */
+export const hydrateDraftColumn = (
+  column: AdvancedEditorColumn,
+  payloadColumns: AvailableColumn[],
+  advancedColumnType: string,
+  isKnownType: (name: string) => boolean
+): AdvancedEditorColumn => {
+  const available = payloadColumns.find(field => matchesAvailableColumn(field, column, advancedColumnType))
+
+  return {
+    ...column,
+    fieldtype: resolveColumnFieldtype(column, available, isKnownType),
+    localizable: column.localizable ?? available?.localizable,
+    pipelineConfig: column.pipelineConfig ?? (available?.config as Record<string, any> | undefined)
+  }
+}
+
+/**
+ * A whole draft hydrated against the available-columns payload. Without the payload there is no oracle
+ * for the token, so the draft is handed back untouched and a stored token is left exactly as it is.
+ *
+ * Every path which puts persisted columns into the draft goes through here — the load effect and Discard
+ * alike — so a draft restored by Discard resolves its tokens the way a freshly loaded one does, and an
+ * Apply after a Discard cannot write a legacy field name back into `fieldtype`.
+ */
+export const hydrateDraft = (
+  draft: AdvancedEditorColumn[],
+  payloadColumns: AvailableColumn[] | undefined,
+  advancedColumnType: string,
+  isKnownType: (name: string) => boolean
+): AdvancedEditorColumn[] => (
+  payloadColumns === undefined
+    ? draft
+    : draft.map(column => hydrateDraftColumn(column, payloadColumns, advancedColumnType, isKnownType))
+)

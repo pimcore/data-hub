@@ -13,6 +13,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import {
   deriveColumnFieldtype,
+  hydrateDraft,
   matchesAvailableColumn,
   readStoredFieldtype,
   resolveColumnFieldtype
@@ -69,15 +70,9 @@ const availableFields = [
   { key: ADVANCED_COLUMN_KEY, type: ADVANCED_COLUMN_TYPE }
 ]
 
-// Mirrors how the hydration effect composes the two helpers in use-column-editor-state.ts.
-const hydrate = (storedColumns) => storedColumns.map((col) => ({
-  ...col,
-  fieldtype: resolveColumnFieldtype(
-    col,
-    availableFields.find((field) => matchesAvailableColumn(field, col, ADVANCED_COLUMN_TYPE)),
-    isKnownType
-  )
-}))
+// The editor's own hydration, over a draft built from persisted columns the way the hook builds it.
+const hydrate = (storedColumns) =>
+  hydrateDraft(storedColumns.map(advancedFromSchemaColumn), availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
 
 describe('column fieldtype helpers', () => {
   it('derives the token from the field definition of the column', () => {
@@ -277,5 +272,86 @@ describe('column fieldtype helpers', () => {
       ADVANCED_FIELDTYPE,
       NO_TYPE
     ])
+  })
+
+  it('hands a draft back untouched while the payload has not arrived', () => {
+    const draft = [legacyClassificationStoreColumn].map(advancedFromSchemaColumn)
+
+    assert.equal(hydrateDraft(draft, undefined, ADVANCED_COLUMN_TYPE, isKnownType), draft)
+    assert.deepEqual(
+      hydrateDraft(draft, undefined, ADVANCED_COLUMN_TYPE, isKnownType).map((col) => col.fieldtype),
+      [LEGACY_CLASSIFICATION_STORE_KEY]
+    )
+  })
+
+  it('fills the two frontend-only fields from the available column, and keeps the ones the draft has', () => {
+    const payload = [{
+      key: FIELD_NAME,
+      type: INPUT_COLUMN_TYPE,
+      localizable: true,
+      config: { fieldDefinition: { fieldtype: INPUT_FIELDTYPE }, pipeline: 'from-payload' }
+    }]
+    const stored = { key: FIELD_NAME, fieldtype: FIELD_NAME, type: INPUT_COLUMN_TYPE }
+
+    const [filled] = hydrateDraft([advancedFromSchemaColumn(stored)], payload, ADVANCED_COLUMN_TYPE, isKnownType)
+
+    assert.equal(filled.localizable, true)
+    assert.deepEqual(filled.pipelineConfig, payload[0].config)
+
+    const [kept] = hydrateDraft(
+      [{ ...advancedFromSchemaColumn(stored), localizable: false, pipelineConfig: { own: true } }],
+      payload,
+      ADVANCED_COLUMN_TYPE,
+      isKnownType
+    )
+
+    assert.equal(kept.localizable, false)
+    assert.deepEqual(kept.pipelineConfig, { own: true })
+  })
+})
+
+describe('restoring a draft on discard', () => {
+  // The persisted configuration a save before the correction left behind: `fieldtype` holds the field
+  // name, and for the classification store column that name is the legacy integer pair.
+  const persistedColumns = [
+    legacyClassificationStoreColumn,
+    { key: FIELD_NAME, fieldtype: FIELD_NAME, type: INPUT_COLUMN_TYPE }
+  ]
+
+  // What the hook does on open and again on discard: build the draft from the persisted columns.
+  const buildDraft = () => persistedColumns.map(advancedFromSchemaColumn)
+
+  it('resolves the tokens of a restored draft, as a freshly loaded one does', () => {
+    const loaded = hydrateDraft(buildDraft(), availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
+    const restored = hydrateDraft(buildDraft(), availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
+
+    assert.deepEqual(loaded.map((col) => col.fieldtype), [CLASSIFICATION_STORE_FIELDTYPE, INPUT_FIELDTYPE])
+    assert.deepEqual(restored.map((col) => col.fieldtype), loaded.map((col) => col.fieldtype))
+  })
+
+  it('does not write a legacy field name back on an apply after a discard and a reopen', () => {
+    // Discard restores the persisted columns; the editor stays mounted and neither its props nor the
+    // cached payload changed, so no effect reruns and the rebuild has to hydrate on its own.
+    const restored = hydrateDraft(buildDraft(), availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
+
+    // Reopen, then Apply: this is what the second save would persist.
+    assert.deepEqual(
+      restored.map(advancedToSchemaColumn).map((col) => col.fieldtype),
+      [CLASSIFICATION_STORE_FIELDTYPE, INPUT_FIELDTYPE]
+    )
+
+    // Pinning what the hydration prevents: an unhydrated rebuild carries the legacy tokens straight
+    // back out through Apply, which is the defect this covers.
+    assert.deepEqual(
+      buildDraft().map(advancedToSchemaColumn).map((col) => col.fieldtype),
+      [LEGACY_CLASSIFICATION_STORE_KEY, FIELD_NAME]
+    )
+  })
+
+  it('reads no type on discard for a column the payload no longer offers', () => {
+    const removed = [{ key: 'removed', fieldtype: 'removed', type: INPUT_COLUMN_TYPE }]
+    const restored = hydrateDraft(removed.map(advancedFromSchemaColumn), availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
+
+    assert.deepEqual(restored.map(advancedToSchemaColumn).map((col) => col.fieldtype), [NO_TYPE])
   })
 })
