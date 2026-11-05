@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This source file is available under the terms of the
  * Pimcore Open Core License (POCL)
@@ -10,17 +12,15 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-declare(strict_types=1);
-
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Mutation;
 
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache;
 use Pimcore\Cache\RuntimeCache;
