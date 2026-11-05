@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: assets/studio/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run frontend tests
         run: npm test

@@ -32,6 +32,26 @@ const SYSTEM_COLUMNS = [
   { key: 'fullpath', type: 'system.string', group: ['system'] as string[], config: [] as never[] }
 ]
 
+/**
+ * One draft column hydrated against the available-columns payload: its field definition type taken from
+ * the available column it was configured from, and the two frontend-only fields filled in from the same
+ * column when the draft does not carry them yet.
+ */
+const hydrateAgainstPayload = (
+  column: AdvancedEditorColumn,
+  payloadColumns: GridColumnConfiguration[],
+  isKnownFieldtype: (name: string) => boolean
+): AdvancedEditorColumn => {
+  const available = payloadColumns.find(field => matchesAvailableColumn(field, column, ADVANCED_COLUMN_TYPE))
+
+  return {
+    ...column,
+    fieldtype: resolveColumnFieldtype(column, available, isKnownFieldtype),
+    localizable: column.localizable ?? available?.localizable,
+    pipelineConfig: column.pipelineConfig ?? (available?.config as Record<string, any> | undefined)
+  }
+}
+
 interface UseColumnEditorStateOptions {
   entity: string
   classDefinitionId?: string
@@ -138,15 +158,7 @@ export const useColumnEditorState = ({
   // Without the payload there is no oracle for the token, so the stored one is left exactly as it is.
   useEffect(() => {
     if (isUndefined(payloadColumns)) return
-    setDraft(prev => prev.map(col => {
-      const available = payloadColumns.find(f => matchesAvailableColumn(f, col, ADVANCED_COLUMN_TYPE))
-      return {
-        ...col,
-        fieldtype: resolveColumnFieldtype(col, available, isKnownFieldtype),
-        localizable: col.localizable ?? available?.localizable,
-        pipelineConfig: col.pipelineConfig ?? (available?.config as Record<string, any> | undefined)
-      }
-    }))
+    setDraft(prev => prev.map(col => hydrateAgainstPayload(col, payloadColumns, isKnownFieldtype)))
   }, [payloadColumns, columns, isKnownFieldtype])
 
   const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
@@ -171,8 +183,11 @@ export const useColumnEditorState = ({
 
   const columnGroups = useAddColumnGroups(addColumnFields)
 
+  // The type first, so an ordinary field which happens to be keyed 'advanced' cannot be offered as the
+  // advanced entry. The key is only a fallback for a payload which does not carry the type.
   const advancedColumn = useMemo(
-    () => addColumnFields.find(field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY),
+    () => addColumnFields.find(field => field.type === ADVANCED_COLUMN_TYPE) ??
+      addColumnFields.find(field => field.key === ADVANCED_COLUMN_KEY),
     [addColumnFields]
   )
 

@@ -165,6 +165,37 @@ describe('column fieldtype helpers', () => {
     )
   })
 
+  it('matches an advanced column titled like an available field key by type and not by that key', () => {
+    // The user titled the advanced column 'title', which is also the key of a real input field.
+    const collidingAdvancedColumn = { ...advancedColumn, key: FIELD_NAME, fieldtype: FIELD_NAME }
+
+    assert.equal(
+      matchesAvailableColumn(availableFields[0], collidingAdvancedColumn, ADVANCED_COLUMN_TYPE),
+      false
+    )
+    assert.equal(
+      matchesAvailableColumn(availableFields[2], collidingAdvancedColumn, ADVANCED_COLUMN_TYPE),
+      true
+    )
+    // The input field comes first in the payload, so a key match would have won the find and
+    // hydrated the advanced column with the input field's token.
+    assert.deepEqual(hydrate([collidingAdvancedColumn]).map((col) => col.fieldtype), [ADVANCED_FIELDTYPE])
+  })
+
+  it('does not match an ordinary column keyed like the advanced entry against that entry', () => {
+    const columnKeyedAdvanced = {
+      key: ADVANCED_COLUMN_KEY,
+      fieldtype: ADVANCED_COLUMN_KEY,
+      type: INPUT_COLUMN_TYPE
+    }
+
+    assert.equal(
+      matchesAvailableColumn(availableFields[2], columnKeyedAdvanced, ADVANCED_COLUMN_TYPE),
+      false
+    )
+    assert.deepEqual(hydrate([columnKeyedAdvanced]).map((col) => col.fieldtype), [NO_TYPE])
+  })
+
   it('matches a stored integer-pair classification store key against the key the payload carries', () => {
     const availableWithPairOnly = {
       key: LEGACY_CLASSIFICATION_STORE_KEY,

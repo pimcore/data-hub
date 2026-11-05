@@ -123,9 +123,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   }, [])
 
   const columnGroups = useAddColumnGroups(availableFields)
-  const advancedColumn = availableFields.find(
-    field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY
-  )
+  // The type first, so an ordinary field which happens to be keyed 'advanced' cannot be offered as the
+  // advanced entry. The key is only a fallback for a payload which does not carry the type.
+  const advancedColumn = availableFields.find(field => field.type === ADVANCED_COLUMN_TYPE) ??
+    availableFields.find(field => field.key === ADVANCED_COLUMN_KEY)
 
   const commitMigration = (cols: TColumns[]): void => {
     setMigratedColumns(cols)

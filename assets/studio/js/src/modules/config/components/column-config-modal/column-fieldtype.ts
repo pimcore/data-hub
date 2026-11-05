@@ -68,17 +68,25 @@ export const readStoredFieldtype = (
 }
 
 /**
- * Whether an available column from the payload is the one a persisted column was configured from: the
- * stored reference against the key the payload carries, which keeps a legacy reference such as a
- * Classification Store integer pair resolving. Advanced columns match on their type instead, their key
- * holding the user-defined title.
+ * Whether an available column from the payload is the one a persisted column was configured from.
+ *
+ * An advanced column matches on its type and on nothing else, because its key holds the user-defined
+ * title: a column titled `title` must not match an ordinary field keyed `title`. The exclusion runs
+ * both ways — an ordinary column matches on key among the non-advanced entries only, so a field keyed
+ * like the advanced entry cannot claim it either. Matching an ordinary column by key rather than by
+ * type is what keeps a legacy reference such as a Classification Store integer pair resolving.
  */
 export const matchesAvailableColumn = (
   field: FieldtypeColumn,
   column: FieldtypeColumn,
   advancedColumnType: string
-): boolean =>
-  field.key === column.key || (column.type === advancedColumnType && field.type === column.type)
+): boolean => {
+  if (column.type === advancedColumnType) {
+    return field.type === advancedColumnType
+  }
+
+  return field.type !== advancedColumnType && field.key === column.key
+}
 
 /**
  * The field definition type a column carries into the editor: that of the available column it was
