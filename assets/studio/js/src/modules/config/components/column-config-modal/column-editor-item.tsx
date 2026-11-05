@@ -15,21 +15,22 @@ import { ColumnPipelineForm } from './column-pipeline-form'
 export interface ColumnEditorItemBodyProps {
   column: AdvancedEditorColumn
   entity: string
-  objectId: number | null
   onPipelineChange: (id: string, pipeline: Record<string, any>) => void
   /** Service ID of the DynamicTypePipelineRegistry to use for source fields. */
   sourceFieldsRegistryId: string
   /** Service ID of the DynamicTypePipelineRegistry to use for transformers. */
   transformersRegistryId: string
+  /** @deprecated Passed to ColumnPipelineForm / ColumnPreview. */
+  objectId?: number | null
 }
 
 export const ColumnEditorItemBody = ({
   column,
   entity,
-  objectId,
   onPipelineChange,
   sourceFieldsRegistryId,
-  transformersRegistryId
+  transformersRegistryId,
+  objectId
 }: ColumnEditorItemBodyProps): React.JSX.Element => {
   return (
     <ColumnPipelineForm

@@ -8,6 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
@@ -26,15 +27,16 @@ import {
 } from '@pimcore/studio-ui-bundle/components'
 import { useStyles } from './base-column-editor.styles'
 import { FieldsToAddPanel } from './fields-to-add-panel'
-import {
-  LanguageSelectionContext,
-  LanguageSelectionWithProvider
-} from '@pimcore/studio-ui-bundle/modules/data-object'
+import { resolvePreviewLanguage } from './preview-language'
+import { LanguageSelectionContext } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
+import { CollapsedColumnPreview } from './column-preview'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
+import { usePreviewItemPreselect } from './use-preview-item-preselect'
+import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
 import {
   ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
@@ -89,7 +91,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     // Own the language state here. Initialize once from the prop, falling back to
     // the user's first content language. This is the single source of truth —
     // no synchronization effects needed.
-    const initialLanguage = language ?? (user.contentLanguages as string[] | undefined)?.[0] ?? 'en'
+    const initialLanguage = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 
@@ -115,10 +117,10 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const {
       draft,
       isLoading,
-      objectId,
+      resolvedClassId,
+      availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      openElementSelector,
       handleAddColumnOfType,
       handlePipelineChange,
       handleRemove,
@@ -128,6 +130,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       handleReorder,
       getColumns
     } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel, exportableOnly })
+
+    const previewEnabled = usePreviewItemPreselect(resolvedClassId)
 
     useImperativeHandle(ref, () => ({
       getColumns,
@@ -153,15 +157,22 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                   <ColumnEditorItemBody
                     column={ col }
                     entity={ entity }
-                    objectId={ objectId }
                     onPipelineChange={ handlePipelineChange }
                     sourceFieldsRegistryId={ sourceFieldsRegistryId }
                     transformersRegistryId={ transformersRegistryId }
                   />
                   )
-                : <Spin />
+                : <Spin />,
+              collapsedBody: <CollapsedColumnPreview column={ col } />
             }
-          : {}),
+          : previewEnabled
+            ? {
+                body: <SimpleColumnPreview
+                  availableField={ findAvailableField(col, availableFields) }
+                  column={ col }
+                      /> 
+              }
+            : {}),
         renderRightToolbar: (
           <Space size='mini'>
             { col.localizable === true && isAdvanced && (
@@ -194,24 +205,29 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     return (
       <LanguageSelectionContext.Provider value={ languageContextValue }>
-        <ContentLayout
-          renderToolbar={ hideToolbar
-            ? undefined
-            : (
-              <Toolbar
-                padding={ { x: 'none', y: 'small' } }
-                theme='secondary'
-              >
-                <Flex gap='mini'>
-                  <IconTextButton
-                    icon={ { value: 'new' } }
-                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.add-column') }
-                  </IconTextButton>
+        <SimpleColumnPreviewsProvider
+          availableFields={ availableFields }
+          classId={ resolvedClassId }
+          columns={ draft }
+        >
+          <ContentLayout
+            renderToolbar={ hideToolbar
+              ? undefined
+              : (
+                <Toolbar
+                  padding={ { x: 'none', y: 'small' } }
+                  theme='secondary'
+                >
+                  <Flex gap='mini'>
+                    <IconTextButton
+                      icon={ { value: 'new' } }
+                      onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.add-column') }
+                    </IconTextButton>
 
-                  { onAddAdvancedColumn !== undefined && (
+                    { onAddAdvancedColumn !== undefined && (
                     <IconTextButton
                       icon={ { value: 'new' } }
                       onClick={ onAddAdvancedColumn }
@@ -219,64 +235,51 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     >
                       { t('data-hub.column-config-modal.add-advanced-column') }
                     </IconTextButton>
-                  ) }
-                </Flex>
+                    ) }
+                  </Flex>
 
-                <Space size='extra-small'>
-                  <Button
-                    onClick={ handleDiscard }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.discard') }
-                  </Button>
+                  <Space size='extra-small'>
+                    <Button
+                      onClick={ handleDiscard }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.discard') }
+                    </Button>
 
-                  <Button
-                    onClick={ handleApply }
-                    type='primary'
-                  >
-                    { t('data-hub.column-config-modal.apply') }
-                  </Button>
-                </Space>
-              </Toolbar>
-              ) }
-          renderTopBar={ (
-            <Toolbar
-              align='center'
-              position='content'
-              theme='secondary'
-            >
-              <Button onClick={ openElementSelector }>
-                { t('data-hub.column-config-modal.preview.select-object') }
-              </Button>
-
-              <LanguageSelectionWithProvider />
-            </Toolbar>
-          ) }
-        >
-          <Content
-            padded
-            padding={ { x: 'none', y: 'small' } }
-            style={ { height: 'calc(80vh - 200px)' } }
+                    <Button
+                      onClick={ handleApply }
+                      type='primary'
+                    >
+                      { t('data-hub.column-config-modal.apply') }
+                    </Button>
+                  </Space>
+                </Toolbar>
+                ) }
           >
-            <div className={ styles.body }>
-              { !hideToolbar && fieldsToAddOpen && (
+            <Content
+              padded
+              padding={ { x: 'none', y: 'small' } }
+              style={ { height: 'calc(80vh - 200px)' } }
+            >
+              <div className={ styles.body }>
+                { !hideToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
                   groups={ columnGroups }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
                 />
-              ) }
+                ) }
 
-              <div className={ styles.list }>
-                <Space
-                  direction='vertical'
-                  style={ { width: '100%' } }
-                >
-                  { draft.length === 0 && (
+                <div className={ styles.list }>
+                  <Space
+                    direction='vertical'
+                    style={ { width: '100%' } }
+                  >
+                    { draft.length === 0 && (
                     <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-                  ) }
+                    ) }
 
-                  { draft.length > 0 && (
+                    { draft.length > 0 && (
                     <StackList
                       items={ stackItems }
                       onItemsChange={ (items) => {
@@ -284,12 +287,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                       } }
                       sortable
                     />
-                  ) }
-                </Space>
+                    ) }
+                  </Space>
+                </div>
               </div>
-            </div>
-          </Content>
-        </ContentLayout>
+            </Content>
+          </ContentLayout>
+        </SimpleColumnPreviewsProvider>
       </LanguageSelectionContext.Provider>
     )
   }

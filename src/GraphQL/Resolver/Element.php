@@ -17,6 +17,7 @@ use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AbstractFieldHelper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType\ElementPropertyType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ElementTagTrait;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
@@ -97,7 +98,9 @@ class Element
             $result = $element->getProperties();
         }
 
-        return $result;
+        $readable = array_filter($result, static fn (Property $property) => ElementPropertyType::isReadable($property));
+
+        return array_values($readable);
     }
 
     /**

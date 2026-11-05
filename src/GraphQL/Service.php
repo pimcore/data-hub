@@ -40,6 +40,7 @@ use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Localizedfield;
 use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 use Pimcore\Model\Document;
@@ -884,7 +885,7 @@ final class Service
             }
 
             $brickKey = $attributeParts[1];
-            $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+            $key = self::getBrickContainerField($object->getclass(), $brickType, $attributeParts[2] ?? null);
 
             $brickClass = Definition::getByKey($brickType);
             $context['outerFieldname'] = $key;
@@ -999,13 +1000,25 @@ final class Service
                     $brickType,
                     $brickKey,
                     $brickDescriptor,
-                    $descriptorData
+                    $descriptorData,
+                    $descriptorData['__brickContainer'] ?? null
                 );
             } else {
                 $blockGetter = 'get'.ucfirst($descriptorData['__blockName']);
-                $isLocalizedField = self::isLocalizedField($container, $fieldDefinition->getName());
+                // the block, not the child, decides: children with their own resolver pass their own definition
+                $isLocalizedField = self::isLocalizedField($container, $descriptorData['__blockName']);
                 if ($isLocalizedField) {
-                    $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
+                    // like the block rows, the children honour getFallbackLanguageValue
+                    $orgUseFallbackValues = Localizedfield::getGetFallbackValues();
+                    Localizedfield::setGetFallbackValues(
+                        $descriptorData['args']['getFallbackLanguageValue'] ?? $orgUseFallbackValues
+                    );
+
+                    try {
+                        $blockData = $object->$blockGetter($descriptorData['args']['language'] ?? null);
+                    } finally {
+                        Localizedfield::setGetFallbackValues($orgUseFallbackValues);
+                    }
                 } else {
                     $blockData = $object->$blockGetter();
                 }
@@ -1041,7 +1054,7 @@ final class Service
             }
 
             $brickKey = $attributeParts[1];
-            $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+            $key = self::getBrickContainerField($object->getclass(), $brickType, $attributeParts[2] ?? null);
 
             $brickClass = Definition::getByKey($brickType);
             $context['outerFieldname'] = $key;
@@ -1185,10 +1198,11 @@ final class Service
         string $brickKey,
         ?array $brickDescriptor = null,
         array $descriptorData = [],
+        ?string $containerField = null,
     ): mixed {
         $context = ['object' => $object];
 
-        $key = \Pimcore\Model\DataObject\Service::getFieldForBrickType($object->getclass(), $brickType);
+        $key = self::getBrickContainerField($object->getclass(), $brickType, $containerField);
         $brickClass = Definition::getByKey($brickType);
         if (!$brickClass) {
             return null;
@@ -1216,6 +1230,46 @@ final class Service
         return null;
     }
 
+    /**
+     * Returns the name of the objectbricks field which holds the given brick type. The optional third part of a
+     * brick attribute (`Brick~field~containerField`) selects the field when a brick is allowed in more than one
+     * objectbricks field of the class. Without it, or if it does not name an objectbricks field allowing the brick,
+     * the first field allowing the brick is used.
+     */
+    public static function getBrickContainerField(
+        ClassDefinition $class,
+        string $brickType,
+        ?string $containerField = null
+    ): int|string|null {
+        if ($containerField !== null && $containerField !== '') {
+            $fieldDefinition = $class->getFieldDefinition($containerField);
+
+            if (
+                $fieldDefinition instanceof Data\Objectbricks
+                && in_array($brickType, $fieldDefinition->getAllowedTypes(), true)
+            ) {
+                return $containerField;
+            }
+        }
+
+        return \Pimcore\Model\DataObject\Service::getFieldForBrickType($class, $brickType);
+    }
+
+    /**
+     * The brick definition of a brick attribute which selects its objectbricks field (`Brick~field~containerField`),
+     * null for every other attribute.
+     */
+    public static function getContainerSelectingBrick(string $attribute): ?Definition
+    {
+        $brickParts = self::parseObjectBrickFieldName($attribute);
+
+        if (empty($brickParts['containerField'])) {
+            return null;
+        }
+
+        return Definition::getByKey($brickParts['brickType']);
+    }
+
     public static function parseObjectBrickFieldName(
         string $fieldName
     ): array {
@@ -1234,6 +1288,7 @@ final class Service
                 'brickType' => $brickType,
                 'brickKey' => $brickKey,
                 'brickDescriptor' => $brickDescriptor,
+                'containerField' => ($parts[2] ?? '') !== '' ? $parts[2] : null,
             ];
         }
 

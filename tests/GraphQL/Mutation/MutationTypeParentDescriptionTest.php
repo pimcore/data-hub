@@ -10,18 +10,25 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+declare(strict_types=1);
+
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\Mutation;
 
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
+use Pimcore\Cache;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Tests\Support\Util\TestHelper;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * The "not allowed to create ..." messages name the parent the caller asked for,
@@ -29,7 +36,13 @@ use Pimcore\Tests\Support\Util\TestHelper;
  */
 class MutationTypeParentDescriptionTest extends Unit
 {
+    private const CONFIG_NAME = 'datahub-parent-description-test';
+
+    private const PREFIX = 'datahub_parent_description_';
+
     private mixed $backupContext = null;
+
+    private bool $hadContext = false;
 
     private ?ElementInterface $parent = null;
 
@@ -38,7 +51,7 @@ class MutationTypeParentDescriptionTest extends Unit
         // the workspace lookup behind the permission check needs the bundle's tables, which the CI database lacks
         foreach (['document', 'asset', 'object'] as $type) {
             Db::get()->executeStatement(
-                'CREATE TABLE IF NOT EXISTS `plugin_datahub_workspaces_' . $type . '` (
+                'CREATE TABLE IF NOT EXISTS ' . Db::get()->quoteIdentifier('plugin_datahub_workspaces_' . $type) . ' (
                     `cid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
                     `cpath` VARCHAR(765) NULL DEFAULT NULL,
                     `configuration` VARCHAR(80) NOT NULL DEFAULT \'0\',
@@ -51,23 +64,35 @@ class MutationTypeParentDescriptionTest extends Unit
             );
         }
 
-        if (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
+        $this->hadContext = RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        if ($this->hadContext) {
             $this->backupContext = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
         }
 
         // a configuration without workspace entries denies every create
-        $configuration = new Configuration('graphql', '/1', 'datahub-parent-description-test');
+        $configuration = new Configuration('graphql', '/1', self::CONFIG_NAME);
         $configuration->setConfiguration([]);
         RuntimeCache::set(
             PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY,
-            ['clientname' => 'datahub-parent-description-test', 'configuration' => $configuration]
+            ['clientname' => self::CONFIG_NAME, 'configuration' => $configuration]
         );
     }
 
     protected function tearDown(): void
     {
-        if ($this->backupContext !== null) {
+        if ($this->hadContext) {
             RuntimeCache::set(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY, $this->backupContext);
+        } elseif (RuntimeCache::isRegistered(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY)) {
+            RuntimeCache::getInstance()->offsetUnset(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        }
+
+        // the permission check stores the workspace lookup under these keys
+        foreach (['document', 'asset', 'object'] as $type) {
+            $key = 'datahub_workspace_permissions_' . self::CONFIG_NAME . '_' . $type;
+            Cache::remove($key);
+            if (RuntimeCache::isRegistered($key)) {
+                RuntimeCache::getInstance()->offsetUnset($key);
+            }
         }
 
         $this->parent?->delete();
@@ -108,9 +133,9 @@ class MutationTypeParentDescriptionTest extends Unit
     public function testCreateFolderDeniedMessageNamesParentIdAndPath(string $elementType, string $folderType): void
     {
         $this->parent = match ($elementType) {
-            'asset' => TestHelper::createAssetFolder('pme_t0444_'),
-            'object' => TestHelper::createObjectFolder('pme_t0444_'),
-            'document' => TestHelper::createDocumentFolder('pme_t0444_'),
+            'asset' => TestHelper::createAssetFolder(self::PREFIX),
+            'object' => TestHelper::createObjectFolder(self::PREFIX),
+            'document' => TestHelper::createDocumentFolder(self::PREFIX),
         };
 
         $resolver = $this->createFolderResolver($elementType);
@@ -132,6 +157,94 @@ class MutationTypeParentDescriptionTest extends Unit
             'not allowed to create ' . $folderType . " in parent path '" . $path . "'",
             $byPath['message']
         );
+    }
+
+    /**
+     * The create asset and create document resolvers are closures made by the schema builders; they are built by hand.
+     */
+    public function testCreateAssetDeniedMessageNamesParent(): void
+    {
+        $this->parent = TestHelper::createAssetFolder(self::PREFIX);
+        $config = ['fields' => []];
+        $this->mutationType()->buildCreateAssetMutation($config, ['configuration' => $this->configuration()]);
+
+        $resolver = $config['fields']['createAsset']['resolve'];
+        $this->assertDeniedMessages($resolver, 'not allowed to create asset', ['filename' => 'x', 'type' => 'text']);
+    }
+
+    public function testCreateDocumentDeniedMessageNamesParent(): void
+    {
+        $this->parent = TestHelper::createDocumentFolder(self::PREFIX);
+        $config = ['fields' => []];
+        $this->mutationType()->buildUpdateDocumentMutation(
+            $config,
+            ['configuration' => $this->configuration()],
+            'create',
+            'link'
+        );
+
+        $resolver = $config['fields']['createDocumentLink']['resolve'];
+        $this->assertDeniedMessages($resolver, 'not allowed to create document', ['key' => 'x']);
+    }
+
+    /**
+     * @param array<string, mixed> $baseArgs
+     */
+    private function assertDeniedMessages(callable $resolver, string $message, array $baseArgs): void
+    {
+        $info = $this->createStub(ResolveInfo::class);
+        $parentId = $this->parent->getId();
+        $path = $this->parent->getRealFullPath();
+
+        $byId = $resolver(null, ['parentId' => $parentId] + $baseArgs, [], $info);
+        $this->assertFalse($byId['success']);
+        $this->assertSame($message . ' in parent id ' . $parentId, $byId['message']);
+
+        $byPath = $resolver(null, ['path' => $path] + $baseArgs, [], $info);
+        $this->assertFalse($byPath['success']);
+        $this->assertSame($message . " in parent path '" . $path . "'", $byPath['message']);
+    }
+
+    private function configuration(): Configuration
+    {
+        return new Configuration('graphql', '/1', self::CONFIG_NAME, [
+            'schema' => ['specialEntities' => [
+                'asset' => ['create' => true],
+                'document' => ['update' => true],
+            ]],
+            'security' => ['skipPermissionCheck' => false],
+        ]);
+    }
+
+    private function mutationType(): MutationType
+    {
+        // the service is final and needs the whole container: set just the lookups the mutation builders use
+        $graphQlService = (new \ReflectionClass(Service::class))->newInstanceWithoutConstructor();
+        $assetTypes = new Container();
+        $assetTypes->set('asset', new class() {
+            public function build(): Type
+            {
+                return Type::string();
+            }
+        });
+        $this->setProperty($graphQlService, 'assetTypeGeneratorFactories', $assetTypes);
+        $this->setProperty($graphQlService, 'assetDataTypes', ['asset_input' => Type::string()]);
+        $this->setProperty($graphQlService, 'documentDataTypes', [
+            'document_link' => Type::string(),
+            'document_link_input' => Type::string(),
+        ]);
+
+        $mutationType = (new \ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
+        $mutationType->setGraphQLService($graphQlService);
+        $this->setProperty($mutationType, 'eventDispatcher', new EventDispatcher());
+
+        return $mutationType;
+    }
+
+    private function setProperty(object $object, string $property, mixed $value): void
+    {
+        $reflection = new \ReflectionProperty($object, $property);
+        $reflection->setValue($object, $value);
     }
 
     private function createFolderResolver(string $elementType): callable

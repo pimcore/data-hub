@@ -8,8 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useElementSelector, SelectionType } from '@pimcore/studio-ui-bundle/modules/element'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { isNil } from 'lodash'
@@ -24,11 +23,6 @@ import {
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
 
-const SYSTEM_COLUMNS = [
-  { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
-  { key: 'fullpath', type: 'system.string', group: ['system'] as string[], config: [] as never[] }
-]
-
 interface UseColumnEditorStateOptions {
   entity: string
   classDefinitionId?: string
@@ -42,12 +36,11 @@ interface UseColumnEditorStateOptions {
 interface UseColumnEditorStateResult {
   draft: AdvancedEditorColumn[]
   isLoading: boolean
-  objectId: number | null
+  resolvedClassId: string
   availableFields: GridColumnConfiguration[]
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
   onAddAdvancedColumn?: () => void
-  openElementSelector: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
   handleRemove: (id: string) => void
@@ -85,40 +78,6 @@ export const useColumnEditorState = ({
   useEffect(() => {
     setDraft(columns.map(advancedFromSchemaColumn))
   }, [columns])
-
-  const [objectId, setObjectId] = useState<number | null>(null)
-  const hasManualSelection = useRef(false)
-
-  const { data: gridData } = api.endpoints.dataObjectGetGrid.useQuery(
-    { classId: resolvedClassId, body: { folderId: 1, columns: SYSTEM_COLUMNS, filters: { includeDescendants: true, page: 1, pageSize: 1 } } },
-    { skip: resolvedClassId === undefined }
-  )
-
-  useEffect(() => {
-    if (hasManualSelection.current) return
-    const firstItem = gridData?.items?.[0]
-    if (firstItem?.id !== undefined) {
-      setObjectId(firstItem.id as number)
-    }
-  }, [gridData?.items])
-
-  const { open: openElementSelector } = useElementSelector({
-    selectionType: SelectionType.Single,
-    areas: { object: true, asset: false, document: false },
-    config: {
-      objects: {
-        allowedTypes: ['object'],
-        ...(entity !== undefined ? { allowedClasses: [entity] } : {})
-      }
-    },
-    onFinish: (event) => {
-      const item = event?.items?.[0]
-      if (item !== undefined) {
-        hasManualSelection.current = true
-        setObjectId(item.data.id)
-      }
-    }
-  })
 
   const availableFields: GridColumnConfiguration[] = data?.columns ?? []
 
@@ -202,11 +161,10 @@ export const useColumnEditorState = ({
   return {
     draft,
     isLoading,
-    objectId,
+    resolvedClassId,
     availableFields,
     columnGroups,
     onAddAdvancedColumn,
-    openElementSelector,
     handleAddColumnOfType,
     handlePipelineChange,
     handleRemove,
