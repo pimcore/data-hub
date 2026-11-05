@@ -76,13 +76,13 @@ class FeatureIdentifierTest extends Unit
         $this->assertArrayNotHasKey('deprecationReason', $fields[self::IDENTIFIER]);
 
         $this->assertSame(Type::int(), $fields[self::ID]['type']);
-        $this->assertSame(Helper::ID_DEPRECATION_REASON, $fields[self::ID]['deprecationReason']);
+        $this->assertSame(Helper::getIdDeprecationReason(), $fields[self::ID]['deprecationReason']);
     }
 
     public function testTheDeprecationReasonNamesTheReplacementAndTheRemovalRelease(): void
     {
-        $this->assertStringContainsString(self::IDENTIFIER, Helper::ID_DEPRECATION_REASON);
-        $this->assertStringContainsString('2027.1', Helper::ID_DEPRECATION_REASON);
+        $this->assertStringContainsString(self::IDENTIFIER, Helper::getIdDeprecationReason());
+        $this->assertStringContainsString('2027.1', Helper::getIdDeprecationReason());
     }
 
     public function testTheFeatureTypesBuiltWithoutAServicePublishIdentifierAndKeepIdAsADeprecatedInt(): void
@@ -95,7 +95,7 @@ class FeatureIdentifierTest extends Unit
             $id = $type->getField(self::ID);
             $this->assertSame(Type::int(), $id->getType(), $type->name);
             $this->assertTrue($id->isDeprecated(), $type->name);
-            $this->assertSame(Helper::ID_DEPRECATION_REASON, $id->deprecationReason, $type->name);
+            $this->assertSame(Helper::getIdDeprecationReason(), $id->deprecationReason, $type->name);
         }
     }
 
@@ -127,7 +127,7 @@ class FeatureIdentifierTest extends Unit
 
         $withDeprecated = $this->introspectFields($schema, true);
         $this->assertTrue($withDeprecated[self::ID]['isDeprecated']);
-        $this->assertSame(Helper::ID_DEPRECATION_REASON, $withDeprecated[self::ID]['deprecationReason']);
+        $this->assertSame(Helper::getIdDeprecationReason(), $withDeprecated[self::ID]['deprecationReason']);
         $this->assertFalse($withDeprecated[self::IDENTIFIER]['isDeprecated']);
         $this->assertNull($withDeprecated[self::IDENTIFIER]['deprecationReason']);
 

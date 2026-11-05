@@ -77,7 +77,7 @@ class GroupIdentifierTest extends Unit
         $id = $this->group->getField(self::ID);
         $this->assertSame(Type::int(), $id->getType());
         $this->assertTrue($id->isDeprecated());
-        $this->assertSame(Helper::ID_DEPRECATION_REASON, $id->deprecationReason);
+        $this->assertSame(Helper::getIdDeprecationReason(), $id->deprecationReason);
     }
 
     /**

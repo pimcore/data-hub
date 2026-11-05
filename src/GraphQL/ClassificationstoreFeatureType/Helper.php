@@ -23,7 +23,12 @@ use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
  */
 final class Helper extends ObjectType
 {
-    public const ID_DEPRECATION_REASON = 'Use `identifier` instead, `id` is removed in 2027.1.';
+    private const ID_DEPRECATION_REASON = 'Use `identifier` instead, `id` is removed in 2027.1.';
+
+    public static function getIdDeprecationReason(): string
+    {
+        return self::ID_DEPRECATION_REASON;
+    }
 
     /**
      * @return array
@@ -33,7 +38,7 @@ final class Helper extends ObjectType
         $fields = [
             'id' => [
                 'type' => Type::int(),
-                'deprecationReason' => self::ID_DEPRECATION_REASON,
+                'deprecationReason' => self::getIdDeprecationReason(),
                 'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getId();
@@ -42,7 +47,7 @@ final class Helper extends ObjectType
             ],
             'identifier' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null) {
+                'resolve' => static function (mixed $value = null): ?string {
                     if ($value instanceof FeatureDescriptor) {
                         $keyConfig = KeyConfig::getById($value->getId());
                         if ($keyConfig) {

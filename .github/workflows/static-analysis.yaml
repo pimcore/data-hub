@@ -71,7 +71,12 @@ jobs:
         run: |
           php_versions="${{ steps.parse-php-versions.outputs.php_versions }}"
           MATRIX_JSON=$(cat reusable-workflows/phpstan-configuration/matrix-config.json)
-          FILTERED_MATRIX_JSON=$(echo "$MATRIX_JSON" | jq --arg php_versions "$php_versions" '{ include: [ .configs[] | select(.php_version == $php_versions) | .matrix[] ] }')
+          # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
+          # this epic consumes core API that lives only on cs-store-improvements
+          # (Classification Store identifiers), so CI must install that branch instead
+          # of ^2026.4 from packagist. Without it PHPStan reports every new core method
+          # as undefined and codeception cannot boot.
+          FILTERED_MATRIX_JSON=$(echo "$MATRIX_JSON" | jq --arg php_versions "$php_versions" --arg pimcore_version 'dev-cs-store-improvements as 2026.99.9' '{ include: [ .configs[] | select(.php_version == $php_versions) | .matrix[] | . + {pimcore_version: $pimcore_version} ] }')
           if [ "$(echo "$FILTERED_MATRIX_JSON" | jq '.include | length')" = "0" ]; then
             echo "::error::No matrix configuration found for PHP versions '$php_versions'"
             exit 1

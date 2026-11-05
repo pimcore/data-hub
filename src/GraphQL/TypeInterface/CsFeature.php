@@ -38,7 +38,7 @@ final class CsFeature
                         'fields' => [
                             'id' => [
                                 'type' => Type::int(),
-                                'deprecationReason' => Helper::ID_DEPRECATION_REASON,
+                                'deprecationReason' => Helper::getIdDeprecationReason(),
                             ],
                             'identifier' => [
                                 'type' => Type::string(),

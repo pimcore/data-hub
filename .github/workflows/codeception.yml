@@ -67,12 +67,18 @@ jobs:
 
                   IFS=',' read -ra VERSIONS_ARRAY <<< "$php_versions"
 
-                  FILTERED_MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg php_versions "$php_versions" '
+                  # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
+                  # this epic consumes core API that lives only on cs-store-improvements
+                  # (Classification Store identifiers), so CI must install that branch instead
+                  # of ^2026.4 from packagist. Without it PHPStan reports every new core method
+                  # as undefined and codeception cannot boot.
+                  FILTERED_MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg php_versions "$php_versions" --arg pimcore_version 'dev-cs-store-improvements as 2026.99.9' '
                   {
                     matrix: [
                       .configs[] |
                       select(.php_version == $php_versions) |
-                      .matrix[]
+                      .matrix[] |
+                      . + {pimcore_version: $pimcore_version}
                     ]
                   }')
 

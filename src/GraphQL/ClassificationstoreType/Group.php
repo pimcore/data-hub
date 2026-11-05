@@ -55,11 +55,11 @@ final class Group extends ObjectType
         $config['fields'] = [
             'id' => [
                 'type' => Type::int(),
-                'deprecationReason' => Helper::ID_DEPRECATION_REASON,
+                'deprecationReason' => Helper::getIdDeprecationReason(),
             ],
             'identifier' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value) {
+                'resolve' => static function (mixed $value): ?string {
                     $groupConfig = GroupConfig::getById($value['id']);
                     if ($groupConfig) {
                         return $groupConfig->getIdentifier();
