@@ -115,6 +115,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const {
       draft,
       isLoading,
+      isHydrated,
       objectId,
       columnGroups,
       onAddAdvancedColumn,
@@ -230,7 +231,9 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     { t('data-hub.column-config-modal.discard') }
                   </Button>
 
+                  { /* Disabled until this class's available columns load — see isHydrated. */ }
                   <Button
+                    disabled={ !isHydrated }
                     onClick={ handleApply }
                     type='primary'
                   >

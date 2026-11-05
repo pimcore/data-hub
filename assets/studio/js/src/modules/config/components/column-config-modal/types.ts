@@ -28,8 +28,15 @@ export interface SchemaColumn {
  * Allows ColumnConfigModal to imperatively read the current draft and add a column.
  */
 export interface ColumnEditorHandle<TColumns = SchemaColumn> {
-  /** Returns the current list of columns from the editor draft. */
-  getColumns: () => TColumns[]
+  /**
+   * Returns the current list of columns from the editor draft, or undefined while the editor has not
+   * hydrated that draft against the available columns of the selected class.
+   *
+   * Undefined is not an empty configuration: it means the field definition types in the draft are
+   * still the ones the stored configuration carried, so persisting it would write a legacy field name
+   * back into `fieldtype`. A caller must refuse to submit on undefined rather than fall back to it.
+   */
+  getColumns: () => TColumns[] | undefined
   /** Programmatically adds a column from the available-columns list. */
   addColumn: (column: GridColumnConfiguration) => void
 }

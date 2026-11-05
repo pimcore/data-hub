@@ -14,6 +14,7 @@ import { describe, it } from 'node:test'
 import {
   deriveColumnFieldtype,
   hydrateDraft,
+  isDraftHydrated,
   matchesAvailableColumn,
   readStoredFieldtype,
   resolveColumnFieldtype
@@ -307,6 +308,44 @@ describe('column fieldtype helpers', () => {
 
     assert.equal(kept.localizable, false)
     assert.deepEqual(kept.pipelineConfig, { own: true })
+  })
+})
+
+describe('gating submission on hydration', () => {
+  it('refuses a draft while the payload has not arrived', () => {
+    // Both cases the request leaves behind: it failed, or an uncached class was selected after a
+    // successful query. In each the payload is undefined while nothing is reported as loading.
+    assert.equal(isDraftHydrated(undefined), false)
+  })
+
+  it('accepts a loaded payload, an empty one included', () => {
+    assert.equal(isDraftHydrated(availableFields), true)
+    // A class offering no columns is a resolved answer, not a missing one: every draft column
+    // hydrates to no type. Only undefined means the payload has not arrived.
+    assert.equal(isDraftHydrated([]), true)
+  })
+
+  it('refuses exactly the draft hydrateDraft cannot resolve', () => {
+    const draft = [legacyClassificationStoreColumn].map(advancedFromSchemaColumn)
+
+    // The branch the gate exists for: untouched by hydration, so Apply would write the legacy field
+    // name back into `fieldtype`. isDraftHydrated is false for the same input hydrateDraft gives up on.
+    assert.equal(isDraftHydrated(undefined), false)
+    assert.deepEqual(
+      hydrateDraft(draft, undefined, ADVANCED_COLUMN_TYPE, isKnownType)
+        .map(advancedToSchemaColumn)
+        .map((col) => col.fieldtype),
+      [LEGACY_CLASSIFICATION_STORE_KEY]
+    )
+
+    // And with the payload the same draft resolves, so the gate opens on a correct configuration.
+    assert.equal(isDraftHydrated(availableFields), true)
+    assert.deepEqual(
+      hydrateDraft(draft, availableFields, ADVANCED_COLUMN_TYPE, isKnownType)
+        .map(advancedToSchemaColumn)
+        .map((col) => col.fieldtype),
+      [CLASSIFICATION_STORE_FIELDTYPE]
+    )
   })
 })
 

@@ -25,7 +25,7 @@ import {
 } from './types'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
-import { deriveColumnFieldtype, hydrateDraft } from './column-fieldtype'
+import { deriveColumnFieldtype, hydrateDraft, isDraftHydrated } from './column-fieldtype'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
@@ -45,6 +45,12 @@ interface UseColumnEditorStateOptions {
 interface UseColumnEditorStateResult {
   draft: AdvancedEditorColumn[]
   isLoading: boolean
+  /**
+   * Whether the available-columns payload for the selected class has loaded, so the draft's field
+   * definition types are resolved and it may be submitted. False while the request is in flight or has
+   * failed — the toolbar must not offer Apply then. See `isDraftHydrated`.
+   */
+  isHydrated: boolean
   objectId: number | null
   availableFields: GridColumnConfiguration[]
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
@@ -58,7 +64,8 @@ interface UseColumnEditorStateResult {
   handleDiscard: () => void
   handleLocaleChange: (id: string, locale: string | null) => void
   handleReorder: (ids: string[]) => void
-  getColumns: () => SchemaColumn[]
+  /** The draft as persistable columns, or undefined while it is not hydrated. See `isHydrated`. */
+  getColumns: () => SchemaColumn[] | undefined
 }
 
 export const useColumnEditorState = ({
@@ -134,6 +141,7 @@ export const useColumnEditorState = ({
 
   const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
   const availableFields: GridColumnConfiguration[] = useMemo(() => payloadColumns ?? [], [payloadColumns])
+  const isHydrated = isDraftHydrated(payloadColumns)
 
   // Runs on the draft the reset effect above has just rebuilt from `columns`, and again when the payload
   // arrives. Without the payload hydrateDraft hands the draft back untouched, stored token and all.
@@ -185,7 +193,15 @@ export const useColumnEditorState = ({
     setDraft(prev => prev.filter(col => col._id !== id))
   }
 
+  // Both submission paths — this one and getColumns below — are gated on hydration. Without the
+  // payload every persisted column still carries the token an earlier save wrote into it, so a save
+  // here would write a legacy field name back into `fieldtype`, which is the defect this ticket fixes.
+  // The toolbar disables Apply on the same flag; the guard holds for a caller that renders its own.
   const handleApply = (): void => {
+    if (!isHydrated) {
+      return
+    }
+
     onApply(draft.filter(col => col.key !== '').map(advancedToSchemaColumn))
   }
 
@@ -213,6 +229,7 @@ export const useColumnEditorState = ({
   return {
     draft,
     isLoading,
+    isHydrated,
     objectId,
     availableFields,
     columnGroups,
@@ -225,6 +242,8 @@ export const useColumnEditorState = ({
     handleDiscard,
     handleLocaleChange,
     handleReorder,
-    getColumns: () => draft.filter(col => col.key !== '').map(advancedToSchemaColumn)
+    getColumns: () => isHydrated
+      ? draft.filter(col => col.key !== '').map(advancedToSchemaColumn)
+      : undefined
   }
 }

@@ -151,3 +151,23 @@ export const hydrateDraft = (
     ? draft
     : draft.map(column => hydrateDraftColumn(column, payloadColumns, advancedColumnType, isKnownType))
 )
+
+/**
+ * Whether a draft hydrated with this payload may be submitted: true once the available-columns
+ * payload for the selected class has arrived, false while it has not.
+ *
+ * It is the predicate for exactly the branch `hydrateDraft` hands the draft back untouched on. Without
+ * the payload there is no oracle for the token, so every persisted column still carries whatever an
+ * earlier save wrote into it — a legacy field name included — and a submission would write it straight
+ * back. Blocking the submission is the only correct answer, because the editor cannot tell a legacy
+ * token from a current one without the payload.
+ *
+ * An empty payload is a loaded payload: a class offering no columns hydrates every draft column to no
+ * type, which is a resolved answer. Only `undefined` means "not loaded".
+ *
+ * A request's `isLoading` flag is not this predicate. RTK Query leaves `isLoading` false both when the
+ * request failed and when an uncached class is selected after a first successful query, and in both
+ * cases `currentData` — and therefore the payload — is undefined.
+ */
+export const isDraftHydrated = (payloadColumns: AvailableColumn[] | undefined): boolean =>
+  payloadColumns !== undefined
