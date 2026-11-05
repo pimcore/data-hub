@@ -44,6 +44,11 @@ export interface MigrationModalProps {
    */
   onConfirm: () => void
   /**
+   * Disables "Confirm Migration". Set this while the consumer cannot yet produce a correct
+   * configuration — for the column editor, while the available columns of the class have not loaded.
+   */
+  confirmDisabled?: boolean
+  /**
    * Called when the user closes the modal from either the initial legacy view
    * (X button or Cancel in the initial toolbar) or from the split migration view
    * (Cancel button returns to the initial view — the modal stays open).
@@ -74,6 +79,7 @@ export const MigrationModal = ({
   legacyConfig,
   renderToolbarLeft,
   onConfirm,
+  confirmDisabled = false,
   onClose,
   children
 }: MigrationModalProps): React.JSX.Element => {
@@ -193,6 +199,7 @@ export const MigrationModal = ({
           </Button>
 
           <Button
+            disabled={ confirmDisabled }
             onClick={ onConfirm }
             type='primary'
           >
