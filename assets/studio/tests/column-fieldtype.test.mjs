@@ -32,7 +32,6 @@ const RELATION_FIELDTYPE = 'manyToManyObjectRelation'
 const CLASSIFICATION_STORE_FIELDTYPE = 'classificationstore'
 const CLASSIFICATION_STORE_TYPE = 'dataobject.classificationstore'
 const LEGACY_CLASSIFICATION_STORE_KEY = '3-17'
-const IDENTIFIER_CLASSIFICATION_STORE_KEY = 'colours~size'
 const ADVANCED_COLUMN_TITLE = 'Full name'
 const ADVANCED_FIELDTYPE = 'advanced'
 const NO_TYPE = ''
@@ -62,15 +61,11 @@ const legacyClassificationStoreColumn = {
   type: CLASSIFICATION_STORE_TYPE
 }
 
-// The available-columns payload as the editor reads it: the input field, and a classification store
-// field offering its legacy integer pair as the key next to an identifier.
+// The available-columns payload as the editor reads it: the input field, a classification store field
+// carrying its legacy integer pair as the key, and the advanced column.
 const availableFields = [
   { key: FIELD_NAME, type: INPUT_COLUMN_TYPE, config: { fieldDefinition: { fieldtype: INPUT_FIELDTYPE } } },
-  {
-    key: LEGACY_CLASSIFICATION_STORE_KEY,
-    identifier: IDENTIFIER_CLASSIFICATION_STORE_KEY,
-    type: CLASSIFICATION_STORE_TYPE
-  },
+  { key: LEGACY_CLASSIFICATION_STORE_KEY, type: CLASSIFICATION_STORE_TYPE },
   { key: ADVANCED_COLUMN_KEY, type: ADVANCED_COLUMN_TYPE }
 ]
 
@@ -156,10 +151,10 @@ describe('column fieldtype helpers', () => {
     )
   })
 
-  it('does not match an available field of another type which happens to carry the same key', () => {
+  it('keeps matching an available field by key after its attribute type changed in the class', () => {
     assert.equal(
       matchesAvailableColumn({ key: FIELD_NAME, type: SELECT_COLUMN_TYPE }, inputColumn, ADVANCED_COLUMN_TYPE),
-      false
+      true
     )
   })
 
@@ -175,9 +170,10 @@ describe('column fieldtype helpers', () => {
       key: LEGACY_CLASSIFICATION_STORE_KEY,
       type: CLASSIFICATION_STORE_TYPE
     }
+    // A payload which additionally offers an identifier form alongside the key it carries today.
     const availableWithIdentifier = {
       key: LEGACY_CLASSIFICATION_STORE_KEY,
-      identifier: IDENTIFIER_CLASSIFICATION_STORE_KEY,
+      identifier: 'colours~size',
       type: CLASSIFICATION_STORE_TYPE
     }
 
@@ -188,27 +184,6 @@ describe('column fieldtype helpers', () => {
     assert.equal(
       matchesAvailableColumn(availableWithIdentifier, legacyClassificationStoreColumn, ADVANCED_COLUMN_TYPE),
       true
-    )
-  })
-
-  it('matches a stored identifier against the identifier the payload carries next to its key', () => {
-    const storedByIdentifier = {
-      key: IDENTIFIER_CLASSIFICATION_STORE_KEY,
-      fieldtype: CLASSIFICATION_STORE_FIELDTYPE,
-      type: CLASSIFICATION_STORE_TYPE
-    }
-
-    assert.equal(
-      matchesAvailableColumn(availableFields[1], storedByIdentifier, ADVANCED_COLUMN_TYPE),
-      true
-    )
-    assert.equal(
-      matchesAvailableColumn(
-        { key: LEGACY_CLASSIFICATION_STORE_KEY, type: CLASSIFICATION_STORE_TYPE },
-        storedByIdentifier,
-        ADVANCED_COLUMN_TYPE
-      ),
-      false
     )
   })
 
@@ -247,6 +222,14 @@ describe('column fieldtype helpers', () => {
       resolveColumnFieldtype({ key: 'gone', type: INPUT_COLUMN_TYPE }, undefined, isKnownType),
       NO_TYPE
     )
+  })
+
+  it('takes the token of an available field whose attribute type changed since the save', () => {
+    const drifted = { key: FIELD_NAME, type: SELECT_COLUMN_TYPE, config: { fieldDefinition: { fieldtype: 'select' } } }
+    const stored = { key: FIELD_NAME, fieldtype: FIELD_NAME, type: INPUT_COLUMN_TYPE }
+
+    assert.equal(matchesAvailableColumn(drifted, stored, ADVANCED_COLUMN_TYPE), true)
+    assert.equal(resolveColumnFieldtype(stored, drifted, isKnownType), 'select')
   })
 
   it('resolves every stored column the way the hydration path composes the two helpers', () => {

@@ -13,7 +13,6 @@ import { useElementSelector, SelectionType } from '@pimcore/studio-ui-bundle/mod
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
-import { ApiError, trackError, type ApiErrorData } from '@pimcore/studio-ui-bundle/modules/app'
 import { serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { isNil, isUndefined } from 'lodash'
 import {
@@ -86,18 +85,10 @@ export const useColumnEditorState = ({
   }, [classDefinitionId, entity, getByName])
 
   // currentData, not data: during a refetch data still holds the columns of the previous arguments.
-  const { currentData, isLoading, error } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
+  const { currentData, isLoading } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
     classId: resolvedClassId,
     folderId: 1
   })
-
-  const availableColumnsError: ApiErrorData | undefined = error
-
-  useEffect(() => {
-    if (!isNil(availableColumnsError)) {
-      trackError(new ApiError(availableColumnsError))
-    }
-  }, [availableColumnsError])
 
   const [draft, setDraft] = useState<AdvancedEditorColumn[]>(() =>
     columns.map(advancedFromSchemaColumn)

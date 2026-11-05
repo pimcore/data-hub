@@ -15,8 +15,6 @@
 export interface FieldtypeColumn {
   key: string
   type: string
-  /** The second form of the reference an available column offers, where its key is not the only one. */
-  identifier?: string
   config?: unknown
 }
 
@@ -70,27 +68,17 @@ export const readStoredFieldtype = (
 }
 
 /**
- * Whether an available column from the payload is the one a persisted column was configured from. The type
- * has to agree, because the token of a column of another type is written back on Apply. Advanced columns
- * match on their type alone, their key holding the user-defined title; every other column matches its
- * stored reference against both forms the payload offers, so a reference saved as an identifier and one
- * saved before identifiers existed both keep resolving.
+ * Whether an available column from the payload is the one a persisted column was configured from: the
+ * stored reference against the key the payload carries, which keeps a legacy reference such as a
+ * Classification Store integer pair resolving. Advanced columns match on their type instead, their key
+ * holding the user-defined title.
  */
 export const matchesAvailableColumn = (
   field: FieldtypeColumn,
   column: FieldtypeColumn,
   advancedColumnType: string
-): boolean => {
-  if (field.type !== column.type) {
-    return false
-  }
-
-  if (column.type === advancedColumnType) {
-    return true
-  }
-
-  return field.key === column.key || field.identifier === column.key
-}
+): boolean =>
+  field.key === column.key || (column.type === advancedColumnType && field.type === column.type)
 
 /**
  * The field definition type a column carries into the editor: that of the available column it was

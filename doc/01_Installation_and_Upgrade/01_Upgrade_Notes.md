@@ -8,7 +8,7 @@ description: Breaking changes and migration steps per release.
 ## Upgrade to 2026.4.0
 
 ### Studio
-- A column configuration re-saved through the column editor now stores the field's type instead of the field's name. This can change the shape of a published export and require a reindex for the columns affected; configurations that are not re-saved are unchanged.
+- A column configuration re-saved through the column editor now stores the field's type where it stored the field's name, and no type at all for a column whose field the class no longer offers. This can change the shape of a published export and require a reindex for the columns affected; configurations that are not re-saved are unchanged.
 
 ### GraphQL
 - Added the `focalPoints` field to the asset type. For images with a focal point set in the asset editor it returns `{x, y}` as percentages (`Float`, `0`–`100`) of the image width/height, read from the asset's `focalPointX`/`focalPointY` custom settings; it is `null` for images without a focal point and for all other asset types. This is a purely additive schema change; existing queries are not affected.
