@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
+import type { GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 
 /**
  * Persisted column shape shared across all Data Hub adapter bundles.

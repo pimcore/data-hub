@@ -23,6 +23,7 @@ import {
 } from './types'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
+import { deriveColumnFieldtype, matchesAvailableColumn } from './column-fieldtype'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
@@ -125,12 +126,11 @@ export const useColumnEditorState = ({
   useEffect(() => {
     if (availableFields.length === 0) return
     setDraft(prev => prev.map(col => {
-      const available = availableFields.find(f =>
-        f.key === col.key || (col.type === ADVANCED_COLUMN_TYPE && f.type === col.type)
-      )
+      const available = availableFields.find(f => matchesAvailableColumn(f, col, ADVANCED_COLUMN_TYPE))
       if (available === undefined) return col
       return {
         ...col,
+        fieldtype: deriveColumnFieldtype(available),
         localizable: col.localizable ?? available.localizable,
         pipelineConfig: col.pipelineConfig ?? (available.config as Record<string, any> | undefined)
       }
@@ -141,7 +141,7 @@ export const useColumnEditorState = ({
     setDraft(prev => [...prev, {
       _id: crypto.randomUUID(),
       key: column.key,
-      fieldtype: column.key,
+      fieldtype: deriveColumnFieldtype(column),
       type: column.type,
       pipelineConfig: column.config as Record<string, any> | undefined,
       localizable: column.localizable,
