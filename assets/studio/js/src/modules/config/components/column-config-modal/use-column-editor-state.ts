@@ -12,7 +12,10 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useElementSelector, SelectionType } from '@pimcore/studio-ui-bundle/modules/element'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
-import { isNil } from 'lodash'
+import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
+import { ApiError, trackError, type ApiErrorData } from '@pimcore/studio-ui-bundle/modules/app'
+import { serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { isNil, isUndefined } from 'lodash'
 import {
   advancedFromSchemaColumn,
   advancedToSchemaColumn,
@@ -23,7 +26,7 @@ import {
 } from './types'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
-import { deriveColumnFieldtype, matchesAvailableColumn } from './column-fieldtype'
+import { deriveColumnFieldtype, matchesAvailableColumn, resolveColumnFieldtype } from './column-fieldtype'
 
 const SYSTEM_COLUMNS = [
   { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
@@ -68,16 +71,33 @@ export const useColumnEditorState = ({
   exportableOnly = false
 }: UseColumnEditorStateOptions): UseColumnEditorStateResult => {
   const { getByName } = useClassDefinitions()
+  const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(
+    serviceIds['DynamicTypes/FieldDefinitionRegistry']
+  )
+
+  const isKnownFieldtype = useCallback(
+    (name: string): boolean => !isUndefined(fieldDefinitionRegistry.getDynamicType(name, false)),
+    [fieldDefinitionRegistry]
+  )
 
   const resolvedClassId = useMemo(() => {
     if (!isNil(classDefinitionId)) return classDefinitionId
     return getByName(entity)?.id ?? entity
   }, [classDefinitionId, entity, getByName])
 
-  const { data, isLoading } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
+  // currentData, not data: during a refetch data still holds the columns of the previous arguments.
+  const { currentData, isLoading, error } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
     classId: resolvedClassId,
     folderId: 1
   })
+
+  const availableColumnsError: ApiErrorData | undefined = error
+
+  useEffect(() => {
+    if (!isNil(availableColumnsError)) {
+      trackError(new ApiError(availableColumnsError))
+    }
+  }, [availableColumnsError])
 
   const [draft, setDraft] = useState<AdvancedEditorColumn[]>(() =>
     columns.map(advancedFromSchemaColumn)
@@ -121,21 +141,22 @@ export const useColumnEditorState = ({
     }
   })
 
-  const availableFields: GridColumnConfiguration[] = data?.columns ?? []
+  const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
+  const availableFields: GridColumnConfiguration[] = useMemo(() => payloadColumns ?? [], [payloadColumns])
 
+  // Without the payload there is no oracle for the token, so the stored one is left exactly as it is.
   useEffect(() => {
-    if (availableFields.length === 0) return
+    if (isUndefined(payloadColumns)) return
     setDraft(prev => prev.map(col => {
-      const available = availableFields.find(f => matchesAvailableColumn(f, col, ADVANCED_COLUMN_TYPE))
-      if (available === undefined) return col
+      const available = payloadColumns.find(f => matchesAvailableColumn(f, col, ADVANCED_COLUMN_TYPE))
       return {
         ...col,
-        fieldtype: deriveColumnFieldtype(available),
-        localizable: col.localizable ?? available.localizable,
-        pipelineConfig: col.pipelineConfig ?? (available.config as Record<string, any> | undefined)
+        fieldtype: resolveColumnFieldtype(col, available, isKnownFieldtype),
+        localizable: col.localizable ?? available?.localizable,
+        pipelineConfig: col.pipelineConfig ?? (available?.config as Record<string, any> | undefined)
       }
     }))
-  }, [availableFields])
+  }, [payloadColumns, columns, isKnownFieldtype])
 
   const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
     setDraft(prev => [...prev, {

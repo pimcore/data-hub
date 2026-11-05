@@ -15,7 +15,16 @@
 export interface FieldtypeColumn {
   key: string
   type: string
+  /** The second form of the reference an available column offers, where its key is not the only one. */
+  identifier?: string
   config?: unknown
+}
+
+/**
+ * A column as it comes back from a configuration, carrying the token an earlier save wrote into it.
+ */
+export interface StoredFieldtypeColumn extends FieldtypeColumn {
+  fieldtype?: string
 }
 
 interface FieldDefinitionConfig {
@@ -61,12 +70,41 @@ export const readStoredFieldtype = (
 }
 
 /**
- * Whether an available column from the payload is the one a persisted column was configured from.
- * Advanced columns are matched on their type because their key holds the user-defined title.
+ * Whether an available column from the payload is the one a persisted column was configured from. The type
+ * has to agree, because the token of a column of another type is written back on Apply. Advanced columns
+ * match on their type alone, their key holding the user-defined title; every other column matches its
+ * stored reference against both forms the payload offers, so a reference saved as an identifier and one
+ * saved before identifiers existed both keep resolving.
  */
 export const matchesAvailableColumn = (
   field: FieldtypeColumn,
   column: FieldtypeColumn,
   advancedColumnType: string
-): boolean =>
-  field.key === column.key || (column.type === advancedColumnType && field.type === column.type)
+): boolean => {
+  if (field.type !== column.type) {
+    return false
+  }
+
+  if (column.type === advancedColumnType) {
+    return true
+  }
+
+  return field.key === column.key || field.identifier === column.key
+}
+
+/**
+ * The field definition type a column carries into the editor: that of the available column it was
+ * configured from, or — when the payload offers none — its stored token, kept only when it names a known
+ * type, so a configuration holding a field name resolves to no type instead of carrying the wrong one on.
+ */
+export const resolveColumnFieldtype = (
+  column: StoredFieldtypeColumn,
+  availableColumn: FieldtypeColumn | undefined,
+  isKnownType: (name: string) => boolean
+): string => {
+  if (availableColumn !== undefined) {
+    return deriveColumnFieldtype(availableColumn)
+  }
+
+  return readStoredFieldtype(column.fieldtype, isKnownType) ?? ''
+}

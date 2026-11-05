@@ -14,9 +14,11 @@ import { describe, it } from 'node:test'
 import {
   deriveColumnFieldtype,
   matchesAvailableColumn,
-  readStoredFieldtype
+  readStoredFieldtype,
+  resolveColumnFieldtype
 } from '../js/src/modules/config/components/column-config-modal/column-fieldtype.ts'
 import {
+  ADVANCED_COLUMN_KEY,
   ADVANCED_COLUMN_TYPE,
   advancedFromSchemaColumn,
   advancedToSchemaColumn
@@ -25,12 +27,17 @@ import {
 const FIELD_NAME = 'title'
 const INPUT_FIELDTYPE = 'input'
 const INPUT_COLUMN_TYPE = 'dataobject.input'
+const SELECT_COLUMN_TYPE = 'dataobject.select'
 const RELATION_FIELDTYPE = 'manyToManyObjectRelation'
+const CLASSIFICATION_STORE_FIELDTYPE = 'classificationstore'
 const CLASSIFICATION_STORE_TYPE = 'dataobject.classificationstore'
 const LEGACY_CLASSIFICATION_STORE_KEY = '3-17'
+const IDENTIFIER_CLASSIFICATION_STORE_KEY = 'colours~size'
 const ADVANCED_COLUMN_TITLE = 'Full name'
+const ADVANCED_FIELDTYPE = 'advanced'
+const NO_TYPE = ''
 
-const knownTypes = new Set([INPUT_FIELDTYPE, RELATION_FIELDTYPE, 'integer'])
+const knownTypes = new Set([INPUT_FIELDTYPE, RELATION_FIELDTYPE, CLASSIFICATION_STORE_FIELDTYPE, 'integer'])
 const isKnownType = (name) => knownTypes.has(name)
 
 const inputColumn = {
@@ -54,6 +61,28 @@ const legacyClassificationStoreColumn = {
   fieldtype: LEGACY_CLASSIFICATION_STORE_KEY,
   type: CLASSIFICATION_STORE_TYPE
 }
+
+// The available-columns payload as the editor reads it: the input field, and a classification store
+// field offering its legacy integer pair as the key next to an identifier.
+const availableFields = [
+  { key: FIELD_NAME, type: INPUT_COLUMN_TYPE, config: { fieldDefinition: { fieldtype: INPUT_FIELDTYPE } } },
+  {
+    key: LEGACY_CLASSIFICATION_STORE_KEY,
+    identifier: IDENTIFIER_CLASSIFICATION_STORE_KEY,
+    type: CLASSIFICATION_STORE_TYPE
+  },
+  { key: ADVANCED_COLUMN_KEY, type: ADVANCED_COLUMN_TYPE }
+]
+
+// Mirrors how the hydration effect composes the two helpers in use-column-editor-state.ts.
+const hydrate = (storedColumns) => storedColumns.map((col) => ({
+  ...col,
+  fieldtype: resolveColumnFieldtype(
+    col,
+    availableFields.find((field) => matchesAvailableColumn(field, col, ADVANCED_COLUMN_TYPE)),
+    isKnownType
+  )
+}))
 
 describe('column fieldtype helpers', () => {
   it('derives the token from the field definition of the column', () => {
@@ -103,7 +132,7 @@ describe('column fieldtype helpers', () => {
   it('derives a token which is no known field type for an advanced column', () => {
     const derived = deriveColumnFieldtype(advancedColumn)
 
-    assert.equal(derived, 'advanced')
+    assert.equal(derived, ADVANCED_FIELDTYPE)
     assert.equal(isKnownType(derived), false)
     assert.equal(readStoredFieldtype(derived, isKnownType), undefined)
   })
@@ -127,21 +156,28 @@ describe('column fieldtype helpers', () => {
     )
   })
 
+  it('does not match an available field of another type which happens to carry the same key', () => {
+    assert.equal(
+      matchesAvailableColumn({ key: FIELD_NAME, type: SELECT_COLUMN_TYPE }, inputColumn, ADVANCED_COLUMN_TYPE),
+      false
+    )
+  })
+
   it('matches an advanced column by type, because its key holds the user title', () => {
     assert.equal(
-      matchesAvailableColumn({ key: 'advanced', type: ADVANCED_COLUMN_TYPE }, advancedColumn, ADVANCED_COLUMN_TYPE),
+      matchesAvailableColumn(availableFields[2], advancedColumn, ADVANCED_COLUMN_TYPE),
       true
     )
   })
 
-  it('matches a legacy integer-pair classification store key, also when the payload offers an identifier form', () => {
+  it('matches a stored integer-pair classification store key against the key the payload carries', () => {
     const availableWithPairOnly = {
       key: LEGACY_CLASSIFICATION_STORE_KEY,
       type: CLASSIFICATION_STORE_TYPE
     }
     const availableWithIdentifier = {
       key: LEGACY_CLASSIFICATION_STORE_KEY,
-      identifier: 'colours~size',
+      identifier: IDENTIFIER_CLASSIFICATION_STORE_KEY,
       type: CLASSIFICATION_STORE_TYPE
     }
 
@@ -153,5 +189,79 @@ describe('column fieldtype helpers', () => {
       matchesAvailableColumn(availableWithIdentifier, legacyClassificationStoreColumn, ADVANCED_COLUMN_TYPE),
       true
     )
+  })
+
+  it('matches a stored identifier against the identifier the payload carries next to its key', () => {
+    const storedByIdentifier = {
+      key: IDENTIFIER_CLASSIFICATION_STORE_KEY,
+      fieldtype: CLASSIFICATION_STORE_FIELDTYPE,
+      type: CLASSIFICATION_STORE_TYPE
+    }
+
+    assert.equal(
+      matchesAvailableColumn(availableFields[1], storedByIdentifier, ADVANCED_COLUMN_TYPE),
+      true
+    )
+    assert.equal(
+      matchesAvailableColumn(
+        { key: LEGACY_CLASSIFICATION_STORE_KEY, type: CLASSIFICATION_STORE_TYPE },
+        storedByIdentifier,
+        ADVANCED_COLUMN_TYPE
+      ),
+      false
+    )
+  })
+
+  it('takes the token of the available column a stored column was configured from', () => {
+    assert.equal(
+      resolveColumnFieldtype(
+        { key: FIELD_NAME, fieldtype: FIELD_NAME, type: INPUT_COLUMN_TYPE },
+        availableFields[0],
+        isKnownType
+      ),
+      INPUT_FIELDTYPE
+    )
+  })
+
+  it('keeps the stored token of an unmatched column when it names a known type', () => {
+    assert.equal(
+      resolveColumnFieldtype(
+        { key: 'gone', fieldtype: RELATION_FIELDTYPE, type: 'dataobject.manyToManyObjectRelation' },
+        undefined,
+        isKnownType
+      ),
+      RELATION_FIELDTYPE
+    )
+  })
+
+  it('reads no type for an unmatched column, rather than carrying a field name on', () => {
+    assert.equal(
+      resolveColumnFieldtype(
+        { key: 'gone', fieldtype: 'gone', type: INPUT_COLUMN_TYPE },
+        undefined,
+        isKnownType
+      ),
+      NO_TYPE
+    )
+    assert.equal(
+      resolveColumnFieldtype({ key: 'gone', type: INPUT_COLUMN_TYPE }, undefined, isKnownType),
+      NO_TYPE
+    )
+  })
+
+  it('resolves every stored column the way the hydration path composes the two helpers', () => {
+    const hydrated = hydrate([
+      { key: FIELD_NAME, fieldtype: FIELD_NAME, type: INPUT_COLUMN_TYPE },
+      legacyClassificationStoreColumn,
+      advancedColumn,
+      { key: 'removed', fieldtype: 'removed', type: INPUT_COLUMN_TYPE }
+    ])
+
+    assert.deepEqual(hydrated.map((col) => col.fieldtype), [
+      INPUT_FIELDTYPE,
+      CLASSIFICATION_STORE_FIELDTYPE,
+      ADVANCED_FIELDTYPE,
+      NO_TYPE
+    ])
   })
 })
