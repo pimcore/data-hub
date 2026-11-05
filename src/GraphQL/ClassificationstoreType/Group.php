@@ -15,10 +15,12 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\Classificationstore;
+use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 
 /**
  * @internal
@@ -51,7 +53,21 @@ final class Group extends ObjectType
         $resolver->setGraphQLService($this->getGraphQlService());
 
         $config['fields'] = [
-            'id' => Type::int(),
+            'id' => [
+                'type' => Type::int(),
+                'deprecationReason' => Helper::ID_DEPRECATION_REASON,
+            ],
+            'identifier' => [
+                'type' => Type::string(),
+                'resolve' => static function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) {
+                    $groupConfig = GroupConfig::getById($value['id']);
+                    if ($groupConfig) {
+                        return $groupConfig->getIdentifier();
+                    }
+
+                    return null;
+                },
+            ],
             'name' => Type::string(),
             'description' => Type::string(),
             'features' => [
