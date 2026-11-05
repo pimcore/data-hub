@@ -418,7 +418,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame(self::CREATE_ASSET_DENIED, $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED . ' in parent id ' . self::DENIED_FOLDER_ID, $result['message']);
     }
 
     /**
