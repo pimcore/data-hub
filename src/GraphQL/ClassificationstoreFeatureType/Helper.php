@@ -42,7 +42,7 @@ final class Helper extends ObjectType
             ],
             'identifier' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value = null) {
                     if ($value instanceof FeatureDescriptor) {
                         $keyConfig = KeyConfig::getById($value->getId());
                         if ($keyConfig) {

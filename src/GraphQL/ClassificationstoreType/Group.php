@@ -59,7 +59,7 @@ final class Group extends ObjectType
             ],
             'identifier' => [
                 'type' => Type::string(),
-                'resolve' => static function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) {
+                'resolve' => static function ($value) {
                     $groupConfig = GroupConfig::getById($value['id']);
                     if ($groupConfig) {
                         return $groupConfig->getIdentifier();

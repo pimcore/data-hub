@@ -111,7 +111,7 @@ class GroupIdentifierTest extends Unit
     {
         $resolve = $this->group->getField(self::IDENTIFIER)->resolveFn;
 
-        return $resolve(['id' => $groupId], []);
+        return $resolve(['id' => $groupId]);
     }
 
     private function createGroupConfig(?string $identifier): int
