@@ -8,7 +8,14 @@ on:
         branches:
             - "[0-9]+.[0-9]+"
             - "[0-9]+.x"
-    pull_request_target:
+    # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
+    # `pull_request` and not `pull_request_target`, because GitHub does not execute
+    # the base branch's definition for pull_request_target here — it runs a version
+    # without the core pin below, so every epic PR fails on core API that only
+    # exists on cs-store-improvements. `pull_request` reads the definition from the
+    # PR head, which carries the pin. Safe for this epic: every PR is same-repo, so
+    # the fork-secret reason for pull_request_target does not apply.
+    pull_request:
         types: [opened, synchronize, reopened]
 
 env:
@@ -16,7 +23,7 @@ env:
     PRIVATE_REPO: ${{ github.event.repository.private }}
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -72,11 +79,15 @@ jobs:
                   # must install that branch instead of ^2026.4 from packagist. Without it
                   # codeception cannot boot and the suites fail on undefined core methods.
                   #
-                  # It lives on the BASE branch, not on each feature branch, because this
-                  # workflow triggers on pull_request_target: GitHub loads the definition from
-                  # the base ref, so an override pushed to a PR head is never executed. The
-                  # passthrough below (PIMCORE_VERSION: ${{ matrix.matrix.pimcore_version }})
-                  # then carries it into every pull request automatically.
+                  # It lives on the PR head, together with the pull_request trigger above.
+                  # The pin was first put on the base branch, on the documented premise that
+                  # pull_request_target loads the definition from the base ref. Measured on
+                  # 2026-11-06, that is not what happened: with the pin on the base tip and the
+                  # PR's merge base equal to the pin commit, GitHub still executed a definition
+                  # without it (data-hub run 42177605232, data-importer 42177597962). The same
+                  # commit run under workflow_dispatch on the head did carry it, and both suites
+                  # passed. The passthrough below (PIMCORE_VERSION: ${{ matrix.matrix.pimcore_version }})
+                  # carries it into every job of this PR.
                   FILTERED_MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg php_versions "$php_versions" --arg pimcore_version 'dev-cs-store-improvements as 2026.99.9' '
                   {
                     matrix: [
