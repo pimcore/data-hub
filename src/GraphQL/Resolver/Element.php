@@ -168,7 +168,7 @@ class Element
     }
 
     public function resolveModificationDate(
-        array $value
+        array|ElementDescriptor $value
     ): ?string {
         $id = $value['id'] ?? null;
         if (!$id) {
@@ -185,7 +185,7 @@ class Element
     }
 
     public function resolveCreationDate(
-        array $value
+        array|ElementDescriptor $value
     ): ?string {
         $id = $value['id'] ?? null;
         if (!$id) {
