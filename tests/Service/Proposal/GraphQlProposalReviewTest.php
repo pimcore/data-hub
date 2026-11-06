@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use Codeception\Test\Unit;
-use Pimcore\Bundle\ChangeControlBundle\Contract\ChangeControlAuthoringInterface;
 use Pimcore\Bundle\ChangeControlBundle\Installer\Installer as ChangeControlInstaller;
+use Pimcore\Bundle\ChangeControlBundle\Service\ChangeControlAuthoringInterface;
 use Pimcore\Bundle\ChangeControlBundle\Storage\SubjectIdentityRepository;
 use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
 use Pimcore\Bundle\DataHubBundle\Configuration;
