@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
+import type { GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 
 /**
  * Persisted column shape shared across all Data Hub adapter bundles.
@@ -32,6 +32,16 @@ export interface ColumnEditorHandle<TColumns = SchemaColumn> {
   getColumns: () => TColumns[]
   /** Programmatically adds a column from the available-columns list. */
   addColumn: (column: GridColumnConfiguration) => void
+  /**
+   * Readiness probe: whether the editor has hydrated its draft against the available columns of the
+   * selected class, so the field definition types it would hand back are resolved rather than the ones
+   * the stored configuration carried.
+   *
+   * False means a submission would write a legacy field name back into `fieldtype`, so a caller which
+   * persists `getColumns()` must refuse while it is false. Optional, and an editor which does not
+   * implement it is treated as ready — the behaviour before the probe existed.
+   */
+  isHydrated?: () => boolean
 }
 
 /**

@@ -9,20 +9,18 @@
  */
 
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
-import { Empty, Tag } from 'antd'
+import { Empty } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
   Button,
   Content,
   ContentLayout,
   Flex,
-  IconButton,
   IconTextButton,
   Space,
   Spin,
   StackList,
-  Toolbar,
-  type StackListProps
+  Toolbar
 } from '@pimcore/studio-ui-bundle/components'
 import { useStyles } from './base-column-editor.styles'
 import { FieldsToAddPanel } from './fields-to-add-panel'
@@ -31,21 +29,9 @@ import {
   LanguageSelectionWithProvider
 } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
-import { isNil } from 'lodash'
-import { ColumnEditorItemBody } from './column-editor-item'
-import { ColumnLocaleControl } from './column-locale-control'
+import { buildStackItems } from './column-editor-stack-items'
 import { useColumnEditorState } from './use-column-editor-state'
-import {
-  ADVANCED_COLUMN_TYPE,
-  type ColumnEditorHandle,
-  type SchemaColumn,
-  type AdvancedEditorColumn
-} from './types'
-
-const getColumnLabel = (col: AdvancedEditorColumn): string => {
-  if (col.key === '') return ''
-  return col.key
-}
+import { type ColumnEditorHandle, type SchemaColumn } from './types'
 
 export interface BaseColumnEditorProps {
   entity: string
@@ -115,6 +101,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const {
       draft,
       isLoading,
+      isHydrated,
       objectId,
       columnGroups,
       onAddAdvancedColumn,
@@ -131,53 +118,21 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     useImperativeHandle(ref, () => ({
       getColumns,
-      addColumn: handleAddColumnOfType
-    }), [getColumns, handleAddColumnOfType])
+      addColumn: handleAddColumnOfType,
+      // The readiness probe the modal refuses Confirm Migration on: getColumns carries resolved
+      // field definition types only once the available columns of this class have loaded.
+      isHydrated: () => isHydrated
+    }), [getColumns, handleAddColumnOfType, isHydrated])
 
-    const stackItems: StackListProps['items'] = draft.map(col => {
-      const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
-      const label = getColumnLabel(col)
-
-      return {
-        id: col._id,
-        sortable: true,
-        type: isAdvanced ? 'collapse' as const : 'default' as const,
-        defaultActive: isAdvanced && col.isNew === true,
-        children: isAdvanced
-          ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
-          : <Tag>{ label }</Tag>,
-        ...(isAdvanced
-          ? {
-              body: col.pipelineConfig !== undefined
-                ? (
-                  <ColumnEditorItemBody
-                    column={ col }
-                    entity={ entity }
-                    objectId={ objectId }
-                    onPipelineChange={ handlePipelineChange }
-                    sourceFieldsRegistryId={ sourceFieldsRegistryId }
-                    transformersRegistryId={ transformersRegistryId }
-                  />
-                  )
-                : <Spin />
-            }
-          : {}),
-        renderRightToolbar: (
-          <Space size='mini'>
-            { col.localizable === true && isAdvanced && (
-              <ColumnLocaleControl
-                onChange={ (locale) => { handleLocaleChange(col._id, locale) } }
-                value={ col.locale }
-              />
-            ) }
-            <IconButton
-              icon={ { value: 'trash' } }
-              onClick={ () => { handleRemove(col._id) } }
-              theme='secondary'
-            />
-          </Space>
-        )
-      }
+    const stackItems = buildStackItems({
+      draft,
+      entity,
+      objectId,
+      sourceFieldsRegistryId,
+      transformersRegistryId,
+      onPipelineChange: handlePipelineChange,
+      onLocaleChange: handleLocaleChange,
+      onRemove: handleRemove
     })
 
     if (isLoading) {
@@ -230,7 +185,9 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     { t('data-hub.column-config-modal.discard') }
                   </Button>
 
+                  { /* Disabled until this class's available columns load — see isHydrated. */ }
                   <Button
+                    disabled={ !isHydrated }
                     onClick={ handleApply }
                     type='primary'
                   >
