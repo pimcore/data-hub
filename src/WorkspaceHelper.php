@@ -339,6 +339,50 @@ final class WorkspaceHelper
         return false;
     }
 
+    /**
+     * Builds the SQL condition restricting a listing to elements the configuration may read.
+     *
+     * An element is readable if, of the workspaces whose path starts with the element's full path,
+     * the one with the longest path grants read, or if the same holds for the workspaces whose path
+     * the element's full path starts with.
+     *
+     * The workspaces are fetched once and inlined as literals, ordered by path length, so that the
+     * longest matching path wins the CASE. Expressing the same lookup as subqueries correlated with
+     * the listed table would make the database run them for every row of that table.
+     *
+     * @internal
+     *
+     * @param string $fullPathExpression SQL expression evaluating to the listed element's full path
+     */
+    public static function getReadPermissionCondition(
+        Configuration $configuration,
+        string $elementType,
+        string $fullPathExpression
+    ): string {
+        $db = Db::get();
+        $workspaces = $db->fetchAllAssociative(
+            'SELECT cpath, `read` FROM ' . $db->quoteIdentifier('plugin_datahub_workspaces_' . $elementType) . '
+            WHERE configuration = ? AND cpath IS NOT NULL
+            ORDER BY LENGTH(cpath) DESC',
+            [$configuration->getName()]
+        );
+
+        if (!$workspaces) {
+            return ' FALSE';
+        }
+
+        $parentCases = '';
+        $childCases = '';
+        foreach ($workspaces as $workspace) {
+            $cpath = $db->quote($workspace['cpath']);
+            $read = $workspace['read'] === null ? 'NULL' : (int) $workspace['read'];
+            $parentCases .= ' WHEN LOCATE(' . $fullPathExpression . ',' . $cpath . ')=1 THEN ' . $read;
+            $childCases .= ' WHEN LOCATE(' . $cpath . ',' . $fullPathExpression . ')=1 THEN ' . $read;
+        }
+
+        return ' ((CASE' . $parentCases . ' END)=1 OR (CASE' . $childCases . ' END)=1)';
+    }
+
     private static function fetchLookupTable(string $elementType, Configuration $configuration): array
     {
         $cacheKey = 'datahub_workspace_permissions_' . $configuration->getName() . '_' . $elementType;

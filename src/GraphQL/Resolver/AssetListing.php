@@ -142,24 +142,12 @@ final class AssetListing
         $tableName = 'assets';
 
         if (!$configuration->skipPermisssionCheck()) {
-            $workspacesTableName = 'plugin_datahub_workspaces_asset';
-            $conditionParts[] = ' (
-            (
-                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
-                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.filename),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
-                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
-                LIMIT 1
-            )=1
-            OR
-            (
-                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
-                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.filename))=1
-                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
-                LIMIT 1
-            )=1
-            )';
+            $conditionParts[] = WorkspaceHelper::getReadPermissionCondition(
+                $configuration,
+                'asset',
+                'CONCAT(' . $db->quoteIdentifier($tableName) . '.path,'
+                . $db->quoteIdentifier($tableName) . '.filename)'
+            );
         }
 
         if (isset($args['filter'])) {
