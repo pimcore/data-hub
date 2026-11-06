@@ -1019,7 +1019,7 @@ final class MutationType extends ObjectType
                         $args['input']['parentId'] ?? null,
                         $parent->getId(),
                         $omitPermissionCheck,
-                        'not allowed to create asset'
+                        'not allowed to create asset' . self::describeParent(['parentId' => $args['input']['parentId'] ?? null])
                     );
                     if ($rejection) {
                         return $rejection;
