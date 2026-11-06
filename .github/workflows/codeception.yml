@@ -9,12 +9,13 @@ on:
             - "[0-9]+.[0-9]+"
             - "[0-9]+.x"
     # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
-    # `pull_request` and not `pull_request_target`, because GitHub does not execute
-    # the base branch's definition for pull_request_target here — it runs a version
-    # without the core pin below, so every epic PR fails on core API that only
-    # exists on cs-store-improvements. `pull_request` reads the definition from the
-    # PR head, which carries the pin. Safe for this epic: every PR is same-repo, so
-    # the fork-secret reason for pull_request_target does not apply.
+    # `pull_request`, not `pull_request_target`, so that the core pin below is the
+    # definition GitHub actually executes — under `pull_request_target` it runs a
+    # definition without the pin and every job fails on core API that only exists
+    # on cs-store-improvements. This matches studio-backend-bundle and
+    # studio-ui-bundle, and data-hub's own static-analysis.yaml, which all use
+    # `pull_request`. Safe for this epic: every PR is same-repo, so the
+    # fork-secret reason for pull_request_target does not apply.
     pull_request:
         types: [opened, synchronize, reopened]
 
@@ -23,7 +24,7 @@ env:
     PRIVATE_REPO: ${{ github.event.repository.private }}
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -75,19 +76,10 @@ jobs:
                   IFS=',' read -ra VERSIONS_ARRAY <<< "$php_versions"
 
                   # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
-                  # this epic consumes core API that lives only on cs-store-improvements, so CI
-                  # must install that branch instead of ^2026.4 from packagist. Without it
-                  # codeception cannot boot and the suites fail on undefined core methods.
-                  #
-                  # It lives on the PR head, together with the pull_request trigger above.
-                  # The pin was first put on the base branch, on the documented premise that
-                  # pull_request_target loads the definition from the base ref. Measured on
-                  # 2026-11-06, that is not what happened: with the pin on the base tip and the
-                  # PR's merge base equal to the pin commit, GitHub still executed a definition
-                  # without it (data-hub run 42177605232, data-importer 42177597962). The same
-                  # commit run under workflow_dispatch on the head did carry it, and both suites
-                  # passed. The passthrough below (PIMCORE_VERSION: ${{ matrix.matrix.pimcore_version }})
-                  # carries it into every job of this PR.
+                  # this epic consumes core API that lives only on cs-store-improvements
+                  # (Classification Store identifiers), so CI must install that branch instead
+                  # of ^2026.4 from packagist. Without it PHPStan reports every new core method
+                  # as undefined and codeception cannot boot.
                   FILTERED_MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg php_versions "$php_versions" --arg pimcore_version 'dev-cs-store-improvements as 2026.99.9' '
                   {
                     matrix: [

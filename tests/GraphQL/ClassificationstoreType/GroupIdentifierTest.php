@@ -28,6 +28,8 @@ use Pimcore\Model\DataObject\Classificationstore\StoreConfig;
  * type resolves are the group arrays built by the classification store field generator
  * (DataObjectQueryFieldConfigGenerator/Classificationstore.php:59-65), so the resolver is exercised
  * with such an array.
+ *
+ * @internal
  */
 class GroupIdentifierTest extends Unit
 {

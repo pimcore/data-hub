@@ -36,6 +36,8 @@ use Pimcore\Model\DataObject\Classificationstore\StoreConfig;
  * asserted directly; the per-type assertions cover the types that build without a wired Service -
  * MultiselectType and QuantityValueType take one (MultiselectType.php:36, QuantityValueType.php:34)
  * and merge the very same map.
+ *
+ * @internal
  */
 class FeatureIdentifierTest extends Unit
 {
