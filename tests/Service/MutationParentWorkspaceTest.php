@@ -57,6 +57,8 @@ class MutationParentWorkspaceTest extends Unit
 
     private const CREATE_ASSET_DENIED = 'not allowed to create asset';
 
+    private const IN_PARENT = ' in parent id ';
+
     private ?KernelInterface $previousKernel;
 
     private int $previousPolicy;
@@ -393,7 +395,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame(self::CREATE_ASSET_DENIED . ' in parent id ' . self::DENIED_FOLDER_ID, $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED . self::IN_PARENT . self::DENIED_FOLDER_ID, $result['message']);
     }
 
     public function testCreateAssetInputParentOutsideTheWorkspaceIsRejected(): void
@@ -406,7 +408,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame(self::CREATE_ASSET_DENIED . ' in parent id ' . self::OUTSIDE_FOLDER_ID, $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED . self::IN_PARENT . self::OUTSIDE_FOLDER_ID, $result['message']);
     }
 
     public function testCreateAssetInDeniedParentIsStillRejected(): void
@@ -418,7 +420,7 @@ class MutationParentWorkspaceTest extends Unit
         ]);
 
         $this->assertFalse($result['success']);
-        $this->assertSame(self::CREATE_ASSET_DENIED . ' in parent id ' . self::DENIED_FOLDER_ID, $result['message']);
+        $this->assertSame(self::CREATE_ASSET_DENIED . self::IN_PARENT . self::DENIED_FOLDER_ID, $result['message']);
     }
 
     /**

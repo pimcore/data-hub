@@ -229,10 +229,8 @@ class MutationTypeParentDescriptionTest extends Unit
         });
         $this->setProperty($graphQlService, 'assetTypeGeneratorFactories', $assetTypes);
         $this->setProperty($graphQlService, 'assetDataTypes', ['asset_input' => Type::string()]);
-        $this->setProperty($graphQlService, 'documentDataTypes', [
-            'document_link' => Type::string(),
-            'document_link_input' => Type::string(),
-        ]);
+        $documentTypes = ['document_link' => Type::string(), 'document_link_input' => Type::string()];
+        $this->setProperty($graphQlService, 'documentDataTypes', $documentTypes);
 
         $mutationType = (new \ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
         $mutationType->setGraphQLService($graphQlService);
