@@ -68,10 +68,15 @@ jobs:
                   IFS=',' read -ra VERSIONS_ARRAY <<< "$php_versions"
 
                   # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
-                  # this epic consumes core API that lives only on cs-store-improvements
-                  # (Classification Store identifiers), so CI must install that branch instead
-                  # of ^2026.4 from packagist. Without it PHPStan reports every new core method
-                  # as undefined and codeception cannot boot.
+                  # this epic consumes core API that lives only on cs-store-improvements, so CI
+                  # must install that branch instead of ^2026.4 from packagist. Without it
+                  # codeception cannot boot and the suites fail on undefined core methods.
+                  #
+                  # It lives on the BASE branch, not on each feature branch, because this
+                  # workflow triggers on pull_request_target: GitHub loads the definition from
+                  # the base ref, so an override pushed to a PR head is never executed. The
+                  # passthrough below (PIMCORE_VERSION: ${{ matrix.matrix.pimcore_version }})
+                  # then carries it into every pull request automatically.
                   FILTERED_MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg php_versions "$php_versions" --arg pimcore_version 'dev-cs-store-improvements as 2026.99.9' '
                   {
                     matrix: [
