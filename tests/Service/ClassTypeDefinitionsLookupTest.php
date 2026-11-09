@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectTypeFactory;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Psr\Log\NullLogger;
 use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\DependencyInjection\Container;
@@ -33,6 +34,9 @@ class ClassTypeDefinitionsLookupTest extends Unit
 {
     private const CLASSES = ['pme777Alpha' => 'pme777_a', 'pme777Beta' => 'pme777_b', 'pme777Gamma' => 'pme777_c'];
 
+    /** listed in the classes table, but its definition cannot be loaded (nothing in the runtime cache, no definition file) */
+    private const UNLOADABLE = ['pme777Broken' => 'pme777_x'];
+
     /** @var string[] */
     private array $queries = [];
 
@@ -44,6 +48,10 @@ class ClassTypeDefinitionsLookupTest extends Unit
     protected function setUp(): void
     {
         $this->previousKernel = \Pimcore::getKernel();
+        // the unloadable class is looked up in the definition directories, which do not exist outside a Pimcore kernel
+        foreach (['PIMCORE_CUSTOM_CONFIGURATION_CLASS_DEFINITION_DIRECTORY', 'PIMCORE_CLASS_DEFINITION_DIRECTORY'] as $constant) {
+            defined($constant) || define($constant, sys_get_temp_dir() . '/pme777_no_such_definition_directory');
+        }
         $this->queries = [];
 
         foreach (self::CLASSES as $name => $id) {
@@ -60,7 +68,7 @@ class ClassTypeDefinitionsLookupTest extends Unit
         $connection->method('fetchAllAssociative')->willReturnCallback(function (string $sql, array $params = []) {
             $this->queries[] = $sql;
             $rows = [];
-            foreach (self::CLASSES as $name => $id) {
+            foreach (array_merge(self::CLASSES, self::UNLOADABLE) as $name => $id) {
                 $rows[] = ['id' => $id, 'name' => $name];
             }
 
@@ -71,6 +79,7 @@ class ClassTypeDefinitionsLookupTest extends Unit
 
         $container = new Container();
         $container->set('doctrine.dbal.default_connection', $connection);
+        $container->set('monolog.logger.pimcore', new NullLogger());
         $kernel = $this->createMock(KernelInterface::class);
         $kernel->method('getContainer')->willReturn($container);
         $this->setKernel($kernel);
@@ -91,6 +100,7 @@ class ClassTypeDefinitionsLookupTest extends Unit
         }
         ClassTypeDefinitions::$definitions = [];
         DataObjectTypeFactory::$registry = [];
+        (new ReflectionProperty(ClassTypeDefinitions::class, 'classDefinitions'))->setValue(null, []);
     }
 
     public function testBuildResolvesAllClassesWithOneQuery(): void
@@ -105,6 +115,16 @@ class ClassTypeDefinitionsLookupTest extends Unit
             $this->assertTrue(ClassTypeDefinitions::$definitions[$name]->built);
         }
         $this->assertCount(1, $this->queries, 'class definitions are loaded with one query: ' . implode(' | ', $this->queries));
+    }
+
+    public function testClassWithUnloadableDefinitionIsSkipped(): void
+    {
+        $service = $this->buildService();
+
+        ClassTypeDefinitions::build($service, []);
+
+        $this->assertArrayNotHasKey('pme777Broken', ClassTypeDefinitions::$definitions);
+        $this->assertCount(count(self::CLASSES), ClassTypeDefinitions::$definitions);
     }
 
     public function testLoadedClassIsServedWithoutQuery(): void

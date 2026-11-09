@@ -43,7 +43,7 @@ final class ClassTypeDefinitions
     public static function build(Service $graphQlService, $context = [])
     {
         self::$classDefinitions = [];
-        // one query for all classes; also fills the runtime cache entries (class_<id>) that PimcoreObjectType::getById() relies on
+        // one query for all classes; also fills the runtime cache entries (class_<id>) that PimcoreObjectType::build() reads through ClassDefinition::getById()
         foreach ((new ClassDefinition\Listing())->load() as $classDefinition) {
             self::$classDefinitions[$classDefinition->getName()] = $classDefinition;
         }
