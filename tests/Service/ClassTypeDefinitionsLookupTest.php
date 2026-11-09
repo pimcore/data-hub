@@ -34,7 +34,10 @@ class ClassTypeDefinitionsLookupTest extends Unit
 {
     private const CLASSES = ['pme777Alpha' => 'pme777_a', 'pme777Beta' => 'pme777_b', 'pme777Gamma' => 'pme777_c'];
 
-    /** listed in the classes table, but its definition cannot be loaded (nothing in the runtime cache, no definition file) */
+    /**
+     * listed in the classes table, but its definition cannot be loaded
+     * (nothing in the runtime cache, no definition file)
+     */
     private const UNLOADABLE = ['pme777Broken' => 'pme777_x'];
 
     /** @var string[] */
@@ -49,14 +52,16 @@ class ClassTypeDefinitionsLookupTest extends Unit
     {
         $this->previousKernel = \Pimcore::getKernel();
         // the unloadable class is looked up in the definition directories, which do not exist outside a Pimcore kernel
-        foreach (['PIMCORE_CUSTOM_CONFIGURATION_CLASS_DEFINITION_DIRECTORY', 'PIMCORE_CLASS_DEFINITION_DIRECTORY'] as $constant) {
+        $constants = ['PIMCORE_CUSTOM_CONFIGURATION_CLASS_DEFINITION_DIRECTORY', 'PIMCORE_CLASS_DEFINITION_DIRECTORY'];
+        foreach ($constants as $constant) {
             defined($constant) || define($constant, sys_get_temp_dir() . '/pme777_no_such_definition_directory');
         }
         $this->queries = [];
 
         foreach (self::CLASSES as $name => $id) {
             $key = 'class_' . $id;
-            $this->previousCache[$key] = [RuntimeCache::isRegistered($key), RuntimeCache::isRegistered($key) ? RuntimeCache::get($key) : null];
+            $registered = RuntimeCache::isRegistered($key);
+            $this->previousCache[$key] = [$registered, $registered ? RuntimeCache::get($key) : null];
             $definition = new ClassDefinition();
             $definition->setName($name);
             $definition->setId($id);
@@ -114,7 +119,11 @@ class ClassTypeDefinitionsLookupTest extends Unit
             $this->assertSame($id, ClassTypeDefinitions::$definitions[$name]->classId);
             $this->assertTrue(ClassTypeDefinitions::$definitions[$name]->built);
         }
-        $this->assertCount(1, $this->queries, 'class definitions are loaded with one query: ' . implode(' | ', $this->queries));
+        $this->assertCount(
+            1,
+            $this->queries,
+            'class definitions are loaded with one query: ' . implode(' | ', $this->queries)
+        );
     }
 
     public function testClassWithUnloadableDefinitionIsSkipped(): void
@@ -175,12 +184,18 @@ final class ClassTypeStub
 {
     public bool $built = false;
 
-    public function __construct(public Service $service, public string $name, public mixed $classId, public array $config = [], public array $context = [])
-    {
+    public function __construct(
+        public Service $service,
+        public string $name,
+        public mixed $classId,
+        public array $config = [],
+        public array $context = []
+    ) {
     }
 
     public function build(array $context = []): void
     {
+        unset($context);
         $this->built = true;
     }
 }
