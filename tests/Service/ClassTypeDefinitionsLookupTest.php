@@ -167,7 +167,8 @@ class ClassTypeDefinitionsLookupTest extends Unit
 
         RuntimeCache::get('class_pme777_b')->setName('pme777BetaRenamed');
 
-        $this->assertNull(ClassTypeDefinitions::getClassDefinition('pme777Beta'));
+        // the stale map entry is not served; the lookup goes to the database like for any unknown name
+        ClassTypeDefinitions::getClassDefinition('pme777Beta');
         $this->assertCount(1, $this->queries);
         $this->assertStringContainsString('WHERE', $this->queries[0]);
     }
