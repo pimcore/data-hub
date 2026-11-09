@@ -9,11 +9,12 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ColumnPickerPopover, Flex, IconTextButton, Modal, ModalTitle, useAlertModal } from '@pimcore/studio-ui-bundle/components'
+import { ColumnPickerPopover, ContentLayout, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { MigrationModal } from '../migration-modal'
+import { PreviewHeader } from './preview-header'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 import { isDraftHydrated } from './column-fieldtype'
@@ -180,8 +181,26 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     </ModalTitle>
   )
 
+  const previewSwitch = (
+    <PreviewHeader
+      entity={ entity }
+      language={ language }
+      onLanguageChange={ onLanguageChange }
+    />
+  )
+
+  // The provider is keyed by `open`, so preview mode is off every time the modal opens (DR-P2)
+  const withPreviewMode = (content: React.ReactNode): React.JSX.Element => (
+    <PreviewModeProvider
+      key={ open ? 'open' : 'closed' }
+      resetKey={ resolvedClassId }
+    >
+      { content }
+    </PreviewModeProvider>
+  )
+
   if (!isLegacy) {
-    return (
+    return withPreviewMode(
       <Modal
         footer={ null }
         onCancel={ handleCancel }
@@ -189,32 +208,36 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
         size="XL"
         title={ modalTitle }
       >
-        { renderEditor({
-          ref: columnEditorRef,
-          classDefinitionId: resolvedClassId,
-          columns: isMigrated ? migratedColumns : columns,
-          entity,
-          hideToolbar: false,
-          exportableOnly,
-          language,
-          onLanguageChange,
-          onApply: (updatedColumns) => {
-            onApply(updatedColumns)
-            handleCancel()
-          },
-          onCancel: handleCancel
-        }) }
+        { /* the top bar goes in the layout's full-width slot, like the Grid Configuration modal's */ }
+        <ContentLayout renderTopBar={ previewSwitch }>
+          { renderEditor({
+            ref: columnEditorRef,
+            classDefinitionId: resolvedClassId,
+            columns: isMigrated ? migratedColumns : columns,
+            entity,
+            hideToolbar: false,
+            exportableOnly,
+            language,
+            onLanguageChange,
+            onApply: (updatedColumns) => {
+              onApply(updatedColumns)
+              handleCancel()
+            },
+            onCancel: handleCancel
+          }) }
+        </ContentLayout>
       </Modal>
     )
   }
 
-  return (
+  return withPreviewMode(
     <MigrationModal
       confirmDisabled={ !isHydrated }
       legacyConfig={ columnConfig }
       onClose={ handleCancel }
       onConfirm={ handleConfirmMigration }
       open={ open }
+      renderBelowTitle={ previewSwitch }
       renderToolbarLeft={
         <Flex gap='mini'>
           <ColumnPickerPopover<GridColumnConfiguration>

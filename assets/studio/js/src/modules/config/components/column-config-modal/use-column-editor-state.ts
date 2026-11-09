@@ -8,8 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useElementSelector, SelectionType } from '@pimcore/studio-ui-bundle/modules/element'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
@@ -26,11 +25,6 @@ import {
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { deriveColumnFieldtype, hydrateDraft, isDraftHydrated } from './column-fieldtype'
-
-const SYSTEM_COLUMNS = [
-  { key: 'id', type: 'system.id', group: ['system'] as string[], config: [] as never[] },
-  { key: 'fullpath', type: 'system.string', group: ['system'] as string[], config: [] as never[] }
-]
 
 interface UseColumnEditorStateOptions {
   entity: string
@@ -51,12 +45,11 @@ interface UseColumnEditorStateResult {
    * failed — the toolbar must not offer Apply then. See `isDraftHydrated`.
    */
   isHydrated: boolean
-  objectId: number | null
+  resolvedClassId: string
   availableFields: GridColumnConfiguration[]
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
   onAddAdvancedColumn?: () => void
-  openElementSelector: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
   handleRemove: (id: string) => void
@@ -64,11 +57,6 @@ interface UseColumnEditorStateResult {
   handleDiscard: () => void
   handleLocaleChange: (id: string, locale: string | null) => void
   handleReorder: (ids: string[]) => void
-  /**
-   * The draft as persistable columns. It carries resolved field definition types only once the draft is
-   * hydrated, so a caller which persists the result must check `isHydrated` first — `handleApply` and
-   * the modal's Confirm Migration both do.
-   */
   getColumns: () => SchemaColumn[]
 }
 
@@ -109,55 +97,30 @@ export const useColumnEditorState = ({
     setDraft(columns.map(advancedFromSchemaColumn))
   }, [columns])
 
-  const [objectId, setObjectId] = useState<number | null>(null)
-  const hasManualSelection = useRef(false)
-
-  const { data: gridData } = api.endpoints.dataObjectGetGrid.useQuery(
-    { classId: resolvedClassId, body: { folderId: 1, columns: SYSTEM_COLUMNS, filters: { includeDescendants: true, page: 1, pageSize: 1 } } },
-    { skip: resolvedClassId === undefined }
-  )
-
-  useEffect(() => {
-    if (hasManualSelection.current) return
-    const firstItem = gridData?.items?.[0]
-    if (firstItem?.id !== undefined) {
-      setObjectId(firstItem.id as number)
-    }
-  }, [gridData?.items])
-
-  const { open: openElementSelector } = useElementSelector({
-    selectionType: SelectionType.Single,
-    areas: { object: true, asset: false, document: false },
-    config: {
-      objects: {
-        allowedTypes: ['object'],
-        ...(entity !== undefined ? { allowedClasses: [entity] } : {})
-      }
-    },
-    onFinish: (event) => {
-      const item = event?.items?.[0]
-      if (item !== undefined) {
-        hasManualSelection.current = true
-        setObjectId(item.data.id)
-      }
-    }
-  })
-
   const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
   const availableFields: GridColumnConfiguration[] = useMemo(() => payloadColumns ?? [], [payloadColumns])
   const isHydrated = isDraftHydrated(payloadColumns)
 
-  // Runs on the draft the reset effect above has just rebuilt from `columns`, and again when the payload
-  // arrives. Without the payload hydrateDraft hands the draft back untouched, stored token and all.
   useEffect(() => {
-    setDraft(prev => hydrateDraft(prev, payloadColumns, ADVANCED_COLUMN_TYPE, isKnownFieldtype))
-  }, [payloadColumns, columns, isKnownFieldtype])
+    if (availableFields.length === 0) return
+    setDraft(prev => prev.map(col => {
+      const available = availableFields.find(f =>
+        f.key === col.key || (col.type === ADVANCED_COLUMN_TYPE && f.type === col.type)
+      )
+      if (available === undefined) return col
+      return {
+        ...col,
+        localizable: col.localizable ?? available.localizable,
+        pipelineConfig: col.pipelineConfig ?? (available.config as Record<string, any> | undefined)
+      }
+    }))
+  }, [availableFields])
 
   const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
     setDraft(prev => [...prev, {
       _id: crypto.randomUUID(),
       key: column.key,
-      fieldtype: deriveColumnFieldtype(column),
+      fieldtype: column.key,
       type: column.type,
       pipelineConfig: column.config as Record<string, any> | undefined,
       localizable: column.localizable,
@@ -200,8 +163,7 @@ export const useColumnEditorState = ({
   // Both submission paths are gated on hydration: this one directly, and the modal's Confirm Migration
   // through the handle's isHydrated probe. Without the payload every persisted column still carries the
   // token an earlier save wrote into it, so a save here would write a legacy field name back into
-  // `fieldtype`, which is the defect this ticket fixes. The toolbar disables Apply on the same flag;
-  // the guard holds for a caller that renders its own.
+  // `fieldtype`, which is the defect #1709 fixes.
   const handleApply = (): void => {
     if (!isHydrated) {
       return
@@ -235,11 +197,10 @@ export const useColumnEditorState = ({
     draft,
     isLoading,
     isHydrated,
-    objectId,
+    resolvedClassId,
     availableFields,
     columnGroups,
     onAddAdvancedColumn,
-    openElementSelector,
     handleAddColumnOfType,
     handlePipelineChange,
     handleRemove,
