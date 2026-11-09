@@ -24,7 +24,12 @@ env:
     PRIVATE_REPO: ${{ github.event.repository.private }}
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
+    # 2026.x is the default branch and its copy of this workflow still declares
+    # `pull_request_target`, so every PR here gets a second, unpinned run of the
+    # same workflow name. Without `github.event_name` in the group the two runs
+    # share a group and cancel each other, and which one survives is a race.
+    group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
     cancel-in-progress: true
 
 jobs:

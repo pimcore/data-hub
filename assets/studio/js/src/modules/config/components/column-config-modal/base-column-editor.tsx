@@ -8,30 +8,47 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import { ColumnEditorActions } from './column-editor-actions'
+import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
-import { Empty } from 'antd'
+import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
   Button,
   Content,
   ContentLayout,
   Flex,
+  IconButton,
   IconTextButton,
   Space,
   Spin,
   StackList,
-  Toolbar
+  Toolbar,
+  type StackListProps
 } from '@pimcore/studio-ui-bundle/components'
 import { useStyles } from './base-column-editor.styles'
 import { FieldsToAddPanel } from './fields-to-add-panel'
-import {
-  LanguageSelectionContext,
-  LanguageSelectionWithProvider
-} from '@pimcore/studio-ui-bundle/modules/data-object'
+import { resolvePreviewLanguage } from './preview-language'
+import { LanguageSelectionContext } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
-import { buildStackItems } from './column-editor-stack-items'
+import { isNil } from 'lodash'
+import { CollapsedColumnPreview } from './column-preview'
+import { ColumnEditorItemBody } from './column-editor-item'
+import { ColumnLocaleControl } from './column-locale-control'
 import { useColumnEditorState } from './use-column-editor-state'
-import { type ColumnEditorHandle, type SchemaColumn } from './types'
+import { usePreviewItemPreselect } from './use-preview-item-preselect'
+import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
+import {
+  ADVANCED_COLUMN_TYPE,
+  type ColumnEditorHandle,
+  type SchemaColumn,
+  type AdvancedEditorColumn
+} from './types'
+
+const getColumnLabel = (col: AdvancedEditorColumn): string => {
+  if (col.key === '') return ''
+  return col.key
+}
 
 export interface BaseColumnEditorProps {
   entity: string
@@ -75,7 +92,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     // Own the language state here. Initialize once from the prop, falling back to
     // the user's first content language. This is the single source of truth —
     // no synchronization effects needed.
-    const initialLanguage = language ?? (user.contentLanguages as string[] | undefined)?.[0] ?? 'en'
+    const initialLanguage = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 
@@ -102,10 +119,10 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       draft,
       isLoading,
       isHydrated,
-      objectId,
+      resolvedClassId,
+      availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      openElementSelector,
       handleAddColumnOfType,
       handlePipelineChange,
       handleRemove,
@@ -116,23 +133,67 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       getColumns
     } = useColumnEditorState({ entity, classDefinitionId, columns, onApply, onCancel, exportableOnly })
 
+    const previewEnabled = usePreviewItemPreselect(resolvedClassId)
+
     useImperativeHandle(ref, () => ({
       getColumns,
       addColumn: handleAddColumnOfType,
-      // The readiness probe the modal refuses Confirm Migration on: getColumns carries resolved
-      // field definition types only once the available columns of this class have loaded.
+      // The readiness probe the modal refuses Confirm Migration on: getColumns carries
+      // resolved field definition types only once this class's available columns have loaded.
       isHydrated: () => isHydrated
     }), [getColumns, handleAddColumnOfType, isHydrated])
 
-    const stackItems = buildStackItems({
-      draft,
-      entity,
-      objectId,
-      sourceFieldsRegistryId,
-      transformersRegistryId,
-      onPipelineChange: handlePipelineChange,
-      onLocaleChange: handleLocaleChange,
-      onRemove: handleRemove
+    const stackItems: StackListProps['items'] = draft.map(col => {
+      const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
+      const label = getColumnLabel(col)
+
+      return {
+        id: col._id,
+        sortable: true,
+        type: isAdvanced ? 'collapse' as const : 'default' as const,
+        defaultActive: isAdvanced && col.isNew === true,
+        children: isAdvanced
+          ? <Tag color='purple'>{ !isNil(col.pipeline?.title) ? String(col.pipeline?.title) : label }</Tag>
+          : <Tag>{ label }</Tag>,
+        ...(isAdvanced
+          ? {
+              body: col.pipelineConfig !== undefined
+                ? (
+                  <ColumnEditorItemBody
+                    column={ col }
+                    entity={ entity }
+                    onPipelineChange={ handlePipelineChange }
+                    sourceFieldsRegistryId={ sourceFieldsRegistryId }
+                    transformersRegistryId={ transformersRegistryId }
+                  />
+                  )
+                : <Spin />,
+              collapsedBody: <CollapsedColumnPreview column={ col } />
+            }
+          : previewEnabled
+            ? {
+                body: <SimpleColumnPreview
+                  availableField={ findAvailableField(col, availableFields) }
+                  column={ col }
+                      /> 
+              }
+            : {}),
+        renderRightToolbar: (
+          <Space size='mini'>
+            { col.localizable === true && isAdvanced && (
+              <ColumnLocaleControl
+                onChange={ (locale) => { handleLocaleChange(col._id, locale) } }
+                value={ col.locale }
+              />
+            ) }
+            <IconButton
+              icon={ { value: 'trash' } }
+              onClick={ () => { handleRemove(col._id) } }
+              theme='secondary'
+            />
+          </Space>
+        )
+      }
     })
 
     if (isLoading) {
@@ -149,24 +210,29 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     return (
       <LanguageSelectionContext.Provider value={ languageContextValue }>
-        <ContentLayout
-          renderToolbar={ hideToolbar
-            ? undefined
-            : (
-              <Toolbar
-                padding={ { x: 'none', y: 'small' } }
-                theme='secondary'
-              >
-                <Flex gap='mini'>
-                  <IconTextButton
-                    icon={ { value: 'new' } }
-                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.add-column') }
-                  </IconTextButton>
+        <SimpleColumnPreviewsProvider
+          availableFields={ availableFields }
+          classId={ resolvedClassId }
+          columns={ draft }
+        >
+          <ContentLayout
+            renderToolbar={ hideToolbar
+              ? undefined
+              : (
+                <Toolbar
+                  padding={ { x: 'none', y: 'small' } }
+                  theme='secondary'
+                >
+                  <Flex gap='mini'>
+                    <IconTextButton
+                      icon={ { value: 'new' } }
+                      onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.add-column') }
+                    </IconTextButton>
 
-                  { onAddAdvancedColumn !== undefined && (
+                    { onAddAdvancedColumn !== undefined && (
                     <IconTextButton
                       icon={ { value: 'new' } }
                       onClick={ onAddAdvancedColumn }
@@ -174,66 +240,41 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     >
                       { t('data-hub.column-config-modal.add-advanced-column') }
                     </IconTextButton>
-                  ) }
-                </Flex>
+                    ) }
+                  </Flex>
 
-                <Space size='extra-small'>
-                  <Button
-                    onClick={ handleDiscard }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.discard') }
-                  </Button>
-
-                  { /* Disabled until this class's available columns load — see isHydrated. */ }
-                  <Button
-                    disabled={ !isHydrated }
-                    onClick={ handleApply }
-                    type='primary'
-                  >
-                    { t('data-hub.column-config-modal.apply') }
-                  </Button>
-                </Space>
-              </Toolbar>
-              ) }
-          renderTopBar={ (
-            <Toolbar
-              align='center'
-              position='content'
-              theme='secondary'
-            >
-              <Button onClick={ openElementSelector }>
-                { t('data-hub.column-config-modal.preview.select-object') }
-              </Button>
-
-              <LanguageSelectionWithProvider />
-            </Toolbar>
-          ) }
-        >
-          <Content
-            padded
-            padding={ { x: 'none', y: 'small' } }
-            style={ { height: 'calc(80vh - 200px)' } }
+                  <ColumnEditorActions
+                    isHydrated={ isHydrated }
+                    onApply={ handleApply }
+                    onDiscard={ handleDiscard }
+                  />
+                </Toolbar>
+                ) }
           >
-            <div className={ styles.body }>
-              { !hideToolbar && fieldsToAddOpen && (
+            <Content
+              padded
+              padding={ { x: 'none', y: 'small' } }
+              style={ { height: 'calc(80vh - 200px)' } }
+            >
+              <div className={ styles.body }>
+                { !hideToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
                   groups={ columnGroups }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
                 />
-              ) }
+                ) }
 
-              <div className={ styles.list }>
-                <Space
-                  direction='vertical'
-                  style={ { width: '100%' } }
-                >
-                  { draft.length === 0 && (
+                <div className={ styles.list }>
+                  <Space
+                    direction='vertical'
+                    style={ { width: '100%' } }
+                  >
+                    { draft.length === 0 && (
                     <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-                  ) }
+                    ) }
 
-                  { draft.length > 0 && (
+                    { draft.length > 0 && (
                     <StackList
                       items={ stackItems }
                       onItemsChange={ (items) => {
@@ -241,12 +282,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                       } }
                       sortable
                     />
-                  ) }
-                </Space>
+                    ) }
+                  </Space>
+                </div>
               </div>
-            </div>
-          </Content>
-        </ContentLayout>
+            </Content>
+          </ContentLayout>
+        </SimpleColumnPreviewsProvider>
       </LanguageSelectionContext.Provider>
     )
   }

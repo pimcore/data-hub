@@ -37,6 +37,8 @@ export interface MigrationModalProps {
    * Use this to provide an "Add column" / "Add field" dropdown specific to your editor.
    */
   renderToolbarLeft?: ReactNode
+  /** Optional slot rendered below the title of the split migration view (e.g. the preview mode switch). */
+  renderBelowTitle?: ReactNode
   /**
    * Called when the user clicks "Confirm Migration".
    * The consumer is responsible for reading the current state from its editor
@@ -78,6 +80,7 @@ export const MigrationModal = ({
   iconName = 'settings',
   legacyConfig,
   renderToolbarLeft,
+  renderBelowTitle,
   onConfirm,
   confirmDisabled = false,
   onClose,
@@ -148,6 +151,15 @@ export const MigrationModal = ({
       size="XL"
       title={ modalTitle }
     >
+      { renderBelowTitle !== undefined && (
+        <Flex
+          style={ { paddingBottom: 8 } }
+          vertical
+        >
+          { renderBelowTitle }
+        </Flex>
+      ) }
+
       <Flex
         gap="small"
         style={ { height: 'calc(80vh - 120px)', overflow: 'hidden' } }
