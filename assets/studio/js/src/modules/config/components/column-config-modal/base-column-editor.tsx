@@ -8,6 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+import { ColumnEditorActions } from './column-editor-actions'
 import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
@@ -242,23 +243,11 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     ) }
                   </Flex>
 
-                  <Space size='extra-small'>
-                    <Button
-                      onClick={ handleDiscard }
-                      type='default'
-                    >
-                      { t('data-hub.column-config-modal.discard') }
-                    </Button>
-
-                    { /* Disabled until this class's available columns load — see isHydrated. */ }
-                    <Button
-                      disabled={ !isHydrated }
-                      onClick={ handleApply }
-                      type='primary'
-                    >
-                      { t('data-hub.column-config-modal.apply') }
-                    </Button>
-                  </Space>
+                  <ColumnEditorActions
+                    isHydrated={ isHydrated }
+                    onApply={ handleApply }
+                    onDiscard={ handleDiscard }
+                  />
                 </Toolbar>
                 ) }
           >
