@@ -159,6 +159,19 @@ class ClassTypeDefinitionsLookupTest extends Unit
         $this->assertStringContainsString('WHERE', $this->queries[0]);
     }
 
+    public function testRenamedClassIsLookedUpByNameAgain(): void
+    {
+        $service = $this->buildService();
+        ClassTypeDefinitions::build($service, []);
+        $this->queries = [];
+
+        RuntimeCache::get('class_pme777_b')->setName('pme777BetaRenamed');
+
+        $this->assertNull(ClassTypeDefinitions::getClassDefinition('pme777Beta'));
+        $this->assertCount(1, $this->queries);
+        $this->assertStringContainsString('WHERE', $this->queries[0]);
+    }
+
     private function buildService(): Service
     {
         // the service is final and needs the whole container: set just the factory lookup the type builder uses

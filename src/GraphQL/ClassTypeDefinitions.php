@@ -62,13 +62,19 @@ final class ClassTypeDefinitions
     }
 
     /**
-     * Returns the class definition loaded by build(); falls back to a lookup by name for classes unknown to it.
+     * Returns the class definition loaded by build(); falls back to a lookup by name for classes unknown to it
+     * or renamed since (the map keeps the name the definition had when it was loaded).
      *
      * @throws \Exception
      */
     public static function getClassDefinition(string $className): ?ClassDefinition
     {
-        return self::$classDefinitions[$className] ?? ClassDefinition::getByName($className);
+        $loaded = self::$classDefinitions[$className] ?? null;
+        if ($loaded !== null && $loaded->getName() === $className) {
+            return $loaded;
+        }
+
+        return ClassDefinition::getByName($className);
     }
 
     /**
