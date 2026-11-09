@@ -17,7 +17,6 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectType\PimcoreObjectType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Cache\RuntimeCache;
-use Pimcore\Db;
 use Pimcore\Model\DataObject\ClassDefinition;
 
 /**
@@ -31,14 +30,26 @@ final class ClassTypeDefinitions
     public static $definitions = [];
 
     /**
+     * Class definitions of the current schema build, by class name. Loaded with one query in build()
+     * so that the type factory and the query/mutation builders do not look up every class by name again.
+     *
+     * @var array<string, ClassDefinition>
+     */
+    private static array $classDefinitions = [];
+
+    /**
      * @param array $context
      */
     public static function build(Service $graphQlService, $context = [])
     {
-        $db = Db::get();
-        $listing = $db->fetchAllAssociative('SELECT id, name FROM classes');
-        foreach ($listing as $class) {
-            self::$definitions[$class['name']] = $graphQlService->buildDataObjectType($class['name'], [], $context);
+        self::$classDefinitions = [];
+        // one query for all classes; also fills the runtime cache entries (class_<id>) that PimcoreObjectType::getById() relies on
+        foreach ((new ClassDefinition\Listing())->load() as $classDefinition) {
+            self::$classDefinitions[$classDefinition->getName()] = $classDefinition;
+        }
+
+        foreach (self::$classDefinitions as $name => $classDefinition) {
+            self::$definitions[$name] = $graphQlService->buildDataObjectType($name, [], $context);
         }
 
         /**
@@ -47,6 +58,16 @@ final class ClassTypeDefinitions
         foreach (self::$definitions as $definition) {
             $definition->build($context);
         }
+    }
+
+    /**
+     * Returns the class definition loaded by build(); falls back to a lookup by name for classes unknown to it.
+     *
+     * @throws \Exception
+     */
+    public static function getClassDefinition(string $className): ?ClassDefinition
+    {
+        return self::$classDefinitions[$className] ?? ClassDefinition::getByName($className);
     }
 
     /**
