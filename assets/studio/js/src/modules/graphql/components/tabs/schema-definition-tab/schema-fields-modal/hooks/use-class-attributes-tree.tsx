@@ -24,6 +24,7 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
+import { isAttributeContainer } from './attribute-container'
 import {
   buildBrickAttribute,
   buildBrickColumnTitle,
@@ -93,7 +94,7 @@ export const useClassAttributesTree = ({
       { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
       const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
-      const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract
+      const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract && !isAttributeContainer(fieldDefinition.fieldtype)
 
       const { icon: _icon, ...restTreeItem } = initialTreeItem
 
