@@ -24,6 +24,7 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
+import { toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
 import {
   buildBrickAttribute,
   buildBrickColumnTitle,
@@ -43,6 +44,7 @@ interface UseClassAttributesTreeReturn {
   expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
+  loadError?: ClassLayoutLoadError
 }
 
 const buildBrickContainerNode = (
@@ -70,7 +72,7 @@ export const useClassAttributesTree = ({
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
   const { t } = useTranslation()
 
-  const { data: classLayout, isLoading, isFetching } = useClassDefinitionGetLayoutByIdQuery(
+  const { data: classLayout, isLoading, isFetching, error } = useClassDefinitionGetLayoutByIdQuery(
     { id: classId },
     { skip: !enabled, refetchOnMountOrArgChange: true }
   )
@@ -265,6 +267,7 @@ export const useClassAttributesTree = ({
     filteredTree,
     expandedKeys,
     getFieldDefinitions,
-    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch
+    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch,
+    loadError: toClassLayoutLoadError(error)
   }
 }
