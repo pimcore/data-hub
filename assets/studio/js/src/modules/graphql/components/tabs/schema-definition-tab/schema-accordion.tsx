@@ -9,11 +9,12 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { IconTextButton, Select, Modal, OperationalGrid, Accordion, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
+import { IconTextButton, Modal, OperationalGrid, Accordion, Button, Checkbox, Flex, SearchInput, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { type QueryEntity, type MutationEntity } from './types'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
+import { filterClassNames, selectClassNames, deselectClassNames, orderLike } from './class-picker-selection'
 
 interface SchemaAccordionProps {
   type: 'query' | 'mutation'
@@ -29,39 +30,50 @@ export const SchemaAccordion = ({
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedClasses, setSelectedClasses] = useState<string[]>([])
+  const [searchValue, setSearchValue] = useState('')
 
   const { getAllClassDefinitions } = useClassDefinitions()
   const availableClasses = useMemo(() => {
     return getAllClassDefinitions()
   }, [getAllClassDefinitions])
 
-  const currentEntityNames = useMemo(() => {
-    return value.map((entity) => entity.entity)
+  const addedClassNames = useMemo(() => {
+    return new Set<string>(value.map((entity) => entity.entity))
   }, [value])
 
-  const options = useMemo(() => {
-    return availableClasses
-      .filter(cls => !currentEntityNames.includes(cls.name as string))
-      .map(cls => ({
-        value: cls.name,
-        label: cls.name,
-        searchValue: cls.name
-      }))
-  }, [availableClasses, currentEntityNames])
+  const classNames = useMemo((): string[] => {
+    return availableClasses.map(cls => cls.name as string)
+  }, [availableClasses])
+
+  const visibleClassNames = useMemo(() => {
+    return filterClassNames(classNames, searchValue)
+  }, [classNames, searchValue])
+
+  const closeModal = (): void => {
+    setSelectedClasses([])
+    setSearchValue('')
+    setModalOpen(false)
+  }
 
   const handleOpenModal = (): void => {
     setSelectedClasses([])
+    setSearchValue('')
     setModalOpen(true)
   }
 
   const handleCancel = (): void => {
-    setSelectedClasses([])
-    setModalOpen(false)
+    closeModal()
+  }
+
+  const toggleClass = (className: string, checked: boolean): void => {
+    setSelectedClasses(current => checked
+      ? selectClassNames(current, [className], addedClassNames)
+      : deselectClassNames(current, [className]))
   }
 
   const handleApply = (): void => {
     if (selectedClasses.length > 0 && !isNil(onChange)) {
-      const newEntities = selectedClasses.map(className => {
+      const newEntities = orderLike(selectedClasses, classNames).map(className => {
         if (type === 'query') {
           return {
             id: className,
@@ -79,8 +91,7 @@ export const SchemaAccordion = ({
       })
       onChange([...value, ...newEntities])
     }
-    setSelectedClasses([])
-    setModalOpen(false)
+    closeModal()
   }
 
   const accordionItem: AccordionItemType = useMemo(() => ({
@@ -115,24 +126,55 @@ export const SchemaAccordion = ({
       />
       <Modal
         cancelText={ t('button.cancel') }
+        limitContentHeight
         okText={ t('button.apply') }
         onCancel={ handleCancel }
         onOk={ handleApply }
         open={ modalOpen }
-        size="M"
+        size="L"
         title={ t(`data-hub.schema.${type}-schema`) }
       >
-        <Select
-          listHeight={ 150 }
-          mode="multiple"
-          onChange={ (values) => { setSelectedClasses(values as string[]) } }
-          optionFilterProp="searchValue"
-          options={ options }
-          placeholder={ t('data-hub.schema.select-class') }
-          showSearch
-          style={ { width: '100%' } }
-          value={ selectedClasses }
-        />
+        <Flex
+          gap="small"
+          vertical
+        >
+          <SearchInput
+            onChange={ (e) => { setSearchValue(e.target.value) } }
+            placeholder={ t('data-hub.schema.select-class') }
+            style={ { width: '100%', maxWidth: '100%' } }
+            value={ searchValue }
+            withoutAddon
+          />
+          <Flex gap="small">
+            <Button
+              onClick={ () => { setSelectedClasses(current => selectClassNames(current, visibleClassNames, addedClassNames)) } }
+              size="small"
+            >
+              {t('data-hub.schema.select-all')}
+            </Button>
+            <Button
+              onClick={ () => { setSelectedClasses(current => deselectClassNames(current, visibleClassNames)) } }
+              size="small"
+            >
+              {t('data-hub.schema.deselect-all')}
+            </Button>
+          </Flex>
+          <Flex
+            gap="mini"
+            vertical
+          >
+            {visibleClassNames.map(className => (
+              <Checkbox
+                checked={ addedClassNames.has(className) || selectedClasses.includes(className) }
+                disabled={ addedClassNames.has(className) }
+                key={ className }
+                onChange={ (e) => { toggleClass(className, e.target.checked) } }
+              >
+                {className}
+              </Checkbox>
+            ))}
+          </Flex>
+        </Flex>
       </Modal>
     </>
   )

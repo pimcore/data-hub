@@ -54,6 +54,8 @@ data-hub.schema.generic-types: Generic Types
 data-hub.schema.entity: Entity
 data-hub.schema.settings: Settings
 data-hub.schema.select-class: Select class...
+data-hub.schema.select-all: Select all
+data-hub.schema.deselect-all: Deselect all
 data-hub.schema.query-modal-title: 'Query Schema Fields - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Mutation Schema Fields - {{entity}}'
 data-hub.schema.class-attributes: Class Attributes
