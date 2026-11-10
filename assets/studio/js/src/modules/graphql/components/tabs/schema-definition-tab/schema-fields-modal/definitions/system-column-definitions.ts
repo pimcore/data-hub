@@ -15,6 +15,8 @@ export interface SystemColumnDefinition {
   attribute: string
   translationKey: string
   iconProps: IconProps
+  // Part of every object type whether selected or not (PimcoreObjectType); selecting one has no effect.
+  alwaysIncluded?: boolean
 }
 
 export const SYSTEM_COLUMN_ICON: IconProps = { value: 'system-columns', colorToken: 'colorCodingGreen1' }
@@ -24,7 +26,8 @@ export const systemColumnDefinitions: SystemColumnDefinition[] = [
     key: 'system-id',
     attribute: 'id',
     translationKey: 'data-hub.schema.system.id',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    alwaysIncluded: true
   },
   {
     key: 'system-fullpath',
@@ -48,13 +51,15 @@ export const systemColumnDefinitions: SystemColumnDefinition[] = [
     key: 'system-creationDate',
     attribute: 'creationDate',
     translationKey: 'data-hub.schema.system.creationDate',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    alwaysIncluded: true
   },
   {
     key: 'system-modificationDate',
     attribute: 'modificationDate',
     translationKey: 'data-hub.schema.system.modificationDate',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    alwaysIncluded: true
   },
   {
     key: 'system-filename',
@@ -66,13 +71,15 @@ export const systemColumnDefinitions: SystemColumnDefinition[] = [
     key: 'system-classname',
     attribute: 'classname',
     translationKey: 'data-hub.schema.system.classname',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    alwaysIncluded: true
   },
   {
     key: 'system-index',
     attribute: 'index',
     translationKey: 'data-hub.schema.system.index',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    alwaysIncluded: true
   }
 ]
 

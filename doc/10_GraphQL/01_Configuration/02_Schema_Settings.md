@@ -28,6 +28,15 @@ Please note that not all data types are supported yet!
 
 You will get a notice if you try to add an unsupported data type.
 
+#### System Columns
+
+Every Data Object type of the endpoint contains `id`, `creationDate`, `modificationDate`, `classname` and `index`,
+whether they are selected or not; the field configuration shows them as "always included". So are `version`,
+`objectType`, `childrenSortBy`, `tags`, `properties`, `parent`, `children` and `_siblings`.
+
+`fullpath`, `key`, `published` and `filename` are only part of the type if they are selected. `Insert all definitions`
+adds them together with the class fields.
+
 ## Mutation Schema
 
 Here you can decide if Data Objects for the selected class can be created, updated or deleted from the endpoint.

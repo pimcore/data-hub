@@ -189,9 +189,12 @@ export const useClassAttributesTree = ({
       isLeaf: false,
       icon: <Icon { ...SYSTEM_COLUMN_ICON } />,
       iconProps: SYSTEM_COLUMN_ICON,
-      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps }) => ({
+      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps, alwaysIncluded }) => ({
         key,
-        title: t(translationKey),
+        title: alwaysIncluded === true
+          ? t('data-hub.schema.system.always-included', { title: t(translationKey) })
+          : t(translationKey),
+        disabled: alwaysIncluded === true,
         isLeaf: true,
         dataType: 'system',
         icon: <Icon { ...iconProps } />,
@@ -247,12 +250,16 @@ export const useClassAttributesTree = ({
       ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
       : []
 
+    const systemColumnsNode = classAttributesTree.find(node => node.key === 'system-columns')
+    const optionalSystemColumnDefs = collectFieldDefinitions((systemColumnsNode?.children ?? []) as TreeNode[])
+      .filter(node => node.disabled !== true)
+
     const brickContainerNodes = classAttributesTree.filter(
       node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
     )
     const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
 
-    return [...objectColumnDefs, ...brickColumnDefs]
+    return [...objectColumnDefs, ...optionalSystemColumnDefs, ...brickColumnDefs]
   }, [classAttributesTree])
 
   // Consider still loading if the class layout resolved but we know there are brick keys
