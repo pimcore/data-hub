@@ -20,6 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -518,7 +519,7 @@ final class MutationType extends ObjectType
         $entities = $configuration->getMutationEntities();
 
         foreach ($entities as $entity) {
-            $class = ClassDefinition::getByName($entity);
+            $class = ClassTypeDefinitions::getClassDefinition($entity);
             if (!$class) {
                 Logger::error('class ' . $entity . ' not found');
 
@@ -541,7 +542,7 @@ final class MutationType extends ObjectType
                         'message' => ['type' => Type::string()],
                         'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                            'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
+                            'type' => ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                                 if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
@@ -698,7 +699,7 @@ final class MutationType extends ObjectType
                         'message' => ['type' => Type::string()],
                         'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                            'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
+                            'type' => ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                                 if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
