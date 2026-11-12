@@ -25,6 +25,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\QualifiedValueR
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ServiceStubTrait;
+use Pimcore\Model\AbstractModel;
+use Pimcore\Model\Dao\DaoInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
@@ -101,8 +103,17 @@ class MultiValueTest extends Unit
 
     private function createStore(bool $qualified): Classificationstore
     {
-        $dao = new class($qualified) {
+        $dao = new class($qualified) implements DaoInterface {
             public function __construct(private readonly bool $qualified)
+            {
+            }
+
+            public function setModel(AbstractModel $model): static
+            {
+                return $this;
+            }
+
+            public function configure(): void
             {
             }
 
@@ -116,7 +127,7 @@ class MultiValueTest extends Unit
             ->onlyMethods(['getDao', 'getClass', 'getLocalizedKeyValue', 'getKeyValues'])
             ->getMock();
         $store->method('getDao')->willReturn($dao);
-        $store->method('getClass')->willReturn($this->createMock(ClassDefinition::class));
+        $store->method('getClass')->willReturn(new ClassDefinition());
 
         return $store;
     }

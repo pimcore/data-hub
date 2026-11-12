@@ -141,15 +141,15 @@ class ClassificationstoreTest extends Unit
         $group = $this->createGroup(self::IDENTIFIER_GROUP);
         $key = $this->createMultiValueKey($group, 'weight');
         $object = $this->createObject();
-        $this->mutate($object, $this->input($group, $key, [
+        $initial = [
             ['value' => 'm0', 'variant' => 'metric'],
             ['value' => 'm1', 'variant' => 'metric', 'position' => 1],
             ['value' => 'i0', 'variant' => self::IMPERIAL],
-        ]));
+        ];
+        $this->mutate($object, $this->input($group, $key, $initial));
 
-        $result = $this->mutate($object, $this->input($group, $key, [
-            ['value' => 'i0-changed', 'variant' => self::IMPERIAL],
-        ]));
+        $changed = [['value' => 'i0-changed', 'variant' => self::IMPERIAL]];
+        $result = $this->mutate($object, $this->input($group, $key, $changed));
 
         $this->assertTrue($result['success'], $result['message']);
         $store = $this->store($object);

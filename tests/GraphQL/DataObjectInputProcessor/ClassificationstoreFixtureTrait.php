@@ -165,6 +165,7 @@ trait ClassificationstoreFixtureTrait
         if ($this->class === null) {
             $field = new ClassificationstoreDefinition();
             $field->setName(self::FIELD);
+            $field->setTitle(self::FIELD);
             $field->setStoreId($this->store->getId());
             $field->setAllowedGroupIds($allowedGroupIds);
             $field->setLocalized(true);

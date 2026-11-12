@@ -17,7 +17,10 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\DataObjectInputProcessor\ClassificationstoreFixtureTrait;
+use Pimcore\Model\AbstractModel;
+use Pimcore\Model\Dao\DaoInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Layout\Panel;
 use Pimcore\Model\DataObject\Classificationstore;
 
 /**
@@ -29,7 +32,16 @@ class QualifiedViewEavTest extends Unit
 
     private function createEavStore(): Classificationstore
     {
-        $dao = new class() {
+        $dao = new class() implements DaoInterface {
+            public function setModel(AbstractModel $model): static
+            {
+                return $this;
+            }
+
+            public function configure(): void
+            {
+            }
+
             public function supports(): bool
             {
                 return false;
@@ -47,7 +59,7 @@ class QualifiedViewEavTest extends Unit
             ])
             ->getMock();
         $store->method('getDao')->willReturn($dao);
-        $store->method('getClass')->willReturn($this->createMock(ClassDefinition::class));
+        $store->method('getClass')->willReturn(new ClassDefinition());
         $store->method('getFieldname')->willReturn('csfield');
         $store->method('getLocalizedKeyValue')->willReturn('plain');
         $store->expects($this->never())->method('getKeyValues');
@@ -79,8 +91,11 @@ class QualifiedViewEavTest extends Unit
         $key = $this->createKey($group, 'k');
         $definition = new \Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore();
         $definition->setStoreId($group->getStoreId());
-        $class = $this->createMock(ClassDefinition::class);
-        $class->method('getFieldDefinition')->willReturn($definition);
+        $definition->setName('csfield');
+        $panel = new Panel();
+        $panel->setChildren([$definition]);
+        $class = new ClassDefinition();
+        $class->setLayoutDefinitions($panel);
         $store = $this->createEavStore();
         $store->expects($this->once())->method('setLocalizedKeyValue');
         $object = new class($class, $store) extends \Pimcore\Model\DataObject\Concrete {
