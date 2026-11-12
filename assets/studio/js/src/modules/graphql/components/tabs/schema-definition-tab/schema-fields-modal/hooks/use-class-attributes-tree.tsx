@@ -24,7 +24,11 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
-import { isAttributeContainer } from './attribute-container'
+import {
+  buildAttributeTreeItem,
+  collectColumnFieldDefinitions,
+  collectLocalizedFieldNames
+} from './attribute-container'
 import {
   buildBrickAttribute,
   buildBrickColumnTitle,
@@ -90,46 +94,24 @@ export const useClassAttributesTree = ({
   const { layouts: brickLayouts, isLoading: brickLayoutsLoading } = useObjectBrickLayouts(allBrickKeys)
 
   const classAttributesTree = useMemo(() => {
-    const buildItemCallback = (brickKey?: string, containerName?: string) => (
+    const buildItemCallback = (brickKey?: string, containerName?: string, localizedFieldNames?: Set<string>) => (
       { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
       const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
-      const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract && !isAttributeContainer(fieldDefinition.fieldtype)
+      const name = fieldDefinition.name as string
 
-      const { icon: _icon, ...restTreeItem } = initialTreeItem
-
-      const label = fieldDefinition.title ?? fieldDefinition.name
-
-      if (!isNil(brickKey) && !isNil(containerName) && isFieldDefinition) {
-        const attributeKey = buildBrickAttribute(brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
-        const title = buildBrickColumnTitle(label as string, brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
-
-        return {
-          ...restTreeItem,
-          title,
-          className: 'ant-tree-node--has-drag-and-drop',
-          icon: initialTreeItem.icon,
-          dataType: fieldDefinition.fieldtype,
-          attribute: attributeKey,
-          iconProps: dynType?.getIcon() ?? { value: 'info' },
-          isFieldDefinition: true
-        }
-      }
-
-      const title = isFieldDefinition
-        ? `${label} (${fieldDefinition.name})`
-        : initialTreeItem.title
-
-      return {
-        ...restTreeItem,
-        title,
-        className: isFieldDefinition ? 'ant-tree-node--has-drag-and-drop' : undefined,
-        icon: initialTreeItem.icon,
-        dataType: fieldDefinition.fieldtype,
-        attribute: fieldDefinition.name,
+      return buildAttributeTreeItem({
+        fieldDefinition,
+        initialTreeItem,
+        isDataField: dynType instanceof DynamicTypeFieldDefinitionDataAbstract,
         iconProps: dynType?.getIcon() ?? { value: 'info' },
-        isFieldDefinition
-      }
+        brickColumn: (isNil(brickKey) || isNil(containerName))
+          ? undefined
+          : (label) => ({
+              attribute: buildBrickAttribute(brickKey, name, containerName, ambiguousBrickKeys, localizedFieldNames?.has(name) ?? false),
+              title: buildBrickColumnTitle(label, brickKey, name, containerName, ambiguousBrickKeys)
+            })
+      })
     }
 
     const buildDataObjectColumns = (): TreeNode['children'] => {
@@ -162,7 +144,7 @@ export const useClassAttributesTree = ({
       const brickTree = buildTree({
         structure,
         fieldDefinitions,
-        itemCallback: buildItemCallback(brickKey, containerName)
+        itemCallback: buildItemCallback(brickKey, containerName, collectLocalizedFieldNames(brickLayout))
       })
 
       return [{
@@ -235,26 +217,10 @@ export const useClassAttributesTree = ({
     return collectAllKeys(filteredTree)
   }, [searchValue, classAttributesTree, filteredTree])
 
-  const getFieldDefinitions = useCallback((): TreeNode[] => {
-    const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
-      flatMap(nodes, node => {
-        if (node.isFieldDefinition === true) return [node]
-        if (!isNil(node.children)) return collectFieldDefinitions(node.children as TreeNode[])
-        return []
-      })
-
-    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
-    const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
-      ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
-      : []
-
-    const brickContainerNodes = classAttributesTree.filter(
-      node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
-    )
-    const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
-
-    return [...objectColumnDefs, ...brickColumnDefs]
-  }, [classAttributesTree])
+  const getFieldDefinitions = useCallback(
+    (): TreeNode[] => collectColumnFieldDefinitions(classAttributesTree),
+    [classAttributesTree]
+  )
 
   // Consider still loading if the class layout resolved but we know there are brick keys
   // to fetch and the brick layouts haven't all been resolved yet. This prevents the
