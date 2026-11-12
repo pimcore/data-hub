@@ -17,6 +17,8 @@ export interface SystemColumnDefinition {
   iconProps: IconProps
   // Part of every object type whether selected or not (PimcoreObjectType); selecting one has no effect.
   alwaysIncluded?: boolean
+  // Added by "Insert all definitions" in the query schema (DataObjectFieldHelper::getQueryFieldConfigFromConfig).
+  insertAllInQuery?: boolean
 }
 
 export const SYSTEM_COLUMN_ICON: IconProps = { value: 'system-columns', colorToken: 'colorCodingGreen1' }
@@ -33,19 +35,22 @@ export const systemColumnDefinitions: SystemColumnDefinition[] = [
     key: 'system-fullpath',
     attribute: 'fullpath',
     translationKey: 'data-hub.schema.system.fullpath',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    insertAllInQuery: true
   },
   {
     key: 'system-key',
     attribute: 'key',
     translationKey: 'data-hub.schema.system.key',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    insertAllInQuery: true
   },
   {
     key: 'system-published',
     attribute: 'published',
     translationKey: 'data-hub.schema.system.published',
-    iconProps: SYSTEM_COLUMN_ICON
+    iconProps: SYSTEM_COLUMN_ICON,
+    insertAllInQuery: true
   },
   {
     key: 'system-creationDate',

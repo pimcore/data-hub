@@ -31,11 +31,12 @@ You will get a notice if you try to add an unsupported data type.
 #### System Columns
 
 Every Data Object type of the endpoint contains `id`, `creationDate`, `modificationDate`, `classname` and `index`,
-whether they are selected or not; the field configuration shows them as "always included". So are `version`,
-`objectType`, `childrenSortBy`, `tags`, `properties`, `parent`, `children` and `_siblings`.
+whether they are selected or not; the query field configuration shows them as "always included". The type also always
+contains `version`, `objectType`, `childrenSortBy`, `tags`, `properties`, `parent`, `children` and `_siblings`; these
+are not listed in the field configuration.
 
-`fullpath`, `key`, `published` and `filename` are only part of the type if they are selected. `Insert all definitions`
-adds them together with the class fields.
+`fullpath`, `key` and `published` are only part of the type if they are selected. In the query schema,
+`Insert all definitions` adds them together with the class fields.
 
 ## Mutation Schema
 

@@ -16,10 +16,12 @@ import { useOperator } from '../../../../../../../modules/operators/hooks/use-op
 import { useOperatorGroups } from '../../../../../../../modules/operators/hooks/use-operator-groups'
 import { ClassAttributesSidebar } from '../components/class-attributes-sidebar'
 import { OperatorsSidebar } from '../components/operators-sidebar'
+import { type SchemaFieldsMode } from '../types'
 
 interface UseSidebarEntriesProps {
   classId: string
   enabled: boolean
+  mode: SchemaFieldsMode
   operatorRegistryServiceId: string
   gridContainerClassName: string
 }
@@ -34,6 +36,7 @@ interface SidebarEntry {
 export const useSidebarEntries = ({
   classId,
   enabled,
+  mode,
   operatorRegistryServiceId,
   gridContainerClassName
 }: UseSidebarEntriesProps): SidebarEntry[] => {
@@ -54,6 +57,7 @@ export const useSidebarEntries = ({
         <ClassAttributesSidebar
           classId={ classId }
           enabled={ enabled }
+          mode={ mode }
         />
       )
     })
@@ -100,5 +104,5 @@ export const useSidebarEntries = ({
       })
 
     return entries
-  }, [classId, enabled, operatorRegistryServiceId, gridContainerClassName])
+  }, [classId, enabled, mode, operatorRegistryServiceId, gridContainerClassName])
 }
