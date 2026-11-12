@@ -24,7 +24,7 @@ import {
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
-import { toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
+import { isBrickFetchPending, toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
 import {
   buildBrickAttribute,
   buildBrickColumnTitle,
@@ -261,7 +261,12 @@ export const useClassAttributesTree = ({
   // Consider still loading if the class layout resolved but we know there are brick keys
   // to fetch and the brick layouts haven't all been resolved yet. This prevents the
   // intermediate flash between "class layout done" and "brick fetch effect fires".
-  const pendingBrickFetch = !isLoading && !isFetching && allBrickKeys.length > 0 && brickLayouts.size === 0 && brickLoadErrors.length === 0
+  const pendingBrickFetch = isBrickFetchPending({
+    classLayoutLoading: isLoading || isFetching,
+    brickKeyCount: allBrickKeys.length,
+    loadedBrickCount: brickLayouts.size,
+    brickErrorCount: brickLoadErrors.length
+  })
 
   return {
     classAttributesTree,

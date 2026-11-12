@@ -11,10 +11,10 @@
 import React, { useCallback, useState } from 'react'
 import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { groupBy, isNil, map } from 'lodash'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
+import { getLayoutLoadErrorMessages } from '../hooks/class-layout-load-error'
 import { useStyles } from './class-attributes-sidebar.styles'
 
 interface ClassAttributesSidebarProps {
@@ -67,18 +67,10 @@ export const ClassAttributesSidebar = ({
         loading={ isLoading }
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
-        { !isNil(loadError) && (
+        { getLayoutLoadErrorMessages(loadError, brickLoadErrors, t).map(({ key, message }) => (
           <Alert
-            message={ t(`data-hub.schema.class-attributes-load-error.${loadError}`) }
-            showIcon
-            type="error"
-          />
-        ) }
-
-        { map(groupBy(brickLoadErrors, 'error'), (errors, error) => (
-          <Alert
-            key={ error }
-            message={ t(`data-hub.schema.brick-layouts-load-error.${error}`, { bricks: map(errors, 'key').join(', ') }) }
+            key={ key }
+            message={ message }
             showIcon
             type="error"
           />

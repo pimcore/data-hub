@@ -11,13 +11,9 @@
 import { useState, useEffect } from 'react'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { api, type ConfigLayoutDefinition } from '@pimcore/studio-ui-bundle/api/class-definition'
-import { isNil } from 'lodash'
-import { toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
+import { collectBrickLayoutResults, type BrickLayoutLoadError } from './class-layout-load-error'
 
-export interface BrickLayoutLoadError {
-  key: string
-  error: ClassLayoutLoadError
-}
+export type { BrickLayoutLoadError } from './class-layout-load-error'
 
 interface UseObjectBrickLayoutsReturn {
   layouts: Map<string, ConfigLayoutDefinition>
@@ -54,18 +50,7 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
     void Promise.all(promises).then((responses: Array<{ data?: ConfigLayoutDefinition, error?: unknown }>) => {
       if (cancelled) return
 
-      const newLayouts = new Map<string, ConfigLayoutDefinition>()
-      const newLoadErrors: BrickLayoutLoadError[] = []
-
-      brickKeys.forEach((key, index) => {
-        const data = responses[index]?.data
-        const error = toClassLayoutLoadError(responses[index]?.error)
-        if (!isNil(data)) {
-          newLayouts.set(key, data)
-        } else if (!isNil(error)) {
-          newLoadErrors.push({ key, error })
-        }
-      })
+      const { layouts: newLayouts, loadErrors: newLoadErrors } = collectBrickLayoutResults(brickKeys, responses)
 
       setLayouts(newLayouts)
       setLoadErrors(newLoadErrors)
