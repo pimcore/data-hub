@@ -12,15 +12,23 @@ import { useState, useEffect } from 'react'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { api, type ConfigLayoutDefinition } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { isNil } from 'lodash'
+import { toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
+
+export interface BrickLayoutLoadError {
+  key: string
+  error: ClassLayoutLoadError
+}
 
 interface UseObjectBrickLayoutsReturn {
   layouts: Map<string, ConfigLayoutDefinition>
   isLoading: boolean
+  loadErrors: BrickLayoutLoadError[]
 }
 
 export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayoutsReturn => {
   const dispatch = useAppDispatch()
   const [layouts, setLayouts] = useState<Map<string, ConfigLayoutDefinition>>(new Map())
+  const [loadErrors, setLoadErrors] = useState<BrickLayoutLoadError[]>([])
   // Start as true when keys are already known on first render — prevents a flash of the
   // incomplete tree between "class layout resolved" and "brick fetch effect fires".
   const [isLoading, setIsLoading] = useState(brickKeys.length > 0)
@@ -31,6 +39,7 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
   useEffect(() => {
     if (brickKeys.length === 0) {
       setLayouts(new Map())
+      setLoadErrors([])
       setIsLoading(false)
       return
     }
@@ -42,19 +51,24 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
       dispatch(api.endpoints.classObjectBrickGetLayoutByKey.initiate({ key }))
     )
 
-    void Promise.all(promises).then((responses: Array<{ data?: ConfigLayoutDefinition }>) => {
+    void Promise.all(promises).then((responses: Array<{ data?: ConfigLayoutDefinition, error?: unknown }>) => {
       if (cancelled) return
 
       const newLayouts = new Map<string, ConfigLayoutDefinition>()
+      const newLoadErrors: BrickLayoutLoadError[] = []
 
       brickKeys.forEach((key, index) => {
         const data = responses[index]?.data
+        const error = toClassLayoutLoadError(responses[index]?.error)
         if (!isNil(data)) {
           newLayouts.set(key, data)
+        } else if (!isNil(error)) {
+          newLoadErrors.push({ key, error })
         }
       })
 
       setLayouts(newLayouts)
+      setLoadErrors(newLoadErrors)
       setIsLoading(false)
     })
 
@@ -64,5 +78,5 @@ export const useObjectBrickLayouts = (brickKeys: string[]): UseObjectBrickLayout
     }
   }, [dispatch, sortedKeysString])
 
-  return { layouts, isLoading }
+  return { layouts, isLoading, loadErrors }
 }

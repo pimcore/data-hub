@@ -59,6 +59,8 @@ data-hub.schema.mutation-modal-title: 'Mutation Schema Fields - {{entity}}'
 data-hub.schema.class-attributes: Class Attributes
 data-hub.schema.class-attributes-load-error.forbidden: 'The fields of this class cannot be listed: your user needs the "Classes" permission.'
 data-hub.schema.class-attributes-load-error.failed: The fields of this class could not be loaded.
+data-hub.schema.brick-layouts-load-error.forbidden: 'The fields of these object bricks cannot be listed, your user is not allowed to read them: {{bricks}}'
+data-hub.schema.brick-layouts-load-error.failed: 'The fields of these object bricks could not be loaded: {{bricks}}'
 data-hub.schema.available-fields: Available Fields
 data-hub.schema.drag-class-attributes-or-operators: Drag class attributes or operators here
 data-hub.schema.add-all-definitions: Add all definitions

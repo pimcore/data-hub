@@ -9,9 +9,9 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
+import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { isNil } from 'lodash'
+import { groupBy, isNil, map } from 'lodash'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
@@ -29,7 +29,7 @@ export const ClassAttributesSidebar = ({
   const { t } = useTranslation()
   const { styles } = useStyles()
   const [searchValue, setSearchValue] = useState('')
-  const { filteredTree, expandedKeys, isLoading, loadError } = useClassAttributesTree({
+  const { filteredTree, expandedKeys, isLoading, loadError, brickLoadErrors } = useClassAttributesTree({
     classId,
     enabled,
     searchValue
@@ -65,10 +65,24 @@ export const ClassAttributesSidebar = ({
     >
       <Content
         loading={ isLoading }
-        none={ !isNil(loadError) }
-        noneOptions={ { text: t(`data-hub.schema.class-attributes-load-error.${loadError}`) } }
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
+        { !isNil(loadError) && (
+          <Alert
+            message={ t(`data-hub.schema.class-attributes-load-error.${loadError}`) }
+            showIcon
+            type="error"
+          />
+        ) }
+
+        { map(groupBy(brickLoadErrors, 'error'), (errors, error) => (
+          <Alert
+            key={ error }
+            message={ t(`data-hub.schema.brick-layouts-load-error.${error}`, { bricks: map(errors, 'key').join(', ') }) }
+            showIcon
+            type="error"
+          />
+        )) }
 
         <TreeElement
           className={ styles.treeContainer }
