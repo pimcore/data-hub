@@ -39,6 +39,7 @@ class ClassificationstoreMandatoryTest extends Unit
 
         $omitted = $this->mutate($object, $input, true);
         $this->assertTrue($omitted['success'], $omitted['message']);
-        $this->assertNull($this->store($object)->getLocalizedKeyValue($group->getId(), $mandatory->getKeyId(), 'default'));
+        $stored = $this->store($object)->getLocalizedKeyValue($group->getId(), $mandatory->getKeyId(), 'default');
+        $this->assertNull($stored);
     }
 }

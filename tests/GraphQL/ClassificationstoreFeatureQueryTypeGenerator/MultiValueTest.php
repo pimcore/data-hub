@@ -130,7 +130,10 @@ class MultiValueTest extends Unit
         $this->assertContains('csFeatureMultiValue', $names);
 
         $schema = new Schema([
-            'query' => new ObjectType(['name' => 'Query', 'fields' => ['features' => ['type' => Type::listOf($union)]]]),
+            'query' => new ObjectType([
+                'name' => 'Query',
+                'fields' => ['features' => ['type' => Type::listOf($union)]],
+            ]),
         ]);
         $schema->assertValid();
     }
@@ -146,7 +149,9 @@ class MultiValueTest extends Unit
             $entries = QualifiedValueReader::entries($this->createDescriptor($store, $delegate));
 
             $this->assertNotEmpty($entries);
-            $resolved = $union->resolveType($entries[0]['value'], [], (new \ReflectionClass(\GraphQL\Type\Definition\ResolveInfo::class))->newInstanceWithoutConstructor());
+            $info = (new \ReflectionClass(\GraphQL\Type\Definition\ResolveInfo::class))
+                ->newInstanceWithoutConstructor();
+            $resolved = $union->resolveType($entries[0]['value'], [], $info);
             $this->assertSame($typeName, $resolved->name);
         }
 
@@ -156,7 +161,10 @@ class MultiValueTest extends Unit
     public function testMultiValueDegradesOnAnEavStore(): void
     {
         $store = $this->createStore(false);
-        $store->expects($this->once())->method('getLocalizedKeyValue')->with(self::GROUP_ID, self::KEY_ID, 'default')->willReturn('plain');
+        $store->expects($this->once())
+            ->method('getLocalizedKeyValue')
+            ->with(self::GROUP_ID, self::KEY_ID, 'default')
+            ->willReturn('plain');
         $store->expects($this->never())->method('getKeyValues');
 
         $entries = QualifiedValueReader::entries($this->createDescriptor($store, 'input'));

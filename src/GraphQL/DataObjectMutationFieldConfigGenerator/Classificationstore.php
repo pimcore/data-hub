@@ -70,8 +70,14 @@ final class Classificationstore extends Base implements ResetInterface
             $keyInput = new InputObjectType([
                 'name' => 'ClassificationstoreKeyInput',
                 'fields' => [
-                    'keyId' => ['type' => Type::int(), 'description' => 'the numeric id of the key, alternative to `key`'],
-                    'key' => ['type' => Type::string(), 'description' => 'the identifier of the key, alternative to `keyId`'],
+                    'keyId' => [
+                        'type' => Type::int(),
+                        'description' => 'the numeric id of the key, alternative to `key`',
+                    ],
+                    'key' => [
+                        'type' => Type::string(),
+                        'description' => 'the identifier of the key, alternative to `keyId`',
+                    ],
                     'values' => ['type' => Type::listOf($valueInput)],
                 ],
             ]);
@@ -79,8 +85,14 @@ final class Classificationstore extends Base implements ResetInterface
             $groupInput = new InputObjectType([
                 'name' => 'ClassificationstoreGroupInput',
                 'fields' => [
-                    'groupId' => ['type' => Type::int(), 'description' => 'the numeric id of the group, alternative to `group`'],
-                    'group' => ['type' => Type::string(), 'description' => 'the identifier of the group, alternative to `groupId`'],
+                    'groupId' => [
+                        'type' => Type::int(),
+                        'description' => 'the numeric id of the group, alternative to `group`',
+                    ],
+                    'group' => [
+                        'type' => Type::string(),
+                        'description' => 'the identifier of the group, alternative to `groupId`',
+                    ],
                     'language' => ['type' => Type::string(), 'description' => 'defaults to "default"'],
                     'keys' => ['type' => Type::listOf($keyInput)],
                 ],
@@ -92,7 +104,8 @@ final class Classificationstore extends Base implements ResetInterface
                     'groups' => ['type' => Type::listOf($groupInput)],
                     'strict' => [
                         'type' => Type::boolean(),
-                        'description' => 'if true a write to an inactive group is refused instead of activating the group',
+                        'description' => 'if true a write to an inactive group is refused '
+                            . 'instead of activating the group',
                     ],
                 ],
             ]);

@@ -65,9 +65,11 @@ final class Classificationstore extends Base
         }
 
         $attribute = $this->getAttribute();
-        $definition = $object instanceof Concrete ? $object->getClass()?->getFieldDefinition($attribute) : null;
+        $definition = $object instanceof Concrete ? $object->getClass()->getFieldDefinition($attribute) : null;
         if (!$definition instanceof ClassificationstoreDefinition) {
-            throw new ClientSafeException(sprintf('"%s" is not a classification store field of the object.', $attribute));
+            throw new ClientSafeException(
+                sprintf('"%s" is not a classification store field of the object.', $attribute)
+            );
         }
 
         $getter = 'get' . ucfirst($attribute);
@@ -83,7 +85,8 @@ final class Classificationstore extends Base
     }
 
     /**
-     * Activates the groups on the store itself: with inherited values on, getActiveGroups() answers the ancestors' too.
+     * Activates the groups on the store itself:
+     * with inherited values on, getActiveGroups() answers the ancestors' too.
      *
      * @param int[] $groupIds
      */
@@ -116,8 +119,11 @@ final class Classificationstore extends Base
      *
      * @throws ClientSafeException
      */
-    private function plan(ClassificationstoreModel $store, ClassificationstoreDefinition $definition, array $input): array
-    {
+    private function plan(
+        ClassificationstoreModel $store,
+        ClassificationstoreDefinition $definition,
+        array $input
+    ): array {
         $strict = ($input['strict'] ?? false) === true;
         $active = $this->ownValues(static fn (): array => $store->getActiveGroups());
         $activate = [];
@@ -131,21 +137,32 @@ final class Classificationstore extends Base
 
             if (($active[$groupId] ?? false) !== true) {
                 if ($strict) {
-                    throw new ClientSafeException(sprintf('The classification store group %s is inactive and "strict" is set.', $this->describe($group)));
+                    throw new ClientSafeException(sprintf(
+                        'The classification store group %s is inactive and "strict" is set.',
+                        $this->describe($group)
+                    ));
                 }
                 $activate[$groupId] = $groupId;
             }
 
             $language = $groupInput['language'] ?? self::DEFAULT_QUALIFIER;
             if ($language === '') {
-                throw new ClientSafeException(sprintf('The language of the classification store group %s must not be empty.', $this->describe($group)));
+                throw new ClientSafeException(sprintf(
+                    'The language of the classification store group %s must not be empty.',
+                    $this->describe($group)
+                ));
             }
             foreach ($groupInput['keys'] ?? [] as $keyInput) {
                 $relation = $this->resolveKey($keyInput, $group, $definition);
                 $this->assertKeyWritable($relation, $group, $language, $definition);
 
                 $writeId = implode("\0", [$groupId, $relation->getKeyId(), $language]);
-                $writes[$writeId] ??= ['groupId' => $groupId, 'keyId' => $relation->getKeyId(), 'language' => $language, 'entries' => []];
+                $writes[$writeId] ??= [
+                    'groupId' => $groupId,
+                    'keyId' => $relation->getKeyId(),
+                    'language' => $language,
+                    'entries' => [],
+                ];
 
                 foreach ($keyInput['values'] ?? [] as $valueInput) {
                     $entry = $this->planEntry($store, $relation, $valueInput, $slots, $language);
@@ -165,12 +182,18 @@ final class Classificationstore extends Base
         $id = $input['groupId'] ?? null;
         $identifier = $input['group'] ?? null;
         if (($id === null) === ($identifier === null)) {
-            throw new ClientSafeException('A classification store group is addressed by exactly one of "groupId" and "group".');
+            throw new ClientSafeException(
+                'A classification store group is addressed by exactly one of "groupId" and "group".'
+            );
         }
 
-        $group = $id !== null ? GroupConfig::getById($id) : GroupConfig::getByIdentifier($identifier, $definition->getStoreId());
+        $group = $id !== null
+            ? GroupConfig::getById($id)
+            : GroupConfig::getByIdentifier($identifier, $definition->getStoreId());
         if (!$group) {
-            throw new ClientSafeException(sprintf('The classification store group "%s" does not resolve.', $id ?? $identifier));
+            throw new ClientSafeException(
+                sprintf('The classification store group "%s" does not resolve.', $id ?? $identifier)
+            );
         }
 
         return $group;
@@ -182,34 +205,55 @@ final class Classificationstore extends Base
     private function assertGroupWritable(GroupConfig $group, ClassificationstoreDefinition $definition): void
     {
         if ($group->getStoreId() !== $definition->getStoreId()) {
-            throw new ClientSafeException(sprintf('The classification store group %s belongs to another store than the field "%s".', $this->describe($group), $definition->getName()));
+            throw new ClientSafeException(sprintf(
+                'The classification store group %s belongs to another store than the field "%s".',
+                $this->describe($group),
+                $definition->getName()
+            ));
         }
 
         $allowed = array_map('intval', $definition->getAllowedGroupIds());
         if ($allowed !== [] && !in_array($group->getId(), $allowed, true)) {
-            throw new ClientSafeException(sprintf('The classification store group %s is not allowed on the field "%s".', $this->describe($group), $definition->getName()));
+            throw new ClientSafeException(sprintf(
+                'The classification store group %s is not allowed on the field "%s".',
+                $this->describe($group),
+                $definition->getName()
+            ));
         }
     }
 
     /**
      * @throws ClientSafeException
      */
-    private function resolveKey(array $input, GroupConfig $group, ClassificationstoreDefinition $definition): KeyGroupRelation
-    {
+    private function resolveKey(
+        array $input,
+        GroupConfig $group,
+        ClassificationstoreDefinition $definition
+    ): KeyGroupRelation {
         $id = $input['keyId'] ?? null;
         $identifier = $input['key'] ?? null;
         if (($id === null) === ($identifier === null)) {
-            throw new ClientSafeException('A classification store key is addressed by exactly one of "keyId" and "key".');
+            throw new ClientSafeException(
+                'A classification store key is addressed by exactly one of "keyId" and "key".'
+            );
         }
 
-        $key = $id !== null ? KeyConfig::getById($id) : KeyConfig::getByIdentifier($identifier, $definition->getStoreId());
+        $key = $id !== null
+            ? KeyConfig::getById($id)
+            : KeyConfig::getByIdentifier($identifier, $definition->getStoreId());
         if (!$key) {
-            throw new ClientSafeException(sprintf('The classification store key "%s" does not resolve.', $id ?? $identifier));
+            throw new ClientSafeException(
+                sprintf('The classification store key "%s" does not resolve.', $id ?? $identifier)
+            );
         }
 
         $relation = KeyGroupRelation::getByGroupAndKeyId($group->getId(), $key->getId());
         if (!$relation) {
-            throw new ClientSafeException(sprintf('The classification store key "%s" is not a key of the group %s.', $id ?? $identifier, $this->describe($group)));
+            throw new ClientSafeException(sprintf(
+                'The classification store key "%s" is not a key of the group %s.',
+                $id ?? $identifier,
+                $this->describe($group)
+            ));
         }
 
         return $relation;
@@ -218,18 +262,27 @@ final class Classificationstore extends Base
     /**
      * @throws ClientSafeException
      */
-    private function assertKeyWritable(KeyGroupRelation $relation, GroupConfig $group, string $language, ClassificationstoreDefinition $definition): void
-    {
+    private function assertKeyWritable(
+        KeyGroupRelation $relation,
+        GroupConfig $group,
+        string $language,
+        ClassificationstoreDefinition $definition
+    ): void {
         if (!$relation->isEnabled()) {
             throw new ClientSafeException(sprintf(
-                'The classification store key "%s" is disabled in the group %s: a disabled key still publishes its stored values, and refuses new ones.',
+                'The classification store key "%s" is disabled in the group %s: '
+                . 'a disabled key still publishes its stored values, and refuses new ones.',
                 $relation->getName(),
                 $this->describe($group)
             ));
         }
 
         if (!in_array(QualifiedValueReader::publishedType($relation), $this->getAcceptedTypes(), true)) {
-            throw new ClientSafeException(sprintf('The classification store key "%s" of the type "%s" cannot be written.', $relation->getName(), $relation->getType()));
+            throw new ClientSafeException(sprintf(
+                'The classification store key "%s" of the type "%s" cannot be written.',
+                $relation->getName(),
+                $relation->getType()
+            ));
         }
 
         if ($language !== self::DEFAULT_QUALIFIER) {
@@ -252,22 +305,34 @@ final class Classificationstore extends Base
      *
      * @throws ClientSafeException
      */
-    private function planEntry(ClassificationstoreModel $store, KeyGroupRelation $relation, array $input, array &$slots, string $language): array
-    {
+    private function planEntry(
+        ClassificationstoreModel $store,
+        KeyGroupRelation $relation,
+        array $input,
+        array &$slots,
+        string $language
+    ): array {
         if (!array_key_exists('value', $input)) {
-            throw new ClientSafeException(sprintf('A value of the classification store key "%s" carries no "value", use null to clear the slot.', $relation->getName()));
+            throw new ClientSafeException(sprintf(
+                'A value of the classification store key "%s" carries no "value", use null to clear the slot.',
+                $relation->getName()
+            ));
         }
 
         $variant = $input['variant'] ?? self::DEFAULT_QUALIFIER;
         $position = $input['position'] ?? 0;
         if ($variant === '' || $position < 0) {
-            throw new ClientSafeException(sprintf('The variant of the classification store key "%s" must not be empty and its position not negative.', $relation->getName()));
+            throw new ClientSafeException(sprintf(
+                'The variant of the classification store key "%s" must not be empty and its position not negative.',
+                $relation->getName()
+            ));
         }
 
         $slot = implode("\0", [$relation->getGroupId(), $relation->getKeyId(), $language, $variant, $position]);
         if (isset($slots[$slot])) {
             throw new ClientSafeException(sprintf(
-                'Two values of the classification store key "%s" address the same slot (language "%s", variant "%s", position %d).',
+                'Two values of the classification store key "%s" address the same slot '
+                . '(language "%s", variant "%s", position %d).',
                 $relation->getName(),
                 $language,
                 $variant,
@@ -307,11 +372,17 @@ final class Classificationstore extends Base
             return;
         }
 
-        // setKeyValues() replaces every slot it is given as a whole, so the values the input does not name are handed back
+        // setKeyValues() replaces every slot it is given as a whole,
+        // so the values the input does not name are handed back
         $values = [];
         foreach ($qualified as $variant => $named) {
             $variant = (string) $variant;
-            $own = $this->ownValues(static fn (): array => $store->getKeyValues($write['groupId'], $write['keyId'], $write['language'], $variant));
+            $own = $this->ownValues(static fn (): array => $store->getKeyValues(
+                $write['groupId'],
+                $write['keyId'],
+                $write['language'],
+                $variant
+            ));
             foreach ($own as $position => $stored) {
                 // position 0 of the default variant is the plain value, setLocalizedKeyValue() holds it
                 if ($variant === self::DEFAULT_QUALIFIER && (int) $position === 0) {

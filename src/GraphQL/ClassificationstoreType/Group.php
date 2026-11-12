@@ -13,7 +13,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
@@ -77,7 +76,7 @@ final class Group extends ObjectType
             'description' => Type::string(),
             'features' => [
                 'type' => Type::listOf($this->featureType),
-                'resolve' => function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) {
+                'resolve' => function ($value) {
                     /** @var Classificationstore $csValue */
                     $csValue = $value['_csValue'];
                     $groupId = $value['id'];
@@ -89,15 +88,21 @@ final class Group extends ObjectType
                     $supportedFeatureTypeNames = $service->getSupportedCsFeatureQueryDataTypes();
 
                     foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
-                        $keyDataType = $keyRelation->getType();
-                        if (in_array(QualifiedValueReader::publishedType($keyRelation), $supportedFeatureTypeNames, true)) {
+                        if ($this->isPublished($keyRelation, $supportedFeatureTypeNames)) {
                             $keyId = $keyRelation->getKeyId();
                             //TODO maybe add args for this fallback stuff ?
 
                             $featureValue = $csValue->getLocalizedKeyValue($groupId, $keyId, $language);
-                            $result[] = $this->createDescriptor($csValue, $groupId, $language, $keyRelation, $featureValue);
+                            $result[] = $this->createDescriptor(
+                                $csValue,
+                                $groupId,
+                                $language,
+                                $keyRelation,
+                                $featureValue
+                            );
                         }
-                        //TODO decide whether we want to skip unsupported types (encryptedField, table; as we do now) or simply add null
+                        //TODO decide whether we want to skip unsupported types
+                        // (encryptedField, table; as we do now) or simply add null
                     }
 
                     return $result;
@@ -105,8 +110,9 @@ final class Group extends ObjectType
             ],
             'qualifiedFeatures' => [
                 'type' => Type::listOf($this->qualifiedFeatureType),
-                'description' => 'the keys of the group with all of their qualified values (language, variant, position)',
-                'resolve' => function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) {
+                'description' => 'the keys of the group with all of their qualified values '
+                    . '(language, variant, position)',
+                'resolve' => function ($value) {
                     /** @var Classificationstore $csValue */
                     $csValue = $value['_csValue'];
                     QualifiedValueReader::assertSupported($csValue);
@@ -117,7 +123,7 @@ final class Group extends ObjectType
 
                     $result = [];
                     foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
-                        if (in_array(QualifiedValueReader::publishedType($keyRelation), $supportedFeatureTypeNames, true)) {
+                        if ($this->isPublished($keyRelation, $supportedFeatureTypeNames)) {
                             $result[] = $this->createDescriptor($csValue, $groupId, $language, $keyRelation, null);
                         }
                     }
@@ -153,8 +159,21 @@ final class Group extends ObjectType
         return $keyRelations->load();
     }
 
-    private function createDescriptor(Classificationstore $csValue, int $groupId, string $language, KeyGroupRelation $keyRelation, mixed $featureValue): FeatureDescriptor
+    /**
+     * @param string[] $supportedFeatureTypeNames
+     */
+    private function isPublished(KeyGroupRelation $keyRelation, array $supportedFeatureTypeNames): bool
     {
+        return in_array(QualifiedValueReader::publishedType($keyRelation), $supportedFeatureTypeNames, true);
+    }
+
+    private function createDescriptor(
+        Classificationstore $csValue,
+        int $groupId,
+        string $language,
+        KeyGroupRelation $keyRelation,
+        mixed $featureValue
+    ): FeatureDescriptor {
         $wrappedFeatureValue = new FeatureDescriptor();
         $wrappedFeatureValue->setId($keyRelation->getKeyId());
         $wrappedFeatureValue->setType($keyRelation->getType());

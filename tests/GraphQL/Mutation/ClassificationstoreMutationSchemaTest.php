@@ -71,7 +71,10 @@ class ClassificationstoreMutationSchemaTest extends Unit
         }
 
         $schema = new Schema([
-            'query' => new ObjectType(['name' => 'Query', 'fields' => ['f' => ['type' => Type::string(), 'args' => $args]]]),
+            'query' => new ObjectType([
+                'name' => 'Query',
+                'fields' => ['f' => ['type' => Type::string(), 'args' => $args]],
+            ]),
         ]);
         $schema->assertValid();
         $this->assertTrue(true);

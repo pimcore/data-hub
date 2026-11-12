@@ -29,7 +29,12 @@ class ClassificationstoreIdentifierTest extends Unit
         $byIdentifier = $this->createObject();
 
         $this->mutate($byId, $this->input($group, $key, [['value' => 'v']]));
-        $result = $this->mutate($byIdentifier, ['groups' => [['group' => 'ident_group', 'keys' => [['key' => 'ident_key', 'values' => [['value' => 'v']]]]]]]);
+        $result = $this->mutate($byIdentifier, [
+            'groups' => [[
+                'group' => 'ident_group',
+                'keys' => [['key' => 'ident_key', 'values' => [['value' => 'v']]]],
+            ]],
+        ]);
 
         $this->assertTrue($result['success'], $result['message']);
         $this->assertSame($this->store($byId)->getItems(), $this->store($byIdentifier)->getItems());
@@ -41,10 +46,31 @@ class ClassificationstoreIdentifierTest extends Unit
     public static function unresolvable(): array
     {
         return [
-            'unknown group identifier' => [static fn () => ['groups' => [['group' => 'no_such_group', 'keys' => []]]], 'no_such_group'],
-            'unknown key identifier' => [static fn ($g) => ['groups' => [['groupId' => $g->getId(), 'keys' => [['key' => 'no_such_key', 'values' => []]]]]], 'no_such_key'],
-            'unknown numeric pair' => [static fn () => ['groups' => [['groupId' => 999999998, 'keys' => [['keyId' => 999999997, 'values' => []]]]]], '999999998'],
-            'key of another group' => [static fn ($g, $other) => ['groups' => [['groupId' => $g->getId(), 'keys' => [['keyId' => $other->getKeyId(), 'values' => []]]]]], 'is not a key of the group'],
+            'unknown group identifier' => [
+                static fn () => ['groups' => [['group' => 'no_such_group', 'keys' => []]]],
+                'no_such_group',
+            ],
+            'unknown key identifier' => [
+                static fn ($g) => ['groups' => [[
+                    'groupId' => $g->getId(),
+                    'keys' => [['key' => 'no_such_key', 'values' => []]],
+                ]]],
+                'no_such_key',
+            ],
+            'unknown numeric pair' => [
+                static fn () => ['groups' => [[
+                    'groupId' => 999999998,
+                    'keys' => [['keyId' => 999999997, 'values' => []]],
+                ]]],
+                '999999998',
+            ],
+            'key of another group' => [
+                static fn ($g, $other) => ['groups' => [[
+                    'groupId' => $g->getId(),
+                    'keys' => [['keyId' => $other->getKeyId(), 'values' => []]],
+                ]]],
+                'is not a key of the group',
+            ],
         ];
     }
 

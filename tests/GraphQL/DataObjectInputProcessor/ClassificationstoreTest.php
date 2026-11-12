@@ -50,7 +50,8 @@ class ClassificationstoreTest extends Unit
             $result = $this->mutate($object, $this->input($group, $key, [['value' => $value]]));
 
             $this->assertTrue($result['success'], $result['message']);
-            $this->assertSame($value, $this->store($object)->getLocalizedKeyValue($group->getId(), $key->getKeyId(), 'default'));
+            $stored = $this->store($object)->getLocalizedKeyValue($group->getId(), $key->getKeyId(), 'default');
+            $this->assertSame($value, $stored);
         }
     }
 
@@ -68,8 +69,12 @@ class ClassificationstoreTest extends Unit
                 ['keyId' => $keyA1->getKeyId(), 'values' => [['value' => 'a1']]],
                 ['keyId' => $keyA2->getKeyId(), 'values' => [['value' => 'a2']]],
             ]],
-            ['groupId' => $groupA->getId(), 'language' => 'de', 'keys' => [['keyId' => $keyA1->getKeyId(), 'values' => [['value' => 'a1-de']]]]],
-            ['groupId' => $groupB->getId(), 'keys' => [['keyId' => $keyB->getKeyId(), 'values' => [['value' => 'b1']]]]],
+            ['groupId' => $groupA->getId(), 'language' => 'de', 'keys' => [
+                ['keyId' => $keyA1->getKeyId(), 'values' => [['value' => 'a1-de']]],
+            ]],
+            ['groupId' => $groupB->getId(), 'keys' => [
+                ['keyId' => $keyB->getKeyId(), 'values' => [['value' => 'b1']]],
+            ]],
         ]]);
         $before = $this->store($object)->getItems();
 
@@ -86,11 +91,12 @@ class ClassificationstoreTest extends Unit
         $group = $this->createGroup(self::IDENTIFIER_GROUP);
         $key = $this->createMultiValueKey($group, 'weight');
         $object = $this->createObject();
-        $this->mutate($object, $this->input($group, $key, [
+        $entries = [
             ['value' => 'v0'],
             ['value' => 'v1', 'position' => 1],
             ['value' => 'i0', 'variant' => self::IMPERIAL],
-        ]));
+        ];
+        $this->mutate($object, $this->input($group, $key, $entries));
 
         $result = $this->mutate($object, $this->input($group, $key, [['value' => null]]));
 
@@ -111,7 +117,8 @@ class ClassificationstoreTest extends Unit
 
         $this->mutate($object, $this->input($group, $written, [['value' => 'new']]));
 
-        $this->assertSame('kept', $this->store($object)->getLocalizedKeyValue($group->getId(), $kept->getKeyId(), 'default'));
+        $keptValue = $this->store($object)->getLocalizedKeyValue($group->getId(), $kept->getKeyId(), 'default');
+        $this->assertSame('kept', $keptValue);
     }
 
     public function testAValueLandsInTheSlotItNamesAndNowhereElse(): void
@@ -120,7 +127,8 @@ class ClassificationstoreTest extends Unit
         $key = $this->createMultiValueKey($group, 'weight');
         $object = $this->createObject();
 
-        $result = $this->mutate($object, $this->input($group, $key, [['value' => 'x', 'variant' => self::IMPERIAL, 'position' => 1]]));
+        $entries = [['value' => 'x', 'variant' => self::IMPERIAL, 'position' => 1]];
+        $result = $this->mutate($object, $this->input($group, $key, $entries));
 
         $this->assertTrue($result['success'], $result['message']);
         $store = $this->store($object);
@@ -202,11 +210,14 @@ class ClassificationstoreTest extends Unit
         $this->assertStringContainsString($other->getName(), $result['message']);
         $this->assertSame([], $this->store($restricted)->getItems());
 
-        $this->assertTrue($this->mutate($restricted, $this->input($allowed, $allowedKey, [['value' => 'x']]))['success']);
+        $allowedInput = $this->input($allowed, $allowedKey, [['value' => 'x']]);
+        $this->assertTrue($this->mutate($restricted, $allowedInput)['success']);
 
         $unrestricted = $this->createObject();
         $this->assertTrue($this->mutate($unrestricted, $this->input($other, $otherKey, [['value' => 'y']]))['success']);
-        $this->assertSame('y', $this->store($unrestricted)->getLocalizedKeyValue($other->getId(), $otherKey->getKeyId(), 'default'));
+        $otherValue = $this->store($unrestricted)
+            ->getLocalizedKeyValue($other->getId(), $otherKey->getKeyId(), 'default');
+        $this->assertSame('y', $otherValue);
     }
 
     public function testAGroupOfAForeignStoreIsRefused(): void

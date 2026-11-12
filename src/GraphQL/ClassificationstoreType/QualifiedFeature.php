@@ -13,7 +13,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\QualifiedValueType;
@@ -32,7 +31,7 @@ final class QualifiedFeature extends ObjectType
         $fields = Helper::getCommonFields();
         $fields['values'] = [
             'type' => Type::listOf(QualifiedValueType::getInstance($graphQlService)),
-            'resolve' => static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
+            'resolve' => static function ($value = null) {
                 if ($value instanceof FeatureDescriptor) {
                     return QualifiedValueReader::qualifiedEntries($value);
                 }

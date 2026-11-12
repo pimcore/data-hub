@@ -104,8 +104,14 @@ trait ClassificationstoreFixtureTrait
         return $this->groups[] = $group;
     }
 
-    private function createKey(GroupConfig $group, string $identifier, string $type = 'input', array $definition = [], bool $enabled = true, bool $mandatory = false): KeyGroupRelation
-    {
+    private function createKey(
+        GroupConfig $group,
+        string $identifier,
+        string $type = 'input',
+        array $definition = [],
+        bool $enabled = true,
+        bool $mandatory = false
+    ): KeyGroupRelation {
         $definition += ['fieldtype' => $type, 'name' => $identifier];
 
         $key = new KeyConfig();
@@ -133,8 +139,11 @@ trait ClassificationstoreFixtureTrait
     /**
      * A multiValue key over an inner type, with a list and the variants "metric" and "imperial".
      */
-    private function createMultiValueKey(GroupConfig $group, string $identifier, string $delegate = 'input'): KeyGroupRelation
-    {
+    private function createMultiValueKey(
+        GroupConfig $group,
+        string $identifier,
+        string $delegate = 'input'
+    ): KeyGroupRelation {
         return $this->createKey($group, $identifier, 'multiValue', [
             'multiValue' => true,
             'variants' => [['name' => 'metric'], ['name' => 'imperial']],

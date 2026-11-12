@@ -70,7 +70,9 @@ final class QualifiedValueReader
     {
         $store = $descriptor->getStore();
         if ($store === null || $descriptor->getRelation() === null) {
-            throw new ClientSafeException('The values of this classification store key cannot be read: the key is not bound to a store.');
+            throw new ClientSafeException(
+                'The values of this classification store key cannot be read: the key is not bound to a store.'
+            );
         }
 
         $valueType = self::getValueType($descriptor);
@@ -79,7 +81,11 @@ final class QualifiedValueReader
         }
 
         if (!self::supportsQualifiers($store)) {
-            $value = $store->getLocalizedKeyValue($descriptor->getGroupId(), $descriptor->getId(), $descriptor->getLanguage());
+            $value = $store->getLocalizedKeyValue(
+                $descriptor->getGroupId(),
+                $descriptor->getId(),
+                $descriptor->getLanguage()
+            );
 
             return [self::entry($descriptor, $valueType, null, null, null, $value)];
         }
@@ -110,9 +116,21 @@ final class QualifiedValueReader
 
         $result = [];
         foreach ($variants as $variant) {
-            $values = $store->getKeyValues($descriptor->getGroupId(), $descriptor->getId(), $descriptor->getLanguage(), (string) $variant);
+            $values = $store->getKeyValues(
+                $descriptor->getGroupId(),
+                $descriptor->getId(),
+                $descriptor->getLanguage(),
+                (string) $variant
+            );
             foreach ($values as $position => $value) {
-                $result[] = self::entry($descriptor, $valueType, $descriptor->getLanguage(), (string) $variant, (int) $position, $value);
+                $result[] = self::entry(
+                    $descriptor,
+                    $valueType,
+                    $descriptor->getLanguage(),
+                    (string) $variant,
+                    (int) $position,
+                    $value
+                );
             }
         }
 
@@ -143,8 +161,14 @@ final class QualifiedValueReader
     /**
      * @return array{language: ?string, variant: ?string, position: ?int, value: FeatureDescriptor}
      */
-    private static function entry(FeatureDescriptor $key, string $valueType, ?string $language, ?string $variant, ?int $position, mixed $value): array
-    {
+    private static function entry(
+        FeatureDescriptor $key,
+        string $valueType,
+        ?string $language,
+        ?string $variant,
+        ?int $position,
+        mixed $value
+    ): array {
         $wrapped = new FeatureDescriptor();
         $wrapped->setId($key->getId());
         $wrapped->setType($valueType);

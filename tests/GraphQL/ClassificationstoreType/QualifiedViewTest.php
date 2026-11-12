@@ -48,7 +48,10 @@ class QualifiedViewTest extends Unit
                 $entries[] = [$entry['variant'], $entry['position'], $entry['value']->getValue()];
             }
         }
-        $this->assertEqualsCanonicalizing([['default', 0, 'm0'], ['default', 1, 'm1'], ['imperial', 0, 'i0']], $entries);
+        $this->assertEqualsCanonicalizing(
+            [['default', 0, 'm0'], ['default', 1, 'm1'], ['imperial', 0, 'i0']],
+            $entries
+        );
 
         $features = $type->getField('features')->resolveFn;
         $this->assertSame(['m0'], array_map(static fn ($f) => $f->getValue(), $features($value)));
@@ -59,6 +62,9 @@ class QualifiedViewTest extends Unit
         $service = $this->createServiceStub();
         $type = new Group($service, new Feature($service));
 
-        $this->assertSame(['id', 'identifier', 'name', 'description', 'features', 'qualifiedFeatures'], array_keys($type->getFields()));
+        $this->assertSame(
+            ['id', 'identifier', 'name', 'description', 'features', 'qualifiedFeatures'],
+            array_keys($type->getFields())
+        );
     }
 }

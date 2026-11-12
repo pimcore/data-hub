@@ -37,7 +37,14 @@ class QualifiedViewEavTest extends Unit
         };
 
         $store = $this->getMockBuilder(Classificationstore::class)
-            ->onlyMethods(['getDao', 'getClass', 'getFieldname', 'getLocalizedKeyValue', 'setLocalizedKeyValue', 'getKeyValues'])
+            ->onlyMethods([
+                'getDao',
+                'getClass',
+                'getFieldname',
+                'getLocalizedKeyValue',
+                'setLocalizedKeyValue',
+                'getKeyValues',
+            ])
             ->getMock();
         $store->method('getDao')->willReturn($dao);
         $store->method('getClass')->willReturn($this->createMock(ClassDefinition::class));
@@ -77,8 +84,10 @@ class QualifiedViewEavTest extends Unit
         $store = $this->createEavStore();
         $store->expects($this->once())->method('setLocalizedKeyValue');
         $object = new class($class, $store) extends \Pimcore\Model\DataObject\Concrete {
-            public function __construct(private readonly ClassDefinition $stubClass, private readonly Classificationstore $stubStore)
-            {
+            public function __construct(
+                private readonly ClassDefinition $stubClass,
+                private readonly Classificationstore $stubStore
+            ) {
             }
 
             public function getClass(): ClassDefinition
@@ -93,7 +102,8 @@ class QualifiedViewEavTest extends Unit
         };
 
         $unqualified = $this->mutateWithoutSave($object, $this->input($group, $key, [['value' => 'x']]));
-        $qualified = $this->mutateWithoutSave($object, $this->input($group, $key, [['value' => 'x', 'variant' => 'imperial']]));
+        $entries = [['value' => 'x', 'variant' => 'imperial']];
+        $qualified = $this->mutateWithoutSave($object, $this->input($group, $key, $entries));
 
         $this->assertTrue($unqualified['success'], $unqualified['message']);
         $this->assertFalse($qualified['success']);
