@@ -328,6 +328,15 @@ final class Classificationstore extends Base
             ));
         }
 
+        if (!in_array($variant, QualifiedValueReader::variants($relation), true)) {
+            throw new ClientSafeException(sprintf(
+                'The classification store key "%s" declares no variant "%s", its variants are: %s.',
+                $relation->getName(),
+                $variant,
+                implode(', ', QualifiedValueReader::variants($relation))
+            ));
+        }
+
         $slot = implode("\0", [$relation->getGroupId(), $relation->getKeyId(), $language, $variant, $position]);
         if (isset($slots[$slot])) {
             throw new ClientSafeException(sprintf(
@@ -368,13 +377,23 @@ final class Classificationstore extends Base
             }
         }
 
-        if ($qualified === []) {
-            return;
+        if ($qualified !== []) {
+            $store->setKeyValues($write['groupId'], $write['keyId'], $this->slotEntries($store, $write, $qualified));
         }
+    }
 
-        // setKeyValues() replaces every slot it is given as a whole,
-        // so the values the input does not name are handed back
-        $values = [];
+    /**
+     * setKeyValues() replaces each (language, variant) slot it is given as a whole and leaves every other
+     * slot of the key alone, so only the slots the input names are handed over, completed with the positions
+     * of those slots the input does not name.
+     *
+     * @param array<string|int, array<int, mixed>> $qualified the named values by variant and position
+     *
+     * @return MultiValue[]
+     */
+    private function slotEntries(ClassificationstoreModel $store, array $write, array $qualified): array
+    {
+        $entries = [];
         foreach ($qualified as $variant => $named) {
             $variant = (string) $variant;
             $own = $this->ownValues(static fn (): array => $store->getKeyValues(
@@ -383,21 +402,17 @@ final class Classificationstore extends Base
                 $write['language'],
                 $variant
             ));
-            foreach ($own as $position => $stored) {
-                // position 0 of the default variant is the plain value, setLocalizedKeyValue() holds it
-                if ($variant === self::DEFAULT_QUALIFIER && (int) $position === 0) {
-                    continue;
-                }
-                if (!array_key_exists($position, $named)) {
-                    $values[] = new MultiValue($stored, $write['language'], $variant, (int) $position);
-                }
+            // position 0 of the default variant is the plain value, setLocalizedKeyValue() holds it
+            if ($variant === self::DEFAULT_QUALIFIER) {
+                unset($own[0]);
             }
-            foreach ($named as $position => $value) {
-                $values[] = new MultiValue($value, $write['language'], $variant, (int) $position);
+
+            foreach ($named + $own as $position => $value) {
+                $entries[] = new MultiValue($value, $write['language'], $variant, (int) $position);
             }
         }
 
-        $store->setKeyValues($write['groupId'], $write['keyId'], $values);
+        return $entries;
     }
 
     private function describe(GroupConfig $group): string

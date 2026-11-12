@@ -101,8 +101,7 @@ final class Group extends ObjectType
                                 $featureValue
                             );
                         }
-                        //TODO decide whether we want to skip unsupported types
-                        // (encryptedField, table; as we do now) or simply add null
+                        // a key of a type no read generator publishes is skipped, not answered with null
                     }
 
                     return $result;

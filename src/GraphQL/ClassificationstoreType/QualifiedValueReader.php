@@ -103,11 +103,7 @@ final class QualifiedValueReader
         $store = $descriptor->getStore();
         self::assertSupported($store);
 
-        $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($descriptor->getRelation());
-        $variants = [self::DEFAULT_VARIANT];
-        if ($definition instanceof MultiValueDefinition) {
-            $variants = array_merge($variants, $definition->getVariantNames());
-        }
+        $variants = self::variants($descriptor->getRelation());
 
         $valueType = self::getValueType($descriptor);
         if ($valueType === null) {
@@ -135,6 +131,22 @@ final class QualifiedValueReader
         }
 
         return $result;
+    }
+
+    /**
+     * The variants a key holds values in: the default one, and the ones a multiValue key declares.
+     *
+     * @return string[]
+     */
+    public static function variants(KeyGroupRelation $relation): array
+    {
+        $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($relation);
+        $variants = [self::DEFAULT_VARIANT];
+        if ($definition instanceof MultiValueDefinition) {
+            $variants = array_merge($variants, array_map('strval', $definition->getVariantNames()));
+        }
+
+        return $variants;
     }
 
     /**

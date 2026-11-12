@@ -29,11 +29,12 @@ class QualifiedViewTest extends Unit
         $group = $this->createGroup('qualified_group');
         $key = $this->createMultiValueKey($group, 'weight');
         $object = $this->createObject();
-        $this->mutate($object, $this->input($group, $key, [
+        $values = [
             ['value' => 'm0'],
             ['value' => 'm1', 'position' => 1],
             ['value' => 'i0', 'variant' => 'imperial'],
-        ]));
+        ];
+        $this->mutate($object, $this->input($group, $key, $values));
 
         $service = $this->createServiceStub();
         $service->setSupportedCsFeatureQueryDataTypes(self::READABLE_TYPES);

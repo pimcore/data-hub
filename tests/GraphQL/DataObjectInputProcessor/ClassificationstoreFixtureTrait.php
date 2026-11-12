@@ -101,7 +101,9 @@ trait ClassificationstoreFixtureTrait
         $group->setIdentifier($identifier);
         $group->save();
 
-        return $this->groups[] = $group;
+        $this->groups[] = $group;
+
+        return $group;
     }
 
     private function createKey(
@@ -133,7 +135,9 @@ trait ClassificationstoreFixtureTrait
         $relation->setMandatory($mandatory);
         $relation->save();
 
-        return $this->relations[] = $relation;
+        $this->relations[] = $relation;
+
+        return $relation;
     }
 
     /**
@@ -183,7 +187,9 @@ trait ClassificationstoreFixtureTrait
         $object->setPublished(true);
         $object->save();
 
-        return $this->objects[] = $object;
+        $this->objects[] = $object;
+
+        return $object;
     }
 
     private function createProcessor(): Processor

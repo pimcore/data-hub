@@ -106,7 +106,7 @@ class MultiValueTest extends Unit
             {
             }
 
-            public function supports(mixed $feature): bool
+            public function supports(): bool
             {
                 return $this->qualified;
             }

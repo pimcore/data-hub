@@ -45,6 +45,7 @@ mutation {
 * The whole mutation is refused, and nothing is saved, if a group or key does not resolve, a key is not part of the
   group, the group is not allowed on the field or belongs to another store, a key is disabled, or a key has a type that
   cannot be written. A disabled key still publishes its stored values, and refuses new ones.
+* A `variant` the key does not declare is refused; keys that are not multiValue declare none besides the default.
 * A variant or a position above 0 is refused on a store whose engine cannot hold qualified values.
 * `omitMandatoryCheck: true` skips the mandatory check of the keys like it does for any other field.
 * The writable types are the ones `csFeature` publishes, without Calculated Value, see

@@ -30,7 +30,7 @@ class QualifiedViewEavTest extends Unit
     private function createEavStore(): Classificationstore
     {
         $dao = new class() {
-            public function supports(mixed $feature): bool
+            public function supports(): bool
             {
                 return false;
             }

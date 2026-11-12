@@ -136,6 +136,47 @@ class ClassificationstoreTest extends Unit
         $this->assertSame('x', $store->getKeyValue($group->getId(), $key->getKeyId(), null, self::IMPERIAL, 1));
     }
 
+    public function testAWriteToOneVariantLeavesTheOtherVariantsOfTheKeyAlone(): void
+    {
+        $group = $this->createGroup(self::IDENTIFIER_GROUP);
+        $key = $this->createMultiValueKey($group, 'weight');
+        $object = $this->createObject();
+        $this->mutate($object, $this->input($group, $key, [
+            ['value' => 'm0', 'variant' => 'metric'],
+            ['value' => 'm1', 'variant' => 'metric', 'position' => 1],
+            ['value' => 'i0', 'variant' => self::IMPERIAL],
+        ]));
+
+        $result = $this->mutate($object, $this->input($group, $key, [
+            ['value' => 'i0-changed', 'variant' => self::IMPERIAL],
+        ]));
+
+        $this->assertTrue($result['success'], $result['message']);
+        $store = $this->store($object);
+        $groupId = $group->getId();
+        $keyId = $key->getKeyId();
+        $this->assertSame('i0-changed', $store->getKeyValue($groupId, $keyId, null, self::IMPERIAL, 0));
+        $this->assertSame('m0', $store->getKeyValue($groupId, $keyId, null, 'metric', 0));
+        $this->assertSame('m1', $store->getKeyValue($groupId, $keyId, null, 'metric', 1));
+    }
+
+    public function testAVariantTheKeyDoesNotDeclareIsRefusedAndNothingIsSaved(): void
+    {
+        $group = $this->createGroup(self::IDENTIFIER_GROUP);
+        $multi = $this->createMultiValueKey($group, 'weight');
+        $plain = $this->createKey($group, 'plain');
+        $object = $this->createObject();
+
+        foreach ([[$multi, 'imperal'], [$plain, self::IMPERIAL]] as [$key, $variant]) {
+            $result = $this->mutate($object, $this->input($group, $key, [['value' => 'x', 'variant' => $variant]]));
+
+            $this->assertFalse($result['success']);
+            $this->assertStringContainsString($key->getName(), $result['message']);
+            $this->assertStringContainsString($variant, $result['message']);
+        }
+        $this->assertSame([], $this->store($object)->getItems());
+    }
+
     public function testTwoEntriesForOneSlotAreRefusedAndNothingIsSaved(): void
     {
         $group = $this->createGroup(self::IDENTIFIER_GROUP);
