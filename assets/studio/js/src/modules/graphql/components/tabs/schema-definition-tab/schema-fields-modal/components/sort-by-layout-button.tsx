@@ -30,7 +30,7 @@ export const SortByLayoutButton = ({
   onEntityConfigChange
 }: SortByLayoutButtonProps): React.JSX.Element => {
   const { t } = useTranslation()
-  const { classAttributesTree } = useClassAttributesTree({ classId, enabled })
+  const { classAttributesTree, isLoading } = useClassAttributesTree({ classId, enabled })
 
   const columns = useMemo(() => entityConfig?.columnConfig?.columns ?? [], [entityConfig])
 
@@ -53,7 +53,7 @@ export const SortByLayoutButton = ({
 
   return (
     <Button
-      disabled={ isNil(entityConfig) || isEqual(sortedColumns, columns) }
+      disabled={ isLoading || isNil(entityConfig) || isEqual(sortedColumns, columns) }
       onClick={ handleSort }
     >
       {t('data-hub.schema.sort-by-class-layout')}

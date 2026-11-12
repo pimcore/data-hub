@@ -21,6 +21,7 @@ import { useObjectBrickLayouts } from './use-objectbrick-layouts'
 import {
   filterTreeNodesRecursive,
   collectAllKeys,
+  collectFieldDefinitionNodes,
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
@@ -235,22 +236,15 @@ export const useClassAttributesTree = ({
   }, [searchValue, classAttributesTree, filteredTree])
 
   const getFieldDefinitions = useCallback((): TreeNode[] => {
-    const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
-      flatMap(nodes, node => {
-        if (node.isFieldDefinition === true) return [node]
-        if (!isNil(node.children)) return collectFieldDefinitions(node.children as TreeNode[])
-        return []
-      })
-
     const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
     const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
-      ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+      ? collectFieldDefinitionNodes(objectColumnsNode.children as TreeNode[])
       : []
 
     const brickContainerNodes = classAttributesTree.filter(
       node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
     )
-    const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
+    const brickColumnDefs = collectFieldDefinitionNodes(brickContainerNodes)
 
     return [...objectColumnDefs, ...brickColumnDefs]
   }, [classAttributesTree])
