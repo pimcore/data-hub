@@ -21,6 +21,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
+use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
 
 /**
  * @internal
@@ -32,6 +33,9 @@ final class Group extends ObjectType
     /** @var Feature */
     protected $featureType;
 
+    /** @var QualifiedFeature */
+    protected $qualifiedFeatureType;
+
     /**
      * @param array $config
      * @param array $context
@@ -40,6 +44,7 @@ final class Group extends ObjectType
     {
         $this->setGraphQLService($graphQlService);
         $this->featureType = $featuresType;
+        $this->qualifiedFeatureType = new QualifiedFeature($graphQlService);
         $this->build($config);
         parent::__construct($config);
     }
@@ -76,43 +81,89 @@ final class Group extends ObjectType
                     /** @var Classificationstore $csValue */
                     $csValue = $value['_csValue'];
                     $groupId = $value['id'];
-                    $language = $value['_language'];
-                    if (!$language) {
-                        // Let's try to "inherit" the language from what's already been parsed from this query
-                        $language = $this->getGraphQlService()->getLocaleService()->getLocale();
-                        if (!$language) {
-                            $language = 'default';
-                        }
-                    }
-
-                    $keyRelations = new Classificationstore\KeyGroupRelation\Listing();
-                    $keyRelations->setCondition('groupId = ' . $groupId);
-                    $keyRelations = $keyRelations->load();
+                    $language = $this->resolveLanguage($value);
 
                     $result = [];
 
                     $service = $this->getGraphQlService();
                     $supportedFeatureTypeNames = $service->getSupportedCsFeatureQueryDataTypes();
 
-                    foreach ($keyRelations as $keyRelation) {
+                    foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
                         $keyDataType = $keyRelation->getType();
-                        if (in_array($keyDataType, $supportedFeatureTypeNames)) {
+                        if (in_array(QualifiedValueReader::publishedType($keyRelation), $supportedFeatureTypeNames, true)) {
                             $keyId = $keyRelation->getKeyId();
                             //TODO maybe add args for this fallback stuff ?
 
                             $featureValue = $csValue->getLocalizedKeyValue($groupId, $keyId, $language);
-                            $wrappedFeatureValue = new FeatureDescriptor();
-                            $wrappedFeatureValue->setId($keyId);
-                            $wrappedFeatureValue->setType($keyDataType);
-                            $wrappedFeatureValue->setValue($featureValue);
-                            $result[] = $wrappedFeatureValue;
+                            $result[] = $this->createDescriptor($csValue, $groupId, $language, $keyRelation, $featureValue);
                         }
-                        //TODO decide whether we want to skip unsupported types (as we do now) or simply add null
+                        //TODO decide whether we want to skip unsupported types (encryptedField, table; as we do now) or simply add null
+                    }
+
+                    return $result;
+                },
+            ],
+            'qualifiedFeatures' => [
+                'type' => Type::listOf($this->qualifiedFeatureType),
+                'description' => 'the keys of the group with all of their qualified values (language, variant, position)',
+                'resolve' => function ($value, $args, $context = [], ?ResolveInfo $resolveInfo = null) {
+                    /** @var Classificationstore $csValue */
+                    $csValue = $value['_csValue'];
+                    QualifiedValueReader::assertSupported($csValue);
+
+                    $groupId = $value['id'];
+                    $language = $this->resolveLanguage($value);
+                    $supportedFeatureTypeNames = $this->getGraphQlService()->getSupportedCsFeatureQueryDataTypes();
+
+                    $result = [];
+                    foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
+                        if (in_array(QualifiedValueReader::publishedType($keyRelation), $supportedFeatureTypeNames, true)) {
+                            $result[] = $this->createDescriptor($csValue, $groupId, $language, $keyRelation, null);
+                        }
                     }
 
                     return $result;
                 },
             ],
         ];
+    }
+
+    private function resolveLanguage(array $value): string
+    {
+        $language = $value['_language'];
+        if (!$language) {
+            // Let's try to "inherit" the language from what's already been parsed from this query
+            $language = $this->getGraphQlService()->getLocaleService()->getLocale();
+            if (!$language) {
+                $language = 'default';
+            }
+        }
+
+        return $language;
+    }
+
+    /**
+     * @return KeyGroupRelation[]
+     */
+    private function loadKeyRelations(int $groupId): array
+    {
+        $keyRelations = new Classificationstore\KeyGroupRelation\Listing();
+        $keyRelations->setCondition('groupId = ' . $groupId);
+
+        return $keyRelations->load();
+    }
+
+    private function createDescriptor(Classificationstore $csValue, int $groupId, string $language, KeyGroupRelation $keyRelation, mixed $featureValue): FeatureDescriptor
+    {
+        $wrappedFeatureValue = new FeatureDescriptor();
+        $wrappedFeatureValue->setId($keyRelation->getKeyId());
+        $wrappedFeatureValue->setType($keyRelation->getType());
+        $wrappedFeatureValue->setValue($featureValue);
+        $wrappedFeatureValue->setStore($csValue);
+        $wrappedFeatureValue->setGroupId($groupId);
+        $wrappedFeatureValue->setLanguage($language);
+        $wrappedFeatureValue->setRelation($keyRelation);
+
+        return $wrappedFeatureValue;
     }
 }

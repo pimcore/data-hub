@@ -23,6 +23,14 @@ final class FeatureDescriptor extends \ArrayObject
 
     protected $value;
 
+    protected $store;
+
+    protected $groupId;
+
+    protected $language;
+
+    protected $relation;
+
     /**
      * @return mixed
      */
@@ -69,5 +77,69 @@ final class FeatureDescriptor extends \ArrayObject
     public function setValue($value): void
     {
         $this->value = $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStore()
+    {
+        return $this->store;
+    }
+
+    /**
+     * @param mixed $store
+     */
+    public function setStore($store): void
+    {
+        $this->store = $store;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupId()
+    {
+        return $this->groupId;
+    }
+
+    /**
+     * @param mixed $groupId
+     */
+    public function setGroupId($groupId): void
+    {
+        $this->groupId = $groupId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param mixed $language
+     */
+    public function setLanguage($language): void
+    {
+        $this->language = $language;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRelation()
+    {
+        return $this->relation;
+    }
+
+    /**
+     * @param mixed $relation
+     */
+    public function setRelation($relation): void
+    {
+        $this->relation = $relation;
     }
 }

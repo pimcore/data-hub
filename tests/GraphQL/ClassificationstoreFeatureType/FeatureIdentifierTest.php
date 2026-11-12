@@ -23,9 +23,12 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\BooleanS
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\CheckboxType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\DateType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\MultiValueType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\StringType;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\QualifiedFeature;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
+use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ServiceStubTrait;
 use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
 use Pimcore\Model\DataObject\Classificationstore\StoreConfig;
 
@@ -41,6 +44,8 @@ use Pimcore\Model\DataObject\Classificationstore\StoreConfig;
  */
 class FeatureIdentifierTest extends Unit
 {
+    use ServiceStubTrait;
+
     private const ID = 'id';
 
     private const IDENTIFIER = 'identifier';
@@ -89,7 +94,7 @@ class FeatureIdentifierTest extends Unit
 
     public function testTheFeatureTypesBuiltWithoutAServicePublishIdentifierAndKeepIdAsADeprecatedInt(): void
     {
-        foreach ($this->featureTypes() as $type) {
+        foreach (array_merge($this->featureTypes(), $this->addedTypes()) as $type) {
             $identifier = $type->getField(self::IDENTIFIER);
             $this->assertSame(Type::string(), $identifier->getType(), $type->name);
             $this->assertFalse($identifier->isDeprecated(), $type->name);
@@ -160,6 +165,18 @@ class FeatureIdentifierTest extends Unit
         $descriptor = $this->createDescriptor(self::UNRESOLVABLE_KEY_ID);
 
         $this->assertNull($this->resolve(self::IDENTIFIER, $descriptor));
+    }
+
+    /**
+     * The csFeatureMultiValue type and the type of the qualified view, they publish the common fields too.
+     *
+     * @return ObjectType[]
+     */
+    private function addedTypes(): array
+    {
+        $service = $this->createServiceStub();
+
+        return [MultiValueType::getInstance($service), new QualifiedFeature($service)];
     }
 
     /**
