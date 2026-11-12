@@ -115,6 +115,7 @@ class MultiValueTest extends Unit
 
             public function configure(): void
             {
+                // Nothing to configure: this stub DAO only answers supports().
             }
 
             public function supports(): bool
