@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { IconTextButton, Modal, OperationalGrid, Accordion, Button, Checkbox, Flex, SearchInput, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
+import { IconTextButton, Modal, OperationalGrid, Accordion, Button, Checkbox, Flex, NoContent, SearchInput, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { type QueryEntity, type MutationEntity } from './types'
@@ -126,7 +126,6 @@ export const SchemaAccordion = ({
       />
       <Modal
         cancelText={ t('button.cancel') }
-        limitContentHeight
         okText={ t('button.apply') }
         onCancel={ handleCancel }
         onOk={ handleApply }
@@ -139,8 +138,9 @@ export const SchemaAccordion = ({
           vertical
         >
           <SearchInput
+            aria-label={ t('data-hub.schema.search-classes') }
             onChange={ (e) => { setSearchValue(e.target.value) } }
-            placeholder={ t('data-hub.schema.select-class') }
+            placeholder={ t('data-hub.schema.search-classes') }
             style={ { width: '100%', maxWidth: '100%' } }
             value={ searchValue }
             withoutAddon
@@ -159,21 +159,27 @@ export const SchemaAccordion = ({
               {t('data-hub.schema.deselect-all')}
             </Button>
           </Flex>
-          <Flex
-            gap="mini"
-            vertical
-          >
-            {visibleClassNames.map(className => (
-              <Checkbox
-                checked={ addedClassNames.has(className) || selectedClasses.includes(className) }
-                disabled={ addedClassNames.has(className) }
-                key={ className }
-                onChange={ (e) => { toggleClass(className, e.target.checked) } }
-              >
-                {className}
-              </Checkbox>
-            ))}
-          </Flex>
+          {visibleClassNames.length === 0
+            ? <NoContent text={ t('data-hub.schema.no-classes-found') } />
+            : (
+              <div style={ { maxHeight: '50vh', overflowY: 'auto' } }>
+                <Flex
+                  gap="mini"
+                  vertical
+                >
+                  {visibleClassNames.map(className => (
+                    <Checkbox
+                      checked={ addedClassNames.has(className) || selectedClasses.includes(className) }
+                      disabled={ addedClassNames.has(className) }
+                      key={ className }
+                      onChange={ (e) => { toggleClass(className, e.target.checked) } }
+                    >
+                      {className}
+                    </Checkbox>
+                  ))}
+                </Flex>
+              </div>
+              )}
         </Flex>
       </Modal>
     </>

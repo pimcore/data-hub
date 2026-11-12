@@ -53,7 +53,8 @@ data-hub.schema.mutation-schema: Mutation-schema
 data-hub.schema.generic-types: Generiska typer
 data-hub.schema.entity: Entitet
 data-hub.schema.settings: Inställningar
-data-hub.schema.select-class: Välj klass...
+data-hub.schema.search-classes: Sök klasser...
+data-hub.schema.no-classes-found: Inga klasser hittades
 data-hub.schema.query-modal-title: 'Query-schemafält - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Mutation-schemafält - {{entity}}'
 data-hub.schema.class-attributes: Klassattribut

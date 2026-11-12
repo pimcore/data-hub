@@ -8,34 +8,31 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-// Run with: node --test "tests/*.test.mjs" (Node >= 22.18 or 24, which strips TypeScript types natively)
-import assert from 'node:assert/strict'
-import { describe, it } from 'node:test'
 import {
   filterClassNames,
   selectClassNames,
   deselectClassNames,
   orderLike
-} from '../js/src/modules/graphql/components/tabs/schema-definition-tab/class-picker-selection.ts'
+} from '../src/modules/graphql/components/tabs/schema-definition-tab/class-picker-selection'
 
 const classes = ['Car', 'Category', 'Customer', 'News']
 
 describe('class picker selection', () => {
   it('filters class names case-insensitively and ignores surrounding blanks', () => {
-    assert.deepEqual(filterClassNames(classes, ' cat '), ['Category'])
-    assert.deepEqual(filterClassNames(classes, 'C'), ['Car', 'Category', 'Customer'])
-    assert.deepEqual(filterClassNames(classes, ''), classes)
+    expect(filterClassNames(classes, ' cat ')).toEqual(['Category'])
+    expect(filterClassNames(classes, 'C')).toEqual(['Car', 'Category', 'Customer'])
+    expect(filterClassNames(classes, '')).toEqual(classes)
   })
 
   it('selects the given classes once, without classes already in the schema', () => {
-    assert.deepEqual(selectClassNames(['Car'], ['Car', 'Category', 'News'], new Set(['News'])), ['Car', 'Category'])
+    expect(selectClassNames(['Car'], ['Car', 'Category', 'News'], new Set(['News']))).toEqual(['Car', 'Category'])
   })
 
   it('deselects only the given classes, so selections hidden by the search are kept', () => {
-    assert.deepEqual(deselectClassNames(['Car', 'News', 'Customer'], ['Car', 'Customer']), ['News'])
+    expect(deselectClassNames(['Car', 'News', 'Customer'], ['Car', 'Customer'])).toEqual(['News'])
   })
 
   it('orders the selection like the class list', () => {
-    assert.deepEqual(orderLike(['News', 'Car'], classes), ['Car', 'News'])
+    expect(orderLike(['News', 'Car'], classes)).toEqual(['Car', 'News'])
   })
 })
