@@ -38,14 +38,20 @@ export const getAmbiguousBrickKeys = (fields: ObjectBricksFieldInfo[]): Set<stri
  * `Brick~field` is the attribute format used so far and resolves to the first objectbricks field allowing
  * the brick. `Brick~field~containerField` selects the field explicitly; it is only needed (and only used)
  * for bricks which are allowed in several fields, so that existing configurations stay valid.
+ * A field of the brick's localizedfields is addressed by a `?{"containerKey":…,"brickfield":…}` descriptor in place
+ * of the brick key (see DataObjectFieldHelper::getFieldDefinitionFromKey()).
  */
 export const buildBrickAttribute = (
   brickKey: string,
   brickFieldName: string,
   containerName: string,
-  ambiguousBrickKeys: Set<string>
+  ambiguousBrickKeys: Set<string>,
+  localized: boolean = false
 ): string => {
-  const attribute = `${brickKey}~${brickFieldName}`
+  const brickType = localized
+    ? `?${JSON.stringify({ containerKey: brickKey, brickfield: brickFieldName })}`
+    : brickKey
+  const attribute = `${brickType}~${brickFieldName}`
 
   return ambiguousBrickKeys.has(brickKey) ? `${attribute}~${containerName}` : attribute
 }
