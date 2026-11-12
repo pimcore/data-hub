@@ -580,6 +580,15 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             );
         }
 
+        // Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
+        if (!is_string($type) || !is_string($importData['path']) || !is_string($name)
+            || !is_array($importData['configuration'] ?? null)) {
+            throw new ValidationFailedException(
+                message: 'Uploaded configuration data is invalid. Type, path and name must be strings, configuration must be an object.',
+                errorKey: 'data-hub.import-config-invalid'
+            );
+        }
+
         $this->ensureConfigDoesNotExist($name);
 
         if (!$this->adapterAvailabilityService->isEnabled($type)) {
