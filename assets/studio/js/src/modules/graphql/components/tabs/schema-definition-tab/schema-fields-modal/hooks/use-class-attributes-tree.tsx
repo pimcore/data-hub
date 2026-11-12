@@ -21,6 +21,7 @@ import { useObjectBrickLayouts, type BrickLayoutLoadError } from './use-objectbr
 import {
   filterTreeNodesRecursive,
   collectAllKeys,
+  collectFieldDefinitionNodes,
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
@@ -247,16 +248,9 @@ export const useClassAttributesTree = ({
   }, [searchValue, classAttributesTree, filteredTree])
 
   const getFieldDefinitions = useCallback((): TreeNode[] => {
-    const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
-      flatMap(nodes, node => {
-        if (node.isFieldDefinition === true) return [node]
-        if (!isNil(node.children)) return collectFieldDefinitions(node.children as TreeNode[])
-        return []
-      })
-
     const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
     const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
-      ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+      ? collectFieldDefinitionNodes(objectColumnsNode.children as TreeNode[])
       : []
 
     // A class field and a system column of the same name would end up as one GraphQL field (PimcoreObjectType),
@@ -264,7 +258,7 @@ export const useClassAttributesTree = ({
     const classFieldNames = new Set(objectColumnDefs.map(node => node.attribute))
     const systemColumnsNode = classAttributesTree.find(node => node.key === 'system-columns')
     const systemColumnDefs = mode === 'query'
-      ? collectFieldDefinitions((systemColumnsNode?.children ?? []) as TreeNode[])
+      ? collectFieldDefinitionNodes((systemColumnsNode?.children ?? []) as TreeNode[])
           .filter(node => systemColumnLookup.get(node.attribute ?? '')?.insertAllInQuery === true)
           .filter(node => !classFieldNames.has(node.attribute))
       : []
@@ -272,7 +266,7 @@ export const useClassAttributesTree = ({
     const brickContainerNodes = classAttributesTree.filter(
       node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
     )
-    const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
+    const brickColumnDefs = collectFieldDefinitionNodes(brickContainerNodes)
 
     return [...objectColumnDefs, ...systemColumnDefs, ...brickColumnDefs]
   }, [classAttributesTree, mode])

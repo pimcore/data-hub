@@ -8,22 +8,17 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-interface AttributeTreeNode {
-  attribute?: string
-  isFieldDefinition?: boolean
-  children?: unknown
-}
+import { flatMap, isNil } from 'lodash'
+import { type TreeNode } from '../types'
+import { collectFieldDefinitionNodes } from './class-attributes-tree-helpers'
 
 interface SortableColumn {
   isOperator?: boolean
   attributes?: { attribute?: string }
 }
 
-export const collectAttributeOrder = (nodes: AttributeTreeNode[]): string[] =>
-  nodes.reduce<string[]>((order, node) => {
-    if (node.isFieldDefinition === true) return node.attribute === undefined ? order : [...order, node.attribute]
-    return Array.isArray(node.children) ? [...order, ...collectAttributeOrder(node.children as AttributeTreeNode[])] : order
-  }, [])
+export const collectAttributeOrder = (nodes: TreeNode[]): string[] =>
+  flatMap(collectFieldDefinitionNodes(nodes), node => isNil(node.attribute) ? [] : [node.attribute])
 
 // Columns of an attribute in the layout trade places among themselves; operators and unknown attributes keep their index.
 export const sortColumnsByLayout = <T extends SortableColumn>(columns: T[], attributeOrder: string[]): T[] => {
