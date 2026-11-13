@@ -18,13 +18,22 @@ use function array_is_list;
 use function array_key_exists;
 use function array_keys;
 use function array_pop;
+use function array_slice;
+use function count;
 use function explode;
+use function implode;
 use function in_array;
+use InvalidArgumentException;
 use function is_array;
 use function ksort;
 use function preg_match;
 use const SORT_STRING;
+use function sprintf;
 use function str_contains;
+use function str_ends_with;
+use function str_starts_with;
+use function substr;
+use function substr_count;
 
 /**
  * A stored configuration as a proposal may see and carry it.
@@ -45,6 +54,9 @@ final class ConfigDocument
      */
     public const array VOLATILE_GENERAL = ['modificationDate', 'createDate', 'creationDate', 'writeable'];
 
+    /** ends the last segment of a withheld path to withhold every key that starts with the rest */
+    public const string WILDCARD = '*';
+
     public static function isValidName(string $name): bool
     {
         return preg_match('/^[[:alnum:]][[:alnum:]_-]*$/', $name) === 1;
@@ -64,7 +76,9 @@ final class ConfigDocument
         }
 
         foreach ($policy->withheld() as $path) {
-            $document = self::without($document, $path);
+            foreach (self::matches($document, self::segments($path)) as $match) {
+                $document = self::without($document, $match);
+            }
         }
 
         return $document;
@@ -79,6 +93,7 @@ final class ConfigDocument
     {
         $sections = [];
         foreach ($policy->withheld() as $path) {
+            self::segments($path);
             if (!str_contains($path, '.')) {
                 $sections[] = $path;
             }
@@ -119,12 +134,39 @@ final class ConfigDocument
     {
         $refused = [];
         foreach ($policy->withheld() as $path) {
-            if (self::has($proposed, $path)) {
-                $refused[] = $path;
+            foreach (self::matches($proposed, self::segments($path)) as $match) {
+                $refused[] = implode('.', $match);
             }
         }
 
         return $refused;
+    }
+
+    /**
+     * Whether a leaf address, or a value sent whole under it, reaches into a withheld path.
+     *
+     * @param list<string> $address
+     */
+    public static function withholds(array $address, mixed $value, ConfigProposalPolicyInterface $policy): bool
+    {
+        foreach ($policy->withheld() as $path) {
+            $withheld = self::segments($path);
+            $depth = count($withheld);
+            if (count($address) >= $depth) {
+                if (self::covers($withheld, array_slice($address, 0, $depth))) {
+                    return true;
+                }
+
+                continue;
+            }
+            if (array_slice($withheld, 0, count($address)) === $address
+                && is_array($value)
+                && self::matches($value, array_slice($withheld, count($address))) !== []) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -171,9 +213,12 @@ final class ConfigDocument
         ConfigProposalPolicyInterface $policy,
     ): array {
         foreach ($policy->withheld() as $path) {
-            $configuration = self::without($configuration, $path);
-            if (self::has($stored, $path)) {
-                $configuration = self::with($configuration, $path, self::at($stored, $path));
+            $segments = self::segments($path);
+            foreach (self::matches($configuration, $segments) as $match) {
+                $configuration = self::without($configuration, $match);
+            }
+            foreach (self::matches($stored, $segments) as $match) {
+                $configuration = self::with($configuration, $match, self::at($stored, $match));
             }
         }
 
@@ -202,13 +247,93 @@ final class ConfigDocument
     }
 
     /**
+     * A withheld path as segments. Only the last segment of a path below a section may end in
+     * the wildcard; anywhere else it would be read literally and withhold nothing, so it is
+     * refused instead.
+     *
+     * @return list<string>
+     */
+    private static function segments(string $path): array
+    {
+        $segments = explode('.', $path);
+        $wildcards = substr_count($path, self::WILDCARD);
+        if ($wildcards > 1
+            || ($wildcards === 1 && (count($segments) < 2 || !str_ends_with($path, self::WILDCARD)))) {
+            throw new InvalidArgumentException(sprintf(
+                'Withheld path "%s" is not supported: only the last segment of a path below a section '
+                . 'may end in "%s".',
+                $path,
+                self::WILDCARD,
+            ));
+        }
+
+        return $segments;
+    }
+
+    /**
+     * The keys of the document a withheld path names: itself, or with a wildcard every key
+     * under its parent that starts with the rest of the last segment.
+     *
+     * @param array<array-key, mixed> $document
+     * @param list<string> $withheld
+     *
+     * @return list<list<string>>
+     */
+    private static function matches(array $document, array $withheld): array
+    {
+        $leaf = array_pop($withheld);
+        if ($leaf === null) {
+            return [];
+        }
+        if (!str_ends_with($leaf, self::WILDCARD)) {
+            return self::has($document, [...$withheld, $leaf]) ? [[...$withheld, $leaf]] : [];
+        }
+
+        $parent = self::at($document, $withheld);
+        if (!is_array($parent)) {
+            return [];
+        }
+
+        $matches = [];
+        foreach (array_keys($parent) as $key) {
+            if (self::covers([$leaf], [(string) $key])) {
+                $matches[] = [...$withheld, (string) $key];
+            }
+        }
+
+        return $matches;
+    }
+
+    /**
+     * @param list<string> $withheld
+     * @param list<string> $address as long as $withheld
+     */
+    private static function covers(array $withheld, array $address): bool
+    {
+        foreach ($withheld as $index => $segment) {
+            $key = $address[$index] ?? null;
+            if ($key === null) {
+                return false;
+            }
+            $matches = str_ends_with($segment, self::WILDCARD)
+                ? str_starts_with($key, substr($segment, 0, -1))
+                : $key === $segment;
+            if (!$matches) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @param array<string, mixed> $document
+     * @param list<string> $segments
      *
      * @return array<string, mixed>
      */
-    private static function without(array $document, string $path): array
+    private static function without(array $document, array $segments): array
     {
-        $segments = explode('.', $path);
         $leaf = array_pop($segments);
         $node = &$document;
         foreach ($segments as $segment) {
@@ -224,13 +349,14 @@ final class ConfigDocument
 
     /**
      * @param array<string, mixed> $document
+     * @param list<string> $segments
      *
      * @return array<string, mixed>
      */
-    private static function with(array $document, string $path, mixed $value): array
+    private static function with(array $document, array $segments, mixed $value): array
     {
         $node = &$document;
-        foreach (explode('.', $path) as $segment) {
+        foreach ($segments as $segment) {
             if (!is_array($node)) {
                 $node = [];
             }
@@ -242,12 +368,13 @@ final class ConfigDocument
     }
 
     /**
-     * @param array<string, mixed> $document
+     * @param array<array-key, mixed> $document
+     * @param list<string> $segments
      */
-    private static function has(array $document, string $path): bool
+    private static function has(array $document, array $segments): bool
     {
         $node = $document;
-        foreach (explode('.', $path) as $segment) {
+        foreach ($segments as $segment) {
             if (!is_array($node) || !array_key_exists($segment, $node)) {
                 return false;
             }
@@ -258,12 +385,13 @@ final class ConfigDocument
     }
 
     /**
-     * @param array<string, mixed> $document
+     * @param array<array-key, mixed> $document
+     * @param list<string> $segments
      */
-    private static function at(array $document, string $path): mixed
+    private static function at(array $document, array $segments): mixed
     {
         $node = $document;
-        foreach (explode('.', $path) as $segment) {
+        foreach ($segments as $segment) {
             $node = is_array($node) ? ($node[$segment] ?? null) : null;
         }
 
