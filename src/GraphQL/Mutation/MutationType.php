@@ -20,6 +20,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\Model\MutationTypeEvent;
 use Pimcore\Bundle\DataHubBundle\Event\GraphQL\MutationEvents;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementTag;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -254,7 +255,7 @@ final class MutationType extends ObjectType
                         if (!WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create document',
+                                'message' => 'not allowed to create document' . self::describeParent($args),
                             ];
                         }
 
@@ -518,7 +519,7 @@ final class MutationType extends ObjectType
         $entities = $configuration->getMutationEntities();
 
         foreach ($entities as $entity) {
-            $class = ClassDefinition::getByName($entity);
+            $class = ClassTypeDefinitions::getClassDefinition($entity);
             if (!$class) {
                 Logger::error('class ' . $entity . ' not found');
 
@@ -541,7 +542,7 @@ final class MutationType extends ObjectType
                         'message' => ['type' => Type::string()],
                         'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                            'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
+                            'type' => ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                                 if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
@@ -604,7 +605,7 @@ final class MutationType extends ObjectType
                         if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                             return [
                                 'success' => false,
-                                'message' => 'not allowed to create object ' . $entity,
+                                'message' => 'not allowed to create object ' . $entity . self::describeParent($args),
                             ];
                         }
 
@@ -698,7 +699,7 @@ final class MutationType extends ObjectType
                         'message' => ['type' => Type::string()],
                         'output' => [
                             'args' => ['defaultLanguage' => ['type' => Type::string()]],
-                            'type' => \Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions::get($class),
+                            'type' => ClassTypeDefinitions::get($class),
                             'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($queryResolver) {
                                 if ($value['success'] === true) {
                                     $args['id'] = $value['id'];
@@ -847,18 +848,14 @@ final class MutationType extends ObjectType
 
         return static function ($value, $args, $context, $info) use ($processors, $localeService, $object, $omitPermissionCheck, $me) {
             try {
+                $parent = null;
                 if (!$object) {
                     $object = $me->getElementByTypeAndIdOrPath($args, 'object');
 
-                    $parent = null;
                     if (isset($args['parentId'])) {
                         $parent = DataObject::getById($args['parentId']);
                     } elseif (isset($args['path'])) {
                         $parent = DataObject::getByPath($args['path']);
-                    }
-
-                    if ($parent) {
-                        $object->setParent($parent);
                     }
                 }
 
@@ -874,6 +871,11 @@ final class MutationType extends ObjectType
                         'success' => false,
                         'message' => 'permission denied.',
                     ];
+                }
+
+                $rejection = $me->applyNewObjectParent($object, $parent, $omitPermissionCheck);
+                if ($rejection) {
+                    return $rejection;
                 }
 
                 if (isset($args['defaultLanguage'])) {
@@ -1008,8 +1010,21 @@ final class MutationType extends ObjectType
                     if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                         return [
                             'success' => false,
-                            'message' => 'not allowed to create asset',
+                            'message' => 'not allowed to create asset' . self::describeParent($args),
                         ];
+                    }
+
+                    // the input may carry its own parentId: it needs the same right as the parent argument
+                    $rejection = $me->checkNewParent(
+                        'asset',
+                        $args['input']['parentId'] ?? null,
+                        $parent->getId(),
+                        $omitPermissionCheck,
+                        'not allowed to create asset'
+                            . self::describeParent(['parentId' => $args['input']['parentId'] ?? null])
+                    );
+                    if ($rejection) {
+                        return $rejection;
                     }
 
                     $type = $args['type'];
@@ -1116,6 +1131,7 @@ final class MutationType extends ObjectType
             $opName = 'updateAsset';
 
             $me = $this;
+            $omitPermissionCheck = $this->omitPermissionCheck;
             $updateField = [
                 'type' => $updateResultType,
                 'args' => [
@@ -1124,9 +1140,36 @@ final class MutationType extends ObjectType
                     'omitVersionCreate' => ['type' => Type::boolean()],
                     'userId' => ['type' => Type::int()],
                     'input' => $this->getGraphQlService()->getAssetTypeDefinition('asset_input'),
-                ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
-                    /** @var Asset $element */
+                ],
+                'resolve' => static function ($value, $args) use ($omitPermissionCheck, $me) {
+                    /** @var Asset|null $element */
                     $element = $me->getElementByTypeAndIdOrPath($args, 'asset');
+
+                    if (!$element) {
+                        return [
+                            'success' => false,
+                            'message' => 'unable to update asset. Unknown id or fullpath',
+                        ];
+                    }
+
+                    if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'update')) {
+                        return [
+                            'success' => false,
+                            'message' => 'permission denied.',
+                        ];
+                    }
+
+                    $rejection = $me->checkNewParent(
+                        'asset',
+                        $args['input']['parentId'] ?? null,
+                        $element->getParentId(),
+                        $omitPermissionCheck,
+                        'not allowed to move asset to the given parent'
+                    );
+                    if ($rejection) {
+                        return $rejection;
+                    }
+
                     $tags = [];
 
                     if (isset($args['input'])) {
@@ -1215,6 +1258,27 @@ final class MutationType extends ObjectType
     }
 
     /**
+     * Names the parent the caller asked for, in the same precedence the create resolvers use
+     * (`parentId` before `path`). It echoes the caller's own input and never the resolved parent's full path,
+     * which could belong to an element outside the workspace (with the default not-allowed policy; the `exception`
+     * policy throws earlier, in WorkspaceHelper::checkPermission()).
+     *
+     * @param array<string, mixed> $args
+     */
+    private static function describeParent(array $args): string
+    {
+        if (isset($args['parentId'])) {
+            return ' in parent id ' . $args['parentId'];
+        }
+
+        if (isset($args['path'])) {
+            return " in parent path '" . $args['path'] . "'";
+        }
+
+        return '';
+    }
+
+    /**
      * @param string $elementType
      *
      * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
@@ -1242,7 +1306,7 @@ final class MutationType extends ObjectType
             if (!$me->omitPermissionCheck && !WorkspaceHelper::checkPermission($parent, 'create')) {
                 return [
                     'success' => false,
-                    'message' => 'not allowed to create ' . $elementType . 'folder ',
+                    'message' => 'not allowed to create ' . $elementType . 'folder' . self::describeParent($args),
                 ];
             }
 
@@ -1328,11 +1392,30 @@ final class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
+                        $folderClass = $me->getFolderClass($type);
+                        if (!$element instanceof $folderClass) {
+                            return [
+                                'success' => false,
+                                'message' => 'unable to update folder. Unknown id or fullpath',
+                            ];
+                        }
+
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'update')) {
                             return [
                                 'success' => false,
                                 'message' => 'permission denied.',
                             ];
+                        }
+
+                        $rejection = $me->checkNewParent(
+                            $type,
+                            $args['input']['parentId'] ?? null,
+                            $element->getParentId(),
+                            $omitPermissionCheck,
+                            'not allowed to move folder to the given parent'
+                        );
+                        if ($rejection) {
+                            return $rejection;
                         }
 
                         $inputArgs = isset($args['input']) ? $args['input'] : [];
@@ -1489,6 +1572,14 @@ final class MutationType extends ObjectType
                         $configuration = $context['configuration'];
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
+                        $folderClass = $me->getFolderClass($type);
+                        if (!$element instanceof $folderClass) {
+                            return [
+                                'success' => false,
+                                'message' => 'unable to delete folder. Unknown id or fullpath',
+                            ];
+                        }
+
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
                                 'success' => false,
@@ -1571,6 +1662,81 @@ final class MutationType extends ObjectType
     public function isEmpty()
     {
         return !$this->config['fields'];
+    }
+
+    /**
+     * @param string $type asset|object|document
+     *
+     * @return class-string<Folder|DataObject\Folder|Document\Folder>
+     */
+    private function getFolderClass(string $type): string
+    {
+        return match ($type) {
+            'asset' => Folder::class,
+            'document' => Document\Folder::class,
+            default => DataObject\Folder::class,
+        };
+    }
+
+    /**
+     * Moves the object below the given parent when the parent may be used.
+     *
+     * @return array{success: false, message: string}|null the failure result, null when moved or no new parent
+     */
+    private function applyNewObjectParent(DataObject $object, ?DataObject $parent, bool $omitPermissionCheck): ?array
+    {
+        if (!$parent) {
+            return null;
+        }
+
+        $rejection = $this->checkNewParent(
+            'object',
+            $parent->getId(),
+            $object->getParentId(),
+            $omitPermissionCheck,
+            'not allowed to move object to the given parent'
+        );
+        if (!$rejection) {
+            $object->setParent($parent);
+        }
+
+        return $rejection;
+    }
+
+    /**
+     * Checks the 'create' right on the parent an element is moved to or created in. An unchanged parent needs no check.
+     *
+     * @param string $type asset|object|document
+     *
+     * @return array{success: false, message: string}|null the failure result, null when the parent may be used
+     */
+    private function checkNewParent(
+        string $type,
+        ?int $newParentId,
+        ?int $currentParentId,
+        bool $omitPermissionCheck,
+        string $deniedMessage
+    ): ?array {
+        if ($newParentId === null || $newParentId === $currentParentId) {
+            return null;
+        }
+
+        $newParent = ElementService::getElementById($type, $newParentId);
+        if (!$newParent) {
+            return [
+                'success' => false,
+                'message' => 'unable to resolve parent',
+            ];
+        }
+
+        if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($newParent, 'create')) {
+            return [
+                'success' => false,
+                'message' => $deniedMessage,
+            ];
+        }
+
+        return null;
     }
 
     /**

@@ -25,6 +25,6 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['js/test/**/*.test.{ts,tsx}']
+    include: ['js/test/graphql/**/*.test.{ts,tsx}', 'js/test/plugins.test.ts']
   }
 })

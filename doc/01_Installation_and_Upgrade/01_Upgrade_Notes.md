@@ -9,7 +9,27 @@ description: Breaking changes and migration steps per release.
 
 ### GraphQL
 - Added the `focalPoints` field to the asset type. For images with a focal point set in the asset editor it returns `{x, y}` as percentages (`Float`, `0`–`100`) of the image width/height, read from the asset's `focalPointX`/`focalPointY` custom settings; it is `null` for images without a focal point and for all other asset types. This is a purely additive schema change; existing queries are not affected.
+- The result messages of denied create mutations now name the requested parent, e.g. `not allowed to create object Car in parent path '/shop'` or `... in parent id 5` (create object, asset, document and object/asset/document folder). The create-folder messages (`not allowed to create assetfolder`, ...) also lost their trailing space. Clients that compare these messages exactly need to adjust.
 - The `read` settings of `Object Folder` and `Document Folder` are now applied in every position a folder can show up. A folder of a disabled type resolves to `null` (or is left out of a list) in `parent`, `children` and `_siblings`, relations, relation editables of documents and element properties. Before, relations and the document tree returned the folder anyway, and unions of element properties could fail with a schema error for such a folder. Endpoints that rely on folders being returned from these positions have to enable the `read` setting of the `Object Folder` / `Document Folder` type. See [Folder Read Settings](../10_GraphQL/01_Configuration/02_Schema_Settings.md#folder-read-settings).
+- Thumbnails of image editables with a user selected crop are now cropped. For a `document_editableImage` whose crop area was set in the editor, the thumbnail fields (`fullpath`, `data`, `srcset`, `dimensions` and `resolutions` with a `thumbnail` argument) apply that area, the way the frontend does. Without a `thumbnail` argument `fullpath` still returns the original image. Clients that already read the `crop` field and crop the thumbnail themselves must stop doing so, otherwise the crop is applied twice. The `resolutions` of a `srcset` entry now follow the requested `format` argument like the `srcset` urls do (before they were always in the original format).
+
+### GraphQL: a denying `PermissionEvents::PRE_CHECK` listener is now honoured with the default not allowed policy
+
+`WorkspaceHelper::checkPermission()` ignored `$event->setIsGranted(false)` of a `PermissionEvents::PRE_CHECK` listener
+unless the not allowed policy was `NOT_ALLOWED_POLICY_EXCEPTION`. With the default `NOT_ALLOWED_POLICY_NULL` the denial
+is now applied too: the element is treated like one denied by the workspaces (omitted from lists, `success: false` for
+mutations, `null` from `getAsset`/`getDocument`, an error from `getObject`; a denied image of an image editable in a
+document create or update is cleared without failing the mutation). Projects that register a denying listener and
+relied on the denial being ignored see elements disappear. A listener still cannot grant access that the workspaces
+deny.
+
+## Upgrade to 2026.3.4
+
+### GraphQL
+- The `updateAsset` mutation now follows the workspace of the configuration, like `updateObject` and `updateAssetFolder`: the `update` right is required on the asset, and moving it to a new `parentId` additionally requires the `create` right on the new parent. Without the right the mutation answers with `success: false` (or throws with the exception policy enabled). Configurations whose asset workspace entries are narrower than the assets they update through `updateAsset` need wider entries if that access is intended.
+- The mutations that move or create elements apply the workspace to the target parent as well: `updateAssetFolder`, `updateObjectFolder` and `updateDocumentFolder` only act on folders and require the `create` right on a new `parentId`; `deleteAssetFolder`, `deleteObjectFolder` and `deleteDocumentFolder` only delete folders and no longer delete other elements; `updateObject` checks the `update` right on the object where it is and now requires the `create` right on a new `parentId` instead of the `update` right (a move into a folder with `create` but no `update` is accepted, a move of an object without `update` where it is now is refused), before changing anything; `createAsset` requires the `create` right on a `parentId` given inside `input` too. Requests that relied on moving or creating elements outside the workspace now answer with `success: false`.
+- The `filter` argument of `getAssetListing` and the data object listing queries only accepts the documented JSON syntax: an object, or an array of objects, at every level (including inside `$and` / `$or` and field arrays). Any other value, such as a plain JSON string, is rejected with the error `invalid filter: conditions must be JSON objects` instead of being added to the listing condition. Filters written in the documented syntax are not affected. See [Filtering](../10_GraphQL/04_Query/10_Filtering.md).
+- The children of a `Block` field inside `Localized Fields` that resolve their own value (for example `Date` and relation fields) are now read in the language requested with the `language` argument of the block field, like the other children. Before, they came from the current locale instead of the requested language, so one block row could mix languages. Queries that request a language for such a block now return the values for that language, including `getFallbackLanguageValue` like the other children.
 
 ## Upgrade to 2026.3.0
 

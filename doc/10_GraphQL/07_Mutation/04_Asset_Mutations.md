@@ -18,6 +18,9 @@ mutation {
 }
 ```
 
+The parent has to be covered by the workspace of the GraphQL configuration with the `create` right. This also applies
+to a `parentId` given inside `input`.
+
 ## Update Asset
 
 This will rename the Asset and update the data.
@@ -34,6 +37,10 @@ mutation {
   }
 }
 ```
+
+The asset has to be covered by the workspace of the GraphQL configuration with the `update` right. When the input
+contains a new `parentId`, the `create` right on the new parent is required as well. Otherwise the mutation answers
+with `success: false`.
 
 ## Delete Asset
 ```graphql
