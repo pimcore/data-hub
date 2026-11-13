@@ -18,6 +18,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore as ClassificationstoreDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Relations\AbstractRelations;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Video;
 use Pimcore\Model\DataObject\Classificationstore as ClassificationstoreModel;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
@@ -359,12 +360,28 @@ final class Classificationstore extends Base
         $value = $input['value'];
         if ($value !== null) {
             $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($relation);
-            $converted = $definition->getDataFromEditmode($value, $store->getObject());
+            $converted = $definition->getDataFromEditmode(
+                $this->withOptionalMembers($definition, $value),
+                $store->getObject()
+            );
             $this->assertRelationResolved($relation, $definition, $value, $converted);
             $value = $converted;
         }
 
         return ['variant' => $variant, 'position' => $position, 'value' => $value];
+    }
+
+    /**
+     * Core's video conversion reads "poster" without a default, so a value that leaves it out raises "Undefined array
+     * key". The plain-field input accepts such a value, so the member is filled with null here.
+     */
+    private function withOptionalMembers(mixed $definition, mixed $value): mixed
+    {
+        if ($definition instanceof Video && is_array($value)) {
+            $value['poster'] ??= null;
+        }
+
+        return $value;
     }
 
     /**
