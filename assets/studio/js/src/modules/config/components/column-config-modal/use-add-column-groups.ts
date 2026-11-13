@@ -16,6 +16,27 @@ import { isNil } from 'lodash'
 import { CLASSIFICATION_STORE_TYPE, PICK_KEY_SUFFIX } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
 
+type PickerItem = ColumnPickerGroup<GridColumnConfiguration>['items'][number]
+
+/**
+ * The leaves one column is offered as. A store field is offered once per key, the ids keeping those leaves
+ * apart; the whole-store entry carries a sibling leaf which opens the key picker.
+ */
+const leavesOf = (column: GridColumnConfiguration, t: (key: string) => string): PickerItem[] => {
+  let translationKey: string = column.key
+  if (!isNil(column.config) && 'fieldDefinition' in column.config) {
+    const fieldDefinition = column.config.fieldDefinition as Record<string, any>
+    translationKey = fieldDefinition?.title ?? column.key
+  }
+  const storeIds = column.type === CLASSIFICATION_STORE_TYPE ? column.config as Record<string, unknown> | undefined : undefined
+  const keyId = storeIds?.keyId
+  const ids = keyId === undefined ? '' : `-${String(storeIds?.groupId)}-${String(keyId)}`
+  const item = { key: `${column.key}${ids}`, label: t(translationKey), meta: column }
+  if (storeIds === undefined || keyId !== undefined) return [item]
+  const pickLabel = `${t('data-hub.column-config-modal.pick-classification-store-key')} (${t(translationKey)})`
+  return [item, { key: `${column.key}${PICK_KEY_SUFFIX}`, label: pickLabel, meta: column }]
+}
+
 /**
  * Builds grouped, selectable column groups for the studio ColumnPicker from a
  * flat list of GridColumnConfiguration entries. Each leaf carries its column in
@@ -82,23 +103,7 @@ export const useAddColumnGroups = (
         (acc, [groupName, groupData]) => {
           const children = convertTreeToGroups(groupData.subGroups as Record<string, any>)
 
-          const items: Array<ColumnPickerGroup<GridColumnConfiguration>['items'][number]> = []
-          ;(groupData.items as GridColumnConfiguration[]).forEach((column) => {
-            let translationKey: string = column.key
-            if (!isNil(column.config) && 'fieldDefinition' in column.config) {
-              const fieldDefinition = column.config.fieldDefinition as Record<string, any>
-              translationKey = fieldDefinition?.title ?? column.key
-            }
-            // One store field is offered once per key: the ids keep those leaves apart
-            const storeIds = column.type === CLASSIFICATION_STORE_TYPE ? column.config as Record<string, unknown> | undefined : undefined
-            const ids = storeIds?.keyId !== undefined ? `-${String(storeIds.groupId)}-${String(storeIds.keyId)}` : ''
-            const item = { key: `${column.key}${ids}`, label: t(translationKey), meta: column }
-            // The whole-store entry carries a sibling leaf which opens the key picker
-            items.push(item)
-            if (storeIds === undefined || storeIds.keyId !== undefined) return
-            const pickLabel = `${t('data-hub.column-config-modal.pick-classification-store-key')} (${t(translationKey)})`
-            items.push({ key: `${column.key}${PICK_KEY_SUFFIX}`, label: pickLabel, meta: column })
-          })
+          const items = (groupData.items as GridColumnConfiguration[]).flatMap(column => leavesOf(column, t))
 
           if (items.length > 0 || children.length > 0) {
             acc.push({ key: `group-${groupIndex++}`, label: t(groupName), items, children })
