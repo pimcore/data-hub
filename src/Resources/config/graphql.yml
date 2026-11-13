@@ -866,6 +866,11 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_checkbox }
 
+  pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_classificationstore:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Classificationstore
+    tags:
+      - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_classificationstore }
+
   pimcore.datahub.graphql.dataobjectmutationtypegenerator_datatype_country:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\DataObjectMutationFieldConfigGenerator\Base
     tags:
@@ -1108,6 +1113,11 @@ services:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Datetime
     tags:
       - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_datetime }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_multiValue:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\MultiValue
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_multiValue }
 
   pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_input:
     class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Input
