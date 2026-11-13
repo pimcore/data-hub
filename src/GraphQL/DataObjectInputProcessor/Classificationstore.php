@@ -17,6 +17,8 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\QualifiedValueR
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore as ClassificationstoreDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Relations\AbstractRelations;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Video;
 use Pimcore\Model\DataObject\Classificationstore as ClassificationstoreModel;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
@@ -358,10 +360,62 @@ final class Classificationstore extends Base
         $value = $input['value'];
         if ($value !== null) {
             $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($relation);
-            $value = $definition->getDataFromEditmode($value, $store->getObject());
+            $converted = $definition->getDataFromEditmode(
+                $this->withOptionalMembers($definition, $value),
+                $store->getObject()
+            );
+            $this->assertRelationResolved($relation, $definition, $value, $converted);
+            $value = $converted;
         }
 
         return ['variant' => $variant, 'position' => $position, 'value' => $value];
+    }
+
+    /**
+     * Core's video conversion reads "poster" without a default, so a value that leaves it out raises "Undefined array
+     * key". The plain-field input accepts such a value, so the member is filled with null here.
+     */
+    private function withOptionalMembers(mixed $definition, mixed $value): mixed
+    {
+        if ($definition instanceof Video && is_array($value)) {
+            $value['poster'] ??= null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * The editmode conversion drops a relation target it cannot find. A write that names one must not clear the
+     * slot or store a shorter list than it was given; an explicit null is the way to clear.
+     *
+     * @throws ClientSafeException
+     */
+    private function assertRelationResolved(
+        KeyGroupRelation $relation,
+        mixed $definition,
+        mixed $input,
+        mixed $converted
+    ): void {
+        if (!$definition instanceof AbstractRelations || !is_array($input)) {
+            return;
+        }
+
+        // A list is one target per entry; anything else is a single descriptor map.
+        $expected = array_is_list($input) ? count($input) : 1;
+
+        if (is_array($converted)) {
+            $actual = count($converted);
+        } else {
+            $actual = $converted === null ? 0 : 1;
+        }
+
+        if ($input !== [] && $actual !== $expected) {
+            throw new ClientSafeException(sprintf(
+                'A target of the classification store key "%s" does not exist or is not of a type the key accepts. '
+                . 'Nothing was saved.',
+                $relation->getName()
+            ));
+        }
     }
 
     /**

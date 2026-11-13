@@ -1184,6 +1184,101 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_wysiwyg }
 
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_email:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Email
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_email }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_firstname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Firstname
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_firstname }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_lastname:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Lastname
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_lastname }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_gender:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Gender
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_gender }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_externalImage:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\ExternalImage
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_externalImage }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_geopoint:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Geopoint
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_geopoint }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_geobounds:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Geobounds
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_geobounds }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_geopolygon:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Geopolygon
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_geopolygon }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_geopolyline:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Geopolyline
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_geopolyline }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_link:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Link
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_link }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_video:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Video
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_video }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_image:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Image
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_image }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_hotspotimage:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Hotspotimage
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_hotspotimage }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_imageGallery:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\ImageGallery
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_imageGallery }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_manyToOneRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\ManyToOneRelation
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_manyToOneRelation }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_manyToManyRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\ManyToManyRelation
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_manyToManyRelation }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_manyToManyObjectRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\ManyToManyObjectRelation
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_manyToManyObjectRelation }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_advancedManyToManyRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\AdvancedManyToManyRelation
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_advancedManyToManyRelation }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_advancedManyToManyObjectRelation:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\AdvancedManyToManyObjectRelation
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_advancedManyToManyObjectRelation }
+
 
   # properties
 

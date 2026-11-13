@@ -2,29 +2,30 @@
 
 ## Supported Data Types
 
-The data types a key can be read as are the ones with a registered `csfeaturequerytypegenerator`:
+A Classification Store key supports every data type the same type supports on a plain object field. A key of such a
+type shows up in `features` of its group and is a member of the `csFeature` union.
 
-* BooleanSelect
-* Calculated Value (read only)
-* Checkbox
-* Country
-* Countries (Multiselect)
-* Date
-* DateTime
-* Input
-* InputQuantityValue
-* Language
-* Languages (Multiselect)
-* MultiValue
-* Multiselect
-* Numeric
-* QuantityValue
-* RgbaColor
-* Select
-* Slider
-* Textarea
-* Time
-* Wysiwyg
+The data types a key can be read as are the ones with a registered `csfeaturequerytypegenerator`: one per supported
+plain field type, plus `multiValue`, the Classification Store's own wrapper for qualified values. Calculated Value is
+read only.
+
+The following types are not supported and are skipped in `features`:
+
+* Block, Fieldcollections, Classification Store: container types
+* Reverse Object Relation, Reverse Many To Many Object Relation: computed from the owning side, not stored on a key
+* URL Slug: needs a route registration keyed to the object and the field name
+* Newsletter Active, Newsletter Confirmed: Customer Management Framework types, not core field types
+* Table, Structured Table: their fields come from the columns of the field definition, not from a shared type
+
+The legacy ids `href`, `multihref` and `multihrefMetadata` are the same types as `manyToOneRelation`,
+`manyToManyRelation` and `advancedManyToManyRelation`. Relation keys are published as follows:
+
+* `manyToOneRelation` and `manyToManyRelation` publish the `AnyTarget` union (a list for the latter)
+* `manyToManyObjectRelation` publishes a union of the object classes enabled in the endpoint
+* `advancedManyToManyRelation` and `advancedManyToManyObjectRelation` publish `element` (the same unions) and
+  `metadata` (`element_metadata_item_key_value_pair`)
+
+Targets the endpoint is not allowed to read are omitted from lists and resolve to `null` for a single target.
 
 The data types a key can be written as are the same list without Calculated Value, see
 [Classification Store Mutations](../../07_Mutation/24_Mutation_Samples/16_Classificationstore_Mutations.md).
