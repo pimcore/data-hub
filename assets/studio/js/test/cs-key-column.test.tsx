@@ -41,10 +41,11 @@ const AVAILABLE = { data: { columns: [storeField] }, isLoading: false }
 const NO_COLUMNS: any[] = []
 
 // The editor's draft is read through its handle: what Apply submits, and whether Apply may submit it
-const mountEditor = (columns: any[]): React.RefObject<ColumnEditorHandle> => {
+const mountEditor = (columns: any[], classDefinitionId?: string): React.RefObject<ColumnEditorHandle> => {
   const ref = React.createRef<ColumnEditorHandle>()
   render(
     <BaseColumnEditor
+      classDefinitionId={ classDefinitionId }
       columns={ columns }
       entity='Product'
       onApply={ () => {} }
@@ -223,6 +224,13 @@ describe('the key picker affordance in the tree', () => {
     expect(editor.current?.getColumns()).toEqual([
       expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 7, keyId: 42 } })
     ])
+  })
+
+  it('is not offered when the class is empty, while the whole-store entry still is', () => {
+    mountEditor(NO_COLUMNS, '')
+
+    expect(screen.queryByTestId(PICK)).not.toBeInTheDocument()
+    expect(screen.getByTestId('picker-item-technicalAttributes')).toBeInTheDocument()
   })
 
   it('falls back to store 1 when the field never had a store configured', () => {
