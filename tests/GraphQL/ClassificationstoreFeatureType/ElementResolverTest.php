@@ -237,9 +237,12 @@ class ElementResolverTest extends Unit
      * ObjectMetadata::getElement() is declared to return a concrete object, so an element of any other kind
      * (a folder) can only sit in an ElementMetadata.
      */
-    private function metadata(ObjectFolder|DocumentFolder|Concrete $element, array $data): ObjectMetadata|ElementMetadata
-    {
-        $metadata = $this->createMock($element instanceof Concrete ? ObjectMetadata::class : ElementMetadata::class);
+    private function metadata(
+        ObjectFolder|DocumentFolder|Concrete $element,
+        array $data
+    ): ObjectMetadata|ElementMetadata {
+        $metadataClass = $element instanceof Concrete ? ObjectMetadata::class : ElementMetadata::class;
+        $metadata = $this->createMock($metadataClass);
         $metadata->method('getElement')->willReturn($element);
         $metadata->method('getData')->willReturn($data);
 
