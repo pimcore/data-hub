@@ -164,7 +164,7 @@ export const useColumnEditorState = ({
     [availableFields, exportableOnly]
   )
 
-  const columnGroups = useAddColumnGroups(addColumnFields)
+  const columnGroups = useAddColumnGroups(addColumnFields, resolvedClassId !== '')
 
   // The type first, so an ordinary field which happens to be keyed 'advanced' cannot be offered as the
   // advanced entry. The key is only a fallback for a payload which does not carry the type.

@@ -31,15 +31,7 @@ export interface FieldsToAddPanelProps {
  * Embedded "Fields to add" panel shown inside the migrated column editor: the
  * searchable ColumnPicker tree with a collapsible header.
  */
-// Without a class the key picker would list every group of the store instead of the ones the field allows
-const withoutPickKeyLeaves = (groups: Array<ColumnPickerGroup<GridColumnConfiguration>>): Array<ColumnPickerGroup<GridColumnConfiguration>> =>
-  groups.map(group => ({
-    ...group,
-    items: group.items.filter(item => !item.key.endsWith(PICK_KEY_SUFFIX)),
-    children: withoutPickKeyLeaves(group.children ?? [])
-  }))
-
-const FieldsToAddPanelContent = ({ classId, groups, isError = false, onColumnSelect, onKeySelect, onClose }: FieldsToAddPanelProps): React.JSX.Element => {
+const FieldsToAddPanelContent = ({ groups, isError = false, onColumnSelect, onKeySelect, onClose }: FieldsToAddPanelProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
   const { openPicker } = useClassificationStoreFieldPicker()
@@ -65,7 +57,7 @@ const FieldsToAddPanelContent = ({ classId, groups, isError = false, onColumnSel
       { !isError && (
         <ColumnPicker
           fillHeight
-          groups={ classId === undefined || classId === '' ? withoutPickKeyLeaves(groups) : groups }
+          groups={ groups }
           onSelect={ (item: { key: string, meta?: GridColumnConfiguration }) => {
             const field = item.meta
             if (field === undefined) return

@@ -16,6 +16,7 @@ import { trackedErrors } from './mocks/studio-ui-bundle/modules-app'
 import { openClassificationStorePicker } from './mocks/studio-ui-bundle/modules-element'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
+import { useAddColumnGroups } from '../src/modules/config/components/column-config-modal/use-add-column-groups'
 import { useColumnEditorState } from '../src/modules/config/components/column-config-modal/use-column-editor-state'
 import {
   CLASSIFICATION_STORE_TYPE,
@@ -231,6 +232,19 @@ describe('the key picker affordance in the tree', () => {
 
     expect(screen.queryByTestId(PICK)).not.toBeInTheDocument()
     expect(screen.getByTestId('picker-item-technicalAttributes')).toBeInTheDocument()
+  })
+
+  it('is not offered by the legacy migration popover, which hosts no key picker', () => {
+    const { result } = renderHook(() => useAddColumnGroups([storeField]))
+    const keys = result.current.flatMap(group => group.items.map(item => item.key))
+
+    expect(keys).toEqual(['technicalAttributes'])
+  })
+
+  it('is offered by the grouped tree only when the caller says it can host the picker', () => {
+    const { result } = renderHook(() => useAddColumnGroups([storeField], true))
+
+    expect(result.current.flatMap(group => group.items.map(item => item.key))).toEqual(['technicalAttributes', 'technicalAttributes-pick-key'])
   })
 
   it('falls back to store 1 when the field never had a store configured', () => {
