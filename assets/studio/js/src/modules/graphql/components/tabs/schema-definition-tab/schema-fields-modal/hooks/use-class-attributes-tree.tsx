@@ -15,8 +15,8 @@ import { type DynamicTypeFieldDefinitionRegistry, DynamicTypeFieldDefinitionData
 import { useInjection, serviceIds, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
 import { isNil, flatMap } from 'lodash'
-import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
-import { type TreeNode } from '../types'
+import { systemColumnDefinitions, systemColumnLookup, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
+import { type SchemaFieldsMode, type TreeNode } from '../types'
 import { useObjectBrickLayouts } from './use-objectbrick-layouts'
 import {
   filterTreeNodesRecursive,
@@ -34,6 +34,7 @@ import {
 interface UseClassAttributesTreeProps {
   classId: string
   enabled: boolean
+  mode: SchemaFieldsMode
   searchValue?: string
 }
 
@@ -65,6 +66,7 @@ const buildBrickContainerNode = (
 export const useClassAttributesTree = ({
   classId,
   enabled,
+  mode,
   searchValue = ''
 }: UseClassAttributesTreeProps): UseClassAttributesTreeReturn => {
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
@@ -189,17 +191,24 @@ export const useClassAttributesTree = ({
       isLeaf: false,
       icon: <Icon { ...SYSTEM_COLUMN_ICON } />,
       iconProps: SYSTEM_COLUMN_ICON,
-      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps }) => ({
-        key,
-        title: t(translationKey),
-        isLeaf: true,
-        dataType: 'system',
-        icon: <Icon { ...iconProps } />,
-        iconProps,
-        className: 'ant-tree-node--has-drag-and-drop',
-        attribute,
-        isFieldDefinition: true
-      }))
+      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps, alwaysIncluded }) => {
+        const isAlwaysIncluded = mode === 'query' && alwaysIncluded === true
+
+        return {
+          key,
+          title: isAlwaysIncluded
+            ? t('data-hub.schema.system.always-included', { title: t(translationKey) })
+            : t(translationKey),
+          disabled: isAlwaysIncluded,
+          isLeaf: true,
+          dataType: 'system',
+          icon: <Icon { ...iconProps } />,
+          iconProps,
+          className: 'ant-tree-node--has-drag-and-drop',
+          attribute,
+          isFieldDefinition: true
+        }
+      })
     })
 
     try {
@@ -218,7 +227,7 @@ export const useClassAttributesTree = ({
       console.error('Error building class attributes tree:', error)
       return []
     }
-  }, [classLayout, brickLayouts, objectBricksFields, ambiguousBrickKeys, fieldDefinitionRegistry, t])
+  }, [classLayout, brickLayouts, objectBricksFields, ambiguousBrickKeys, fieldDefinitionRegistry, mode, t])
 
   const filteredTree = useMemo(() => {
     if (searchValue === '') {
@@ -247,13 +256,23 @@ export const useClassAttributesTree = ({
       ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
       : []
 
+    // A class field and a system column of the same name would end up as one GraphQL field (PimcoreObjectType),
+    // so the class field is kept.
+    const classFieldNames = new Set(objectColumnDefs.map(node => node.attribute))
+    const systemColumnsNode = classAttributesTree.find(node => node.key === 'system-columns')
+    const systemColumnDefs = mode === 'query'
+      ? collectFieldDefinitions((systemColumnsNode?.children ?? []) as TreeNode[])
+          .filter(node => systemColumnLookup.get(node.attribute ?? '')?.insertAllInQuery === true)
+          .filter(node => !classFieldNames.has(node.attribute))
+      : []
+
     const brickContainerNodes = classAttributesTree.filter(
       node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
     )
     const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
 
-    return [...objectColumnDefs, ...brickColumnDefs]
-  }, [classAttributesTree])
+    return [...objectColumnDefs, ...systemColumnDefs, ...brickColumnDefs]
+  }, [classAttributesTree, mode])
 
   // Consider still loading if the class layout resolved but we know there are brick keys
   // to fetch and the brick layouts haven't all been resolved yet. This prevents the

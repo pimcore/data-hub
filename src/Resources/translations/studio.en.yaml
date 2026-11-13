@@ -72,6 +72,7 @@ data-hub.schema.system.modificationDate: Modification Date (modificationDate)
 data-hub.schema.system.filename: Filename (filename)
 data-hub.schema.system.classname: classname (classname)
 data-hub.schema.system.index: Indexed (index)
+data-hub.schema.system.always-included: '{{title}} - always included'
 data-hub.schema.coming-soon: '(Coming soon)'
 data-hub.schema.special.document: Document
 data-hub.schema.special.document_folder: Document Folder
