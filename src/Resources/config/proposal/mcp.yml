@@ -1,0 +1,8 @@
+# Loaded only when an agent can author proposals - see ConfigProposalLane::canPropose().
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: false
+        public: false
+
+    Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools: ~
