@@ -70,7 +70,7 @@
     "typescript-eslint": "^8"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^2026.4.0-canary.20261104-151221-2f1c2d1",
+    "@pimcore/studio-ui-bundle": "^2026.4.0-canary.20261113-162505-f7a607c",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "uuid": "^10.0.0",
