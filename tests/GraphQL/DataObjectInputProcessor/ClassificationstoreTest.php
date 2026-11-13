@@ -228,6 +228,7 @@ class ClassificationstoreTest extends Unit
         $this->assertFalse($result['success']);
         $this->assertStringContainsString($disabled->getName(), $result['message']);
         $this->assertStringContainsString('disabled', $result['message']);
+        $this->assertStringContainsString('Nothing was saved', $result['message']);
         $store = $this->store($object);
         $this->assertNull($store->getLocalizedKeyValue($group->getId(), $enabled->getKeyId(), 'default'));
 

@@ -271,7 +271,8 @@ final class Classificationstore extends Base
         if (!$relation->isEnabled()) {
             throw new ClientSafeException(sprintf(
                 'The classification store key "%s" is disabled in the group %s: '
-                . 'a disabled key still publishes its stored values, and refuses new ones.',
+                . 'a disabled key still publishes its stored values, and refuses new ones. '
+                . 'Nothing was saved; remove this key from the mutation and send it again.',
                 $relation->getName(),
                 $this->describe($group)
             ));
