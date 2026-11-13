@@ -29,6 +29,9 @@ const idPart = (value: unknown): string => value === undefined || value === null
 const identityOf = (key: string, locale: string | null | undefined, keyId: unknown, groupId: unknown): string =>
   `${key}|${idPart(keyId)}|${idPart(groupId)}|${locale ?? ''}`
 
+/** Key suffix of the tree leaf which opens the key picker for a store field */
+export const PICK_KEY_SUFFIX = '-pick-key'
+
 export const isClassificationStore = (type: string | undefined): boolean => type === CLASSIFICATION_STORE_TYPE
 
 /** keyId and groupId of a column: its own config, else the pipeline config of the available field */

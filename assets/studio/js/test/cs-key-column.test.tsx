@@ -13,6 +13,7 @@ import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { trackedErrors } from './mocks/studio-ui-bundle/modules-app'
+import { openClassificationStorePicker } from './mocks/studio-ui-bundle/modules-element'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
 import { useColumnEditorState } from '../src/modules/config/components/column-config-modal/use-column-editor-state'
@@ -60,6 +61,7 @@ beforeEach(() => {
   resetApiState()
   apiState.available = AVAILABLE
   trackedErrors.length = 0
+  openClassificationStorePicker.mockClear()
 })
 
 describe('adding a Classification Store field from the tree', () => {
@@ -182,5 +184,76 @@ describe('a failed available-columns request', () => {
     expect(screen.queryByTestId('column-picker')).not.toBeInTheDocument()
     expect(trackedErrors.length).toBeGreaterThan(0)
     expect(editor.current?.isHydrated?.()).toBe(false)
+  })
+})
+
+describe('the key picker affordance in the tree', () => {
+  const adapterField = { key: 'name', type: 'dataobject.input', localizable: false, group: ['Technical'], exportable: true } as unknown as GridColumnConfiguration
+  const PICK = 'picker-item-technicalAttributes-pick-key'
+
+  it('is offered on the classification store entry only', () => {
+    apiState.available = { data: { columns: [storeField, adapterField] }, isLoading: false }
+    mountEditor(NO_COLUMNS)
+
+    expect(screen.getAllByTestId(/-pick-key$/)).toHaveLength(1)
+    expect(screen.getByTestId(PICK)).toBeInTheDocument()
+  })
+
+  it('leaves the plain entry and other entries adding exactly what they add today', () => {
+    apiState.available = { data: { columns: [storeField, adapterField] }, isLoading: false }
+    const editor = mountEditor(NO_COLUMNS)
+
+    fireEvent.click(screen.getByTestId('picker-item-technicalAttributes'))
+    fireEvent.click(screen.getByTestId('picker-item-name'))
+
+    expect(openClassificationStorePicker).not.toHaveBeenCalled()
+    expect(editor.current?.getColumns()).toEqual([
+      expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: undefined }),
+      expect.objectContaining({ key: 'name', type: 'dataobject.input' })
+    ])
+  })
+
+  it('opens the picker with the store of the field and appends the picked key as one column', () => {
+    const editor = mountEditor(NO_COLUMNS)
+
+    fireEvent.click(screen.getByTestId(PICK))
+    expect(openClassificationStorePicker).toHaveBeenCalledWith(expect.objectContaining({ storeId: 3, fieldName: 'technicalAttributes' }))
+    act(() => { openClassificationStorePicker.mock.calls[0][0].onPick({ groupId: 7, keyId: 42, keyName: 'rim' }) })
+
+    expect(editor.current?.getColumns()).toEqual([
+      expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 7, keyId: 42 } })
+    ])
+  })
+
+  it('falls back to store 1 when the field never had a store configured', () => {
+    const bare = { ...storeField, config: { fieldDefinition: { fieldtype: 'classificationstore' } } } as unknown as GridColumnConfiguration
+    apiState.available = { data: { columns: [bare] }, isLoading: false }
+    mountEditor(NO_COLUMNS)
+
+    fireEvent.click(screen.getByTestId(PICK))
+
+    expect(openClassificationStorePicker).toHaveBeenCalledWith(expect.objectContaining({ storeId: 1 }))
+  })
+})
+
+describe('a per-key column across save and reload', () => {
+  it.each([
+    ['integer ids', { groupId: 7, keyId: 42 }],
+    ['identifier strings', { groupId: 'GRP_A', keyId: 'EF000010' }]
+  ])('is handed back unchanged with %s', (_name, config) => {
+    const editor = mountEditor([{ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config }])
+
+    expect(editor.current?.getColumns()).toEqual([expect.objectContaining({ key: 'technicalAttributes', config })])
+  })
+
+  it('reads as three different rows next to the whole-store column', () => {
+    mountEditor([
+      { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore' },
+      { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config: { groupId: 7, keyId: 42 } },
+      { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config: { groupId: 7, keyId: 43 } }
+    ])
+
+    expect(screen.getByText('technicalAttributes-7-42')).toBeInTheDocument()
+    expect(screen.getByText('technicalAttributes-7-43')).toBeInTheDocument()
   })
 })

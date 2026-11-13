@@ -150,6 +150,7 @@ data-hub.column-config-modal.add-column: Kolom toevoegen
 data-hub.column-config-modal.add-advanced-column: Geavanceerde kolom toevoegen
 data-hub.column-config-modal.fields-to-add: Toe te voegen velden
 data-hub.column-config-modal.fields-to-add.error: De toe te voegen velden konden niet worden geladen.
+data-hub.column-config-modal.pick-classification-store-key: Kies een sleutel
 data-hub.column-config-modal.apply: Wijzigingen toepassen
 data-hub.column-config-modal.discard: Alle wijzigingen verwerpen
 data-hub.column-config-modal.preview.select-object: Voorbeeldobject selecteren

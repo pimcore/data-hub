@@ -150,6 +150,7 @@ data-hub.column-config-modal.add-column: Add Column
 data-hub.column-config-modal.add-advanced-column: Add advanced column
 data-hub.column-config-modal.fields-to-add: Fields to add
 data-hub.column-config-modal.fields-to-add.error: The fields to add could not be loaded.
+data-hub.column-config-modal.pick-classification-store-key: Pick a key
 data-hub.column-config-modal.apply: Apply changes
 data-hub.column-config-modal.discard: Discard all changes
 data-hub.column-config-modal.preview.select-object: Select preview object

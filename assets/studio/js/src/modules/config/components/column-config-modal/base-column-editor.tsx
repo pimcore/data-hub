@@ -120,7 +120,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      handleAddColumnOfType,
+      handleAddColumnOfType, handleAddClassificationStoreKey,
       handlePipelineChange,
       handleRemove,
       handleApply,
@@ -143,7 +143,6 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const stackItems: StackListProps['items'] = draft.map(col => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
       const label = columnLabel(col)
-
       return {
         id: col._id,
         sortable: true,
@@ -262,10 +261,12 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               <div className={ styles.body }>
                 { !hideToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
+                  classId={ resolvedClassId }
                   groups={ columnGroups }
                   isError={ isError }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
+                  onKeySelect={ handleAddClassificationStoreKey }
                 />
                 ) }
 
