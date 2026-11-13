@@ -121,7 +121,8 @@ class QualifiedViewEavTest extends Unit
         };
 
         $unqualified = $this->mutateWithoutSave($object, $this->input($group, $key, [['value' => 'x']]));
-        $entries = [['value' => 'x', 'variant' => 'imperial']];
+        // a position above 0 is a qualified value on a key that declares no variants: the engine is what refuses it
+        $entries = [['value' => 'x', 'position' => 1]];
         $qualified = $this->mutateWithoutSave($object, $this->input($group, $key, $entries));
 
         $this->assertTrue($unqualified['success'], $unqualified['message']);
