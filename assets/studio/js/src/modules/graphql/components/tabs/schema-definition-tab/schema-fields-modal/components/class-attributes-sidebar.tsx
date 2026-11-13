@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
+import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, Flex, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
@@ -34,6 +34,8 @@ export const ClassAttributesSidebar = ({
     enabled,
     searchValue
   })
+
+  const layoutLoadErrors = getLayoutLoadErrorMessages(loadError, brickLoadErrors, t)
 
   const titleRender = useCallback((node: TreeNode, initialComponent: React.ReactNode): React.JSX.Element => {
     return (
@@ -67,14 +69,23 @@ export const ClassAttributesSidebar = ({
         loading={ isLoading }
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
-        { getLayoutLoadErrorMessages(loadError, brickLoadErrors, t).map(({ key, message }) => (
-          <Alert
-            key={ key }
-            message={ message }
-            showIcon
-            type="error"
-          />
-        )) }
+        { layoutLoadErrors.length > 0 && (
+          <Box margin={ { bottom: 'small' } }>
+            <Flex
+              gap='extra-small'
+              vertical
+            >
+              { layoutLoadErrors.map(({ key, message }) => (
+                <Alert
+                  key={ key }
+                  message={ message }
+                  showIcon
+                  type="error"
+                />
+              )) }
+            </Flex>
+          </Box>
+        ) }
 
         <TreeElement
           className={ styles.treeContainer }
