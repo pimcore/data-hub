@@ -53,7 +53,8 @@ data-hub.schema.mutation-schema: Schéma de mutation
 data-hub.schema.generic-types: Types génériques
 data-hub.schema.entity: Entité
 data-hub.schema.settings: Paramètres
-data-hub.schema.select-class: Sélectionner une classe...
+data-hub.schema.search-classes: Rechercher des classes...
+data-hub.schema.no-classes-found: Aucune classe trouvée
 data-hub.schema.query-modal-title: 'Champs du schéma de requête - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Champs du schéma de mutation - {{entity}}'
 data-hub.schema.class-attributes: Attributs de classe
