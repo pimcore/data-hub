@@ -159,11 +159,11 @@ trait ClassificationstoreFixtureTrait
         ]);
     }
 
-    private function createObject(array $allowedGroupIds = []): Concrete
+    private function createObject(array $allowedGroupIds = [], bool $localized = true): Concrete
     {
         $this->store ??= $this->createStore();
 
-        $memo = implode(',', $allowedGroupIds);
+        $memo = implode(',', $allowedGroupIds) . ($localized ? '' : '|plain');
         $this->class = $this->classes[$memo] ?? null;
         if ($this->class === null) {
             $field = new ClassificationstoreDefinition();
@@ -171,7 +171,7 @@ trait ClassificationstoreFixtureTrait
             $field->setTitle(self::FIELD);
             $field->setStoreId($this->store->getId());
             $field->setAllowedGroupIds($allowedGroupIds);
-            $field->setLocalized(true);
+            $field->setLocalized($localized);
 
             $panel = new Panel();
             $panel->setChildren([$field]);

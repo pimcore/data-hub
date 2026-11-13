@@ -58,6 +58,32 @@ class QualifiedViewTest extends Unit
         $this->assertSame(['m0'], array_map(static fn ($f) => $f->getValue(), $features($value)));
     }
 
+    public function testQualifiedFeaturesOfANonLocalizedStoreReadTheDefaultBucketWithoutALanguage(): void
+    {
+        $group = $this->createGroup('plain_group');
+        $key = $this->createMultiValueKey($group, 'plain_weight');
+        $object = $this->createObject([], false);
+        $this->mutate($object, $this->input($group, $key, [['value' => 'a'], ['value' => 'b', 'position' => 1]]));
+
+        $service = $this->createServiceStub();
+        $service->setSupportedCsFeatureQueryDataTypes(self::READABLE_TYPES);
+        $type = new Group($service, new Feature($service));
+        $qualified = $type->getField('qualifiedFeatures')->resolveFn;
+        $valuesOf = $type->getField('qualifiedFeatures')->getType()->getWrappedType()->getField('values')->resolveFn;
+
+        // no language argument, and a named one that the field does not keep
+        foreach ([null, 'en'] as $language) {
+            $value = ['id' => $group->getId(), '_csValue' => $this->store($object), '_language' => $language];
+            $entries = [];
+            foreach ($qualified($value) as $feature) {
+                foreach ($valuesOf($feature) as $entry) {
+                    $entries[] = [$entry['position'], $entry['value']->getValue()];
+                }
+            }
+            $this->assertEqualsCanonicalizing([[0, 'a'], [1, 'b']], $entries, (string) $language);
+        }
+    }
+
     public function testTheGroupFieldMapOnlyGainedTheQualifiedView(): void
     {
         $service = $this->createServiceStub();

@@ -18,9 +18,11 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore as ClassificationstoreDefinition;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
+use Pimcore\Model\DataObject\Concrete;
 
 /**
  * @internal
@@ -135,6 +137,12 @@ final class Group extends ObjectType
 
     private function resolveLanguage(array $value): string
     {
+        // a field that is not localized keeps all of its values in the 'default' bucket, whatever language the
+        // query or the request names, as `features` does through getLocalizedKeyValue()
+        if (!$this->isLocalizedField($value['_csValue'])) {
+            return 'default';
+        }
+
         $language = $value['_language'];
         if (!$language) {
             // Let's try to "inherit" the language from what's already been parsed from this query
@@ -145,6 +153,16 @@ final class Group extends ObjectType
         }
 
         return $language;
+    }
+
+    private function isLocalizedField(Classificationstore $csValue): bool
+    {
+        $object = $csValue->getObject();
+        $definition = $object instanceof Concrete
+            ? $object->getClass()->getFieldDefinition($csValue->getFieldname())
+            : null;
+
+        return !$definition instanceof ClassificationstoreDefinition || $definition->isLocalized();
     }
 
     /**
