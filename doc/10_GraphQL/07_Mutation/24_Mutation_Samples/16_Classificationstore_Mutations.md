@@ -51,3 +51,22 @@ mutation {
 * `omitMandatoryCheck: true` skips the mandatory check of the keys like it does for any other field.
 * The writable types are the ones `csFeature` publishes, without Calculated Value, see
   [Classification Store queries](../../04_Query/11_Query_Samples/08_ClassificationStore.md).
+
+## Value shapes
+
+`value` is an untyped value and is converted to the stored form by the key's type, in the shape the editor sends. A
+value that was written reads back unchanged.
+
+| Type | `value` |
+| --- | --- |
+| `geopoint` | `{ latitude: 48.2, longitude: 16.3 }` |
+| `geobounds` | `{ NElatitude, NElongitude, SWlatitude, SWlongitude }` |
+| `geopolygon`, `geopolyline` | a list of `{ latitude, longitude }` |
+| `link` | the link fields, e.g. `{ text: "Pimcore", path: "https://pimcore.com" }` |
+| `image` | `{ id: 12 }`, the id of an image asset |
+| `video` | `{ type: "asset", data: "/videos/clip.mp4" }`, the path of an asset; `type` can also name an external source |
+| `manyToOneRelation` | `{ id: 3, type: "object" }`, the type being `object`, `asset` or `document` |
+| `manyToManyRelation` | a list of `{ id, type }` of any element type |
+| `manyToManyObjectRelation` | a list of `{ id, type: "object" }` |
+
+A relation target that does not exist refuses the whole mutation and nothing is saved; `null` clears the slot.

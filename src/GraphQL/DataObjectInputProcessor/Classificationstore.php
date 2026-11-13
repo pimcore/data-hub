@@ -17,6 +17,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\QualifiedValueR
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore as ClassificationstoreDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Relations\AbstractRelations;
 use Pimcore\Model\DataObject\Classificationstore as ClassificationstoreModel;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
 use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
@@ -358,10 +359,39 @@ final class Classificationstore extends Base
         $value = $input['value'];
         if ($value !== null) {
             $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($relation);
-            $value = $definition->getDataFromEditmode($value, $store->getObject());
+            $converted = $definition->getDataFromEditmode($value, $store->getObject());
+            $this->assertRelationResolved($relation, $definition, $value, $converted);
+            $value = $converted;
         }
 
         return ['variant' => $variant, 'position' => $position, 'value' => $value];
+    }
+
+    /**
+     * The editmode conversion drops a relation target it cannot find. A write that names one must not clear the
+     * slot or store a shorter list than it was given; an explicit null is the way to clear.
+     *
+     * @throws ClientSafeException
+     */
+    private function assertRelationResolved(
+        KeyGroupRelation $relation,
+        mixed $definition,
+        mixed $input,
+        mixed $converted
+    ): void {
+        if (!$definition instanceof AbstractRelations || !is_array($input)) {
+            return;
+        }
+
+        $expected = array_is_list($input) && !array_key_exists('id', $input) ? count($input) : 1;
+        $actual = is_array($converted) ? count($converted) : ($converted === null ? 0 : 1);
+        if ($input !== [] && $actual !== $expected) {
+            throw new ClientSafeException(sprintf(
+                'A target of the classification store key "%s" does not exist or is not of a type the key accepts. '
+                . 'Nothing was saved.',
+                $relation->getName()
+            ));
+        }
     }
 
     /**

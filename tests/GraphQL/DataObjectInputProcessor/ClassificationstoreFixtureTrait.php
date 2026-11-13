@@ -41,6 +41,9 @@ trait ClassificationstoreFixtureTrait
 
     private const READABLE_TYPES = ['input', 'numeric', 'checkbox', 'textarea', 'calculatedValue', 'multiValue'];
 
+    /** @var string[]|null the types the read side publishes, the plain ones when null */
+    private ?array $readable = null;
+
     private ?StoreConfig $store = null;
 
     /** @var GroupConfig[] */
@@ -204,7 +207,7 @@ trait ClassificationstoreFixtureTrait
     private function createProcessor(): Processor
     {
         $service = $this->createServiceStub();
-        $service->setSupportedCsFeatureQueryDataTypes(self::READABLE_TYPES);
+        $service->setSupportedCsFeatureQueryDataTypes($this->readable ?? self::READABLE_TYPES);
         $processor = new Processor(['attributes' => ['attribute' => self::FIELD]]);
         $processor->setGraphQLService($service);
 
