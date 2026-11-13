@@ -146,3 +146,4 @@ user-management.permissions.plugin_datahub_adapter_graphql: Datahub Adapter - Gr
 user-management.permissions.plugin_datahub_permission_delete: Datahub Sletting
 user-management.permissions.plugin_datahub_permission_read: Datahub Lesing
 user-management.permissions.plugin_datahub_permission_update: Datahub Oppdatering
+data-hub.column-config-modal.fields-to-add.error: Feltene som kan legges til kunne ikke lastes.

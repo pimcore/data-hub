@@ -37,9 +37,29 @@ export const IconButton = ({ onClick }: Props): React.JSX.Element => (
 )
 export const IconTextButton = Button
 export const ColumnPickerPopover = ({ children }: PropsWithChildren): React.JSX.Element => <>{ children }</>
-export const ColumnPicker = (): null => null
+// Renders every leaf of the tree as a button which hands its item back, as the real picker's onSelect does
+interface PickerGroup { key: string, items: Array<{ key: string, label: string }>, children?: PickerGroup[] }
+const renderPickerGroups = (groups: PickerGroup[], onSelect: (item: unknown) => void): React.ReactNode => groups.map((group) => (
+  <div
+    data-testid={ `picker-group-${group.key}` }
+    key={ group.key }
+  >
+    { group.items.map((item) => (
+      <button
+        data-testid={ `picker-item-${item.key}` }
+        key={ item.key }
+        onClick={ () => { onSelect(item) } }
+        type='button'
+      >{ item.label }</button>
+    )) }
+    { renderPickerGroups(group.children ?? [], onSelect) }
+  </div>
+))
+export const ColumnPicker = ({ groups, onSelect }: { groups: PickerGroup[], onSelect: (item: unknown) => void }): React.JSX.Element => (
+  <div data-testid='column-picker'>{ renderPickerGroups(groups, onSelect) }</div>
+)
 export const Header = passthrough
-export const Alert = passthrough
+export const Alert = ({ message }: Props): React.JSX.Element => <div role='alert'>{ message }</div>
 export const CodeEditor = ({ value }: Props): React.JSX.Element => <pre>{ value }</pre>
 export const LanguageSelection = (): null => null
 export const ModalTitle = passthrough

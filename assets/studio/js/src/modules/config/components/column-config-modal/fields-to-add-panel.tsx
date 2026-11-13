@@ -16,6 +16,8 @@ import { useStyles } from './base-column-editor.styles'
 
 export interface FieldsToAddPanelProps {
   groups: Array<ColumnPickerGroup<GridColumnConfiguration>>
+  /** The available-columns request failed: an empty tree then says nothing about the class */
+  isError?: boolean
   onColumnSelect: (column: GridColumnConfiguration) => void
   onClose: () => void
 }
@@ -24,7 +26,7 @@ export interface FieldsToAddPanelProps {
  * Embedded "Fields to add" panel shown inside the migrated column editor: the
  * searchable ColumnPicker tree with a collapsible header.
  */
-export const FieldsToAddPanel = ({ groups, onColumnSelect, onClose }: FieldsToAddPanelProps): React.JSX.Element => {
+export const FieldsToAddPanel = ({ groups, isError = false, onColumnSelect, onClose }: FieldsToAddPanelProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
@@ -45,15 +47,18 @@ export const FieldsToAddPanel = ({ groups, onColumnSelect, onClose }: FieldsToAd
         </Flex>
       </Header>
 
-      <ColumnPicker
-        fillHeight
-        groups={ groups }
-        onSelect={ (item: { meta?: GridColumnConfiguration }) => {
-          if (item.meta !== undefined) {
-            onColumnSelect(item.meta)
-          }
-        } }
-      />
+      { /* The failure itself is reported by the editor body, which stays visible when this panel is collapsed */ }
+      { !isError && (
+        <ColumnPicker
+          fillHeight
+          groups={ groups }
+          onSelect={ (item: { meta?: GridColumnConfiguration }) => {
+            if (item.meta !== undefined) {
+              onColumnSelect(item.meta)
+            }
+          } }
+        />
+      ) }
     </div>
   )
 }

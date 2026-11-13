@@ -13,6 +13,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { isNil } from 'lodash'
+import { CLASSIFICATION_STORE_TYPE } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
 
 /**
@@ -87,7 +88,10 @@ export const useAddColumnGroups = (
               const fieldDefinition = column.config.fieldDefinition as Record<string, any>
               translationKey = fieldDefinition?.title ?? column.key
             }
-            return { key: column.key, label: t(translationKey), meta: column }
+            // One store field is offered once per key: the ids keep those leaves apart
+            const storeIds = column.type === CLASSIFICATION_STORE_TYPE ? column.config as Record<string, unknown> | undefined : undefined
+            const ids = storeIds?.keyId !== undefined ? `-${String(storeIds.groupId)}-${String(storeIds.keyId)}` : ''
+            return { key: `${column.key}${ids}`, label: t(translationKey), meta: column }
           })
 
           if (items.length > 0 || children.length > 0) {

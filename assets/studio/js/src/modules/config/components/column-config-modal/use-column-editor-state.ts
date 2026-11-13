@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { type DynamicTypeFieldDefinitionRegistry } from '@pimcore/studio-ui-bundle/modules/field-definitions'
@@ -25,6 +25,8 @@ import {
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { deriveColumnFieldtype, hydrateDraft, isDraftHydrated } from './column-fieldtype'
+import { CLASSIFICATION_STORE_TYPE } from './column-identity'
+import { trackConfigError } from '../../../../components/base-detail-view/track-config-error'
 
 interface UseColumnEditorStateOptions {
   entity: string
@@ -45,12 +47,16 @@ interface UseColumnEditorStateResult {
    * failed — the toolbar must not offer Apply then. See `isDraftHydrated`.
    */
   isHydrated: boolean
+  /** The available-columns request failed, so an empty tree means nothing about the class. */
+  isError: boolean
   resolvedClassId: string
   availableFields: GridColumnConfiguration[]
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
   onAddAdvancedColumn?: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
+  /** Adds one key of a Classification Store field; the whole-store path stays handleAddColumnOfType. */
+  handleAddClassificationStoreKey: (field: GridColumnConfiguration, ids: { groupId: number, keyId: number, fieldtype?: string }) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
   handleRemove: (id: string) => void
   handleApply: () => void
@@ -84,49 +90,71 @@ export const useColumnEditorState = ({
   }, [classDefinitionId, entity, getByName])
 
   // currentData, not data: during a refetch data still holds the columns of the previous arguments.
-  const { currentData, isLoading } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
+  const { currentData, isLoading, isError, error } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
     classId: resolvedClassId,
     folderId: 1
   })
 
+  const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
+  const payloadRef = useRef(payloadColumns)
+  payloadRef.current = payloadColumns
+
   const [draft, setDraft] = useState<AdvancedEditorColumn[]>(() =>
-    columns.map(advancedFromSchemaColumn)
+    hydrateDraft(columns.map(advancedFromSchemaColumn), payloadColumns, ADVANCED_COLUMN_TYPE, isKnownFieldtype)
   )
 
+  // The payload is read through a ref: its arrival is handled by the effect below, and a reload of the
+  // configuration must not be undone by it.
   useEffect(() => {
-    setDraft(columns.map(advancedFromSchemaColumn))
-  }, [columns])
+    setDraft(hydrateDraft(columns.map(advancedFromSchemaColumn), payloadRef.current, ADVANCED_COLUMN_TYPE, isKnownFieldtype))
+  }, [columns, isKnownFieldtype])
 
-  const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
+  useEffect(() => {
+    if (isError === true) trackConfigError(error)
+  }, [isError, error])
+
   const availableFields: GridColumnConfiguration[] = useMemo(() => payloadColumns ?? [], [payloadColumns])
   const isHydrated = isDraftHydrated(payloadColumns)
 
   useEffect(() => {
-    if (availableFields.length === 0) return
-    setDraft(prev => prev.map(col => {
-      const available = availableFields.find(f =>
-        f.key === col.key || (col.type === ADVANCED_COLUMN_TYPE && f.type === col.type)
-      )
-      if (available === undefined) return col
-      return {
-        ...col,
-        localizable: col.localizable ?? available.localizable,
-        pipelineConfig: col.pipelineConfig ?? (available.config as Record<string, any> | undefined)
-      }
-    }))
-  }, [availableFields])
+    if (payloadColumns === undefined) return
+    setDraft(prev => hydrateDraft(prev, payloadColumns, ADVANCED_COLUMN_TYPE, isKnownFieldtype))
+  }, [payloadColumns, isKnownFieldtype])
 
   const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
     setDraft(prev => [...prev, {
       _id: crypto.randomUUID(),
       key: column.key,
-      fieldtype: column.key,
+      fieldtype: deriveColumnFieldtype(column),
       type: column.type,
       pipelineConfig: column.config as Record<string, any> | undefined,
       localizable: column.localizable,
       isNew: true
     }])
   }, [])
+
+  const handleAddClassificationStoreKey = useCallback(
+    (field: GridColumnConfiguration, ids: { groupId: number, keyId: number, fieldtype?: string }): void => {
+      // D-0012: the bare type of the key itself. The picked value, else the key's own payload entry (matched by
+      // ids only: the store field's entry would hand one key the type of the whole store); none known yet is
+      // resolved by hydration once the payload carries the key.
+      const keyEntry = payloadRef.current?.find(entry => {
+        const entryIds = entry.config as Record<string, unknown> | undefined
+        return entry.key === field.key && String(entryIds?.groupId) === String(ids.groupId) &&
+          String(entryIds?.keyId) === String(ids.keyId)
+      })
+      setDraft(prev => [...prev, {
+        _id: crypto.randomUUID(),
+        key: field.key,
+        fieldtype: ids.fieldtype ?? (keyEntry !== undefined ? deriveColumnFieldtype(keyEntry) : ''),
+        type: CLASSIFICATION_STORE_TYPE,
+        config: { groupId: ids.groupId, keyId: ids.keyId },
+        localizable: field.localizable,
+        isNew: true
+      }])
+    },
+    []
+  )
 
   // Only the add-column dropdown is restricted to exportable columns. The full
   // availableFields list is still used above to hydrate already-configured columns,
@@ -197,11 +225,13 @@ export const useColumnEditorState = ({
     draft,
     isLoading,
     isHydrated,
+    isError: isError === true,
     resolvedClassId,
     availableFields,
     columnGroups,
     onAddAdvancedColumn,
     handleAddColumnOfType,
+    handleAddClassificationStoreKey,
     handlePipelineChange,
     handleRemove,
     handleApply,

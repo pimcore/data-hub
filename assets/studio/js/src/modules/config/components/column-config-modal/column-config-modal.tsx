@@ -113,7 +113,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   // currentData, not data: during a refetch data still holds the columns of the previous arguments,
   // which would offer this class's picker the columns of another one. Same reading as the editor hook.
-  const { currentData } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
+  const { currentData, isError } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
     { classId: resolvedClassId, folderId: 1 },
     { skip: !isLegacy }
   )
@@ -249,7 +249,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
             } }
             placement="leftBottom"
           >
-            <IconTextButton icon={ { value: 'new' } }>
+            <IconTextButton
+              disabled={ isError }
+              icon={ { value: 'new' } }
+            >
               { t('data-hub.column-config-modal.add-column') }
             </IconTextButton>
           </ColumnPickerPopover>
