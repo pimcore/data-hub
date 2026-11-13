@@ -404,6 +404,51 @@ class ConfigProposalToolsTest extends Unit
         $this->assertSame([], $this->recorded);
     }
 
+    public function testAProposalIsRecordedAsThePolicyComparesIt(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true],
+            'workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1']]],
+        ]));
+
+        $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
+            new RowIdNormalizingConfigPolicy(),
+            self::TOOL,
+            'orders',
+            ['workspaces' => ['object' => [
+                ['cpath' => '/shop', 'read' => true, 'rowId' => 'r1'],
+                ['cpath' => '/news', 'read' => true],
+            ]]],
+            null,
+        );
+
+        $this->assertSame(
+            [['cpath' => '/shop', 'read' => true], ['cpath' => '/news', 'read' => true]],
+            $this->recorded[0][2]['subjectState']['workspaces']['object'],
+        );
+    }
+
+    public function testAProposalThatOnlyChangesWhatThePolicyNormalizesChangesNothing(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true],
+            'workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1']]],
+        ]));
+
+        $result = $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
+            new RowIdNormalizingConfigPolicy(),
+            self::TOOL,
+            'orders',
+            ['workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'other']]]],
+            null,
+        );
+
+        $this->assertStringStartsWith(
+            'This leaves the webhook configuration "orders" exactly as it is',
+            $this->payload($result, true)['error'],
+        );
+    }
+
     public function testAChangeOnlyALooseComparisonMissesIsRecorded(): void
     {
         $this->stored->put($this->configuration('orders', ['general' => ['active' => true, 'description' => '01']]));
