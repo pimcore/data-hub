@@ -15,6 +15,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\DataObjectInputProcessor;
 use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group;
+use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
 
 /**
  * @internal
@@ -213,7 +214,10 @@ class ClassificationstoreTest extends Unit
         $disabled = $this->createKey($group, 'disabled_key');
         $object = $this->createObject();
         $this->mutate($object, $this->input($group, $disabled, [['value' => 'stored']]));
-        $disabled->setEnabled(false);
+        // the flag lives on the key, and disabling a key drops its relations: the assignment is restored after it
+        $keyConfig = KeyConfig::getById($disabled->getKeyId(), true);
+        $keyConfig->setEnabled(false);
+        $keyConfig->save();
         $disabled->save();
 
         $result = $this->mutate($object, ['groups' => [['groupId' => $group->getId(), 'keys' => [

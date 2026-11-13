@@ -106,13 +106,6 @@ jobs:
     codeception-tests:
         needs: setup-matrix
         strategy:
-            # TEMPORARY, REVERT BEFORE MERGING TO 2026.x:
-            # during this epic the matrix carries legs that install released core, which has
-            # none of the Classification Store API this branch calls. Those legs cannot pass,
-            # and with the default fail-fast their failure CANCELS the pinned
-            # dev-cs-store-improvements legs before they report - so the only legs whose result
-            # means anything never run. Letting the matrix finish is what makes them readable.
-            fail-fast: false
             matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
         uses: pimcore/workflows-collection-public/.github/workflows/reusable-codeception-tests-centralized.yaml@main
         with:

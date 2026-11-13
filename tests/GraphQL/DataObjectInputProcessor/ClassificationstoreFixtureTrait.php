@@ -122,6 +122,9 @@ trait ClassificationstoreFixtureTrait
         $key->setIdentifier($identifier);
         $key->setType($type);
         $key->setDefinition(json_encode($definition));
+        // the flag lives on the key, a key that never decided about it is stored as disabled, and a relation
+        // reads it from the key; the relation is created after the key, as saving a disabled key drops its relations
+        $key->setEnabled($enabled);
         $key->save();
         $this->keys[] = $key;
 
