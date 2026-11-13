@@ -28,7 +28,9 @@ use Pimcore\Model\DataObject\Classificationstore;
  */
 class QualifiedViewEavTest extends Unit
 {
-    use ClassificationstoreFixtureTrait;
+    use ClassificationstoreFixtureTrait {
+        deleteFixtures as protected _after;
+    }
 
     private function createEavStore(): Classificationstore
     {

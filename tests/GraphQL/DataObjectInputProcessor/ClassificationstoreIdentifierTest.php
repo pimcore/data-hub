@@ -19,7 +19,9 @@ use Codeception\Test\Unit;
  */
 class ClassificationstoreIdentifierTest extends Unit
 {
-    use ClassificationstoreFixtureTrait;
+    use ClassificationstoreFixtureTrait {
+        deleteFixtures as protected _after;
+    }
 
     public function testIdentifiersWriteTheSameValuesAsNumericIds(): void
     {

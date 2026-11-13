@@ -24,7 +24,9 @@ use Pimcore\Model\DataObject\Concrete;
  */
 class QualifiedViewTest extends Unit
 {
-    use ClassificationstoreFixtureTrait;
+    use ClassificationstoreFixtureTrait {
+        deleteFixtures as protected _after;
+    }
 
     public function testEveryQualifierRoundTripsAndFeaturesKeepsTheDefaultSlot(): void
     {

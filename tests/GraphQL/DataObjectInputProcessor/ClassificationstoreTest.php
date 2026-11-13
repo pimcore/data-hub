@@ -22,7 +22,9 @@ use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
  */
 class ClassificationstoreTest extends Unit
 {
-    use ClassificationstoreFixtureTrait;
+    use ClassificationstoreFixtureTrait {
+        deleteFixtures as protected _after;
+    }
 
     private const IDENTIFIER_GROUP = 'datahub_write_group';
 

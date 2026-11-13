@@ -60,7 +60,7 @@ trait ClassificationstoreFixtureTrait
 
     private ?ClassDefinition $class = null;
 
-    protected function _after(): void
+    protected function deleteFixtures(): void
     {
         foreach ($this->objects as $object) {
             $object->delete();

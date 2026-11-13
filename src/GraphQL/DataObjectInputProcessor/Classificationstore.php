@@ -381,7 +381,11 @@ final class Classificationstore extends Base
         }
 
         if ($qualified !== []) {
-            $store->setKeyValues($write['groupId'], $write['keyId'], $this->slotEntries($store, $write, $qualified, $plain));
+            $store->setKeyValues(
+                $write['groupId'],
+                $write['keyId'],
+                $this->slotEntries($store, $write, $qualified, $plain)
+            );
         }
     }
 

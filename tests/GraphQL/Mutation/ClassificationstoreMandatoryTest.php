@@ -23,7 +23,9 @@ use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\DataObjectInputProcessor\Classifi
  */
 class ClassificationstoreMandatoryTest extends Unit
 {
-    use ClassificationstoreFixtureTrait;
+    use ClassificationstoreFixtureTrait {
+        deleteFixtures as protected _after;
+    }
 
     public function testTheFlagSavesAnObjectWhoseMandatoryKeyIsEmptyAndWithoutItTheSaveIsRefused(): void
     {
