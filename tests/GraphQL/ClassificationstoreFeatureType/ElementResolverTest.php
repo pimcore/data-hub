@@ -27,8 +27,10 @@ use Pimcore\Bundle\DataHubBundle\PimcoreDataHubBundle;
 use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ServiceStubTrait;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\Data\ObjectMetadata;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\Data\ElementMetadata;
+use Pimcore\Model\DataObject\Data\ObjectMetadata;
 use Pimcore\Model\DataObject\Folder as ObjectFolder;
 use Pimcore\Model\Document;
 use Pimcore\Model\Document\Folder as DocumentFolder;
@@ -135,8 +137,8 @@ class ElementResolverTest extends Unit
             self::CLASS_A => new ObjectType(['name' => self::CLASS_A, 'fields' => ['id' => Type::int()]]),
             self::CLASS_B => new ObjectType(['name' => self::CLASS_B, 'fields' => ['id' => Type::int()]]),
         ];
-        $included = (new Concrete())->setClassName(self::CLASS_A);
-        $excluded = (new Concrete())->setClassName(self::CLASS_B);
+        $included = $this->concrete(self::CLASS_A);
+        $excluded = $this->concrete(self::CLASS_B);
         $resolver = new ElementResolver($this->createServiceStub(), true);
 
         $result = $resolver->resolveElements($this->feature([$included, $excluded]));
@@ -231,9 +233,13 @@ class ElementResolverTest extends Unit
         return $descriptor;
     }
 
-    private function metadata(ObjectFolder|DocumentFolder $element, array $data): ObjectMetadata
+    /**
+     * ObjectMetadata::getElement() is declared to return a concrete object, so an element of any other kind
+     * (a folder) can only sit in an ElementMetadata.
+     */
+    private function metadata(ObjectFolder|DocumentFolder|Concrete $element, array $data): ObjectMetadata|ElementMetadata
     {
-        $metadata = $this->createMock(ObjectMetadata::class);
+        $metadata = $this->createMock($element instanceof Concrete ? ObjectMetadata::class : ElementMetadata::class);
         $metadata->method('getElement')->willReturn($element);
         $metadata->method('getData')->willReturn($data);
 
@@ -264,6 +270,17 @@ class ElementResolverTest extends Unit
             PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY,
             ['clientname' => 'datahub-cs-feature-test', 'configuration' => $configuration]
         );
+    }
+
+    private function concrete(string $className): Concrete
+    {
+        // ElementDescriptor reads the class definition of an object, which a bare Concrete cannot load
+        $class = new ClassDefinition();
+        $class->setName($className);
+        $object = $this->createPartialMock(Concrete::class, ['getClass']);
+        $object->method('getClass')->willReturn($class);
+
+        return $object->setClassName($className);
     }
 
     private function resetObjectsTarget(): void

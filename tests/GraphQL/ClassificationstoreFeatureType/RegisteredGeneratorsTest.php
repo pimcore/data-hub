@@ -79,7 +79,8 @@ class RegisteredGeneratorsTest extends Unit
         $plain = $this->taggedTypes(self::PLAIN_TAG, self::PLAIN_PREFIX);
         $cs = $this->taggedTypes(self::CS_TAG, self::CS_PREFIX);
 
-        $this->assertSame([], array_values(array_diff($cs, $plain)));
+        // multiValue is the wrapper type of a key that holds several values, not a field type
+        $this->assertSame(['multiValue'], array_values(array_diff($cs, $plain)));
     }
 
     public function testEveryGeneratorPublishesItsOwnFeatureTypeName(): void
