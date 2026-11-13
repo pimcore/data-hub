@@ -56,13 +56,17 @@ class ConfigurationServiceImportTest extends Unit
      */
     public function testImportRejectsWronglyTypedFieldsAsValidationError(array $importData): void
     {
+        $exception = null;
+
         try {
             $this->validate($importData);
-            $this->fail('Expected a ValidationFailedException.');
         } catch (ValidationFailedException $e) {
-            $this->assertSame('data-hub.import-config-invalid', $e->getErrorKey());
-            $this->assertSame(422, $e->getStatusCode());
+            $exception = $e;
         }
+
+        $this->assertInstanceOf(ValidationFailedException::class, $exception);
+        $this->assertSame('data-hub.import-config-invalid', $exception->getErrorKey());
+        $this->assertSame(422, $exception->getStatusCode());
     }
 
     public static function wronglyTypedFieldsProvider(): array
@@ -109,6 +113,7 @@ class ConfigurationServiceImportTest extends Unit
     {
         $service = (new \ReflectionClass(ConfigurationService::class))->newInstanceWithoutConstructor();
 
-        (new \ReflectionMethod(ConfigurationService::class, 'validateUploadedConfigurationData'))->invoke($service, $importData);
+        $method = new \ReflectionMethod(ConfigurationService::class, 'validateUploadedConfigurationData');
+        $method->invoke($service, $importData);
     }
 }

@@ -584,7 +584,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         if (!is_string($type) || !is_string($importData['path']) || !is_string($name)
             || !is_array($importData['configuration'] ?? null)) {
             throw new ValidationFailedException(
-                message: 'Uploaded configuration data is invalid. Type, path and name must be strings, configuration must be an object.',
+                message: 'Uploaded configuration data is invalid. '
+                    . 'Type, path and name must be strings, configuration must be an object.',
                 errorKey: 'data-hub.import-config-invalid'
             );
         }
