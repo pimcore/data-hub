@@ -87,6 +87,8 @@ trait ClassificationstoreFixtureTrait
     {
         $store = new StoreConfig();
         $store->setName('datahub-cs-write-' . uniqid());
+        // qualified values (variants, positions) live in the document engine, the default EAV engine refuses them
+        $store->setEngine('document');
         $store->save();
 
         return $store;
@@ -112,7 +114,8 @@ trait ClassificationstoreFixtureTrait
         string $type = 'input',
         array $definition = [],
         bool $enabled = true,
-        bool $mandatory = false
+        bool $mandatory = false,
+        ?bool $localized = null
     ): KeyGroupRelation {
         $definition += ['fieldtype' => $type, 'name' => $identifier];
 
@@ -125,6 +128,8 @@ trait ClassificationstoreFixtureTrait
         // the flag lives on the key, a key that never decided about it is stored as disabled, and a relation
         // reads it from the key; the relation is created after the key, as saving a disabled key drops its relations
         $key->setEnabled($enabled);
+        // null is a key that inherits the flag of the field it is rendered in
+        $key->setLocalized($localized);
         $key->save();
         $this->keys[] = $key;
 

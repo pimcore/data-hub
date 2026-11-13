@@ -17,6 +17,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Model\DataObject\ClassDefinition\Data\MultiValue as MultiValueDefinition;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Classificationstore\Engine\EngineFeature;
+use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
 use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
 use Pimcore\Model\DataObject\Classificationstore\Service as ClassificationstoreService;
 
@@ -28,6 +29,15 @@ use Pimcore\Model\DataObject\Classificationstore\Service as ClassificationstoreS
 final class QualifiedValueReader
 {
     private const DEFAULT_VARIANT = 'default';
+
+    /**
+     * Whether a key is kept per language: its own flag, and the flag of the field it is rendered in when it has
+     * none. The one rule the read side and the write side share.
+     */
+    public static function isKeyLocalized(int $keyId, bool $fieldLocalized): bool
+    {
+        return KeyConfig::getById($keyId)?->getLocalized() ?? $fieldLocalized;
+    }
 
     /**
      * Whether the engine behind the store can hold variants and positions above 0.

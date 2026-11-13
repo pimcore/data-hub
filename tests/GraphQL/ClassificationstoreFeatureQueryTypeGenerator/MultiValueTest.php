@@ -76,11 +76,14 @@ class MultiValueTest extends Unit
         return $service;
     }
 
-    private function createDescriptor(Classificationstore $store, string $delegate): FeatureDescriptor
-    {
+    private function createDescriptor(
+        Classificationstore $store,
+        string $delegate,
+        int $keyId = self::KEY_ID
+    ): FeatureDescriptor {
         $relation = KeyGroupRelation::create();
         $relation->setGroupId(self::GROUP_ID);
-        $relation->setKeyId(self::KEY_ID);
+        $relation->setKeyId($keyId);
         $relation->setType('multiValue');
         $relation->setDefinition(json_encode([
             'fieldtype' => 'multiValue',
@@ -91,7 +94,7 @@ class MultiValueTest extends Unit
         ]));
 
         $descriptor = new FeatureDescriptor();
-        $descriptor->setId(self::KEY_ID);
+        $descriptor->setId($keyId);
         $descriptor->setType('multiValue');
         $descriptor->setStore($store);
         $descriptor->setGroupId(self::GROUP_ID);
@@ -155,10 +158,12 @@ class MultiValueTest extends Unit
         $service = $this->createCsService();
         $union = $service->getClassificationStoreTypeDefinition('cs_feature');
 
+        $keyId = self::KEY_ID + 100;
         foreach (['input' => 'csFeatureInput', 'checkbox' => 'csFeatureCheckbox'] as $delegate => $typeName) {
             $store = $this->createStore(true);
             $store->method('getKeyValues')->willReturn([0 => 'v']);
-            $entries = QualifiedValueReader::entries($this->createDescriptor($store, $delegate));
+            // the definition of a relation is memoized by its group and key id, one key per delegate
+            $entries = QualifiedValueReader::entries($this->createDescriptor($store, $delegate, ++$keyId));
 
             $this->assertNotEmpty($entries);
             $info = (new \ReflectionClass(\GraphQL\Type\Definition\ResolveInfo::class))

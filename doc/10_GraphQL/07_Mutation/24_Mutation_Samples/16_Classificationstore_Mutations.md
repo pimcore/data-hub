@@ -41,6 +41,7 @@ mutation {
 * A group and a key are addressed by identifier or by numeric id, both forms can be mixed in one input. A `value` is
   given the way the editor sends it, the type of the key converts it.
 * `variant` defaults to the default variant and `position` to 0. Two entries for the same slot are refused.
+* Each key decides for itself whether it is kept per language: its own `localized` flag, or the flag of the field when it has none. A key that is not localized is written and read under `default` only (a named `language` is refused on write, and ignored by `features` and `qualifiedFeatures`), a localized key is addressed per language.
 * An inactive group is activated by the write; with `strict: true` the write is refused instead.
 * The whole mutation is refused, and nothing is saved, if a group or key does not resolve, a key is not part of the
   group, the group is not allowed on the field or belongs to another store, a key is disabled, or a key has a type that

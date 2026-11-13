@@ -16,6 +16,8 @@ use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Feature;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\Group;
 use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\DataObjectInputProcessor\ClassificationstoreFixtureTrait;
+use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
+use Pimcore\Model\DataObject\Concrete;
 
 /**
  * @internal
@@ -82,6 +84,75 @@ class QualifiedViewTest extends Unit
             }
             $this->assertEqualsCanonicalizing([[0, 'a'], [1, 'b']], $entries, (string) $language);
         }
+    }
+
+    public function testAKeyFlaggedLocalizedInANonLocalizedFieldRoundTripsUnderANamedLanguage(): void
+    {
+        $group = $this->createGroup('per_key_group');
+        $key = $this->createKey($group, 'per_key', 'input', [], true, false, true);
+        $object = $this->createObject([], false);
+
+        $written = $this->mutate($object, $this->input($group, $key, [['value' => 'deutsch']], 'de'));
+        $this->assertTrue($written['success'], $written['message']);
+
+        $this->assertSame([[0, 'deutsch']], $this->readQualified($object, $group, 'de'));
+        $this->assertSame(['deutsch'], $this->readFeatures($object, $group, 'de'));
+    }
+
+    public function testAKeyFlaggedNotLocalizedInALocalizedFieldIsWrittenAndReadOnce(): void
+    {
+        $group = $this->createGroup('per_key_plain_group');
+        $key = $this->createKey($group, 'per_key_plain', 'input', [], true, false, false);
+        $object = $this->createObject();
+
+        $refused = $this->mutate($object, $this->input($group, $key, [['value' => 'x']], 'de'));
+        $this->assertFalse($refused['success']);
+
+        $written = $this->mutate($object, $this->input($group, $key, [['value' => 'once']]));
+        $this->assertTrue($written['success'], $written['message']);
+
+        // whatever language the query names, the key answers from the non-localized bucket, once
+        foreach (['de', 'en', null] as $language) {
+            $this->assertSame([[0, 'once']], $this->readQualified($object, $group, $language), (string) $language);
+            $this->assertSame(['once'], $this->readFeatures($object, $group, $language), (string) $language);
+        }
+    }
+
+    /**
+     * @return array<int, array{0: int, 1: mixed}> position and value of every qualified value of the group
+     */
+    private function readQualified(Concrete $object, GroupConfig $group, ?string $language): array
+    {
+        $service = $this->createServiceStub();
+        $service->setSupportedCsFeatureQueryDataTypes(self::READABLE_TYPES);
+        $type = new Group($service, new Feature($service));
+        $value = ['id' => $group->getId(), '_csValue' => $this->store($object), '_language' => $language];
+        $valuesOf = $type->getField('qualifiedFeatures')->getType()->getWrappedType()->getField('values')->resolveFn;
+
+        $entries = [];
+        foreach (($type->getField('qualifiedFeatures')->resolveFn)($value) as $feature) {
+            foreach ($valuesOf($feature) as $entry) {
+                $entries[] = [$entry['position'], $entry['value']->getValue()];
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function readFeatures(Concrete $object, GroupConfig $group, ?string $language): array
+    {
+        $service = $this->createServiceStub();
+        $service->setSupportedCsFeatureQueryDataTypes(self::READABLE_TYPES);
+        $type = new Group($service, new Feature($service));
+        $value = ['id' => $group->getId(), '_csValue' => $this->store($object), '_language' => $language];
+
+        return array_map(
+            static fn ($feature) => $feature->getValue(),
+            ($type->getField('features')->resolveFn)($value)
+        );
     }
 
     public function testTheGroupFieldMapOnlyGainedTheQualifiedView(): void

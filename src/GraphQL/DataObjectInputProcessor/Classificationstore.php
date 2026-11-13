@@ -287,7 +287,7 @@ final class Classificationstore extends Base
         }
 
         if ($language !== self::DEFAULT_QUALIFIER) {
-            $localized = KeyConfig::getById($relation->getKeyId())?->getLocalized() ?? $definition->isLocalized();
+            $localized = QualifiedValueReader::isKeyLocalized($relation->getKeyId(), $definition->isLocalized());
             if (!$localized || !in_array($language, Tool::getValidLanguages(), true)) {
                 throw new ClientSafeException(sprintf(
                     'The classification store key "%s" in the group %s is not kept in the language "%s".',

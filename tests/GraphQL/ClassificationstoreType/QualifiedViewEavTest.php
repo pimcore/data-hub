@@ -92,7 +92,7 @@ class QualifiedViewEavTest extends Unit
         $key = $this->createKey($group, 'k');
         $definition = new \Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore();
         $definition->setStoreId($group->getStoreId());
-        $definition->setName('csfield');
+        $definition->setName(self::FIELD);
         $panel = new Panel();
         $panel->setChildren([$definition]);
         $class = new ClassDefinition();

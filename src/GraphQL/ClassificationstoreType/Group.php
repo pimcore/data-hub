@@ -82,7 +82,6 @@ final class Group extends ObjectType
                     /** @var Classificationstore $csValue */
                     $csValue = $value['_csValue'];
                     $groupId = $value['id'];
-                    $language = $this->resolveLanguage($value);
 
                     $result = [];
 
@@ -92,6 +91,7 @@ final class Group extends ObjectType
                     foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
                         if ($this->isPublished($keyRelation, $supportedFeatureTypeNames)) {
                             $keyId = $keyRelation->getKeyId();
+                            $language = $this->resolveLanguage($value, $keyId);
                             //TODO maybe add args for this fallback stuff ?
 
                             $featureValue = $csValue->getLocalizedKeyValue($groupId, $keyId, $language);
@@ -119,12 +119,12 @@ final class Group extends ObjectType
                     QualifiedValueReader::assertSupported($csValue);
 
                     $groupId = $value['id'];
-                    $language = $this->resolveLanguage($value);
                     $supportedFeatureTypeNames = $this->getGraphQlService()->getSupportedCsFeatureQueryDataTypes();
 
                     $result = [];
                     foreach ($this->loadKeyRelations($groupId) as $keyRelation) {
                         if ($this->isPublished($keyRelation, $supportedFeatureTypeNames)) {
+                            $language = $this->resolveLanguage($value, $keyRelation->getKeyId());
                             $result[] = $this->createDescriptor($csValue, $groupId, $language, $keyRelation, null);
                         }
                     }
@@ -135,11 +135,12 @@ final class Group extends ObjectType
         ];
     }
 
-    private function resolveLanguage(array $value): string
+    private function resolveLanguage(array $value, int $keyId): string
     {
-        // a field that is not localized keeps all of its values in the 'default' bucket, whatever language the
-        // query or the request names, as `features` does through getLocalizedKeyValue()
-        if (!$this->isLocalizedField($value['_csValue'])) {
+        // a key that is not kept per language holds all of its values in the 'default' bucket, whatever language
+        // the query or the request names, as `features` does through getLocalizedKeyValue(); the key decides for
+        // itself, and only a key that does not inherits the flag of its field
+        if (!QualifiedValueReader::isKeyLocalized($keyId, $this->isLocalizedField($value['_csValue']))) {
             return 'default';
         }
 
