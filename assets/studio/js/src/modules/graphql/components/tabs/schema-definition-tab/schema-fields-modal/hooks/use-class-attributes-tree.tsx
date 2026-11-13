@@ -17,13 +17,14 @@ import { Icon } from '@pimcore/studio-ui-bundle/components'
 import { isNil, flatMap } from 'lodash'
 import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
 import { type TreeNode } from '../types'
-import { useObjectBrickLayouts } from './use-objectbrick-layouts'
+import { useObjectBrickLayouts, type BrickLayoutLoadError } from './use-objectbrick-layouts'
 import {
   filterTreeNodesRecursive,
   collectAllKeys,
   scanForObjectBricksFields,
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
+import { isBrickFetchPending, toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
 import {
   buildBrickAttribute,
   buildBrickColumnTitle,
@@ -43,6 +44,8 @@ interface UseClassAttributesTreeReturn {
   expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
+  loadError?: ClassLayoutLoadError
+  brickLoadErrors: BrickLayoutLoadError[]
 }
 
 const buildBrickContainerNode = (
@@ -70,7 +73,7 @@ export const useClassAttributesTree = ({
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
   const { t } = useTranslation()
 
-  const { data: classLayout, isLoading, isFetching } = useClassDefinitionGetLayoutByIdQuery(
+  const { data: classLayout, isLoading, isFetching, error } = useClassDefinitionGetLayoutByIdQuery(
     { id: classId },
     { skip: !enabled, refetchOnMountOrArgChange: true }
   )
@@ -86,7 +89,7 @@ export const useClassAttributesTree = ({
 
   const ambiguousBrickKeys = useMemo(() => getAmbiguousBrickKeys(objectBricksFields), [objectBricksFields])
 
-  const { layouts: brickLayouts, isLoading: brickLayoutsLoading } = useObjectBrickLayouts(allBrickKeys)
+  const { layouts: brickLayouts, isLoading: brickLayoutsLoading, loadErrors: brickLoadErrors } = useObjectBrickLayouts(allBrickKeys)
 
   const classAttributesTree = useMemo(() => {
     const buildItemCallback = (brickKey?: string, containerName?: string) => (
@@ -258,13 +261,20 @@ export const useClassAttributesTree = ({
   // Consider still loading if the class layout resolved but we know there are brick keys
   // to fetch and the brick layouts haven't all been resolved yet. This prevents the
   // intermediate flash between "class layout done" and "brick fetch effect fires".
-  const pendingBrickFetch = !isLoading && !isFetching && allBrickKeys.length > 0 && brickLayouts.size === 0
+  const pendingBrickFetch = isBrickFetchPending({
+    classLayoutLoading: isLoading || isFetching,
+    brickKeyCount: allBrickKeys.length,
+    loadedBrickCount: brickLayouts.size,
+    brickErrorCount: brickLoadErrors.length
+  })
 
   return {
     classAttributesTree,
     filteredTree,
     expandedKeys,
     getFieldDefinitions,
-    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch
+    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch,
+    loadError: toClassLayoutLoadError(error),
+    brickLoadErrors
   }
 }

@@ -9,11 +9,12 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
+import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
+import { getLayoutLoadErrorMessages } from '../hooks/class-layout-load-error'
 import { useStyles } from './class-attributes-sidebar.styles'
 
 interface ClassAttributesSidebarProps {
@@ -28,7 +29,7 @@ export const ClassAttributesSidebar = ({
   const { t } = useTranslation()
   const { styles } = useStyles()
   const [searchValue, setSearchValue] = useState('')
-  const { filteredTree, expandedKeys, isLoading } = useClassAttributesTree({
+  const { filteredTree, expandedKeys, isLoading, loadError, brickLoadErrors } = useClassAttributesTree({
     classId,
     enabled,
     searchValue
@@ -66,6 +67,14 @@ export const ClassAttributesSidebar = ({
         loading={ isLoading }
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
+        { getLayoutLoadErrorMessages(loadError, brickLoadErrors, t).map(({ key, message }) => (
+          <Alert
+            key={ key }
+            message={ message }
+            showIcon
+            type="error"
+          />
+        )) }
 
         <TreeElement
           className={ styles.treeContainer }
