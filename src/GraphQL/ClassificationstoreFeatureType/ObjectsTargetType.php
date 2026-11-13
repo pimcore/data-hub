@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This source file is available under the terms of the
  * Pimcore Open Core License (POCL)
@@ -33,8 +35,10 @@ final class ObjectsTargetType extends UnionType implements ContainerAwareInterfa
 
     protected static $instance;
 
-    public function __construct(Service $graphQlService, array $config = ['name' => 'csFeatureObjectTarget', 'types' => []])
-    {
+    public function __construct(
+        Service $graphQlService,
+        array $config = ['name' => 'csFeatureObjectTarget', 'types' => []]
+    ) {
         $this->setGraphQLService($graphQlService);
 
         parent::__construct($config);

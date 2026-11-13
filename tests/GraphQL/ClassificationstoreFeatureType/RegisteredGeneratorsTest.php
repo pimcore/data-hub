@@ -15,6 +15,9 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ClassificationstoreFeatureType;
 
 use Codeception\Test\Unit;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ServiceStubTrait;
 use Symfony\Component\Yaml\Yaml;
 
@@ -87,13 +90,39 @@ class RegisteredGeneratorsTest extends Unit
                 if ($tag['name'] !== self::CS_TAG) {
                     continue;
                 }
-                $generator = new ($definition['class'])($this->createServiceStub());
+                $generator = new ($definition['class'])($this->createServiceWithDataObjectTypes());
                 $names[] = $generator->getFieldType()->name;
             }
         }
 
         $this->assertSame(array_unique($names), $names);
         $this->assertCount(count($this->taggedTypes(self::CS_TAG, self::CS_PREFIX)), $names);
+    }
+
+    /**
+     * The generators of the relation, media and hotspot types build on the data object types the service registers
+     * (getDataObjectTypeDefinition()); this one answers every requested name with a minimal object type.
+     */
+    private function createServiceWithDataObjectTypes(): Service
+    {
+        $service = $this->createServiceStub();
+        $types = new class () extends \ArrayObject {
+            public function offsetExists(mixed $key): bool
+            {
+                return true;
+            }
+
+            public function offsetGet(mixed $key): mixed
+            {
+                return new ObjectType(['name' => 'stub_' . $key, 'fields' => ['id' => Type::int()]]);
+            }
+        };
+
+        \Closure::bind(static function (Service $service, \ArrayObject $types): void {
+            $service->dataObjectDataTypes = $types;
+        }, null, Service::class)($service, $types);
+
+        return $service;
     }
 
     /**

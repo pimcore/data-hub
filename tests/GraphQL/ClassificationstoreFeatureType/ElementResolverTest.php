@@ -28,6 +28,7 @@ use Pimcore\Bundle\DataHubBundle\Tests\GraphQL\ServiceStubTrait;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Data\ObjectMetadata;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Folder as ObjectFolder;
 use Pimcore\Model\Document;
 use Pimcore\Model\Document\Folder as DocumentFolder;
@@ -125,6 +126,36 @@ class ElementResolverTest extends Unit
 
         $this->assertSame([], $resolver->resolveElements($this->feature([$folder])));
         $this->assertSame([], $resolver->resolveAdvancedElements($this->feature([$this->metadata($folder, [])])));
+    }
+
+    public function testAnObjectsOnlyKeyLeavesOutAnObjectOfAClassThatIsNotAQueryEntity(): void
+    {
+        $this->useConfiguration([self::CLASS_A], []);
+        ClassTypeDefinitions::$definitions = [
+            self::CLASS_A => new ObjectType(['name' => self::CLASS_A, 'fields' => ['id' => Type::int()]]),
+            self::CLASS_B => new ObjectType(['name' => self::CLASS_B, 'fields' => ['id' => Type::int()]]),
+        ];
+        $included = (new Concrete())->setClassName(self::CLASS_A);
+        $excluded = (new Concrete())->setClassName(self::CLASS_B);
+        $resolver = new ElementResolver($this->createServiceStub(), true);
+
+        $result = $resolver->resolveElements($this->feature([$included, $excluded]));
+
+        $this->assertCount(1, $result);
+        $this->assertSame($included, $this->extractDataCalls[0][1]);
+    }
+
+    public function testAnAssetFolderFollowsTheAssetFolderSettingAndNotTheAssetSetting(): void
+    {
+        $this->useConfiguration([self::CLASS_A], ['asset' => true, 'asset_folder' => false]);
+        $this->assertNull($this->resolver()->resolveElement($this->feature(new Asset\Folder())));
+
+        $this->useConfiguration([self::CLASS_A], ['asset' => false, 'asset_folder' => true]);
+        $this->assertNull($this->resolver()->resolveElement($this->feature(new Asset\Image())));
+        $this->assertInstanceOf(
+            ElementDescriptor::class,
+            $this->resolver()->resolveElement($this->feature(new Asset\Folder()))
+        );
     }
 
     public function testATargetOfATypeThatIsNotEnabledForQueryIsOmitted(): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This source file is available under the terms of the
  * Pimcore Open Core License (POCL)
@@ -13,6 +15,7 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassTypeDefinitions;
 use Pimcore\Bundle\DataHubBundle\GraphQL\ElementDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -145,8 +148,9 @@ final class ElementResolver
     }
 
     /**
-     * An element can only be resolved when the union it is returned through has a member for it: folders follow their
-     * own read setting (WorkspaceHelper), every other type needs to be enabled for query in the endpoint.
+     * An element can only be resolved when the union it is returned through has a member for it: every type needs
+     * its read setting enabled in the endpoint (object folders are covered by WorkspaceHelper::isFolderReadAllowed),
+     * and an objects-only key additionally needs the concrete class to be one of the endpoint's query entities.
      */
     private function isPublishable(ElementInterface $element): bool
     {
@@ -155,16 +159,26 @@ final class ElementResolver
         }
 
         if ($element instanceof Concrete) {
-            return $this->getGraphQlService()->querySchemaEnabled('object');
+            return $this->getGraphQlService()->querySchemaEnabled('object')
+                && (!$this->objectsOnly || $this->isQueryEntity($element));
         }
         if ($element instanceof Asset) {
-            return $element instanceof Asset\Folder || $this->getGraphQlService()->querySchemaEnabled('asset');
+            $setting = $element instanceof Asset\Folder ? 'asset_folder' : 'asset';
+
+            return $this->getGraphQlService()->querySchemaEnabled($setting);
         }
         if ($element instanceof Document) {
             return $element instanceof Document\Folder || $this->getGraphQlService()->querySchemaEnabled('document');
         }
 
         return true;
+    }
+
+    private function isQueryEntity(Concrete $element): bool
+    {
+        $type = ClassTypeDefinitions::$definitions[$element->getClassName()] ?? null;
+
+        return $type !== null && in_array($type, ClassTypeDefinitions::getAll(true), true);
     }
 
     private function describeHotspotimage($hotspotimage, $args, $context, ?ResolveInfo $resolveInfo): ?ElementDescriptor
