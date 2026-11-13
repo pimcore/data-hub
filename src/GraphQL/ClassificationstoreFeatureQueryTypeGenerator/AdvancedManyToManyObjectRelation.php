@@ -33,7 +33,10 @@ final class AdvancedManyToManyObjectRelation extends Base
         return ValueType::getInstance(
             'csFeatureAdvancedManyToManyObjectRelation',
             'relations',
-            Type::listOf(AdvancedRelationType::getInstance('csFeatureAdvancedObjectRelation', ObjectsTargetType::getInstance($this->getGraphQlService()))),
+            Type::listOf(AdvancedRelationType::getInstance(
+                'csFeatureAdvancedObjectRelation',
+                ObjectsTargetType::getInstance($this->getGraphQlService())
+            )),
             [new ElementResolver($this->getGraphQlService(), true), 'resolveAdvancedElements']
         );
     }

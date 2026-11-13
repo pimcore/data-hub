@@ -37,13 +37,15 @@ class RegisteredGeneratorsTest extends Unit
 
     private const CS_PREFIX = 'typegenerator_csfeaturequerydatatype_';
 
+    private const CONTAINER_TYPE = 'container type';
+
     /**
      * Plain field types without a Classification Store read generator, with the reason.
      */
     private const EXCLUSIONS = [
-        'block' => 'container type',
-        'fieldcollections' => 'container type',
-        'classificationstore' => 'container type',
+        'block' => self::CONTAINER_TYPE,
+        'fieldcollections' => self::CONTAINER_TYPE,
+        'classificationstore' => self::CONTAINER_TYPE,
         'reverseObjectRelation' => 'computed from the owning side, not stored on a key',
         'reverseManyToManyObjectRelation' => 'computed from the owning side, not stored on a key',
         'urlSlug' => 'needs a route registration keyed to the object and field name',

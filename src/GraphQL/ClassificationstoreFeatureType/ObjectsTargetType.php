@@ -12,7 +12,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
 
-use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
@@ -34,7 +33,7 @@ final class ObjectsTargetType extends UnionType implements ContainerAwareInterfa
 
     protected static $instance;
 
-    public function __construct(Service $graphQlService, $config = ['name' => 'csFeatureObjectTarget'])
+    public function __construct(Service $graphQlService, array $config = ['name' => 'csFeatureObjectTarget', 'types' => []])
     {
         $this->setGraphQLService($graphQlService);
 
@@ -59,7 +58,7 @@ final class ObjectsTargetType extends UnionType implements ContainerAwareInterfa
         return array_values(ClassTypeDefinitions::getAll(true));
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|string|callable|Deferred|null
+    public function resolveType($element, $context, ResolveInfo $info): ?ObjectType
     {
         if ($element && $element['__elementType'] === 'object') {
             return ClassTypeDefinitions::get($element['__elementSubtype']);

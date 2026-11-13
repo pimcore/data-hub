@@ -13,7 +13,6 @@
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FeatureDescriptor;
 use Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface\CsFeature;
@@ -26,7 +25,8 @@ final class ValueType extends ObjectType
     protected static $instance = [];
 
     /**
-     * @param callable|null $resolver receives the same arguments as a field resolver, the value is the FeatureDescriptor
+     * @param callable|null $resolver receives the same arguments as a field resolver,
+     *                                the value is the FeatureDescriptor
      *
      * @return ValueType
      */
@@ -36,7 +36,7 @@ final class ValueType extends ObjectType
             $fields = Helper::getCommonFields();
             $fields[$valueField] = [
                 'type' => $valueType,
-                'resolve' => $resolver ?? static function ($value = null, $args = [], $context = [], ?ResolveInfo $resolveInfo = null) {
+                'resolve' => $resolver ?? static function ($value = null) {
                     if ($value instanceof FeatureDescriptor) {
                         return $value->getValue();
                     }
