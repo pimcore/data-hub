@@ -370,16 +370,18 @@ final class Classificationstore extends Base
     private function write(ClassificationstoreModel $store, array $write): void
     {
         $qualified = [];
+        $plain = [];
         foreach ($write['entries'] as $entry) {
             if ($entry['variant'] === self::DEFAULT_QUALIFIER && $entry['position'] === 0) {
                 $store->setLocalizedKeyValue($write['groupId'], $write['keyId'], $entry['value'], $write['language']);
+                $plain = [0 => $entry['value']];
             } else {
                 $qualified[$entry['variant']][$entry['position']] = $entry['value'];
             }
         }
 
         if ($qualified !== []) {
-            $store->setKeyValues($write['groupId'], $write['keyId'], $this->slotEntries($store, $write, $qualified));
+            $store->setKeyValues($write['groupId'], $write['keyId'], $this->slotEntries($store, $write, $qualified, $plain));
         }
     }
 
@@ -389,10 +391,12 @@ final class Classificationstore extends Base
      * of those slots the input does not name.
      *
      * @param array<string|int, array<int, mixed>> $qualified the named values by variant and position
+     * @param array<int, mixed> $plain position 0 of the default variant when the input names it, which is
+     *                                 written through setLocalizedKeyValue() and must survive the slot replacement
      *
      * @return MultiValue[]
      */
-    private function slotEntries(ClassificationstoreModel $store, array $write, array $qualified): array
+    private function slotEntries(ClassificationstoreModel $store, array $write, array $qualified, array $plain): array
     {
         $entries = [];
         foreach ($qualified as $variant => $named) {
@@ -403,9 +407,9 @@ final class Classificationstore extends Base
                 $write['language'],
                 $variant
             ));
-            // position 0 of the default variant is the plain value, setLocalizedKeyValue() holds it
+            // the slot is replaced as a whole: position 0 of the default variant, named or already stored, stays
             if ($variant === self::DEFAULT_QUALIFIER) {
-                unset($own[0]);
+                $named = $plain + $named;
             }
 
             foreach ($named + $own as $position => $value) {

@@ -93,6 +93,7 @@ class QualifiedViewEavTest extends Unit
         $definition = new \Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore();
         $definition->setStoreId($group->getStoreId());
         $definition->setName(self::FIELD);
+        $definition->setAllowedGroupIds([]);
         $panel = new Panel();
         $panel->setChildren([$definition]);
         $class = new ClassDefinition();
