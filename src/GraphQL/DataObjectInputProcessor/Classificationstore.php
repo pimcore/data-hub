@@ -383,8 +383,15 @@ final class Classificationstore extends Base
             return;
         }
 
-        $expected = array_is_list($input) && !array_key_exists('id', $input) ? count($input) : 1;
-        $actual = is_array($converted) ? count($converted) : ($converted === null ? 0 : 1);
+        // A list is one target per entry; anything else is a single descriptor map.
+        $expected = array_is_list($input) ? count($input) : 1;
+
+        if (is_array($converted)) {
+            $actual = count($converted);
+        } else {
+            $actual = $converted === null ? 0 : 1;
+        }
+
         if ($input !== [] && $actual !== $expected) {
             throw new ClientSafeException(sprintf(
                 'A target of the classification store key "%s" does not exist or is not of a type the key accepts. '
