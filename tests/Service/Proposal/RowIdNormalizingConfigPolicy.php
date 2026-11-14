@@ -23,6 +23,9 @@ use Pimcore\Bundle\DataHubBundle\Proposal\ConfigStateNormalizerInterface;
  */
 final class RowIdNormalizingConfigPolicy extends RecordingConfigPolicy implements ConfigStateNormalizerInterface
 {
+    /** @var list<array<string, mixed>> the stored configuration each restored() call was given */
+    public array $restoredFrom = [];
+
     public function comparable(array $state): array
     {
         foreach ($state['workspaces']['object'] ?? [] as $i => $row) {
@@ -34,6 +37,7 @@ final class RowIdNormalizingConfigPolicy extends RecordingConfigPolicy implement
 
     public function restored(array $approved, array $stored): array
     {
+        $this->restoredFrom[] = $stored;
         $ids = [];
         foreach ($stored['workspaces']['object'] ?? [] as $row) {
             if (is_array($row) && isset($row['cpath'], $row['rowId'])) {

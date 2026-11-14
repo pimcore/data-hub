@@ -145,6 +145,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         }
 
         $isNew = $stored === null;
+        // a normaliser restores from what was stored before, never from the configuration a create makes below
+        $storedBefore = $stored?->getConfiguration() ?? [];
         // an amendment made in the review, or a reference removed while it waited, never met the propose tool's checks
         $problems = $this->policy->problems(
             ConfigDocument::readable($this->withIdentity($finalData, $name), $this->policy),
@@ -173,7 +175,7 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             $name,
         );
         if ($this->policy instanceof ConfigStateNormalizerInterface) {
-            $configuration = $this->policy->restored($configuration, $stored?->getConfiguration() ?? []);
+            $configuration = $this->policy->restored($configuration, $storedBefore);
         }
 
         try {

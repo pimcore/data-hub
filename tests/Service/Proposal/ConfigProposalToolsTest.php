@@ -50,6 +50,12 @@ class ConfigProposalToolsTest extends Unit
 
     private const string TOO_LONG = 'name is too long';
 
+    private const string UNCHANGED = 'This leaves the webhook configuration "orders" exactly as it is';
+
+    private const string SHOP = '/shop';
+
+    private const string NEWS = '/news';
+
     private InMemoryStoredConfigurations $stored;
 
     /** @var list<array{string, string, array<string, mixed>, int}> */
@@ -398,7 +404,7 @@ class ConfigProposalToolsTest extends Unit
         );
 
         $this->assertStringStartsWith(
-            'This leaves the webhook configuration "orders" exactly as it is',
+            self::UNCHANGED,
             $this->payload($result, true)['error'],
         );
         $this->assertSame([], $this->recorded);
@@ -408,7 +414,7 @@ class ConfigProposalToolsTest extends Unit
     {
         $this->stored->put($this->configuration('orders', [
             'general' => ['active' => true],
-            'workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1']]],
+            'workspaces' => ['object' => [['cpath' => self::SHOP, 'read' => true, 'rowId' => 'r1']]],
         ]));
 
         $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
@@ -416,14 +422,14 @@ class ConfigProposalToolsTest extends Unit
             self::TOOL,
             'orders',
             ['workspaces' => ['object' => [
-                ['cpath' => '/shop', 'read' => true, 'rowId' => 'r1'],
-                ['cpath' => '/news', 'read' => true],
+                ['cpath' => self::SHOP, 'read' => true, 'rowId' => 'r1'],
+                ['cpath' => self::NEWS, 'read' => true],
             ]]],
             null,
         );
 
         $this->assertSame(
-            [['cpath' => '/shop', 'read' => true], ['cpath' => '/news', 'read' => true]],
+            [['cpath' => self::SHOP, 'read' => true], ['cpath' => self::NEWS, 'read' => true]],
             $this->recorded[0][2]['subjectState']['workspaces']['object'],
         );
     }
@@ -432,19 +438,19 @@ class ConfigProposalToolsTest extends Unit
     {
         $this->stored->put($this->configuration('orders', [
             'general' => ['active' => true],
-            'workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1']]],
+            'workspaces' => ['object' => [['cpath' => self::SHOP, 'read' => true, 'rowId' => 'r1']]],
         ]));
 
         $result = $this->tools($this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]))->propose(
             new RowIdNormalizingConfigPolicy(),
             self::TOOL,
             'orders',
-            ['workspaces' => ['object' => [['cpath' => '/shop', 'read' => true, 'rowId' => 'other']]]],
+            ['workspaces' => ['object' => [['cpath' => self::SHOP, 'read' => true, 'rowId' => 'other']]]],
             null,
         );
 
         $this->assertStringStartsWith(
-            'This leaves the webhook configuration "orders" exactly as it is',
+            self::UNCHANGED,
             $this->payload($result, true)['error'],
         );
     }
@@ -481,7 +487,7 @@ class ConfigProposalToolsTest extends Unit
         );
 
         $this->assertStringStartsWith(
-            'This leaves the webhook configuration "orders" exactly as it is',
+            self::UNCHANGED,
             $this->payload($result, true)['error'],
         );
         $this->assertSame([], $this->recorded);

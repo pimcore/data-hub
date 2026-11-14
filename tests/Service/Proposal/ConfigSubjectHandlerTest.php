@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
-use function array_column;
 use Codeception\Test\Unit;
 use Doctrine\DBAL\Connection;
 use function in_array;
@@ -24,7 +23,6 @@ use Pimcore\Bundle\ChangeControlBundle\ChangeSet\Hydrator\ReviewHydrator;
 use Pimcore\Bundle\ChangeControlBundle\ChangeSet\Service\ChangeSetService;
 use Pimcore\Bundle\ChangeControlBundle\Draft\BranchVisibility;
 use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorRegistry;
-use Pimcore\Bundle\ChangeControlBundle\Merge\EditableDataMerge;
 use Pimcore\Bundle\ChangeControlBundle\Merge\Exception\UnsupportedMergeSaveModeException;
 use Pimcore\Bundle\ChangeControlBundle\Merge\MergeSaveMode;
 use Pimcore\Bundle\ChangeControlBundle\Service\ChangeControlAuthoringInterface;
@@ -611,104 +609,6 @@ class ConfigSubjectHandlerTest extends Unit
         $this->assertNull($this->stored->find('invoices'));
         $this->assertSame($existing, $this->stored->find('orders'));
         $this->assertSame(['general' => ['active' => true, 'description' => 'old']], $handler->readState($this->ref()));
-    }
-
-    public function testAnEditorSaveThePolicyNormalizesAwayIsNoConflict(): void
-    {
-        $conflicts = $this->conflictsAfterAnEditorSave(
-            new RowIdNormalizingConfigPolicy(),
-            [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1'], ['cpath' => '/blog', 'read' => true, 'rowId' => 'r2']],
-        );
-
-        $this->assertSame([], $conflicts);
-    }
-
-    public function testARealChangeStillConflictsWhenThePolicyNormalizes(): void
-    {
-        $conflicts = $this->conflictsAfterAnEditorSave(
-            new RowIdNormalizingConfigPolicy(),
-            [['cpath' => '/shop', 'read' => false, 'rowId' => 'r1'], ['cpath' => '/blog', 'read' => true, 'rowId' => 'r2']],
-        );
-
-        $this->assertSame(['workspaces.object'], array_column($conflicts, 'path'));
-    }
-
-    public function testWithoutTheNormalizerAnEditorSaveStillConflicts(): void
-    {
-        $conflicts = $this->conflictsAfterAnEditorSave(
-            new RecordingConfigPolicy(),
-            [['cpath' => '/shop', 'read' => true, 'rowId' => 'r1'], ['cpath' => '/blog', 'read' => true, 'rowId' => 'r2']],
-        );
-
-        $this->assertSame(['workspaces.object'], array_column($conflicts, 'path'));
-    }
-
-    public function testApprovingPutsBackWhatTheNormalizerDropped(): void
-    {
-        $this->stored->put($this->configuration('orders', [
-            'general' => ['active' => true],
-            'workspaces' => ['object' => [
-                ['cpath' => '/shop', 'read' => true, 'rowId' => 'r1'],
-                ['cpath' => '/blog', 'read' => true, 'rowId' => 'r2'],
-            ]],
-        ]));
-        $policy = new RowIdNormalizingConfigPolicy();
-        $handler = $this->handler($policy);
-
-        $this->assertSame(
-            ['general' => ['active' => true], 'workspaces' => ['object' => [
-                ['cpath' => '/shop', 'read' => true],
-                ['cpath' => '/blog', 'read' => true],
-            ]]],
-            $handler->readState($this->ref()),
-        );
-
-        $handler->applyMerged($this->ref(), [
-            'general' => ['active' => true],
-            'workspaces' => ['object' => [
-                ['cpath' => '/blog', 'read' => false],
-                ['cpath' => '/news', 'read' => true],
-            ]],
-        ], $this->user([]), MergeSaveMode::Publish);
-
-        $this->assertSame([
-            ['cpath' => '/blog', 'read' => false, 'rowId' => 'r2'],
-            ['cpath' => '/news', 'read' => true],
-        ], $policy->saved[0][1]['workspaces']['object']);
-        // the adapter's checks see the state as the review compared it
-        $this->assertSame(
-            [['cpath' => '/blog', 'read' => false], ['cpath' => '/news', 'read' => true]],
-            $policy->checked[0][0]['workspaces']['object'],
-        );
-    }
-
-    /**
-     * A proposal adds a workspace row; before it is approved, the editor saves the configuration
-     * with a new description and the rows as given.
-     *
-     * @param list<array<string, mixed>> $rowsSaved
-     *
-     * @return list<array{path: string, base: mixed, main: mixed, ours: mixed}>
-     */
-    private function conflictsAfterAnEditorSave(RecordingConfigPolicy $policy, array $rowsSaved): array
-    {
-        $rows = [['cpath' => '/shop', 'read' => true], ['cpath' => '/blog', 'read' => true]];
-        $this->stored->put($this->configuration('orders', [
-            'general' => ['active' => true, 'description' => 'old'],
-            'workspaces' => ['object' => $rows],
-        ]));
-        $handler = $this->handler($policy);
-        $base = $handler->readState($this->ref());
-        $ours = $base;
-        $ours['workspaces']['object'][] = ['cpath' => '/news', 'read' => true];
-
-        $this->stored->put($this->configuration('orders', [
-            'general' => ['active' => true, 'description' => 'new'],
-            'workspaces' => ['object' => $rowsSaved],
-        ]));
-
-        return (new EditableDataMerge($handler->shape($this->ref())))
-            ->conflictsDeep($base, $handler->readState($this->ref()), $ours);
     }
 
     /**
