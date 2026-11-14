@@ -13,7 +13,7 @@ import { Modal, Flex, Button, Form, Content, Sidebar, SidebarProvider, SplitLayo
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { AvailableFieldsTree } from './available-fields-tree'
-import { type QueryEntityConfig } from './types'
+import { type QueryEntityConfig, type SchemaFieldsMode } from './types'
 import { isNil, cloneDeep } from 'lodash'
 import { useStyles } from './schema-fields-modal.styles'
 import { useSidebarEntries } from './hooks/use-sidebar-entries'
@@ -27,7 +27,7 @@ interface SchemaFieldsModalProps {
   open: boolean
   className: string
   operatorRegistryServiceId: string
-  type?: 'query' | 'mutation'
+  type?: SchemaFieldsMode
   disabled?: boolean
   onCancel: () => void
   onApply: () => void
@@ -54,6 +54,7 @@ export const SchemaFieldsModal = ({
   const sidebarEntries = useSidebarEntries({
     classId,
     enabled,
+    mode: type,
     operatorRegistryServiceId,
     gridContainerClassName: styles.gridContainer
   })
@@ -95,6 +96,7 @@ export const SchemaFieldsModal = ({
               classId={ classId }
               enabled={ enabled }
               entityConfig={ localEntityConfig }
+              mode={ type }
               onEntityConfigChange={ setLocalEntityConfig }
             />
             <Button

@@ -1,0 +1,22 @@
+# Loaded only when an agent can author proposals - see PimcoreDataHubExtension.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: false
+        public: false
+
+    Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ListGraphQlConfigsTool:
+        tags:
+            - { name: 'pimcore.mcp_tool', group: 'pimcore-data-hub-graphql-read', description: 'List the GraphQL configurations' }
+
+    Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\GetGraphQlConfigTool:
+        tags:
+            - { name: 'pimcore.mcp_tool', group: 'pimcore-data-hub-graphql-read' }
+
+    Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ProposeGraphQlConfigTool:
+        tags:
+            - {
+                name: 'pimcore.mcp_tool',
+                group: 'pimcore-data-hub-graphql-propose',
+                description: 'Propose changes to a GraphQL configuration for review'
+              }

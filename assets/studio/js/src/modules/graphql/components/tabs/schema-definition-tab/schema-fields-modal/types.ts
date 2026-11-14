@@ -10,6 +10,8 @@
 
 import { type TreeDataItem } from '@pimcore/studio-ui-bundle/components'
 
+export type SchemaFieldsMode = 'query' | 'mutation'
+
 export interface ChildAttribute {
   key?: string
   attributes?: {

@@ -19,6 +19,8 @@ const config: Config = {
   // jsdom defaults to the browser build of dependencies like yaml, which is ESM-only
   testEnvironmentOptions: { customExportConditions: ['node', 'node-addons'] },
   testMatch: ['<rootDir>/js/test/**/*.test.{ts,tsx}'],
+  // the review surface tests run on vitest (vitest.config.mts)
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/js/test/graphql/', String.raw`<rootDir>/js/test/plugins\.test\.ts$`],
   setupFilesAfterEnv: ['<rootDir>/js/test/setup.ts'],
   moduleNameMapper: {
     '^@pimcore/studio-ui-bundle/components$': mock('components'),

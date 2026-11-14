@@ -12,18 +12,20 @@ import React, { useCallback, useState } from 'react'
 import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
-import { type TreeNode } from '../types'
+import { type SchemaFieldsMode, type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
 import { useStyles } from './class-attributes-sidebar.styles'
 
 interface ClassAttributesSidebarProps {
   classId: string
   enabled: boolean
+  mode: SchemaFieldsMode
 }
 
 export const ClassAttributesSidebar = ({
   classId,
-  enabled
+  enabled,
+  mode
 }: ClassAttributesSidebarProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
@@ -31,6 +33,7 @@ export const ClassAttributesSidebar = ({
   const { filteredTree, expandedKeys, isLoading } = useClassAttributesTree({
     classId,
     enabled,
+    mode,
     searchValue
   })
 

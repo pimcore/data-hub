@@ -35,6 +35,18 @@ class ClassificationstoreAddedTypesTest extends Unit
         'manyToOneRelation', 'manyToManyRelation', 'manyToManyObjectRelation',
     ];
 
+    /**
+     * A relation key accepts no element type until its definition says which ones it takes:
+     * `objectsAllowed`, `assetsAllowed` and `documentsAllowed` all default to false
+     * ({@see \Pimcore\Model\DataObject\ClassDefinition\Data\ManyToOneRelation::$objectsAllowed}).
+     * A key configured through the UI would have them ticked; this fixture has to say so itself.
+     * `manyToManyObjectRelation` needs no entry - it has no element-type gate, only a class list.
+     */
+    private const ALLOWED_ELEMENTS = [
+        'manyToOneRelation' => ['objectsAllowed' => true],
+        'manyToManyRelation' => ['objectsAllowed' => true, 'assetsAllowed' => true],
+    ];
+
     /** @var Asset[] */
     private array $assets = [];
 
@@ -82,7 +94,7 @@ class ClassificationstoreAddedTypesTest extends Unit
     {
         $this->readable = self::TYPES;
         $group = $this->createGroup(self::IDENTIFIER_GROUP);
-        $this->createKey($group, 'k', $type);
+        $this->createKey($group, 'k', $type, self::ALLOWED_ELEMENTS[$type] ?? []);
 
         return $this->createObject();
     }
