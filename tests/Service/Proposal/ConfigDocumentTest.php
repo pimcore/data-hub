@@ -234,6 +234,22 @@ class ConfigDocumentTest extends Unit
         $this->assertFalse(ConfigDocument::withholds(['general', 'transmitter_sftp'], 'x', $policy));
     }
 
+    public function testAWildcardUnderAMissingOrScalarSectionMatchesNothing(): void
+    {
+        $policy = $this->wildcardPolicy();
+
+        $missing = ['general' => ['name' => 'feed']];
+        $scalar = ['deliveryDestination' => 'none'];
+
+        $this->assertSame($missing, ConfigDocument::readable($missing, $policy));
+        $this->assertSame($scalar, ConfigDocument::readable($scalar, $policy));
+        $this->assertSame([], ConfigDocument::refusedPaths($scalar, $policy));
+        $this->assertSame(
+            ['deliveryDestination' => ['transmitter' => 'ftp']],
+            ConfigDocument::withStored(['deliveryDestination' => ['transmitter' => 'ftp']], ['general' => []], $policy),
+        );
+    }
+
     public function testExactPathsStillMatchOnlyThemselves(): void
     {
         $policy = $this->policy();
