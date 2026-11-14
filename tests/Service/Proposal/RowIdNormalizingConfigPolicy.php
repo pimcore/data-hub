@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use function is_array;
+use LogicException;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigStateNormalizerInterface;
 
 /**
@@ -25,6 +26,12 @@ final class RowIdNormalizingConfigPolicy extends RecordingConfigPolicy implement
 {
     /** @var list<array<string, mixed>> the stored configuration each restored() call was given */
     public array $restoredFrom = [];
+
+    public function __construct(
+        private readonly bool $restoreFails = false,
+    ) {
+        parent::__construct();
+    }
 
     public function comparable(array $state): array
     {
@@ -38,6 +45,10 @@ final class RowIdNormalizingConfigPolicy extends RecordingConfigPolicy implement
     public function restored(array $approved, array $stored): array
     {
         $this->restoredFrom[] = $stored;
+        if ($this->restoreFails) {
+            throw new LogicException('The stored ids could not be put back.');
+        }
+
         $ids = [];
         foreach ($stored['workspaces']['object'] ?? [] as $row) {
             if (is_array($row) && isset($row['cpath'], $row['rowId'])) {

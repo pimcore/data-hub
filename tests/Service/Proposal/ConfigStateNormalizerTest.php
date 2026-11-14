@@ -16,6 +16,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use function array_column;
 use Codeception\Test\Unit;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Pimcore\Bundle\ChangeControlBundle\Merge\EditableDataMerge;
 use Pimcore\Bundle\ChangeControlBundle\Merge\MergeSaveMode;
@@ -164,6 +165,34 @@ class ConfigStateNormalizerTest extends Unit
 
         $this->assertSame([[]], $policy->restoredFrom);
         $this->assertSame([$this->row(self::SHOP, true)], $policy->saved[0][1]['workspaces']['object']);
+    }
+
+    public function testACreateWhoseRestoreFailsLeavesTheNameFree(): void
+    {
+        $this->configurations->method('addConfiguration')->willReturnCallback(function (string $name): string {
+            $this->stored->put($this->configuration(['general' => []], $name));
+
+            return $name;
+        });
+        $this->configurations->expects($this->once())->method('deleteConfiguration')
+            ->with('orders')
+            ->willReturnCallback(fn (string $name) => $this->stored->remove($name));
+        $policy = new RowIdNormalizingConfigPolicy(restoreFails: true);
+
+        try {
+            $this->handler($policy)->applyMerged(
+                $this->ref(),
+                [ConfigDocument::CREATE_MARKER => true, 'general' => ['active' => false]],
+                $this->user(),
+                MergeSaveMode::Publish,
+            );
+            $this->fail('The failed restore must reach the approver.');
+        } catch (LogicException $e) {
+            $this->assertSame('The stored ids could not be put back.', $e->getMessage());
+        }
+
+        $this->assertNull($this->stored->find('orders'));
+        $this->assertSame([], $policy->saved);
     }
 
     /**

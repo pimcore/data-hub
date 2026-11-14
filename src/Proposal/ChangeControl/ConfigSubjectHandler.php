@@ -170,15 +170,15 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             $stored = $this->load($name);
         }
 
-        $configuration = $this->withIdentity(
-            ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy),
-            $name,
-        );
-        if ($this->policy instanceof ConfigStateNormalizerInterface) {
-            $configuration = $this->policy->restored($configuration, $storedBefore);
-        }
-
         try {
+            $configuration = $this->withIdentity(
+                ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy),
+                $name,
+            );
+            if ($this->policy instanceof ConfigStateNormalizerInterface) {
+                $configuration = $this->policy->restored($configuration, $storedBefore);
+            }
+
             $this->policy->save($name, $configuration);
         } catch (Throwable $e) {
             if ($isNew) {
