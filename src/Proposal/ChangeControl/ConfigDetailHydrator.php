@@ -19,9 +19,6 @@ use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
 use function array_is_list;
 use function array_key_exists;
-use function array_slice;
-use function count;
-use function explode;
 use function in_array;
 use function is_array;
 use Pimcore\Bundle\ChangeControlBundle\Hydrator\DetailHydratorInterface;
@@ -81,7 +78,7 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
                     return $segments === [ConfigDocument::CREATE_MARKER] && $value === true;
                 }
 
-                return !$this->isWithheld($segments, $value);
+                return !ConfigDocument::withholds($segments, $value, $this->policy);
             },
             ARRAY_FILTER_USE_BOTH,
         );
@@ -98,40 +95,6 @@ final readonly class ConfigDetailHydrator implements DetailHydratorInterface
             static fn (int|string $address): bool => array_key_exists(LeafPath::split((string) $address)[0], $proposed),
             ARRAY_FILTER_USE_KEY,
         );
-    }
-
-    /**
-     * @param list<string> $segments
-     */
-    private function isWithheld(array $segments, mixed $value): bool
-    {
-        foreach ($this->policy->withheld() as $path) {
-            $withheld = explode('.', $path);
-            if (array_slice($segments, 0, count($withheld)) === $withheld) {
-                return true;
-            }
-            if (array_slice($withheld, 0, count($segments)) === $segments
-                && self::holds($value, array_slice($withheld, count($segments)))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param list<string> $path
-     */
-    private static function holds(mixed $value, array $path): bool
-    {
-        foreach ($path as $key) {
-            if (!is_array($value) || !array_key_exists($key, $value)) {
-                return false;
-            }
-            $value = $value[$key];
-        }
-
-        return true;
     }
 
     /**

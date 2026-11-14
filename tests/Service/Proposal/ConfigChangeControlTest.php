@@ -191,6 +191,34 @@ class ConfigChangeControlTest extends Unit
         );
     }
 
+    public function testAnAmendmentUnderAWildcardPathIsNeverStored(): void
+    {
+        $policy = $this->createStub(ConfigProposalPolicyInterface::class);
+        $policy->method('withheld')->willReturn(['deliveryDestination.transmitter_*']);
+        $hydrator = new ConfigDetailHydrator($policy);
+        $existing = ['deliveryDestination' => ['transmitter' => 'sftp']];
+
+        $this->assertSame(
+            ['deliveryDestination.transmitter' => 'ftp'],
+            $hydrator->dehydrate($this->ref(), [
+                'deliveryDestination.transmitter_x.host' => 'forged',
+                'deliveryDestination.transmitter' => 'ftp',
+            ], $existing),
+        );
+        $this->assertSame(
+            [],
+            $hydrator->dehydrate(
+                $this->ref(),
+                ['deliveryDestination' => ['transmitter' => 'ftp', 'transmitter_x' => ['host' => 'forged']]],
+                $existing,
+            ),
+        );
+        $this->assertSame(
+            ['deliveryDestination' => ['transmitter' => 'ftp']],
+            $hydrator->dehydrate($this->ref(), ['deliveryDestination' => ['transmitter' => 'ftp']], $existing),
+        );
+    }
+
     private function hydrator(): ConfigDetailHydrator
     {
         $policy = $this->createStub(ConfigProposalPolicyInterface::class);
