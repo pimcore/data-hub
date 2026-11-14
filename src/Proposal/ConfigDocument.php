@@ -131,29 +131,64 @@ final class ConfigDocument
      * The stored document with the proposal laid over it, section by section and then key by
      * key. A list replaces wholesale — half a list is not a thing a reviewer can read.
      *
+     * Under a path the policy merges per entity it goes one level deeper: an entity sent
+     * replaces whole, one omitted is kept, one sent as null is removed. An empty map there
+     * replaces whole, so it clears them all.
+     *
      * @param array<string, mixed> $stored
      * @param array<string, mixed> $proposed
      *
      * @return array<string, mixed>
      */
-    public static function fold(array $stored, array $proposed): array
-    {
+    public static function fold(
+        array $stored,
+        array $proposed,
+        ?ConfigProposalPolicyInterface $policy = null,
+    ): array {
         $state = $stored;
+        $perEntity = $policy instanceof PerEntityMergeInterface ? $policy->perEntityPaths() : [];
 
         foreach ($proposed as $section => $value) {
             $section = (string) $section;
-            if (!is_array($value) || array_is_list($value) || !is_array($state[$section] ?? null)) {
+            if (!is_array($value) || array_is_list($value)) {
                 $state[$section] = $value;
 
                 continue;
             }
 
+            // laying a map over nothing yields the map, as replacing it did
+            if (!is_array($state[$section] ?? null)) {
+                $state[$section] = [];
+            }
+
             foreach ($value as $key => $child) {
-                $state[$section][$key] = $child;
+                $state[$section][$key] = in_array($section . '.' . $key, $perEntity, true)
+                    && is_array($child) && $child !== [] && !array_is_list($child)
+                    ? self::foldEntities($state[$section][$key] ?? null, $child)
+                    : $child;
             }
         }
 
         return $state;
+    }
+
+    /**
+     * @param array<array-key, mixed> $proposed
+     *
+     * @return array<array-key, mixed>
+     */
+    private static function foldEntities(mixed $stored, array $proposed): array
+    {
+        $entities = is_array($stored) ? $stored : [];
+        foreach ($proposed as $entity => $value) {
+            if ($value === null) {
+                unset($entities[$entity]);
+            } else {
+                $entities[$entity] = $value;
+            }
+        }
+
+        return $entities;
     }
 
     /**

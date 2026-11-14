@@ -31,6 +31,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\Config\SpecialEntitiesEvent;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\PerEntityMergeInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Model\DataObject\ClassDefinition;
 use function sprintf;
@@ -53,7 +54,7 @@ use function time;
  *
  * @internal
  */
-final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterface
+final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterface, PerEntityMergeInterface
 {
     public const string CONFIG_TYPE = 'graphql';
 
@@ -62,6 +63,9 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public const array PROPOSABLE = ['general', 'schema', 'workspaces'];
 
     public const array WITHHELD = ['security', 'permissions'];
+
+    // keyed by class name or generic type, so a proposal carries only the entries it changes
+    public const array PER_ENTITY = ['schema.queryEntities', 'schema.mutationEntities', 'schema.specialEntities'];
 
     // the generic types the Studio editor offers before listeners add their own
     private const array GENERIC_TYPES = [
@@ -116,6 +120,11 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
         return 'The security settings hold the API keys, the authentication method and the switch '
             . 'that skips the workspace check, and permissions decide who may approve a proposal — '
             . 'they are changed by a person in the Data Hub editor.';
+    }
+
+    public function perEntityPaths(): array
+    {
+        return self::PER_ENTITY;
     }
 
     public function slots(): array

@@ -244,7 +244,7 @@ final readonly class ConfigProposalTools
         array $proposed,
     ): array {
         $stored = ConfigDocument::readable($existing?->getConfiguration() ?? [], $policy);
-        $state = ConfigDocument::fold($stored, $proposed);
+        $state = ConfigDocument::fold($stored, $proposed, $policy);
 
         // the subject strips these from its own state; proposing them back adds leaves to the
         // review that name a change nobody made
