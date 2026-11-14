@@ -31,7 +31,7 @@ export interface FieldsToAddPanelProps {
  * Embedded "Fields to add" panel shown inside the migrated column editor: the
  * searchable ColumnPicker tree with a collapsible header.
  */
-const FieldsToAddPanelContent = ({ groups, isError = false, onColumnSelect, onKeySelect, onClose }: FieldsToAddPanelProps): React.JSX.Element => {
+const FieldsToAddPanelContent = ({ groups, isError = false, onColumnSelect, onKeySelect, onClose }: Omit<FieldsToAddPanelProps, 'classId'>): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
   const { openPicker } = useClassificationStoreFieldPicker()
