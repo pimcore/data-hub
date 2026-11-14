@@ -64,8 +64,8 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
 
     public const array WITHHELD = ['security', 'permissions'];
 
-    // keyed by class name, so a proposal carries only the classes it changes
-    public const array PER_ENTITY = ['schema.queryEntities', 'schema.mutationEntities'];
+    // keyed by class name or generic type, so a proposal carries only the entries it changes
+    public const array PER_ENTITY = ['schema.queryEntities', 'schema.mutationEntities', 'schema.specialEntities'];
 
     // the generic types the Studio editor offers before listeners add their own
     private const array GENERIC_TYPES = [

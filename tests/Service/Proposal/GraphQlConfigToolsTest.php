@@ -249,6 +249,7 @@ class GraphQlConfigToolsTest extends Unit
 
             public function save(string $name, array $configuration): void
             {
+                // nothing to store: the test reads what the session recorded
             }
 
             public function perEntityPaths(): array

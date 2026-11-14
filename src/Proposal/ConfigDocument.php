@@ -132,7 +132,8 @@ final class ConfigDocument
      * key. A list replaces wholesale — half a list is not a thing a reviewer can read.
      *
      * Under a path the policy merges per entity it goes one level deeper: an entity sent
-     * replaces whole, one omitted is kept, one sent as null is removed.
+     * replaces whole, one omitted is kept, one sent as null is removed. An empty map there
+     * replaces whole, so it clears them all.
      *
      * @param array<string, mixed> $stored
      * @param array<string, mixed> $proposed
@@ -162,7 +163,7 @@ final class ConfigDocument
 
             foreach ($value as $key => $child) {
                 $state[$section][$key] = in_array($section . '.' . $key, $perEntity, true)
-                    && is_array($child) && ($child === [] || !array_is_list($child))
+                    && is_array($child) && $child !== [] && !array_is_list($child)
                     ? self::foldEntities($state[$section][$key] ?? null, $child)
                     : $child;
             }

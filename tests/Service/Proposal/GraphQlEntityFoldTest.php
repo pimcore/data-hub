@@ -88,7 +88,7 @@ class GraphQlEntityFoldTest extends Unit
         $this->assertSame(['Car' => $this->entity('Car', ['name'])], $state['schema']['queryEntities']);
     }
 
-    public function testOtherSchemaKeysStillReplaceWhole(): void
+    public function testAnOmittedGenericTypeKeepsItsStoredFlags(): void
     {
         $state = ConfigDocument::fold(
             $this->stored(),
@@ -96,8 +96,51 @@ class GraphQlEntityFoldTest extends Unit
             $this->policy(),
         );
 
-        $this->assertSame(['asset' => ['read' => true]], $state['schema']['specialEntities']);
+        $this->assertSame(
+            ['document' => ['read' => true], 'object' => ['read' => true], 'asset' => ['read' => true]],
+            $state['schema']['specialEntities'],
+        );
         $this->assertSame($this->stored()['schema']['queryEntities'], $state['schema']['queryEntities']);
+    }
+
+    public function testAGenericTypeSentAsNullIsRemoved(): void
+    {
+        $state = ConfigDocument::fold(
+            $this->stored(),
+            ['schema' => ['specialEntities' => ['object' => null]]],
+            $this->policy(),
+        );
+
+        $this->assertSame(['document' => ['read' => true]], $state['schema']['specialEntities']);
+    }
+
+    public function testAnEmptyEntityMapClearsThemAll(): void
+    {
+        $state = ConfigDocument::fold(
+            $this->stored(),
+            ['schema' => ['mutationEntities' => [], 'specialEntities' => []]],
+            $this->policy(),
+        );
+
+        $this->assertSame([], $state['schema']['mutationEntities']);
+        $this->assertSame([], $state['schema']['specialEntities']);
+        $this->assertSame($this->stored()['schema']['queryEntities'], $state['schema']['queryEntities']);
+    }
+
+    public function testListsAndOtherKeysStillReplaceWhole(): void
+    {
+        $state = ConfigDocument::fold(
+            $this->stored(),
+            [
+                'general' => ['description' => 'cars'],
+                'workspaces' => ['object' => [['cpath' => '/cars', 'read' => true]]],
+            ],
+            $this->policy(),
+        );
+
+        $this->assertSame(['active' => true, 'description' => 'cars'], $state['general']);
+        $this->assertSame([['cpath' => '/cars', 'read' => true]], $state['workspaces']['object']);
+        $this->assertSame($this->stored()['schema'], $state['schema']);
     }
 
     public function testWithoutAPolicyEntitiesReplaceWholeAsBefore(): void
@@ -135,8 +178,9 @@ class GraphQlEntityFoldTest extends Unit
                     'Car' => $this->entity('Car', ['name']),
                     'Manufacturer' => $this->entity('Manufacturer', ['name']),
                 ],
-                'specialEntities' => ['document' => ['read' => true]],
+                'specialEntities' => ['document' => ['read' => true], 'object' => ['read' => true]],
             ],
+            'workspaces' => ['object' => [['cpath' => '/', 'read' => true]]],
         ];
     }
 

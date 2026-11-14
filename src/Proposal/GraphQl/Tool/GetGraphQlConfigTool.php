@@ -46,8 +46,8 @@ final readonly class GetGraphQlConfigTool
             . '(asset, document and object trees with read/create/update/delete flags) sections — the security '
             . 'settings with the API keys and per-configuration permissions are withheld and cannot '
             . 'be proposed. To change it, send propose_graphql_config only what you change: the '
-            . 'sections and keys you edit, each changed query or mutation entity complete, and '
-            . '"<Entity>": null to remove one.',
+            . 'sections and keys you edit, each changed query or mutation entity and generic type '
+            . 'complete, and "<Entity>": null to remove one.',
         annotations: new ToolAnnotations(
             readOnlyHint: true,
             destructiveHint: false,
