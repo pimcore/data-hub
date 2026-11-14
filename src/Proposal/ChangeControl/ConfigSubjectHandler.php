@@ -25,6 +25,7 @@ use Pimcore\Bundle\ChangeControlBundle\Subject\SubjectRef;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigStateNormalizerInterface;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -63,9 +64,16 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         $configuration = $this->load($subject->ref);
 
         // no configuration yet: an empty base, and an approval once the name is taken is refused
-        return $configuration === null
-            ? []
-            : ConfigDocument::readable($configuration->getConfiguration(), $this->policy);
+        if ($configuration === null) {
+            return [];
+        }
+
+        $state = ConfigDocument::readable($configuration->getConfiguration(), $this->policy);
+
+        // the base at propose and Main at approve are both read here, so editor-only noise never conflicts
+        return $this->policy instanceof ConfigStateNormalizerInterface
+            ? $this->policy->comparable($state)
+            : $state;
     }
 
     /**
@@ -137,6 +145,8 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         }
 
         $isNew = $stored === null;
+        // a normaliser restores from what was stored before, never from the configuration a create makes below
+        $storedBefore = $stored?->getConfiguration() ?? [];
         // an amendment made in the review, or a reference removed while it waited, never met the propose tool's checks
         $problems = $this->policy->problems(
             ConfigDocument::readable($this->withIdentity($finalData, $name), $this->policy),
@@ -160,12 +170,15 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
             $stored = $this->load($name);
         }
 
-        $configuration = $this->withIdentity(
-            ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy),
-            $name,
-        );
-
         try {
+            $configuration = $this->withIdentity(
+                ConfigDocument::withStored($finalData, $stored?->getConfiguration() ?? [], $this->policy),
+                $name,
+            );
+            if ($this->policy instanceof ConfigStateNormalizerInterface) {
+                $configuration = $this->policy->restored($configuration, $storedBefore);
+            }
+
             $this->policy->save($name, $configuration);
         } catch (Throwable $e) {
             if ($isNew) {

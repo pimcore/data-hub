@@ -25,6 +25,7 @@ use Mcp\Schema\Result\CallToolResult;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigStateNormalizerInterface;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
@@ -256,7 +257,8 @@ final readonly class ConfigProposalTools
         $state['general']['name'] = $name;
         $state['general']['type'] = $existing?->getType() ?? $policy->configType();
 
-        return $state;
+        // the subject reads its base in this form, so the proposal is compared in it too
+        return $policy instanceof ConfigStateNormalizerInterface ? $policy->comparable($state) : $state;
     }
 
     /**

@@ -19,7 +19,7 @@ use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 /**
  * A webhook-like adapter policy that records what it is asked to save.
  */
-final class RecordingConfigPolicy implements ConfigProposalPolicyInterface
+class RecordingConfigPolicy implements ConfigProposalPolicyInterface
 {
     /** @var list<array{string, array<string, mixed>}> */
     public array $saved = [];
