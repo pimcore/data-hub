@@ -19,11 +19,13 @@ use function json_decode;
 use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Result\CallToolResult;
 use Pimcore\Bundle\DataHubBundle\Configuration;
+use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\GetGraphQlConfigTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ListGraphQlConfigsTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ProposeGraphQlConfigTool;
 use Pimcore\Bundle\DataHubBundle\Proposal\Mcp\ConfigProposalTools;
+use Pimcore\Bundle\DataHubBundle\Proposal\PerEntityMergeInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
@@ -132,6 +134,39 @@ class GraphQlConfigToolsTest extends Unit
         $this->assertArrayNotHasKey('security', $this->recorded[0]['subjectState']);
     }
 
+    public function testAProposalCarryingOneEntityIsRecordedWithEveryOtherEntityKept(): void
+    {
+        $event = ['id' => 'Event', 'columnConfig' => ['columns' => [['name' => 'title'], ['name' => 'date']]]];
+        $this->stored->put($this->configuration(self::NAME, 'graphql', [
+            'general' => ['active' => true],
+            'schema' => [
+                'queryEntities' => [
+                    'Event' => $event,
+                    'Car' => ['id' => 'Car', 'columnConfig' => ['columns' => [['name' => 'name']]]],
+                    'Manufacturer' => ['id' => 'Manufacturer'],
+                ],
+                'mutationEntities' => [],
+            ],
+            'security' => ['method' => 'datahub_apikey', 'apikey' => ['secret']],
+        ]));
+        $car = ['id' => 'Car', 'columnConfig' => ['columns' => [['name' => 'name'], ['name' => 'color']]]];
+
+        // the GraphQL policy looks classes up in the database, so its entity paths ride a stand-in
+        $result = $this->tools()->propose(
+            $this->entityPolicy(),
+            'propose_graphql_config',
+            self::NAME,
+            ['schema' => ['queryEntities' => ['Car' => $car, 'Manufacturer' => null]]],
+            null,
+        );
+
+        $this->assertSame(self::NAME, $this->payload($result)['name']);
+        $this->assertSame(
+            ['queryEntities' => ['Event' => $event, 'Car' => $car], 'mutationEntities' => []],
+            $this->recorded[0]['subjectState']['schema'],
+        );
+    }
+
     public function testTheProposeToolRefusesTheSecuritySettings(): void
     {
         $result = (new ProposeGraphQlConfigTool($this->tools(), $this->policy()))
@@ -150,6 +185,78 @@ class GraphQlConfigToolsTest extends Unit
             $this->createStub(ConfigurationServiceInterface::class),
             new EventDispatcher(),
         );
+    }
+
+    /**
+     * GraphQL's sections and entity paths, without its database lookups.
+     */
+    private function entityPolicy(): ConfigProposalPolicyInterface&PerEntityMergeInterface
+    {
+        return new class($this->policy()) implements ConfigProposalPolicyInterface, PerEntityMergeInterface {
+            public function __construct(private readonly GraphQlConfigPolicy $graphQl)
+            {
+            }
+
+            public function configType(): string
+            {
+                return $this->graphQl->configType();
+            }
+
+            public function subjectType(): string
+            {
+                return $this->graphQl->subjectType();
+            }
+
+            public function noun(): string
+            {
+                return $this->graphQl->noun();
+            }
+
+            public function readToolName(): string
+            {
+                return $this->graphQl->readToolName();
+            }
+
+            public function proposable(): array
+            {
+                return $this->graphQl->proposable();
+            }
+
+            public function withheld(): array
+            {
+                return $this->graphQl->withheld();
+            }
+
+            public function withheldReason(): string
+            {
+                return $this->graphQl->withheldReason();
+            }
+
+            public function slots(): array
+            {
+                return $this->graphQl->slots();
+            }
+
+            public function problems(array $state, bool $isNew): array
+            {
+                return [];
+            }
+
+            public function summarize(array $configuration): array
+            {
+                return $this->graphQl->summarize($configuration);
+            }
+
+            public function save(string $name, array $configuration): void
+            {
+                // nothing to store: the test reads what the session recorded
+            }
+
+            public function perEntityPaths(): array
+            {
+                return $this->graphQl->perEntityPaths();
+            }
+        };
     }
 
     private function tools(): ConfigProposalTools
