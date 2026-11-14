@@ -56,7 +56,7 @@ export const useTreeNodes = ({
       const operatorType = operatorRegistry.getDynamicType(String(item.attributes.class ?? ''), false)
       const config = { key: item.key, isOperator: true, attributes: item.attributes }
 
-      if (operatorType === null) {
+      if (isNil(operatorType)) {
         return {
           icon: undefined,
           iconProps: undefined,

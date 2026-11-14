@@ -13,12 +13,13 @@ import { Button } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { uuid } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
-import { type QueryEntityConfig, type PersistedColumnConfig } from '../types'
+import { type QueryEntityConfig, type PersistedColumnConfig, type SchemaFieldsMode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
 
 interface AddAllDefinitionsButtonProps {
   classId: string
   enabled: boolean
+  mode: SchemaFieldsMode
   entityConfig?: QueryEntityConfig
   onEntityConfigChange: (config: QueryEntityConfig) => void
 }
@@ -26,11 +27,12 @@ interface AddAllDefinitionsButtonProps {
 export const AddAllDefinitionsButton = ({
   classId,
   enabled,
+  mode,
   entityConfig,
   onEntityConfigChange
 }: AddAllDefinitionsButtonProps): React.JSX.Element => {
   const { t } = useTranslation()
-  const { getFieldDefinitions } = useClassAttributesTree({ classId, enabled })
+  const { getFieldDefinitions } = useClassAttributesTree({ classId, enabled, mode })
 
   const handleAddAllDefinitions = useCallback((): void => {
     if (isNil(entityConfig)) return

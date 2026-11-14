@@ -213,7 +213,7 @@ describe('schema modal preview mode', () => {
   })
 
   test('AC8: npm test runs Jest', () => {
-    expect(pkg.scripts.test).toBe('jest')
+    expect(pkg.scripts.test.split(' && ')[0]).toBe('jest')
     expect(pkg.scripts['check-types']).toBeDefined()
     expect(pkg.scripts.lint).toBeDefined()
   })

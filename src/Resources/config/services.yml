@@ -40,3 +40,7 @@ services:
         class: Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityService
         arguments:
             $enabledTypes: '%pimcore_data_hub.enabled_adapter_types%'
+
+    # what the proposal lanes look configurations up with
+    Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface:
+        class: Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurations
