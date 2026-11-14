@@ -46,6 +46,10 @@ interface ConfigProposalPolicyInterface
      * Paths a proposal may never carry, never reviewed and never merged: a whole section, or
      * `section.key` inside a proposable one. They are withheld from the agent too.
      *
+     * The last segment of a path below a section may end in `*` to name every key that starts
+     * with the rest of it, `section.transmitter_*` for example, so keys the adapter does not
+     * know of are withheld as well. A `*` anywhere else is refused.
+     *
      * @return list<string>
      */
     public function withheld(): array;
