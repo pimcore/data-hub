@@ -9,6 +9,7 @@
  */
 
 import React from 'react'
+import { flatMap } from 'lodash'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
@@ -236,7 +237,7 @@ describe('the key picker affordance in the tree', () => {
 
   it('is not offered by the legacy migration popover, which hosts no key picker', () => {
     const { result } = renderHook(() => useAddColumnGroups([storeField]))
-    const keys = result.current.flatMap(group => group.items.map(item => item.key))
+    const keys = flatMap(result.current, group => group.items.map(item => item.key))
 
     expect(keys).toEqual(['technicalAttributes'])
   })
@@ -244,7 +245,7 @@ describe('the key picker affordance in the tree', () => {
   it('is offered by the grouped tree only when the caller says it can host the picker', () => {
     const { result } = renderHook(() => useAddColumnGroups([storeField], true))
 
-    expect(result.current.flatMap(group => group.items.map(item => item.key))).toEqual(['technicalAttributes', 'technicalAttributes-pick-key'])
+    expect(flatMap(result.current, group => group.items.map(item => item.key))).toEqual(['technicalAttributes', 'technicalAttributes-pick-key'])
   })
 
   it('falls back to store 1 when the field never had a store configured', () => {

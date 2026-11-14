@@ -12,7 +12,7 @@ import { useMemo } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
-import { isNil } from 'lodash'
+import { flatMap, isNil } from 'lodash'
 import { CLASSIFICATION_STORE_TYPE, PICK_KEY_SUFFIX } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
 
@@ -57,7 +57,7 @@ const convertTreeToGroups = (
   const groups: Array<ColumnPickerGroup<GridColumnConfiguration>> = []
   for (const [groupName, groupData] of Object.entries(tree)) {
     const children = convertTreeToGroups(groupData.subGroups, context)
-    const items = groupData.items.flatMap(column => leavesOf(column, context.t, context.withKeyPicker))
+    const items = flatMap(groupData.items, column => leavesOf(column, context.t, context.withKeyPicker))
     if (items.length > 0 || children.length > 0) {
       groups.push({ key: `group-${context.nextIndex++}`, label: context.t(groupName), items, children })
     }
