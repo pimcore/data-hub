@@ -205,11 +205,14 @@ class ConfigChangeControlTest extends Unit
                 'deliveryDestination.transmitter' => 'ftp',
             ], $existing),
         );
-        $this->assertSame([], $hydrator->dehydrate(
-            $this->ref(),
-            ['deliveryDestination' => ['transmitter' => 'ftp', 'transmitter_x' => ['host' => 'forged']]],
-            $existing,
-        ));
+        $this->assertSame(
+            [],
+            $hydrator->dehydrate(
+                $this->ref(),
+                ['deliveryDestination' => ['transmitter' => 'ftp', 'transmitter_x' => ['host' => 'forged']]],
+                $existing,
+            ),
+        );
         $this->assertSame(
             ['deliveryDestination' => ['transmitter' => 'ftp']],
             $hydrator->dehydrate($this->ref(), ['deliveryDestination' => ['transmitter' => 'ftp']], $existing),
