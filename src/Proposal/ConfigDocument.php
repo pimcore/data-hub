@@ -55,7 +55,7 @@ final class ConfigDocument
     public const array VOLATILE_GENERAL = ['modificationDate', 'createDate', 'creationDate', 'writeable'];
 
     /** ends the last segment of a withheld path to withhold every key that starts with the rest */
-    public const string WILDCARD = '*';
+    private const string WILDCARD = '*';
 
     public static function isValidName(string $name): bool
     {

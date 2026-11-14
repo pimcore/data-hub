@@ -156,10 +156,10 @@ class ConfigDocumentTest extends Unit
             ['deliveryDestination.transmitter_ftp', 'deliveryDestination.transmitter_retired'],
             ConfigDocument::refusedPaths($proposed, $this->wildcardPolicy()),
         );
-        $this->assertSame([], ConfigDocument::refusedPaths(
-            ['deliveryDestination' => ['transmitter' => 'ftp']],
-            $this->wildcardPolicy(),
-        ));
+        $this->assertSame(
+            [],
+            ConfigDocument::refusedPaths(['deliveryDestination' => ['transmitter' => 'ftp']], $this->wildcardPolicy()),
+        );
         $this->assertSame([], ConfigDocument::withheldSections($this->wildcardPolicy()));
     }
 
@@ -185,8 +185,9 @@ class ConfigDocumentTest extends Unit
             $stored,
             $this->wildcardPolicy(),
         );
-        $this->assertSame($stored['deliveryDestination']['transmitter_sftp'], $configuration['deliveryDestination']['transmitter_sftp']);
-        $this->assertSame($stored['deliveryDestination']['transmitter_retired'], $configuration['deliveryDestination']['transmitter_retired']);
+        $delivery = $configuration['deliveryDestination'];
+        $this->assertSame($stored['deliveryDestination']['transmitter_sftp'], $delivery['transmitter_sftp']);
+        $this->assertSame($stored['deliveryDestination']['transmitter_retired'], $delivery['transmitter_retired']);
         $this->assertSame('ftp', $configuration['deliveryDestination']['transmitter']);
         $this->assertSame('new', $configuration['general']['description']);
 
@@ -238,7 +239,10 @@ class ConfigDocumentTest extends Unit
         $policy = $this->policy();
         $document = ['delivery' => ['transmitter_sftp' => ['host' => 'a'], 'transmitter_ftp' => ['host' => 'b']]];
 
-        $this->assertSame(['delivery' => ['transmitter_ftp' => ['host' => 'b']]], ConfigDocument::readable($document, $policy));
+        $this->assertSame(
+            ['delivery' => ['transmitter_ftp' => ['host' => 'b']]],
+            ConfigDocument::readable($document, $policy),
+        );
         $this->assertSame(['delivery.transmitter_sftp'], ConfigDocument::refusedPaths($document, $policy));
         $this->assertTrue(ConfigDocument::withholds(['delivery', 'transmitter_sftp'], 'x', $policy));
         $this->assertFalse(ConfigDocument::withholds(['delivery', 'transmitter_ftp'], 'x', $policy));
