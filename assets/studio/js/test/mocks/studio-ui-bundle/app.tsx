@@ -12,4 +12,12 @@ export const useTranslation = (): { t: (key: string) => string } => ({ t: (key: 
 
 export const serviceIds = { 'DynamicTypes/AdvancedGridCellRegistry': 'advanced-grid-cell-registry' }
 
-export const useInjection = (): { hasDynamicType: () => boolean } => ({ hasDynamicType: () => false })
+// The field definition types the fixtures use are the known ones
+const KNOWN_FIELDTYPES = new Set(['input', 'classificationstore'])
+const registry = {
+  hasDynamicType: () => false,
+  getDynamicType: (name: string) => KNOWN_FIELDTYPES.has(name) ? {} : undefined
+}
+
+// One instance for every call, as the container hands out one registry
+export const useInjection = (): typeof registry => registry

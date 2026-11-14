@@ -9,11 +9,12 @@
  */
 
 import { ColumnEditorActions } from './column-editor-actions'
-import { findAvailableField } from './column-identity'
+import { columnLabel, findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
+  Alert,
   Button,
   Content,
   ContentLayout,
@@ -44,11 +45,6 @@ import {
   type SchemaColumn,
   type AdvancedEditorColumn
 } from './types'
-
-const getColumnLabel = (col: AdvancedEditorColumn): string => {
-  if (col.key === '') return ''
-  return col.key
-}
 
 export interface BaseColumnEditorProps {
   entity: string
@@ -119,11 +115,12 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       draft,
       isLoading,
       isHydrated,
+      isError,
       resolvedClassId,
       availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      handleAddColumnOfType,
+      handleAddColumnOfType, handleAddClassificationStoreKey,
       handlePipelineChange,
       handleRemove,
       handleApply,
@@ -145,8 +142,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     const stackItems: StackListProps['items'] = draft.map(col => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
-      const label = getColumnLabel(col)
-
+      const label = columnLabel(col)
       return {
         id: col._id,
         sortable: true,
@@ -256,12 +252,21 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               padding={ { x: 'none', y: 'small' } }
               style={ { height: 'calc(80vh - 200px)' } }
             >
+              { isError && (
+              <Alert
+                message={ t('data-hub.column-config-modal.fields-to-add.error') }
+                type='error'
+              />
+              ) }
               <div className={ styles.body }>
                 { !hideToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
+                  classId={ resolvedClassId }
                   groups={ columnGroups }
+                  isError={ isError }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
+                  onKeySelect={ handleAddClassificationStoreKey }
                 />
                 ) }
 
