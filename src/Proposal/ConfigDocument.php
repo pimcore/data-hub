@@ -234,6 +234,35 @@ final class ConfigDocument
     }
 
     /**
+     * Change Control's merged state keeps an entity sent as null as its removal marker; under a
+     * path the policy merges per entity that null means the entity is gone, so it is dropped.
+     *
+     * @param array<string, mixed> $state
+     *
+     * @return array<string, mixed>
+     */
+    public static function withoutRemovedEntities(array $state, ConfigProposalPolicyInterface $policy): array
+    {
+        if (!$policy instanceof PerEntityMergeInterface) {
+            return $state;
+        }
+
+        foreach ($policy->perEntityPaths() as $path) {
+            [$section, $key] = explode('.', $path, 2) + [1 => ''];
+            if (!is_array($state[$section][$key] ?? null)) {
+                continue;
+            }
+            foreach ($state[$section][$key] as $entity => $value) {
+                if ($value === null) {
+                    unset($state[$section][$key][$entity]);
+                }
+            }
+        }
+
+        return $state;
+    }
+
+    /**
      * The withheld paths as storage has them: they never rode the change set, and a save
      * writes the whole document, so dropping them would erase them.
      *

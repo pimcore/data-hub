@@ -38,6 +38,8 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
+use Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy;
+use Pimcore\Bundle\DataHubBundle\Proposal\PerEntityMergeInterface;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -99,6 +101,73 @@ class ConfigSubjectHandlerTest extends Unit
             'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
             'security' => ['method' => 'header'],
         ]]], $policy->saved);
+    }
+
+    public function testAnEntitySentAsNullIsRemovedAndTheOthersAreKept(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => ['id' => 'Manufacturer']]],
+        ]));
+        // Change Control's merged state keeps the null it was proposed with as the removal marker
+        $policy = new class() extends RecordingConfigPolicy implements PerEntityMergeInterface {
+            public function perEntityPaths(): array
+            {
+                return ['eventsSchema.entities'];
+            }
+        };
+
+        $this->handler($policy)->applyMerged($this->ref(), [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => null]],
+        ], $this->user([]), MergeSaveMode::Publish);
+
+        $expected = ['entities' => ['Car' => ['id' => 'Car']]];
+        $this->assertSame($expected, $policy->checked[0][0]['eventsSchema']);
+        $this->assertSame($expected, $policy->saved[0][1]['eventsSchema']);
+    }
+
+    public function testTheGraphQlEntitiesAndGenericTypesSentAsNullAreRemoved(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $policy = new class() extends RecordingConfigPolicy implements PerEntityMergeInterface {
+            public function perEntityPaths(): array
+            {
+                return GraphQlConfigPolicy::PER_ENTITY;
+            }
+        };
+
+        // the last query entity goes as well: an existing configuration may be left without one
+        $this->handler($policy)->applyMerged($this->ref(), [
+            'general' => ['active' => true],
+            'schema' => [
+                'queryEntities' => ['Manufacturer' => null],
+                'mutationEntities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => null],
+                'specialEntities' => ['asset' => null, 'document' => ['read' => true]],
+            ],
+        ], $this->user([]), MergeSaveMode::Publish);
+
+        $expected = [
+            'queryEntities' => [],
+            'mutationEntities' => ['Car' => ['id' => 'Car']],
+            'specialEntities' => ['document' => ['read' => true]],
+        ];
+        // the adapter's checks see the removal done, so a marker never reads as a misshapen entity
+        $this->assertSame($expected, $policy->checked[0][0]['schema']);
+        $this->assertSame($expected, $policy->saved[0][1]['schema']);
+    }
+
+    public function testANullOutsideAPerEntityPathStaysForTheAdapterToJudge(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $policy = new RecordingConfigPolicy();
+
+        $this->handler($policy)->applyMerged($this->ref(), [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Manufacturer' => null]],
+        ], $this->user([]), MergeSaveMode::Publish);
+
+        $this->assertSame(['entities' => ['Manufacturer' => null]], $policy->checked[0][0]['eventsSchema']);
     }
 
     public function testTheSubjectsNameAndTypeWinOverTheMergedState(): void

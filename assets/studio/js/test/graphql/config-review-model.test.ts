@@ -73,6 +73,16 @@ describe('configChanges', () => {
     })])
   })
 
+  it('names an entity the proposal removes with null once, as removed, and one it does not have not at all', () => {
+    const changes = configChanges(review({
+      schema: slot({ ...CAR, ...PRODUCT }, { ...PRODUCT, 'schema.queryEntities.Car': null, 'schema.mutationEntities.Bike': null })
+    }))
+
+    expect(changes).toEqual([expect.objectContaining({
+      address: 'schema.queryEntities.Car', label: 'Car', status: 'removed', formPath: 'schema.query'
+    })])
+  })
+
   it('keeps a leaf added to an entity that already exists as that leaf', () => {
     const changes = configChanges(review({
       schema: slot(CAR, { ...CAR, 'schema.queryEntities.Car.columnConfig': [{ attribute: 'sku' }] })
@@ -157,6 +167,18 @@ describe('proposedConfiguration', () => {
     expect(configuration.schema?.specialEntities).toEqual([expect.objectContaining({
       name: 'translation', readAllowed: false, createAllowed: true, readPossible: true, createPossible: true
     })])
+  })
+
+  it('drops an entity or a generic type the proposal removes with null', () => {
+    const configuration = proposedConfiguration(review({
+      schema: slot(
+        { ...CAR, ...PRODUCT, 'schema.specialEntities.asset.read': true },
+        { ...PRODUCT, 'schema.queryEntities.Car': null, 'schema.specialEntities.asset': null }
+      )
+    }), live)
+
+    expect(configuration.schema?.queryEntities).toEqual({ Product: { id: 'Product', name: 'Product' } })
+    expect(configuration.schema?.specialEntities ?? []).toEqual([])
   })
 
   it('never reaches a prototype through a proposed address', () => {
