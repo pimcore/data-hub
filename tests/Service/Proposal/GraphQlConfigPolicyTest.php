@@ -210,6 +210,28 @@ class GraphQlConfigPolicyTest extends Unit
         );
     }
 
+    public function testAnEntityOrGenericTypeProposedAsNullIsRemovedBeforeTheChecks(): void
+    {
+        $merged = [
+            'general' => ['name' => 'no-such-endpoint'],
+            'schema' => [
+                'queryEntities' => ['Manufacturer' => null],
+                'mutationEntities' => ['Manufacturer' => null],
+                'specialEntities' => ['asset' => null, 'document' => ['read' => true]],
+            ],
+        ];
+        // kept, the removal markers read as misshapen entries
+        $this->assertNotSame([], $this->policy()->problems($merged, false));
+
+        $state = ConfigDocument::withoutRemovedEntities($merged, $this->policy());
+
+        $this->assertSame(
+            ['queryEntities' => [], 'mutationEntities' => [], 'specialEntities' => ['document' => ['read' => true]]],
+            $state['schema'],
+        );
+        $this->assertSame([], $this->policy()->problems($state, false));
+    }
+
     public function testANewConfigurationNeedsAQueryEntity(): void
     {
         $problems = $this->policy()->problems(['general' => ['name' => 'no-such-endpoint']], true);

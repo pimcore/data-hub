@@ -115,6 +115,7 @@ final readonly class ConfigSubjectHandler implements SubjectHandlerInterface
         $name = $subject->ref;
         $proposedAsNew = ($finalData[ConfigDocument::CREATE_MARKER] ?? false) === true;
         unset($finalData[ConfigDocument::CREATE_MARKER]);
+        $finalData = ConfigDocument::withoutRemovedEntities($finalData, $this->policy);
 
         if ($finalData === []) {
             // an empty merged state would be a removal; a configuration is never deleted through a merge

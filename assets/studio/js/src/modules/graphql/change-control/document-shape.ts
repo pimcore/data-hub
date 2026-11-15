@@ -11,14 +11,11 @@
 
 export type Doc = Record<string, any>
 
-const isEntry = (item: unknown): item is Doc => typeof item === 'object' && item !== null
-
 // a null entry names nothing, so it is left out rather than failing the whole document
 const keyBy = (list: unknown[], key: (item: Doc) => string, value: (item: Doc) => Doc): Doc =>
-  list.filter(isEntry).reduce<Doc>((keyed, item) => ({ ...keyed, [key(item)]: value(item) }), {})
-
-const entriesOf = (map: Record<string, unknown>): Array<[string, Doc]> =>
-  Object.entries(map).filter((entry): entry is [string, Doc] => isEntry(entry[1]))
+  list
+    .filter((item): item is Doc => typeof item === 'object' && item !== null)
+    .reduce<Doc>((keyed, item) => ({ ...keyed, [key(item)]: value(item) }), {})
 
 /**
  * The live document as it is stored: the detail endpoint lists the schema entities and the
@@ -51,22 +48,19 @@ export function toStoredShape (live: Doc): Doc {
 
 /** the generic types back as the list the editor reads; the schema entities it reads keyed */
 export function toEditorShape (doc: Doc): Doc {
-  for (const key of ['queryEntities', 'mutationEntities']) {
-    const entities = doc.schema?.[key]
-    if (isEntry(entities) && !Array.isArray(entities)) {
-      doc.schema[key] = entriesOf(entities).reduce<Doc>((kept, [name, entity]) => ({ ...kept, [name]: entity }), {})
-    }
-  }
   const special = doc.schema?.specialEntities
-  if (isEntry(special) && !Array.isArray(special)) {
-    doc.schema.specialEntities = entriesOf(special).map(([name, setting]) => ({
-      ...setting,
-      name,
-      readAllowed: setting.read ?? setting.readAllowed ?? false,
-      createAllowed: setting.create ?? setting.createAllowed ?? false,
-      updateAllowed: setting.update ?? setting.updateAllowed ?? false,
-      deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
-    }))
+  if (special !== undefined && special !== null && !Array.isArray(special)) {
+    // a generic type proposed as null is one approving removes
+    doc.schema.specialEntities = Object.entries(special as Record<string, Doc | null>)
+      .filter((entry): entry is [string, Doc] => entry[1] !== null)
+      .map(([name, setting]) => ({
+        ...setting,
+        name,
+        readAllowed: setting.read ?? setting.readAllowed ?? false,
+        createAllowed: setting.create ?? setting.createAllowed ?? false,
+        updateAllowed: setting.update ?? setting.updateAllowed ?? false,
+        deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
+      }))
   }
 
   return doc

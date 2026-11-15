@@ -98,13 +98,30 @@ export function proposedConfiguration (
       if (!(address in proposed)) unassign(config, address)
     }
     for (const [address, value] of Object.entries(proposed)) {
-      // Change Control marks a key the change set removes with null
-      if (value === null) unassign(config, address)
+      if (removesEntity(address, value)) unassign(config, address)
       else assign(config, address, value)
     }
   }
 
   return toEditorShape(config) as BackendConfiguration
+}
+
+/**
+ * A schema entity or generic type proposed as null is one approving removes, as the subject
+ * handler drops it: not a value of its own.
+ */
+const removesEntity = (address: string, value: unknown): boolean => {
+  const segments = address.split('.')
+  return value === null && segments.length === 3 && segments[0] === 'schema' &&
+    Object.prototype.hasOwnProperty.call(SCHEMA_GRIDS, segments[1])
+}
+
+const withoutRemovedEntities = (proposed: Record<string, unknown>): Record<string, unknown> => {
+  const kept: Record<string, unknown> = {}
+  for (const [address, value] of Object.entries(proposed)) {
+    if (!removesEntity(address, value)) kept[address] = value
+  }
+  return kept
 }
 
 /** what the editor calls each slot, as translation keys, in the order it shows them */
@@ -187,7 +204,7 @@ export function configChanges (
   const onBothSides = new Set<string>()
   for (const [slotKey, slot] of Object.entries(payload.slots ?? {})) {
     const current = comparedSide(slot, compareAgainst)
-    const proposed = slot.proposed ?? {}
+    const proposed = withoutRemovedEntities(slot.proposed ?? {})
     changes.push(...slotChanges(slotKey, current, proposed))
     for (const entity of entitiesOnBothSides(current, proposed)) onBothSides.add(entity)
   }
@@ -203,10 +220,9 @@ function slotChanges (
   const changes: ConfigChange[] = []
   for (const address of new Set([...Object.keys(proposed), ...Object.keys(current)])) {
     if (NOT_A_CHANGE.has(address)) continue
+    const inProposed = address in proposed
     const inCurrent = address in current
-    if (address in proposed && inCurrent && isEqual(current[address], proposed[address])) continue
-    const inProposed = isProposed(proposed, address)
-    if (!inCurrent && !inProposed) continue
+    if (inProposed && inCurrent && isEqual(current[address], proposed[address])) continue
     changes.push({
       address,
       formPath: toFormPath(address),
@@ -214,15 +230,11 @@ function slotChanges (
       section,
       status: changeStatus(inCurrent, inProposed),
       current: current[address],
-      proposed: inProposed ? proposed[address] : undefined
+      proposed: proposed[address]
     })
   }
   return changes
 }
-
-/** a null leaf is Change Control's marker for a key the change set removes, not a value */
-const isProposed = (proposed: Record<string, unknown>, address: string): boolean =>
-  address in proposed && proposed[address] !== null
 
 function changeStatus (inCurrent: boolean, inProposed: boolean): FormItemAnnotationStatus {
   if (!inCurrent) return 'added'
@@ -230,7 +242,7 @@ function changeStatus (inCurrent: boolean, inProposed: boolean): FormItemAnnotat
 }
 
 function entitiesOnBothSides (current: Record<string, unknown>, proposed: Record<string, unknown>): string[] {
-  const proposedEntities = new Set(Object.keys(proposed).filter((address) => isProposed(proposed, address)).map(entityOf))
+  const proposedEntities = new Set(Object.keys(proposed).map(entityOf))
   return Object.keys(current)
     .map(entityOf)
     .filter((entity): entity is string => entity !== undefined && proposedEntities.has(entity))
