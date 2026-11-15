@@ -10,18 +10,27 @@
 
 import { describe, expect, it } from 'vitest'
 import { transformSchemaEntitiesFromBackend } from '../../src/modules/graphql/utils/transformers'
+import { toEditorShape } from '../../src/modules/graphql/change-control/document-shape'
 
 describe('transformSchemaEntitiesFromBackend', () => {
-  // a proposal that removes one entity carries it as null, and the review rendered it (B61)
+  // a proposal that removes one entity carries it as null
   it('leaves out an entity a proposal removes with null, and keeps the others', () => {
-    const entities = { Car: { id: 'Car', name: 'Car' }, Manufacturer: null } as unknown as Parameters<typeof transformSchemaEntitiesFromBackend>[0]
-
-    expect(transformSchemaEntitiesFromBackend(entities)).toEqual([{ id: 'Car', name: 'Car', entity: 'Car' }])
+    expect(transformSchemaEntitiesFromBackend({ Car: { id: 'Car', name: 'Car' }, Manufacturer: null }))
+      .toEqual([{ id: 'Car', name: 'Car', entity: 'Car' }])
   })
 
   it('leaves out a null in a list as well', () => {
-    const entities = [{ id: 'Car', name: 'Car' }, null] as unknown as Parameters<typeof transformSchemaEntitiesFromBackend>[0]
+    expect(transformSchemaEntitiesFromBackend([{ id: 'Car', name: 'Car' }, null]))
+      .toEqual([{ id: 'Car', name: 'Car', entity: 'Car' }])
+  })
+})
 
-    expect(transformSchemaEntitiesFromBackend(entities)).toEqual([{ id: 'Car', name: 'Car', entity: 'Car' }])
+describe('toEditorShape', () => {
+  it('leaves out a generic type a proposal removes with null, and keeps the others', () => {
+    const shaped = toEditorShape({ schema: { specialEntities: { document: null, asset: { read: true } } } })
+
+    expect(shaped.schema.specialEntities).toEqual([{
+      read: true, name: 'asset', readAllowed: true, createAllowed: false, updateAllowed: false, deleteAllowed: false
+    }])
   })
 })

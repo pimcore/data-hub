@@ -47,14 +47,17 @@ export function toStoredShape (live: Doc): Doc {
 export function toEditorShape (doc: Doc): Doc {
   const special = doc.schema?.specialEntities
   if (special !== undefined && special !== null && !Array.isArray(special)) {
-    doc.schema.specialEntities = Object.entries(special as Record<string, Doc>).map(([name, setting]) => ({
-      ...setting,
-      name,
-      readAllowed: setting.read ?? setting.readAllowed ?? false,
-      createAllowed: setting.create ?? setting.createAllowed ?? false,
-      updateAllowed: setting.update ?? setting.updateAllowed ?? false,
-      deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
-    }))
+    // a generic type proposed as null is one approving removes
+    doc.schema.specialEntities = Object.entries(special as Record<string, Doc | null>)
+      .filter((entry): entry is [string, Doc] => entry[1] !== null)
+      .map(([name, setting]) => ({
+        ...setting,
+        name,
+        readAllowed: setting.read ?? setting.readAllowed ?? false,
+        createAllowed: setting.create ?? setting.createAllowed ?? false,
+        updateAllowed: setting.update ?? setting.updateAllowed ?? false,
+        deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
+      }))
   }
 
   return doc

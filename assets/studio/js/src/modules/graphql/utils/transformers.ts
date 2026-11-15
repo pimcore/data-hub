@@ -137,12 +137,15 @@ export function transformSchemaEntitiesToBackend (entities: Record<string, unkno
   })
 }
 
-export function transformSchemaEntitiesFromBackend (backendEntities: Record<string, BackendSchemaEntity> | BackendSchemaEntity[] | undefined, defaultValue: any[] = []): any[] {
+export function transformSchemaEntitiesFromBackend (
+  backendEntities: Record<string, BackendSchemaEntity | null> | Array<BackendSchemaEntity | null> | undefined,
+  defaultValue: any[] = []
+): any[] {
   if (isNil(backendEntities)) {
     return defaultValue
   }
 
-  // a proposal that removes an entity carries it as null (B61): the review shows it as gone
+  // a proposal that removes an entity carries it as null: the review shows it as gone
   if (Array.isArray(backendEntities)) {
     return backendEntities.filter((entity: any) => !isNil(entity)).map((entity: any) => ({
       ...entity,
