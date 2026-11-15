@@ -176,10 +176,8 @@ class GraphQlEntityFoldTest extends Unit
         $merged = ['general' => ['active' => true], 'schema' => ['queryEntities' => null, 'mutationEntities' => 'x']];
 
         $this->assertSame($merged, ConfigDocument::withoutRemovedEntities($merged, $this->policy()));
-        $this->assertSame(['general' => ['active' => null]], ConfigDocument::withoutRemovedEntities(
-            ['general' => ['active' => null]],
-            $this->policy(),
-        ));
+        $unset = ['general' => ['active' => null]];
+        $this->assertSame($unset, ConfigDocument::withoutRemovedEntities($unset, $this->policy()));
     }
 
     private function policy(): GraphQlConfigPolicy
