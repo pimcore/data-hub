@@ -152,6 +152,36 @@ class GraphQlEntityFoldTest extends Unit
         $this->assertSame(['Car' => $car], $state['schema']['queryEntities']);
     }
 
+    public function testAMergedStateDropsOnlyTheEntitiesItsRemovalMarkersName(): void
+    {
+        // Change Control's merged state keeps the null an entity was proposed with
+        $merged = $this->stored();
+        $merged['schema']['queryEntities']['Manufacturer'] = null;
+        $merged['schema']['mutationEntities']['Car'] = null;
+        $merged['schema']['specialEntities']['object'] = null;
+
+        $state = ConfigDocument::withoutRemovedEntities($merged, $this->policy());
+
+        $expected = $this->stored();
+        unset(
+            $expected['schema']['queryEntities']['Manufacturer'],
+            $expected['schema']['mutationEntities']['Car'],
+            $expected['schema']['specialEntities']['object'],
+        );
+        $this->assertSame($expected, $state);
+    }
+
+    public function testAMergedStateWithoutEntityMapsIsLeftAsItIs(): void
+    {
+        $merged = ['general' => ['active' => true], 'schema' => ['queryEntities' => null, 'mutationEntities' => 'x']];
+
+        $this->assertSame($merged, ConfigDocument::withoutRemovedEntities($merged, $this->policy()));
+        $this->assertSame(['general' => ['active' => null]], ConfigDocument::withoutRemovedEntities(
+            ['general' => ['active' => null]],
+            $this->policy(),
+        ));
+    }
+
     private function policy(): GraphQlConfigPolicy
     {
         return new GraphQlConfigPolicy(
