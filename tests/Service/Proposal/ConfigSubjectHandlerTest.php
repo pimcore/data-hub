@@ -109,7 +109,7 @@ class ConfigSubjectHandlerTest extends Unit
             'eventsSchema' => ['entities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => ['id' => 'Manufacturer']]],
         ]));
         // Change Control's merged state keeps the null it was proposed with as the removal marker (B61)
-        $policy = new class () extends RecordingConfigPolicy implements PerEntityMergeInterface {
+        $policy = new class() extends RecordingConfigPolicy implements PerEntityMergeInterface {
             public function perEntityPaths(): array
             {
                 return ['eventsSchema.entities'];
