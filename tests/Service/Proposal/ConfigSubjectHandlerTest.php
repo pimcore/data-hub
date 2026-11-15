@@ -147,11 +147,14 @@ class ConfigSubjectHandlerTest extends Unit
             ],
         ], $this->user([]), MergeSaveMode::Publish);
 
-        $this->assertSame([
+        $expected = [
             'queryEntities' => [],
             'mutationEntities' => ['Car' => ['id' => 'Car']],
             'specialEntities' => ['document' => ['read' => true]],
-        ], $policy->saved[0][1]['schema']);
+        ];
+        // the adapter's checks see the removal done, so a marker never reads as a misshapen entity
+        $this->assertSame($expected, $policy->checked[0][0]['schema']);
+        $this->assertSame($expected, $policy->saved[0][1]['schema']);
     }
 
     public function testANullOutsideAPerEntityPathStaysForTheAdapterToJudge(): void
