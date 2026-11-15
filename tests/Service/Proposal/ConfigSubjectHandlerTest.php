@@ -38,6 +38,7 @@ use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigStateShape;
 use Pimcore\Bundle\DataHubBundle\Proposal\ChangeControl\ConfigSubjectHandler;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
+use Pimcore\Bundle\DataHubBundle\Proposal\PerEntityMergeInterface;
 use Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface;
 use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Service\Studio\ConfigurationServiceInterface;
@@ -99,6 +100,43 @@ class ConfigSubjectHandlerTest extends Unit
             'eventsSchema' => ['events' => ['pimcore.dataobject.postUpdate']],
             'security' => ['method' => 'header'],
         ]]], $policy->saved);
+    }
+
+    public function testAnEntitySentAsNullIsRemovedAndTheOthersAreKept(): void
+    {
+        $this->stored->put($this->configuration('orders', [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => ['id' => 'Manufacturer']]],
+        ]));
+        // Change Control's merged state keeps the null it was proposed with as the removal marker (B61)
+        $policy = new class () extends RecordingConfigPolicy implements PerEntityMergeInterface {
+            public function perEntityPaths(): array
+            {
+                return ['eventsSchema.entities'];
+            }
+        };
+
+        $this->handler($policy)->applyMerged($this->ref(), [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Car' => ['id' => 'Car'], 'Manufacturer' => null]],
+        ], $this->user([]), MergeSaveMode::Publish);
+
+        $expected = ['entities' => ['Car' => ['id' => 'Car']]];
+        $this->assertSame($expected, $policy->checked[0][0]['eventsSchema']);
+        $this->assertSame($expected, $policy->saved[0][1]['eventsSchema']);
+    }
+
+    public function testANullOutsideAPerEntityPathStaysForTheAdapterToJudge(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $policy = new RecordingConfigPolicy();
+
+        $this->handler($policy)->applyMerged($this->ref(), [
+            'general' => ['active' => true],
+            'eventsSchema' => ['entities' => ['Manufacturer' => null]],
+        ], $this->user([]), MergeSaveMode::Publish);
+
+        $this->assertSame(['entities' => ['Manufacturer' => null]], $policy->checked[0][0]['eventsSchema']);
     }
 
     public function testTheSubjectsNameAndTypeWinOverTheMergedState(): void
