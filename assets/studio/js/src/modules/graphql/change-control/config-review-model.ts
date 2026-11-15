@@ -97,7 +97,11 @@ export function proposedConfiguration (
     for (const address of Object.keys(slot.current ?? {})) {
       if (!(address in proposed)) unassign(config, address)
     }
-    for (const [address, value] of Object.entries(proposed)) assign(config, address, value)
+    for (const [address, value] of Object.entries(proposed)) {
+      // Change Control marks a key the change set removes with null
+      if (value === null) unassign(config, address)
+      else assign(config, address, value)
+    }
   }
 
   return toEditorShape(config) as BackendConfiguration
@@ -199,9 +203,10 @@ function slotChanges (
   const changes: ConfigChange[] = []
   for (const address of new Set([...Object.keys(proposed), ...Object.keys(current)])) {
     if (NOT_A_CHANGE.has(address)) continue
-    const inProposed = address in proposed
     const inCurrent = address in current
-    if (inProposed && inCurrent && isEqual(current[address], proposed[address])) continue
+    if (address in proposed && inCurrent && isEqual(current[address], proposed[address])) continue
+    const inProposed = isProposed(proposed, address)
+    if (!inCurrent && !inProposed) continue
     changes.push({
       address,
       formPath: toFormPath(address),
@@ -209,11 +214,15 @@ function slotChanges (
       section,
       status: changeStatus(inCurrent, inProposed),
       current: current[address],
-      proposed: proposed[address]
+      proposed: inProposed ? proposed[address] : undefined
     })
   }
   return changes
 }
+
+/** a null leaf is Change Control's marker for a key the change set removes, not a value */
+const isProposed = (proposed: Record<string, unknown>, address: string): boolean =>
+  address in proposed && proposed[address] !== null
 
 function changeStatus (inCurrent: boolean, inProposed: boolean): FormItemAnnotationStatus {
   if (!inCurrent) return 'added'
@@ -221,7 +230,7 @@ function changeStatus (inCurrent: boolean, inProposed: boolean): FormItemAnnotat
 }
 
 function entitiesOnBothSides (current: Record<string, unknown>, proposed: Record<string, unknown>): string[] {
-  const proposedEntities = new Set(Object.keys(proposed).map(entityOf))
+  const proposedEntities = new Set(Object.keys(proposed).filter((address) => isProposed(proposed, address)).map(entityOf))
   return Object.keys(current)
     .map(entityOf)
     .filter((entity): entity is string => entity !== undefined && proposedEntities.has(entity))
