@@ -237,7 +237,10 @@ export function transformBackendToForm (
     schema: {
       query: transformSchemaEntitiesFromBackend(backendConfig.schema?.queryEntities, []),
       mutation: transformSchemaEntitiesFromBackend(backendConfig.schema?.mutationEntities, []),
-      genericTypes: (backendConfig.schema?.specialEntities ?? []).map(transformGenericTypeFromBackend)
+      // a null entry names nothing, so it is left out rather than failing the editor
+      genericTypes: (backendConfig.schema?.specialEntities ?? [])
+        .filter((entity): entity is BackendSpecialEntity => !isNil(entity))
+        .map(transformGenericTypeFromBackend)
     }
   }
 }

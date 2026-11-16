@@ -72,7 +72,7 @@ export interface BackendConfiguration {
   schema?: {
     queryEntities?: Record<string, BackendSchemaEntity> | BackendSchemaEntity[]
     mutationEntities?: Record<string, BackendSchemaEntity> | BackendSchemaEntity[]
-    specialEntities?: BackendSpecialEntity[]
+    specialEntities?: Array<BackendSpecialEntity | null>
     [key: string]: any
   }
   [key: string]: any
