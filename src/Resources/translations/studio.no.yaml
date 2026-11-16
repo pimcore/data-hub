@@ -156,3 +156,5 @@ data-hub.review.outline.mutations-one: '1 mutasjonsentitet'
 data-hub.review.outline.mutations: '{{count}} mutasjonsentiteter'
 data-hub.review.outline.rules-one: '1 arbeidsområderegel'
 data-hub.review.outline.rules: '{{count}} arbeidsområderegler'
+data-hub.column-config-modal.fields-to-add.error: Feltene som kan legges til kunne ikke lastes.
+data-hub.column-config-modal.pick-classification-store-key: Velg en nøkkel

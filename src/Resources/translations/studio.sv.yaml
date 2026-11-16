@@ -156,3 +156,5 @@ data-hub.review.outline.mutations-one: '1 mutationsentitet'
 data-hub.review.outline.mutations: '{{count}} mutationsentiteter'
 data-hub.review.outline.rules-one: '1 arbetsyteregel'
 data-hub.review.outline.rules: '{{count}} arbetsyteregler'
+data-hub.column-config-modal.fields-to-add.error: Fälten att lägga till kunde inte läsas in.
+data-hub.column-config-modal.pick-classification-store-key: Välj en nyckel

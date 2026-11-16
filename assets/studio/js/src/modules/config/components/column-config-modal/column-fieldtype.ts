@@ -9,6 +9,7 @@
  */
 
 import type { AdvancedEditorColumn } from './types'
+import { findStoredStoreField, isClassificationStore } from './column-identity'
 
 /**
  * The part of a column the fieldtype token is read from. Structurally satisfied by
@@ -123,7 +124,9 @@ export const hydrateDraftColumn = (
   advancedColumnType: string,
   isKnownType: (name: string) => boolean
 ): AdvancedEditorColumn => {
-  const available = payloadColumns.find(field => matchesAvailableColumn(field, column, advancedColumnType))
+  const candidates = payloadColumns.filter(field => matchesAvailableColumn(field, column, advancedColumnType))
+  // A classification-store column is told apart by its ids: the key alone would hand it the type of another key
+  const available = isClassificationStore(column.type) ? findStoredStoreField(column, candidates) : candidates[0]
 
   return {
     ...column,

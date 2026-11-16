@@ -156,3 +156,5 @@ data-hub.review.outline.mutations-one: '1 Mutation-Entität'
 data-hub.review.outline.mutations: '{{count}} Mutation-Entitäten'
 data-hub.review.outline.rules-one: '1 Workspace-Regel'
 data-hub.review.outline.rules: '{{count}} Workspace-Regeln'
+data-hub.column-config-modal.fields-to-add.error: Die hinzuzufügenden Felder konnten nicht geladen werden.
+data-hub.column-config-modal.pick-classification-store-key: Schlüssel wählen
