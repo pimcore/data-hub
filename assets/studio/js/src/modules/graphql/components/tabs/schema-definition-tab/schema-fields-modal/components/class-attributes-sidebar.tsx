@@ -70,7 +70,10 @@ export const ClassAttributesSidebar = ({
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
         { layoutLoadErrors.length > 0 && (
-          <Box margin={ { bottom: 'small' } } padding={ { x: 'small' } }>
+          <Box
+            margin={ { bottom: 'small' } }
+            padding={ { x: 'small' } }
+          >
             <Flex
               gap='extra-small'
               vertical
