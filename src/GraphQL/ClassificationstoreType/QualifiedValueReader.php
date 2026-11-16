@@ -22,7 +22,7 @@ use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
 use Pimcore\Model\DataObject\Classificationstore\Service as ClassificationstoreService;
 
 /**
- * Reads the qualified values (language, variant, position) of one key for the types that publish them.
+ * Reads the qualified values (language, variant) of one key for the types that publish them.
  *
  * @internal
  */
@@ -40,7 +40,7 @@ final class QualifiedValueReader
     }
 
     /**
-     * Whether the engine behind the store can hold variants and positions above 0.
+     * Whether the engine behind the store can hold variants.
      */
     public static function supportsQualifiers(Classificationstore $store): bool
     {
@@ -51,7 +51,7 @@ final class QualifiedValueReader
 
         $dao = $store->getDao();
 
-        return $dao->supports(EngineFeature::MultiValue) && $dao->supports(EngineFeature::Variants);
+        return $dao->supports(EngineFeature::Variants);
     }
 
     /**
@@ -62,7 +62,7 @@ final class QualifiedValueReader
         if (!self::supportsQualifiers($store)) {
             throw new ClientSafeException(sprintf(
                 'The storage engine of the classification store "%s" does not support qualified values'
-                . ' (variants and positions), change the engine setting of its store or use `features`.',
+                . ' (variants), change the engine setting of its store or use `features`.',
                 $store->getFieldname()
             ));
         }
@@ -72,7 +72,7 @@ final class QualifiedValueReader
      * The values of a multiValue key: all qualified values, or the single unqualified one on an engine
      * that cannot hold qualified values.
      *
-     * @return array<int, array{language: ?string, variant: ?string, position: ?int, value: FeatureDescriptor}>
+     * @return array<int, array{language: ?string, variant: ?string, value: FeatureDescriptor}>
      *
      * @throws \Exception
      */
@@ -97,14 +97,14 @@ final class QualifiedValueReader
                 $descriptor->getLanguage()
             );
 
-            return [self::entry($descriptor, $valueType, null, null, null, $value)];
+            return [self::entry($descriptor, $valueType, null, null, $value)];
         }
 
         return self::qualifiedEntries($descriptor);
     }
 
     /**
-     * @return array<int, array{language: ?string, variant: ?string, position: ?int, value: FeatureDescriptor}>
+     * @return array<int, array{language: ?string, variant: ?string, value: FeatureDescriptor}>
      *
      * @throws \Exception
      */
@@ -128,14 +128,14 @@ final class QualifiedValueReader
                 $descriptor->getLanguage(),
                 (string) $variant
             );
-            foreach ($values as $position => $value) {
+            // one value per variant: a value stored above position 0 is kept, and not published
+            if (array_key_exists(0, $values)) {
                 $result[] = self::entry(
                     $descriptor,
                     $valueType,
                     $descriptor->getLanguage(),
                     (string) $variant,
-                    (int) $position,
-                    $value
+                    $values[0]
                 );
             }
         }
@@ -181,14 +181,13 @@ final class QualifiedValueReader
     }
 
     /**
-     * @return array{language: ?string, variant: ?string, position: ?int, value: FeatureDescriptor}
+     * @return array{language: ?string, variant: ?string, value: FeatureDescriptor}
      */
     private static function entry(
         FeatureDescriptor $key,
         string $valueType,
         ?string $language,
         ?string $variant,
-        ?int $position,
         mixed $value
     ): array {
         $wrapped = new FeatureDescriptor();
@@ -196,6 +195,6 @@ final class QualifiedValueReader
         $wrapped->setType($valueType);
         $wrapped->setValue($value);
 
-        return ['language' => $language, 'variant' => $variant, 'position' => $position, 'value' => $wrapped];
+        return ['language' => $language, 'variant' => $variant, 'value' => $wrapped];
     }
 }

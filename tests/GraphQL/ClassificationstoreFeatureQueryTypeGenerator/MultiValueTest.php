@@ -88,7 +88,6 @@ class MultiValueTest extends Unit
         $relation->setDefinition(json_encode([
             'fieldtype' => 'multiValue',
             'name' => 'weight',
-            'multiValue' => true,
             'delegateDatatype' => $delegate,
             'delegate' => ['fieldtype' => $delegate, 'name' => 'weight'],
         ]));
@@ -189,7 +188,7 @@ class MultiValueTest extends Unit
         $this->assertCount(1, $entries);
         $this->assertNull($entries[0]['language']);
         $this->assertNull($entries[0]['variant']);
-        $this->assertNull($entries[0]['position']);
+        $this->assertArrayNotHasKey('position', $entries[0]);
         $this->assertSame('plain', $entries[0]['value']->getValue());
     }
 }

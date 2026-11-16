@@ -17,7 +17,7 @@ use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
 
 /**
- * One qualified value of a key: its language, variant and position and the value typed through the csFeature union.
+ * One qualified value of a key: its language and variant and the value typed through the csFeature union.
  *
  * @internal
  */
@@ -39,7 +39,6 @@ final class QualifiedValueType extends ObjectType
                 'fields' => static fn (): array => [
                     'language' => Type::string(),
                     'variant' => Type::string(),
-                    'position' => Type::int(),
                     'value' => $service->getClassificationStoreTypeDefinition('cs_feature'),
                 ],
             ]);

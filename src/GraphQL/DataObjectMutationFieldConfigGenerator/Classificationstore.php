@@ -63,7 +63,6 @@ final class Classificationstore extends Base implements ResetInterface
                         'description' => 'the value as the editor sends it, an explicit null clears the slot',
                     ],
                     'variant' => ['type' => Type::string(), 'description' => 'defaults to the default variant'],
-                    'position' => ['type' => Type::int(), 'description' => 'defaults to position 0'],
                 ],
             ]);
 

@@ -90,7 +90,7 @@ trait ClassificationstoreFixtureTrait
     {
         $store = new StoreConfig();
         $store->setName('datahub-cs-write-' . uniqid());
-        // qualified values (variants, positions) live in the document engine, the default EAV engine refuses them
+        // qualified values (variants) live in the document engine, the default EAV engine refuses them
         $store->setEngine('document');
         $store->save();
 
@@ -152,7 +152,7 @@ trait ClassificationstoreFixtureTrait
     }
 
     /**
-     * A multiValue key over an inner type, with a list and the variants "metric" and "imperial".
+     * A multiValue key over an inner type, with the variants "metric" and "imperial".
      */
     private function createMultiValueKey(
         GroupConfig $group,
@@ -160,7 +160,6 @@ trait ClassificationstoreFixtureTrait
         string $delegate = 'input'
     ): KeyGroupRelation {
         return $this->createKey($group, $identifier, 'multiValue', [
-            'multiValue' => true,
             'variants' => [['name' => 'metric'], ['name' => 'imperial']],
             'delegateDatatype' => $delegate,
             'delegate' => ['fieldtype' => $delegate, 'name' => $identifier],
