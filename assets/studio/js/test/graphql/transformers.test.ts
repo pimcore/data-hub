@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { transformSchemaEntitiesFromBackend } from '../../src/modules/graphql/utils/transformers'
+import { transformBackendToForm, transformSchemaEntitiesFromBackend } from '../../src/modules/graphql/utils/transformers'
 import { toEditorShape } from '../../src/modules/graphql/change-control/document-shape'
 
 describe('transformSchemaEntitiesFromBackend', () => {
@@ -32,5 +32,13 @@ describe('toEditorShape', () => {
     expect(shaped.schema.specialEntities).toEqual([{
       read: true, name: 'asset', readAllowed: true, createAllowed: false, updateAllowed: false, deleteAllowed: false
     }])
+  })
+})
+
+describe('transformBackendToForm', () => {
+  it('leaves out a null generic type of the live configuration, and keeps the others', () => {
+    const form = transformBackendToForm({ schema: { specialEntities: [null, { name: 'asset', readAllowed: true, createAllowed: false, updateAllowed: false, deleteAllowed: false }] } }, 'products')
+    expect(form.schema.genericTypes).toHaveLength(1)
+    expect(form.schema.genericTypes[0]).toMatchObject({ name: 'asset', read: true, create: false })
   })
 })
