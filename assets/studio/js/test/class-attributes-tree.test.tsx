@@ -56,7 +56,7 @@ jest.mock('@pimcore/studio-ui-bundle/components', () => ({
 }))
 
 jest.mock('../src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/use-objectbrick-layouts', () => ({
-  useObjectBrickLayouts: () => ({ layouts: new Map(), isLoading: false })
+  useObjectBrickLayouts: () => ({ layouts: new Map(), isLoading: false, loadErrors: [] })
 }))
 
 const renderTree = (mode: SchemaFieldsMode): ReturnType<typeof useClassAttributesTree> =>
