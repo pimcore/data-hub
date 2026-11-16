@@ -10,7 +10,7 @@
 
 import React from 'react'
 import { Button, Space } from '@pimcore/studio-ui-bundle/components'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 
 export interface ColumnEditorActionsProps {
   /**
