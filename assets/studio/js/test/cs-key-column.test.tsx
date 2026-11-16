@@ -9,15 +9,12 @@
  */
 
 import React from 'react'
-import { flatMap } from 'lodash'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { trackedErrors } from './mocks/studio-ui-bundle/modules-app'
-import { openClassificationStorePicker } from './mocks/studio-ui-bundle/modules-element'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
-import { useAddColumnGroups } from '../src/modules/config/components/column-config-modal/use-add-column-groups'
 import { useColumnEditorState } from '../src/modules/config/components/column-config-modal/use-column-editor-state'
 import {
   CLASSIFICATION_STORE_TYPE,
@@ -64,7 +61,6 @@ beforeEach(() => {
   resetApiState()
   apiState.available = AVAILABLE
   trackedErrors.length = 0
-  openClassificationStorePicker.mockClear()
 })
 
 describe('adding a Classification Store field from the tree', () => {
@@ -93,8 +89,8 @@ describe('adding one key of a Classification Store field', () => {
     }))
 
     act(() => { result.current.handleAddColumnOfType(storeField) })
-    act(() => { result.current.handleAddClassificationStoreKey(storeField, { groupId: 10, keyId: 4 }) })
-    act(() => { result.current.handleAddClassificationStoreKey(storeField, { groupId: 11, keyId: 4 }) })
+    act(() => { result.current.handleAddClassificationStoreKey(storeField, [{ groupId: 10, keyId: 4 }]) })
+    act(() => { result.current.handleAddClassificationStoreKey(storeField, [{ groupId: 11, keyId: 4 }]) })
 
     const columns = result.current.getColumns()
     expect(columns).toHaveLength(3)
@@ -107,6 +103,26 @@ describe('adding one key of a Classification Store field', () => {
       locale: undefined
     })
     expect(columns[2].config).toEqual({ groupId: 11, keyId: 4 })
+  })
+
+  it('appends every key of one selection, in the order it was reported', () => {
+    const { result } = renderHook(() => useColumnEditorState({
+      entity: 'Product', columns: NO_COLUMNS, onApply: () => {}, onCancel: () => {}
+    }))
+
+    act(() => {
+      result.current.handleAddClassificationStoreKey(storeField, [
+        { groupId: 10, keyId: 4 },
+        { groupId: 11, keyId: 5 },
+        { groupId: 12, keyId: 6 }
+      ])
+    })
+
+    expect(result.current.getColumns().map(column => column.config)).toEqual([
+      { groupId: 10, keyId: 4 },
+      { groupId: 11, keyId: 5 },
+      { groupId: 12, keyId: 6 }
+    ])
   })
 })
 
@@ -122,7 +138,7 @@ describe('the type of a single key', () => {
       entity: 'Product', columns: NO_COLUMNS, onApply: () => {}, onCancel: () => {}
     }))
 
-    act(() => { result.current.handleAddClassificationStoreKey(storeField, { groupId: 10, keyId: 4 }) })
+    act(() => { result.current.handleAddClassificationStoreKey(storeField, [{ groupId: 10, keyId: 4 }]) })
 
     expect(result.current.getColumns()[0].fieldtype).toBe('input')
   })
@@ -187,75 +203,6 @@ describe('a failed available-columns request', () => {
     expect(screen.queryByTestId('column-picker')).not.toBeInTheDocument()
     expect(trackedErrors.length).toBeGreaterThan(0)
     expect(editor.current?.isHydrated?.()).toBe(false)
-  })
-})
-
-describe('the key picker affordance in the tree', () => {
-  const adapterField = { key: 'name', type: 'dataobject.input', localizable: false, group: ['Technical'], exportable: true } as unknown as GridColumnConfiguration
-  const PICK = 'picker-item-technicalAttributes-pick-key'
-
-  it('is offered on the classification store entry only', () => {
-    apiState.available = { data: { columns: [storeField, adapterField] }, isLoading: false }
-    mountEditor(NO_COLUMNS)
-
-    expect(screen.getAllByTestId(/-pick-key$/)).toHaveLength(1)
-    expect(screen.getByTestId(PICK)).toBeInTheDocument()
-  })
-
-  it('leaves the plain entry and other entries adding exactly what they add today', () => {
-    apiState.available = { data: { columns: [storeField, adapterField] }, isLoading: false }
-    const editor = mountEditor(NO_COLUMNS)
-
-    fireEvent.click(screen.getByTestId('picker-item-technicalAttributes'))
-    fireEvent.click(screen.getByTestId('picker-item-name'))
-
-    expect(openClassificationStorePicker).not.toHaveBeenCalled()
-    expect(editor.current?.getColumns()).toEqual([
-      expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: undefined }),
-      expect.objectContaining({ key: 'name', type: 'dataobject.input' })
-    ])
-  })
-
-  it('opens the picker with the store of the field and appends the picked key as one column', () => {
-    const editor = mountEditor(NO_COLUMNS)
-
-    fireEvent.click(screen.getByTestId(PICK))
-    expect(openClassificationStorePicker).toHaveBeenCalledWith(expect.objectContaining({ storeId: 3, fieldName: 'technicalAttributes' }))
-    act(() => { openClassificationStorePicker.mock.calls[0][0].onPick({ groupId: 7, keyId: 42, keyName: 'rim' }) })
-
-    expect(editor.current?.getColumns()).toEqual([
-      expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 7, keyId: 42 } })
-    ])
-  })
-
-  it('is not offered when the class is empty, while the whole-store entry still is', () => {
-    mountEditor(NO_COLUMNS, '')
-
-    expect(screen.queryByTestId(PICK)).not.toBeInTheDocument()
-    expect(screen.getByTestId('picker-item-technicalAttributes')).toBeInTheDocument()
-  })
-
-  it('is not offered by the legacy migration popover, which hosts no key picker', () => {
-    const { result } = renderHook(() => useAddColumnGroups([storeField]))
-    const keys = flatMap(result.current, group => group.items.map(item => item.key))
-
-    expect(keys).toEqual(['technicalAttributes'])
-  })
-
-  it('is offered by the grouped tree only when the caller says it can host the picker', () => {
-    const { result } = renderHook(() => useAddColumnGroups([storeField], true))
-
-    expect(flatMap(result.current, group => group.items.map(item => item.key))).toEqual(['technicalAttributes', 'technicalAttributes-pick-key'])
-  })
-
-  it('falls back to store 1 when the field never had a store configured', () => {
-    const bare = { ...storeField, config: { fieldDefinition: { fieldtype: 'classificationstore' } } } as unknown as GridColumnConfiguration
-    apiState.available = { data: { columns: [bare] }, isLoading: false }
-    mountEditor(NO_COLUMNS)
-
-    fireEvent.click(screen.getByTestId(PICK))
-
-    expect(openClassificationStorePicker).toHaveBeenCalledWith(expect.objectContaining({ storeId: 1 }))
   })
 })
 

@@ -28,6 +28,9 @@ import { deriveColumnFieldtype, hydrateDraft, isDraftHydrated } from './column-f
 import { CLASSIFICATION_STORE_TYPE } from './column-identity'
 import { trackConfigError } from '../../../../components/base-detail-view/track-config-error'
 
+/** One key of a Classification Store field, as the picker reports it */
+interface StoreKeyIds { groupId: number, keyId: number, fieldtype?: string }
+
 interface UseColumnEditorStateOptions {
   entity: string
   classDefinitionId?: string
@@ -55,8 +58,8 @@ interface UseColumnEditorStateResult {
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
   onAddAdvancedColumn?: () => void
   handleAddColumnOfType: (column: GridColumnConfiguration) => void
-  /** Adds one key of a Classification Store field; the whole-store path stays handleAddColumnOfType. */
-  handleAddClassificationStoreKey: (field: GridColumnConfiguration, ids: { groupId: number, keyId: number, fieldtype?: string }) => void
+  /** Adds the picked keys of a Classification Store field; the whole-store path stays handleAddColumnOfType. */
+  handleAddClassificationStoreKey: (field: GridColumnConfiguration, keys: StoreKeyIds[]) => void
   handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
   handleRemove: (id: string) => void
   handleApply: () => void
@@ -134,24 +137,29 @@ export const useColumnEditorState = ({
   }, [])
 
   const handleAddClassificationStoreKey = useCallback(
-    (field: GridColumnConfiguration, ids: { groupId: number, keyId: number, fieldtype?: string }): void => {
+    (field: GridColumnConfiguration, keys: StoreKeyIds[]): void => {
       // D-0012: the bare type of the key itself. The picked value, else the key's own payload entry (matched by
       // ids only: the store field's entry would hand one key the type of the whole store); none known yet is
       // resolved by hydration once the payload carries the key.
-      const keyEntry = payloadRef.current?.find(entry => {
-        const entryIds = entry.config as Record<string, unknown> | undefined
-        return entry.key === field.key && String(entryIds?.groupId) === String(ids.groupId) &&
-          String(entryIds?.keyId) === String(ids.keyId)
-      })
-      setDraft(prev => [...prev, {
-        _id: crypto.randomUUID(),
-        key: field.key,
-        fieldtype: ids.fieldtype ?? (keyEntry !== undefined ? deriveColumnFieldtype(keyEntry) : ''),
-        type: CLASSIFICATION_STORE_TYPE,
-        config: { groupId: ids.groupId, keyId: ids.keyId },
-        localizable: field.localizable,
-        isNew: true
-      }])
+      const columnOf = (ids: StoreKeyIds): AdvancedEditorColumn => {
+        const keyEntry = payloadRef.current?.find(entry => {
+          const entryIds = entry.config as Record<string, unknown> | undefined
+          return entry.key === field.key && String(entryIds?.groupId) === String(ids.groupId) &&
+            String(entryIds?.keyId) === String(ids.keyId)
+        })
+        return {
+          _id: crypto.randomUUID(),
+          key: field.key,
+          fieldtype: ids.fieldtype ?? (keyEntry !== undefined ? deriveColumnFieldtype(keyEntry) : ''),
+          type: CLASSIFICATION_STORE_TYPE,
+          config: { groupId: ids.groupId, keyId: ids.keyId },
+          localizable: field.localizable,
+          isNew: true
+        }
+      }
+
+      // The whole selection in one update, appended in the order the picker reported it.
+      setDraft(prev => [...prev, ...keys.map(columnOf)])
     },
     []
   )
