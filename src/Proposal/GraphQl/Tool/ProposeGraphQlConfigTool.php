@@ -43,9 +43,14 @@ final readonly class ProposeGraphQlConfigTool
         description: 'Propose a Data Hub GraphQL endpoint configuration for user approval — changes '
             . 'to an existing one, or a new one under a name that does not exist yet. Does NOT '
             . 'write — the configuration rides a change set the user reviews. For a change, read the '
-            . 'current configuration first with get_graphql_config and send the COMPLETE document '
-            . 'back with your changes applied; anything you leave out keeps its current value. Only '
-            . 'the general, schema and workspaces sections may be sent: security and permissions '
+            . 'current configuration first with get_graphql_config and send ONLY the sections and keys '
+            . 'you change; anything you leave out keeps its current value. In schema.queryEntities, '
+            . 'schema.mutationEntities and schema.specialEntities send only the entries you change, '
+            . 'each one COMPLETE (an entity\'s id and whole columnConfig, a generic type\'s flags), as '
+            . 'it replaces the stored one, and "<Entity>": null to remove one; entries you leave out '
+            . 'stay as they are, and an empty map removes them all. Other keys and lists are replaced '
+            . 'whole by what you send. Only the general, schema and workspaces sections may be '
+            . 'sent: security and permissions '
             . 'are refused, and so is any create, update or delete access the endpoint does not '
             . 'already grant — propose read access only. A new configuration needs at least one '
             . 'query entity and starts inactive unless active is set. Returns '
@@ -66,8 +71,9 @@ final readonly class ProposeGraphQlConfigTool
         string $name,
         #[Schema(
             type: 'string',
-            description: 'The configuration as JSON or YAML — the general, schema and workspaces '
-                . 'sections, with your changes applied.'
+            description: 'The configuration as JSON or YAML — only the sections, keys and entities '
+                . 'you change, from general, schema and workspaces; a changed entity complete, a removed '
+                . 'one as null.'
         )]
         array|string $configuration,
         #[Schema(type: 'string', description: 'One sentence saying what the change does, shown on the review card.')]

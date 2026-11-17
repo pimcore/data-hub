@@ -15,8 +15,10 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigDocument;
 use Pimcore\Bundle\DataHubBundle\Proposal\ConfigProposalPolicyInterface;
+use function sprintf;
 
 class ConfigDocumentTest extends Unit
 {
@@ -120,6 +122,180 @@ class ConfigDocumentTest extends Unit
         );
         $this->assertNotSame(ConfigDocument::normalized(['l' => [1, 2]]), ConfigDocument::normalized(['l' => [2, 1]]));
         $this->assertNotSame(ConfigDocument::normalized(['v' => '01']), ConfigDocument::normalized(['v' => '1']));
+    }
+
+    public function testAWildcardPathHidesEveryMatchingKeyOnRead(): void
+    {
+        $readable = ConfigDocument::readable([
+            'general' => ['name' => 'feed'],
+            'deliveryDestination' => [
+                'transmitter' => 'sftp',
+                'transmitter_sftp' => ['password' => 'secret'],
+                'transmitter_retired' => ['token' => 'secret'],
+                'transmitterHint' => 'kept',
+            ],
+        ], $this->wildcardPolicy());
+
+        $this->assertSame([
+            'general' => ['name' => 'feed'],
+            'deliveryDestination' => ['transmitter' => 'sftp', 'transmitterHint' => 'kept'],
+        ], $readable);
+    }
+
+    public function testAProposalTouchingAWildcardMatchIsRefused(): void
+    {
+        $proposed = [
+            'deliveryDestination' => [
+                'transmitter' => 'ftp',
+                'transmitter_ftp' => ['host' => 'x'],
+                'transmitter_retired' => [],
+            ],
+        ];
+
+        $this->assertSame(
+            ['deliveryDestination.transmitter_ftp', 'deliveryDestination.transmitter_retired'],
+            ConfigDocument::refusedPaths($proposed, $this->wildcardPolicy()),
+        );
+        $this->assertSame(
+            [],
+            ConfigDocument::refusedPaths(['deliveryDestination' => ['transmitter' => 'ftp']], $this->wildcardPolicy()),
+        );
+        $this->assertSame([], ConfigDocument::withheldSections($this->wildcardPolicy()));
+    }
+
+    public function testAProposalOmittingTheWildcardBlockKeepsTheStoredSettings(): void
+    {
+        $stored = [
+            'general' => ['name' => 'feed', 'description' => 'old'],
+            'deliveryDestination' => [
+                'transmitter' => 'sftp',
+                'transmitter_sftp' => ['host' => 'real', 'password' => 'secret'],
+                'transmitter_retired' => ['token' => 'secret'],
+            ],
+        ];
+        // what an agent sends back after reading: the readable document, edited
+        $proposed = ConfigDocument::readable($stored, $this->wildcardPolicy());
+        $proposed['general']['description'] = 'new';
+        $proposed['deliveryDestination']['transmitter'] = 'ftp';
+
+        $this->assertSame([], ConfigDocument::refusedPaths($proposed, $this->wildcardPolicy()));
+
+        $configuration = ConfigDocument::withStored(
+            ConfigDocument::fold($stored, $proposed),
+            $stored,
+            $this->wildcardPolicy(),
+        );
+        $delivery = $configuration['deliveryDestination'];
+        $this->assertSame($stored['deliveryDestination']['transmitter_sftp'], $delivery['transmitter_sftp']);
+        $this->assertSame($stored['deliveryDestination']['transmitter_retired'], $delivery['transmitter_retired']);
+        $this->assertSame('ftp', $configuration['deliveryDestination']['transmitter']);
+        $this->assertSame('new', $configuration['general']['description']);
+
+        // a section sent whole, without the blocks, cannot drop them either
+        $configuration = ConfigDocument::withStored(
+            ['general' => $stored['general'], 'deliveryDestination' => ['transmitter' => 'ftp']],
+            $stored,
+            $this->wildcardPolicy(),
+        );
+        $this->assertSame([
+            'transmitter' => 'ftp',
+            'transmitter_sftp' => ['host' => 'real', 'password' => 'secret'],
+            'transmitter_retired' => ['token' => 'secret'],
+        ], $configuration['deliveryDestination']);
+    }
+
+    public function testAWildcardMatchCannotBeOverwrittenOrAdded(): void
+    {
+        $configuration = ConfigDocument::withStored(
+            ['deliveryDestination' => [
+                'transmitter_sftp' => ['host' => 'forged'],
+                'transmitter_new' => ['host' => 'forged'],
+                'transmitterHint' => 'changed',
+            ]],
+            ['deliveryDestination' => ['transmitter_sftp' => ['host' => 'real'], 'transmitterHint' => 'old']],
+            $this->wildcardPolicy(),
+        );
+
+        $this->assertSame(
+            ['deliveryDestination' => ['transmitterHint' => 'changed', 'transmitter_sftp' => ['host' => 'real']]],
+            $configuration,
+        );
+    }
+
+    public function testAnAddressUnderAWildcardMatchIsWithheld(): void
+    {
+        $policy = $this->wildcardPolicy();
+
+        $this->assertTrue(ConfigDocument::withholds(['deliveryDestination', 'transmitter_sftp', 'host'], 'x', $policy));
+        $this->assertTrue(ConfigDocument::withholds(['deliveryDestination', 'transmitter_x'], [], $policy));
+        $this->assertTrue(ConfigDocument::withholds(['deliveryDestination'], ['transmitter_x' => []], $policy));
+        $this->assertFalse(ConfigDocument::withholds(['deliveryDestination'], ['transmitter' => 'ftp'], $policy));
+        $this->assertFalse(ConfigDocument::withholds(['deliveryDestination', 'transmitter'], 'ftp', $policy));
+        $this->assertFalse(ConfigDocument::withholds(['general', 'transmitter_sftp'], 'x', $policy));
+    }
+
+    public function testAWildcardUnderAMissingOrScalarSectionMatchesNothing(): void
+    {
+        $policy = $this->wildcardPolicy();
+
+        $missing = ['general' => ['name' => 'feed']];
+        $scalar = ['deliveryDestination' => 'none'];
+
+        $this->assertSame($missing, ConfigDocument::readable($missing, $policy));
+        $this->assertSame($scalar, ConfigDocument::readable($scalar, $policy));
+        $this->assertSame([], ConfigDocument::refusedPaths($scalar, $policy));
+        $this->assertSame(
+            ['deliveryDestination' => ['transmitter' => 'ftp']],
+            ConfigDocument::withStored(['deliveryDestination' => ['transmitter' => 'ftp']], ['general' => []], $policy),
+        );
+    }
+
+    public function testExactPathsStillMatchOnlyThemselves(): void
+    {
+        $policy = $this->policy();
+        $document = ['delivery' => ['transmitter_sftp' => ['host' => 'a'], 'transmitter_ftp' => ['host' => 'b']]];
+
+        $this->assertSame(
+            ['delivery' => ['transmitter_ftp' => ['host' => 'b']]],
+            ConfigDocument::readable($document, $policy),
+        );
+        $this->assertSame(['delivery.transmitter_sftp'], ConfigDocument::refusedPaths($document, $policy));
+        $this->assertTrue(ConfigDocument::withholds(['delivery', 'transmitter_sftp'], 'x', $policy));
+        $this->assertFalse(ConfigDocument::withholds(['delivery', 'transmitter_ftp'], 'x', $policy));
+        $this->assertTrue(ConfigDocument::withholds(['permissions', 'user'], [], $policy));
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function unsupportedWildcards(): iterable
+    {
+        yield 'wildcard section' => ['transmitter_*'];
+        yield 'wildcard in a parent segment' => ['delivery*.transmitter'];
+        yield 'wildcard inside the last segment' => ['delivery.trans*mitter'];
+        yield 'two wildcards' => ['delivery.transmitter_**'];
+    }
+
+    /**
+     * @dataProvider unsupportedWildcards
+     */
+    public function testAWildcardAnywhereButAtTheEndOfTheLastSegmentIsRefused(string $path): void
+    {
+        $policy = $this->createStub(ConfigProposalPolicyInterface::class);
+        $policy->method('withheld')->willReturn([$path]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf('Withheld path "%s" is not supported', $path));
+        ConfigDocument::readable(['delivery' => ['transmitter' => 'x']], $policy);
+    }
+
+    private function wildcardPolicy(): ConfigProposalPolicyInterface
+    {
+        $policy = $this->createStub(ConfigProposalPolicyInterface::class);
+        $policy->method('proposable')->willReturn(['general', 'deliveryDestination']);
+        $policy->method('withheld')->willReturn(['deliveryDestination.transmitter_*']);
+
+        return $policy;
     }
 
     private function policy(): ConfigProposalPolicyInterface

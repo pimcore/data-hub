@@ -97,10 +97,31 @@ export function proposedConfiguration (
     for (const address of Object.keys(slot.current ?? {})) {
       if (!(address in proposed)) unassign(config, address)
     }
-    for (const [address, value] of Object.entries(proposed)) assign(config, address, value)
+    for (const [address, value] of Object.entries(proposed)) {
+      if (removesEntity(address, value)) unassign(config, address)
+      else assign(config, address, value)
+    }
   }
 
   return toEditorShape(config) as BackendConfiguration
+}
+
+/**
+ * A schema entity or generic type proposed as null is one approving removes, as the subject
+ * handler drops it: not a value of its own.
+ */
+const removesEntity = (address: string, value: unknown): boolean => {
+  const segments = address.split('.')
+  return value === null && segments.length === 3 && segments[0] === 'schema' &&
+    Object.prototype.hasOwnProperty.call(SCHEMA_GRIDS, segments[1])
+}
+
+const withoutRemovedEntities = (proposed: Record<string, unknown>): Record<string, unknown> => {
+  const kept: Record<string, unknown> = {}
+  for (const [address, value] of Object.entries(proposed)) {
+    if (!removesEntity(address, value)) kept[address] = value
+  }
+  return kept
 }
 
 /** what the editor calls each slot, as translation keys, in the order it shows them */
@@ -183,7 +204,7 @@ export function configChanges (
   const onBothSides = new Set<string>()
   for (const [slotKey, slot] of Object.entries(payload.slots ?? {})) {
     const current = comparedSide(slot, compareAgainst)
-    const proposed = slot.proposed ?? {}
+    const proposed = withoutRemovedEntities(slot.proposed ?? {})
     changes.push(...slotChanges(slotKey, current, proposed))
     for (const entity of entitiesOnBothSides(current, proposed)) onBothSides.add(entity)
   }

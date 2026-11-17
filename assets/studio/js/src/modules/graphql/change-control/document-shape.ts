@@ -11,8 +11,11 @@
 
 export type Doc = Record<string, any>
 
-const keyBy = (list: Doc[], key: (item: Doc) => string, value: (item: Doc) => Doc): Doc =>
-  list.reduce<Doc>((keyed, item) => ({ ...keyed, [key(item)]: value(item) }), {})
+// a null entry names nothing, so it is left out rather than failing the whole document
+const keyBy = (list: unknown[], key: (item: Doc) => string, value: (item: Doc) => Doc): Doc =>
+  list
+    .filter((item): item is Doc => typeof item === 'object' && item !== null)
+    .reduce<Doc>((keyed, item) => ({ ...keyed, [key(item)]: value(item) }), {})
 
 /**
  * The live document as it is stored: the detail endpoint lists the schema entities and the
@@ -23,12 +26,12 @@ export function toStoredShape (live: Doc): Doc {
   const schema: Doc = doc.schema ?? {}
   for (const key of ['queryEntities', 'mutationEntities']) {
     if (Array.isArray(schema[key])) {
-      schema[key] = keyBy(schema[key] as Doc[], (entity) => entity.id ?? entity.name, (entity) => entity)
+      schema[key] = keyBy(schema[key] as unknown[], (entity) => entity.id ?? entity.name, (entity) => entity)
     }
   }
   if (Array.isArray(schema.specialEntities)) {
     // the aliases go: a flag the proposal removes must not come back from the live alias
-    schema.specialEntities = keyBy(schema.specialEntities as Doc[], (setting) => setting.name, ({
+    schema.specialEntities = keyBy(schema.specialEntities as unknown[], (setting) => setting.name, ({
       readAllowed, createAllowed, updateAllowed, deleteAllowed, ...setting
     }) => ({
       ...setting,
@@ -47,14 +50,17 @@ export function toStoredShape (live: Doc): Doc {
 export function toEditorShape (doc: Doc): Doc {
   const special = doc.schema?.specialEntities
   if (special !== undefined && special !== null && !Array.isArray(special)) {
-    doc.schema.specialEntities = Object.entries(special as Record<string, Doc>).map(([name, setting]) => ({
-      ...setting,
-      name,
-      readAllowed: setting.read ?? setting.readAllowed ?? false,
-      createAllowed: setting.create ?? setting.createAllowed ?? false,
-      updateAllowed: setting.update ?? setting.updateAllowed ?? false,
-      deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
-    }))
+    // a generic type proposed as null is one approving removes
+    doc.schema.specialEntities = Object.entries(special as Record<string, Doc | null>)
+      .filter((entry): entry is [string, Doc] => entry[1] !== null)
+      .map(([name, setting]) => ({
+        ...setting,
+        name,
+        readAllowed: setting.read ?? setting.readAllowed ?? false,
+        createAllowed: setting.create ?? setting.createAllowed ?? false,
+        updateAllowed: setting.update ?? setting.updateAllowed ?? false,
+        deleteAllowed: setting.delete ?? setting.deleteAllowed ?? false
+      }))
   }
 
   return doc

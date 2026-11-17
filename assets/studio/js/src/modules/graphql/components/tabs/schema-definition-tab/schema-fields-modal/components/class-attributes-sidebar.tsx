@@ -9,11 +9,12 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { Content, ContentLayout, TreeElement, SidebarTitle, Box, SearchInput } from '@pimcore/studio-ui-bundle/components'
+import { Alert, Content, ContentLayout, TreeElement, SidebarTitle, Box, Flex, SearchInput } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { DraggableTreeTitle } from './draggable-tree-title'
 import { type SchemaFieldsMode, type TreeNode } from '../types'
 import { useClassAttributesTree } from '../hooks/use-class-attributes-tree'
+import { getLayoutLoadErrorMessages } from '../hooks/class-layout-load-error'
 import { useStyles } from './class-attributes-sidebar.styles'
 
 interface ClassAttributesSidebarProps {
@@ -30,12 +31,14 @@ export const ClassAttributesSidebar = ({
   const { t } = useTranslation()
   const { styles } = useStyles()
   const [searchValue, setSearchValue] = useState('')
-  const { filteredTree, expandedKeys, isLoading } = useClassAttributesTree({
+  const { filteredTree, expandedKeys, isLoading, loadError, brickLoadErrors } = useClassAttributesTree({
     classId,
     enabled,
     mode,
     searchValue
   })
+
+  const layoutLoadErrors = getLayoutLoadErrorMessages(loadError, brickLoadErrors, t)
 
   const titleRender = useCallback((node: TreeNode, initialComponent: React.ReactNode): React.JSX.Element => {
     return (
@@ -69,6 +72,26 @@ export const ClassAttributesSidebar = ({
         loading={ isLoading }
         padding={ { x: 'small', top: 'extra-small', bottom: 'small' } }
       >
+        { layoutLoadErrors.length > 0 && (
+          <Box
+            margin={ { bottom: 'small' } }
+            padding={ { x: 'small' } }
+          >
+            <Flex
+              gap='extra-small'
+              vertical
+            >
+              { layoutLoadErrors.map(({ key, message }) => (
+                <Alert
+                  key={ key }
+                  message={ message }
+                  showIcon
+                  type="error"
+                />
+              )) }
+            </Flex>
+          </Box>
+        ) }
 
         <TreeElement
           className={ styles.treeContainer }
