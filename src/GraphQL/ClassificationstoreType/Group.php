@@ -112,7 +112,7 @@ final class Group extends ObjectType
             'qualifiedFeatures' => [
                 'type' => Type::listOf($this->qualifiedFeatureType),
                 'description' => 'the keys of the group with all of their qualified values '
-                    . '(language, variant, position)',
+                    . '(language, variant)',
                 'resolve' => function ($value) {
                     /** @var Classificationstore $csValue */
                     $csValue = $value['_csValue'];

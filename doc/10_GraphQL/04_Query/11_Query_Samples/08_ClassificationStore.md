@@ -31,14 +31,14 @@ The data types a key can be written as are the same list without Calculated Valu
 [Classification Store Mutations](../../07_Mutation/24_Mutation_Samples/16_Classificationstore_Mutations.md).
 A type that has no read generator (e.g. Table, Encrypted Field) is neither readable nor writable.
 
-A `multiValue` key is published as `csFeatureMultiValue`, whose `values` carry every qualified value of the key
-(`language`, `variant`, `position` and the `value`, typed as the inner type of the key). On a store whose engine cannot
-hold qualified values `values` holds the single unqualified value.
+A `multiValue` key holds one value per declared variant and is published as `csFeatureMultiValue`, whose `values` list
+carries one entry per variant that holds a value (`language`, `variant` and the `value`, typed as the inner type of the
+key). On a store whose engine cannot hold variants `values` holds the single unqualified value.
 
 ## Qualified Values
 
-`features` returns position 0 of the default variant of every key. `qualifiedFeatures` of `csGroup` returns the
-same keys with all of their qualified values, the analogue of `getKeyValues()` of the store:
+`features` returns the value of the default variant of every key. `qualifiedFeatures` of `csGroup` returns the
+same keys with their value in each variant:
 
 ```graphql
 csfield(language: "default") {
@@ -48,7 +48,6 @@ csfield(language: "default") {
     values {
       language
       variant
-      position
       value {
         ... on csFeatureInput { text }
       }
@@ -57,7 +56,7 @@ csfield(language: "default") {
 }
 ```
 
-On a store whose engine cannot hold qualified values `qualifiedFeatures` is refused with an error naming the store;
+On a store whose engine cannot hold variants `qualifiedFeatures` is refused with an error naming the store;
 `features` keeps working.
 
 

@@ -304,7 +304,7 @@ final class Classificationstore extends Base
     /**
      * @param array<string, bool> $slots the slots named so far, shared by the whole input
      *
-     * @return array{variant: string, position: int, value: mixed}
+     * @return array{variant: string, value: mixed}
      *
      * @throws ClientSafeException
      */
@@ -323,10 +323,9 @@ final class Classificationstore extends Base
         }
 
         $variant = $input['variant'] ?? self::DEFAULT_QUALIFIER;
-        $position = $input['position'] ?? 0;
-        if ($variant === '' || $position < 0) {
+        if ($variant === '') {
             throw new ClientSafeException(sprintf(
-                'The variant of the classification store key "%s" must not be empty and its position not negative.',
+                'The variant of the classification store key "%s" must not be empty.',
                 $relation->getName()
             ));
         }
@@ -340,20 +339,19 @@ final class Classificationstore extends Base
             ));
         }
 
-        $slot = implode("\0", [$relation->getGroupId(), $relation->getKeyId(), $language, $variant, $position]);
+        $slot = implode("\0", [$relation->getGroupId(), $relation->getKeyId(), $language, $variant]);
         if (isset($slots[$slot])) {
             throw new ClientSafeException(sprintf(
                 'Two values of the classification store key "%s" address the same slot '
-                . '(language "%s", variant "%s", position %d).',
+                . '(language "%s", variant "%s").',
                 $relation->getName(),
                 $language,
-                $variant,
-                $position
+                $variant
             ));
         }
         $slots[$slot] = true;
 
-        if ($variant !== self::DEFAULT_QUALIFIER || $position !== 0) {
+        if ($variant !== self::DEFAULT_QUALIFIER) {
             QualifiedValueReader::assertSupported($store);
         }
 
@@ -368,7 +366,7 @@ final class Classificationstore extends Base
             $value = $converted;
         }
 
-        return ['variant' => $variant, 'position' => $position, 'value' => $value];
+        return ['variant' => $variant, 'value' => $value];
     }
 
     /**
@@ -424,55 +422,34 @@ final class Classificationstore extends Base
     private function write(ClassificationstoreModel $store, array $write): void
     {
         $qualified = [];
-        $plain = [];
         foreach ($write['entries'] as $entry) {
-            if ($entry['variant'] === self::DEFAULT_QUALIFIER && $entry['position'] === 0) {
+            if ($entry['variant'] === self::DEFAULT_QUALIFIER) {
                 $store->setLocalizedKeyValue($write['groupId'], $write['keyId'], $entry['value'], $write['language']);
-                $plain = [0 => $entry['value']];
             } else {
-                $qualified[$entry['variant']][$entry['position']] = $entry['value'];
+                $qualified[$entry['variant']] = $entry['value'];
             }
         }
 
         if ($qualified !== []) {
-            $store->setKeyValues(
-                $write['groupId'],
-                $write['keyId'],
-                $this->slotEntries($store, $write, $qualified, $plain)
-            );
+            $store->setKeyValues($write['groupId'], $write['keyId'], $this->slotEntries($write, $qualified));
         }
     }
 
     /**
-     * setKeyValues() replaces each (language, variant) slot it is given as a whole and leaves every other
-     * slot of the key alone, so only the slots the input names are handed over, completed with the positions
-     * of those slots the input does not name.
+     * setKeyValues() replaces each (language, variant) slot it is given as a whole and leaves every
+     * other slot of the key alone, so only the variants the input names are handed over, one value
+     * each. A value stored above position 0 needs no carrying over here: no write can address one,
+     * and the store puts back what it holds there on the next save.
      *
-     * @param array<string|int, array<int, mixed>> $qualified the named values by variant and position
-     * @param array<int, mixed> $plain position 0 of the default variant when the input names it, which is
-     *                                 written through setLocalizedKeyValue() and must survive the slot replacement
+     * @param array<string|int, mixed> $qualified the named values by variant
      *
      * @return MultiValue[]
      */
-    private function slotEntries(ClassificationstoreModel $store, array $write, array $qualified, array $plain): array
+    private function slotEntries(array $write, array $qualified): array
     {
         $entries = [];
         foreach ($qualified as $variant => $named) {
-            $variant = (string) $variant;
-            $own = $this->ownValues(static fn (): array => $store->getKeyValues(
-                $write['groupId'],
-                $write['keyId'],
-                $write['language'],
-                $variant
-            ));
-            // the slot is replaced as a whole: position 0 of the default variant, named or already stored, stays
-            if ($variant === self::DEFAULT_QUALIFIER) {
-                $named = $plain + $named;
-            }
-
-            foreach ($named + $own as $position => $value) {
-                $entries[] = new MultiValue($value, $write['language'], $variant, (int) $position);
-            }
+            $entries[] = new MultiValue($named, $write['language'], (string) $variant);
         }
 
         return $entries;

@@ -92,6 +92,7 @@ class QualifiedViewEavTest extends Unit
     {
         $group = $this->createGroup('eav_write_group');
         $key = $this->createKey($group, 'k');
+        $multiValue = $this->createMultiValueKey($group, 'mv');
         $definition = new \Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore();
         $definition->setStoreId($group->getStoreId());
         $definition->setName(self::FIELD);
@@ -121,9 +122,9 @@ class QualifiedViewEavTest extends Unit
         };
 
         $unqualified = $this->mutateWithoutSave($object, $this->input($group, $key, [['value' => 'x']]));
-        // a position above 0 is a qualified value on a key that declares no variants: the engine is what refuses it
-        $entries = [['value' => 'x', 'position' => 1]];
-        $qualified = $this->mutateWithoutSave($object, $this->input($group, $key, $entries));
+        // the key declares the variant: the engine is what refuses it
+        $entries = [['value' => 'x', 'variant' => 'imperial']];
+        $qualified = $this->mutateWithoutSave($object, $this->input($group, $multiValue, $entries));
 
         $this->assertTrue($unqualified['success'], $unqualified['message']);
         $this->assertFalse($qualified['success']);
@@ -136,6 +137,7 @@ class QualifiedViewEavTest extends Unit
     private function mutateWithoutSave(\Pimcore\Model\DataObject\Concrete $object, array $input): array
     {
         $info = (new \ReflectionClass(\GraphQL\Type\Definition\ResolveInfo::class))->newInstanceWithoutConstructor();
+
         try {
             $this->createProcessor()->process($object, $input, [], [], $info);
         } catch (\Exception $e) {

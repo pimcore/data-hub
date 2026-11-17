@@ -96,7 +96,7 @@ class ClassificationstoreTest extends Unit
         $object = $this->createObject();
         $entries = [
             ['value' => 'v0'],
-            ['value' => 'v1', 'position' => 1],
+            ['value' => 'm0', 'variant' => 'metric'],
             ['value' => 'i0', 'variant' => self::IMPERIAL],
         ];
         $this->mutate($object, $this->input($group, $key, $entries));
@@ -106,7 +106,7 @@ class ClassificationstoreTest extends Unit
         $this->assertTrue($result['success'], $result['message']);
         $store = $this->store($object);
         $this->assertNull($store->getLocalizedKeyValue($group->getId(), $key->getKeyId(), 'default'));
-        $this->assertSame([1 => 'v1'], $store->getKeyValues($group->getId(), $key->getKeyId()));
+        $this->assertSame([0 => 'm0'], $store->getKeyValues($group->getId(), $key->getKeyId(), null, 'metric'));
         $this->assertSame([0 => 'i0'], $store->getKeyValues($group->getId(), $key->getKeyId(), null, self::IMPERIAL));
     }
 
@@ -130,13 +130,13 @@ class ClassificationstoreTest extends Unit
         $key = $this->createMultiValueKey($group, 'weight');
         $object = $this->createObject();
 
-        $entries = [['value' => 'x', 'variant' => self::IMPERIAL, 'position' => 1]];
+        $entries = [['value' => 'x', 'variant' => self::IMPERIAL]];
         $result = $this->mutate($object, $this->input($group, $key, $entries));
 
         $this->assertTrue($result['success'], $result['message']);
         $store = $this->store($object);
         $this->assertNull($store->getLocalizedKeyValue($group->getId(), $key->getKeyId(), 'default'));
-        $this->assertSame('x', $store->getKeyValue($group->getId(), $key->getKeyId(), null, self::IMPERIAL, 1));
+        $this->assertSame([0 => 'x'], $store->getKeyValues($group->getId(), $key->getKeyId(), null, self::IMPERIAL));
     }
 
     public function testAWriteToOneVariantLeavesTheOtherVariantsOfTheKeyAlone(): void
@@ -146,7 +146,6 @@ class ClassificationstoreTest extends Unit
         $object = $this->createObject();
         $initial = [
             ['value' => 'm0', 'variant' => 'metric'],
-            ['value' => 'm1', 'variant' => 'metric', 'position' => 1],
             ['value' => 'i0', 'variant' => self::IMPERIAL],
         ];
         $this->mutate($object, $this->input($group, $key, $initial));
@@ -160,7 +159,6 @@ class ClassificationstoreTest extends Unit
         $keyId = $key->getKeyId();
         $this->assertSame('i0-changed', $store->getKeyValue($groupId, $keyId, null, self::IMPERIAL, 0));
         $this->assertSame('m0', $store->getKeyValue($groupId, $keyId, null, 'metric', 0));
-        $this->assertSame('m1', $store->getKeyValue($groupId, $keyId, null, 'metric', 1));
     }
 
     public function testAVariantTheKeyDoesNotDeclareIsRefusedAndNothingIsSaved(): void
