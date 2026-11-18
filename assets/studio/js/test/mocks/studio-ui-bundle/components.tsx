@@ -45,8 +45,54 @@ export const LanguageSelection = (): null => null
 export const ModalTitle = passthrough
 export const useAlertModal = (): { warn: () => void } => ({ warn: () => {} })
 
-export const Modal = ({ open, title, children }: PropsWithChildren): React.JSX.Element | null =>
-  open === true ? <dialog open>{ title }{ children }</dialog> : null
+export const Modal = ({ open, title, children, onOk, okText, onCancel, cancelText }: PropsWithChildren): React.JSX.Element | null =>
+  open === true
+    ? (
+      <dialog open>
+        { title }{ children }
+        { onCancel !== undefined && (
+        <button
+          onClick={ onCancel }
+          type='button'
+        >{ cancelText ?? 'cancel' }</button>
+        ) }
+        { onOk !== undefined && (
+        <button
+          onClick={ onOk }
+          type='button'
+        >{ okText ?? 'ok' }</button>
+        ) }
+      </dialog>
+      )
+    : null
+
+export const Accordion = ({ items }: Props): React.JSX.Element => (
+  <div>
+    { items.map((item: any) => <div key={ item.key }>{ item.title }{ item.info }{ item.children }</div>) }
+  </div>
+)
+export const OperationalGrid = { Grid: (): null => null }
+export const NoContent = ({ text }: Props): React.JSX.Element => <div>{ text }</div>
+export const SearchInput = ({ onChange, value, placeholder, 'aria-label': ariaLabel }: Props): React.JSX.Element => (
+  <input
+    aria-label={ ariaLabel }
+    onChange={ onChange }
+    placeholder={ placeholder }
+    type='search'
+    value={ value }
+  />
+)
+export const Checkbox = ({ children, checked, disabled, onChange }: PropsWithChildren): React.JSX.Element => (
+  <label>
+    <input
+      checked={ checked }
+      disabled={ disabled }
+      onChange={ onChange }
+      type='checkbox'
+    />
+    { children }
+  </label>
+)
 
 export const ContentLayout = ({ renderTopBar, children }: PropsWithChildren): React.JSX.Element => (
   <div>{ renderTopBar }{ children }</div>

@@ -53,7 +53,8 @@ data-hub.schema.mutation-schema: Mutation-skjema
 data-hub.schema.generic-types: Generiske typer
 data-hub.schema.entity: Entitet
 data-hub.schema.settings: Innstillinger
-data-hub.schema.select-class: Velg klasse...
+data-hub.schema.search-classes: Søk etter klasser...
+data-hub.schema.no-classes-found: Ingen klasser funnet
 data-hub.schema.query-modal-title: 'Query-skjemafelt - {{entity}}'
 data-hub.schema.mutation-modal-title: 'Mutation-skjemafelt - {{entity}}'
 data-hub.schema.class-attributes: Klasseattributter
