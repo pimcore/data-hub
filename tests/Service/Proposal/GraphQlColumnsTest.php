@@ -266,7 +266,10 @@ class GraphQlColumnsTest extends Unit
 
         $proposed = $document;
         $proposed['schema']['queryEntities'][self::CLASS_NAME]['columnConfig']['columns'] = [
-            ['isOperator' => false, 'attributes' => ['dataType' => 'input', 'attribute' => 'removedField']],
+            [
+                'attributes' => ['dataType' => 'input', 'label' => 'removedField', 'attribute' => 'removedField'],
+                'isOperator' => false,
+            ],
             $this->field('alsoMissing'),
         ];
         $problems = $this->policy()->problems($proposed, false);
