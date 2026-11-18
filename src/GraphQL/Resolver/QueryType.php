@@ -453,24 +453,11 @@ final class QueryType
         $configuration = $context['configuration'];
         if (!$configuration->skipPermisssionCheck()) {
             // check permissions
-            $workspacesTableName = 'plugin_datahub_workspaces_object';
-            $conditionParts[] = ' (
-            (
-                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
-                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.key),' . $db->quoteIdentifier($workspacesTableName) . '.cpath)=1
-                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
-                LIMIT 1
-            )=1
-            OR
-            (
-                SELECT `read` from ' . $db->quoteIdentifier($workspacesTableName) . '
-                WHERE ' . $db->quoteIdentifier($workspacesTableName) . '.configuration = ' . $db->quote($configuration->getName()) . '
-                AND LOCATE(' . $db->quoteIdentifier($workspacesTableName) . '.cpath,CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.key))=1
-                ORDER BY LENGTH(' . $db->quoteIdentifier($workspacesTableName) . '.cpath) DESC
-                LIMIT 1
-            )=1
-            )';
+            $conditionParts[] = WorkspaceHelper::getReadPermissionCondition(
+                $configuration,
+                'object',
+                'CONCAT(' . $db->quoteIdentifier($tableName) . '.path,' . $db->quoteIdentifier($tableName) . '.key)'
+            );
         }
 
         if (isset($args['filter'])) {
