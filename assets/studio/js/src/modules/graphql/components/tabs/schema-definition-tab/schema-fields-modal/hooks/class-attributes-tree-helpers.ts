@@ -9,7 +9,7 @@
  */
 
 import { type Layout } from '@pimcore/studio-ui-bundle/api/class-definition'
-import { isNil, flatMapDeep } from 'lodash'
+import { isNil, flatMap, flatMapDeep } from 'lodash'
 import { type TreeNode } from '../types'
 import { type ObjectBricksFieldInfo } from './brick-container-helpers'
 
@@ -50,6 +50,13 @@ export const collectAllKeys = (nodes: TreeNode[]): string[] => {
     ...(!isNil(node.children) && Array.isArray(node.children) ? collectAllKeys(node.children as TreeNode[]) : [])
   ])
 }
+
+export const collectFieldDefinitionNodes = (nodes: TreeNode[]): TreeNode[] =>
+  flatMap(nodes, node => {
+    if (node.isFieldDefinition === true) return [node]
+    if (!isNil(node.children)) return collectFieldDefinitionNodes(node.children as TreeNode[])
+    return []
+  })
 
 /**
  * Recursively walks a raw layout's children to collect all objectbricks fields
