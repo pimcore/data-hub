@@ -51,6 +51,8 @@ use function time;
  * - write access the endpoint does not already grant — create, update or delete on a workspace,
  *   a mutation entity or a generic type. Reading is reviewed; writing through the API is
  *   granted by a person.
+ * - columns the schema builder cannot build (GraphQlColumns): the schema is built on every
+ *   request, so one unknown brick or operator fails every client of the endpoint.
  *
  * @internal
  */

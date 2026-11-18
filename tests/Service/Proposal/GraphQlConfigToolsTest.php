@@ -49,6 +49,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class GraphQlConfigToolsTest extends Unit
 {
+    use GraphQlColumnsTrait;
+
     private const string NAME = 'shop';
 
     private InMemoryStoredConfigurations $stored;
@@ -184,6 +186,7 @@ class GraphQlConfigToolsTest extends Unit
         return new GraphQlConfigPolicy(
             $this->createStub(ConfigurationServiceInterface::class),
             new EventDispatcher(),
+            $this->graphQlColumns(),
         );
     }
 
