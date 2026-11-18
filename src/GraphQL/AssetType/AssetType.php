@@ -190,6 +190,11 @@ final class AssetType extends ObjectType
                 'args' => [
                     'language' => ['type' => Type::string()],
                     'ignore_language' => ['type' => Type::boolean()],
+                    'keys' => [
+                        'type' => Type::listOf(Type::string()),
+                        'description' => 'List of metadata names to include '
+                            . '(if omitted, all metadata is returned).',
+                    ],
                 ],
                 'resolve' => [$resolver, 'resolveMetadata'],
             ],

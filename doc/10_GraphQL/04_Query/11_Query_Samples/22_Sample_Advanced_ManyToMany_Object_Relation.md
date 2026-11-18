@@ -39,6 +39,9 @@ Note that the response differs from `Advanced Many-to-Many Relations` as there c
 }
 ```
 
+The metadata columns can be filtered by providing the `keys` argument, e.g. `metadata(keys: ["altName"])`. All columns
+are returned by default.
+
 ### Response
 
 ```

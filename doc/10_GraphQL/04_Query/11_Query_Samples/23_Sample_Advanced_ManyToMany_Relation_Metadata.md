@@ -48,6 +48,9 @@ The exact class name is required to access the data. E.g. for manufacturer data 
 }
 ```
 
+The metadata columns can be filtered by providing the `keys` argument, e.g. `metadata(keys: ["altName"])`. All columns
+are returned by default.
+
 ### Response
 
 ```json
