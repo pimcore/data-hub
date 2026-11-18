@@ -51,6 +51,8 @@ use function time;
  * - write access the endpoint does not already grant — create, update or delete on a workspace,
  *   a mutation entity or a generic type. Reading is reviewed; writing through the API is
  *   granted by a person.
+ * - columns the schema builder cannot build (GraphQlColumns): the schema is built on every
+ *   request, so one unknown brick or operator fails every client of the endpoint.
  *
  * @internal
  */
@@ -82,6 +84,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public function __construct(
         private ConfigurationServiceInterface $configurations,
         private EventDispatcherInterface $events,
+        private GraphQlColumns $columns,
     ) {
     }
 
@@ -155,8 +158,10 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             ...(new GraphQlWorkspacePaths())->unresolved($state),
         ];
 
-        $grants = new GraphQlWriteGrants();
         $stored = $this->stored($state);
+        $problems = [...$problems, ...$this->columns->problems($state, $stored)];
+
+        $grants = new GraphQlWriteGrants();
         $granted = array_values(array_diff($grants->of($state), $grants->of($stored)));
         if ($granted !== []) {
             $problems[] = sprintf(

@@ -30,6 +30,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class GraphQlConfigSaveTest extends Unit
 {
+    use GraphQlColumnsTrait;
+
     private const string NAME = 'policy-save-endpoint';
 
     private const array SECURITY = ['method' => 'datahub_apikey', 'apikey' => ['kept-as-stored-0123456789']];
@@ -131,6 +133,6 @@ class GraphQlConfigSaveTest extends Unit
         $events = $services->get('event_dispatcher');
         $this->assertInstanceOf(EventDispatcherInterface::class, $events);
 
-        return new GraphQlConfigPolicy($configurations, $events);
+        return new GraphQlConfigPolicy($configurations, $events, $this->graphQlColumns());
     }
 }
