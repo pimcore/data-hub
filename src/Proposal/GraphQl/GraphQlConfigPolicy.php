@@ -82,6 +82,7 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
     public function __construct(
         private ConfigurationServiceInterface $configurations,
         private EventDispatcherInterface $events,
+        private GraphQlColumns $columns,
     ) {
     }
 
@@ -155,8 +156,10 @@ final readonly class GraphQlConfigPolicy implements ConfigProposalPolicyInterfac
             ...(new GraphQlWorkspacePaths())->unresolved($state),
         ];
 
-        $grants = new GraphQlWriteGrants();
         $stored = $this->stored($state);
+        $problems = [...$problems, ...$this->columns->problems($state, $stored)];
+
+        $grants = new GraphQlWriteGrants();
         $granted = array_values(array_diff($grants->of($state), $grants->of($stored)));
         if ($granted !== []) {
             $problems[] = sprintf(
