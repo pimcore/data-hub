@@ -166,7 +166,10 @@ class GraphQlColumnsTest extends Unit
         ]);
 
         $this->assertCount(2, $problems);
-        $this->assertStringContainsString(self::AT . '0: "NoSuchOperator" is not a GraphQL query operator', $problems[0]);
+        $this->assertStringContainsString(
+            self::AT . '0: "NoSuchOperator" is not a GraphQL query operator',
+            $problems[0],
+        );
         $this->assertStringContainsString(
             self::AT . '1.attributes.children.0: "AlsoMissing" is not a GraphQL query operator',
             $problems[1],
@@ -205,10 +208,10 @@ class GraphQlColumnsTest extends Unit
     {
         $problems = $this->policy()->problems($this->state(['columnConfig' => ['columns' => 'name']]), false);
 
-        $this->assertSame(
-            ['schema.queryEntities.' . self::CLASS_NAME . '.columnConfig needs its columns as a list: {"columns": [...]}.'],
-            $problems,
-        );
+        $this->assertSame([sprintf(
+            'schema.queryEntities.%s.columnConfig needs its columns as a list: {"columns": [...]}.',
+            self::CLASS_NAME,
+        )], $problems);
     }
 
     public function testASystemColumnTheEditorDoesNotOfferIsRefused(): void
@@ -232,7 +235,9 @@ class GraphQlColumnsTest extends Unit
         $columns = ['columnConfig' => ['columns' => [$this->field('nmae')]]];
         $problems = $this->policy()->problems([
             'general' => ['name' => 'no-such-endpoint'],
-            'schema' => ['mutationEntities' => [self::CLASS_NAME => ['id' => self::CLASS_NAME, 'update' => true] + $columns]],
+            'schema' => ['mutationEntities' => [
+                self::CLASS_NAME => ['id' => self::CLASS_NAME, 'update' => true] + $columns,
+            ]],
         ], false);
 
         $this->problemContaining(

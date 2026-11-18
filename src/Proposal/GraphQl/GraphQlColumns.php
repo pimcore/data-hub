@@ -126,7 +126,13 @@ final readonly class GraphQlColumns
 
             $problems = array_merge(
                 $problems,
-                $this->columnProblems($mode, $class, $column, sprintf('%s.columnConfig.columns.%d', $at, $index), false),
+                $this->columnProblems(
+                    $mode,
+                    $class,
+                    $column,
+                    sprintf('%s.columnConfig.columns.%d', $at, $index),
+                    false,
+                ),
             );
         }
 
@@ -156,8 +162,13 @@ final readonly class GraphQlColumns
      *
      * @return list<string>
      */
-    private function fieldProblems(string $mode, ClassDefinition $class, array $attributes, string $at, bool $child): array
-    {
+    private function fieldProblems(
+        string $mode,
+        ClassDefinition $class,
+        array $attributes,
+        string $at,
+        bool $child,
+    ): array {
         $key = $attributes['attribute'] ?? null;
         $dataType = $attributes['dataType'] ?? null;
         if (!is_string($key) || $key === '' || !is_string($dataType) || $dataType === '') {
@@ -196,7 +207,7 @@ final readonly class GraphQlColumns
         if ($mode === 'mutation' && !$this->graphQl->supportsDataObjectMutationDataType($dataType)
             && ($child || $this->graphQl->supportsDataObjectMutationDataType($field->getFieldtype()))) {
             return [sprintf(
-                '%s: "%s" is not a field type the GraphQL mutations can write; "%s" is a %s field.',
+                '%s: "%s" is not a field type the GraphQL mutations can write; "%s" is of field type %s.',
                 $at,
                 $dataType,
                 $key,
@@ -259,8 +270,8 @@ final readonly class GraphQlColumns
     private function hasOperator(string $mode, string $type, bool $child): bool
     {
         if ($mode === 'query') {
-            return $this->graphQl->getQueryOperatorFactories()->has($type)
-                && ($child || $this->graphQl->getQueryTypeGeneratorFactories()->has('typegenerator_queryoperator_' . $type));
+            return $this->graphQl->getQueryOperatorFactories()->has($type) && ($child
+                || $this->graphQl->getQueryTypeGeneratorFactories()->has('typegenerator_queryoperator_' . $type));
         }
 
         return $this->graphQl->getDataObjectMutationTypeGeneratorFactories()->has(
@@ -272,7 +283,12 @@ final readonly class GraphQlColumns
     {
         $brickType = $this->fields->brickType($key);
         if ($brickType !== null && ObjectbrickDefinition::getByKey($brickType) === null) {
-            return sprintf('%s: "%s" names the brick "%s", which this installation does not have.', $at, $key, $brickType);
+            return sprintf(
+                '%s: "%s" names the brick "%s", which this installation does not have.',
+                $at,
+                $key,
+                $brickType,
+            );
         }
 
         if ($brickType !== null) {
