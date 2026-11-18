@@ -14,15 +14,14 @@ import { describe, it } from 'node:test'
 import {
   buildAttributeTreeItem,
   collectColumnFieldDefinitions,
-  collectLocalizedFieldNames,
   isAttributeContainer
 } from '../js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/attribute-container.ts'
 import {
-  buildBrickAttribute,
-  buildBrickColumnTitle
+  collectLocalizedFieldNames,
+  createBrickColumnFactory
 } from '../js/src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/hooks/brick-container-helpers.ts'
 
-const DATA_FIELD_TYPES = new Set(['input', 'textarea', 'localizedfields', 'objectbricks'])
+const DATA_FIELD_TYPES = new Set(['input', 'textarea', 'localizedfields', 'objectbricks', 'block'])
 
 // Mirrors buildTree() of the studio-ui-bundle: the item callback per layout node, the children kept on the item.
 const buildNode = (definition, brickColumn) => buildAttributeTreeItem({
@@ -40,6 +39,7 @@ const buildNode = (definition, brickColumn) => buildAttributeTreeItem({
 const localizedFields = (...children) => ({ datatype: 'data', fieldtype: 'localizedfields', name: 'localizedfields', children })
 const field = (name, fieldtype = 'input') => ({ datatype: 'data', fieldtype, name, title: name.toUpperCase() })
 const panel = (...children) => ({ datatype: 'layout', fieldtype: 'panel', name: 'Layout', children })
+const block = (name, ...children) => ({ datatype: 'data', fieldtype: 'block', name, title: name.toUpperCase(), children })
 
 const attributes = nodes => collectColumnFieldDefinitions(nodes).map(node => node.attribute)
 
@@ -90,12 +90,9 @@ describe('class attribute columns', () => {
 describe('brick attribute columns', () => {
   const brickLayout = panel(field('power'), localizedFields(field('label')))
 
-  const brickTree = (containerName, ambiguousBrickKeys) => {
-    const localizedNames = collectLocalizedFieldNames(brickLayout)
-    const brickColumn = definition => label => ({
-      attribute: buildBrickAttribute('Engine', definition, containerName, ambiguousBrickKeys, localizedNames.has(definition)),
-      title: buildBrickColumnTitle(label, 'Engine', definition, containerName, ambiguousBrickKeys)
-    })
+  // The brick columns as the hook builds them: one factory per brick and objectbricks field, asked per field name.
+  const brickTree = (containerName, ambiguousBrickKeys, layout = brickLayout) => {
+    const brickColumn = createBrickColumnFactory('Engine', containerName, layout, ambiguousBrickKeys)
     const buildBrickNode = definition => buildAttributeTreeItem({
       fieldDefinition: definition,
       initialTreeItem: { key: definition.name, title: definition.name, children: definition.children?.map(buildBrickNode) },
@@ -104,7 +101,7 @@ describe('brick attribute columns', () => {
       brickColumn: brickColumn(definition.name)
     })
 
-    return [{ key: `brick-container-${containerName}`, children: brickLayout.children.map(buildBrickNode) }]
+    return [{ key: `brick-container-${containerName}`, children: layout.children.map(buildBrickNode) }]
   }
 
   it('finds the fields inside localizedfields only', () => {
@@ -112,17 +109,30 @@ describe('brick attribute columns', () => {
     assert.deepEqual([...collectLocalizedFieldNames({ children: [field('power')] })], [])
   })
 
+  it('does not look into the localizedfields of a block', () => {
+    const layout = panel(field('title'), block('variants', localizedFields(field('title'))), localizedFields(block('notes')))
+
+    assert.deepEqual([...collectLocalizedFieldNames(layout)], ['notes'])
+  })
+
   it('addresses localized brick fields through the brick descriptor', () => {
     assert.deepEqual(attributes(brickTree('bricks', new Set())), [
       'Engine~power',
-      '?{"containerKey":"Engine","brickfield":"label"}~label'
+      '?{"containerKey":"Engine","fieldname":"bricks","brickfield":"label"}~label'
     ])
   })
 
   it('keeps the containing field for localized fields of ambiguous bricks', () => {
     assert.deepEqual(attributes(brickTree('secondary', new Set(['Engine']))), [
       'Engine~power~secondary',
-      '?{"containerKey":"Engine","brickfield":"label"}~label~secondary'
+      '?{"containerKey":"Engine","fieldname":"secondary","brickfield":"label"}~label~secondary'
     ])
+  })
+
+  it('addresses a brick field by its plain key when a block of the brick has a localized field of the same name', () => {
+    const layout = panel(field('title'), block('variants', localizedFields(field('title'))))
+    const brickColumn = createBrickColumnFactory('Engine', 'bricks', layout, new Set())
+
+    assert.deepEqual(brickColumn('title')('Title'), { attribute: 'Engine~title', title: 'Title (Engine.title)' })
   })
 })

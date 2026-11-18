@@ -25,15 +25,11 @@ import {
   removeObjectBricksNodes
 } from './class-attributes-tree-helpers'
 import { isBrickFetchPending, toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
+import { buildAttributeTreeItem, collectColumnFieldDefinitions } from './attribute-container'
 import {
-  buildAttributeTreeItem,
-  collectColumnFieldDefinitions,
-  collectLocalizedFieldNames
-} from './attribute-container'
-import {
-  buildBrickAttribute,
-  buildBrickColumnTitle,
+  createBrickColumnFactory,
   getAmbiguousBrickKeys,
+  type BrickColumn,
   type ObjectBricksFieldInfo
 } from './brick-container-helpers'
 
@@ -97,23 +93,17 @@ export const useClassAttributesTree = ({
   const { layouts: brickLayouts, isLoading: brickLayoutsLoading, loadErrors: brickLoadErrors } = useObjectBrickLayouts(allBrickKeys)
 
   const classAttributesTree = useMemo(() => {
-    const buildItemCallback = (brickKey?: string, containerName?: string, localizedFieldNames?: Set<string>) => (
+    const buildItemCallback = (brickColumn?: (brickFieldName: string) => BrickColumn) => (
       { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
     ): any => {
       const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
-      const name = fieldDefinition.name as string
 
       return buildAttributeTreeItem({
         fieldDefinition,
         initialTreeItem,
         isDataField: dynType instanceof DynamicTypeFieldDefinitionDataAbstract,
         iconProps: dynType?.getIcon() ?? { value: 'info' },
-        brickColumn: (isNil(brickKey) || isNil(containerName))
-          ? undefined
-          : (label) => ({
-              attribute: buildBrickAttribute(brickKey, name, containerName, ambiguousBrickKeys, localizedFieldNames?.has(name) ?? false),
-              title: buildBrickColumnTitle(label, brickKey, name, containerName, ambiguousBrickKeys)
-            })
+        brickColumn: brickColumn?.(fieldDefinition.name as string)
       })
     }
 
@@ -147,7 +137,7 @@ export const useClassAttributesTree = ({
       const brickTree = buildTree({
         structure,
         fieldDefinitions,
-        itemCallback: buildItemCallback(brickKey, containerName, collectLocalizedFieldNames(brickLayout))
+        itemCallback: buildItemCallback(createBrickColumnFactory(brickKey, containerName, brickLayout, ambiguousBrickKeys))
       })
 
       return [{

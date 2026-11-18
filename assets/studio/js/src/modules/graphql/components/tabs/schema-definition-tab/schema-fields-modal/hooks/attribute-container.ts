@@ -16,28 +16,6 @@ const ATTRIBUTE_CONTAINER_FIELD_TYPES = new Set(['localizedfields'])
 export const isAttributeContainer = (fieldType: unknown): boolean =>
   typeof fieldType === 'string' && ATTRIBUTE_CONTAINER_FIELD_TYPES.has(fieldType)
 
-export const collectLocalizedFieldNames = (layout: { children?: object[] }): Set<string> => {
-  const names = new Set<string>()
-
-  const walk = (children: object[], inLocalizedFields: boolean): void => {
-    children.forEach(child => {
-      const node = child as Record<string, unknown>
-
-      if (inLocalizedFields && node.datatype === 'data' && typeof node.name === 'string') {
-        names.add(node.name)
-      }
-
-      if (Array.isArray(node.children)) {
-        walk(node.children as object[], inLocalizedFields || node.fieldtype === 'localizedfields')
-      }
-    })
-  }
-
-  walk(layout.children ?? [], false)
-
-  return names
-}
-
 export interface AttributeTreeItemProps {
   fieldDefinition: { name?: string, title?: string | null, fieldtype?: string }
   initialTreeItem: TreeNode
