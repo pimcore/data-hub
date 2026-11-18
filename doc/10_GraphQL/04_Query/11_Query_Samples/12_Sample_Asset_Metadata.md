@@ -80,6 +80,22 @@ Get the custom asset metadata for language `de`
 }
 ```
 
+### Filter by name
+
+Metadata can be filtered by providing the `keys` argument with the metadata names to return. All metadata is returned
+by default. The filter also applies together with `language` and `ignore_language`.
+
+```graphql
+{
+  getAsset(id: 4) {
+    metadata(keys: ["author", "license"]) {
+      name
+      data
+    }
+  }
+}
+```
+
 ## Get Asset Embedded Meta Info
 
 <div class="image-as-lightbox"></div>

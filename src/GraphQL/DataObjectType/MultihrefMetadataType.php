@@ -76,6 +76,13 @@ final class MultihrefMetadataType extends ObjectType
                        ],
                    'metadata' => [
                        'type' => Type::listOf($metadataKeyValuePairType),
+                       'args' => [
+                           'keys' => [
+                               'type' => Type::listOf(Type::string()),
+                               'description' => 'List of metadata column names to include '
+                                   . '(if omitted, all columns are returned).',
+                           ],
+                       ],
                        'resolve' => [$resolver, 'resolveMetadata'],
                    ]];
 

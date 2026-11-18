@@ -101,6 +101,9 @@ final class ObjectMetadata
             $result = [];
             if ($meta) {
                 foreach ($meta as $metaItemKey => $metaItemValue) {
+                    if (isset($args['keys']) && !in_array($metaItemKey, $args['keys'], true)) {
+                        continue;
+                    }
                     $result[] = [
                         'name' => $metaItemKey,
                         'value' => $metaItemValue,
