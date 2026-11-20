@@ -33,6 +33,17 @@ describe('package.json declares the 2026.4 minimums', () => {
     }
   })
 
+  it('AC3: the lockfile keeps the LTS versions of antd, @rsbuild/core, jest and react', () => {
+    const lock = JSON.parse(readFileSync(new URL('../package-lock.json', import.meta.url), 'utf8'))
+    const resolved = (name) => lock.packages[`node_modules/${name}`].version
+    assert.equal(resolved('antd'), '5.29.3')
+    assert.equal(resolved('@rsbuild/core'), '1.7.6')
+    assert.equal(resolved('jest'), '30.5.2')
+    assert.equal(resolved('react'), '18.3.1')
+    // the root entry of the lock mirrors the manifest
+    assert.equal(lock.packages[''].dependencies.antd, pkg.dependencies.antd)
+  })
+
   it('AC2: directly imported packages are declared', () => {
     for (const name of ['antd', 'antd-style', 'lodash', '@tanstack/react-table', 'classnames']) {
       assert.ok(declared[name] !== undefined, `${name} is imported but not declared`)
