@@ -57,7 +57,7 @@ vi.mock('@pimcore/studio-ui-bundle/components', () => {
     Accordion: ({ items }: { items: Array<{ key: string, info?: React.ReactNode, children?: React.ReactNode }> }) => (
       <div>{ items.map((item) => <div key={ item.key }>{ item.info }{ item.children }</div>) }</div>
     ),
-    Modal: () => null,
+    Modal: ({ open }: { open: boolean }) => open ? <div data-testid="add-modal" /> : null,
     Select: () => null,
     OperationalGrid
   }
@@ -198,5 +198,51 @@ describe('schema grid rows in a review', () => {
 
     expect(screen.queryByTestId(/row-mark-/)).toBeNull()
     expect(screen.getByTestId('row-asset').querySelectorAll('td')).toHaveLength(5)
+  })
+
+  it('removes a row by its trash outside a review, in both grids', () => {
+    const onQueryChange = vi.fn()
+    render(
+      <QueryGrid
+        onChange={ onQueryChange }
+        value={ [{ id: 'Car', entity: 'Car' }, { id: 'Product', entity: 'Product' }] }
+      />
+    )
+    fireEvent.click(within(screen.getByTestId('row-Car')).getByText('trash'))
+    expect(onQueryChange).toHaveBeenCalledWith([{ id: 'Product', entity: 'Product' }])
+    cleanup()
+
+    const onMutationChange = vi.fn()
+    render(
+      <MutationGrid
+        onChange={ onMutationChange }
+        value={ [{ id: 'Car', entity: 'Car', create: false, update: true, delete: false }] }
+      />
+    )
+    fireEvent.click(within(screen.getByTestId('row-Car')).getByText('trash'))
+    expect(onMutationChange).toHaveBeenCalledWith([])
+  })
+
+  it('opens the class picker by Add outside a review', () => {
+    render(<QueryGrid value={ [] } />)
+
+    expect(screen.queryByTestId('add-modal')).toBeNull()
+    fireEvent.click(screen.getByText('add'))
+    expect(screen.getByTestId('add-modal')).toBeTruthy()
+  })
+
+  it('opens a mutation row\'s fields view-only in a review', () => {
+    render(
+      <SchemaRowMarksContext.Provider value={ { mutation: { Car: 'changed' } } }>
+        <MutationGrid
+          isWriteable={ false }
+          value={ [{ id: 'Car', entity: 'Car', create: false, update: true, delete: false }] }
+        />
+      </SchemaRowMarksContext.Provider>
+    )
+
+    fireEvent.click(within(screen.getByTestId('row-Car')).getByText('settings'))
+    expect(screen.getByTestId('fields-modal').textContent).toBe('Car')
+    expect(screen.getByTestId('fields-modal').dataset.disabled).toBe('true')
   })
 })
