@@ -113,7 +113,10 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   }
 
   return (
-    <Content loading={ isLoading || liveLoading }>
+    <Content
+      className={ styles.frame }
+      loading={ isLoading || liveLoading }
+    >
       { readOnly === true && state != null && (
         <ReviewOutcomeHeader
           flush
