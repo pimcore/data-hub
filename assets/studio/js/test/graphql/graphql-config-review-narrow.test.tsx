@@ -27,7 +27,10 @@ vi.mock('@pimcore/studio-ui-bundle/components', () => ({
   useFormItemAnnotation: () => undefined
 }))
 
-vi.mock('@pimcore/change-control-bundle/sdk', () => ({ ReviewOutcomeHeader: () => null, ConfigSummary: () => null }))
+vi.mock('@pimcore/change-control-bundle/sdk', () => ({
+  ReviewOutcomeHeader: () => <div data-testid="outcome" />,
+  ConfigSummary: () => null
+}))
 
 vi.mock('../../src/modules/graphql/components/graphql-config-editor', () => ({
   GRAPHQL_TABS: { general: 'general', schema: 'schema', security: 'security', permissions: 'permissions' },
@@ -114,6 +117,23 @@ describe('GraphQLConfigReviewSurface in a narrow change request tab', () => {
 
     expect(valueOf(surface, '', 'container-name')).toBe(SURFACE_CONTAINER)
     expect(valueOf(surface, '', 'container-type')).toBe('inline-size')
+  })
+
+  it('keeps a resolved review in the measured frame, so the narrow layout applies to it too', () => {
+    vi.stubGlobal('fetch', vi.fn(async () => await new Promise(() => {})))
+    render(
+      <GraphQLConfigReviewSurface
+        { ...({ subjectRef: 'shop', changeSetId: 'change-set-1', readOnly: true, state: 'approved', resolvedAt: 1 } as unknown as React.ComponentProps<typeof GraphQLConfigReviewSurface>) }
+      />
+    )
+    const surface = byId('surface')
+    const outcome = byId('outcome')
+    const split = outcome.nextElementSibling!
+
+    expect(outcome.parentElement).toBe(surface)
+    expect(split.parentElement).toBe(surface)
+    expect(valueOf(split, narrow, 'flex-direction')).toBe('column')
+    expect(valueOf(split.firstElementChild!, narrow, 'width')).toBe('auto')
   })
 
   it('puts the editor below the list at full width where the pane is too narrow for both', () => {
