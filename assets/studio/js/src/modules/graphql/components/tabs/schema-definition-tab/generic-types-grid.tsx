@@ -24,6 +24,23 @@ interface GenericTypesGridProps {
 export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: GenericTypesGridProps): React.JSX.Element => {
   const { t } = useTranslation()
   const marks = useRowMarks('genericTypes')
+  // a generic type the review removes is no longer in the form: list it with nothing granted, so its mark shows
+  const rows = useMemo(() => [
+    ...value,
+    ...Object.keys(marks)
+      .filter((name) => marks[name] === 'removed' && !value.some((row) => row.name === name))
+      .map((name): GenericType => ({
+        name,
+        readPossible: false,
+        createPossible: false,
+        updatePossible: false,
+        deletePossible: false,
+        read: false,
+        create: false,
+        update: false,
+        delete: false
+      }))
+  ], [value, marks])
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<GenericType>()
@@ -34,7 +51,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
             id: 'review',
             header: '',
             size: 100,
-            cell: (info: { row: { index: number } }) => <RowMark status={ marks[value[info.row.index]?.name] } />
+            cell: (info: { row: { index: number } }) => <RowMark status={ marks[rows[info.row.index]?.name] } />
           }]
         : []),
       columnHelper.accessor('name', {
@@ -108,7 +125,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
         }
       })
     ]
-  }, [t, isWriteable, marks, value])
+  }, [t, isWriteable, marks, rows])
 
   const accordionItem: AccordionItemType = useMemo(() => ({
     key: 'genericTypes',
@@ -124,7 +141,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
       autoWidth
       columns={ columns }
       onChange={ onChange }
-      value={ value }
+      value={ rows }
     >
       <OperationalGrid.Operations>
         {() => (

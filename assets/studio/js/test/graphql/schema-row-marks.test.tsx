@@ -193,6 +193,34 @@ describe('schema grid rows in a review', () => {
     expect(within(screen.getByTestId('row-asset')).queryByTestId(/row-mark-/)).toBeNull()
   })
 
+  it('lists a generic type the review removes, marked removed', () => {
+    const changes = configChanges({
+      subjectType: 'data-hub-graphql-config',
+      subjectRef: 'shop',
+      slots: {
+        schema: {
+          shape: 'record',
+          current: { 'schema.specialEntities.document.read': true },
+          proposed: { 'schema.specialEntities.document': null }
+        }
+      }
+    } as unknown as ChangeSetReviewData)
+    const marks = schemaRowMarks(changes)
+    expect(marks).toEqual({ genericTypes: { document: 'removed' } })
+
+    render(
+      <SchemaRowMarksContext.Provider value={ marks }>
+        <GenericTypesGrid
+          isWriteable={ false }
+          value={ [{ name: 'asset', readPossible: true, createPossible: false, updatePossible: false, deletePossible: false, read: true, create: false, update: false, delete: false }] }
+        />
+      </SchemaRowMarksContext.Provider>
+    )
+
+    expect(within(screen.getByTestId('row-document')).getByTestId('row-mark-removed')).toBeTruthy()
+    expect(within(screen.getByTestId('row-asset')).queryByTestId(/row-mark-/)).toBeNull()
+  })
+
   it('adds no mark column to the generic types outside a review', () => {
     render(<GenericTypesGrid value={ [{ name: 'asset' }] as any } />)
 
