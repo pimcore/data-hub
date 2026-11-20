@@ -13,10 +13,14 @@ import { createStyles } from 'antd-style'
 /** the surface's own width: in a narrow change request tab the page's width says nothing about it */
 export const SURFACE_CONTAINER = 'dh-graphql-review'
 
-const RAIL_WIDTH = 320
-const RAIL_GAP = 24
-// the schema table and the editor's tabs need this much beside the rail; below it the editor goes under the list
-const EDITOR_MIN_WIDTH = 400
+export const RAIL_WIDTH = 320
+export const RAIL_GAP = 24
+// the widest table the editor shows: the security workspaces' fixed columns (300 + 4 × 80 + 60)
+export const WIDEST_GRID_WIDTH = 680
+// the accordion's border and padding around that table
+const GRID_INSET = 40
+// below this the editor's tables would be cut beside the rail, so the editor goes under the list
+export const EDITOR_MIN_WIDTH = WIDEST_GRID_WIDTH + GRID_INSET
 export const EDITOR_BELOW_WIDTH = RAIL_WIDTH + RAIL_GAP + EDITOR_MIN_WIDTH
 const NARROW = `@container ${SURFACE_CONTAINER} (max-width: ${EDITOR_BELOW_WIDTH - 1}px)`
 

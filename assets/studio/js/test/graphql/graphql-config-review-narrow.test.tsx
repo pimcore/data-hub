@@ -39,7 +39,7 @@ vi.mock('../../src/modules/config/config-api-slice-enhanced', () => ({
 }))
 
 const { GraphQLConfigReviewSurface } = await import('../../src/modules/graphql/change-control/graphql-config-review-surface')
-const { EDITOR_BELOW_WIDTH, SURFACE_CONTAINER, useStyles } = await import('../../src/modules/graphql/change-control/graphql-config-review-surface.styles')
+const { EDITOR_BELOW_WIDTH, RAIL_GAP, RAIL_WIDTH, SURFACE_CONTAINER, useStyles } = await import('../../src/modules/graphql/change-control/graphql-config-review-surface.styles')
 
 // jsdom lays nothing out, so a container query is read from the injected rules, not measured
 const declaredRules = (element: Element): Array<{ container: string, style: CSSStyleDeclaration }> => {
@@ -126,6 +126,16 @@ describe('GraphQLConfigReviewSurface in a narrow change request tab', () => {
     // the list scrolls in its share; the editor keeps the rest of the height
     expect(valueOf(byId('rail'), narrow, 'max-height')).toBe('40%')
     expect(valueOf(byId('rail'), narrow, 'border-right')).toBe('none')
+  })
+
+  it('stacks wherever the editor beside the list would be narrower than its widest table', () => {
+    // the security workspace grid's fixed columns: path 300, four permissions of 80, actions 60
+    const workspaceGrid = 300 + 4 * 80 + 60
+    // a wider window with the chat open: the pane is still too narrow for list and table
+    const MEDIUM_PANE = 800
+
+    expect(EDITOR_BELOW_WIDTH - RAIL_WIDTH - RAIL_GAP).toBeGreaterThan(workspaceGrid)
+    expect(MEDIUM_PANE).toBeLessThan(EDITOR_BELOW_WIDTH)
   })
 
   it('keeps the list beside the editor where there is room', () => {
