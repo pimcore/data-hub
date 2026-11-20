@@ -76,31 +76,33 @@ export const PermissionGrid = ({ type, value = [], onChange, isWriteable = true 
           }
         }
       }),
-      {
-        id: 'actions',
-        header: '',
-        size: 60,
-        cell: (info: { row: { index: number } }) => (
-          <Flex
-            align="center"
-            justify="center"
-          >
-            <IconButton
-              icon={ { value: 'trash' } }
-              onClick={ () => {
-                const newData = [...value]
-                newData.splice(info.row.index, 1)
-                if (!isNil(onChange)) {
-                  onChange(newData)
-                }
-              } }
-              type="link"
-            />
-          </Flex>
-        ),
-        enableResizing: false,
-        enableSorting: false
-      }
+      ...(isWriteable
+        ? [{
+            id: 'actions',
+            header: '',
+            size: 60,
+            cell: (info: { row: { index: number } }) => (
+              <Flex
+                align="center"
+                justify="center"
+              >
+                <IconButton
+                  icon={ { value: 'trash' } }
+                  onClick={ () => {
+                    const newData = [...value]
+                    newData.splice(info.row.index, 1)
+                    if (!isNil(onChange)) {
+                      onChange(newData)
+                    }
+                  } }
+                  type="link"
+                />
+              </Flex>
+            ),
+            enableResizing: false,
+            enableSorting: false
+          }]
+        : [])
     ]
   }, [itemType, t, value, onChange, isWriteable])
 
@@ -114,6 +116,7 @@ export const PermissionGrid = ({ type, value = [], onChange, isWriteable = true 
       <OperationalGrid.Operations>
         {() => (
           <PermissionAccordion
+            isWriteable={ isWriteable }
             onChange={ onChange }
             type={ type }
             value={ value }

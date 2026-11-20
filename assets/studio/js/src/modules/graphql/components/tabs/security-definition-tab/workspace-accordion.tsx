@@ -18,12 +18,14 @@ interface WorkspaceAccordionProps {
   type: WorkspaceType
   value?: Workspace[]
   onChange?: (value: Workspace[]) => void
+  isWriteable?: boolean
 }
 
 export const WorkspaceAccordion = ({
   type,
   value = [],
-  onChange
+  onChange,
+  isWriteable = true
 }: WorkspaceAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
 
@@ -43,21 +45,23 @@ export const WorkspaceAccordion = ({
     key: type,
     id: type,
     title: <>{t(`data-hub.workspaces.${type}`)}</>,
-    info: (
-      <IconTextButton
-        icon={ { value: 'add-find' } }
-        onClick={ (e) => {
-          e.stopPropagation()
-          handleAdd()
-        } }
-      >
-        {t('add')}
-      </IconTextButton>
-    ),
+    info: isWriteable
+      ? (
+        <IconTextButton
+          icon={ { value: 'add-find' } }
+          onClick={ (e) => {
+            e.stopPropagation()
+            handleAdd()
+          } }
+        >
+          {t('add')}
+        </IconTextButton>
+        )
+      : undefined,
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, value, handleAdd, t])
+  }), [type, value, handleAdd, t, isWriteable])
 
   return (
     <Accordion

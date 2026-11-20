@@ -20,12 +20,14 @@ interface PermissionAccordionProps {
   type: 'roles' | 'users'
   value?: Permission[]
   onChange?: (value: Permission[]) => void
+  isWriteable?: boolean
 }
 
 export const PermissionAccordion = ({
   type,
   value = [],
-  onChange
+  onChange,
+  isWriteable = true
 }: PermissionAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
@@ -104,21 +106,23 @@ export const PermissionAccordion = ({
     key: type,
     id: type,
     title: <>{t(isRoles ? 'data-hub.permissions.role-permissions' : 'data-hub.permissions.user-permissions')}</>,
-    info: (
-      <IconTextButton
-        icon={ { value: 'plus-circle' } }
-        onClick={ (e) => {
-          e.stopPropagation()
-          handleOpenModal()
-        } }
-      >
-        {t('add')}
-      </IconTextButton>
-    ),
+    info: isWriteable
+      ? (
+        <IconTextButton
+          icon={ { value: 'plus-circle' } }
+          onClick={ (e) => {
+            e.stopPropagation()
+            handleOpenModal()
+          } }
+        >
+          {t('add')}
+        </IconTextButton>
+        )
+      : undefined,
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, isRoles, t])
+  }), [type, isRoles, t, isWriteable])
 
   return (
     <>
