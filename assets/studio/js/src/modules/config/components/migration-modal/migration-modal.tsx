@@ -57,6 +57,8 @@ export interface MigrationModalProps {
    * The consumer is responsible for wiring this up with its own state / ref.
    */
   children: ReactNode
+  /** View only: the legacy configuration is shown, no migration can be started. */
+  readOnly?: boolean
 }
 
 /**
@@ -78,7 +80,8 @@ export const MigrationModal = ({
   renderBelowTitle,
   onConfirm,
   onClose,
-  children
+  children,
+  readOnly = false
 }: MigrationModalProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [isMigrating, setIsMigrating] = useState(false)
@@ -119,19 +122,21 @@ export const MigrationModal = ({
           />
         </Flex>
 
-        <Toolbar
-          padding={ { x: 'none', y: 'small' } }
-          theme='secondary'
-        >
-          <Space size='extra-small'>
-            <Button
-              onClick={ () => { setIsMigrating(true) } }
-              type='primary'
-            >
-              { t('data-hub.migration-modal.start-migration') }
-            </Button>
-          </Space>
-        </Toolbar>
+        { !readOnly && (
+          <Toolbar
+            padding={ { x: 'none', y: 'small' } }
+            theme='secondary'
+          >
+            <Space size='extra-small'>
+              <Button
+                onClick={ () => { setIsMigrating(true) } }
+                type='primary'
+              >
+                { t('data-hub.migration-modal.start-migration') }
+              </Button>
+            </Space>
+          </Toolbar>
+        ) }
       </Modal>
     )
   }

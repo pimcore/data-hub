@@ -38,6 +38,10 @@ export interface EditorRenderProps<TColumns = SchemaColumn> {
   language?: string
   /** Called when the user changes the preview language so the adapter can persist it. */
   onLanguageChange?: (language: string) => void
+  /** View only: the columns can be looked at, not changed. */
+  readOnly?: boolean
+  /** View only: the columns before the change under review; the editor marks what differs. */
+  previousColumns?: TColumns[]
 }
 
 export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
@@ -64,6 +68,10 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
   onLanguageChange?: (language: string) => void
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly?: boolean
+  /** View only, e.g. in a review: the columns can be looked at, not changed. */
+  readOnly?: boolean
+  /** With `readOnly`: the columns before the change under review; added, changed and removed ones are marked. */
+  previousColumns?: TColumns[]
   /**
    * Render prop that returns the adapter-specific column editor element.
    * The consumer MUST forward the `ref` to their editor component (forwardRef).
@@ -93,9 +101,13 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   language,
   onLanguageChange,
   exportableOnly = false,
+  readOnly = false,
+  previousColumns,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
+  // looking must not write the preview language back into the form
+  const persistLanguage = readOnly ? undefined : onLanguageChange
   const alertModal = useAlertModal()
   const { getByName } = useClassDefinitions()
 
@@ -112,7 +124,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   const { data: availableFieldsData } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
     { classId: resolvedClassId, folderId: 1 },
-    { skip: !isLegacy }
+    { skip: !isLegacy || readOnly }
   )
   const allAvailableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
   const availableFields: GridColumnConfiguration[] = exportableOnly
@@ -166,7 +178,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     <PreviewHeader
       entity={ entity }
       language={ language }
-      onLanguageChange={ onLanguageChange }
+      onLanguageChange={ persistLanguage }
     />
   )
 
@@ -179,6 +191,22 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
       { content }
     </PreviewModeProvider>
   )
+
+  // a migration writes, so a reader sees the legacy configuration as it is
+  if (isLegacy && readOnly) {
+    return (
+      <MigrationModal
+        legacyConfig={ columnConfig }
+        onClose={ handleCancel }
+        onConfirm={ () => {} }
+        open={ open }
+        readOnly
+        title={ title }
+      >
+        { null }
+      </MigrationModal>
+    )
+  }
 
   if (!isLegacy) {
     return withPreviewMode(
@@ -199,7 +227,9 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
             hideToolbar: false,
             exportableOnly,
             language,
-            onLanguageChange,
+            onLanguageChange: persistLanguage,
+            readOnly,
+            previousColumns: readOnly ? previousColumns : undefined,
             onApply: (updatedColumns) => {
               onApply(updatedColumns)
               handleCancel()

@@ -13,6 +13,7 @@ import { Flex, OperationalGrid, Accordion, type AccordionItemType } from '@pimco
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { createColumnHelper } from '@tanstack/react-table'
 import { type GenericType } from './types'
+import { RowMark, useRowMarks } from './row-marks'
 
 interface GenericTypesGridProps {
   value?: GenericType[]
@@ -22,11 +23,37 @@ interface GenericTypesGridProps {
 
 export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: GenericTypesGridProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const marks = useRowMarks('genericTypes')
+  // a generic type the review removes is no longer in the form: list it with nothing granted, so its mark shows
+  const rows = useMemo(() => [
+    ...value,
+    ...Object.keys(marks)
+      .filter((name) => marks[name] === 'removed' && !value.some((row) => row.name === name))
+      .map((name): GenericType => ({
+        name,
+        readPossible: false,
+        createPossible: false,
+        updatePossible: false,
+        deletePossible: false,
+        read: false,
+        create: false,
+        update: false,
+        delete: false
+      }))
+  ], [value, marks])
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<GenericType>()
 
     return [
+      ...(Object.keys(marks).length > 0
+        ? [{
+            id: 'review',
+            header: '',
+            size: 100,
+            cell: (info: { row: { index: number } }) => <RowMark status={ marks[rows[info.row.index]?.name] } />
+          }]
+        : []),
       columnHelper.accessor('name', {
         header: '',
         size: 200,
@@ -98,7 +125,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
         }
       })
     ]
-  }, [t, isWriteable])
+  }, [t, isWriteable, marks, rows])
 
   const accordionItem: AccordionItemType = useMemo(() => ({
     key: 'genericTypes',
@@ -114,7 +141,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
       autoWidth
       columns={ columns }
       onChange={ onChange }
-      value={ value }
+      value={ rows }
     >
       <OperationalGrid.Operations>
         {() => (

@@ -19,12 +19,14 @@ interface SchemaAccordionProps {
   type: 'query' | 'mutation'
   value?: QueryEntity[] | MutationEntity[]
   onChange?: (value: QueryEntity[] | MutationEntity[]) => void
+  isWriteable?: boolean
 }
 
 export const SchemaAccordion = ({
   type,
   value = [],
-  onChange
+  onChange,
+  isWriteable = true
 }: SchemaAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
@@ -87,21 +89,23 @@ export const SchemaAccordion = ({
     key: type,
     id: type,
     title: <>{t(`data-hub.schema.${type}-schema`)}</>,
-    info: (
-      <IconTextButton
-        icon={ { value: 'add-find' } }
-        onClick={ (e) => {
-          e.stopPropagation()
-          handleOpenModal()
-        } }
-      >
-        {t('add')}
-      </IconTextButton>
-    ),
+    info: isWriteable
+      ? (
+        <IconTextButton
+          icon={ { value: 'add-find' } }
+          onClick={ (e) => {
+            e.stopPropagation()
+            handleOpenModal()
+          } }
+        >
+          {t('add')}
+        </IconTextButton>
+        )
+      : undefined,
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, t])
+  }), [type, t, isWriteable])
 
   return (
     <>

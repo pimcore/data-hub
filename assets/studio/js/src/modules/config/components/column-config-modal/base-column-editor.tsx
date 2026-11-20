@@ -17,7 +17,6 @@ import {
   Content,
   ContentLayout,
   Flex,
-  IconButton,
   IconTextButton,
   Space,
   Spin,
@@ -32,11 +31,11 @@ import { LanguageSelectionContext } from '@pimcore/studio-ui-bundle/modules/data
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
 import { CollapsedColumnPreview } from './column-preview'
-import { ColumnEditorItemBody } from './column-editor-item'
-import { ColumnLocaleControl } from './column-locale-control'
+import { ColumnEditorItemBody, ColumnRowActions } from './column-editor-item'
 import { useColumnEditorState } from './use-column-editor-state'
 import { usePreviewItemPreselect } from './use-preview-item-preselect'
 import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
+import { useColumnMarkItems } from './column-marks'
 import {
   ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
@@ -67,6 +66,10 @@ export interface BaseColumnEditorProps {
   onLanguageChange?: (language: string) => void
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly?: boolean
+  /** View only: no apply, add, remove or reorder; a column's settings show disabled. */
+  readOnly?: boolean
+  /** With `readOnly`: the columns before the change under review, to mark what differs. */
+  previousColumns?: SchemaColumn[]
 }
 
 export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorProps>(
@@ -81,24 +84,25 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     transformersRegistryId,
     language,
     onLanguageChange,
-    exportableOnly = false
+    exportableOnly = false,
+    readOnly = false,
+    previousColumns
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
+    const showToolbar = !hideToolbar && !readOnly
     const { styles } = useStyles()
     const user = useUser()
     const [fieldsToAddOpen, setFieldsToAddOpen] = useState(true)
 
-    // Own the language state here. Initialize once from the prop, falling back to
-    // the user's first content language. This is the single source of truth —
-    // no synchronization effects needed.
+    // Own the language state here, initialized once from the prop, else the user's first content language:
+    // the single source of truth, no synchronization effects needed.
     const initialLanguage = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 
-    // On mount, persist the resolved initial language to the parent so that
-    // entities that have never had a language set get one saved immediately.
+    // On mount, persist the resolved initial language, so an entity without one gets it saved at once.
     useEffect(() => {
-      onLanguageChange?.(currentLanguage)
+      if (!readOnly) onLanguageChange?.(currentLanguage)
     }, [])
 
     const handleLanguageChange = useCallback((lang: string) => {
@@ -138,13 +142,14 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       addColumn: handleAddColumnOfType
     }), [getColumns, handleAddColumnOfType])
 
-    const stackItems: StackListProps['items'] = draft.map(col => {
+    const { marks, removedItems } = useColumnMarkItems(columns, previousColumns, readOnly)
+    const stackItems: StackListProps['items'] = [...draft.map((col, index) => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
       const label = getColumnLabel(col)
 
       return {
         id: col._id,
-        sortable: true,
+        sortable: !readOnly,
         type: isAdvanced ? 'collapse' as const : 'default' as const,
         defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
@@ -158,6 +163,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     column={ col }
                     entity={ entity }
                     onPipelineChange={ handlePipelineChange }
+                    readOnly={ readOnly }
                     sourceFieldsRegistryId={ sourceFieldsRegistryId }
                     transformersRegistryId={ transformersRegistryId }
                   />
@@ -174,22 +180,16 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               }
             : {}),
         renderRightToolbar: (
-          <Space size='mini'>
-            { col.localizable === true && isAdvanced && (
-              <ColumnLocaleControl
-                onChange={ (locale) => { handleLocaleChange(col._id, locale) } }
-                value={ col.locale }
-              />
-            ) }
-            <IconButton
-              icon={ { value: 'trash' } }
-              onClick={ () => { handleRemove(col._id) } }
-              theme='secondary'
-            />
-          </Space>
+          <ColumnRowActions
+            column={ col }
+            mark={ marks[index] }
+            onLocaleChange={ handleLocaleChange }
+            onRemove={ handleRemove }
+            readOnly={ readOnly }
+          />
         )
       }
-    })
+    }), ...removedItems]
 
     if (isLoading) {
       return (
@@ -211,7 +211,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
           columns={ draft }
         >
           <ContentLayout
-            renderToolbar={ hideToolbar
+            renderToolbar={ !showToolbar
               ? undefined
               : (
                 <Toolbar
@@ -262,7 +262,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               style={ { height: 'calc(80vh - 200px)' } }
             >
               <div className={ styles.body }>
-                { !hideToolbar && fieldsToAddOpen && (
+                { showToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
                   groups={ columnGroups }
                   onClose={ () => { setFieldsToAddOpen(false) } }
@@ -275,17 +275,17 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     direction='vertical'
                     style={ { width: '100%' } }
                   >
-                    { draft.length === 0 && (
+                    { stackItems.length === 0 && (
                     <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
                     ) }
 
-                    { draft.length > 0 && (
+                    { stackItems.length > 0 && (
                     <StackList
                       items={ stackItems }
                       onItemsChange={ (items) => {
                         handleReorder(items.map(item => String(item.id)))
                       } }
-                      sortable
+                      sortable={ !readOnly }
                     />
                     ) }
                   </Space>
