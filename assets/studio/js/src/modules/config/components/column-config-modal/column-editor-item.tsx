@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { ConfigProvider } from 'antd'
+import { Tag } from 'antd'
 import { IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { ADVANCED_COLUMN_TYPE, type AdvancedEditorColumn } from './types'
 import { ColumnPipelineForm } from './column-pipeline-form'
@@ -39,18 +39,17 @@ export const ColumnEditorItemBody = ({
   readOnly
 }: ColumnEditorItemBodyProps): React.JSX.Element => {
   return (
-    <ConfigProvider componentDisabled={ readOnly }>
-      <ColumnPipelineForm
-        column={ column }
-        config={ column.pipelineConfig }
-        entity={ entity }
-        objectId={ objectId }
-        onChange={ (pipeline) => { onPipelineChange(column._id, pipeline) } }
-        sourceFieldsRegistryId={ sourceFieldsRegistryId }
-        transformersRegistryId={ transformersRegistryId }
-        value={ column.pipeline }
-      />
-    </ConfigProvider>
+    <ColumnPipelineForm
+      column={ column }
+      config={ column.pipelineConfig }
+      disabled={ readOnly }
+      entity={ entity }
+      objectId={ objectId }
+      onChange={ (pipeline) => { onPipelineChange(column._id, pipeline) } }
+      sourceFieldsRegistryId={ sourceFieldsRegistryId }
+      transformersRegistryId={ transformersRegistryId }
+      value={ column.pipeline }
+    />
   )
 }
 
@@ -64,14 +63,14 @@ export interface ColumnRowActionsProps {
 
 export const ColumnRowActions = ({ column, onLocaleChange, onRemove, readOnly }: ColumnRowActionsProps): React.JSX.Element => (
   <Space size='mini'>
-    { column.localizable === true && column.type === ADVANCED_COLUMN_TYPE && (
-      <ConfigProvider componentDisabled={ readOnly }>
+    { column.localizable === true && column.type === ADVANCED_COLUMN_TYPE && (readOnly === true
+      ? <Tag>{ column.locale ?? '-' }</Tag>
+      : (
         <ColumnLocaleControl
           onChange={ (locale) => { onLocaleChange(column._id, locale) } }
           value={ column.locale }
         />
-      </ConfigProvider>
-    ) }
+        )) }
     { readOnly !== true && (
       <IconButton
         icon={ { value: 'trash' } }

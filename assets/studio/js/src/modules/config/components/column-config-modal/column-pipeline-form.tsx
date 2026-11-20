@@ -28,6 +28,8 @@ export interface ColumnPipelineFormProps {
   transformersRegistryId: string
   /** @deprecated Passed to ColumnPreview, which takes the item from the preview mode otherwise. */
   objectId?: number | null
+  /** shows the settings without letting them change */
+  disabled?: boolean
 }
 
 export const ColumnPipelineForm = ({
@@ -38,7 +40,8 @@ export const ColumnPipelineForm = ({
   onChange,
   sourceFieldsRegistryId,
   transformersRegistryId,
-  objectId
+  objectId,
+  disabled
 }: ColumnPipelineFormProps): React.JSX.Element => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
@@ -110,6 +113,7 @@ export const ColumnPipelineForm = ({
 
   return (
     <Form
+      disabled={ disabled }
       form={ form }
       initialValues={ { value: value ?? {} } }
       layout='vertical'

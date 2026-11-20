@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { ConfigProvider, Input } from 'antd'
+import { Input } from 'antd'
 import { render, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
@@ -38,9 +38,14 @@ jest.mock('../src/modules/config/components/column-config-modal/base-column-edit
   useStyles: () => ({ styles: {} })
 }))
 
-// a real AntD control, so the test sees whether the settings follow the read-only state
+// a control that shows whether the settings are handed the read-only state
 jest.mock('../src/modules/config/components/column-config-modal/column-pipeline-form', () => ({
-  ColumnPipelineForm: () => <Input aria-label='pipeline-setting' />
+  ColumnPipelineForm: ({ disabled }: { disabled?: boolean }) => (
+    <Input
+      aria-label='pipeline-setting'
+      disabled={ disabled }
+    />
+  )
 }))
 
 const COLUMNS = [
@@ -77,10 +82,10 @@ beforeEach(() => {
   }
 })
 
-describe('column configurator in a disabled form', () => {
-  test('opens view only: no apply, add, remove or reorder, settings disabled, columns listed', () => {
+describe('column configurator view only', () => {
+  test('readOnly: no apply, add, remove or reorder, settings disabled, columns listed', () => {
     const onLanguageChange = jest.fn()
-    render(<ConfigProvider componentDisabled>{ modal(onLanguageChange) }</ConfigProvider>)
+    render(modal(onLanguageChange, true))
 
     expect(screen.getByText('name')).toBeInTheDocument()
     expect(screen.getByText('Calc')).toBeInTheDocument()
@@ -98,14 +103,7 @@ describe('column configurator in a disabled form', () => {
     expect(onLanguageChange).not.toHaveBeenCalled()
   })
 
-  test('an explicit readOnly wins over an enabled form', () => {
-    render(modal(() => {}, true))
-
-    expect(screen.queryByText('data-hub.column-config-modal.apply')).toBeNull()
-    expect(screen.queryByText('icon')).toBeNull()
-  })
-
-  test('stays editable in an enabled form', () => {
+  test('stays editable without readOnly', () => {
     render(modal())
 
     expect(screen.getByText('data-hub.column-config-modal.apply')).toBeInTheDocument()

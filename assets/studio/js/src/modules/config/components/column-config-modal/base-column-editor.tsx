@@ -10,7 +10,7 @@
 
 import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
-import { ConfigProvider, Empty, Tag } from 'antd'
+import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
   Button,
@@ -65,7 +65,7 @@ export interface BaseColumnEditorProps {
   onLanguageChange?: (language: string) => void
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly?: boolean
-  /** View only: no apply, add, remove or reorder; a column's settings show disabled. Defaults to the surrounding form's disabled state. */
+  /** View only: no apply, add, remove or reorder; a column's settings show disabled. */
   readOnly?: boolean
 }
 
@@ -82,11 +82,9 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     language,
     onLanguageChange,
     exportableOnly = false,
-    readOnly: readOnlyProp
+    readOnly = false
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
-    const { componentDisabled } = ConfigProvider.useConfig()
-    const readOnly = readOnlyProp ?? componentDisabled
     const showToolbar = !hideToolbar && !readOnly
     const { styles } = useStyles()
     const user = useUser()

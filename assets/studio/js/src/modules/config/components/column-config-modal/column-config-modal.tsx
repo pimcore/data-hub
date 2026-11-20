@@ -9,7 +9,6 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { ConfigProvider } from 'antd'
 import { ColumnPickerPopover, ContentLayout, Flex, IconTextButton, Modal, ModalTitle, PreviewModeProvider, useAlertModal } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
@@ -67,7 +66,7 @@ export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
   onLanguageChange?: (language: string) => void
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly?: boolean
-  /** View only, e.g. in a review. Defaults to the surrounding form's disabled state. */
+  /** View only, e.g. in a review: the columns can be looked at, not changed. */
   readOnly?: boolean
   /**
    * Render prop that returns the adapter-specific column editor element.
@@ -98,13 +97,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   language,
   onLanguageChange,
   exportableOnly = false,
-  readOnly: readOnlyProp,
+  readOnly = false,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
-  // a disabled form (a review, a reader) opens the modal to look, not to edit
-  const { componentDisabled } = ConfigProvider.useConfig()
-  const readOnly = readOnlyProp ?? componentDisabled
   // looking must not write the preview language back into the form
   const persistLanguage = readOnly ? undefined : onLanguageChange
   const alertModal = useAlertModal()
