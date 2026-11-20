@@ -27,12 +27,12 @@ vi.mock('@pimcore/studio-ui-bundle/components', () => {
         <tbody>
           { value.map((row, index) => (
             <tr
-              data-testid={ `row-${row.entity as string}` }
-              key={ row.id }
+              data-testid={ `row-${(row.entity ?? row.name) as string}` }
+              key={ row.id ?? row.name }
             >
               { columns.map((column) => (
                 <td key={ column.id ?? column.accessorKey }>
-                  { column.cell !== undefined ? column.cell({ row: { index } }) : String(row[column.accessorKey]) }
+                  { column.cell !== undefined ? column.cell({ row: { index }, getValue: () => row[column.accessorKey] }) : String(row[column.accessorKey]) }
                 </td>
               )) }
             </tr>
@@ -78,6 +78,7 @@ vi.mock('../../src/modules/graphql/components/tabs/schema-definition-tab/schema-
 
 const { QueryGrid } = await import('../../src/modules/graphql/components/tabs/schema-definition-tab/query-grid')
 const { MutationGrid } = await import('../../src/modules/graphql/components/tabs/schema-definition-tab/mutation-grid')
+const { GenericTypesGrid } = await import('../../src/modules/graphql/components/tabs/schema-definition-tab/generic-types-grid')
 const { SchemaRowMarksContext } = await import('../../src/modules/graphql/components/tabs/schema-definition-tab/row-marks')
 const { configChanges, schemaRowMarks } = await import('../../src/modules/graphql/change-control/config-review-model')
 
@@ -159,5 +160,43 @@ describe('schema grid rows in a review', () => {
     expect(screen.queryByTestId(/row-mark-/)).toBeNull()
     expect(screen.getByText('trash')).toBeTruthy()
     expect(screen.getByText('add')).toBeTruthy()
+  })
+
+  it('marks the generic type a change sits in', () => {
+    const changes = configChanges({
+      subjectType: 'data-hub-graphql-config',
+      subjectRef: 'shop',
+      slots: {
+        schema: {
+          shape: 'record',
+          current: { 'schema.specialEntities.document.read': false },
+          proposed: { 'schema.specialEntities.document.read': true }
+        }
+      }
+    } as unknown as ChangeSetReviewData)
+    const marks = schemaRowMarks(changes)
+    expect(marks).toEqual({ genericTypes: { document: 'changed' } })
+
+    const generic = (name: string): Record<string, unknown> => ({
+      name, readPossible: true, createPossible: false, updatePossible: false, deletePossible: false, read: true, create: false, update: false, delete: false
+    })
+    render(
+      <SchemaRowMarksContext.Provider value={ marks }>
+        <GenericTypesGrid
+          isWriteable={ false }
+          value={ [generic('asset'), generic('document')] as any }
+        />
+      </SchemaRowMarksContext.Provider>
+    )
+
+    expect(within(screen.getByTestId('row-document')).getByTestId('row-mark-changed')).toBeTruthy()
+    expect(within(screen.getByTestId('row-asset')).queryByTestId(/row-mark-/)).toBeNull()
+  })
+
+  it('adds no mark column to the generic types outside a review', () => {
+    render(<GenericTypesGrid value={ [{ name: 'asset' }] as any } />)
+
+    expect(screen.queryByTestId(/row-mark-/)).toBeNull()
+    expect(screen.getByTestId('row-asset').querySelectorAll('td')).toHaveLength(5)
   })
 })

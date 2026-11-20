@@ -13,12 +13,14 @@ import { Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type FormItemAnnotationStatus } from '../../../change-control/studio-form-annotations'
 
-/** a review's marks for one grid's rows, keyed by entity id; empty outside a review */
+/** a review's marks for one grid's rows, keyed by entity id (a generic type by its name); empty outside a review */
 export type RowMarks = Record<string, FormItemAnnotationStatus>
 
-export const SchemaRowMarksContext = createContext<Partial<Record<'query' | 'mutation', RowMarks>>>({})
+export type SchemaGrid = 'query' | 'mutation' | 'genericTypes'
 
-export const useRowMarks = (grid: 'query' | 'mutation'): RowMarks => useContext(SchemaRowMarksContext)[grid] ?? {}
+export const SchemaRowMarksContext = createContext<Partial<Record<SchemaGrid, RowMarks>>>({})
+
+export const useRowMarks = (grid: SchemaGrid): RowMarks => useContext(SchemaRowMarksContext)[grid] ?? {}
 
 // the colours of Studio's form annotation tag, so a row reads as a marked field does
 const COLOR: Record<FormItemAnnotationStatus, string> = { added: 'green', changed: 'gold', removed: 'red', moved: 'geekblue' }

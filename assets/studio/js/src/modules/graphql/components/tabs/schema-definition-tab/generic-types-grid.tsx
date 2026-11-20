@@ -13,6 +13,7 @@ import { Flex, OperationalGrid, Accordion, type AccordionItemType } from '@pimco
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { createColumnHelper } from '@tanstack/react-table'
 import { type GenericType } from './types'
+import { RowMark, useRowMarks } from './row-marks'
 
 interface GenericTypesGridProps {
   value?: GenericType[]
@@ -22,11 +23,20 @@ interface GenericTypesGridProps {
 
 export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: GenericTypesGridProps): React.JSX.Element => {
   const { t } = useTranslation()
+  const marks = useRowMarks('genericTypes')
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<GenericType>()
 
     return [
+      ...(Object.keys(marks).length > 0
+        ? [{
+            id: 'review',
+            header: '',
+            size: 100,
+            cell: (info: { row: { index: number } }) => <RowMark status={ marks[value[info.row.index]?.name] } />
+          }]
+        : []),
       columnHelper.accessor('name', {
         header: '',
         size: 200,
@@ -98,7 +108,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
         }
       })
     ]
-  }, [t, isWriteable])
+  }, [t, isWriteable, marks, value])
 
   const accordionItem: AccordionItemType = useMemo(() => ({
     key: 'genericTypes',
