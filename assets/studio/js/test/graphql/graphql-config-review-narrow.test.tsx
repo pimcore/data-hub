@@ -122,7 +122,8 @@ describe('GraphQLConfigReviewSurface in a narrow change request tab', () => {
     expect(NARROW_PANE).toBeLessThan(EDITOR_BELOW_WIDTH)
     expect(valueOf(byId('split'), narrow, 'flex-direction')).toBe('column')
     expect(valueOf(byId('rail'), narrow, 'width')).toBe('auto')
-    expect(valueOf(byId('rail'), narrow, 'flex')).toBe('0 1 auto')
+    // a tall editor must not squeeze the list below its share
+    expect(valueOf(byId('rail'), narrow, 'flex')).toBe('0 0 auto')
     // the list scrolls in its share; the editor keeps the rest of the height
     expect(valueOf(byId('rail'), narrow, 'max-height')).toBe('40%')
     expect(valueOf(byId('rail'), narrow, 'border-right')).toBe('none')
@@ -133,9 +134,18 @@ describe('GraphQLConfigReviewSurface in a narrow change request tab', () => {
     const workspaceGrid = 300 + 4 * 80 + 60
     // a wider window with the chat open: the pane is still too narrow for list and table
     const MEDIUM_PANE = 800
+    render(<Probe />)
 
-    expect(EDITOR_BELOW_WIDTH - RAIL_WIDTH - RAIL_GAP).toBeGreaterThan(workspaceGrid)
-    expect(MEDIUM_PANE).toBeLessThan(EDITOR_BELOW_WIDTH)
+    const stacked = declaredRules(byId('split'))
+      .filter((rule) => rule.style.getPropertyValue('flex-direction') === 'column')
+      .map((rule) => new RegExp(`^${SURFACE_CONTAINER} \\(max-width: (\\d+)px\\)$`).exec(rule.container))
+    expect(stacked).toHaveLength(1)
+    const stackedUpTo = Number(stacked[0]![1])
+
+    // from the first pane that no longer stacks, the editor beside the list is wider than the grid
+    expect(stackedUpTo + 1 - RAIL_WIDTH - RAIL_GAP).toBeGreaterThan(workspaceGrid)
+    expect(stackedUpTo).toBe(EDITOR_BELOW_WIDTH - 1)
+    expect(MEDIUM_PANE).toBeLessThanOrEqual(stackedUpTo)
   })
 
   it('keeps the list beside the editor where there is room', () => {

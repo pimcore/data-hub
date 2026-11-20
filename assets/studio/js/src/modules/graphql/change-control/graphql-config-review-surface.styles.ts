@@ -55,7 +55,8 @@ export const useStyles = createStyles(({ token, css }) => ({
     border-right: 1px solid ${token.colorSplit};
     ${NARROW} {
       width: auto;
-      flex: 0 1 auto;
+      /* not shrinkable: a tall editor would otherwise squeeze the list below its share */
+      flex: 0 0 auto;
       max-height: 40%;
       padding-right: 0;
       padding-bottom: ${token.paddingLG}px;
