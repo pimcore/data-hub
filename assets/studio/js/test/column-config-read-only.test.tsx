@@ -10,10 +10,13 @@
 
 import React from 'react'
 import { Input } from 'antd'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
+import { ColumnRowActions } from '../src/modules/config/components/column-config-modal/column-editor-item'
+import { columnMarks } from '../src/modules/config/components/column-config-modal/column-marks'
+import { type SchemaColumn } from '../src/modules/config/components/column-config-modal/types'
 
 // the shared stand-ins drop the toolbars and the sort flag, which are what a reader must not get
 jest.mock('@pimcore/studio-ui-bundle/components', () => ({
@@ -38,6 +41,10 @@ jest.mock('../src/modules/config/components/column-config-modal/base-column-edit
   useStyles: () => ({ styles: {} })
 }))
 
+jest.mock('../src/modules/config/components/column-config-modal/column-locale-control', () => ({
+  ColumnLocaleControl: () => <select aria-label='locale-control' />
+}))
+
 // a control that shows whether the settings are handed the read-only state
 jest.mock('../src/modules/config/components/column-config-modal/column-pipeline-form', () => ({
   ColumnPipelineForm: ({ disabled }: { disabled?: boolean }) => (
@@ -48,20 +55,32 @@ jest.mock('../src/modules/config/components/column-config-modal/column-pipeline-
   )
 }))
 
-const COLUMNS = [
+const COLUMNS: SchemaColumn[] = [
   { key: 'name', fieldtype: 'input', type: 'dataobject.input', config: {} },
   { key: 'Calc', fieldtype: 'advanced', type: 'dataobject.advanced', config: { advancedColumns: [], transformers: [] } }
 ]
 
-const modal = (onLanguageChange: (language: string) => void = () => {}, readOnly?: boolean): React.JSX.Element => (
+interface ModalOptions {
+  columns?: SchemaColumn[]
+  columnConfig?: Record<string, unknown>
+  previousColumns?: SchemaColumn[]
+  onApply?: () => void
+}
+
+const modal = (
+  onLanguageChange: (language: string) => void = () => {},
+  readOnly?: boolean,
+  { columns = COLUMNS, columnConfig, previousColumns, onApply = () => {} }: ModalOptions = {}
+): React.JSX.Element => (
   <ColumnConfigModal
-    columnConfig={ undefined }
-    columns={ COLUMNS }
+    columnConfig={ columnConfig }
+    columns={ columns }
     entity='Product'
-    onApply={ () => {} }
+    onApply={ onApply }
     onCancel={ () => {} }
     onLanguageChange={ onLanguageChange }
     open
+    previousColumns={ previousColumns }
     readOnly={ readOnly }
     renderEditor={ (props) => (
       <BaseColumnEditor
@@ -111,5 +130,108 @@ describe('column configurator view only', () => {
     // one trash per column
     expect(document.querySelectorAll('li button')).toHaveLength(2)
     expect(screen.getByLabelText('pipeline-setting')).not.toBeDisabled()
+  })
+
+  test('readOnly with a legacy configuration: the legacy columns are shown, no migration can start', () => {
+    const onApply = jest.fn()
+    render(modal(() => {}, true, { columns: [], columnConfig: { columns: [{ attribute: 'legacySku' }] }, onApply }))
+
+    // the legacy configuration, not an empty editor
+    expect(screen.getByText(/legacySku/)).toBeInTheDocument()
+    expect(screen.queryByText('data-hub.migration-modal.start-migration')).toBeNull()
+    expect(screen.queryByText('data-hub.migration-modal.confirm-migration')).toBeNull()
+    expect(screen.queryByText('data-hub.column-config-modal.add-column')).toBeNull()
+    expect(screen.queryByText('data-hub.column-config-modal.apply')).toBeNull()
+    expect(onApply).not.toHaveBeenCalled()
+  })
+
+  test('a legacy configuration stays migratable without readOnly', () => {
+    render(modal(() => {}, false, { columns: [], columnConfig: { columns: [{ attribute: 'legacySku' }] } }))
+
+    expect(screen.getByText('data-hub.migration-modal.start-migration')).toBeInTheDocument()
+  })
+
+  test('readOnly with previous columns: added and changed columns marked, removed ones listed', () => {
+    const previous = [
+      { key: 'name', fieldtype: 'input', type: 'dataobject.input', config: {} },
+      { key: 'Calc', fieldtype: 'advanced', type: 'dataobject.advanced', config: { advancedColumns: [], transformers: ['trim'] } },
+      { key: 'ean', fieldtype: 'input', type: 'dataobject.input', config: {} }
+    ]
+    const columns = [
+      COLUMNS[0],
+      COLUMNS[1],
+      { key: 'productionYear', fieldtype: 'numeric', type: 'dataobject.numeric', config: {} }
+    ]
+    render(modal(() => {}, true, { columns, previousColumns: previous }))
+
+    const items = screen.getAllByRole('listitem')
+    expect(items).toHaveLength(4)
+    expect(within(items[0]).queryByTestId(/column-mark-/)).toBeNull()
+    expect(within(items[1]).getByTestId('column-mark-changed').textContent).toBe('form.annotation.changed')
+    expect(within(items[2]).getByText('productionYear')).toBeInTheDocument()
+    expect(within(items[2]).getByTestId('column-mark-added')).toBeInTheDocument()
+    expect(within(items[3]).getByText('ean')).toBeInTheDocument()
+    expect(within(items[3]).getByTestId('column-mark-removed')).toBeInTheDocument()
+  })
+
+  test('previous columns mark nothing when the configurator is editable', () => {
+    render(modal(() => {}, false, { previousColumns: [] }))
+
+    expect(screen.queryByTestId(/column-mark-/)).toBeNull()
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
+  })
+
+  test('readOnly: a localizable column shows its locale as text, no locale control', () => {
+    const column = { _id: 'c1', key: 'title', fieldtype: 'advanced', type: 'dataobject.advanced', localizable: true, locale: 'de' }
+    const onLocaleChange = jest.fn()
+    const { rerender } = render(
+      <ColumnRowActions
+        column={ column }
+        onLocaleChange={ onLocaleChange }
+        onRemove={ () => {} }
+        readOnly
+      />
+    )
+
+    expect(screen.getByText('de')).toBeInTheDocument()
+    expect(screen.queryByLabelText('locale-control')).toBeNull()
+    expect(screen.queryByRole('button')).toBeNull()
+
+    rerender(
+      <ColumnRowActions
+        column={ { ...column, locale: null } }
+        onLocaleChange={ onLocaleChange }
+        onRemove={ () => {} }
+        readOnly
+      />
+    )
+    expect(screen.getByText('-')).toBeInTheDocument()
+
+    rerender(
+      <ColumnRowActions
+        column={ column }
+        onLocaleChange={ onLocaleChange }
+        onRemove={ () => {} }
+      />
+    )
+    expect(screen.getByLabelText('locale-control')).toBeInTheDocument()
+  })
+})
+
+describe('columnMarks', () => {
+  const input = (key: string, locale?: string | null): SchemaColumn =>
+    ({ key, fieldtype: 'input', type: 'dataobject.input', config: {}, locale })
+
+  test('no previous columns: nothing marked', () => {
+    expect(columnMarks([input('a')])).toEqual({ marks: [undefined], removed: [] })
+  })
+
+  test('a column is told apart by its locale', () => {
+    expect(columnMarks([input('a', 'de')], [input('a', 'en')])).toEqual({ marks: ['added'], removed: [input('a', 'en')] })
+  })
+
+  test('an unset config or locale equals an empty one', () => {
+    const { config, ...bare } = input('a')
+    expect(columnMarks([bare], [input('a', null)]).marks).toEqual([undefined])
   })
 })

@@ -14,6 +14,7 @@ import { IconButton, Space } from '@pimcore/studio-ui-bundle/components'
 import { ADVANCED_COLUMN_TYPE, type AdvancedEditorColumn } from './types'
 import { ColumnPipelineForm } from './column-pipeline-form'
 import { ColumnLocaleControl } from './column-locale-control'
+import { ColumnMark, type ColumnMarkStatus } from './column-marks'
 
 export interface ColumnEditorItemBodyProps {
   column: AdvancedEditorColumn
@@ -59,10 +60,13 @@ export interface ColumnRowActionsProps {
   onRemove: (id: string) => void
   /** the locale shows disabled and the column cannot be removed */
   readOnly?: boolean
+  /** a review's mark for the column */
+  mark?: ColumnMarkStatus
 }
 
-export const ColumnRowActions = ({ column, onLocaleChange, onRemove, readOnly }: ColumnRowActionsProps): React.JSX.Element => (
+export const ColumnRowActions = ({ column, onLocaleChange, onRemove, readOnly, mark }: ColumnRowActionsProps): React.JSX.Element => (
   <Space size='mini'>
+    <ColumnMark status={ mark } />
     { column.localizable === true && column.type === ADVANCED_COLUMN_TYPE && (readOnly === true
       ? <Tag>{ column.locale ?? '-' }</Tag>
       : (

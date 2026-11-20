@@ -35,6 +35,7 @@ import { ColumnEditorItemBody, ColumnRowActions } from './column-editor-item'
 import { useColumnEditorState } from './use-column-editor-state'
 import { usePreviewItemPreselect } from './use-preview-item-preselect'
 import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
+import { useColumnMarkItems } from './column-marks'
 import {
   ADVANCED_COLUMN_TYPE,
   type ColumnEditorHandle,
@@ -67,6 +68,8 @@ export interface BaseColumnEditorProps {
   exportableOnly?: boolean
   /** View only: no apply, add, remove or reorder; a column's settings show disabled. */
   readOnly?: boolean
+  /** With `readOnly`: the columns before the change under review, to mark what differs. */
+  previousColumns?: SchemaColumn[]
 }
 
 export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorProps>(
@@ -82,7 +85,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     language,
     onLanguageChange,
     exportableOnly = false,
-    readOnly = false
+    readOnly = false,
+    previousColumns
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
     const showToolbar = !hideToolbar && !readOnly
@@ -90,15 +94,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const user = useUser()
     const [fieldsToAddOpen, setFieldsToAddOpen] = useState(true)
 
-    // Own the language state here. Initialize once from the prop, falling back to
-    // the user's first content language. This is the single source of truth —
-    // no synchronization effects needed.
+    // Own the language state here, initialized once from the prop, else the user's first content language:
+    // the single source of truth, no synchronization effects needed.
     const initialLanguage = resolvePreviewLanguage(language, user.contentLanguages as string[] | undefined)
     const [currentLanguage, setCurrentLanguage] = useState(initialLanguage)
     const [hasLocalizedFields, setHasLocalizedFields] = useState(false)
 
-    // On mount, persist the resolved initial language to the parent so that
-    // entities that have never had a language set get one saved immediately.
+    // On mount, persist the resolved initial language, so an entity without one gets it saved at once.
     useEffect(() => {
       if (!readOnly) onLanguageChange?.(currentLanguage)
     }, [])
@@ -140,7 +142,8 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       addColumn: handleAddColumnOfType
     }), [getColumns, handleAddColumnOfType])
 
-    const stackItems: StackListProps['items'] = draft.map(col => {
+    const { marks, removedItems } = useColumnMarkItems(columns, previousColumns, readOnly)
+    const stackItems: StackListProps['items'] = [...draft.map((col, index) => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
       const label = getColumnLabel(col)
 
@@ -179,13 +182,14 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
         renderRightToolbar: (
           <ColumnRowActions
             column={ col }
+            mark={ marks[index] }
             onLocaleChange={ handleLocaleChange }
             onRemove={ handleRemove }
             readOnly={ readOnly }
           />
         )
       }
-    })
+    }), ...removedItems]
 
     if (isLoading) {
       return (
@@ -271,11 +275,11 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     direction='vertical'
                     style={ { width: '100%' } }
                   >
-                    { draft.length === 0 && (
+                    { stackItems.length === 0 && (
                     <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
                     ) }
 
-                    { draft.length > 0 && (
+                    { stackItems.length > 0 && (
                     <StackList
                       items={ stackItems }
                       onItemsChange={ (items) => {
