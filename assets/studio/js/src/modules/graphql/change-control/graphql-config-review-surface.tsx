@@ -18,8 +18,9 @@ import { type BackendConfiguration } from '../components/backend-types'
 import { FormAnnotationsProvider } from './studio-form-annotations'
 import {
   annotationsFor, configChanges, groupChanges, isNewConfiguration, proposedConfiguration,
-  SECTION_TARGET, type ConfigChange
+  schemaRowMarks, SECTION_TARGET, type ConfigChange
 } from './config-review-model'
+import { SchemaRowMarksContext } from '../components/tabs/schema-definition-tab/row-marks'
 import { fieldLabel } from './field-labels'
 import { ChangeRail } from './change-rail'
 import { configBrief } from './config-brief'
@@ -57,6 +58,11 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const brief = useMemo(() => isNew ? configBrief(configuration, t) : undefined, [isNew, configuration, t])
   // a new configuration is reviewed whole; marking every field says only "all of it"
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
+  const rowMarks = useMemo(() => isNew ? {} : schemaRowMarks(changes), [isNew, changes])
+  const changedTabs = useMemo(
+    () => isNew ? [] : groups.map((group) => SECTION_TARGET[group.section]?.tab).filter((tab): tab is string => tab !== undefined),
+    [isNew, groups]
+  )
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
   // from an effect, which could run after an early click and take the reader back. A pick holds
@@ -84,6 +90,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const editor = (
     <GraphQLConfigEditor
       activeTab={ activeTab }
+      changedTabs={ changedTabs }
       configName={ subjectRef }
       configuration={ configuration }
       isWriteable={ false }
@@ -92,6 +99,8 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
       requestId={ changeSetId }
     />
   )
+
+  const markedEditor = <SchemaRowMarksContext.Provider value={ rowMarks }>{ editor }</SchemaRowMarksContext.Provider>
 
   if (error !== undefined && payload === undefined) {
     return <div className={ styles.empty }>{ t('data-hub.review.unavailable') }</div>
@@ -129,8 +138,8 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
 
         <div className={ styles.editor }>
           { FormAnnotationsProvider !== null
-            ? <FormAnnotationsProvider annotations={ annotations }>{ editor }</FormAnnotationsProvider>
-            : editor }
+            ? <FormAnnotationsProvider annotations={ annotations }>{ markedEditor }</FormAnnotationsProvider>
+            : markedEditor }
         </div>
       </div>
     </Content>

@@ -10,14 +10,13 @@
 
 import { findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
-import { Empty, Tag } from 'antd'
+import { ConfigProvider, Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
   Button,
   Content,
   ContentLayout,
   Flex,
-  IconButton,
   IconTextButton,
   Space,
   Spin,
@@ -32,8 +31,7 @@ import { LanguageSelectionContext } from '@pimcore/studio-ui-bundle/modules/data
 import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
 import { CollapsedColumnPreview } from './column-preview'
-import { ColumnEditorItemBody } from './column-editor-item'
-import { ColumnLocaleControl } from './column-locale-control'
+import { ColumnEditorItemBody, ColumnRowActions } from './column-editor-item'
 import { useColumnEditorState } from './use-column-editor-state'
 import { usePreviewItemPreselect } from './use-preview-item-preselect'
 import { SimpleColumnPreview, SimpleColumnPreviewsProvider } from './simple-column-previews'
@@ -67,6 +65,8 @@ export interface BaseColumnEditorProps {
   onLanguageChange?: (language: string) => void
   /** When true, only columns marked as exportable are offered in the add-column dropdown. */
   exportableOnly?: boolean
+  /** View only: no apply, add, remove or reorder; a column's settings show disabled. Defaults to the surrounding form's disabled state. */
+  readOnly?: boolean
 }
 
 export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorProps>(
@@ -81,9 +81,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     transformersRegistryId,
     language,
     onLanguageChange,
-    exportableOnly = false
+    exportableOnly = false,
+    readOnly: readOnlyProp
   }: BaseColumnEditorProps, ref): React.JSX.Element {
     const { t } = useTranslation()
+    const { componentDisabled } = ConfigProvider.useConfig()
+    const readOnly = readOnlyProp ?? componentDisabled
+    const showToolbar = !hideToolbar && !readOnly
     const { styles } = useStyles()
     const user = useUser()
     const [fieldsToAddOpen, setFieldsToAddOpen] = useState(true)
@@ -98,7 +102,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     // On mount, persist the resolved initial language to the parent so that
     // entities that have never had a language set get one saved immediately.
     useEffect(() => {
-      onLanguageChange?.(currentLanguage)
+      if (!readOnly) onLanguageChange?.(currentLanguage)
     }, [])
 
     const handleLanguageChange = useCallback((lang: string) => {
@@ -144,7 +148,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
       return {
         id: col._id,
-        sortable: true,
+        sortable: !readOnly,
         type: isAdvanced ? 'collapse' as const : 'default' as const,
         defaultActive: isAdvanced && col.isNew === true,
         children: isAdvanced
@@ -158,6 +162,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     column={ col }
                     entity={ entity }
                     onPipelineChange={ handlePipelineChange }
+                    readOnly={ readOnly }
                     sourceFieldsRegistryId={ sourceFieldsRegistryId }
                     transformersRegistryId={ transformersRegistryId }
                   />
@@ -174,19 +179,12 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               }
             : {}),
         renderRightToolbar: (
-          <Space size='mini'>
-            { col.localizable === true && isAdvanced && (
-              <ColumnLocaleControl
-                onChange={ (locale) => { handleLocaleChange(col._id, locale) } }
-                value={ col.locale }
-              />
-            ) }
-            <IconButton
-              icon={ { value: 'trash' } }
-              onClick={ () => { handleRemove(col._id) } }
-              theme='secondary'
-            />
-          </Space>
+          <ColumnRowActions
+            column={ col }
+            onLocaleChange={ handleLocaleChange }
+            onRemove={ handleRemove }
+            readOnly={ readOnly }
+          />
         )
       }
     })
@@ -211,7 +209,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
           columns={ draft }
         >
           <ContentLayout
-            renderToolbar={ hideToolbar
+            renderToolbar={ !showToolbar
               ? undefined
               : (
                 <Toolbar
@@ -262,7 +260,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               style={ { height: 'calc(80vh - 200px)' } }
             >
               <div className={ styles.body }>
-                { !hideToolbar && fieldsToAddOpen && (
+                { showToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
                   groups={ columnGroups }
                   onClose={ () => { setFieldsToAddOpen(false) } }
@@ -285,7 +283,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                       onItemsChange={ (items) => {
                         handleReorder(items.map(item => String(item.id)))
                       } }
-                      sortable
+                      sortable={ !readOnly }
                     />
                     ) }
                   </Space>

@@ -180,6 +180,33 @@ describe('GraphQLConfigEditor', () => {
     expect(last(seen.detailView)).toMatchObject({ configName: 'shop', configData: CONFIGURATION, isWriteable: false, onSave })
   })
 
+  it('marks the tabs a review says hold a change, and no tab otherwise', () => {
+    const { rerender } = render(
+      <GraphQLConfigEditor
+        changedTabs={ ['schema', 'security'] }
+        configName="shop"
+        configuration={ CONFIGURATION as any }
+        isWriteable={ false }
+        onSave={ vi.fn() }
+      />
+    )
+
+    expect(screen.queryByTestId('tab-changed-general')).toBeNull()
+    expect(screen.getByTestId('tab-changed-schema').textContent).toBe('data-hub.tabs.schema-definition')
+    expect(screen.getByTestId('tab-changed-security')).toBeTruthy()
+    expect(screen.queryByTestId('tab-changed-permissions')).toBeNull()
+
+    rerender(
+      <GraphQLConfigEditor
+        configName="shop"
+        configuration={ CONFIGURATION as any }
+        isWriteable
+        onSave={ vi.fn() }
+      />
+    )
+    expect(document.querySelector('[data-testid^="tab-changed-"]')).toBeNull()
+  })
+
   it('keeps its own tab state when nobody drives it, and renders no form while loading', () => {
     const { rerender } = render(
       <GraphQLConfigEditor

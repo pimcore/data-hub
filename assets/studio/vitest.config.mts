@@ -20,6 +20,7 @@ export default defineConfig({
       { find: /^@pimcore\/studio-ui-bundle$/, replacement: federated('studio-ui') },
       { find: /^@pimcore\/studio-ui-bundle\/app$/, replacement: federated('studio-ui-app') },
       { find: /^@pimcore\/studio-ui-bundle\/components$/, replacement: federated('studio-ui-components') },
+      { find: /^@pimcore\/studio-ui-bundle\/modules\/data-object$/, replacement: federated('studio-ui-data-object') },
       { find: /^@pimcore\/change-control-bundle\/sdk$/, replacement: federated('change-control-sdk') }
     ]
   },
