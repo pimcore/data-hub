@@ -35,22 +35,29 @@ const comparable = (column: SchemaColumn): Record<string, unknown> => ({
   locale: column.locale ?? null
 })
 
-/** what differs between the columns and the columns before the change; nothing without previous columns */
+/**
+ * what differs between the columns and the columns before the change; nothing without previous columns.
+ * Columns can share an identity (legacy advanced columns, a field added twice): each previous column pairs with
+ * at most one column, an unchanged one first, so neither a duplicate's change nor its removal is lost.
+ */
 export const columnMarks = (columns: SchemaColumn[], previous?: SchemaColumn[]): ColumnMarks => {
   if (previous === undefined) return { marks: columns.map(() => undefined), removed: [] }
 
-  const before = new Map<string, SchemaColumn>()
-  for (const column of previous) before.set(identity(column), column)
-  const now = new Set(columns.map(identity))
-
-  return {
-    marks: columns.map((column) => {
-      const old = before.get(identity(column))
-      if (old === undefined) return 'added'
-      return isEqual(comparable(old), comparable(column)) ? undefined : 'changed'
-    }),
-    removed: previous.filter((column) => !now.has(identity(column)))
+  const unpaired = new Set(previous.map((_, index) => index))
+  const pair = (column: SchemaColumn, accept: (old: SchemaColumn) => boolean): boolean => {
+    const index = [...unpaired].find((candidate) => identity(previous[candidate]) === identity(column) && accept(previous[candidate]))
+    if (index === undefined) return false
+    unpaired.delete(index)
+    return true
   }
+
+  const unchanged = columns.map((column) => pair(column, (old) => isEqual(comparable(old), comparable(column))))
+  const marks = columns.map((column, index): ColumnMarkStatus | undefined => {
+    if (unchanged[index]) return undefined
+    return pair(column, () => true) ? 'changed' : 'added'
+  })
+
+  return { marks, removed: previous.filter((_, index) => unpaired.has(index)) }
 }
 
 // the colours of Studio's form annotation tag, so a column reads as a marked field does

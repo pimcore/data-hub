@@ -234,4 +234,28 @@ describe('columnMarks', () => {
     const { config, ...bare } = input('a')
     expect(columnMarks([bare], [input('a', null)]).marks).toEqual([undefined])
   })
+
+  describe('columns sharing an identity', () => {
+    const advanced = (transformers: string[]): SchemaColumn =>
+      ({ key: 'advanced', fieldtype: 'advanced', type: 'dataobject.advanced', config: { advancedColumns: [], transformers } })
+    const a = advanced(['trim'])
+    const b = advanced(['upper'])
+    const bChanged = advanced(['lower'])
+
+    test('only the changed one is marked', () => {
+      expect(columnMarks([a, bChanged], [a, b])).toEqual({ marks: [undefined, 'changed'], removed: [] })
+    })
+
+    test('a removed one is listed, the remaining one unmarked', () => {
+      expect(columnMarks([b], [a, b])).toEqual({ marks: [undefined], removed: [a] })
+    })
+
+    test('a second copy of a field is added', () => {
+      expect(columnMarks([input('a'), input('a')], [input('a')])).toEqual({ marks: [undefined, 'added'], removed: [] })
+    })
+
+    test('a removed and a changed one: one changed, nothing listed twice', () => {
+      expect(columnMarks([bChanged], [a, b])).toEqual({ marks: ['changed'], removed: [b] })
+    })
+  })
 })
