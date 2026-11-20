@@ -259,7 +259,7 @@ describe('schema grid rows in a review', () => {
     expect(screen.getByTestId('add-modal')).toBeTruthy()
   })
 
-  it('opens a mutation row\'s fields view-only in a review', () => {
+  it("opens a mutation row's fields view-only in a review", () => {
     render(
       <SchemaRowMarksContext.Provider value={ { mutation: { Car: 'changed' } } }>
         <MutationGrid

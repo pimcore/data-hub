@@ -206,11 +206,11 @@ const AvailableFieldsTreeInner = ({
           />
           )}
 
-      { fieldMarks?.removed.map((column, index) => (
+      { fieldMarks?.removed.map((column) => (
         <Flex
           align="center"
           gap="small"
-          key={ `removed-${index}` }
+          key={ column.key ?? JSON.stringify(column.attributes) }
         >
           <span data-testid="removed-field">{ column.attributes?.label ?? column.attributes?.attribute }</span>
           <RowMark status="removed" />

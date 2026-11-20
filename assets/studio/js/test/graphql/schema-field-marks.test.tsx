@@ -125,7 +125,7 @@ const { schemaPreviousColumns } = await import('../../src/modules/graphql/change
 afterEach(() => { cleanup() })
 
 describe('the fields of a schema entity in a review', () => {
-  it('takes each changed entity\'s fields before the change from the change set', () => {
+  it("takes each changed entity's fields before the change from the change set", () => {
     const changes = configChanges({
       subjectType: 'data-hub-graphql-config',
       subjectRef: 'shop',
@@ -187,6 +187,28 @@ describe('the fields of a schema entity in a review', () => {
     expect(within(screen.getByTestId('node-k-child')).queryByTestId(/row-mark-/)).toBeNull()
     expect(screen.getByTestId('removed-field').textContent).toBe('Price')
     expect(screen.getAllByTestId('row-mark-removed')).toHaveLength(1)
+  })
+
+  it('lists every removed field, also the ones stored without a key', () => {
+    const { key: _price, ...price } = field('old-price', 'price', 'Price')
+    const { key: _stock, ...stock } = field('old-stock', 'stock', 'Stock')
+    const before = [...CAR_BEFORE.filter((column) => column.key !== 'old-price'), price, stock]
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    render(
+      <AvailableFieldsTree
+        disabled
+        entityConfig={ { id: 'Car', name: 'Car', columnConfig: { columns: CAR_COLUMNS } } }
+        fieldMarks={ fieldMarks(CAR_COLUMNS, before) }
+        onEntityConfigChange={ () => undefined }
+        operatorRegistryServiceId="operators"
+      />
+    )
+
+    expect(screen.getAllByTestId('removed-field').map((node) => node.textContent)).toEqual(['Price', 'Stock'])
+    // no duplicate or missing React key among the removed rows
+    expect(error.mock.calls.filter(([message]) => String(message).includes('key'))).toEqual([])
+    error.mockRestore()
   })
 
   it('marks the fields when the modal opens view-only in a review', () => {
