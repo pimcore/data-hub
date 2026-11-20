@@ -10,7 +10,7 @@
 
 import React from 'react'
 import { Input } from 'antd'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
@@ -42,7 +42,15 @@ jest.mock('../src/modules/config/components/column-config-modal/base-column-edit
 }))
 
 jest.mock('../src/modules/config/components/column-config-modal/column-locale-control', () => ({
-  ColumnLocaleControl: () => <select aria-label='locale-control' />
+  ColumnLocaleControl: ({ onChange }: { onChange: (locale: string) => void }) => (
+    <select
+      aria-label='locale-control'
+      onChange={ (event) => { onChange(event.target.value) } }
+    >
+      <option value='de'>de</option>
+      <option value='en'>en</option>
+    </select>
+  )
 }))
 
 // a control that shows whether the settings are handed the read-only state
@@ -215,6 +223,23 @@ describe('column configurator view only', () => {
       />
     )
     expect(screen.getByLabelText('locale-control')).toBeInTheDocument()
+  })
+
+  test('editable: the locale control and the trash change and remove the column', () => {
+    const onLocaleChange = jest.fn()
+    const onRemove = jest.fn()
+    render(
+      <ColumnRowActions
+        column={ { _id: 'c1', key: 'title', fieldtype: 'advanced', type: 'dataobject.advanced', localizable: true, locale: 'de' } }
+        onLocaleChange={ onLocaleChange }
+        onRemove={ onRemove }
+      />
+    )
+
+    fireEvent.change(screen.getByLabelText('locale-control'), { target: { value: 'en' } })
+    expect(onLocaleChange).toHaveBeenCalledWith('c1', 'en')
+    fireEvent.click(screen.getByRole('button'))
+    expect(onRemove).toHaveBeenCalledWith('c1')
   })
 })
 
