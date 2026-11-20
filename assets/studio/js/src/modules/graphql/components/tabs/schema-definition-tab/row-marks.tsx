@@ -22,6 +22,13 @@ export const SchemaRowMarksContext = createContext<Partial<Record<SchemaGrid, Ro
 
 export const useRowMarks = (grid: SchemaGrid): RowMarks => useContext(SchemaRowMarksContext)[grid] ?? {}
 
+/** a review's fields before the change, by grid and entity id, for the entities whose fields it changes */
+export const SchemaPreviousColumnsContext = createContext<Partial<Record<'query' | 'mutation', Record<string, unknown[]>>>>({})
+
+/** the entity's fields before the change; undefined outside a review or when the review leaves them as they are */
+export const usePreviousColumns = (grid: 'query' | 'mutation', entity: string): unknown[] | undefined =>
+  useContext(SchemaPreviousColumnsContext)[grid]?.[entity]
+
 // the colours of Studio's form annotation tag, so a row reads as a marked field does
 const COLOR: Record<FormItemAnnotationStatus, string> = { added: 'green', changed: 'gold', removed: 'red', moved: 'geekblue' }
 

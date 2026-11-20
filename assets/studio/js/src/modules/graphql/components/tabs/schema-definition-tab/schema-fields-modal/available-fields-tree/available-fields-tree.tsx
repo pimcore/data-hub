@@ -9,7 +9,7 @@
  */
 
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
-import { TreeElement } from '@pimcore/studio-ui-bundle/components'
+import { Flex, TreeElement } from '@pimcore/studio-ui-bundle/components'
 import { type QueryEntityConfig, type PersistedColumnConfig } from '../types'
 import { isNonEmptyString } from '@pimcore/studio-ui-bundle/utils'
 import { isNil } from 'lodash'
@@ -20,12 +20,16 @@ import { TreeNodeRenderer } from './tree-node-renderer'
 import { EmptyTreeDropZone } from './empty-tree-drop-zone'
 import { useStyles } from './available-fields-tree.styles'
 import { useTreeNodes, type TreeNodeData } from './hooks/use-tree-nodes'
+import { type FieldMarks } from '../field-marks'
+import { RowMark } from '../../row-marks'
 
 interface AvailableFieldsTreeProps {
   entityConfig?: QueryEntityConfig
   operatorRegistryServiceId: string
   disabled?: boolean
   onEntityConfigChange: (config: QueryEntityConfig) => void
+  /** a review's marks of the top-level fields, and the fields it removes */
+  fieldMarks?: FieldMarks
 }
 
 interface OperatorModalConfig {
@@ -36,12 +40,14 @@ interface OperatorModalConfig {
 interface AvailableFieldsTreeInnerProps {
   operatorModalConfig: OperatorModalConfig | null
   disabled: boolean
+  fieldMarks?: FieldMarks
   setOperatorModalConfig: React.Dispatch<React.SetStateAction<OperatorModalConfig | null>>
 }
 
 const AvailableFieldsTreeInner = ({
   operatorModalConfig,
   disabled,
+  fieldMarks,
   setOperatorModalConfig
 }: AvailableFieldsTreeInnerProps): React.JSX.Element => {
   const {
@@ -155,7 +161,7 @@ const AvailableFieldsTreeInner = ({
     const hasChildren = node.children !== undefined && node.children.length > 0
     const hasExpandedChildren = isExpanded && hasChildren
 
-    return (
+    const rendered = (
       <TreeNodeRenderer
         disabled={ disabled }
         hasExpandedChildren={ hasExpandedChildren }
@@ -163,7 +169,20 @@ const AvailableFieldsTreeInner = ({
         itemData={ node.itemData }
       />
     )
-  }, [expandedKeysSet, disabled])
+    // only a top-level field is marked: the review pairs the entity's fields, not an operator's children
+    const mark = fieldMarks?.marks[items.findIndex((item) => item.key === node.key)]
+    return mark === undefined
+      ? rendered
+      : (
+        <Flex
+          align="center"
+          gap="small"
+        >
+          { rendered }
+          <RowMark status={ mark } />
+        </Flex>
+        )
+  }, [expandedKeysSet, disabled, fieldMarks, items])
 
   return (
     <>
@@ -186,6 +205,17 @@ const AvailableFieldsTreeInner = ({
             treeData={ treeData }
           />
           )}
+
+      { fieldMarks?.removed.map((column, index) => (
+        <Flex
+          align="center"
+          gap="small"
+          key={ `removed-${index}` }
+        >
+          <span data-testid="removed-field">{ column.attributes?.label ?? column.attributes?.attribute }</span>
+          <RowMark status="removed" />
+        </Flex>
+      )) }
 
       {!isNil(operatorModalConfig) && (() => {
         const operatorType = operatorRegistry.getDynamicType(operatorModalConfig.operatorId, false)
@@ -211,7 +241,8 @@ export const AvailableFieldsTree = ({
   entityConfig,
   operatorRegistryServiceId,
   disabled = false,
-  onEntityConfigChange
+  onEntityConfigChange,
+  fieldMarks
 }: AvailableFieldsTreeProps): React.JSX.Element => {
   const [operatorModalConfig, setOperatorModalConfig] = useState<OperatorModalConfig | null>(null)
 
@@ -234,6 +265,7 @@ export const AvailableFieldsTree = ({
     >
       <AvailableFieldsTreeInner
         disabled={ disabled }
+        fieldMarks={ fieldMarks }
         operatorModalConfig={ operatorModalConfig }
         setOperatorModalConfig={ setOperatorModalConfig }
       />

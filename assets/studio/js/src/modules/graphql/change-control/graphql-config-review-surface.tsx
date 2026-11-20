@@ -20,7 +20,8 @@ import {
   annotationsFor, configChanges, groupChanges, isNewConfiguration, proposedConfiguration,
   schemaRowMarks, SECTION_TARGET, type ConfigChange
 } from './config-review-model'
-import { SchemaRowMarksContext } from '../components/tabs/schema-definition-tab/row-marks'
+import { schemaPreviousColumns } from './schema-previous-columns'
+import { SchemaPreviousColumnsContext, SchemaRowMarksContext } from '../components/tabs/schema-definition-tab/row-marks'
 import { fieldLabel } from './field-labels'
 import { ChangeRail } from './change-rail'
 import { configBrief } from './config-brief'
@@ -59,6 +60,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   // a new configuration is reviewed whole; marking every field says only "all of it"
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
   const rowMarks = useMemo(() => isNew ? {} : schemaRowMarks(changes), [isNew, changes])
+  const previousColumns = useMemo(() => isNew ? {} : schemaPreviousColumns(changes), [isNew, changes])
   const changedTabs = useMemo(
     () => isNew ? [] : groups.map((group) => SECTION_TARGET[group.section]?.tab).filter((tab): tab is string => tab !== undefined),
     [isNew, groups]
@@ -100,7 +102,11 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
     />
   )
 
-  const markedEditor = <SchemaRowMarksContext.Provider value={ rowMarks }>{ editor }</SchemaRowMarksContext.Provider>
+  const markedEditor = (
+    <SchemaRowMarksContext.Provider value={ rowMarks }>
+      <SchemaPreviousColumnsContext.Provider value={ previousColumns }>{ editor }</SchemaPreviousColumnsContext.Provider>
+    </SchemaRowMarksContext.Provider>
+  )
 
   if (error !== undefined && payload === undefined) {
     return <div className={ styles.empty }>{ t('data-hub.review.unavailable') }</div>
