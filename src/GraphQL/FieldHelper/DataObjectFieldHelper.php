@@ -16,6 +16,8 @@ use GraphQL\Language\AST\FieldNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
+use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\File;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\ClassDefinition;
@@ -85,21 +87,37 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 $fieldDefinition = $this->getFieldDefinitionFromKey($class, $key, $container);
 
                 if (!$fieldDefinition) {
-                    Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    // fields inside a block (also block -> localizedfields) are served by the block entry type
+                    $blockName = $this->findBlockOfChildField($class, $key);
+                    if ($blockName !== null) {
+                        Logger::debug(
+                            'skipping column "' . $key . '", it is a field of block "' . $blockName
+                            . '" in class ' . $class->getName()
+                        );
+                    } else {
+                        Logger::error('could not resolve field "' . $key . '" in class ' . $class->getName());
+                    }
 
                     return false;
                 }
 
                 if ($this->supportsGraphQL($fieldDefinition, 'query')) {
-                    $fieldName = $fieldDefinition->getName();
+                    $fieldName = $this->getBrickColumnName($key, $fieldDefinition->getName());
 
-                    $result = ['key' => $fieldName,
-                        'config' => $this->getGraphQlQueryFieldConfig(
-                            $key,
-                            $fieldDefinition,
-                            $class,
-                            $container
-                        )];
+                    // the types of a column which selects its objectbricks field are named after its brick
+                    $config = $this->getGraphQlQueryFieldConfig(
+                        $key,
+                        $fieldDefinition,
+                        Service::getContainerSelectingBrick($key) ?? $class,
+                        $container
+                    );
+                    $config['name'] = $fieldName;
+
+                    if (isset($config['type'])) {
+                        $config['type'] = $this->shareBrickColumnType($key, $fieldDefinition, $config['type']);
+                    }
+
+                    $result = ['key' => $fieldName, 'config' => $config];
                 }
             }
         }
@@ -178,6 +196,69 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
         }
 
         return $fieldDefinition;
+    }
+
+    /**
+     * The type of a brick column does not depend on the objectbricks field of the column (`Brick~field` and
+     * `Brick~field~containerField`). The columns of the same brick field which produce a type of the same name get
+     * the same instance, because a schema must not contain two instances of a type of that name.
+     */
+    private function shareBrickColumnType(string $attribute, Data $fieldDefinition, mixed $type): mixed
+    {
+        $brickType = Service::parseObjectBrickFieldName($attribute)['brickType'] ?? null;
+
+        if ($brickType === null || !$type instanceof Type) {
+            return $type;
+        }
+
+        $cacheKey = 'graphql_brick_column_type_' . $brickType . '_' . $fieldDefinition->getName()
+            . '_' . Type::getNamedType($type)->toString();
+
+        if (!RuntimeCache::isRegistered($cacheKey)) {
+            RuntimeCache::set($cacheKey, $type);
+        }
+
+        return RuntimeCache::get($cacheKey);
+    }
+
+    /**
+     * A brick column which selects its containing objectbricks field (`Brick~field~containerField`) is named
+     * after the container too, so that the same brick of several fields can be used side by side.
+     */
+    private function getBrickColumnName(string $attribute, string $defaultName): string
+    {
+        $brickParts = Service::parseObjectBrickFieldName($attribute);
+
+        if (empty($brickParts['containerField'])) {
+            return $defaultName;
+        }
+
+        return $brickParts['containerField'] . '_' . $brickParts['brickType'] . '_' . $brickParts['brickKey'];
+    }
+
+    /**
+     * @param ClassDefinition|\Pimcore\Model\DataObject\Fieldcollection\Definition $class
+     *
+     * @return string|null name of the block containing the field $key, null if there is none
+     */
+    private function findBlockOfChildField($class, string $key): ?string
+    {
+        foreach ($class->getFieldDefinitions(['suppressEnrichment' => true]) as $fieldDefinition) {
+            if (!$fieldDefinition instanceof Data\Block) {
+                continue;
+            }
+
+            foreach ($fieldDefinition->getFieldDefinitions(['suppressEnrichment' => true]) as $blockChild) {
+                if ($blockChild->getName() === $key
+                    || ($blockChild instanceof Data\Localizedfields
+                        && $blockChild->getFieldDefinition($key, ['suppressEnrichment' => true]))
+                ) {
+                    return $fieldDefinition->getName();
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -278,7 +359,7 @@ final class DataObjectFieldHelper extends AbstractFieldHelper
                 }
 
                 if ($this->supportsGraphQL($fieldDefinition, 'mutation')) {
-                    $fieldName = $fieldDefinition->getName();
+                    $fieldName = $this->getBrickColumnName($key, $fieldDefinition->getName());
 
                     $result = $this->getGraphQlMutationFieldConfig(
                         $nodeDef,

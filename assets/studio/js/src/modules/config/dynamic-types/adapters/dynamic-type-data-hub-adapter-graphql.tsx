@@ -11,8 +11,8 @@
 import React from 'react'
 import { injectable } from '@pimcore/studio-ui-bundle/app'
 import type { ElementIcon } from '@pimcore/studio-ui-bundle/modules/widget-manager'
-import { DynamicTypeDataHubAdapterAbstract, type AdapterFormProps } from '../dynamic-type-data-hub-adapter-abstract'
-import { GraphQLAdapterForm } from '../../../graphql/components/graphql-adapter-form'
+import { DynamicTypeDataHubAdapterAbstract, type DataHubAdapterDetailViewProps } from '../dynamic-type-data-hub-adapter-abstract'
+import { GraphQLDetailView } from '../../../graphql/components/graphql-detail-view'
 
 @injectable()
 export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterAbstract {
@@ -22,7 +22,7 @@ export class DynamicTypeDataHubAdapterGraphQL extends DynamicTypeDataHubAdapterA
     return { type: 'name', value: 'graphql', colorToken: 'colorCodingViolet4' }
   }
 
-  getFormComponent (props: AdapterFormProps): React.JSX.Element {
-    return <GraphQLAdapterForm { ...props } />
+  renderDetailView (props: DataHubAdapterDetailViewProps): React.JSX.Element {
+    return <GraphQLDetailView { ...props } />
   }
 }

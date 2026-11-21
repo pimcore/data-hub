@@ -1,19 +1,27 @@
 import { defineConfig } from '@rsbuild/core'
 import { pluginReact } from '@rsbuild/plugin-react'
 import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
-import { pluginGenerateEntrypoints } from '@pimcore/studio-ui-bundle/rsbuild/plugins';
+import { pluginGenerateEntrypoints, pluginWriteBuildId } from '@pimcore/studio-ui-bundle/rsbuild/plugins';
 import { createDynamicRemote } from '@pimcore/studio-ui-bundle/rsbuild/utils';
 import path from 'node:path'
 import fs from 'node:fs';
-import { v4 } from 'uuid';
+import { getBuildGroupId } from '@pimcore/studio-ui-bundle/bundler/build-id';
 import packages from './package.json'
 
-const buildId = v4();
-const buildPath = path.resolve(__dirname, '..', '..', 'src', 'Resources', 'public', 'studio', 'build', buildId);
+const buildId = getBuildGroupId(__dirname);
+const buildRoot = path.resolve(__dirname, '..', '..', 'src', 'Resources', 'public', 'studio', 'build');
+const buildPath = path.resolve(buildRoot, buildId);
 
-if (fs.existsSync( path.resolve(__dirname, '..', '..', 'src', 'Resources', 'public', 'studio', 'build'))) {
-  for (const file of fs.readdirSync(path.resolve(__dirname, '..', '..', 'src', 'Resources', 'public', 'studio', 'build'))) {
-    fs.rmSync(path.resolve(__dirname, '..', '..', 'src', 'Resources', 'public', 'studio', 'build', file), { recursive: true });
+// This bundle has a single build target (no SDK/app pair sharing a build-id group), so it's
+// safe to remove any other build dirs here. It's also necessary: studio-package-build picks
+// the lexicographically greatest .build-id it finds on disk, not the one just built, so a
+// stale dir left over from an earlier source state could otherwise get archived instead of
+// this build.
+if (fs.existsSync(buildRoot)) {
+  for (const file of fs.readdirSync(buildRoot)) {
+    if (file !== buildId) {
+      fs.rmSync(path.resolve(buildRoot, file), { recursive: true, force: true });
+    }
   }
 }
 
@@ -63,6 +71,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    pluginWriteBuildId({ buildId }),
     pluginGenerateEntrypoints({
       alternativePluginExportPath: '/plugins'
     }),
@@ -77,6 +86,9 @@ export default defineConfig({
       dts: false,
       remotes: {
         '@pimcore/studio-ui-bundle': createDynamicRemote('pimcore_studio_ui_bundle'),
+        // optional: with Change Control absent the remote resolves to an empty container, and
+        // only the review surface - which nothing mounts without it - reads from this one
+        '@pimcore/change-control-bundle': createDynamicRemote('pimcore_change_control_bundle', true),
       },
       shared: {
         ...packages.dependencies,
@@ -95,6 +107,11 @@ export default defineConfig({
           eager: true,
           version: '6.1.x',
           requiredVersion: '6.1.x',
+        },
+        'yaml': {
+          singleton: true,
+          eager: true,
+          requiredVersion: packages.dependencies.yaml,
         },
       },
     })

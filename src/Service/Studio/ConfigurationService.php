@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
-use Exception;
+use JsonException;
 use Pimcore\Bundle\DataHubBundle\ConfigEvents;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\Event\AdminEvents;
@@ -28,14 +28,15 @@ use Pimcore\Bundle\DataHubBundle\Hydrator\ConfigurationHydratorInterface;
 use Pimcore\Bundle\DataHubBundle\Model\SpecialEntitySetting;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration as HydratedConfiguration;
 use Pimcore\Bundle\DataHubBundle\Schema\ConfigurationDetail;
+use Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface;
 use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\DataHubBundle\WorkspaceHelper;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ElementExistsException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ForbiddenException;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotFoundException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotWriteableException;
 use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -43,11 +44,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /** @internal */
 final readonly class ConfigurationService implements ConfigurationServiceInterface
 {
-    private const array REQUIRED_CREATE_PERMISSIONS = [
-        PermissionConstants::PLUGIN_DATA_HUB_CONFIG,
-        PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-    ];
-
     private const array REQUIRED_READ_UPDATE_PERMISSIONS = [
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ,
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
@@ -60,7 +56,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         private ConfigurationDehydratorInterface $configurationDehydrator,
         private Service $graphQlService,
         private SecurityServiceInterface $securityService,
-        private ContainerBagInterface $parameterBag
+        private AdapterAvailabilityServiceInterface $adapterAvailabilityService
     ) {
     }
 
@@ -72,6 +68,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         foreach ($configs as $config) {
             if (
                 !$config instanceof Configuration ||
+                !$this->adapterAvailabilityService->isEnabled($config->getType()) ||
                 !$config->isAllowed(PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ)
             ) {
                 continue;
@@ -133,7 +130,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot create configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
+        $this->checkCreatePermission($type);
 
         $this->ensureConfigDoesNotExist($name);
 
@@ -166,18 +163,11 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot clone configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
-
         $this->ensureConfigDoesNotExist($name);
         $originalConfig = $this->fetchConfiguration($originalName);
 
         $this->checkConfigPermission($originalConfig, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $originalConfig->getType(),
-            ]
-        );
+        $this->checkCreatePermission($originalConfig->getType());
 
         $clonedConfig = new Configuration(
             $originalConfig->getType(),
@@ -198,17 +188,10 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             'Cannot import configuration as configurations are not writeable.'
         );
 
-        $this->checkUserPermission(self::REQUIRED_CREATE_PERMISSIONS);
-
-        $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $importData = $this->decodeImportData($json);
         $this->validateUploadedConfigurationData($importData);
 
-        $this->checkUserPermission(
-            [
-                PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
-                PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $importData['type'],
-            ]
-        );
+        $this->checkCreatePermission($importData['type']);
 
         $configuration = new Configuration(
             $importData['type'],
@@ -282,6 +265,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         }
 
         $configuration = $this->configurationDehydrator->dehydrate($configuration);
+        $this->validateApiKeys($configuration);
         $configuration['general']['modificationDate'] = time();
 
         $config->setConfiguration($configuration);
@@ -298,7 +282,46 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         foreach ($permissions as $perm) {
             if (!$configuration->isAllowed($perm)) {
-                throw new ForbiddenException('Permission denied: ' . $perm);
+                $this->denyPermission($perm);
+            }
+        }
+    }
+
+    /**
+     * @throws ValidationFailedException
+     */
+    private function validateApiKeys(array $configuration): void
+    {
+        $isActive = $configuration['general']['active'] ?? false;
+        $securityMethod = $configuration['security']['method'] ?? null;
+
+        if (!$isActive || $securityMethod !== 'datahub_apikey') {
+            return;
+        }
+
+        $apiKeys = $configuration['security']['apikey'] ?? [];
+
+        if (!is_array($apiKeys)) {
+            $apiKeys = [];
+        }
+
+        if (count($apiKeys) === 0) {
+            throw new ValidationFailedException(
+                message: 'At least one API key must be provided when the endpoint is active.',
+                errorKey: 'data-hub.api-key-validation-failed'
+            );
+        }
+
+        foreach ($apiKeys as $apiKey) {
+            $trimmedKey = trim($apiKey);
+            if (mb_strlen($trimmedKey) < 16) {
+                throw new ValidationFailedException(
+                    message: sprintf(
+                        'API key "%s" does not satisfy the minimum length of 16 characters.',
+                        $trimmedKey
+                    ),
+                    errorKey: 'data-hub.api-key-validation-failed'
+                );
             }
         }
     }
@@ -339,6 +362,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         if (!$configuration instanceof Configuration) {
             throw new NotFoundHttpException('Datahub configuration ' . $name . ' does not exist.');
         }
+
+        $this->ensureAdapterIsEnabled($configuration->getType());
 
         $this->checkConfigPermission($configuration, PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ);
 
@@ -460,20 +485,87 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         foreach ($permissions as $perm) {
             if (!$user->isAllowed($perm)) {
-                throw new ForbiddenException('Permission denied: ' . $perm);
+                $this->denyPermission($perm);
             }
         }
     }
 
-    private function isBundleInstalled(?string $type): bool
+    /**
+     * Passes if the current user is granted at least one of the given permissions.
+     */
+    private function checkAnyUserPermission(array $permissions): void
     {
-        try {
-            $registeredBundles = $this->parameterBag->get('pimcore_data_hub');
-        } catch (Exception) {
-            return false;
+        $user = $this->securityService->getCurrentUser();
+
+        foreach ($permissions as $perm) {
+            if ($user->isAllowed($perm)) {
+                return;
+            }
         }
 
-        return array_key_exists($type, $registeredBundles['supported_types']);
+        $this->denyPermission(...$permissions);
+    }
+
+    /**
+     * @throws ForbiddenException
+     */
+    private function denyPermission(string ...$permissions): never
+    {
+        throw new ForbiddenException('Permission denied: ' . implode(' / ', $permissions));
+    }
+
+    /**
+     * A user may create/clone/import a configuration of the given adapter type when they have
+     * access to the data hub config area and are either a data hub admin or hold the
+     * adapter-specific permission for that type.
+     */
+    private function checkCreatePermission(string $type): void
+    {
+        $this->ensureAdapterIsEnabled($type);
+
+        $this->checkUserPermission(PermissionConstants::PLUGIN_DATA_HUB_CONFIG);
+        $this->checkAnyUserPermission([
+            PermissionConstants::PLUGIN_DATA_HUB_ADMIN,
+            PermissionConstants::PLUGIN_DATA_HUB_ADAPTER_PREFIX . $type,
+        ]);
+    }
+
+    /**
+     * A disabled adapter type is unavailable to everyone, admins included, so it is reported the
+     * same way as a type whose bundle was never installed.
+     *
+     * @throws NotFoundException
+     */
+    private function ensureAdapterIsEnabled(string $type): void
+    {
+        if (!$this->adapterAvailabilityService->isEnabled($type)) {
+            throw new NotFoundException('Datahub adapter', $type, 'type');
+        }
+    }
+
+    /**
+     * @throws ValidationFailedException
+     */
+    private function decodeImportData(string $json): array
+    {
+        try {
+            $importData = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new ValidationFailedException(
+                message: 'Uploaded file is not a valid JSON configuration.',
+                previous: $e,
+                errorKey: 'data-hub.import-config-invalid'
+            );
+        }
+
+        if (!is_array($importData)) {
+            throw new ValidationFailedException(
+                message: 'Uploaded file is not a valid JSON configuration.',
+                errorKey: 'data-hub.import-config-invalid'
+            );
+        }
+
+        return $importData;
     }
 
     private function validateUploadedConfigurationData(array $importData): void
@@ -490,9 +582,9 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         $this->ensureConfigDoesNotExist($name);
 
-        if (!$this->isBundleInstalled($type)) {
+        if (!$this->adapterAvailabilityService->isEnabled($type)) {
             throw new ValidationFailedException(sprintf(
-                'Cannot handle type "%s". According bundle is not installed!',
+                'Cannot handle type "%s". The corresponding bundle is not installed, or the type is disabled.',
                 $type
             ));
         }

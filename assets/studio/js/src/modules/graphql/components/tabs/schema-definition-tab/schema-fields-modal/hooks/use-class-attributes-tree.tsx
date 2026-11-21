@@ -9,18 +9,33 @@
  */
 
 import React, { useMemo, useCallback } from 'react'
-import { useClassDefinitionGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/class-definition'
+import { useClassDefinitionGetLayoutByIdQuery, type Layout } from '@pimcore/studio-ui-bundle/api/class-definition'
 import { reduce, buildTree } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { type DynamicTypeFieldDefinitionRegistry, DynamicTypeFieldDefinitionDataAbstract } from '@pimcore/studio-ui-bundle/modules/field-definitions'
 import { useInjection, serviceIds, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Icon } from '@pimcore/studio-ui-bundle/components'
-import { isNil, flatMap, flatMapDeep } from 'lodash'
-import { systemColumnDefinitions, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
-import { type TreeNode } from '../types'
+import { isNil, flatMap } from 'lodash'
+import { systemColumnDefinitions, systemColumnLookup, SYSTEM_COLUMN_ICON } from '../definitions/system-column-definitions'
+import { type SchemaFieldsMode, type TreeNode } from '../types'
+import { useObjectBrickLayouts, type BrickLayoutLoadError } from './use-objectbrick-layouts'
+import {
+  filterTreeNodesRecursive,
+  collectAllKeys,
+  scanForObjectBricksFields,
+  removeObjectBricksNodes
+} from './class-attributes-tree-helpers'
+import { isBrickFetchPending, toClassLayoutLoadError, type ClassLayoutLoadError } from './class-layout-load-error'
+import {
+  buildBrickAttribute,
+  buildBrickColumnTitle,
+  getAmbiguousBrickKeys,
+  type ObjectBricksFieldInfo
+} from './brick-container-helpers'
 
 interface UseClassAttributesTreeProps {
   classId: string
   enabled: boolean
+  mode: SchemaFieldsMode
   searchValue?: string
 }
 
@@ -30,62 +45,97 @@ interface UseClassAttributesTreeReturn {
   expandedKeys: string[]
   getFieldDefinitions: () => TreeNode[]
   isLoading: boolean
+  loadError?: ClassLayoutLoadError
+  brickLoadErrors: BrickLayoutLoadError[]
 }
 
-const filterTreeNodesRecursive = (
-  nodes: TreeNode[],
-  searchValue: string
+const buildBrickContainerNode = (
+  field: ObjectBricksFieldInfo,
+  buildBrickGroupNode: (brickKey: string, containerName: string) => TreeNode[]
 ): TreeNode[] => {
-  if (!Array.isArray(nodes)) {
-    return []
-  }
+  const brickGroups = flatMap(field.allowedTypes, brickKey => buildBrickGroupNode(brickKey, field.name))
+  if (brickGroups.length === 0) return []
 
-  return nodes.reduce<TreeNode[]>((acc, node) => {
-    // Only search in field definitions (isFieldDefinition: true)
-    const isFieldDefinition = node.isFieldDefinition === true
-    const matchesSearch = isFieldDefinition &&
-      ((node.title?.toString().toLowerCase().includes(searchValue.toLowerCase()) ?? false) ||
-       (node.attribute?.toLowerCase().includes(searchValue.toLowerCase()) ?? false))
-
-    const filteredChildren = (!isNil(node.children) && Array.isArray(node.children))
-      ? filterTreeNodesRecursive(node.children as TreeNode[], searchValue)
-      : []
-
-    // Include node if:
-    // 1. It's a field definition and matches the search
-    // 2. It has children that match the search (parent nodes)
-    if ((matchesSearch ?? false) || filteredChildren.length > 0) {
-      acc.push({
-        ...node,
-        children: filteredChildren.length > 0 ? filteredChildren : node.children
-      })
-    }
-
-    return acc
-  }, [])
-}
-
-const collectAllKeys = (nodes: TreeNode[]): string[] => {
-  return flatMapDeep(nodes, (node) => [
-    ...(isNil(node.key) ? [] : [String(node.key)]),
-    ...(!isNil(node.children) && Array.isArray(node.children) ? collectAllKeys(node.children as TreeNode[]) : [])
-  ])
+  return [{
+    key: `brick-container-${field.name}`,
+    title: `${field.title ?? field.name} (${field.name})`,
+    isLeaf: false,
+    icon: <Icon value="object-bricks" />,
+    iconProps: { value: 'object-bricks' },
+    children: brickGroups
+  }]
 }
 
 export const useClassAttributesTree = ({
   classId,
   enabled,
+  mode,
   searchValue = ''
 }: UseClassAttributesTreeProps): UseClassAttributesTreeReturn => {
   const fieldDefinitionRegistry = useInjection<DynamicTypeFieldDefinitionRegistry>(serviceIds['DynamicTypes/FieldDefinitionRegistry'])
   const { t } = useTranslation()
 
-  const { data: classLayout, isLoading, isFetching } = useClassDefinitionGetLayoutByIdQuery(
+  const { data: classLayout, isLoading, isFetching, error } = useClassDefinitionGetLayoutByIdQuery(
     { id: classId },
     { skip: !enabled, refetchOnMountOrArgChange: true }
   )
 
+  const objectBricksFields = useMemo(() => {
+    if (isNil(classLayout)) return []
+    return scanForObjectBricksFields(classLayout)
+  }, [classLayout])
+
+  const allBrickKeys = useMemo((): string[] => {
+    return Array.from(new Set<string>(flatMap(objectBricksFields, f => f.allowedTypes)))
+  }, [objectBricksFields])
+
+  const ambiguousBrickKeys = useMemo(() => getAmbiguousBrickKeys(objectBricksFields), [objectBricksFields])
+
+  const { layouts: brickLayouts, isLoading: brickLayoutsLoading, loadErrors: brickLoadErrors } = useObjectBrickLayouts(allBrickKeys)
+
   const classAttributesTree = useMemo(() => {
+    const buildItemCallback = (brickKey?: string, containerName?: string) => (
+      { fieldDefinition, initialTreeItem }: { fieldDefinition: any, initialTreeItem: any }
+    ): any => {
+      const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype as string, false)
+      const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract
+
+      const { icon: _icon, ...restTreeItem } = initialTreeItem
+
+      const label = fieldDefinition.title ?? fieldDefinition.name
+
+      if (!isNil(brickKey) && !isNil(containerName) && isFieldDefinition) {
+        const attributeKey = buildBrickAttribute(brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
+        const title = buildBrickColumnTitle(label as string, brickKey, fieldDefinition.name as string, containerName, ambiguousBrickKeys)
+
+        return {
+          ...restTreeItem,
+          title,
+          className: 'ant-tree-node--has-drag-and-drop',
+          icon: initialTreeItem.icon,
+          dataType: fieldDefinition.fieldtype,
+          attribute: attributeKey,
+          iconProps: dynType?.getIcon() ?? { value: 'info' },
+          isFieldDefinition: true
+        }
+      }
+
+      const title = isFieldDefinition
+        ? `${label} (${fieldDefinition.name})`
+        : initialTreeItem.title
+
+      return {
+        ...restTreeItem,
+        title,
+        className: isFieldDefinition ? 'ant-tree-node--has-drag-and-drop' : undefined,
+        icon: initialTreeItem.icon,
+        dataType: fieldDefinition.fieldtype,
+        attribute: fieldDefinition.name,
+        iconProps: dynType?.getIcon() ?? { value: 'info' },
+        isFieldDefinition
+      }
+    }
+
     const buildDataObjectColumns = (): TreeNode['children'] => {
       if (isNil(classLayout)) return []
 
@@ -96,31 +146,46 @@ export const useClassAttributesTree = ({
       const tree = buildTree({
         structure,
         fieldDefinitions,
-        itemCallback: ({ fieldDefinition, initialTreeItem }) => {
-          const dynType = fieldDefinitionRegistry.getDynamicType(fieldDefinition.fieldtype, false)
-          const isFieldDefinition = dynType instanceof DynamicTypeFieldDefinitionDataAbstract
-
-          const { icon: _icon, ...restTreeItem } = initialTreeItem
-
-          const label = fieldDefinition.title ?? fieldDefinition.name
-          const title = isFieldDefinition
-            ? `${label} (${fieldDefinition.name})`
-            : initialTreeItem.title
-
-          return {
-            ...restTreeItem,
-            title,
-            className: isFieldDefinition ? 'ant-tree-node--has-drag-and-drop' : undefined,
-            icon: initialTreeItem.icon,
-            dataType: fieldDefinition.fieldtype,
-            attribute: fieldDefinition.name,
-            iconProps: dynType?.getIcon() ?? { value: 'info' },
-            isFieldDefinition
-          }
-        }
+        itemCallback: buildItemCallback()
       })
 
-      return (tree?.children ?? []) as TreeNode[]
+      const children = (tree?.children ?? []) as TreeNode[]
+
+      return removeObjectBricksNodes(children)
+    }
+
+    const buildBrickGroupNode = (brickKey: string, containerName: string): TreeNode[] => {
+      const brickLayout = brickLayouts.get(brickKey)
+      if (isNil(brickLayout)) return []
+
+      // Cast: ConfigLayoutDefinition is structurally compatible with Layout for reduce/buildTree
+      const reduced = reduce({ layout: brickLayout as unknown as Layout })
+      if (isNil(reduced?.structure)) return []
+
+      const { structure, fieldDefinitions } = reduced
+      const brickTree = buildTree({
+        structure,
+        fieldDefinitions,
+        itemCallback: buildItemCallback(brickKey, containerName)
+      })
+
+      return [{
+        key: `brick-group-${containerName}-${brickKey}`,
+        title: `${brickKey} Columns`,
+        isLeaf: false,
+        icon: <Icon value="object-bricks" />,
+        iconProps: { value: 'object-bricks' },
+        // Use brickTree.children directly to skip the redundant root Panel node
+        children: (brickTree?.children ?? []) as TreeNode[]
+      }]
+    }
+
+    // The bricks are nested under the objectbricks field they belong to, so that a brick allowed in
+    // several fields can be added once per field.
+    const buildBrickContainerNodes = (): TreeNode[] => {
+      if (isNil(classLayout) || brickLayouts.size === 0) return []
+
+      return flatMap(objectBricksFields, field => buildBrickContainerNode(field, buildBrickGroupNode))
     }
 
     const buildSystemColumns = (): TreeNode => ({
@@ -129,17 +194,24 @@ export const useClassAttributesTree = ({
       isLeaf: false,
       icon: <Icon { ...SYSTEM_COLUMN_ICON } />,
       iconProps: SYSTEM_COLUMN_ICON,
-      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps }) => ({
-        key,
-        title: t(translationKey),
-        isLeaf: true,
-        dataType: 'system',
-        icon: <Icon { ...iconProps } />,
-        iconProps,
-        className: 'ant-tree-node--has-drag-and-drop',
-        attribute,
-        isFieldDefinition: true
-      }))
+      children: systemColumnDefinitions.map(({ key, attribute, translationKey, iconProps, alwaysIncluded }) => {
+        const isAlwaysIncluded = mode === 'query' && alwaysIncluded === true
+
+        return {
+          key,
+          title: isAlwaysIncluded
+            ? t('data-hub.schema.system.always-included', { title: t(translationKey) })
+            : t(translationKey),
+          disabled: isAlwaysIncluded,
+          isLeaf: true,
+          dataType: 'system',
+          icon: <Icon { ...iconProps } />,
+          iconProps,
+          className: 'ant-tree-node--has-drag-and-drop',
+          attribute,
+          isFieldDefinition: true
+        }
+      })
     })
 
     try {
@@ -153,12 +225,12 @@ export const useClassAttributesTree = ({
         children: dataObjectColumnsData
       }
 
-      return [dataObjectColumns, buildSystemColumns()]
+      return [dataObjectColumns, buildSystemColumns(), ...buildBrickContainerNodes()]
     } catch (error) {
       console.error('Error building class attributes tree:', error)
       return []
     }
-  }, [classLayout])
+  }, [classLayout, brickLayouts, objectBricksFields, ambiguousBrickKeys, fieldDefinitionRegistry, mode, t])
 
   const filteredTree = useMemo(() => {
     if (searchValue === '') {
@@ -171,14 +243,10 @@ export const useClassAttributesTree = ({
     if (searchValue === '') {
       return collectAllKeys(classAttributesTree)
     }
-    // When searching, expand all nodes to show matched results
     return collectAllKeys(filteredTree)
   }, [searchValue, classAttributesTree, filteredTree])
 
   const getFieldDefinitions = useCallback((): TreeNode[] => {
-    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
-    if (isNil(objectColumnsNode) || isNil(objectColumnsNode.children)) return []
-
     const collectFieldDefinitions = (nodes: TreeNode[]): TreeNode[] =>
       flatMap(nodes, node => {
         if (node.isFieldDefinition === true) return [node]
@@ -186,14 +254,46 @@ export const useClassAttributesTree = ({
         return []
       })
 
-    return collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
-  }, [classAttributesTree])
+    const objectColumnsNode = classAttributesTree.find(node => node.key === 'object-columns')
+    const objectColumnDefs = (!isNil(objectColumnsNode) && !isNil(objectColumnsNode.children))
+      ? collectFieldDefinitions(objectColumnsNode.children as TreeNode[])
+      : []
+
+    // A class field and a system column of the same name would end up as one GraphQL field (PimcoreObjectType),
+    // so the class field is kept.
+    const classFieldNames = new Set(objectColumnDefs.map(node => node.attribute))
+    const systemColumnsNode = classAttributesTree.find(node => node.key === 'system-columns')
+    const systemColumnDefs = mode === 'query'
+      ? collectFieldDefinitions((systemColumnsNode?.children ?? []) as TreeNode[])
+          .filter(node => systemColumnLookup.get(node.attribute ?? '')?.insertAllInQuery === true)
+          .filter(node => !classFieldNames.has(node.attribute))
+      : []
+
+    const brickContainerNodes = classAttributesTree.filter(
+      node => typeof node.key === 'string' && node.key.startsWith('brick-container-')
+    )
+    const brickColumnDefs = collectFieldDefinitions(brickContainerNodes)
+
+    return [...objectColumnDefs, ...systemColumnDefs, ...brickColumnDefs]
+  }, [classAttributesTree, mode])
+
+  // Consider still loading if the class layout resolved but we know there are brick keys
+  // to fetch and the brick layouts haven't all been resolved yet. This prevents the
+  // intermediate flash between "class layout done" and "brick fetch effect fires".
+  const pendingBrickFetch = isBrickFetchPending({
+    classLayoutLoading: isLoading || isFetching,
+    brickKeyCount: allBrickKeys.length,
+    loadedBrickCount: brickLayouts.size,
+    brickErrorCount: brickLoadErrors.length
+  })
 
   return {
     classAttributesTree,
     filteredTree,
     expandedKeys,
     getFieldDefinitions,
-    isLoading: isLoading || isFetching
+    isLoading: isLoading || isFetching || brickLayoutsLoading || pendingBrickFetch,
+    loadError: toClassLayoutLoadError(error),
+    brickLoadErrors
   }
 }

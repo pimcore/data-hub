@@ -1,6 +1,6 @@
 # Fieldcollection Mutations
 
-A [Field Collection](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/Fieldcollections.html)
+A [Field Collection](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/35_Fieldcollections.md)
 is a list of items which can have different types.
 
 Since there is no `Union` input type in GraphQL, the approach for Fieldcollection mutations is different.

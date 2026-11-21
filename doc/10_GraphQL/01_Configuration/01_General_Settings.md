@@ -1,24 +1,24 @@
+---
+title: General Settings
+description: Basic settings of a GraphQL endpoint configuration.
+---
+
 # General Settings
 
 <div class="image-as-lightbox"></div>
 
 ![General Settings](../../img/graphql/general.png)
 
-#### Some Aspects:
-* `Active`: You can temporarily disable the configuration using the checkbox.
-* `SQL Condition (Deprecated)`: You can add a condition all data object queries have to satisfy in addition to 
-  the [workspace settings](./03_Security_Settings.md).
+The **General** tab holds the basic settings of the endpoint:
 
-SQL Condition is currently deprecated but still enabled by default. If you want to disable it, you can do so in the symfony configuration tree:
+- `Active`: enable or disable the configuration. Only active configurations serve requests.
+- `Type` and `Name`: set when the configuration is created and shown read-only here.
+- `Description`: free text describing the endpoint.
+- `Group`: groups configurations in the Datahub tree on the left.
 
-```yaml
-pimcore_data_hub:
-    graphql:
-        allow_sqlObjectCondition: false
-```
+:::note
 
-:::caution
-
-Please note that this option will be also removed in the next major version.
+The `SQL Condition` field was removed in Datahub 2.0.0. Restrict data object queries through
+[workspace settings](./03_Security_Settings.md) instead.
 
 :::

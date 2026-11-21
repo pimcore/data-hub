@@ -94,7 +94,7 @@ final class PageSnippet
             $blockName .= $parts[$i - 1]; // "areablock"
             $blockKey = $parts[$i]; // "1"
 
-            $block = $elements[$blockName];
+            $block = $elements[$blockName] ?? null;
             if ($block instanceof BlockInterface) {
                 $indices = $block->getData();
                 if ($block instanceof Areablock) {

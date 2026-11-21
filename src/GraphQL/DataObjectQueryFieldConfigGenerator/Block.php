@@ -22,7 +22,6 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\BlockElement;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
-use Pimcore\Model\DataObject\Service;
 
 /**
  * @internal
@@ -76,6 +75,7 @@ final class Block extends Base
             $brickDescriptor = null;
             $brickType = null;
             $brickKey = null;
+            $brickContainer = null;
 
             if (count($attributeParts) > 1) {
                 $id = $value['id'];
@@ -94,8 +94,13 @@ final class Block extends Base
                     $brickType = $brickDescriptor['containerKey'];
                 }
                 $brickKey = $attributeParts[1];
+                $brickContainer = $attributeParts[2] ?? null;
 
-                $key = Service::getFieldForBrickType($object->getclass(), $brickType);
+                $key = \Pimcore\Bundle\DataHubBundle\GraphQL\Service::getBrickContainerField(
+                    $object->getclass(),
+                    $brickType,
+                    $brickContainer
+                );
 
                 $brickClass = Definition::getByKey($brickType);
 
@@ -160,6 +165,7 @@ final class Block extends Base
                                 $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
                                 $blockDescriptor['__brickType'] = $brickType;
                                 $blockDescriptor['__brickKey'] = $brickKey;
+                                $blockDescriptor['__brickContainer'] = $brickContainer;
                             }
 
                             $result[$blockIndex][$localizedDef->getName()] = $blockDescriptor;
@@ -183,6 +189,7 @@ final class Block extends Base
                         $blockDescriptor['__brickDescriptor'] = $brickDescriptor;
                         $blockDescriptor['__brickType'] = $brickType;
                         $blockDescriptor['__brickKey'] = $brickKey;
+                        $blockDescriptor['__brickContainer'] = $brickContainer;
                     }
 
                     $result[$blockIndex][$key] = $blockDescriptor;

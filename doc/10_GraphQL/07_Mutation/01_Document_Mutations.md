@@ -30,7 +30,7 @@ creating and updating documents.
 
 :::info
 
-Important Note: To be able to fully exploit this feature you have to understand Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html)
+Important Note: To be able to fully exploit this feature you have to understand Pimcore's editable naming strategy
 
 :::
 
@@ -75,7 +75,7 @@ See following list for more examples with the free-form API approach:
 
 ### Tree API
 
-If you are not familiar with Pimcore's [editable naming strategy](https://pimcore.com/docs/6.x/Development_Documentation/Documents/Editable_Naming_Strategies.html)
+If you are not familiar with Pimcore's editable naming strategy
 you can also use the nested approach.
 
 ### Sample (Update a Page With an Areablock Using the Nested Approach)

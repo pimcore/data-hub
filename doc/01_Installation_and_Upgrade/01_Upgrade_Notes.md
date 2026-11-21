@@ -1,4 +1,137 @@
+---
+title: Upgrade Notes
+description: Breaking changes and migration steps per release.
+---
+
 # Upgrade Notes
+
+## Upgrade to 2026.4.0
+
+### GraphQL
+- Added the `focalPoints` field to the asset type. For images with a focal point set in the asset editor it returns `{x, y}` as percentages (`Float`, `0`–`100`) of the image width/height, read from the asset's `focalPointX`/`focalPointY` custom settings; it is `null` for images without a focal point and for all other asset types. This is a purely additive schema change; existing queries are not affected.
+- The result messages of denied create mutations now name the requested parent, e.g. `not allowed to create object Car in parent path '/shop'` or `... in parent id 5` (create object, asset, document and object/asset/document folder). The create-folder messages (`not allowed to create assetfolder`, ...) also lost their trailing space. Clients that compare these messages exactly need to adjust.
+- The `read` settings of `Object Folder` and `Document Folder` are now applied in every position a folder can show up. A folder of a disabled type resolves to `null` (or is left out of a list) in `parent`, `children` and `_siblings`, relations, relation editables of documents and element properties. Before, relations and the document tree returned the folder anyway, and unions of element properties could fail with a schema error for such a folder. Endpoints that rely on folders being returned from these positions have to enable the `read` setting of the `Object Folder` / `Document Folder` type. See [Folder Read Settings](../10_GraphQL/01_Configuration/02_Schema_Settings.md#folder-read-settings).
+- Thumbnails of image editables with a user selected crop are now cropped. For a `document_editableImage` whose crop area was set in the editor, the thumbnail fields (`fullpath`, `data`, `srcset`, `dimensions` and `resolutions` with a `thumbnail` argument) apply that area, the way the frontend does. Without a `thumbnail` argument `fullpath` still returns the original image. Clients that already read the `crop` field and crop the thumbnail themselves must stop doing so, otherwise the crop is applied twice. The `resolutions` of a `srcset` entry now follow the requested `format` argument like the `srcset` urls do (before they were always in the original format).
+
+### GraphQL: a denying `PermissionEvents::PRE_CHECK` listener is now honoured with the default not allowed policy
+
+`WorkspaceHelper::checkPermission()` ignored `$event->setIsGranted(false)` of a `PermissionEvents::PRE_CHECK` listener
+unless the not allowed policy was `NOT_ALLOWED_POLICY_EXCEPTION`. With the default `NOT_ALLOWED_POLICY_NULL` the denial
+is now applied too: the element is treated like one denied by the workspaces (omitted from lists, `success: false` for
+mutations, `null` from `getAsset`/`getDocument`, an error from `getObject`; a denied image of an image editable in a
+document create or update is cleared without failing the mutation). Projects that register a denying listener and
+relied on the denial being ignored see elements disappear. A listener still cannot grant access that the workspaces
+deny.
+
+## Upgrade to 2026.3.4
+
+### GraphQL
+- The `updateAsset` mutation now follows the workspace of the configuration, like `updateObject` and `updateAssetFolder`: the `update` right is required on the asset, and moving it to a new `parentId` additionally requires the `create` right on the new parent. Without the right the mutation answers with `success: false` (or throws with the exception policy enabled). Configurations whose asset workspace entries are narrower than the assets they update through `updateAsset` need wider entries if that access is intended.
+- The mutations that move or create elements apply the workspace to the target parent as well: `updateAssetFolder`, `updateObjectFolder` and `updateDocumentFolder` only act on folders and require the `create` right on a new `parentId`; `deleteAssetFolder`, `deleteObjectFolder` and `deleteDocumentFolder` only delete folders and no longer delete other elements; `updateObject` checks the `update` right on the object where it is and now requires the `create` right on a new `parentId` instead of the `update` right (a move into a folder with `create` but no `update` is accepted, a move of an object without `update` where it is now is refused), before changing anything; `createAsset` requires the `create` right on a `parentId` given inside `input` too. Requests that relied on moving or creating elements outside the workspace now answer with `success: false`.
+- The `filter` argument of `getAssetListing` and the data object listing queries only accepts the documented JSON syntax: an object, or an array of objects, at every level (including inside `$and` / `$or` and field arrays). Any other value, such as a plain JSON string, is rejected with the error `invalid filter: conditions must be JSON objects` instead of being added to the listing condition. Filters written in the documented syntax are not affected. See [Filtering](../10_GraphQL/04_Query/10_Filtering.md).
+- The children of a `Block` field inside `Localized Fields` that resolve their own value (for example `Date` and relation fields) are now read in the language requested with the `language` argument of the block field, like the other children. Before, they came from the current locale instead of the requested language, so one block row could mix languages. Queries that request a language for such a block now return the values for that language, including `getFallbackLanguageValue` like the other children.
+
+## Upgrade to 2026.3.0
+
+### GraphQL
+- Added GraphQL query support for the `Renderlet` document editable. Document queries now expose renderlet editables through the new `document_editableRenderlet` type with the fields `_editableType`, `_editableName`, `id`, `type`, `subtype` and `relation` (the referenced element, resolved as an `anytarget`). This is a purely additive schema change; existing queries are not affected. Note that the `type` field returns the element type of the referenced target (`asset`, `document` or `object`), and unpublished targets resolve to `null` (consistent with the `Relation` editable).
+
+## Upgrade to 2026.2.8
+
+### Frontend Build Ships as a Packaged Archive
+
+The compiled Studio frontend is no longer committed as an expanded
+`src/Resources/public/studio/build/` directory. It now ships as a single archive
+(`build-dist/build-<id>.zip`) that is extracted into
+`src/Resources/public/studio/build/` automatically during cache warmup.
+
+The already-required `pimcore/studio-ui-bundle` `^2026.2.5` provides the archive
+extraction, so no dependency change is needed.
+
+> **Note:** Read-only filesystem deployments must run `bin/console cache:warmup`
+> (or `cache:clear`) during the build/deploy phase while the bundle directory
+> (usually under `vendor/`) is still writable. Standard Pimcore deployments
+> already do this. When `assets:install` runs in copy mode, run `cache:warmup`
+> before it, otherwise no frontend assets are copied. If the filesystem becomes
+> read-only before the first warmup, the bundle fails with
+> `BuildArchiveNotWritableException` because there is no build to serve.
+
+## Upgrade to 2026.2.6
+
+### GraphQL: `unit` of `QuantityValue` / `InputQuantityValue` is now `null` when no unit is set
+
+Quantity value fields without a selected unit previously returned the `unit` field as an object whose
+subfields were all `null` (e.g. `"unit": {"id": null}`). It is now `null` as the (nullable) schema
+definition implies:
+
+```json
+{ "length": { "value": 8500, "unit": null } }
+```
+
+Clients that access `unit` subfields unconditionally (e.g. `data.length.unit.id`) have to null-check
+`unit` first.
+
+## Upgrade to 2026.1.0
+
+### PHP & Symfony Version Requirements
+- Added support for `PHP` `8.5`.
+- Removed support for `PHP` `8.3` and Symfony `v6`.
+- Minimum required Symfony version is now `^7.2` (dev: `^7.4` for `symfony/runtime`).
+
+### Removed ExtJS / Admin Classic UI
+- Removed all ExtJS-based frontend JavaScript files (`src/Resources/public/js/`), including the full configuration UI, field dialog, adapters, workspace editors, query and mutation operators.
+- Removed `ConfigController` (previously provided the classic admin config API at `/pimcore-datahub-webservices/explorer/{clientname}` and related actions).
+- Removed `GraphQLExplorerController` (previously served the ExtJS-based GraphQL Explorer at `/pimcore-datahub-webservices/explorer/{clientname}`).
+- Removed `AdminListener` (no longer needed without classic admin integration).
+- Removed `StudioRouteLoader`: Studio routes are now registered directly via `routing.yml` using attribute-based routing.
+- Removed `ExportService` and `ImportService` (classic admin import/export, not related to Studio).
+- `PimcoreDataHubBundle` no longer implements `PimcoreBundleAdminClassicInterface` or `DependentBundleInterface` and no longer uses `BundleAdminClassicTrait`.
+- Removed dependency on `pimcore/admin-ui-classic-bundle` and `pimcore/compatibility-bridge-v10` from `composer.json`.
+
+### Routing Changes
+- The Studio routing entry has been renamed from `pimcore_statistics_explorer_studio` to `pimcore_data_hub_studio`. Update any references in custom routing configurations accordingly.
+- The separate `studio_routing.yaml` file has been removed; Studio routes are now defined directly in `routing.yml`.
+
+### Studio Integration
+- Added full Studio UI integration for GraphQL configurations (browse, create, edit, clone, delete, import, export).
+- New Studio REST API endpoints added under `/pimcore-studio/api/bundle/data-hub/config/...` (collection, add, get, update, clone, delete, import, export).
+- New Studio REST API endpoints added: GraphQL Explorer URL (`/pimcore-studio/api/bundle/data-hub/graphql/explorer-url/{name}`), thumbnails, and user permissions.
+- New interfaces introduced for Studio services:
+  - `ConfigurationServiceInterface` (`src/Service/Studio/ConfigurationServiceInterface.php`)
+  - `ConfigurationHydratorInterface` (`src/Hydrator/ConfigurationHydratorInterface.php`)
+  - `ConfigurationDehydratorInterface` (`src/Hydrator/ConfigurationDehydratorInterface.php`)
+  - `ConfigurationDetailHydratorInterface` (`src/Hydrator/ConfigurationDetailHydratorInterface.php`)
+  - `GraphQLExplorerServiceInterface` (`src/Service/Studio/GraphQLExplorerServiceInterface.php`)
+  - `ThumbnailHydratorInterface` (`src/Hydrator/ThumbnailHydratorInterface.php`)
+  - `ThumbnailServiceInterface` (`src/Service/Studio/ThumbnailServiceInterface.php`)
+  - `PermissionUserHydratorInterface` (`src/Hydrator/PermissionUserHydratorInterface.php`)
+  - `UserServiceInterface` (`src/Service/Studio/UserServiceInterface.php`)
+- New pre-response events dispatched before Studio API responses:
+  - `ConfigurationEvent`, `ConfigurationDetailEvent`, `PermissionUserEvent`, `ThumbnailEvent`
+
+### New GraphQL Events
+- Added `ListingEvents::PRE_BUILD` event dispatched before building GraphQL query listings. Implement a listener on this event to modify listing arguments before the query is executed.
+
+### Return Type and PHPDoc Changes
+- `PimcoreDataHubBundle::getInstaller()` return type changed from `?InstallerInterface` to `InstallerInterface` (non-nullable).
+- `ElementPropertyType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null`: `string` and `Deferred` removed from union.
+- `HotspotMetadataType::resolveType()` return type changed from `ObjectType|string|callable|Deferred|null` to `ObjectType|callable|null`: `string` and `Deferred` removed from union.
+- `DocumentType::resolveType()` return type changed from `callable|Deferred|ObjectType|null|string` to `callable|ObjectType|null`.
+- `AbstractOperator::$children` property PHPDoc type changed from `ConfigElementInterface[]` to `array`: `ConfigElementInterface` from `Pimcore\DataObject\GridColumnConfig` is no longer referenced.
+- `AbstractOperator::getChildren()` return PHPDoc changed from `ConfigElementInterface[]` to `array`.
+- `Service::buildOperator()` parameter PHPDoc changed from `ConfigElementInterface` to `array`.
+- `ReverseManyToManyObjects::resolve()` return PHPDoc changed from `array|null` to `array`.
+- `ElementMetadataKeyValuePairInputType::getInstance()` return PHPDoc changed from `ElementMetadataKeyValuePairInputType|null` to `ElementMetadataKeyValuePairInputType`.
+- `ClassificationstoreFeatureQueryTypeGenerator\Date::getFieldType()` return PHPDoc changed from `DateType|null` to `DateType`.
+- `Thumbnail::getLabeledValue()` and `ThumbnailHtml::getLabeledValue()` return PHPDoc changed from `\stdClass|null` to `\stdClass`.
+- `DateFormatter::format()` return PHPDoc changed from `Carbon|int|string` to `int|string`.
+- `Link::resolveValue()`, `Link::resolveHref()`, `Link::resolveTarget()`, `Link::resolveLinkValue()` return PHPDoc changed from `string|null` / `null` to `mixed`.
+
+### Dependency Updates
+- Removed Doctrine `enum` type mapping. The custom `enum: string` mapping is no longer required in Doctrine configuration.
+
+## 2026.2.0
+- [MutationType] Added system field `published` as an optional argument for data object mutation
 
 ## 2.2.0
 - [MutationType] Added system field `key` as an optional argument for data object mutation
@@ -9,7 +142,7 @@
 - [General] Added timezone indication for date and datetime fields in the GraphQL schema, including creation and modification date.
 Therefore, the type of both date fields in the GraphQL schema have changed from `int` (timestamp) to `string`.
 - [Operator] Removed merge operator
-- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:graphql:rebuild-workspaces`) instead.
+- [Command] Removed RebuildDefinitionsCommand (`datahub:graphql:rebuild-definitions`), use RebuildWorkspacesCommand (`datahub:configuration:rebuild-workspaces`) instead.
 - [Config] Removed DatahubConfigLocator class
 - [Config] Removed support for legacy config file (`datahub-configurations.php`)
 - [Config] Removed `getConfigModificationDate` from config dao.

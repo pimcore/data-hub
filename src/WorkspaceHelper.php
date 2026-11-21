@@ -20,7 +20,9 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\NotAllowedException;
 use Pimcore\Cache;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Db;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\OwnerAwareFieldInterface;
+use Pimcore\Model\Document;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -111,13 +113,14 @@ final class WorkspaceHelper
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
                 }
-            } elseif (strpos($cTrailingPath, $cTrailingSearchValue) !== false) {
+            } elseif (str_starts_with($cTrailingPath, $cTrailingSearchValue)) {
 
                 // it's a sub element
                 $changed = true;
 
                 if ($modificationType === self::MODIFY_TYPE_REPLACE) {
-                    $space['cpath'] = str_replace($cTrailingSearchValue, $cTrailingReplaceValue, $space['cpath']);
+                    // only the leading path of the element changed, repeated segments further down stay as they are
+                    $space['cpath'] = $cTrailingReplaceValue . substr($space['cpath'], strlen($cTrailingSearchValue));
                 } elseif ($modificationType === self::MODIFY_TYPE_DELETE) {
                     unset($spaces[$spaceIndex]);
                     $spaces = array_values($spaces); // reset array keys
@@ -213,7 +216,31 @@ final class WorkspaceHelper
     }
 
     /**
-     * @param ElementInterface|OwnerAwareFieldInterface $element
+     * A folder is only readable if the read setting of its folder type (object_folder / document_folder)
+     * is enabled in the schema of the configuration. This applies in every position a folder can show up
+     * in (tree, relations, properties, ...) and is independent of the workspaces.
+     *
+     * @param ElementInterface|OwnerAwareFieldInterface|null $element
+     */
+    public static function isFolderReadAllowed($element): bool
+    {
+        if ($element instanceof DataObject\Folder) {
+            $setting = 'object_folder';
+        } elseif ($element instanceof Document\Folder) {
+            $setting = 'document_folder';
+        } else {
+            return true;
+        }
+
+        $context = RuntimeCache::get(PimcoreDataHubBundle::RUNTIME_CONTEXT_KEY);
+        /** @var Configuration $configuration */
+        $configuration = $context['configuration'];
+
+        return (bool) ($configuration->getSpecialEntities()[$setting]['read'] ?? false);
+    }
+
+    /**
+     * @param ElementInterface|OwnerAwareFieldInterface|null $element
      * @param string $type
      *
      * @return bool
@@ -226,6 +253,12 @@ final class WorkspaceHelper
         /** @var Configuration $configuration */
         $configuration = $context['configuration'];
 
+        // a disabled folder read setting is not a workspace permission: it is not lifted by skipPermissionCheck
+        // and not turned into an exception by the not-allowed policy, the folder simply resolves to null
+        if ($type === 'read' && !self::isFolderReadAllowed($element)) {
+            return false;
+        }
+
         if ($configuration->skipPermisssionCheck()) {
             return true;
         }
@@ -234,8 +267,14 @@ final class WorkspaceHelper
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = \Pimcore::getContainer()->get('event_dispatcher');
         $eventDispatcher->dispatch($event, PermissionEvents::PRE_CHECK);
-        if (!$event->isGranted() && PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
-            throw new ClientSafeException('access for '.  $element->getFullPath() . ' denied');
+        if (!$event->isGranted()) {
+            if (PimcoreDataHubBundle::getNotAllowedPolicy() === PimcoreDataHubBundle::NOT_ALLOWED_POLICY_EXCEPTION) {
+                $path = $element?->getFullPath() ?? 'unknown element';
+
+                throw new ClientSafeException('access for ' . $path . ' denied');
+            }
+
+            return false;
         }
 
         $isAllowed = self::isAllowed($element, $configuration, $type);
@@ -298,6 +337,50 @@ final class WorkspaceHelper
         }
 
         return false;
+    }
+
+    /**
+     * Builds the SQL condition restricting a listing to elements the configuration may read.
+     *
+     * An element is readable if, of the workspaces whose path starts with the element's full path,
+     * the one with the longest path grants read, or if the same holds for the workspaces whose path
+     * the element's full path starts with.
+     *
+     * The workspaces are fetched once and inlined as literals, ordered by path length, so that the
+     * longest matching path wins the CASE. Expressing the same lookup as subqueries correlated with
+     * the listed table would make the database run them for every row of that table.
+     *
+     * @internal
+     *
+     * @param string $fullPathExpression SQL expression evaluating to the listed element's full path
+     */
+    public static function getReadPermissionCondition(
+        Configuration $configuration,
+        string $elementType,
+        string $fullPathExpression
+    ): string {
+        $db = Db::get();
+        $workspaces = $db->fetchAllAssociative(
+            'SELECT cpath, `read` FROM ' . $db->quoteIdentifier('plugin_datahub_workspaces_' . $elementType) . '
+            WHERE configuration = ? AND cpath IS NOT NULL
+            ORDER BY LENGTH(cpath) DESC',
+            [$configuration->getName()]
+        );
+
+        if (!$workspaces) {
+            return ' FALSE';
+        }
+
+        $parentCases = '';
+        $childCases = '';
+        foreach ($workspaces as $workspace) {
+            $cpath = $db->quote($workspace['cpath']);
+            $read = $workspace['read'] === null ? 'NULL' : (int) $workspace['read'];
+            $parentCases .= ' WHEN LOCATE(' . $fullPathExpression . ',' . $cpath . ')=1 THEN ' . $read;
+            $childCases .= ' WHEN LOCATE(' . $cpath . ',' . $fullPathExpression . ')=1 THEN ' . $read;
+        }
+
+        return ' ((CASE' . $parentCases . ' END)=1 OR (CASE' . $childCases . ' END)=1)';
     }
 
     private static function fetchLookupTable(string $elementType, Configuration $configuration): array

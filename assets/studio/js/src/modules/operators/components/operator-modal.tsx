@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Modal, Form, FormKit } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type OperatorConfigModalProps } from '../dynamic-type-operator-abstract'
@@ -40,11 +40,24 @@ export const OperatorModal = <T = any>({
     form.setFieldsValue(initialData as Partial<any>)
   }, [])
 
-  const handleApply = async (): Promise<void> => {
+  const handleApply = useCallback(async (): Promise<void> => {
     if (disabled) return
     const values: Partial<T> = await form.validateFields()
     updateAttributes(values)
-  }
+  }, [disabled, form, updateAttributes])
+
+  useEffect(() => {
+    if (disabled) return
+
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Enter') {
+        void handleApply()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => { document.removeEventListener('keydown', handleKeyDown) }
+  }, [disabled, handleApply])
 
   return (
     <Modal

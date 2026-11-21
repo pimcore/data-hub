@@ -20,6 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Pimcore\Model\DataObject\Objectbrick\Definition as ObjectbrickDefinition;
 
 /**
  * @internal
@@ -45,9 +46,16 @@ final class MultihrefMetadataType extends ObjectType
         $this->class = $class;
         $this->setGraphQlService($graphQlService);
         $this->fieldDefinition = $fieldDefinition;
-        $name = ($class instanceof Definition) ? $class->getKey() : $class->getName();
 
-        $config['name'] = 'object_'.$name.'_'.$fieldDefinition->getName();
+        if ($class instanceof ObjectbrickDefinition) {
+            // named apart from the types of a class or field collection of the same name
+            $config['name'] = 'objectbrick_' . $class->getKey() . '_' . $fieldDefinition->getName();
+        } else {
+            $name = ($class instanceof Definition) ? $class->getKey() : $class->getName();
+
+            $config['name'] = 'object_'.$name.'_'.$fieldDefinition->getName();
+        }
+
         $this->build($config);
         parent::__construct($config);
     }

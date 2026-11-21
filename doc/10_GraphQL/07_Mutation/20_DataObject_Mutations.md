@@ -21,7 +21,7 @@ Note that for `Create` and `Update` operate you can query the updated data using
 
 ## Supported Mutation Datatypes
 
-Also check out the Pimcore's [data type documentation](https://pimcore.com/docs/6.x/Development_Documentation/Objects/Object_Classes/Data_Types/index.html).
+Also check out the Pimcore's [data type documentation](https://github.com/pimcore/pimcore/blob/2026.x/doc/03_Objects/01_Object_Classes/01_Data_Types/README.md).
 For supported mutation datatypes please check the `DataObjectMutationFieldConfigGenerator` folder in `src/GraphQL/`.
 
 ## Supported Mutation Operators

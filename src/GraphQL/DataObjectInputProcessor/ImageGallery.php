@@ -62,10 +62,7 @@ final class ImageGallery extends Base
             if (is_array($newValue['images'])) {
                 foreach ($newValue['images'] as $imageValue) {
                     $hotspotImage = new Hotspotimage($imageValue['id']);
-
-                    if ($hotspotImage instanceof Hotspotimage) {
-                        $hotspotImages[] = $hotspotImage;
-                    }
+                    $hotspotImages[] = $hotspotImage;
                 }
 
                 $newGallery = new \Pimcore\Model\DataObject\Data\ImageGallery($hotspotImages);

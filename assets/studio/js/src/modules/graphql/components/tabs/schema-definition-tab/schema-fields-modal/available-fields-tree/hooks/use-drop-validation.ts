@@ -72,9 +72,9 @@ export const useDropValidation = ({
     const operatorClass = isNil(targetNode.childIndex)
       ? get(targetNode, 'columnConfig.attributes.class')
       : get(
-        targetNode,
-        ['columnConfig', 'attributes', 'children', targetNode.childIndex, 'attributes', 'class']
-      )
+          targetNode,
+          ['columnConfig', 'attributes', 'children', targetNode.childIndex, 'attributes', 'class']
+        )
 
     const operatorType = operatorRegistry.getDynamicType(
       String(operatorClass ?? ''),

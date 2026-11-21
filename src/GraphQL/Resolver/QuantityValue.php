@@ -28,7 +28,7 @@ final class QuantityValue
      * @param array $args
      * @param array $context
      *
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -38,7 +38,7 @@ final class QuantityValue
             return $unit->getObjectVars();
         }
 
-        return [];
+        return null;
     }
 
     /**

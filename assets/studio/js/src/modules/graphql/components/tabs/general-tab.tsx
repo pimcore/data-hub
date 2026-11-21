@@ -12,8 +12,13 @@ import React from 'react'
 import { Form, Input, Switch, TextArea, FormKit } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 
-export const GeneralTab = (): React.JSX.Element => {
+export interface GeneralTabProps {
+  adapterTypeLabel?: string
+}
+
+export const GeneralTab = ({ adapterTypeLabel }: GeneralTabProps = {}): React.JSX.Element => {
   const { t } = useTranslation()
+  const typeLabel = adapterTypeLabel ?? t('data-hub.adapter.graphql')
 
   return (
     <FormKit.Panel contentPadding="extra-small">
@@ -27,7 +32,7 @@ export const GeneralTab = (): React.JSX.Element => {
       <Form.Item label={ t('data-hub.config.type') }>
         <Input
           disabled
-          value={ t('data-hub.adapter.graphql') }
+          value={ typeLabel }
         />
       </Form.Item>
 

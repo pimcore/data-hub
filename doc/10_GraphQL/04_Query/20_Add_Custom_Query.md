@@ -2,7 +2,7 @@
 
 You can extend the query schema and add your custom query in the following way.
 
-See [Events and Event Listeners](https://pimcore.com/docs/6.x/Development_Documentation/Extending_Pimcore/Event_API_and_Event_Manager.html)
+See [Events and Event Listeners](https://github.com/pimcore/pimcore/blob/2026.x/doc/10_Extending_Pimcore/01_Events/README.md)
 if you need more information on Pimcore's event mechanism. 
 
 ```php

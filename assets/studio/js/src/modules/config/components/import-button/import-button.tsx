@@ -11,10 +11,12 @@
 import React from 'react'
 import { ImportModal, IconButton, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { getPrefix } from '@pimcore/studio-ui-bundle/api'
-import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type BundleDataHubConfiguration } from '../../config-api-slice.gen'
 import { findConfigInTree } from '../../utils/tree-helpers'
-import { isUndefined } from 'lodash'
+import { isNil, isUndefined } from 'lodash'
+import { bundleServiceIds } from '../../../../config/service-ids'
+import { type DynamicTypeDataHubAdapterRegistry } from '../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 
 interface ImportResponse {
   success: boolean
@@ -35,6 +37,8 @@ export const ImportButton = ({
 }: ImportButtonProps): React.JSX.Element => {
   const { t } = useTranslation()
 
+  const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
+
   const handleImportSuccess = async (data: ImportResponse): Promise<void> => {
     const { data: updatedData } = await onRefresh()
 
@@ -46,6 +50,13 @@ export const ImportButton = ({
       if (!isUndefined(importedConfig)) {
         handleOpenConfig(importedConfig)
       }
+    }
+
+    // Let the adapter run follow-up work (e.g. index generation) in a separate request,
+    // now that the imported configuration is resolvable. No-op for adapters that don't override it.
+    const adapter = adapterRegistry.getDynamicType(data.type, false)
+    if (!isNil(adapter)) {
+      await adapter.afterImport(data.name)
     }
   }
 

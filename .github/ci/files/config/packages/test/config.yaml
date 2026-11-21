@@ -17,13 +17,7 @@ doctrine:
         connections:
             default:
                 url: '%pimcore_test.db.dsn%'
-                host: ~
-                port: ~
-                dbname: ~
-                user: ~
-                password: ~
                 mapping_types:
-                    enum: string
                     bit: boolean
 
 pimcore:

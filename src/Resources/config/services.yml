@@ -15,16 +15,15 @@ services:
 
     Pimcore\Bundle\DataHubBundle\Controller\:
         resource: '../../Controller'
-        exclude:
-            - '../../Controller/Studio'
         public: true
-        autowire: true
-        autoconfigure: true
-        tags: ['controller.service_arguments']
-    
+        tags: [ 'controller.service_arguments' ]
+
     Pimcore\Bundle\DataHubBundle\Service\:
         resource: '../../Service'
-        exclude: '../../Service/Studio'
+        exclude:
+            - '../../Service/Studio'
+            # takes an explicitly wired argument, registered under its interface below
+            - '../../Service/AdapterAvailabilityService.php'
         public: true
         autowire: true
         autoconfigure: true
@@ -37,8 +36,11 @@ services:
     Pimcore\Bundle\DataHubBundle\Service\OutputCacheServiceInterface:
         class: Pimcore\Bundle\DataHubBundle\Service\OutputCacheService
 
-    Pimcore\Bundle\DataHubBundle\Routing\StudioRouteLoader:
+    Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityServiceInterface:
+        class: Pimcore\Bundle\DataHubBundle\Service\AdapterAvailabilityService
         arguments:
-            - '@kernel'
-        tags:
-            - { name: routing.loader }
+            $enabledTypes: '%pimcore_data_hub.enabled_adapter_types%'
+
+    # what the proposal lanes look configurations up with
+    Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurationsInterface:
+        class: Pimcore\Bundle\DataHubBundle\Proposal\StoredConfigurations

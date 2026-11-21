@@ -29,13 +29,13 @@ const injectedRtkApi = api
     });
 export { injectedRtkApi as api };
 export type BundleDataHubGraphqlExplorerApiResponse =
-    /** status 200 GraphQL Explorer HTML interface */ string;
+    /** status 200 bundle_data_hub_graphql_explorer_success_response */ string;
 export type BundleDataHubGraphqlExplorerApiArg = {
     /** Clientname of the client */
     clientname: string;
 };
 export type BundleDataHubGraphqlExplorerUrlApiResponse =
-    /** status 200 GraphQL Explorer URL */ {
+    /** status 200 bundle_data_hub_graphql_explorer_url_success_response */ {
         /** The GraphQL Explorer URL for the specified configuration */
         explorerUrl: string;
     };

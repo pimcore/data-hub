@@ -47,7 +47,7 @@ class GraphQlCustomListener implements EventSubscriberInterface
             true,
             false,
             $event->getConfig()['schema']['specialEntities']['custom']['read'] ?? false,
-            $event->getConfig()['schema']['specialEntities']['custom']['crate'] ?? false,
+            $event->getConfig()['schema']['specialEntities']['custom']['create'] ?? false,
             $event->getConfig()['schema']['specialEntities']['custom']['update'] ?? false,
             $event->getConfig()['schema']['specialEntities']['custom']['delete'] ?? false
         );

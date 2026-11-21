@@ -16,7 +16,6 @@ namespace Pimcore\Bundle\DataHubBundle\Migrations\PimcoreX;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use Pimcore\Bundle\DataHubBundle\Controller\ConfigController;
 use Pimcore\Bundle\DataHubBundle\Installer;
 
 /**
@@ -33,7 +32,7 @@ final class Version20211108160248 extends AbstractMigration
 
         foreach ($list as $item) {
             $permissions = $item->getPermissions();
-            if (($up === true && in_array(ConfigController::CONFIG_NAME, $permissions) && !in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions)) ||
+            if (($up === true && in_array(Installer::CONFIG_NAME, $permissions) && !in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions)) ||
                 ($up === false && in_array(Installer::DATAHUB_ADMIN_PERMISSION, $permissions))) {
                 if ($up === true) {
                     $permissions[] = Installer::DATAHUB_ADMIN_PERMISSION;
@@ -54,7 +53,7 @@ final class Version20211108160248 extends AbstractMigration
             Installer::DATAHUB_PERMISSION_CATEGORY,
             Installer::DATAHUB_ADAPTER_PERMISSION,
             Installer::DATAHUB_ADMIN_PERMISSION,
-            ConfigController::CONFIG_NAME
+            Installer::CONFIG_NAME
         ));
         $this->migrateUsers(true);
     }

@@ -14,7 +14,7 @@ To add a type definition, add a section similar to this one to your `services.ym
             - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_mycustomdatatype }                        
 ```
 
-For reference, have a look at a look at the 
+For reference, have a look at the
 [`Link datatype`](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectQueryFieldConfigGenerator/Link.php).
 It also shows how specific attributes are resolved. 
 

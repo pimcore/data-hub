@@ -64,7 +64,9 @@ final class AnyTargetType extends UnionType implements ContainerAwareInterface
             $types[] = $assetFolderType;
         }
 
-        if ($service->querySchemaEnabled('document_folder')) {
+        if ($service->querySchemaEnabled('document_folder') && !$service->querySchemaEnabled('document')) {
+            // The 'document' union already includes _document_folder; only add it
+            // separately when the document union itself is not merged below.
             $documentFolderType = $service->getDocumentTypeDefinition('_document_folder');
             $types[] = $documentFolderType;
         }
@@ -87,9 +89,11 @@ final class AnyTargetType extends UnionType implements ContainerAwareInterface
     {
         if ($element) {
             if ($element['__elementType'] == 'object') {
-                $type = ClassTypeDefinitions::get($element['__elementSubtype']);
+                if ($element['__elementSubtype'] === 'folder') {
+                    return $this->getGraphQlService()->getDataObjectTypeDefinition('_object_folder');
+                }
 
-                return $type;
+                return ClassTypeDefinitions::get($element['__elementSubtype']);
             } elseif ($element['__elementType'] == 'asset') {
                 return  $this->getGraphQlService()->buildAssetType('asset');
             } elseif ($element['__elementType'] == 'document') {
@@ -97,6 +101,10 @@ final class AnyTargetType extends UnionType implements ContainerAwareInterface
                 if ($document) {
                     $documentType = $document->getType();
                     $service = $this->getGraphQlService();
+                    if ($documentType === 'folder') {
+                        return $service->getDocumentTypeDefinition('_document_folder');
+                    }
+
                     //TODO maybe catch unsupported types for now ?
                     $typeDefinition = $service->getDocumentTypeDefinition('document_' . $documentType);
 

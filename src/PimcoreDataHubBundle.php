@@ -12,26 +12,17 @@
 
 namespace Pimcore\Bundle\DataHubBundle;
 
-use Pimcore\Bundle\AdminBundle\PimcoreAdminBundle;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\CustomDocumentTypePass;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\Compiler\ImportExportLocatorsPass;
 use Pimcore\Bundle\DataHubBundle\DependencyInjection\PimcoreDataHubExtension;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
-use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
-use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
-use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
-use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
-/**
- * @internal
- */
-final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface, DependentBundleInterface
+final class PimcoreDataHubBundle extends AbstractPimcoreBundle
 {
-    use BundleAdminClassicTrait;
     use PackageVersionTrait;
 
     const RUNTIME_CONTEXT_KEY = 'datahub_context';
@@ -54,62 +45,16 @@ final class PimcoreDataHubBundle extends AbstractPimcoreBundle implements Pimcor
         $container->addCompilerPass(new CustomDocumentTypePass());
     }
 
-    public static function registerDependentBundles(BundleCollection $collection): void
-    {
-        $collection->addBundle(new PimcoreAdminBundle(), 60);
-    }
-
     protected function getComposerPackageName(): string
     {
         return 'pimcore/data-hub';
-    }
-
-    public function getCssPaths(): array
-    {
-        return [
-            '/bundles/pimcoredatahub/css/icons.css',
-            '/bundles/pimcoredatahub/css/style.css',
-        ];
-    }
-
-    public function getJsPaths(): array
-    {
-        return [
-            '/bundles/pimcoredatahub/js/datahub.js',
-            '/bundles/pimcoredatahub/js/config.js',
-            '/bundles/pimcoredatahub/js/adapter/abstract.js',
-            '/bundles/pimcoredatahub/js/adapter/graphql.js',
-            '/bundles/pimcoredatahub/js/configuration/graphql/configItem.js',
-            '/bundles/pimcoredatahub/js/fieldConfigDialog.js',
-            '/bundles/pimcoredatahub/js/Abstract.js',
-            '/bundles/pimcoredatahub/js/mutationvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/queryvalue/DefaultValue.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Alias.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Concatenator.js',
-            '/bundles/pimcoredatahub/js/queryoperator/DateFormatter.js',
-            '/bundles/pimcoredatahub/js/queryoperator/ElementCounter.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Text.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Substring.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Thumbnail.js',
-            '/bundles/pimcoredatahub/js/queryoperator/ThumbnailHtml.js',
-            '/bundles/pimcoredatahub/js/queryoperator/TranslateValue.js',
-            '/bundles/pimcoredatahub/js/queryoperator/Trimmer.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/mutationoperator.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/IfEmpty.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/LocaleSwitcher.js',
-            '/bundles/pimcoredatahub/js/mutationoperator/LocaleCollector.js',
-            '/bundles/pimcoredatahub/js/workspace/abstract.js',
-            '/bundles/pimcoredatahub/js/workspace/document.js',
-            '/bundles/pimcoredatahub/js/workspace/asset.js',
-            '/bundles/pimcoredatahub/js/workspace/object.js',
-        ];
     }
 
     /**
      * If the bundle has an installation routine, an installer is responsible of handling installation related tasks
      *
      */
-    public function getInstaller(): ?InstallerInterface
+    public function getInstaller(): InstallerInterface
     {
         return $this->container->get(Installer::class);
     }

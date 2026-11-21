@@ -33,6 +33,8 @@ export const DataHubModule: AbstractModule = {
       path: 'AutomationIntegration/DataHub',
       label: 'data-hub.configuration',
       order: 100,
+      permission: 'plugin_datahub_config',
+      perspectivePermission: 'automationIntegration.dataHubConfiguration',
       className: 'item-style-modifier',
       widgetConfig: {
         name: 'Data Hub Configuration',

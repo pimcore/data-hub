@@ -13,9 +13,13 @@
 namespace Pimcore\Bundle\DataHubBundle\DependencyInjection;
 
 use Exception;
+use Pimcore\Bundle\DataHubBundle\Utils\Constants\AdapterType;
 use Pimcore\Config\LocationAwareConfigRepository;
+use Symfony\Component\Config\Definition\ArrayNode;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -33,6 +37,7 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter('pimcore_data_hub', $config);
+        $container->setParameter('pimcore_data_hub.enabled_adapter_types', $this->resolveEnabledAdapterTypes($config));
 
         $loader = new YamlFileLoader(
             $container,
@@ -40,11 +45,41 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
         );
 
         $loader->load('config.yml');
+        $loader->load('studio_backend.yaml');
 
-        $bundles = $container->getParameter('kernel.bundles');
-        if (isset($bundles['PimcoreStudioBackendBundle'])) {
-            $loader->load('studio_backend.yaml');
+        // The usage.* provider and the datahub.* collector; the core telemetry extension points
+        // are guaranteed by the pimcore/pimcore constraint in composer.json.
+        $loader->load('telemetry.yaml');
+
+        // the GraphQL adapter's proposal lane, and what every adapter builds its own tools on
+        if (ConfigProposalLane::canReview($container)) {
+            $loader->load('proposal/graphql_change_control.yml');
         }
+        if (ConfigProposalLane::canPropose($container)) {
+            $loader->load('proposal/mcp.yml');
+            $loader->load('proposal/graphql_mcp.yml');
+        }
+    }
+
+    /**
+     * An adapter type exists once its bundle registers itself under `supported_types`. Only GraphQL,
+     * the adapter this bundle ships itself, carries a switch - adapter types of other bundles are
+     * available as soon as they are installed.
+     *
+     * @return string[]
+     */
+    private function resolveEnabledAdapterTypes(array $config): array
+    {
+        // a numeric type name arrives as an int array key
+        $types = array_map(strval(...), array_keys($config['supported_types'] ?? []));
+
+        if ($config['graphql']['enabled']) {
+            return $types;
+        }
+
+        return array_values(
+            array_filter($types, static fn (string $type): bool => $type !== AdapterType::GraphQl->value)
+        );
     }
 
     /**
@@ -61,18 +96,40 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             $loader->load('doctrine_migrations.yml');
         }
 
-        if ($container->hasExtension('pimcore_studio_backend')) {
-            $loader->load('pimcore/studio_backend.yaml');
+        // the Configuration agent takes its configuration kinds from the bundles that own them
+        if ($container->hasExtension('pimcore_agent')
+            && ConfigProposalLane::canPropose($container)
+            && self::takesAgentContributions($container)
+        ) {
+            $container->prependExtensionConfig('pimcore_agent', ['agents' => ['contributions' => ['configuration' => [
+                'pimcoreMcpServers' => ['pimcore-data-hub-graphql-read', 'pimcore-data-hub-graphql-propose'],
+            ]]]]);
         }
 
-        if ($container->hasExtension('pimcore_studio_ui')) {
-            $loader->load('studio_ui.yaml');
-        }
+        $loader->load('pimcore/studio_backend.yaml');
+        $loader->load('studio_ui.yaml');
 
         LocationAwareConfigRepository::loadSymfonyConfigFiles(
             $container,
             'pimcore_data_hub',
             'data_hub'
         );
+    }
+
+    /** an agent bundle released before the contributions node rejects the key */
+    private static function takesAgentContributions(ContainerBuilder $container): bool
+    {
+        $extension = $container->getExtension('pimcore_agent');
+        $configuration = $extension instanceof ConfigurationExtensionInterface
+            ? $extension->getConfiguration([], $container)
+            : null;
+        if (!$configuration instanceof ConfigurationInterface) {
+            return false;
+        }
+
+        $root = $configuration->getConfigTreeBuilder()->buildTree();
+        $agents = $root instanceof ArrayNode ? ($root->getChildren()['agents'] ?? null) : null;
+
+        return $agents instanceof ArrayNode && isset($agents->getChildren()['contributions']);
     }
 }

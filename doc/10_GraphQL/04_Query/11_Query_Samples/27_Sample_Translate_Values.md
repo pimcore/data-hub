@@ -2,8 +2,6 @@
 
 The following example translates the `AccessoryPart` condition value.
 
-Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?object_373_object](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?object_373_object)
-
 Operator Config: 
 
 <div class="image-as-lightbox"></div>
@@ -46,5 +44,4 @@ the value of the select field into a human-readable representation.
   }
 }
 ```
-
 

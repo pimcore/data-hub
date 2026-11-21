@@ -12,7 +12,6 @@
 
 namespace Pimcore\Bundle\DataHubBundle\GraphQL\PropertyType;
 
-use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\UnionType;
@@ -77,7 +76,7 @@ final class HotspotMetadataType extends UnionType
         return $supportedTypes;
     }
 
-    public function resolveType($element, $context, ResolveInfo $info): ObjectType|string|callable|Deferred|null
+    public function resolveType($element, $context, ResolveInfo $info): ObjectType|callable|null
     {
         if ($element instanceof MarkerHotspotItem) {
             $type = $element->getType();
@@ -98,7 +97,7 @@ final class HotspotMetadataType extends UnionType
                     return $this->documentType;
                 }
                 case 'object': {
-                    return $this->objectType;
+                    return $this->objectType; // @phpstan-ignore return.type
                 }
                 default:
                     throw new ClientSafeException('unkown metadata type: ' . $type);

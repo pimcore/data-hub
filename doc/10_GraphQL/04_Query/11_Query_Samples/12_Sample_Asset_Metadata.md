@@ -4,8 +4,6 @@
 
 ![Metadata](../../../img/graphql/asset_metadata.png)
 
-Deeplink: [http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image](http://pimcore-demo-basic.pim.zone/admin/login/deeplink?asset_4_image)
-
 ### Request
 
 Get the custom asset metadata for language `de`

@@ -13,27 +13,32 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Webpack;
 
-use Pimcore\Bundle\StudioUiBundle\Webpack\WebpackEntryPointProviderInterface;
+use Pimcore\Bundle\StudioUiBundle\Build\BuildArchive;
+use Pimcore\Bundle\StudioUiBundle\Build\BuildArchiveExtractionTrait;
+use Pimcore\Bundle\StudioUiBundle\Build\BuildArchiveProviderInterface;
 
 /**
  * @internal
  */
-if (interface_exists(WebpackEntryPointProviderInterface::class)) {
-    final class WebpackEntryPointProvider implements WebpackEntryPointProviderInterface
+final class WebpackEntryPointProvider implements BuildArchiveProviderInterface
+{
+    use BuildArchiveExtractionTrait;
+
+    public function getEntryPoints(): array
     {
-        public function getEntryPointsJsonLocations(): array
-        {
-            return glob(__DIR__ . '/../../src/Resources/public/studio/build/*/entrypoints.json');
-        }
+        return ['exposeRemote'];
+    }
 
-        public function getEntryPoints(): array
-        {
-            return ['exposeRemote'];
-        }
+    public function getOptionalEntryPoints(): array
+    {
+        return [];
+    }
 
-        public function getOptionalEntryPoints(): array
-        {
-            return [];
-        }
+    protected function buildArchive(): BuildArchive
+    {
+        return new BuildArchive(
+            archiveGlob: __DIR__ . '/../../build-dist/build*.zip',
+            targetDir: __DIR__ . '/../../src/Resources/public/studio/build',
+        );
     }
 }

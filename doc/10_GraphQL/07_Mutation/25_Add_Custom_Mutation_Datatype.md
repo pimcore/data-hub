@@ -13,7 +13,7 @@ Add a section similar to this one to your `services.yml` file.
             - { name: pimcore.datahub.graphql.dataobjectmutationtypegenerator, id: typegenerator_dataobjectmutationdatatype_mycustomdatatype }                                    
 ```
 
-For reference, have a look at a look at the 
+For reference, have a look at the
 [`Geopoint datatype`](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectMutationFieldConfigGenerator/Geopoint.php).
 
 You return a valid GraphQL input type (which is an `InputObjectType`) here and a `Processor` which processes the actual

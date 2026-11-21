@@ -40,7 +40,7 @@ final class ElementMetadataKeyValuePairInputType extends InputObjectType
     }
 
     /**
-     * @return ElementMetadataKeyValuePairInputType|null
+     * @return ElementMetadataKeyValuePairInputType
      */
     public static function getInstance()
     {

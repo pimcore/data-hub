@@ -1,14 +1,19 @@
+---
+title: Security Settings
+description: Secure a GraphQL endpoint and restrict which data it exposes.
+---
+
 # Security Settings
 
 The security settings define how the endpoint is secured and which data is accessible.
 
 <div class="image-as-lightbox"></div>
 
-![security1.png](../../img/graphql/security1.png)
+![Security Definition tab](../../img/graphql/security1.png)
 
 ## Authentication
 
-Here you can define how users are authenticated when accessing the endpoint.
+The `Method` defines how requests to the endpoint are authenticated.
 
 #### Supported Methods
 
@@ -16,8 +21,12 @@ Here you can define how users are authenticated when accessing the endpoint.
 
 #### API Key
 
-To automatically create an API key use the button next to the input. 
-For each click on the button a new API key is generated and will be added to the input field in addition to the list of existing keys.
+Use **Generate Key** to create an API key. Each click generates a new key and adds it to the **Datahub API Keys**
+field alongside any existing keys.
+
+#### Skip Permission Check
+
+The **Skip Permission Check** toggle disables the workspace permission checks entirely for this endpoint.
 
 ## Introspection Settings
 
@@ -25,7 +34,8 @@ Introspection provides an information about queries which are supported by Graph
 If introspection is enabled, the endpoint will provide a schema definition which can be used by GraphiQL or other tools to provide auto-completion and documentation.
 If introspection is disabled, the schema definition will not be provided and therefore no auto-completion or documentation will be available.
 
-This is currently enabled by default. It can be disabled via security settings tab directly in the backend or in the symfony configuration tree:
+Introspection is enabled by default. Disable it with the **Disable Introspection** toggle on this tab, or in the Symfony
+configuration tree:
 ```
 pimcore_data_hub:
     graphql:
@@ -35,7 +45,7 @@ pimcore_data_hub:
 ## Workspace Settings
 
 Defines workspaces for data that should be accessible via the endpoint.
-The definition is similar to Pimcore user [workspace permissions](https://pimcore.com/docs/6.x/Development_Documentation/Administration_of_Pimcore/Users_and_Roles.html) 
+The definition is similar to Pimcore user [workspace permissions](https://github.com/pimcore/studio-ui-bundle/blob/2026.x/doc/03_Configuration_and_Administration/02_Users_and_Roles/README.md).
 
 :::warning
 

@@ -198,7 +198,7 @@ final class QueryType extends ObjectType
         $entities = $configuration->getQueryEntities();
 
         foreach ($entities as $entity) {
-            $class = ClassDefinition::getByName($entity);
+            $class = ClassTypeDefinitions::getClassDefinition($entity);
             if (!$class) {
                 Logger::error('class ' . $entity . ' not found');
 

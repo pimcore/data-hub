@@ -43,3 +43,6 @@ assets/studio/dist/*
 !assets/studio/dist/.gitkeep
 !assets/studio/dist/types
 !assets/studio/dist/types/*
+
+# Expanded frontend build is generated from build-dist/build-<id>.zip, not committed
+/src/Resources/public/studio/build/

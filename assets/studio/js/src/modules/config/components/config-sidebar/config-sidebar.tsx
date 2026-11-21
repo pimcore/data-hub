@@ -12,12 +12,8 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { isNil, isUndefined } from 'lodash'
 import {
   Content,
-  ContentLayout,
-  Flex,
-  Icon,
-  SearchInput,
-  Spin,
-  TreeElement,
+  ContentLayout, Icon,
+  SearchInput, TreeElement,
   type TreeDataItem
 } from '@pimcore/studio-ui-bundle/components'
 import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
@@ -29,7 +25,9 @@ import { useConfigContext } from '../../providers/config-provider'
 import { useDataHubConfig } from '../../hooks/use-data-hub-config'
 import { findConfigById, filterConfigsRecursive } from '../../utils/tree-helpers'
 import { hasValidAdapter } from '../../utils/adapter-helpers'
+import { canCreateAdapter } from '../../utils/permission-helpers'
 import { getExportUrl } from '../../utils/get-export-url'
+import { useStyles } from './config-sidebar.styles'
 
 interface ConfigSidebarProps {
   handleOpenConfig: (config: BundleDataHubConfiguration) => void
@@ -63,6 +61,7 @@ export const ConfigSidebar = ({
   }, [searchValue, configListData])
 
   const { t } = useTranslation()
+  const { styles } = useStyles()
 
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
 
@@ -85,13 +84,17 @@ export const ConfigSidebar = ({
       return []
     }
 
-    const actions: Array<{ key: string, icon: string }> = [
-      { key: 'clone', icon: 'copy-03' },
-      { key: 'export', icon: 'export' }
-    ]
+    const permissions = (item.permissions ?? {}) as { delete?: boolean }
+    const actions: Array<{ key: string, icon: string }> = []
 
-    // Only add delete action if writeable
-    if (item.writable) {
+    // Clone is a create operation, so it needs create permission (not just read) and a writeable config.
+    if (item.writable && canCreateAdapter(item.adapter as string)) {
+      actions.push({ key: 'clone', icon: 'copy-03' })
+    }
+
+    actions.push({ key: 'export', icon: 'export' })
+
+    if (item.writable && permissions.delete === true) {
       actions.push({ key: 'delete', icon: 'trash' })
     }
 
@@ -203,43 +206,22 @@ export const ConfigSidebar = ({
           withoutAddon
         />
 
-        <Flex
-          className="h-full"
-          gap="mini"
-          justify={ isFetching ? 'center' : 'start' }
-          vertical
+        <Content
+          loading={ isFetching }
+          none={ filteredData.length === 0 }
         >
-          {isFetching
-            ? (
-              <Flex
-                align="center"
-                justify="center"
-              >
-                <Spin
-                  asContainer
-                  tip='Loading'
-                />
-              </Flex>
-              )
-            : (
-              <>
-                {filteredData.length === 0
-                  ? (
-                    <Content none />
-                    )
-                  : (
-                    <TreeElement
-                      defaultExpandedKeys={ expandedKeys }
-                      key={ `config-tree-${treeKey}` }
-                      onActionsClick={ handleActionsClick }
-                      onExpand={ (keys) => { setExpandedKeys(keys as string[]) } }
-                      onSelected={ (key) => { handleTreeItemClick(String(key)) } }
-                      treeData={ treeData }
-                    />
-                    )}
-              </>
-              )}
-        </Flex>
+
+          <TreeElement
+            className={ styles.treeContainer }
+            defaultExpandedKeys={ expandedKeys }
+            key={ `config-tree-${treeKey}` }
+            onActionsClick={ handleActionsClick }
+            onExpand={ (keys) => { setExpandedKeys(keys as string[]) } }
+            onSelected={ (key) => { handleTreeItemClick(String(key)) } }
+            treeData={ treeData }
+          />
+
+        </Content>
       </Content>
     </ContentLayout>
   )

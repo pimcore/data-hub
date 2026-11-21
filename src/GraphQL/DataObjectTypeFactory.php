@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\GraphQL;
 
 use Pimcore\Bundle\DataHubBundle\GraphQL\Traits\ServiceTrait;
-use Pimcore\Model\DataObject\ClassDefinition;
 
 final class DataObjectTypeFactory
 {
@@ -37,7 +36,7 @@ final class DataObjectTypeFactory
     public function build(string $className, $config = [], $context = [])
     {
         if (!isset(self::$registry[$className])) {
-            $class = ClassDefinition::getByName($className);
+            $class = ClassTypeDefinitions::getClassDefinition($className);
             $operatorImpl = new $this->className(
                 $this->getGraphQlService(),
                 $className,

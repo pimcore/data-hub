@@ -1,0 +1,177 @@
+/**
+ * This source file is available under the terms of the
+ * Pimcore Open Core License (POCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
+ *  @license    Pimcore Open Core License (POCL)
+ */
+
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { api, type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
+import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
+import { isNil } from 'lodash'
+import {
+  advancedFromSchemaColumn,
+  advancedToSchemaColumn,
+  ADVANCED_COLUMN_KEY,
+  ADVANCED_COLUMN_TYPE,
+  type AdvancedEditorColumn,
+  type SchemaColumn
+} from './types'
+import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
+import { useAddColumnGroups } from './use-add-column-groups'
+
+interface UseColumnEditorStateOptions {
+  entity: string
+  classDefinitionId?: string
+  columns: SchemaColumn[]
+  onApply: (columns: SchemaColumn[]) => void
+  onCancel: () => void
+  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
+  exportableOnly?: boolean
+}
+
+interface UseColumnEditorStateResult {
+  draft: AdvancedEditorColumn[]
+  isLoading: boolean
+  resolvedClassId: string
+  availableFields: GridColumnConfiguration[]
+  columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
+  /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
+  onAddAdvancedColumn?: () => void
+  handleAddColumnOfType: (column: GridColumnConfiguration) => void
+  handlePipelineChange: (id: string, pipeline: Record<string, any>) => void
+  handleRemove: (id: string) => void
+  handleApply: () => void
+  handleDiscard: () => void
+  handleLocaleChange: (id: string, locale: string | null) => void
+  handleReorder: (ids: string[]) => void
+  getColumns: () => SchemaColumn[]
+}
+
+export const useColumnEditorState = ({
+  entity,
+  classDefinitionId,
+  columns,
+  onApply,
+  onCancel,
+  exportableOnly = false
+}: UseColumnEditorStateOptions): UseColumnEditorStateResult => {
+  const { getByName } = useClassDefinitions()
+
+  const resolvedClassId = useMemo(() => {
+    if (!isNil(classDefinitionId)) return classDefinitionId
+    return getByName(entity)?.id ?? entity
+  }, [classDefinitionId, entity, getByName])
+
+  const { data, isLoading } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery({
+    classId: resolvedClassId,
+    folderId: 1
+  })
+
+  const [draft, setDraft] = useState<AdvancedEditorColumn[]>(() =>
+    columns.map(advancedFromSchemaColumn)
+  )
+
+  useEffect(() => {
+    setDraft(columns.map(advancedFromSchemaColumn))
+  }, [columns])
+
+  const availableFields: GridColumnConfiguration[] = data?.columns ?? []
+
+  useEffect(() => {
+    if (availableFields.length === 0) return
+    setDraft(prev => prev.map(col => {
+      const available = availableFields.find(f =>
+        f.key === col.key || (col.type === ADVANCED_COLUMN_TYPE && f.type === col.type)
+      )
+      if (available === undefined) return col
+      return {
+        ...col,
+        localizable: col.localizable ?? available.localizable,
+        pipelineConfig: col.pipelineConfig ?? (available.config as Record<string, any> | undefined)
+      }
+    }))
+  }, [availableFields])
+
+  const handleAddColumnOfType = useCallback((column: GridColumnConfiguration): void => {
+    setDraft(prev => [...prev, {
+      _id: crypto.randomUUID(),
+      key: column.key,
+      fieldtype: column.key,
+      type: column.type,
+      pipelineConfig: column.config as Record<string, any> | undefined,
+      localizable: column.localizable,
+      isNew: true
+    }])
+  }, [])
+
+  // Only the add-column dropdown is restricted to exportable columns. The full
+  // availableFields list is still used above to hydrate already-configured columns,
+  // so existing schemas containing non-exportable columns keep rendering unchanged.
+  const addColumnFields = useMemo(
+    () => exportableOnly ? availableFields.filter(field => field.exportable === true) : availableFields,
+    [availableFields, exportableOnly]
+  )
+
+  const columnGroups = useAddColumnGroups(addColumnFields)
+
+  const advancedColumn = useMemo(
+    () => addColumnFields.find(field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY),
+    [addColumnFields]
+  )
+
+  const onAddAdvancedColumn = advancedColumn !== undefined
+    ? (): void => { handleAddColumnOfType(advancedColumn) }
+    : undefined
+
+  const handlePipelineChange = (id: string, pipeline: Record<string, any>): void => {
+    setDraft(prev => prev.map(col =>
+      col._id === id ? { ...col, pipeline } : col
+    ))
+  }
+
+  const handleRemove = (id: string): void => {
+    setDraft(prev => prev.filter(col => col._id !== id))
+  }
+
+  const handleApply = (): void => {
+    onApply(draft.filter(col => col.key !== '').map(advancedToSchemaColumn))
+  }
+
+  const handleDiscard = (): void => {
+    setDraft(columns.map(advancedFromSchemaColumn))
+    onCancel()
+  }
+
+  const handleLocaleChange = (id: string, locale: string | null): void => {
+    setDraft(prev => prev.map(c => c._id === id ? { ...c, locale } : c))
+  }
+
+  const handleReorder = (ids: string[]): void => {
+    setDraft(prev => {
+      return ids
+        .map(id => prev.find(col => col._id === id))
+        .filter((col): col is AdvancedEditorColumn => col !== undefined)
+    })
+  }
+
+  return {
+    draft,
+    isLoading,
+    resolvedClassId,
+    availableFields,
+    columnGroups,
+    onAddAdvancedColumn,
+    handleAddColumnOfType,
+    handlePipelineChange,
+    handleRemove,
+    handleApply,
+    handleDiscard,
+    handleLocaleChange,
+    handleReorder,
+    getColumns: () => draft.filter(col => col.key !== '').map(advancedToSchemaColumn)
+  }
+}

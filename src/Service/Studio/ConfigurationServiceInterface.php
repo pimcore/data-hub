@@ -17,6 +17,7 @@ namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 use Exception;
 use Pimcore\Bundle\DataHubBundle\Schema\Configuration;
 use Pimcore\Bundle\DataHubBundle\Schema\ConfigurationDetail;
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\ValidationFailedException;
 
 /** @internal  */
 interface ConfigurationServiceInterface
@@ -58,6 +59,7 @@ interface ConfigurationServiceInterface
 
     /**
      * @throws Exception
+     * @throws ValidationFailedException
      */
     public function updateConfiguration(string $name, array $configuration, int $clientModificationDate): int;
 }

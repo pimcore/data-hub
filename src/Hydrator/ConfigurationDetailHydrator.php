@@ -29,7 +29,14 @@ final readonly class ConfigurationDetailHydrator implements ConfigurationDetailH
         return new ConfigurationDetail(
             $configuration->getName(),
             $configuration->getConfiguration(),
-            $configuration->getPermissionsConfig(),
+            // Resolved permissions of the current user for this configuration (matches the schema
+            // example), used by the UI to gate editing/deleting. The raw per-user/role permission
+            // sets edited in the permissions tab live in getConfiguration()['permissions'].
+            [
+                'read' => $configuration->isAllowed('read'),
+                'update' => $configuration->isAllowed('update'),
+                'delete' => $configuration->isAllowed('delete'),
+            ],
             $supportedQueryDataTypes,
             $supportedMutationDataTypes,
             $configuration->getModificationDate()

@@ -90,7 +90,7 @@ const AvailableFieldsTreeInner = ({
         if (path !== null && path.length > 1) {
           const parentPath = path.slice(0, -1)
           const parent = getItem(parentPath)
-          if (parent !== null && parent.isOperator) {
+          if (parent?.isOperator === true) {
             keysToExpand.add(String(parent.key))
           }
         }
@@ -138,7 +138,7 @@ const AvailableFieldsTreeInner = ({
       if (path === null) return
 
       const item = getItem(path)
-      if (item === null || !item.isOperator) return
+      if (!item?.isOperator) return
       if (!isNonEmptyString(item.attributes.class)) return
 
       setOperatorModalConfig({

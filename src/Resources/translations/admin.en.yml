@@ -86,3 +86,5 @@ plugin_pimcore_datahub_security_introspection_description: "Please note: When in
 plugin_pimcore_datahub_import: "Import"
 plugin_pimcore_datahub_export: "Export"
 plugin_pimcore_datahub_add_all_definitions: Add all definitions
+plugin_pimcore_datahub_configpanel_studio_format_title: "Pimcore Studio Configuration"
+plugin_pimcore_datahub_configpanel_studio_format_message: "This configuration belongs to Pimcore Studio. Please make sure to maintain it directly within Pimcore Studio."

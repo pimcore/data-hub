@@ -20,13 +20,13 @@ interface DraggableTreeTitleProps {
 
 /**
  * Wraps tree node titles with drag capability for the class attributes sidebar.
- * Only nodes marked as field definitions are draggable.
+ * Only enabled nodes marked as field definitions are draggable.
  */
 export const DraggableTreeTitle = ({
   node,
   initialComponent
 }: DraggableTreeTitleProps): React.JSX.Element => {
-  if (node.isFieldDefinition !== true) {
+  if (node.isFieldDefinition !== true || node.disabled === true) {
     return <>{initialComponent}</>
   }
 

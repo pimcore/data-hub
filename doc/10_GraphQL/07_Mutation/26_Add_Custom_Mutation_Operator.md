@@ -23,25 +23,26 @@ depending on its child element.
 
 ### Operator Implementation
 
-You have to provide both JavaScript code dealing with the UI configuration aspects specific to your operator
-and the server-side PHP implementation processing the input (the input processor according to your input schema).
+An operator has two halves: the server-side input processor, and a Pimcore Studio frontend type providing its
+configuration dialog.
 
-A JS sample can be found 
-[here](https://github.com/pimcore/data-hub/blob/2.x/src/Resources/public/js/mutationoperator/IfEmpty.js).
+Provide the input processor first. A sample can be found
+[here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectInputProcessor/IfEmptyOperator.php).
+It will get the child value and only overwrite the current value if it is empty.
 
-:::info
+:::warning
 
-Note that the namespace in your case would be `pimcore.plugin.datahub.mutationoperator.mycustommutationoperator`.
+The frontend half is not a public extension point yet. Operators are Pimcore Studio dynamic types extending
+`DynamicTypeOperatorAbstract` (`readonly id`, `getIcon()`, `getLabel()`, `getConfigModal()`, `getGroup()`), registered
+on the `DataHub/DynamicTypes/Operator/GraphQL/MutationRegistry` service, which defines only the `other` group. That base
+class is **not exported** from the Datahub Studio SDK (`assets/studio/js/src/sdk/index.ts`), so another bundle's Studio
+plugin cannot currently import it. The shipped operators under `assets/studio/js/src/modules/operators/operators/` show
+the pattern, but until the operator API is exported, a custom operator has no configuration dialog in Pimcore Studio.
 
 :::
 
-Make sure that your extension gets loaded. See [Pimcore Bundles](https://pimcore.com/docs/6.x/Development_Documentation/Extending_Pimcore/Bundle_Developers_Guide/Pimcore_Bundles/index.html)
-docs page for further details.
-
-Next thing is to provide the input processor on the server side.
-A sample can be found 
-[here](https://github.com/pimcore/data-hub/blob/2.x/src/GraphQL/DataObjectInputProcessor/IfEmptyOperator.php).
-It will get the child value and only overwrite the current value if it is empty.
+For general plugin setup, see the Studio UI bundle's
+[Getting Started with Your First Plugin](https://github.com/pimcore/studio-ui-bundle/blob/2026.x/doc/04_Extending/01_Getting_Started_with_Your_First_Plugin.md).
 
 
  

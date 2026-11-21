@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Service\Studio;
 
+use Pimcore\Bundle\StudioBackendBundle\Exception\Api\NotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -26,8 +27,12 @@ interface GraphQLExplorerServiceInterface
      * @throws SyntaxError
      * @throws RuntimeError
      * @throws LoaderError
+     * @throws NotFoundException if the GraphQL adapter is disabled
      */
     public function generateExplorerResponse(string $clientname, array $urlParams = []): Response;
 
+    /**
+     * @throws NotFoundException if the GraphQL adapter is disabled
+     */
     public function getExplorerUrl(string $clientname): string;
 }

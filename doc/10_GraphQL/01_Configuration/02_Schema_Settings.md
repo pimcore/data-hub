@@ -28,6 +28,16 @@ Please note that not all data types are supported yet!
 
 You will get a notice if you try to add an unsupported data type.
 
+#### System Columns
+
+Every Data Object type of the endpoint contains `id`, `creationDate`, `modificationDate`, `classname` and `index`,
+whether they are selected or not; the query field configuration shows them as "always included". The type also always
+contains `version`, `objectType`, `childrenSortBy`, `tags`, `properties`, `parent`, `children` and `_siblings`; these
+are not listed in the field configuration.
+
+`fullpath`, `key` and `published` are only part of the type if they are selected. In the query schema,
+`Insert all definitions` adds them together with the class fields.
+
 ## Mutation Schema
 
 Here you can decide if Data Objects for the selected class can be created, updated or deleted from the endpoint.
@@ -46,3 +56,13 @@ As for the `Query Schema` field, you can select the fields you want to expose an
 
 Here you can define which data types can be created, read, updated or deleted from an endpoint.
 
+### Folder Read Settings
+
+The `read` setting of the `Object Folder` and `Document Folder` types applies wherever a folder can show up in a
+response: the `parent`, `children` and `_siblings` fields, relations, relation editables of documents, element
+properties and `getDocument`. The `getObjectFolder` and `getDocumentFolder` queries are only part of the schema if
+the setting is enabled.
+
+If the setting is disabled, a folder of that type resolves to `null` (or is left out of a list of elements), the same as
+an element that the workspaces do not allow to read. This does not depend on the workspaces and is also true if the
+permission check of the endpoint is skipped.

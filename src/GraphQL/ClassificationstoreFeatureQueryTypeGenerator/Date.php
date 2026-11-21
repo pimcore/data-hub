@@ -20,7 +20,7 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\DateType
 final class Date extends Base
 {
     /**
-     * @return DateType|null
+     * @return DateType
      */
     public function getFieldType()
     {

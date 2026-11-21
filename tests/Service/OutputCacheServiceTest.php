@@ -45,7 +45,7 @@ class OutputCacheServiceTest extends Unit
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
-            ->setMethods(['loadFromCache', 'saveToCache'])
+            ->onlyMethods(['loadFromCache', 'saveToCache'])
             ->getMock();
 
         $payload = '{"query":"{\n  getProductCategoryListing {\n    edges {\n      node {\n        fullpath\n      }\n    }\n  }\n}","variables":null,"operationName":null}';
@@ -105,7 +105,7 @@ class OutputCacheServiceTest extends Unit
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
-            ->setMethods(['saveToCache'])
+            ->onlyMethods(['saveToCache'])
             ->getMock();
 
         $this->sut
@@ -131,7 +131,7 @@ class OutputCacheServiceTest extends Unit
 
         $this->sut = $this->getMockBuilder(OutputCacheService::class)
             ->setConstructorArgs([$this->container, $this->eventDispatcher])
-            ->setMethods(['loadFromCache'])
+            ->onlyMethods(['loadFromCache'])
             ->getMock();
 
         $this->sut

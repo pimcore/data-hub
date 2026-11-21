@@ -11,10 +11,13 @@
 import React from 'react'
 import { Toolbar, DropdownButton, Dropdown, type DropdownProps, IconButton, Icon, Flex, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { container, useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { useSettings } from '@pimcore/studio-ui-bundle/modules/app'
 import { bundleServiceIds } from '../../../../../../config/service-ids'
 import { type DynamicTypeDataHubAdapterRegistry } from '../../../../dynamic-types/dynamic-type-data-hub-adapter-registry'
 import { ImportButton } from '../../../import-button/import-button'
 import { type BundleDataHubConfiguration } from '../../../../config-api-slice.gen'
+import { canCreateAdapter } from '../../../../utils/permission-helpers'
+import { isAdapterEnabled } from '../../../../utils/adapter-helpers'
 
 interface ConfigSidebarToolbarProps {
   onAdd: (adapterType: string) => void
@@ -26,10 +29,13 @@ interface ConfigSidebarToolbarProps {
 export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFetching }: ConfigSidebarToolbarProps): React.JSX.Element => {
   const { t } = useTranslation()
   const adapterRegistry = container.get<DynamicTypeDataHubAdapterRegistry>(bundleServiceIds['DataHub/DynamicTypes/Adapter/Registry'])
+  const enabledAdapters = useSettings().data_hub_enabled_adapters as string[] | undefined
 
-  const adapters = adapterRegistry.getDynamicTypes()
+  const creatableAdapters = adapterRegistry.getDynamicTypes().filter(
+    (adapter) => isAdapterEnabled(adapter.id, enabledAdapters) && canCreateAdapter(adapter.id)
+  )
 
-  const dropdownItems: DropdownProps['menu']['items'] = adapters.map((adapter) => ({
+  const dropdownItems: DropdownProps['menu']['items'] = creatableAdapters.map((adapter) => ({
     key: adapter.id,
     label: t(adapter.getNameTranslationKey()),
     icon: <Icon { ...adapter.getIcon() } />,
@@ -48,27 +54,33 @@ export const ConfigSidebarToolbar = ({ onAdd, onRefresh, handleOpenConfig, isFet
           />
         </Tooltip>
 
-        <ImportButton
-          disabled={ isFetching }
-          handleOpenConfig={ handleOpenConfig }
-          onRefresh={ onRefresh }
-        />
+        {/* Import creates a configuration, so it is only offered when the user may create at
+            least one adapter type. */}
+        { dropdownItems.length > 0 && (
+          <ImportButton
+            disabled={ isFetching }
+            handleOpenConfig={ handleOpenConfig }
+            onRefresh={ onRefresh }
+          />
+        ) }
       </Flex>
 
-      <Dropdown
-        menu={ { items: dropdownItems } }
-        trigger={ ['click'] }
-      >
-        <DropdownButton>
-          <Flex
-            align='center'
-            gap='extra-small'
-          >
-            <Icon value="new" />
-            {t('new')}
-          </Flex>
-        </DropdownButton>
-      </Dropdown>
+      { dropdownItems.length > 0 && (
+        <Dropdown
+          menu={ { items: dropdownItems } }
+          trigger={ ['click'] }
+        >
+          <DropdownButton>
+            <Flex
+              align='center'
+              gap='extra-small'
+            >
+              <Icon value="new" />
+              {t('new')}
+            </Flex>
+          </DropdownButton>
+        </Dropdown>
+      ) }
     </Toolbar>
   )
 }

@@ -4,8 +4,6 @@
 
 ### Configuration
 
-Deeplink: [https://demo.pimcore.fun/admin/login/deeplink?object_277_object](https://demo.pimcore.fun/admin/login/deeplink?object_277_object)
-
 :::info
 
 Note that you have to adapt your schema definition as depicted below.
