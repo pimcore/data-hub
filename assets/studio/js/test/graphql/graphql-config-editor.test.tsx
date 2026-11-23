@@ -180,31 +180,24 @@ describe('GraphQLConfigEditor', () => {
     expect(last(seen.detailView)).toMatchObject({ configName: 'shop', configData: CONFIGURATION, isWriteable: false, onSave })
   })
 
-  it('marks the tabs a review says hold a change, and no tab otherwise', () => {
-    const { rerender } = render(
+  it('labels every tab with its title alone: the review\'s change list says where a change sits', () => {
+    // a caller still handing in the tabs a review touched must not get them marked
+    render(
       <GraphQLConfigEditor
-        changedTabs={ ['schema', 'security'] }
         configName="shop"
         configuration={ CONFIGURATION as any }
         isWriteable={ false }
+        { ...({ changedTabs: ['general', 'schema', 'security'] } as any) }
         onSave={ vi.fn() }
       />
     )
 
-    expect(screen.queryByTestId('tab-changed-general')).toBeNull()
-    expect(screen.getByTestId('tab-changed-schema').textContent).toBe('data-hub.tabs.schema-definition')
-    expect(screen.getByTestId('tab-changed-security')).toBeTruthy()
-    expect(screen.queryByTestId('tab-changed-permissions')).toBeNull()
-
-    rerender(
-      <GraphQLConfigEditor
-        configName="shop"
-        configuration={ CONFIGURATION as any }
-        isWriteable
-        onSave={ vi.fn() }
-      />
-    )
-    expect(document.querySelector('[data-testid^="tab-changed-"]')).toBeNull()
+    const tabs = screen.getAllByRole('button')
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      'data-hub.tabs.general', 'data-hub.tabs.schema-definition', 'data-hub.tabs.security-definition', 'data-hub.tabs.permissions'
+    ])
+    for (const tab of tabs) expect(tab.childElementCount).toBe(0)
+    expect(document.querySelector('.ant-badge, [data-testid^="tab-changed-"]')).toBeNull()
   })
 
   it('keeps its own tab state when nobody drives it, and renders no form while loading', () => {

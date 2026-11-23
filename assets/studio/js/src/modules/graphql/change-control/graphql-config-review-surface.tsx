@@ -61,10 +61,6 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
   const rowMarks = useMemo(() => isNew ? {} : schemaRowMarks(changes), [isNew, changes])
   const previousColumns = useMemo(() => isNew ? {} : schemaPreviousColumns(changes), [isNew, changes])
-  const changedTabs = useMemo(
-    () => isNew ? [] : groups.map((group) => SECTION_TARGET[group.section]?.tab).filter((tab): tab is string => tab !== undefined),
-    [isNew, groups]
-  )
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
   // from an effect, which could run after an early click and take the reader back. A pick holds
@@ -92,7 +88,6 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const editor = (
     <GraphQLConfigEditor
       activeTab={ activeTab }
-      changedTabs={ changedTabs }
       configName={ subjectRef }
       configuration={ configuration }
       isWriteable={ false }

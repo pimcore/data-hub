@@ -9,7 +9,6 @@
  */
 
 import React from 'react'
-import { Badge } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Content, ContentLayout, FormKit, Tabs } from '@pimcore/studio-ui-bundle/components'
 import { type DataHubAdapterDetailViewProps } from '../../config/dynamic-types/dynamic-type-data-hub-adapter-abstract'
@@ -44,8 +43,6 @@ export interface GraphQLConfigEditorProps {
   /** drive the tab from outside; omit to keep the tab strip's own state */
   activeTab?: string
   onTabChange?: (key: string) => void
-  /** the tabs a review marks as holding a change */
-  changedTabs?: string[]
 }
 
 /** the tab keys, so a caller can address one without repeating the strings */
@@ -74,8 +71,7 @@ export const GraphQLConfigEditor = ({
   requestId,
   renderToolbar,
   activeTab,
-  onTabChange,
-  changedTabs = []
+  onTabChange
 }: GraphQLConfigEditorProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
@@ -120,18 +116,6 @@ export const GraphQLConfigEditor = ({
   // inlined here instead - the review rail has to be able to open the tab a change sits in.
   const panes = tabs.map((tab) => ({
     ...tab,
-    // the colour of Studio's "changed" form annotation
-    label: changedTabs.includes(tab.key)
-      ? (
-        <span data-testid={ `tab-changed-${tab.key}` }>
-          <Badge
-            color="gold"
-            dot
-            offset={ [6, 0] }
-          >{ tab.label }</Badge>
-        </span>
-        )
-      : tab.label,
     children: tab.fullHeight === true
       ? tab.children
       : <Content padded>{ tab.children }</Content>

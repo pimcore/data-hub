@@ -157,7 +157,8 @@ describe('GraphQLConfigReviewSurface', () => {
     // the editor shows the live document with the proposal laid over it, on the first change's tab
     const editor = last(seen.editor)
     expect(editor?.activeTab).toBe('general')
-    expect((editor as { changedTabs?: string[] } | undefined)?.changedTabs).toEqual(['general', 'schema', 'security'])
+    // the rail is the one place that says which tabs hold a change: the editor gets no tab marks
+    expect(editor).not.toHaveProperty('changedTabs')
     expect(editor?.configuration.general.description).toBe('new')
     expect(editor?.configuration.general.active).toBe(true)
     expect(last(seen.liveQuery)?.skip).toBe(false)

@@ -13,7 +13,7 @@ import { Flex, OperationalGrid, Accordion, type AccordionItemType } from '@pimco
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { createColumnHelper } from '@tanstack/react-table'
 import { type GenericType } from './types'
-import { RowMark, useRowMarks } from './row-marks'
+import { RowMarkCell, useRowMarks } from './row-marks'
 
 interface GenericTypesGridProps {
   value?: GenericType[]
@@ -51,7 +51,7 @@ export const GenericTypesGrid = ({ value = [], onChange, isWriteable = true }: G
             id: 'review',
             header: '',
             size: 100,
-            cell: (info: { row: { index: number } }) => <RowMark status={ marks[rows[info.row.index]?.name] } />
+            cell: (info: { row: { index: number } }) => <RowMarkCell status={ marks[rows[info.row.index]?.name] } />
           }]
         : []),
       columnHelper.accessor('name', {
