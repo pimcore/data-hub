@@ -47,11 +47,12 @@ export const WorkspaceGrid = ({ type, value = [], onChange, isWriteable = true }
             id: 'review',
             header: '',
             size: 100,
-            cell: (info: { row: { index: number } }) => (
+            // by the row itself, not its index: a sorted grid reorders the rows
+            cell: (info: { row: { original: Workspace } }) => (
               <RowMarkCell
-                status={ info.row.index >= value.length
+                status={ rowChanges.removed.includes(info.row.original)
                   ? 'removed'
-                  : rowChanges.byPath[workspacePathOf(value[info.row.index]?.path)] }
+                  : rowChanges.byPath[workspacePathOf(info.row.original.path)] }
               />
             ),
             enableResizing: false,

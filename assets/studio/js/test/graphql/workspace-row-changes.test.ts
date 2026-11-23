@@ -68,6 +68,36 @@ describe('workspaceRowChanges', () => {
     })
   })
 
+  it('compares a path listed twice occurrence by occurrence', () => {
+    const added = configChanges(review({
+      security: slot(
+        { 'workspaces.object': [row('/a'), row('/b')] },
+        { 'workspaces.object': [row('/a'), row('/a', { update: true }), row('/b')] }
+      )
+    }))
+    expect(workspaceRowChanges(added).objects).toEqual({ status: 'changed', byPath: { '/a': 'changed' }, removed: [] })
+
+    const dropped = configChanges(review({
+      security: slot(
+        { 'workspaces.object': [row('/a'), row('/a', { delete: true }), row('/b')] },
+        { 'workspaces.object': [row('/a'), row('/b', { update: true })] }
+      )
+    }))
+    expect(workspaceRowChanges(dropped).objects).toEqual({
+      status: 'changed',
+      byPath: { '/a': 'changed', '/b': 'changed' },
+      removed: [{ path: '/a', create: false, read: true, update: false, delete: true }]
+    })
+
+    const same = configChanges(review({
+      security: slot(
+        { 'workspaces.object': [row('/a'), row('/a', { update: true })] },
+        { 'workspaces.object': [row('/a'), row('/a', { update: true }), row('/c')] }
+      )
+    }))
+    expect(workspaceRowChanges(same).objects?.byPath).toEqual({ '/c': 'added' })
+  })
+
   it('has nothing to mark without a workspace change', () => {
     expect(workspaceRowChanges([])).toEqual({})
   })

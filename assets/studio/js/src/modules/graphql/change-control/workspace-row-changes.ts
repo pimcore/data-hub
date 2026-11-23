@@ -39,19 +39,28 @@ const rows = (value: unknown): BackendWorkspace[] => Array.isArray(value) ? valu
 const differs = (before: BackendWorkspace, after: BackendWorkspace): boolean =>
   FLAGS.some((flag) => (before[flag] ?? false) !== (after[flag] ?? false))
 
+const byCpath = (list: BackendWorkspace[]): Map<string, BackendWorkspace[]> => {
+  const grouped = new Map<string, BackendWorkspace[]>()
+  for (const row of list) grouped.set(row.cpath, [...(grouped.get(row.cpath) ?? []), row])
+  return grouped
+}
+
+// a path listed twice is compared occurrence by occurrence, so no added or dropped duplicate goes unmarked
 function listChanges (change: ConfigChange): WorkspaceRowChanges {
-  const before = new Map(rows(change.current).map((row) => [row.cpath, row]))
-  const after = new Set(rows(change.proposed).map((row) => row.cpath))
+  const before = byCpath(rows(change.current))
+  const after = byCpath(rows(change.proposed))
 
   const byPath: Record<string, WorkspaceRowStatus> = {}
-  for (const row of rows(change.proposed)) {
-    const previous = before.get(row.cpath)
-    if (previous === undefined) byPath[row.cpath] = 'added'
-    else if (differs(previous, row)) byPath[row.cpath] = 'changed'
+  for (const [cpath, proposed] of after) {
+    const previous = before.get(cpath)
+    if (previous === undefined) byPath[cpath] = 'added'
+    else if (previous.length !== proposed.length || proposed.some((row, index) => differs(previous[index], row))) byPath[cpath] = 'changed'
   }
 
-  const removed = rows(change.current)
-    .filter((row) => !after.has(row.cpath))
+  // the occurrences beyond the proposed count are the dropped ones
+  const dropped: BackendWorkspace[] = []
+  before.forEach((previous, cpath) => { dropped.push(...previous.slice(after.get(cpath)?.length ?? 0)) })
+  const removed = dropped
     .map((row) => ({
       path: row.cpath,
       create: row.create ?? false,

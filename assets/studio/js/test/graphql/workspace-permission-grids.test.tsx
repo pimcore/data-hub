@@ -16,6 +16,8 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 
 // the review's marks on the form, by name path
 const annotations: Record<string, { status: string } | undefined> = {}
+// the order a reader sorted the grid into; TanStack's row index follows it, the row's original does not
+const view = { reversed: false }
 
 vi.mock('@pimcore/studio-ui-bundle/app', () => ({
   useTranslation: () => ({ t: (key: string) => key })
@@ -27,14 +29,14 @@ vi.mock('@pimcore/studio-ui-bundle/components', () => {
     <div>
       <table>
         <tbody>
-          { value.map((row, index) => (
+          { (view.reversed ? [...value].reverse() : value).map((row, index) => (
             <tr
               data-testid={ `row-${(row.entity ?? row.name ?? row.path) as string}` }
               key={ row.id ?? row.name }
             >
               { columns.map((column) => (
                 <td key={ column.id ?? column.accessorKey }>
-                  { column.cell !== undefined ? column.cell({ row: { index }, getValue: () => row[column.accessorKey] }) : String(row[column.accessorKey]) }
+                  { column.cell !== undefined ? column.cell({ row: { index, original: row }, getValue: () => row[column.accessorKey] }) : String(row[column.accessorKey]) }
                 </td>
               )) }
             </tr>
@@ -84,6 +86,7 @@ const { WorkspaceRowChangesContext } = await import('../../src/modules/graphql/c
 afterEach(() => {
   cleanup()
   for (const key of Object.keys(annotations)) annotations[key] = undefined
+  view.reversed = false
 })
 
 const workspace = (path: string, flags: Partial<Record<'create' | 'read' | 'update' | 'delete', boolean>> = {}): { path: string, create: boolean, read: boolean, update: boolean, delete: boolean } =>
@@ -177,6 +180,27 @@ describe('workspace and permission grids', () => {
     expect(within(cell).getByTestId('row-mark-changed').style.marginInlineEnd).toBe('0')
 
     expect(within(screen.getByTestId('header-objects')).getByTestId('row-mark-changed')).toBeTruthy()
+  })
+
+  it('keeps each mark on its own row when the reader sorts the grid', () => {
+    view.reversed = true
+    render(
+      <WorkspaceRowChangesContext.Provider
+        value={ { objects: { status: 'changed', byPath: { '/new': 'added', '/flag': 'changed' }, removed: [workspace('/dropped')] } } }
+      >
+        <WorkspaceGrid
+          isWriteable={ false }
+          type="objects"
+          value={ [workspace('/kept'), workspace('/flag', { update: true }), workspace('/new')] }
+        />
+      </WorkspaceRowChangesContext.Provider>
+    )
+
+    expect(screen.getAllByRole('row').map((row) => row.dataset.testid)).toEqual(['row-/dropped', 'row-/new', 'row-/flag', 'row-/kept'])
+    expect(within(screen.getByTestId('row-/dropped')).getByTestId('row-mark-removed')).toBeTruthy()
+    expect(within(screen.getByTestId('row-/new')).getByTestId('row-mark-added')).toBeTruthy()
+    expect(within(screen.getByTestId('row-/flag')).getByTestId('row-mark-changed')).toBeTruthy()
+    expect(within(screen.getByTestId('row-/kept')).queryByTestId(/^row-mark-/)).toBeNull()
   })
 
   it('falls back to the derived list status for the header without a form annotation', () => {
