@@ -18,62 +18,9 @@ import { PreviewHeader } from './preview-header'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
 import { isDraftHydrated } from './column-fieldtype'
+import { type ColumnConfigModalProps } from './column-config-modal-props'
 
-/**
- * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
- * The consumer must forward `ref` to their editor component so ColumnConfigModal
- * can imperatively call `getColumns()` on confirm.
- */
-export interface EditorRenderProps<TColumns = SchemaColumn> {
-  ref: React.Ref<ColumnEditorHandle<TColumns>>
-  classDefinitionId: string
-  columns: TColumns[]
-  entity: string
-  /** True in the split migration view — the editor should hide its own Apply/Discard toolbar. */
-  hideToolbar: boolean
-  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
-  exportableOnly: boolean
-  onApply: (columns: TColumns[]) => void
-  onCancel: () => void
-  /** The currently persisted preview language for this entity. */
-  language?: string
-  /** Called when the user changes the preview language so the adapter can persist it. */
-  onLanguageChange?: (language: string) => void
-}
-
-export interface ColumnConfigModalProps<TColumns = SchemaColumn> {
-  entity: string
-  /**
-   * The numeric Pimcore class definition ID (e.g. "EV", "42").
-   * When omitted the ID is resolved from the class name via useClassDefinitions().
-   */
-  classDefinitionId?: string
-  columns: TColumns[]
-  /**
-   * Legacy ExtJS column configuration blob. When present, the migration flow is shown.
-   * When absent (undefined), the normal new-format editor modal is shown.
-   */
-  columnConfig?: Record<string, unknown>
-  open: boolean
-  /** Already-translated modal title string. */
-  title: string
-  onApply: (columns: TColumns[]) => void
-  onCancel: () => void
-  /** The currently persisted preview language for this entity. */
-  language?: string
-  /** Called when the user changes the preview language so the adapter can persist it. */
-  onLanguageChange?: (language: string) => void
-  /** When true, only columns marked as exportable are offered in the add-column dropdown. */
-  exportableOnly?: boolean
-  /**
-   * Render prop that returns the adapter-specific column editor element.
-   * The consumer MUST forward the `ref` to their editor component (forwardRef).
-   *
-   * @example
-   * renderEditor={(props) => <ColumnEditor {...props} />}
-   */
-  renderEditor: (props: EditorRenderProps<TColumns>) => React.ReactNode
-}
+export type { ColumnConfigModalProps, EditorRenderProps } from './column-config-modal-props'
 
 /**
  * Generic ColumnConfigModal for Data Hub adapter bundles.
@@ -94,9 +41,13 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   language,
   onLanguageChange,
   exportableOnly = false,
+  readOnly = false,
+  previousColumns,
   renderEditor
 }: ColumnConfigModalProps<TColumns>): React.JSX.Element => {
   const { t } = useTranslation()
+  // looking must not write the preview language back into the form
+  const persistLanguage = readOnly ? undefined : onLanguageChange
   const alertModal = useAlertModal()
   const { getByName } = useClassDefinitions()
 
@@ -115,7 +66,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   // which would offer this class's picker the columns of another one. Same reading as the editor hook.
   const { currentData, isError } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
     { classId: resolvedClassId, folderId: 1 },
-    { skip: !isLegacy }
+    { skip: !isLegacy || readOnly }
   )
   const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
   const allAvailableFields: GridColumnConfiguration[] = payloadColumns ?? []
@@ -185,7 +136,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
     <PreviewHeader
       entity={ entity }
       language={ language }
-      onLanguageChange={ onLanguageChange }
+      onLanguageChange={ persistLanguage }
     />
   )
 
@@ -198,6 +149,22 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
       { content }
     </PreviewModeProvider>
   )
+
+  // a migration writes, so a reader sees the legacy configuration as it is
+  if (isLegacy && readOnly) {
+    return (
+      <MigrationModal
+        legacyConfig={ columnConfig }
+        onClose={ handleCancel }
+        onConfirm={ () => {} }
+        open={ open }
+        readOnly
+        title={ title }
+      >
+        { null }
+      </MigrationModal>
+    )
+  }
 
   if (!isLegacy) {
     return withPreviewMode(
@@ -218,7 +185,9 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
             hideToolbar: false,
             exportableOnly,
             language,
-            onLanguageChange,
+            onLanguageChange: persistLanguage,
+            readOnly,
+            previousColumns: readOnly ? previousColumns : undefined,
             onApply: (updatedColumns) => {
               onApply(updatedColumns)
               handleCancel()

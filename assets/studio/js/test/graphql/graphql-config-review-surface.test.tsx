@@ -18,7 +18,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 const seen = vi.hoisted(() => ({
   annotations: [] as unknown[],
   editor: [] as Array<{ activeTab: string, configuration: Record<string, any> }>,
-  liveQuery: [] as Array<{ skip?: boolean }>
+  liveQuery: [] as Array<{ skip?: boolean }>,
+  workspaceChanges: [] as unknown[]
 }))
 
 vi.mock('@pimcore/studio-ui-bundle/app', () => ({
@@ -65,13 +66,18 @@ vi.mock('@pimcore/change-control-bundle/sdk', () => ({
   )
 }))
 
-vi.mock('../../src/modules/graphql/components/graphql-config-editor', () => ({
-  GRAPHQL_TABS: { general: 'general', schema: 'schema', security: 'security', permissions: 'permissions' },
-  GraphQLConfigEditor: (props: { activeTab: string, configuration: Record<string, any> }) => {
-    seen.editor.push(props)
-    return <div data-testid="editor">{ props.activeTab }</div>
+vi.mock('../../src/modules/graphql/components/graphql-config-editor', async () => {
+  const { WorkspaceRowChangesContext } = await import('../../src/modules/graphql/change-control/workspace-row-changes')
+  return {
+    GRAPHQL_TABS: { general: 'general', schema: 'schema', security: 'security', permissions: 'permissions' },
+    GraphQLConfigEditor: (props: { activeTab: string, configuration: Record<string, any> }) => {
+      seen.editor.push(props)
+      // what the workspace grids inside the editor read
+      seen.workspaceChanges.push(React.useContext(WorkspaceRowChangesContext))
+      return <div data-testid="editor">{ props.activeTab }</div>
+    }
   }
-}))
+})
 
 vi.mock('../../src/modules/config/config-api-slice-enhanced', () => ({
   useBundleDataHubConfigGetQuery: (_args: unknown, options?: { skip?: boolean }) => {
@@ -125,6 +131,7 @@ beforeEach(() => {
   seen.annotations.length = 0
   seen.editor.length = 0
   seen.liveQuery.length = 0
+  seen.workspaceChanges.length = 0
 })
 
 afterEach(() => {
@@ -147,6 +154,8 @@ describe('GraphQLConfigReviewSurface', () => {
     expect(rowsOf('general')).toEqual(['Description'])
     expect(rowsOf('schema')).toEqual(['data-hub.review.field.query-entity:Car'])
     expect(rowsOf('security')).toEqual(['Object (0 → 1)'])
+    // the workspace grids get each changed list split into rows
+    expect(last(seen.workspaceChanges)).toEqual({ objects: { status: 'changed', byPath: { '/cars': 'added' }, removed: [] } })
 
     expect(last(seen.annotations)).toEqual({
       description: { status: 'changed' },
@@ -157,6 +166,8 @@ describe('GraphQLConfigReviewSurface', () => {
     // the editor shows the live document with the proposal laid over it, on the first change's tab
     const editor = last(seen.editor)
     expect(editor?.activeTab).toBe('general')
+    // the rail is the one place that says which tabs hold a change: the editor gets no tab marks
+    expect(editor).not.toHaveProperty('changedTabs')
     expect(editor?.configuration.general.description).toBe('new')
     expect(editor?.configuration.general.active).toBe(true)
     expect(last(seen.liveQuery)?.skip).toBe(false)
@@ -230,6 +241,8 @@ describe('GraphQLConfigReviewSurface', () => {
     // a configuration that does not exist yet has no live side to load, and nothing is marked
     expect(seen.liveQuery.every((options) => options.skip === true)).toBe(true)
     expect(last(seen.annotations)).toEqual({})
+    expect(seen.workspaceChanges.length).toBeGreaterThan(0)
+    expect(last(seen.workspaceChanges)).toEqual({})
   })
 
   it('says the review is unavailable when the change set cannot be read', async () => {

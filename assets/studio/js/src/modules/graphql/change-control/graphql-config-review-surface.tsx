@@ -18,8 +18,11 @@ import { type BackendConfiguration } from '../components/backend-types'
 import { FormAnnotationsProvider } from './studio-form-annotations'
 import {
   annotationsFor, configChanges, groupChanges, isNewConfiguration, proposedConfiguration,
-  SECTION_TARGET, type ConfigChange
+  schemaRowMarks, SECTION_TARGET, type ConfigChange
 } from './config-review-model'
+import { schemaPreviousColumns } from './schema-previous-columns'
+import { SchemaPreviousColumnsContext, SchemaRowMarksContext } from '../components/tabs/schema-definition-tab/row-marks'
+import { workspaceRowChanges, WorkspaceRowChangesContext } from './workspace-row-changes'
 import { fieldLabel } from './field-labels'
 import { ChangeRail } from './change-rail'
 import { configBrief } from './config-brief'
@@ -57,6 +60,9 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const brief = useMemo(() => isNew ? configBrief(configuration, t) : undefined, [isNew, configuration, t])
   // a new configuration is reviewed whole; marking every field says only "all of it"
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
+  const rowMarks = useMemo(() => isNew ? {} : schemaRowMarks(changes), [isNew, changes])
+  const previousColumns = useMemo(() => isNew ? {} : schemaPreviousColumns(changes), [isNew, changes])
+  const workspaceChanges = useMemo(() => isNew ? {} : workspaceRowChanges(changes), [isNew, changes])
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
   // from an effect, which could run after an early click and take the reader back. A pick holds
@@ -93,12 +99,23 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
     />
   )
 
+  const markedEditor = (
+    <SchemaRowMarksContext.Provider value={ rowMarks }>
+      <SchemaPreviousColumnsContext.Provider value={ previousColumns }>
+        <WorkspaceRowChangesContext.Provider value={ workspaceChanges }>{ editor }</WorkspaceRowChangesContext.Provider>
+      </SchemaPreviousColumnsContext.Provider>
+    </SchemaRowMarksContext.Provider>
+  )
+
   if (error !== undefined && payload === undefined) {
     return <div className={ styles.empty }>{ t('data-hub.review.unavailable') }</div>
   }
 
   return (
-    <Content loading={ isLoading || liveLoading }>
+    <Content
+      className={ styles.frame }
+      loading={ isLoading || liveLoading }
+    >
       { readOnly === true && state != null && (
         <ReviewOutcomeHeader
           flush
@@ -129,8 +146,8 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
 
         <div className={ styles.editor }>
           { FormAnnotationsProvider !== null
-            ? <FormAnnotationsProvider annotations={ annotations }>{ editor }</FormAnnotationsProvider>
-            : editor }
+            ? <FormAnnotationsProvider annotations={ annotations }>{ markedEditor }</FormAnnotationsProvider>
+            : markedEditor }
         </div>
       </div>
     </Content>

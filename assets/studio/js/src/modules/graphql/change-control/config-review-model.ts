@@ -285,3 +285,15 @@ export function annotationsFor (changes: ConfigChange[]): FormAnnotations {
   }
   return annotations
 }
+
+/** each schema grid's rows by entity id (a generic type by its name) with the review's mark: a change inside an entity changes its row */
+export function schemaRowMarks (changes: ConfigChange[]): Partial<Record<'query' | 'mutation' | 'genericTypes', Record<string, FormItemAnnotationStatus>>> {
+  const marks: Record<string, Record<string, FormItemAnnotationStatus>> = {}
+  for (const change of changes) {
+    const [root, key, entity, ...rest] = change.address.split('.')
+    const grid = root === 'schema' ? SCHEMA_GRIDS[key]?.split('.')[1] : undefined
+    if ((grid !== 'query' && grid !== 'mutation' && grid !== 'genericTypes') || entity === undefined) continue
+    marks[grid] = { ...marks[grid], [entity]: rest.length === 0 ? change.status : 'changed' }
+  }
+  return marks
+}

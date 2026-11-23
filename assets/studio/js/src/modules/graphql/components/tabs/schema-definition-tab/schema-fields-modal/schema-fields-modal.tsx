@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Modal, Flex, Button, Form, Content, Sidebar, SidebarProvider, SplitLayout, Title } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { useClassDefinitions } from '@pimcore/studio-ui-bundle/modules/data-object'
@@ -18,6 +18,8 @@ import { isNil, cloneDeep } from 'lodash'
 import { useStyles } from './schema-fields-modal.styles'
 import { useSidebarEntries } from './hooks/use-sidebar-entries'
 import { AddAllDefinitionsButton } from './components/add-all-definitions-button'
+import { fieldMarks } from './field-marks'
+import { usePreviousColumns } from '../row-marks'
 
 /** Enough for the rail plus a readable attribute panel, and for the field tree beside it. */
 const SIDEBAR_MIN_WIDTH = 320
@@ -68,6 +70,13 @@ export const SchemaFieldsModal = ({
       setLocalEntityConfig(isNil(entity) ? undefined : cloneDeep(entity))
     }
   }, [open, form, className, type])
+
+  // a review marks the fields it changes; the modal is view-only there
+  const previousColumns = usePreviousColumns(type, className)
+  const marks = useMemo(
+    () => disabled && previousColumns !== undefined ? fieldMarks(localEntityConfig?.columnConfig?.columns ?? [], previousColumns) : undefined,
+    [disabled, previousColumns, localEntityConfig]
+  )
 
   const handleApply = (): void => {
     const entities = form.getFieldValue(['schema', type]) ?? []
@@ -140,6 +149,7 @@ export const SchemaFieldsModal = ({
                 <AvailableFieldsTree
                   disabled={ disabled }
                   entityConfig={ localEntityConfig }
+                  fieldMarks={ marks }
                   onEntityConfigChange={ setLocalEntityConfig }
                   operatorRegistryServiceId={ operatorRegistryServiceId }
                 />

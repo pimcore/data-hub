@@ -17,6 +17,7 @@ import { isNil } from 'lodash'
 import { type QueryEntity } from './types'
 import { SchemaFieldsModal } from './schema-fields-modal/schema-fields-modal'
 import { bundleServiceIds } from '../../../../../config/service-ids'
+import { RowMarkCell, useRowMarks, withRemovedRows } from './row-marks'
 
 interface QueryGridProps {
   value?: QueryEntity[]
@@ -29,10 +30,21 @@ export const QueryGrid = ({ value = [], onChange, isWriteable = true }: QueryGri
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<QueryEntity | null>(null)
 
+  const marks = useRowMarks('query')
+  const rows = useMemo(() => withRemovedRows(value, marks), [value, marks])
+
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<QueryEntity>()
 
     return [
+      ...(Object.keys(marks).length > 0
+        ? [{
+            id: 'review',
+            header: '',
+            size: 100,
+            cell: (info: { row: { index: number } }) => <RowMarkCell status={ marks[rows[info.row.index]?.id] } />
+          }]
+        : []),
       columnHelper.accessor('entity', {
         header: t('data-hub.schema.entity'),
         size: 300,
@@ -52,44 +64,48 @@ export const QueryGrid = ({ value = [], onChange, isWriteable = true }: QueryGri
               align="center"
               justify="center"
             >
+              { marks[rows[info.row.index]?.id] !== 'removed' && (
               <IconButton
                 disabled={ false }
                 icon={ { value: 'settings' } }
                 onClick={ () => {
-                  setSelectedEntity(value[info.row.index])
+                  setSelectedEntity(rows[info.row.index])
                   setModalOpen(true)
                 } }
                 type="link"
               />
+              ) }
             </Flex>
           )
         }
       },
-      {
-        id: 'actions',
-        header: '',
-        size: 60,
-        cell: (info: { row: { index: number } }) => (
-          <Flex
-            align="center"
-            justify="center"
-          >
-            <IconButton
-              icon={ { value: 'trash' } }
-              onClick={ () => {
-                const newData = [...value]
-                newData.splice(info.row.index, 1)
-                if (!isNil(onChange)) {
-                  onChange(newData)
-                }
-              } }
-              type="link"
-            />
-          </Flex>
-        )
-      }
+      ...(isWriteable
+        ? [{
+            id: 'actions',
+            header: '',
+            size: 60,
+            cell: (info: { row: { index: number } }) => (
+              <Flex
+                align="center"
+                justify="center"
+              >
+                <IconButton
+                  icon={ { value: 'trash' } }
+                  onClick={ () => {
+                    const newData = [...value]
+                    newData.splice(info.row.index, 1)
+                    if (!isNil(onChange)) {
+                      onChange(newData)
+                    }
+                  } }
+                  type="link"
+                />
+              </Flex>
+            )
+          }]
+        : [])
     ]
-  }, [t, value, onChange, isWriteable])
+  }, [t, value, onChange, isWriteable, marks, rows])
 
   return (
     <>
@@ -97,11 +113,12 @@ export const QueryGrid = ({ value = [], onChange, isWriteable = true }: QueryGri
         autoWidth
         columns={ columns }
         onChange={ onChange }
-        value={ value }
+        value={ rows }
       >
         <OperationalGrid.Operations>
           {() => (
             <SchemaAccordion
+              isWriteable={ isWriteable }
               onChange={ onChange }
               type="query"
               value={ value }
