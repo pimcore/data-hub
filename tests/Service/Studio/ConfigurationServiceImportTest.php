@@ -59,7 +59,8 @@ class ConfigurationServiceImportTest extends Unit
         $exception = null;
 
         try {
-            $this->validate($importData);
+            // Through the validator the import runs, so removing the field type check from it fails this test.
+            $this->validate($importData, 'validateUploadedConfigurationData');
         } catch (ValidationFailedException $e) {
             $exception = $e;
         }
@@ -135,13 +136,14 @@ class ConfigurationServiceImportTest extends Unit
 
     /**
      * The type check runs before the name lookup and the adapter check, and uses none of the service's
-     * collaborators, so it is called on its own.
+     * collaborators. Rejected files therefore never reach them, even through validateUploadedConfigurationData();
+     * accepted files would, so those call the type check on its own.
      */
-    private function validate(array $importData): void
+    private function validate(array $importData, string $methodName = 'validateImportFieldTypes'): void
     {
         $service = (new \ReflectionClass(ConfigurationService::class))->newInstanceWithoutConstructor();
 
-        $method = new \ReflectionMethod(ConfigurationService::class, 'validateImportFieldTypes');
+        $method = new \ReflectionMethod(ConfigurationService::class, $methodName);
         $method->invoke($service, $importData);
     }
 }

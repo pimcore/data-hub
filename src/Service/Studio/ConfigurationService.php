@@ -610,7 +610,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         ) {
             throw new ValidationFailedException(
                 message: 'Uploaded configuration data is invalid. '
-                    . 'Type, path and name must be strings, configuration must be an object.',
+                    . 'Type and name must be strings, path must be a string or number, '
+                    . 'configuration must be an object.',
                 errorKey: 'data-hub.import-config-invalid'
             );
         }
