@@ -8,11 +8,13 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { findAvailableField } from './column-identity'
+import { ColumnEditorActions } from './column-editor-actions'
+import { columnLabel, findAvailableField } from './column-identity'
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import { Empty, Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import {
+  Alert,
   Button,
   Content,
   ContentLayout,
@@ -42,11 +44,6 @@ import {
   type SchemaColumn,
   type AdvancedEditorColumn
 } from './types'
-
-const getColumnLabel = (col: AdvancedEditorColumn): string => {
-  if (col.key === '') return ''
-  return col.key
-}
 
 export interface BaseColumnEditorProps {
   entity: string
@@ -121,11 +118,13 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const {
       draft,
       isLoading,
+      isHydrated,
+      isError,
       resolvedClassId,
       availableFields,
       columnGroups,
       onAddAdvancedColumn,
-      handleAddColumnOfType,
+      handleAddColumnOfType, handleAddClassificationStoreKey,
       handlePipelineChange,
       handleRemove,
       handleApply,
@@ -139,14 +138,16 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     useImperativeHandle(ref, () => ({
       getColumns,
-      addColumn: handleAddColumnOfType
-    }), [getColumns, handleAddColumnOfType])
+      addColumn: handleAddColumnOfType,
+      // The readiness probe the modal refuses Confirm Migration on: getColumns carries
+      // resolved field definition types only once this class's available columns have loaded.
+      isHydrated: () => isHydrated
+    }), [getColumns, handleAddColumnOfType, isHydrated])
 
     const { marks, removedItems } = useColumnMarkItems(columns, previousColumns, readOnly)
     const stackItems: StackListProps['items'] = [...draft.map((col, index) => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
-      const label = getColumnLabel(col)
-
+      const label = columnLabel(col)
       return {
         id: col._id,
         sortable: !readOnly,
@@ -238,21 +239,11 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                     ) }
                   </Flex>
 
-                  <Space size='extra-small'>
-                    <Button
-                      onClick={ handleDiscard }
-                      type='default'
-                    >
-                      { t('data-hub.column-config-modal.discard') }
-                    </Button>
-
-                    <Button
-                      onClick={ handleApply }
-                      type='primary'
-                    >
-                      { t('data-hub.column-config-modal.apply') }
-                    </Button>
-                  </Space>
+                  <ColumnEditorActions
+                    isHydrated={ isHydrated }
+                    onApply={ handleApply }
+                    onDiscard={ handleDiscard }
+                  />
                 </Toolbar>
                 ) }
           >
@@ -261,12 +252,21 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
               padding={ { x: 'none', y: 'small' } }
               style={ { height: 'calc(80vh - 200px)' } }
             >
+              { isError && (
+              <Alert
+                message={ t('data-hub.column-config-modal.fields-to-add.error') }
+                type='error'
+              />
+              ) }
               <div className={ styles.body }>
                 { showToolbar && fieldsToAddOpen && (
                 <FieldsToAddPanel
+                  classId={ resolvedClassId }
                   groups={ columnGroups }
+                  isError={ isError }
                   onClose={ () => { setFieldsToAddOpen(false) } }
                   onColumnSelect={ handleAddColumnOfType }
+                  onKeySelect={ handleAddClassificationStoreKey }
                 />
                 ) }
 

@@ -17,6 +17,7 @@ import { MigrationModal } from '../migration-modal'
 import { PreviewHeader } from './preview-header'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type ColumnEditorHandle, type SchemaColumn } from './types'
+import { isDraftHydrated } from './column-fieldtype'
 
 /**
  * Props passed from ColumnConfigModal down to the consumer's renderEditor callback.
@@ -122,23 +123,29 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   const isLegacy = columnConfig !== undefined && !isMigrated
 
-  const { data: availableFieldsData } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
+  // currentData, not data: during a refetch data still holds the columns of the previous arguments,
+  // which would offer this class's picker the columns of another one. Same reading as the editor hook.
+  const { currentData, isError } = api.endpoints.dataObjectGetAvailableGridColumns.useQuery(
     { classId: resolvedClassId, folderId: 1 },
     { skip: !isLegacy || readOnly }
   )
-  const allAvailableFields: GridColumnConfiguration[] = availableFieldsData?.columns ?? []
+  const payloadColumns: GridColumnConfiguration[] | undefined = currentData?.columns
+  const allAvailableFields: GridColumnConfiguration[] = payloadColumns ?? []
   const availableFields: GridColumnConfiguration[] = exportableOnly
     ? allAvailableFields.filter(field => field.exportable === true)
     : allAvailableFields
+  // The editor below queries the same cache entry, so this mirrors the hydration state of its draft.
+  const isHydrated = isDraftHydrated(payloadColumns)
 
   const handleAddColumn = useCallback((column: GridColumnConfiguration): void => {
     columnEditorRef.current?.addColumn(column)
   }, [])
 
   const columnGroups = useAddColumnGroups(availableFields)
-  const advancedColumn = availableFields.find(
-    field => field.type === ADVANCED_COLUMN_TYPE || field.key === ADVANCED_COLUMN_KEY
-  )
+  // The type first, so an ordinary field which happens to be keyed 'advanced' cannot be offered as the
+  // advanced entry. The key is only a fallback for a payload which does not carry the type.
+  const advancedColumn = availableFields.find(field => field.type === ADVANCED_COLUMN_TYPE) ??
+    availableFields.find(field => field.key === ADVANCED_COLUMN_KEY)
 
   const commitMigration = (cols: TColumns[]): void => {
     setMigratedColumns(cols)
@@ -146,7 +153,19 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
   }
 
   const handleConfirmMigration = (): void => {
-    const cols = columnEditorRef.current?.getColumns() ?? migratedColumns
+    const editor = columnEditorRef.current
+
+    // An editor which reports itself unhydrated is mounted but has not resolved its draft against the
+    // available columns of this class, so the tokens it would hand back are the stored ones. Refuse
+    // rather than migrate; the Confirm button is disabled on the same condition. An editor which does
+    // not implement the probe is treated as ready, as it was before the probe existed.
+    if (editor?.isHydrated?.() === false) {
+      return
+    }
+
+    // A null ref means no editor exposed the handle, and migratedColumns — what its onApply wrote —
+    // is the only state there is.
+    const cols = editor === null ? migratedColumns : editor.getColumns()
 
     if (cols.length === 0) {
       alertModal.warn({
@@ -243,6 +262,7 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
 
   return withPreviewMode(
     <MigrationModal
+      confirmDisabled={ !isHydrated }
       legacyConfig={ columnConfig }
       onClose={ handleCancel }
       onConfirm={ handleConfirmMigration }
@@ -259,7 +279,10 @@ export const ColumnConfigModal = <TColumns = SchemaColumn>({
             } }
             placement="leftBottom"
           >
-            <IconTextButton icon={ { value: 'new' } }>
+            <IconTextButton
+              disabled={ isError }
+              icon={ { value: 'new' } }
+            >
               { t('data-hub.column-config-modal.add-column') }
             </IconTextButton>
           </ColumnPickerPopover>

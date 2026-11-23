@@ -27,15 +27,22 @@ import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE, type AdvancedEditorColumn } 
 interface ResponseEntry {
   key: string
   type?: string
+  /** The field definition type the value was resolved as; for a store column that of the key, not of the store */
+  fieldType?: string
   locale?: string | null
   value: unknown
   additionalAttributes?: Record<string, any>
 }
 
+interface PreviewEntry {
+  value: unknown
+  fieldType?: string
+}
+
 interface SimpleColumnPreviewsContextValue {
   isLoading: boolean
   hasError: boolean
-  values: Map<string, unknown>
+  values: Map<string, PreviewEntry>
   apiRow?: Record<string, any>
   hasItem: boolean
   getLocale: (column: AdvancedEditorColumn) => string | null | undefined
@@ -81,7 +88,11 @@ export const SimpleColumnPreviewsProvider = ({
       type: column.type,
       locale: getLocale(column),
       group: available?.group as unknown as string[] | undefined,
-      config: available?.config
+      // The group and key of a store column live on the column alone: the payload holds one entry per store
+      // field and none per key, so the available entry's config names no key and resolves to no value.
+      config: isClassificationStore(column.type)
+        ? { ...available?.config, ...column.config }
+        : available?.config
     }
   }), [columns, availableFields, currentLanguage])
 
@@ -102,11 +113,14 @@ export const SimpleColumnPreviewsProvider = ({
   } as any, { skip })
 
   const value = useMemo(() => {
-    const values = new Map<string, unknown>()
+    const values = new Map<string, PreviewEntry>()
     const apiRow = currentData?.items?.[0] as Record<string, any> | undefined
     ;(currentData?.items?.[0]?.columns ?? []).forEach((entry: any) => {
       const column = entry as ResponseEntry
-      values.set(responseIdentity(column, isClassificationStore(column.type) || column.additionalAttributes?.keyId !== undefined), column.value)
+      // The response names the type as `fieldType`; `type` is the request side's name for it
+      const isStore = isClassificationStore(column.type ?? column.fieldType) ||
+        column.additionalAttributes?.keyId !== undefined
+      values.set(responseIdentity(column, isStore), { value: column.value, fieldType: column.fieldType })
     })
     return { isLoading: isFetching && currentData === undefined, hasError: error !== undefined, values, apiRow, hasItem: itemId !== undefined, getLocale }
   }, [isFetching, currentData, error, itemId, currentLanguage])
@@ -143,19 +157,24 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
         if (hasError) {
           return <Text type='danger'>{ t('data-hub.column-config-modal.preview.error') }</Text>
         }
-        if (!values.has(key)) {
+        const entry = values.get(key)
+        if (entry === undefined) {
           return <Text type='secondary'>{ t('data-hub.column-config-modal.preview.no-data') }</Text>
         }
 
         const isAdapter = ADAPTER_TYPES.has(column.type)
         const config = availableField?.config as Record<string, any> | undefined
+        // A store cell holds one key's value, so it is drawn as the type of that key — which only the
+        // response names; the column and the payload entry both carry the type of the whole store field.
+        const storeKeyType = isClassificationStore(column.type) ? entry.fieldType : undefined
         const gridColumn = columnHelper.accessor('value', {
           meta: {
             editable: false,
             type: column.type,
             config: isAdapter
               ? {
-                  dataObjectType: config?.fieldDefinition?.fieldtype ?? (availableField as any)?.frontendType ?? column.fieldtype,
+                  dataObjectType: storeKeyType ?? config?.fieldDefinition?.fieldtype ??
+                    (availableField as any)?.frontendType ?? column.fieldtype,
                   dataObjectConfig: { ...config }
                 }
               : {}
@@ -172,7 +191,7 @@ export const SimpleColumnPreview = ({ column, availableField }: SimpleColumnPrev
                 isLocked: apiRow?.isLocked,
                 permissions: apiRow?.permissions,
                 '__api-data': apiRow,
-                value: values.get(key)
+                value: entry.value
               }] }
               hideColumnHeaders
             />

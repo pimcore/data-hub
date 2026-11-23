@@ -12,8 +12,58 @@ import { useMemo } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
-import { isNil } from 'lodash'
+import { flatMap, isNil } from 'lodash'
+import { CLASSIFICATION_STORE_TYPE, PICK_KEY_SUFFIX } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
+
+type PickerItem = ColumnPickerGroup<GridColumnConfiguration>['items'][number]
+
+/**
+ * The leaves one column is offered as. A store field is offered once per key, the ids keeping those leaves
+ * apart; the whole-store entry carries a sibling leaf which opens the key picker, when the caller can host one.
+ */
+const idText = (value: unknown): string => typeof value === 'number' || typeof value === 'string' ? String(value) : ''
+
+const leavesOf = (column: GridColumnConfiguration, t: (key: string) => string, withKeyPicker: boolean): PickerItem[] => {
+  let translationKey: string = column.key
+  if (!isNil(column.config) && 'fieldDefinition' in column.config) {
+    const fieldDefinition = column.config.fieldDefinition as Record<string, any>
+    translationKey = fieldDefinition?.title ?? column.key
+  }
+  const storeIds = column.type === CLASSIFICATION_STORE_TYPE ? column.config as Record<string, unknown> | undefined : undefined
+  const keyId = storeIds?.keyId
+  const ids = keyId === undefined ? '' : `-${idText(storeIds?.groupId)}-${idText(keyId)}`
+  const item = { key: `${column.key}${ids}`, label: t(translationKey), meta: column }
+  if (storeIds === undefined || keyId !== undefined || !withKeyPicker) return [item]
+  const pickLabel = `${t('data-hub.column-config-modal.pick-classification-store-key')} (${t(translationKey)})`
+  return [item, { key: `${column.key}${PICK_KEY_SUFFIX}`, label: pickLabel, meta: column }]
+}
+
+interface ConversionContext {
+  t: (key: string) => string
+  withKeyPicker: boolean
+  nextIndex: number
+}
+
+interface GroupNode {
+  items: GridColumnConfiguration[]
+  subGroups: Record<string, GroupNode>
+}
+
+const convertTreeToGroups = (
+  tree: Record<string, GroupNode>,
+  context: ConversionContext
+): Array<ColumnPickerGroup<GridColumnConfiguration>> => {
+  const groups: Array<ColumnPickerGroup<GridColumnConfiguration>> = []
+  for (const [groupName, groupData] of Object.entries(tree)) {
+    const children = convertTreeToGroups(groupData.subGroups, context)
+    const items = flatMap(groupData.items, column => leavesOf(column, context.t, context.withKeyPicker))
+    if (items.length > 0 || children.length > 0) {
+      groups.push({ key: `group-${context.nextIndex++}`, label: context.t(groupName), items, children })
+    }
+  }
+  return groups
+}
 
 /**
  * Builds grouped, selectable column groups for the studio ColumnPicker from a
@@ -21,12 +71,14 @@ import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
  * `meta`, so the picker's `onSelect` can hand it back to the add-column handler.
  */
 export const useAddColumnGroups = (
-  availableColumns: GridColumnConfiguration[]
+  availableColumns: GridColumnConfiguration[],
+  /** Offer the sibling leaf which opens the key picker; only a caller mounting the picker provider with a class may */
+  withKeyPicker = false
 ): Array<ColumnPickerGroup<GridColumnConfiguration>> => {
   const { t } = useTranslation()
 
   return useMemo((): Array<ColumnPickerGroup<GridColumnConfiguration>> => {
-    const groupTree: Record<string, any> = {}
+    const groupTree: Record<string, GroupNode> = {}
 
     // The advanced column is offered through its own dedicated button, not the tree.
     const treeColumns = availableColumns.filter(
@@ -72,34 +124,6 @@ export const useAddColumnGroups = (
       })
     })
 
-    let groupIndex = 0
-
-    const convertTreeToGroups = (
-      tree: Record<string, any>
-    ): Array<ColumnPickerGroup<GridColumnConfiguration>> => {
-      return Object.entries(tree).reduce<Array<ColumnPickerGroup<GridColumnConfiguration>>>(
-        (acc, [groupName, groupData]) => {
-          const children = convertTreeToGroups(groupData.subGroups as Record<string, any>)
-
-          const items = (groupData.items as GridColumnConfiguration[]).map((column) => {
-            let translationKey = column.key
-            if (!isNil(column.config) && 'fieldDefinition' in column.config) {
-              const fieldDefinition = column.config.fieldDefinition as Record<string, any>
-              translationKey = fieldDefinition?.title ?? column.key
-            }
-            return { key: column.key, label: t(translationKey), meta: column }
-          })
-
-          if (items.length > 0 || children.length > 0) {
-            acc.push({ key: `group-${groupIndex++}`, label: t(groupName), items, children })
-          }
-
-          return acc
-        },
-        []
-      )
-    }
-
-    return convertTreeToGroups(groupTree)
-  }, [availableColumns, t])
+    return convertTreeToGroups(groupTree, { t, withKeyPicker, nextIndex: 0 })
+  }, [availableColumns, t, withKeyPicker])
 }

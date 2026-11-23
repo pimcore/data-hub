@@ -6,6 +6,7 @@
     "dev-server": "NODE_ENV=dev-server rsbuild dev",
     "build": "rsbuild build",
     "package-build": "studio-package-build --build-dir ../../src/Resources/public/studio/build --out-dir ../../build-dist",
+    "test": "node --test \"tests/**/*.test.mjs\"",
     "lint": "eslint ./js",
     "lint-fix": "eslint ./js --fix",
     "lint-fix-watch": "nodemon --watch './js/**/*' --exec \"eslint ./js --fix --cache\" -e js,jsx,ts,tsx",
@@ -77,7 +78,7 @@
     "vitest": "^4.1.12"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^2026.4.0-canary.20261104-151221-2f1c2d1",
+    "@pimcore/studio-ui-bundle": "^2026.4.0-canary.20261113-162505-f7a607c",
     "antd": "^5.29.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

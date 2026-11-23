@@ -16,6 +16,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;
@@ -41,24 +42,29 @@ trait ServiceStubTrait
      */
     private function createServiceStub(): Service
     {
-        $anyTargetType = new ObjectType([
-            'name' => 'service_stub_anytarget',
+        // the real anytarget is a union, and the relation types type their element argument as one
+        $member = new ObjectType([
+            'name' => 'service_stub_anytarget_member',
             'fields' => ['id' => Type::int()],
+        ]);
+        $anyTargetType = new UnionType([
+            'name' => 'service_stub_anytarget',
+            'types' => [$member],
         ]);
 
         $factories = new class($anyTargetType) implements ContainerInterface {
-            public function __construct(private readonly ObjectType $type)
+            public function __construct(private readonly UnionType $type)
             {
             }
 
             public function get(string $id): mixed
             {
                 return new class($this->type) {
-                    public function __construct(private readonly ObjectType $type)
+                    public function __construct(private readonly UnionType $type)
                     {
                     }
 
-                    public function build(): ObjectType
+                    public function build(): UnionType
                     {
                         return $this->type;
                     }

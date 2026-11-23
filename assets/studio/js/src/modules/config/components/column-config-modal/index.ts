@@ -11,6 +11,7 @@
 export * from './column-config-modal'
 export * from './use-add-column-groups'
 export * from './types'
+export * from './column-fieldtype'
 export * from './column-preview'
 export * from './column-pipeline-form'
 export * from './column-editor-item'
