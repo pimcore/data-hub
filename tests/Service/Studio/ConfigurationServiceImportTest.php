@@ -54,7 +54,7 @@ class ConfigurationServiceImportTest extends Unit
     /**
      * @dataProvider wronglyTypedFieldsProvider
      */
-    public function testImportRejectsWronglyTypedFieldsAsValidationError(array $importData): void
+    public function testImportRejectsWronglyTypedFieldsAsValidationError(array $importData, string $expectedMessage): void
     {
         $exception = null;
 
@@ -68,6 +68,8 @@ class ConfigurationServiceImportTest extends Unit
         $this->assertInstanceOf(ValidationFailedException::class, $exception);
         $this->assertSame('data-hub.import-config-invalid', $exception->getErrorKey());
         $this->assertSame(422, $exception->getStatusCode());
+        // The message names the failing field, which is what tells the user what to fix in the file.
+        $this->assertStringContainsString($expectedMessage, $exception->getMessage());
     }
 
     /**
@@ -113,7 +115,6 @@ class ConfigurationServiceImportTest extends Unit
             'permissions is zero' => [self::withSections(['permissions' => 0])],
             'permissions is false' => [self::withSections(['permissions' => false])],
             'security is null' => [self::withSections(['security' => null])],
-            'security is an empty string' => [self::withSections(['security' => ''])],
             'security is zero' => [self::withSections(['security' => 0])],
             'security is false' => [self::withSections(['security' => false])],
         ];
@@ -124,33 +125,35 @@ class ConfigurationServiceImportTest extends Unit
         $valid = ['type' => 'graphql', 'path' => '', 'name' => 'pme', 'configuration' => []];
 
         return [
-            'configuration is a string' => [array_merge($valid, ['configuration' => 'foo'])],
-            'configuration is a number' => [array_merge($valid, ['configuration' => 42])],
-            'configuration is true' => [array_merge($valid, ['configuration' => true])],
-            'type is an array' => [array_merge($valid, ['type' => ['graphql']])],
-            'name is a number' => [array_merge($valid, ['name' => 42])],
-            'path is an array' => [array_merge($valid, ['path' => []])],
-            'general is a string' => [self::withSections(['general' => 'x'])],
-            'general is an empty string' => [self::withSections(['general' => ''])],
-            'general is zero' => [self::withSections(['general' => 0])],
-            'general is true' => [self::withSections(['general' => true])],
-            'workspaces is a string' => [self::withSections(['workspaces' => 'x'])],
-            'workspaces is an empty string' => [self::withSections(['workspaces' => ''])],
-            'workspaces is zero' => [self::withSections(['workspaces' => 0])],
-            'workspaces is false' => [self::withSections(['workspaces' => false])],
-            'workspaces is true' => [self::withSections(['workspaces' => true])],
-            'permissions is a string' => [self::withSections(['permissions' => 'x'])],
-            'permissions is a number' => [self::withSections(['permissions' => 1])],
-            'permissions is true' => [self::withSections(['permissions' => true])],
-            'security is a string' => [self::withSections(['security' => 'x'])],
-            'security is a number' => [self::withSections(['security' => 1])],
-            'security is true' => [self::withSections(['security' => true])],
+            'configuration is a string' => [array_merge($valid, ['configuration' => 'foo']), 'configuration must be an object'],
+            'configuration is a number' => [array_merge($valid, ['configuration' => 42]), 'configuration must be an object'],
+            'configuration is true' => [array_merge($valid, ['configuration' => true]), 'configuration must be an object'],
+            'type is an array' => [array_merge($valid, ['type' => ['graphql']]), 'Type and name must be strings'],
+            'name is a number' => [array_merge($valid, ['name' => 42]), 'Type and name must be strings'],
+            'path is an array' => [array_merge($valid, ['path' => []]), 'Type and name must be strings'],
+            'general is a string' => [self::withSections(['general' => 'x']), 'configuration.general must be an object'],
+            'general is an empty string' => [self::withSections(['general' => '']), 'configuration.general must be an object'],
+            'general is zero' => [self::withSections(['general' => 0]), 'configuration.general must be an object'],
+            'general is true' => [self::withSections(['general' => true]), 'configuration.general must be an object'],
+            'workspaces is a string' => [self::withSections(['workspaces' => 'x']), 'configuration.workspaces must be an object'],
+            'workspaces is an empty string' => [self::withSections(['workspaces' => '']), 'configuration.workspaces must be an object'],
+            'workspaces is zero' => [self::withSections(['workspaces' => 0]), 'configuration.workspaces must be an object'],
+            'workspaces is false' => [self::withSections(['workspaces' => false]), 'configuration.workspaces must be an object'],
+            'workspaces is true' => [self::withSections(['workspaces' => true]), 'configuration.workspaces must be an object'],
+            'permissions is a string' => [self::withSections(['permissions' => 'x']), 'configuration.permissions must be an object'],
+            'permissions is a number' => [self::withSections(['permissions' => 1]), 'configuration.permissions must be an object'],
+            'permissions is true' => [self::withSections(['permissions' => true]), 'configuration.permissions must be an object'],
+            // The security check reads ['method'] from it, which throws on a string, although the import succeeds.
+            'security is an empty string' => [self::withSections(['security' => '']), 'configuration.security must be an object'],
+            'security is a string' => [self::withSections(['security' => 'x']), 'configuration.security must be an object'],
+            'security is a number' => [self::withSections(['security' => 1]), 'configuration.security must be an object'],
+            'security is true' => [self::withSections(['security' => true]), 'configuration.security must be an object'],
             // schema is rejected beyond what fails at import: these import, but the detail endpoint then fails.
-            'schema is a string' => [self::withSections(['schema' => 'x'])],
-            'schema is an empty string' => [self::withSections(['schema' => ''])],
-            'schema is zero' => [self::withSections(['schema' => 0])],
-            'schema is a number' => [self::withSections(['schema' => 1])],
-            'schema is true' => [self::withSections(['schema' => true])],
+            'schema is a string' => [self::withSections(['schema' => 'x']), 'configuration.schema must be an object'],
+            'schema is an empty string' => [self::withSections(['schema' => '']), 'configuration.schema must be an object'],
+            'schema is zero' => [self::withSections(['schema' => 0]), 'configuration.schema must be an object'],
+            'schema is a number' => [self::withSections(['schema' => 1]), 'configuration.schema must be an object'],
+            'schema is true' => [self::withSections(['schema' => true]), 'configuration.schema must be an object'],
         ];
     }
 

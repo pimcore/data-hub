@@ -629,7 +629,9 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
      * Only values that import today stay accepted, except where the stored result is unusable:
      * - general: persist() writes into it, so only an array, null and false work (false with a PHP deprecation).
      * - workspaces: passed to a function typed array, so only an array and null work.
-     * - permissions, security: stored as is, so every empty value stays accepted.
+     * - permissions: stored as is and read with a default, so every empty value stays accepted.
+     * - security: stored as is, but the security check reads ['method'] from it, which throws on a string, so
+     *   "" is rejected although it imports; the other empty values read as null and stay accepted.
      * - schema: the detail endpoint writes into it, so "", 0 and true are rejected although they import;
      *   false is read as an empty schema and stays accepted.
      */
@@ -656,6 +658,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
         return match ($section) {
             'general', 'schema' => is_array($value) || $value === null || $value === false,
             'workspaces' => is_array($value) || $value === null,
+            'security' => is_array($value) || (empty($value) && !is_string($value)),
             default => is_array($value) || empty($value),
         };
     }
