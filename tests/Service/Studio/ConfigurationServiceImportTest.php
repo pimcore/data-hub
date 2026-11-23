@@ -69,6 +69,28 @@ class ConfigurationServiceImportTest extends Unit
         $this->assertSame(422, $exception->getStatusCode());
     }
 
+    /**
+     * @dataProvider acceptedFieldsProvider
+     */
+    public function testImportAcceptsCorrectlyTypedFields(array $importData): void
+    {
+        $this->validate($importData);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public static function acceptedFieldsProvider(): array
+    {
+        $valid = ['type' => 'graphql', 'path' => '', 'name' => 'pme', 'configuration' => []];
+
+        return [
+            'complete file' => [$valid],
+            // Imported as an empty configuration before this check existed, so it stays accepted.
+            'configuration is missing' => [array_diff_key($valid, ['configuration' => true])],
+            'configuration is null' => [array_merge($valid, ['configuration' => null])],
+        ];
+    }
+
     public static function wronglyTypedFieldsProvider(): array
     {
         $valid = ['type' => 'graphql', 'path' => '', 'name' => 'pme', 'configuration' => []];
@@ -76,7 +98,6 @@ class ConfigurationServiceImportTest extends Unit
         return [
             'configuration is a string' => [array_merge($valid, ['configuration' => 'foo'])],
             'configuration is a number' => [array_merge($valid, ['configuration' => 42])],
-            'configuration is missing' => [array_diff_key($valid, ['configuration' => true])],
             'type is an array' => [array_merge($valid, ['type' => ['graphql']])],
             'name is a number' => [array_merge($valid, ['name' => 42])],
             'path is an array' => [array_merge($valid, ['path' => []])],
@@ -106,14 +127,14 @@ class ConfigurationServiceImportTest extends Unit
     }
 
     /**
-     * The type checks run before the name lookup and the adapter check, so the validation step needs no
-     * collaborators either.
+     * The type check runs before the name lookup and the adapter check, and uses none of the service's
+     * collaborators, so it is called on its own.
      */
     private function validate(array $importData): void
     {
         $service = (new \ReflectionClass(ConfigurationService::class))->newInstanceWithoutConstructor();
 
-        $method = new \ReflectionMethod(ConfigurationService::class, 'validateUploadedConfigurationData');
+        $method = new \ReflectionMethod(ConfigurationService::class, 'validateImportFieldTypes');
         $method->invoke($service, $importData);
     }
 }

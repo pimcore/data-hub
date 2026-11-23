@@ -580,15 +580,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             );
         }
 
-        // Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
-        if (!is_string($type) || !is_string($importData['path']) || !is_string($name)
-            || !is_array($importData['configuration'] ?? null)) {
-            throw new ValidationFailedException(
-                message: 'Uploaded configuration data is invalid. '
-                    . 'Type, path and name must be strings, configuration must be an object.',
-                errorKey: 'data-hub.import-config-invalid'
-            );
-        }
+        $this->validateImportFieldTypes($importData);
 
         $this->ensureConfigDoesNotExist($name);
 
@@ -597,6 +589,28 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
                 'Cannot handle type "%s". The corresponding bundle is not installed, or the type is disabled.',
                 $type
             ));
+        }
+    }
+
+    /**
+     * Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
+     * A file without a configuration key is still accepted and imported as an empty configuration.
+     */
+    private function validateImportFieldTypes(array $importData): void
+    {
+        $configuration = $importData['configuration'] ?? [];
+
+        if (
+            !is_string($importData['type'])
+            || !is_string($importData['path'])
+            || !is_string($importData['name'])
+            || !is_array($configuration)
+        ) {
+            throw new ValidationFailedException(
+                message: 'Uploaded configuration data is invalid. '
+                    . 'Type, path and name must be strings, configuration must be an object.',
+                errorKey: 'data-hub.import-config-invalid'
+            );
         }
     }
 }
