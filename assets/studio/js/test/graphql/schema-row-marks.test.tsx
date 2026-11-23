@@ -49,7 +49,13 @@ vi.mock('@pimcore/studio-ui-bundle/components', () => {
     return null
   }
   return {
-    Flex: ({ children }: { children?: React.ReactNode }) => <div>{ children }</div>,
+    Flex: ({ children, align, justify, 'data-testid': testId }: { children?: React.ReactNode, align?: string, justify?: string, 'data-testid'?: string }) => (
+      <div
+        data-align={ align }
+        data-justify={ justify }
+        data-testid={ testId }
+      >{ children }</div>
+    ),
     IconButton: ({ icon, onClick }: { icon: { value: string }, onClick: () => void }) => <button onClick={ onClick }>{ icon.value }</button>,
     IconTextButton: ({ children, onClick }: { children?: React.ReactNode, onClick: (event: { stopPropagation: () => void }) => void }) => (
       <button onClick={ () => { onClick({ stopPropagation: () => undefined }) } }>{ children }</button>
@@ -108,6 +114,15 @@ const PAYLOAD = {
 
 afterEach(() => { cleanup() })
 
+// the grid stretches a cell's direct child over the cell: the tag needs a centring box around it
+const expectCentred = (mark: HTMLElement): void => {
+  const cell = mark.parentElement
+  expect(cell?.dataset.testid).toBe('mark-cell')
+  expect(cell?.dataset.align).toBe('center')
+  expect(cell?.dataset.justify).toBe('center')
+  expect(mark.style.marginInlineEnd).toBe('0')
+}
+
 describe('schema grid rows in a review', () => {
   it('derives a mark per entity: a change inside it, or the entity added or removed whole', () => {
     expect(schemaRowMarks(configChanges(PAYLOAD as unknown as ChangeSetReviewData))).toEqual({
@@ -128,7 +143,8 @@ describe('schema grid rows in a review', () => {
 
     expect(within(screen.getByTestId('row-Car')).getByTestId('row-mark-changed').textContent).toBe('form.annotation.changed')
     expect(within(screen.getByTestId('row-Product')).queryByTestId(/row-mark-/)).toBeNull()
-    expect(within(screen.getByTestId('row-Manufacturer')).getByTestId('row-mark-removed')).toBeTruthy()
+    expectCentred(within(screen.getByTestId('row-Manufacturer')).getByTestId('row-mark-removed'))
+    expectCentred(within(screen.getByTestId('row-Car')).getByTestId('row-mark-changed'))
 
     expect(screen.queryByText('trash')).toBeNull()
     expect(screen.queryByText('add')).toBeNull()
@@ -150,7 +166,7 @@ describe('schema grid rows in a review', () => {
       </SchemaRowMarksContext.Provider>
     )
 
-    expect(within(screen.getByTestId('row-Car')).getByTestId('row-mark-added')).toBeTruthy()
+    expectCentred(within(screen.getByTestId('row-Car')).getByTestId('row-mark-added'))
     expect(screen.queryByText('trash')).toBeNull()
   })
 
@@ -189,7 +205,7 @@ describe('schema grid rows in a review', () => {
       </SchemaRowMarksContext.Provider>
     )
 
-    expect(within(screen.getByTestId('row-document')).getByTestId('row-mark-changed')).toBeTruthy()
+    expectCentred(within(screen.getByTestId('row-document')).getByTestId('row-mark-changed'))
     expect(within(screen.getByTestId('row-asset')).queryByTestId(/row-mark-/)).toBeNull()
   })
 

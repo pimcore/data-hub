@@ -11,6 +11,7 @@
 import React, { createContext, useContext } from 'react'
 import { Tag } from 'antd'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
+import { Flex } from '@pimcore/studio-ui-bundle/components'
 import { type FormItemAnnotationStatus } from '../../../change-control/studio-form-annotations'
 
 /** a review's marks for one grid's rows, keyed by entity id (a generic type by its name); empty outside a review */
@@ -32,16 +33,34 @@ export const usePreviousColumns = (grid: 'query' | 'mutation', entity: string): 
 // the colours of Studio's form annotation tag, so a row reads as a marked field does
 const COLOR: Record<FormItemAnnotationStatus, string> = { added: 'green', changed: 'gold', removed: 'red', moved: 'geekblue' }
 
-export const RowMark = ({ status }: { status?: FormItemAnnotationStatus }): React.JSX.Element | null => {
+export const RowMark = ({ status, style }: { status?: FormItemAnnotationStatus, style?: React.CSSProperties }): React.JSX.Element | null => {
   const { t } = useTranslation()
   if (status === undefined) return null
   return (
     <Tag
       color={ COLOR[status] }
       data-testid={ `row-mark-${status}` }
+      style={ style }
     >{ t(`form.annotation.${status}`) }</Tag>
   )
 }
+
+// the tag's trailing margin would pull it off centre
+const CENTRED: React.CSSProperties = { marginInlineEnd: 0 }
+
+/** a grid stretches a cell's direct child over the whole cell, so the tag sits in a centring box */
+export const RowMarkCell = ({ status }: { status?: FormItemAnnotationStatus }): React.JSX.Element => (
+  <Flex
+    align="center"
+    data-testid="mark-cell"
+    justify="center"
+  >
+    <RowMark
+      status={ status }
+      style={ CENTRED }
+    />
+  </Flex>
+)
 
 /** the rows to show: the grid's own, then the entities the review removes, which the form no longer holds */
 export const withRemovedRows = <T extends { id: string, entity: string }>(value: T[], marks: RowMarks): T[] => [

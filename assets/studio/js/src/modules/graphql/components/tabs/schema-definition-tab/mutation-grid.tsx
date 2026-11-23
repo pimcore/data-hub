@@ -17,7 +17,7 @@ import { isNil } from 'lodash'
 import { type MutationEntity } from './types'
 import { SchemaFieldsModal } from './schema-fields-modal/schema-fields-modal'
 import { bundleServiceIds } from '../../../../../config/service-ids'
-import { RowMark, useRowMarks, withRemovedRows } from './row-marks'
+import { RowMarkCell, useRowMarks, withRemovedRows } from './row-marks'
 
 interface MutationGridProps {
   value?: MutationEntity[]
@@ -42,7 +42,7 @@ export const MutationGrid = ({ value = [], onChange, isWriteable = true }: Mutat
             id: 'review',
             header: '',
             size: 100,
-            cell: (info: { row: { index: number } }) => <RowMark status={ marks[rows[info.row.index]?.id] } />
+            cell: (info: { row: { index: number } }) => <RowMarkCell status={ marks[rows[info.row.index]?.id] } />
           }]
         : []),
       columnHelper.accessor('entity', {
