@@ -35,11 +35,9 @@ use Pimcore\Bundle\PimcoreAgentBundle\Service\AgentSessionServiceInterface;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\TaskContextResolverInterface;
 use Pimcore\Bundle\StudioBackendBundle\Mcp\Exception\InvalidMcpToolArgumentException;
 use Pimcore\Bundle\StudioBackendBundle\Mcp\Tool\McpToolErrorHandlerInterface;
-use Pimcore\Bundle\StudioBackendBundle\Security\Authenticator\Mcp\McpAccessTokenAuthenticator;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
 use Pimcore\Model\User;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -618,14 +616,7 @@ class ConfigProposalToolsTest extends Unit
         $resolver->method('getType')->willReturn('subject-update');
         $resolver->method('getWidgetType')->willReturn('config-widget');
 
-        if ($requests === null) {
-            $requests = new RequestStack();
-            $request = new Request();
-            if ($this->sessionId !== null) {
-                $request->attributes->set(McpAccessTokenAuthenticator::REQUEST_ATTR_REFERENCE, $this->sessionId);
-            }
-            $requests->push($request);
-        }
+        $requests ??= McpRequests::stack($this->sessionId);
 
         $adapters = $this->createStub(AdapterAvailabilityServiceInterface::class);
         $adapters->method('isEnabled')->willReturnCallback(fn (string $type): bool => $this->adapterEnabled);
