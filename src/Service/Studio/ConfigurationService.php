@@ -199,7 +199,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             $importData['name']
         );
         $configuration->setModificationDate(time());
-        $configuration->setConfiguration($importData['configuration']);
+        $configuration->setConfiguration($importData['configuration'] ?? null);
         $configuration->save();
 
         return [
@@ -580,6 +580,8 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             );
         }
 
+        $this->validateImportFieldTypes($importData);
+
         $this->ensureConfigDoesNotExist($name);
 
         if (!$this->adapterAvailabilityService->isEnabled($type)) {
@@ -587,6 +589,31 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
                 'Cannot handle type "%s". The corresponding bundle is not installed, or the type is disabled.',
                 $type
             ));
+        }
+    }
+
+    /**
+     * Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
+     * Only a configuration that is present, non-empty and not an array is rejected. A missing key, null, "", 0
+     * and false keep importing as an empty configuration, because persist() rebuilds the defaults for them.
+     * A scalar path (e.g. 5) was stored as its string form before this check existed, so only an array is rejected.
+     */
+    private function validateImportFieldTypes(array $importData): void
+    {
+        $configuration = $importData['configuration'] ?? null;
+
+        if (
+            !is_string($importData['type'])
+            || !is_scalar($importData['path'])
+            || !is_string($importData['name'])
+            || !(is_array($configuration) || empty($configuration))
+        ) {
+            throw new ValidationFailedException(
+                message: 'Uploaded configuration data is invalid. '
+                    . 'Type and name must be strings, path must be a string or number, '
+                    . 'configuration must be an object.',
+                errorKey: 'data-hub.import-config-invalid'
+            );
         }
     }
 }
