@@ -27,6 +27,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 class GraphQlEntityFoldTest extends Unit
 {
+    use GraphQlColumnsTrait;
+
     public function testAnOmittedQueryEntityKeepsItsStoredValue(): void
     {
         $car = $this->entity('Car', ['name', 'color']);
@@ -185,6 +187,7 @@ class GraphQlEntityFoldTest extends Unit
         return new GraphQlConfigPolicy(
             $this->createStub(ConfigurationServiceInterface::class),
             new EventDispatcher(),
+            $this->graphQlColumns(),
         );
     }
 

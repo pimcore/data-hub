@@ -5,6 +5,8 @@ services:
         autoconfigure: false
         public: false
 
+    Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlColumns: ~
+
     Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\GraphQlConfigPolicy: ~
 
     pimcore.datahub.graphql.proposal.subject_handler:

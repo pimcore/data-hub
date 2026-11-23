@@ -27,6 +27,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class GraphQlConfigPolicyTest extends Unit
 {
+    use GraphQlColumnsTrait;
+
     private const string STORED = 'policy-test-endpoint';
 
     // the root folder: every installation has it, and a workspace on a missing path is refused
@@ -248,7 +250,7 @@ class GraphQlConfigPolicyTest extends Unit
 
         $this->expectException(LogicException::class);
 
-        $policy = new GraphQlConfigPolicy($configurations, new EventDispatcher());
+        $policy = new GraphQlConfigPolicy($configurations, new EventDispatcher(), $this->graphQlColumns());
         $policy->save('orders', ['general' => ['type' => 'webhook']]);
     }
 
@@ -301,7 +303,7 @@ class GraphQlConfigPolicyTest extends Unit
             ->with($this->anything(), $this->callback($capture))
             ->willReturn(1);
 
-        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('shop', [
+        (new GraphQlConfigPolicy($configurations, new EventDispatcher(), $this->graphQlColumns()))->save('shop', [
             'schema' => ['specialEntities' => ['asset' => ['read' => true, 'create' => false]]],
         ]);
 
@@ -415,7 +417,7 @@ class GraphQlConfigPolicyTest extends Unit
             ->with($this->anything(), $this->callback($capture))
             ->willReturn(1);
 
-        (new GraphQlConfigPolicy($configurations, new EventDispatcher()))->save('shop', [
+        (new GraphQlConfigPolicy($configurations, new EventDispatcher(), $this->graphQlColumns()))->save('shop', [
             'schema' => ['specialEntities' => [
                 ['name' => 'document', 'readAllowed' => true],
                 ['readAllowed' => true],
@@ -467,6 +469,7 @@ class GraphQlConfigPolicyTest extends Unit
         return new GraphQlConfigPolicy(
             $this->createStub(ConfigurationServiceInterface::class),
             $events ?? new EventDispatcher(),
+            $this->graphQlColumns(),
         );
     }
 }
