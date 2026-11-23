@@ -596,6 +596,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
      * Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
      * Only a configuration that is present, non-empty and not an array is rejected. A missing key, null, "", 0
      * and false keep importing as an empty configuration, because persist() rebuilds the defaults for them.
+     * A scalar path (e.g. 5) was stored as its string form before this check existed, so only an array is rejected.
      */
     private function validateImportFieldTypes(array $importData): void
     {
@@ -603,7 +604,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
         if (
             !is_string($importData['type'])
-            || !is_string($importData['path'])
+            || !is_scalar($importData['path'])
             || !is_string($importData['name'])
             || !(is_array($configuration) || empty($configuration))
         ) {

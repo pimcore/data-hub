@@ -92,6 +92,8 @@ class ConfigurationServiceImportTest extends Unit
             'configuration is an empty string' => [array_merge($valid, ['configuration' => ''])],
             'configuration is zero' => [array_merge($valid, ['configuration' => 0])],
             'configuration is false' => [array_merge($valid, ['configuration' => false])],
+            // A scalar path was stored as a string before this check existed, so it stays accepted.
+            'path is a number' => [array_merge($valid, ['path' => 5])],
         ];
     }
 
