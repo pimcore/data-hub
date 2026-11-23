@@ -8,10 +8,10 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-// Run with: node --test "tests/*.test.mjs"
+// Run with: npm test (vitest)
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { describe, it } from 'node:test'
+import { describe, it } from 'vitest'
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 const declared = { ...pkg.devDependencies, ...pkg.dependencies }
