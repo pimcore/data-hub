@@ -57,8 +57,7 @@ class ConfigurationServiceImportTest extends Unit
     public function testImportRejectsWronglyTypedFieldsAsValidationError(
         array $importData,
         string $expectedMessage
-    ): void
-    {
+    ): void {
         $exception = null;
 
         try {
