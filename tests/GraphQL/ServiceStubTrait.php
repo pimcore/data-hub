@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\UnionType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\UnionType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\AssetFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DataObjectFieldHelper;
 use Pimcore\Bundle\DataHubBundle\GraphQL\FieldHelper\DocumentFieldHelper;

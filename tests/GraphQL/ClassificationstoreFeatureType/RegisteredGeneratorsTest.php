@@ -107,7 +107,7 @@ class RegisteredGeneratorsTest extends Unit
     private function createServiceWithDataObjectTypes(): Service
     {
         $service = $this->createServiceStub();
-        $types = new class () extends \ArrayObject {
+        $types = new class() extends \ArrayObject {
             public function offsetExists(mixed $key): bool
             {
                 return true;
