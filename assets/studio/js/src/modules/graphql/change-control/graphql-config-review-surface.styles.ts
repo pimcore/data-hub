@@ -15,8 +15,8 @@ export const SURFACE_CONTAINER = 'dh-graphql-review'
 
 export const RAIL_WIDTH = 320
 export const RAIL_GAP = 24
-// the widest table the editor shows: the security workspaces' fixed columns (300 + 4 × 80 + 60)
-export const WIDEST_GRID_WIDTH = 680
+// the widest table a review shows: the security workspaces' mark column and fixed columns (100 + 300 + 4 × 80)
+export const WIDEST_GRID_WIDTH = 720
 // the accordion's border and padding around that table
 const GRID_INSET = 40
 // below this the editor's tables would be cut beside the rail, so the editor goes under the list

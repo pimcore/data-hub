@@ -22,6 +22,7 @@ import {
 } from './config-review-model'
 import { schemaPreviousColumns } from './schema-previous-columns'
 import { SchemaPreviousColumnsContext, SchemaRowMarksContext } from '../components/tabs/schema-definition-tab/row-marks'
+import { workspaceRowChanges, WorkspaceRowChangesContext } from './workspace-row-changes'
 import { fieldLabel } from './field-labels'
 import { ChangeRail } from './change-rail'
 import { configBrief } from './config-brief'
@@ -61,6 +62,7 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
   const annotations = useMemo(() => isNew ? {} : annotationsFor(changes), [isNew, changes])
   const rowMarks = useMemo(() => isNew ? {} : schemaRowMarks(changes), [isNew, changes])
   const previousColumns = useMemo(() => isNew ? {} : schemaPreviousColumns(changes), [isNew, changes])
+  const workspaceChanges = useMemo(() => isNew ? {} : workspaceRowChanges(changes), [isNew, changes])
 
   // land on the tab the first change sits in until the reader picks one; derived rather than set
   // from an effect, which could run after an early click and take the reader back. A pick holds
@@ -99,7 +101,9 @@ export const GraphQLConfigReviewSurface: React.FC<ReviewDiffViewProps> = ({
 
   const markedEditor = (
     <SchemaRowMarksContext.Provider value={ rowMarks }>
-      <SchemaPreviousColumnsContext.Provider value={ previousColumns }>{ editor }</SchemaPreviousColumnsContext.Provider>
+      <SchemaPreviousColumnsContext.Provider value={ previousColumns }>
+        <WorkspaceRowChangesContext.Provider value={ workspaceChanges }>{ editor }</WorkspaceRowChangesContext.Provider>
+      </SchemaPreviousColumnsContext.Provider>
     </SchemaRowMarksContext.Provider>
   )
 

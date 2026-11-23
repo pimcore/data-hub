@@ -9,10 +9,13 @@
  */
 
 import React, { useMemo } from 'react'
-import { IconTextButton, OperationalGrid, Accordion, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
+import { Flex, IconTextButton, OperationalGrid, Accordion, type AccordionItemType } from '@pimcore/studio-ui-bundle/components'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isNil } from 'lodash'
 import { type Workspace, type WorkspaceType } from './types'
+import { RowMark } from '../schema-definition-tab/row-marks'
+import { useFormItemAnnotation } from '../../../change-control/studio-form-annotations'
+import { useWorkspaceRowChanges } from '../../../change-control/workspace-row-changes'
 
 interface WorkspaceAccordionProps {
   type: WorkspaceType
@@ -28,6 +31,10 @@ export const WorkspaceAccordion = ({
   isWriteable = true
 }: WorkspaceAccordionProps): React.JSX.Element => {
   const { t } = useTranslation()
+  // the grid's Form.Item is noStyle, which renders no mark: a review marks the list's header
+  const annotation = useFormItemAnnotation(['workspaces', type])
+  const rowChanges = useWorkspaceRowChanges(type)
+  const status = annotation?.status ?? rowChanges?.status
 
   const handleAdd = (): void => {
     if (!isNil(onChange)) {
@@ -44,7 +51,15 @@ export const WorkspaceAccordion = ({
   const accordionItem: AccordionItemType = useMemo(() => ({
     key: type,
     id: type,
-    title: <>{t(`data-hub.workspaces.${type}`)}</>,
+    title: (
+      <Flex
+        align="center"
+        gap="small"
+      >
+        {t(`data-hub.workspaces.${type}`)}
+        <RowMark status={ status } />
+      </Flex>
+    ),
     info: isWriteable
       ? (
         <IconTextButton
@@ -61,7 +76,7 @@ export const WorkspaceAccordion = ({
     children: (
       <OperationalGrid.Grid />
     )
-  }), [type, value, handleAdd, t, isWriteable])
+  }), [type, value, handleAdd, t, isWriteable, status])
 
   return (
     <Accordion
