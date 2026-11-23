@@ -1,4 +1,6 @@
 # Loaded only when an agent can author proposals - see PimcoreDataHubExtension.
+# The read tools need no chat session, so they also carry pimcore.studio_backend.mcp_tool and can be assigned to a
+# Studio-managed MCP server; propose_graphql_config records into the agent chat session and stays chat-only.
 services:
     _defaults:
         autowire: true
@@ -8,10 +10,12 @@ services:
     Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ListGraphQlConfigsTool:
         tags:
             - { name: 'pimcore.mcp_tool', group: 'pimcore-data-hub-graphql-read', description: 'List the GraphQL configurations' }
+            - { name: 'pimcore.studio_backend.mcp_tool' }
 
     Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\GetGraphQlConfigTool:
         tags:
             - { name: 'pimcore.mcp_tool', group: 'pimcore-data-hub-graphql-read' }
+            - { name: 'pimcore.studio_backend.mcp_tool' }
 
     Pimcore\Bundle\DataHubBundle\Proposal\GraphQl\Tool\ProposeGraphQlConfigTool:
         tags:
