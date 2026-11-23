@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\Service\Proposal;
 
+use function array_column;
 use function array_map;
 use Codeception\Test\Unit;
 use function in_array;
@@ -505,6 +506,27 @@ class ConfigProposalToolsTest extends Unit
         $this->assertSame([], $this->recorded);
     }
 
+    /**
+     * A Studio-managed MCP server's client has no agent chat session: reading must not touch it.
+     */
+    public function testListAndGetAnswerWithoutAChatSession(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $sessions = $this->createMock(AgentSessionServiceInterface::class);
+        $sessions->expects($this->never())->method($this->anything());
+        $tools = $this->tools(
+            $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]),
+            sessions: $sessions,
+            requests: new RequestStack(),
+        );
+
+        $list = $tools->list(new RecordingConfigPolicy(), self::TOOL);
+        $get = $tools->get(new RecordingConfigPolicy(), self::TOOL, 'orders');
+
+        $this->assertSame(['orders'], array_column($this->payload($list)['configurations'], 'name'));
+        $this->assertSame(['general' => ['active' => true]], $this->payload($get)['configuration']);
+    }
+
     public function testAConfigurationTheUserMayNotReadCannotBeProposedOnto(): void
     {
         $this->stored->put($this->configuration('orders', ['general' => ['active' => true]], allowed: []));
@@ -575,29 +597,35 @@ class ConfigProposalToolsTest extends Unit
         ?SecurityServiceInterface $security = null,
         ?McpToolErrorHandlerInterface $errors = null,
         ?StoredConfigurationsInterface $stored = null,
+        ?AgentSessionServiceInterface $sessions = null,
+        ?RequestStack $requests = null,
     ): ConfigProposalTools {
         if ($security === null) {
             $security = $this->createStub(SecurityServiceInterface::class);
             $security->method('getCurrentUser')->willReturn($user);
         }
 
-        $sessions = $this->createStub(AgentSessionServiceInterface::class);
-        $sessions->method('setProposalData')->willReturnCallback(
-            function (string $sessionId, string $proposalId, array $data, int $userId): void {
-                $this->recorded[] = [$sessionId, $proposalId, $data, $userId];
-            }
-        );
+        if ($sessions === null) {
+            $sessions = $this->createStub(AgentSessionServiceInterface::class);
+            $sessions->method('setProposalData')->willReturnCallback(
+                function (string $sessionId, string $proposalId, array $data, int $userId): void {
+                    $this->recorded[] = [$sessionId, $proposalId, $data, $userId];
+                }
+            );
+        }
 
         $resolver = $this->createStub(ProposalResolverInterface::class);
         $resolver->method('getType')->willReturn('subject-update');
         $resolver->method('getWidgetType')->willReturn('config-widget');
 
-        $requests = new RequestStack();
-        $request = new Request();
-        if ($this->sessionId !== null) {
-            $request->attributes->set(McpAccessTokenAuthenticator::REQUEST_ATTR_REFERENCE, $this->sessionId);
+        if ($requests === null) {
+            $requests = new RequestStack();
+            $request = new Request();
+            if ($this->sessionId !== null) {
+                $request->attributes->set(McpAccessTokenAuthenticator::REQUEST_ATTR_REFERENCE, $this->sessionId);
+            }
+            $requests->push($request);
         }
-        $requests->push($request);
 
         $adapters = $this->createStub(AdapterAvailabilityServiceInterface::class);
         $adapters->method('isEnabled')->willReturnCallback(fn (string $type): bool => $this->adapterEnabled);

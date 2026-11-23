@@ -74,6 +74,10 @@ final class StudioCatalogueToolsTest extends Unit
         );
     }
 
+    /**
+     * The tool classes' own dependencies only; that the shared service they call stays off the session on a read is
+     * ConfigProposalToolsTest::testListAndGetAnswerWithoutAChatSession.
+     */
     public function testCatalogueToolsNeedNoChatSession(): void
     {
         foreach ($this->tools(self::STUDIO_TAG) as $name => [$class]) {
