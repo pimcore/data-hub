@@ -95,6 +95,27 @@ class ConfigurationServiceImportTest extends Unit
             'configuration is false' => [array_merge($valid, ['configuration' => false])],
             // A scalar path was stored as a string before this check existed, so it stays accepted.
             'path is a number' => [array_merge($valid, ['path' => 5])],
+            // Sections: what imports today stays accepted, see validateImportSectionTypes().
+            'all sections are arrays' => [self::withSections([
+                'general' => ['active' => true],
+                'workspaces' => ['object' => []],
+                'permissions' => ['user' => [], 'role' => []],
+                'security' => ['method' => 'datahub_apikey'],
+                'schema' => ['queryEntities' => []],
+            ])],
+            'general is null' => [self::withSections(['general' => null])],
+            'general is false' => [self::withSections(['general' => false])],
+            'workspaces is null' => [self::withSections(['workspaces' => null])],
+            'schema is null' => [self::withSections(['schema' => null])],
+            'schema is false' => [self::withSections(['schema' => false])],
+            'permissions is null' => [self::withSections(['permissions' => null])],
+            'permissions is an empty string' => [self::withSections(['permissions' => ''])],
+            'permissions is zero' => [self::withSections(['permissions' => 0])],
+            'permissions is false' => [self::withSections(['permissions' => false])],
+            'security is null' => [self::withSections(['security' => null])],
+            'security is an empty string' => [self::withSections(['security' => ''])],
+            'security is zero' => [self::withSections(['security' => 0])],
+            'security is false' => [self::withSections(['security' => false])],
         ];
     }
 
@@ -109,6 +130,27 @@ class ConfigurationServiceImportTest extends Unit
             'type is an array' => [array_merge($valid, ['type' => ['graphql']])],
             'name is a number' => [array_merge($valid, ['name' => 42])],
             'path is an array' => [array_merge($valid, ['path' => []])],
+            'general is a string' => [self::withSections(['general' => 'x'])],
+            'general is an empty string' => [self::withSections(['general' => ''])],
+            'general is zero' => [self::withSections(['general' => 0])],
+            'general is true' => [self::withSections(['general' => true])],
+            'workspaces is a string' => [self::withSections(['workspaces' => 'x'])],
+            'workspaces is an empty string' => [self::withSections(['workspaces' => ''])],
+            'workspaces is zero' => [self::withSections(['workspaces' => 0])],
+            'workspaces is false' => [self::withSections(['workspaces' => false])],
+            'workspaces is true' => [self::withSections(['workspaces' => true])],
+            'permissions is a string' => [self::withSections(['permissions' => 'x'])],
+            'permissions is a number' => [self::withSections(['permissions' => 1])],
+            'permissions is true' => [self::withSections(['permissions' => true])],
+            'security is a string' => [self::withSections(['security' => 'x'])],
+            'security is a number' => [self::withSections(['security' => 1])],
+            'security is true' => [self::withSections(['security' => true])],
+            // schema is rejected beyond what fails at import: these import, but the detail endpoint then fails.
+            'schema is a string' => [self::withSections(['schema' => 'x'])],
+            'schema is an empty string' => [self::withSections(['schema' => ''])],
+            'schema is zero' => [self::withSections(['schema' => 0])],
+            'schema is a number' => [self::withSections(['schema' => 1])],
+            'schema is true' => [self::withSections(['schema' => true])],
         ];
     }
 
@@ -121,6 +163,14 @@ class ConfigurationServiceImportTest extends Unit
             'json number' => ['42'],
             'json null' => ['null'],
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $sections
+     */
+    private static function withSections(array $sections): array
+    {
+        return ['type' => 'graphql', 'path' => '', 'name' => 'pme', 'configuration' => $sections];
     }
 
     /**

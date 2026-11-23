@@ -44,6 +44,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /** @internal */
 final readonly class ConfigurationService implements ConfigurationServiceInterface
 {
+    private const array IMPORT_SECTIONS = ['general', 'workspaces', 'permissions', 'security', 'schema'];
+
     private const array REQUIRED_READ_UPDATE_PERMISSIONS = [
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_READ,
         PermissionConstants::PLUGIN_DATA_HUB_PERMISSION_UPDATE,
@@ -615,5 +617,46 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
                 errorKey: 'data-hub.import-config-invalid'
             );
         }
+
+        if (is_array($configuration)) {
+            $this->validateImportSectionTypes($configuration);
+        }
+    }
+
+    /**
+     * persist() and the detail endpoint expect arrays inside the configuration; a wrongly typed section would
+     * end in a TypeError (HTTP 500) there, or be stored and break the detail endpoint afterwards.
+     * Only values that import today stay accepted, except where the stored result is unusable:
+     * - general: persist() writes into it, so only an array, null and false work (false with a PHP deprecation).
+     * - workspaces: passed to a function typed array, so only an array and null work.
+     * - permissions, security: stored as is, so every empty value stays accepted.
+     * - schema: the detail endpoint writes into it, so "", 0 and true are rejected although they import;
+     *   false is read as an empty schema and stays accepted.
+     */
+    private function validateImportSectionTypes(array $configuration): void
+    {
+        foreach (self::IMPORT_SECTIONS as $section) {
+            if (
+                array_key_exists($section, $configuration)
+                && !$this->isValidImportSection($section, $configuration[$section])
+            ) {
+                throw new ValidationFailedException(
+                    message: sprintf(
+                        'Uploaded configuration data is invalid. configuration.%s must be an object.',
+                        $section
+                    ),
+                    errorKey: 'data-hub.import-config-invalid'
+                );
+            }
+        }
+    }
+
+    private function isValidImportSection(string $section, mixed $value): bool
+    {
+        return match ($section) {
+            'general', 'schema' => is_array($value) || $value === null || $value === false,
+            'workspaces' => is_array($value) || $value === null,
+            default => is_array($value) || empty($value),
+        };
     }
 }
