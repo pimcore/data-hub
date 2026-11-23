@@ -206,11 +206,12 @@ const AvailableFieldsTreeInner = ({
           />
           )}
 
-      { fieldMarks?.removed.map((column) => (
+      { /* removed fields can share a key or, stored without one, their attributes: the position keeps the key unique */ }
+      { fieldMarks?.removed.map((column, index) => (
         <Flex
           align="center"
           gap="small"
-          key={ column.key ?? JSON.stringify(column.attributes) }
+          key={ `${index}:${column.key ?? JSON.stringify(column.attributes)}` }
         >
           <span data-testid="removed-field">{ column.attributes?.label ?? column.attributes?.attribute }</span>
           <RowMark status="removed" />

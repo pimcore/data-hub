@@ -211,6 +211,26 @@ describe('the fields of a schema entity in a review', () => {
     error.mockRestore()
   })
 
+  it('lists removed fields that share an identity, each under its own React key', () => {
+    const { key: _first, ...keyless } = field('old-price', 'price', 'Price')
+    const before = [...CAR_BEFORE, keyless, { ...keyless }, field('dup', 'stock', 'Stock'), field('dup', 'stock', 'Stock')]
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    render(
+      <AvailableFieldsTree
+        disabled
+        entityConfig={ { id: 'Car', name: 'Car', columnConfig: { columns: CAR_COLUMNS } } }
+        fieldMarks={ fieldMarks(CAR_COLUMNS, before) }
+        onEntityConfigChange={ () => undefined }
+        operatorRegistryServiceId="operators"
+      />
+    )
+
+    expect(screen.getAllByTestId('removed-field').map((node) => node.textContent)).toEqual(['Price', 'Price', 'Price', 'Stock', 'Stock'])
+    expect(error.mock.calls.filter(([message]) => String(message).includes('key'))).toEqual([])
+    error.mockRestore()
+  })
+
   it('marks the fields when the modal opens view-only in a review', () => {
     render(
       <SchemaPreviousColumnsContext.Provider value={ { query: { Car: CAR_BEFORE } } }>
