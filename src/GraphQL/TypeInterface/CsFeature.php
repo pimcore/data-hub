@@ -14,6 +14,7 @@ namespace Pimcore\Bundle\DataHubBundle\GraphQL\TypeInterface;
 
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
+use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureType\Helper;
 
 /**
  * @internal
@@ -37,6 +38,10 @@ final class CsFeature
                         'fields' => [
                             'id' => [
                                 'type' => Type::int(),
+                                'deprecationReason' => Helper::getIdDeprecationReason(),
+                            ],
+                            'identifier' => [
+                                'type' => Type::string(),
                             ],
                             'name' => [
                                 'type' => Type::string(),

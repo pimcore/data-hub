@@ -25,6 +25,7 @@ const config: Config = {
   moduleNameMapper: {
     '^@pimcore/studio-ui-bundle/components$': mock('components'),
     '^@pimcore/studio-ui-bundle/app$': mock('app'),
+    '^@pimcore/studio-ui-bundle/modules/app$': mock('modules-app'),
     '^@pimcore/studio-ui-bundle/api/data-object$': mock('api-data-object'),
     '^@pimcore/studio-ui-bundle/modules/data-object$': mock('modules-data-object'),
     '^@pimcore/studio-ui-bundle/modules/auth$': mock('modules-auth'),
