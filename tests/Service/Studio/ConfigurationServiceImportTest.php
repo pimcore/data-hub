@@ -85,9 +85,13 @@ class ConfigurationServiceImportTest extends Unit
 
         return [
             'complete file' => [$valid],
-            // Imported as an empty configuration before this check existed, so it stays accepted.
+            // Empty values were imported as an empty configuration before this check existed (persist() rebuilds
+            // the defaults), so they stay accepted.
             'configuration is missing' => [array_diff_key($valid, ['configuration' => true])],
             'configuration is null' => [array_merge($valid, ['configuration' => null])],
+            'configuration is an empty string' => [array_merge($valid, ['configuration' => ''])],
+            'configuration is zero' => [array_merge($valid, ['configuration' => 0])],
+            'configuration is false' => [array_merge($valid, ['configuration' => false])],
         ];
     }
 
@@ -98,6 +102,7 @@ class ConfigurationServiceImportTest extends Unit
         return [
             'configuration is a string' => [array_merge($valid, ['configuration' => 'foo'])],
             'configuration is a number' => [array_merge($valid, ['configuration' => 42])],
+            'configuration is true' => [array_merge($valid, ['configuration' => true])],
             'type is an array' => [array_merge($valid, ['type' => ['graphql']])],
             'name is a number' => [array_merge($valid, ['name' => 42])],
             'path is an array' => [array_merge($valid, ['path' => []])],

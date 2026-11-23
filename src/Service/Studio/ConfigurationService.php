@@ -199,7 +199,7 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
             $importData['name']
         );
         $configuration->setModificationDate(time());
-        $configuration->setConfiguration($importData['configuration']);
+        $configuration->setConfiguration($importData['configuration'] ?? null);
         $configuration->save();
 
         return [
@@ -594,17 +594,18 @@ final readonly class ConfigurationService implements ConfigurationServiceInterfa
 
     /**
      * Checked before the values are used: wrongly typed fields would otherwise end in a TypeError (HTTP 500).
-     * A file without a configuration key is still accepted and imported as an empty configuration.
+     * Only a configuration that is present, non-empty and not an array is rejected. A missing key, null, "", 0
+     * and false keep importing as an empty configuration, because persist() rebuilds the defaults for them.
      */
     private function validateImportFieldTypes(array $importData): void
     {
-        $configuration = $importData['configuration'] ?? [];
+        $configuration = $importData['configuration'] ?? null;
 
         if (
             !is_string($importData['type'])
             || !is_string($importData['path'])
             || !is_string($importData['name'])
-            || !is_array($configuration)
+            || !(is_array($configuration) || empty($configuration))
         ) {
             throw new ValidationFailedException(
                 message: 'Uploaded configuration data is invalid. '
