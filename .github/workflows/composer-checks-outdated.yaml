@@ -2,6 +2,10 @@ name: "Composer outdated check"
 
 on:
     workflow_dispatch:
+    # TEMPORARY test-run trigger for this PR only - remove before merge
+    pull_request:
+        paths:
+            - '.github/workflows/composer-checks-outdated.yaml'
     schedule:
         - cron:  '0 7 * * 5'
 
