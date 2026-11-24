@@ -22,9 +22,6 @@ jobs:
                 include:
                     - { php-version: 8.5, branch: 2026.x }
                     - { php-version: 8.4, branch: 2026.x }
-                    - { php-version: 8.5, branch: 2026.3 }
-                    - { php-version: 8.4, branch: 2026.3 }
-                    - { php-version: 8.4, branch: 2.4 }
         with:
             php-version: ${{ matrix.php-version }}
             branch: ${{ matrix.branch }}
