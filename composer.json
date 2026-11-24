@@ -25,7 +25,7 @@
         "webonyx/graphql-php": "^15.2.3"
     },
     "require-dev": {
-        "phpstan/phpstan": "1.12.15",
+        "phpstan/phpstan": "1.12.34",
         "phpunit/phpunit": "^12.5.23 || ^13.1.7",
         "symfony/phpunit-bridge": "^6",
         "codeception/codeception": "^5.3.5",
