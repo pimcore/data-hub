@@ -34,6 +34,7 @@ import { useUser } from '@pimcore/studio-ui-bundle/modules/auth'
 import { isNil } from 'lodash'
 import { ColumnEditorItemBody } from './column-editor-item'
 import { ColumnLocaleControl } from './column-locale-control'
+import { OptionalClassificationStoreFieldPickerProvider } from './optional-classification-store-field-picker-provider'
 import { useColumnEditorState } from './use-column-editor-state'
 import {
   ADVANCED_COLUMN_TYPE,
@@ -194,102 +195,104 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     return (
       <LanguageSelectionContext.Provider value={ languageContextValue }>
-        <ContentLayout
-          renderToolbar={ hideToolbar
-            ? undefined
-            : (
-              <Toolbar
-                padding={ { x: 'none', y: 'small' } }
-                theme='secondary'
-              >
-                <Flex gap='mini'>
-                  <IconTextButton
-                    icon={ { value: 'new' } }
-                    onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.add-column') }
-                  </IconTextButton>
-
-                  { onAddAdvancedColumn !== undefined && (
+        <OptionalClassificationStoreFieldPickerProvider defaultClassId={ classDefinitionId }>
+          <ContentLayout
+            renderToolbar={ hideToolbar
+              ? undefined
+              : (
+                <Toolbar
+                  padding={ { x: 'none', y: 'small' } }
+                  theme='secondary'
+                >
+                  <Flex gap='mini'>
                     <IconTextButton
                       icon={ { value: 'new' } }
-                      onClick={ onAddAdvancedColumn }
+                      onClick={ () => { setFieldsToAddOpen(isOpen => !isOpen) } }
                       type='default'
                     >
-                      { t('data-hub.column-config-modal.add-advanced-column') }
+                      { t('data-hub.column-config-modal.add-column') }
                     </IconTextButton>
-                  ) }
-                </Flex>
 
-                <Space size='extra-small'>
-                  <Button
-                    onClick={ handleDiscard }
-                    type='default'
-                  >
-                    { t('data-hub.column-config-modal.discard') }
-                  </Button>
+                    { onAddAdvancedColumn !== undefined && (
+                      <IconTextButton
+                        icon={ { value: 'new' } }
+                        onClick={ onAddAdvancedColumn }
+                        type='default'
+                      >
+                        { t('data-hub.column-config-modal.add-advanced-column') }
+                      </IconTextButton>
+                    ) }
+                  </Flex>
 
-                  <Button
-                    onClick={ handleApply }
-                    type='primary'
-                  >
-                    { t('data-hub.column-config-modal.apply') }
-                  </Button>
-                </Space>
+                  <Space size='extra-small'>
+                    <Button
+                      onClick={ handleDiscard }
+                      type='default'
+                    >
+                      { t('data-hub.column-config-modal.discard') }
+                    </Button>
+
+                    <Button
+                      onClick={ handleApply }
+                      type='primary'
+                    >
+                      { t('data-hub.column-config-modal.apply') }
+                    </Button>
+                  </Space>
+                </Toolbar>
+                ) }
+            renderTopBar={ (
+              <Toolbar
+                align='center'
+                position='content'
+                theme='secondary'
+              >
+                <Button onClick={ openElementSelector }>
+                  { t('data-hub.column-config-modal.preview.select-object') }
+                </Button>
+
+                <LanguageSelectionWithProvider />
               </Toolbar>
-              ) }
-          renderTopBar={ (
-            <Toolbar
-              align='center'
-              position='content'
-              theme='secondary'
-            >
-              <Button onClick={ openElementSelector }>
-                { t('data-hub.column-config-modal.preview.select-object') }
-              </Button>
-
-              <LanguageSelectionWithProvider />
-            </Toolbar>
-          ) }
-        >
-          <Content
-            padded
-            padding={ { x: 'none', y: 'small' } }
-            style={ { height: 'calc(80vh - 200px)' } }
+            ) }
           >
-            <div className={ styles.body }>
-              { !hideToolbar && fieldsToAddOpen && (
-                <FieldsToAddPanel
-                  groups={ columnGroups }
-                  onClose={ () => { setFieldsToAddOpen(false) } }
-                  onColumnSelect={ handleAddColumnOfType }
-                />
-              ) }
+            <Content
+              padded
+              padding={ { x: 'none', y: 'small' } }
+              style={ { height: 'calc(80vh - 200px)' } }
+            >
+              <div className={ styles.body }>
+                { !hideToolbar && fieldsToAddOpen && (
+                  <FieldsToAddPanel
+                    groups={ columnGroups }
+                    onClose={ () => { setFieldsToAddOpen(false) } }
+                    onColumnSelect={ handleAddColumnOfType }
+                  />
+                ) }
 
-              <div className={ styles.list }>
-                <Space
-                  direction='vertical'
-                  style={ { width: '100%' } }
-                >
-                  { draft.length === 0 && (
-                    <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
-                  ) }
+                <div className={ styles.list }>
+                  <Space
+                    direction='vertical'
+                    style={ { width: '100%' } }
+                  >
+                    { draft.length === 0 && (
+                      <Empty image={ Empty.PRESENTED_IMAGE_SIMPLE } />
+                    ) }
 
-                  { draft.length > 0 && (
-                    <StackList
-                      items={ stackItems }
-                      onItemsChange={ (items) => {
-                        handleReorder(items.map(item => String(item.id)))
-                      } }
-                      sortable
-                    />
-                  ) }
-                </Space>
+                    { draft.length > 0 && (
+                      <StackList
+                        items={ stackItems }
+                        onItemsChange={ (items) => {
+                          handleReorder(items.map(item => String(item.id)))
+                        } }
+                        sortable
+                      />
+                    ) }
+                  </Space>
+                </div>
               </div>
-            </div>
-          </Content>
-        </ContentLayout>
+            </Content>
+          </ContentLayout>
+        </OptionalClassificationStoreFieldPickerProvider>
       </LanguageSelectionContext.Provider>
     )
   }
