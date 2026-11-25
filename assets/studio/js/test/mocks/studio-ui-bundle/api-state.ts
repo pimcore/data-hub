@@ -19,12 +19,14 @@ export const apiState: {
   /** The key-group-relations page for one request; answers `{ data: { totalItems, items } }` */
   keyGroupRelations: Handler
   calls: { grid: any[], gridPreview: any[], available: any[], keyGroupRelations: any[] }
+  keyGroupRelationUnsubscribes: number
 } = {
   available: {},
   grid: () => ({}),
   gridPreview: () => ({}),
   keyGroupRelations: () => ({}),
-  calls: { grid: [], gridPreview: [], available: [], keyGroupRelations: [] }
+  calls: { grid: [], gridPreview: [], available: [], keyGroupRelations: [] },
+  keyGroupRelationUnsubscribes: 0
 }
 
 export const resetApiState = (): void => {
@@ -33,6 +35,7 @@ export const resetApiState = (): void => {
   apiState.gridPreview = () => ({})
   apiState.keyGroupRelations = () => ({ data: { totalItems: 0, items: [] } })
   apiState.calls = { grid: [], gridPreview: [], available: [], keyGroupRelations: [] }
+  apiState.keyGroupRelationUnsubscribes = 0
 }
 
 export const makeEndpoint = (

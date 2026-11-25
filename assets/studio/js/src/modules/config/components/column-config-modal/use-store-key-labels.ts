@@ -22,8 +22,10 @@ export interface StoreFieldRef {
 /** A whole store in one trip for any store this demo-sized configuration addresses */
 const PAGE_SIZE = 200
 
-/** Guard against a paging answer that never terminates */
-const MAX_PAGES = 25
+/** What `initiate` hands back: awaitable, and subscribed until the caller lets go of it */
+interface QueryHandle extends Promise<{ data?: unknown } | undefined> {
+  unsubscribe?: () => void
+}
 
 interface RelationItem {
   keyId: number
@@ -91,17 +93,22 @@ export const useStoreKeyLabels = (
     }
 
     let cancelled = false
+    const handles: QueryHandle[] = []
 
     const fetchPage = async (field: StoreFieldRef, page: number): Promise<RelationPage> => {
-      const result = await dispatch(relationsEndpoint.initiate({
+      const handle = dispatch(relationsEndpoint.initiate({
         storeId: field.storeId,
         classId,
         fieldName: field.fieldName,
         page,
         pageSize: PAGE_SIZE
-      }))
+      })) as QueryHandle
 
-      return (result.data ?? {}) as RelationPage
+      handles.push(handle)
+
+      const result = await handle
+
+      return (result?.data ?? {}) as RelationPage
     }
 
     const fetchField = async (field: StoreFieldRef): Promise<RelationItem[]> => {
@@ -109,10 +116,12 @@ export const useStoreKeyLabels = (
       const items = [...(first.items ?? [])]
       const totalItems = first.totalItems ?? items.length
 
-      for (let page = 2; page <= MAX_PAGES && items.length < totalItems; page++) {
-        const next = await fetchPage(field, page)
-        if ((next.items ?? []).length === 0) break
-        items.push(...(next.items ?? []))
+      // every page the store reports, however many: a page that adds nothing ends it, so a total
+      // the pages never reach cannot spin here
+      for (let page = 2; items.length < totalItems; page++) {
+        const batch = (await fetchPage(field, page)).items ?? []
+        if (batch.length === 0 || cancelled) break
+        items.push(...batch)
       }
 
       return items
@@ -129,6 +138,7 @@ export const useStoreKeyLabels = (
 
     return () => {
       cancelled = true
+      handles.forEach(handle => { handle.unsubscribe?.() })
     }
     // storeFields itself is intentionally not a dependency; fieldsKey stands for its content
   }, [fieldsKey, classId, dispatch])

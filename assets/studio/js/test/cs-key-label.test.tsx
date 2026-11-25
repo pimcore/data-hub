@@ -10,7 +10,7 @@
 
 import React from 'react'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, render, renderHook, screen, waitFor } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
 import { settleKeyLabels } from './settle-key-labels'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
@@ -167,6 +167,49 @@ describe('labelling a stored key, the path that needs the lookup', () => {
 
     await waitFor(() => { expect(apiState.calls.keyGroupRelations).toHaveLength(1) })
     expect(screen.getByText('technicalAttributes-1-3')).toBeInTheDocument()
+  })
+
+  /**
+   * A store bigger than any one page: the key the configuration names sits past where a fixed page
+   * ceiling would have stopped, and such a key must label rather than keep its identifier.
+   */
+  it('follows the pages of a store too large for any one of them', async () => {
+    const PER_PAGE = 200
+    const PAGES = 30
+    apiState.keyGroupRelations = (arg: any) => {
+      const page = arg.page as number
+      const items = Array.from({ length: PER_PAGE }, (_unused, index) => {
+        const keyId = (page - 1) * PER_PAGE + index + 1
+        return { keyId, groupId: 1, keyName: `k${keyId}`, groupName: 'Dimensions', keyTitle: `Key ${keyId}` }
+      })
+
+      return { data: { totalItems: PER_PAGE * PAGES, items } }
+    }
+
+    mountEditor([
+      { key: 'technicalAttributes', fieldtype: 'quantityValue', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 1, keyId: 5999 } }
+    ])
+
+    expect(await screen.findByText('Key 5999 [Dimensions]')).toBeInTheDocument()
+    expect(apiState.calls.keyGroupRelations).toHaveLength(PAGES)
+  })
+
+  /**
+   * Every `initiate` subscribes the query; dropping the handle leaves it subscribed, so reopening
+   * the dialog accumulates subscriptions. `useObjectBrickLayouts` unsubscribes the same way.
+   */
+  it('unsubscribes every page it started when the editor goes away', async () => {
+    apiState.keyGroupRelations = () => relations
+    mountEditor([
+      { key: 'technicalAttributes', fieldtype: 'quantityValue', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 1, keyId: 3 } }
+    ])
+
+    await waitFor(() => { expect(apiState.calls.keyGroupRelations).toHaveLength(1) })
+    expect(apiState.keyGroupRelationUnsubscribes).toBe(0)
+
+    cleanup()
+
+    expect(apiState.keyGroupRelationUnsubscribes).toBe(apiState.calls.keyGroupRelations.length)
   })
 })
 
