@@ -96,14 +96,19 @@ final class PimcoreDataHubExtension extends Extension implements PrependExtensio
             $loader->load('doctrine_migrations.yml');
         }
 
-        // the Configuration agent takes its configuration kinds from the bundles that own them
-        if ($container->hasExtension('pimcore_agent')
-            && ConfigProposalLane::canPropose($container)
-            && self::takesAgentContributions($container)
-        ) {
-            $container->prependExtensionConfig('pimcore_agent', ['agents' => ['contributions' => ['configuration' => [
-                'pimcoreMcpServers' => ['pimcore-data-hub-graphql-read', 'pimcore-data-hub-graphql-propose'],
-            ]]]]);
+        // the agent bundle is an optional peer; it reads bundle skills from pimcore_agent.skills.paths
+        if ($container->hasExtension('pimcore_agent')) {
+            $agentConfig = ['skills' => ['paths' => [__DIR__ . '/../Resources/skills']]];
+
+            // the Configuration agent takes its configuration kinds from the bundles that own them
+            if (ConfigProposalLane::canPropose($container) && self::takesAgentContributions($container)) {
+                $agentConfig['agents'] = ['contributions' => ['configuration' => [
+                    'pimcoreMcpServers' => ['pimcore-data-hub-graphql-read', 'pimcore-data-hub-graphql-propose'],
+                    'skills' => ['data-hub-graphql-configuration'],
+                ]]];
+            }
+
+            $container->prependExtensionConfig('pimcore_agent', $agentConfig);
         }
 
         $loader->load('pimcore/studio_backend.yaml');
