@@ -69,5 +69,35 @@ value that was written reads back unchanged.
 | `manyToOneRelation` | `{ id: 3, type: "object" }`, the type being `object`, `asset` or `document` |
 | `manyToManyRelation` | a list of `{ id, type }` of any element type |
 | `manyToManyObjectRelation` | a list of `{ id, type: "object" }` |
+| `numericRange` | `{ minimum: 1, maximum: 7 }`, either bound may be left out and stays open |
+| `quantityValueRange` | `{ minimum: 1, maximum: 7, unit: "cm" }`, the `unit` being the **id** of a quantity value unit, not its abbreviation; each member may be left out |
+| `dateRange` | `{ startDate: 1700000000000, endDate: 1700086400000 }`, **milliseconds** since the epoch, both bounds required |
+| `table` | `[["a", "b"], ["c", "d"]]`, a list of rows, each a list of cells |
+| `user` | `12`, the id of a back office user |
 
 A relation target that does not exist refuses the whole mutation and nothing is saved; `null` clears the slot.
+
+### Refusals of the range, table and user types
+
+The editmode conversion of these types answers an unusable value with a PHP warning, a type error, or silently with
+`null`, which would clear the slot the write was meant to fill. Each case is refused with a message instead, and
+nothing is saved:
+
+* a `numericRange`, `quantityValueRange` or `dateRange` naming a member its type does not publish, or naming
+  none of them - a misspelled bound would otherwise be written as `null`, and a value naming no bound at all
+  would clear the key it was meant to fill;
+* a bound of a `numericRange`, a `quantityValueRange` or a `dateRange` that is not a number - a
+  `quantityValueRange` would otherwise store it as `0`;
+* a `dateRange` with only one of its two bounds;
+* a `unit` of a `quantityValueRange` that is not the id of an existing unit;
+* a `user` that is not a positive numeric id, or is an id no user has - every non-numeric value would otherwise
+  resolve to the user with the id `0`, and a missing id would clear the slot;
+* a `table` that is not a list of rows of cells.
+
+Two further notes on these types:
+
+* A `table` is stored as it is given, as a table of a class field is. An all-blank row, and a row holding only `"0"`,
+  are kept; the editmode conversion reads both as an empty table.
+* A `numericRange` with a minimum and no maximum is refused **on save**, by the validation of the type itself, which
+  compares the two bounds and reads a missing maximum as smaller. A maximum with no minimum is accepted. The
+  asymmetry is the field type's own, on a class field as well as on a key.

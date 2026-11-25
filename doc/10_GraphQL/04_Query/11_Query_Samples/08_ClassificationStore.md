@@ -6,8 +6,9 @@ A Classification Store key supports every data type the same type supports on a 
 type shows up in `features` of its group and is a member of the `csFeature` union.
 
 The data types a key can be read as are the ones with a registered `csfeaturequerytypegenerator`: one per supported
-plain field type, plus `multiValue`, the Classification Store's own wrapper for qualified values. Calculated Value is
-read only.
+plain field type, plus `multiValue`, the Classification Store's own wrapper for qualified values, and the types of
+[Range, Table and User Keys](#range-table-and-user-keys), which a key can be read as and a plain field cannot.
+Calculated Value is read only.
 
 The following types are not supported and are skipped in `features`:
 
@@ -15,7 +16,10 @@ The following types are not supported and are skipped in `features`:
 * Reverse Object Relation, Reverse Many To Many Object Relation: computed from the owning side, not stored on a key
 * URL Slug: needs a route registration keyed to the object and the field name
 * Newsletter Active, Newsletter Confirmed: Customer Management Framework types, not core field types
-* Table, Structured Table: their fields come from the columns of the field definition, not from a shared type
+* Structured Table: its fields come from the columns of the field definition, not from a shared type
+* Password, Encrypted Field: deliberately not published and not accepted. Both types exist to keep their value out of
+  reach, and handing it to an API consumer - or taking a new one from one - defeats what they are for. They are simply
+  not registered; there is no separate blocklist to maintain.
 
 The legacy ids `href`, `multihref` and `multihrefMetadata` are the same types as `manyToOneRelation`,
 `manyToManyRelation` and `advancedManyToManyRelation`. Relation keys are published as follows:
@@ -29,11 +33,46 @@ Targets the endpoint is not allowed to read are omitted from lists and resolve t
 
 The data types a key can be written as are the same list without Calculated Value, see
 [Classification Store Mutations](../../07_Mutation/24_Mutation_Samples/16_Classificationstore_Mutations.md).
-A type that has no read generator (e.g. Table, Encrypted Field) is neither readable nor writable.
+A type that has no read generator (e.g. Structured Table, Encrypted Field) is neither readable nor writable.
 
 A `multiValue` key holds one value per declared variant and is published as `csFeatureMultiValue`, whose `values` list
 carries one entry per variant that holds a value (`language`, `variant` and the `value`, typed as the inner type of the
 key). On a store whose engine cannot hold variants `values` holds the single unqualified value.
+
+## Range, Table and User Keys
+
+Five types are readable on a key although a plain object field of the same type is not. Only `table` has a class field
+counterpart to be consistent with; the other four set the contract, and a class field generator added later can adopt
+these shapes verbatim.
+
+| Type | published as | value |
+| --- | --- | --- |
+| `numericRange` | `csFeatureNumericRange` | `numericRange { minimum maximum }`, each `Float` and `null` for an open bound |
+| `quantityValueRange` | `csFeatureQuantityValueRange` | `quantityValueRange { minimum maximum unit { id abbreviation longname } }` |
+| `dateRange` | `csFeatureDateRange` | `dateRange { startDate endDate }`, each a `String` taking the same `format` argument as `csFeatureDate` |
+| `table` | `csFeatureTable` | `rows`, a list of rows, each a list of `String` cells |
+| `user` | `csFeatureUser` | `userId`, the stored id of the back office user as a `String` |
+
+```graphql
+features {
+  ... on csFeatureNumericRange { identifier numericRange { minimum maximum } }
+  ... on csFeatureQuantityValueRange { identifier quantityValueRange { minimum maximum unit { abbreviation } } }
+  ... on csFeatureDateRange { identifier dateRange { startDate(format: "Y-m-d") endDate(format: "U") } }
+  ... on csFeatureTable { identifier rows }
+  ... on csFeatureUser { identifier userId }
+}
+```
+
+Three of these shapes carry a decision worth stating:
+
+* **`table` publishes its rows by position and not its column names.** A class field of this type publishes a type
+  built from the columns of that one field; a key is published as the single type every key of its fieldtype shares,
+  so a per-key field map is not available to it. A key whose column configuration is active stores its rows by column
+  name, and `rows` answers with the values of those columns in their configured order.
+* **`user` publishes the stored id, not the user.** The name of a back office account is not published through a
+  Data Hub endpoint. A richer type can be added later without breaking this one; removing a published field could not.
+* **`dateRange` publishes formatted bounds, while a write takes milliseconds** (see the mutation documentation). Read
+  the bounds with `format: "U"` to get the seconds since the epoch, and multiply by 1000 to write them back.
 
 ## Qualified Values
 

@@ -42,6 +42,8 @@ class RegisteredGeneratorsTest extends Unit
 
     private const CONTAINER_TYPE = 'container type';
 
+    private const NO_PLAIN_GENERATOR = 'a plain field of this type is not published either, see pimcore/data-hub#53';
+
     /**
      * Plain field types without a Classification Store read generator, with the reason.
      */
@@ -52,13 +54,23 @@ class RegisteredGeneratorsTest extends Unit
         'reverseObjectRelation' => 'computed from the owning side, not stored on a key',
         'reverseManyToManyObjectRelation' => 'computed from the owning side, not stored on a key',
         'urlSlug' => 'needs a route registration keyed to the object and field name',
-        'table' => 'its fields come from the columns of the field definition, not of a shared type',
         'structuredTable' => 'its fields come from the columns of the field definition, not of a shared type',
         'href' => 'legacy id of manyToOneRelation, a key reports the modern name',
         'multihref' => 'legacy id of manyToManyRelation, a key reports the modern name',
         'multihrefMetadata' => 'legacy id of advancedManyToManyRelation, a key reports the modern name',
         'newsletterActive' => 'customer management framework type, not a core field type',
         'newsletterConfirmed' => 'customer management framework type, not a core field type',
+    ];
+
+    /**
+     * Classification Store read generators without a plain field read generator, with the reason.
+     */
+    private const CS_ONLY = [
+        'multiValue' => 'the wrapper type of a key that holds several values, not a field type',
+        'numericRange' => self::NO_PLAIN_GENERATOR,
+        'quantityValueRange' => self::NO_PLAIN_GENERATOR,
+        'dateRange' => self::NO_PLAIN_GENERATOR,
+        'user' => self::NO_PLAIN_GENERATOR,
     ];
 
     public function testEveryPlainFieldTypeHasAClassificationStoreGeneratorOrIsExcluded(): void
@@ -74,13 +86,28 @@ class RegisteredGeneratorsTest extends Unit
         $this->assertSame($excluded, $missing);
     }
 
-    public function testNoClassificationStoreGeneratorExistsForATypeWithoutAPlainFieldGenerator(): void
+    public function testEveryClassificationStoreGeneratorWithoutAPlainFieldGeneratorIsOneOfTheKnownOnes(): void
     {
         $plain = $this->taggedTypes(self::PLAIN_TAG, self::PLAIN_PREFIX);
         $cs = $this->taggedTypes(self::CS_TAG, self::CS_PREFIX);
 
-        // multiValue is the wrapper type of a key that holds several values, not a field type
-        $this->assertSame(['multiValue'], array_values(array_diff($cs, $plain)));
+        $csOnly = array_values(array_diff($cs, $plain));
+        sort($csOnly);
+        $known = array_keys(self::CS_ONLY);
+        sort($known);
+
+        $this->assertSame($known, $csOnly);
+    }
+
+    public function testThePasswordAndEncryptedFieldTypesAreNotRegisteredOnEitherSide(): void
+    {
+        $plain = $this->taggedTypes(self::PLAIN_TAG, self::PLAIN_PREFIX);
+        $cs = $this->taggedTypes(self::CS_TAG, self::CS_PREFIX);
+
+        foreach (['password', 'encryptedField'] as $type) {
+            $this->assertNotContains($type, $plain);
+            $this->assertNotContains($type, $cs);
+        }
     }
 
     public function testEveryGeneratorPublishesItsOwnFeatureTypeName(): void

@@ -44,7 +44,7 @@ class ClassificationstoreAcceptedTypesTest extends Unit
     {
         $this->assertContains('rgbaColor', $this->createProcessor(['input', 'rgbaColor'])->getAcceptedTypes());
         $this->assertNotContains('rgbaColor', $this->createProcessor(['input'])->getAcceptedTypes());
-        // a type without a read generator, here table, is not in the set
-        $this->assertNotContains('table', $this->createProcessor(['input'])->getAcceptedTypes());
+        // a type without a read generator, here password, is not in the set
+        $this->assertNotContains('password', $this->createProcessor(['input'])->getAcceptedTypes());
     }
 }

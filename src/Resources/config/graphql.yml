@@ -1279,6 +1279,31 @@ services:
     tags:
       - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_advancedManyToManyObjectRelation }
 
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_numericRange:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\NumericRange
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_numericRange }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_quantityValueRange:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\QuantityValueRange
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_quantityValueRange }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_dateRange:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\DateRange
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_dateRange }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_table:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\Table
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_table }
+
+  pimcore.datahub.graphql.csfeaturequerytypegenerator_datatype_user:
+    class: Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreFeatureQueryTypeGenerator\User
+    tags:
+      - { name: pimcore.datahub.graphql.csfeaturequerytypegenerator, id: typegenerator_csfeaturequerydatatype_user }
+
 
   # properties
 
