@@ -601,6 +601,29 @@ final class Classificationstore extends Base
             ));
         }
 
+        // filling the members in would otherwise turn a value that names none of them into an all-null map,
+        // which core's own isset() checks read as no value at all and which clears the key
+        $unknown = array_diff(array_keys($value), $members);
+        if ($unknown !== []) {
+            throw new ClientSafeException(sprintf(
+                'The value of the classification store key "%s" of the type "%s" carries the unknown member(s) %s. '
+                . self::NOT_SAVED,
+                $relation->getName(),
+                $type,
+                implode(', ', $unknown)
+            ));
+        }
+
+        if (array_intersect(array_keys($value), $members) === []) {
+            throw new ClientSafeException(sprintf(
+                'The value of the classification store key "%s" of the type "%s" carries none of the members %s. '
+                . self::NOT_SAVED,
+                $relation->getName(),
+                $type,
+                implode(', ', $members)
+            ));
+        }
+
         foreach ($members as $member) {
             $value[$member] ??= null;
         }

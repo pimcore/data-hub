@@ -146,6 +146,48 @@ class ClassificationstoreGuardedTypesTest extends Unit
         $this->assertNull($this->stored($object));
     }
 
+    /**
+     * A map naming none of the published members would otherwise be filled into an all-null map, which core's
+     * own isset() checks read as no value and which clears a key that already held one.
+     */
+    public function testANumericRangeRefusesAMapThatNamesNoBound(): void
+    {
+        $object = $this->prepare(self::NUMERIC_RANGE);
+        $this->write($object, [self::MINIMUM => 1, self::MAXIMUM => 7]);
+
+        $result = $this->write($object, ['unknown' => 1]);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString(self::NOT_SAVED, $result['message']);
+        $this->assertEquals(1, $this->stored($object)->getMinimum(), 'the stored range was cleared');
+    }
+
+    /**
+     * A misspelled bound beside a correct one is the half-silent case: the write would have succeeded and
+     * stored the misspelled bound as null.
+     */
+    public function testANumericRangeRefusesAMisspelledBound(): void
+    {
+        $object = $this->prepare(self::NUMERIC_RANGE);
+
+        $result = $this->write($object, ['minimun' => 1, self::MAXIMUM => 7]);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('minimun', $result['message']);
+        $this->assertNull($this->stored($object));
+    }
+
+    public function testAQuantityValueRangeRefusesAMapThatNamesNoMember(): void
+    {
+        $object = $this->prepare(self::QUANTITY_VALUE_RANGE);
+
+        $result = $this->write($object, ['unknown' => 1]);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString(self::NOT_SAVED, $result['message']);
+        $this->assertNull($this->stored($object));
+    }
+
     public function testAQuantityValueRangeRoundTrips(): void
     {
         $object = $this->prepare(self::QUANTITY_VALUE_RANGE);
@@ -233,7 +275,8 @@ class ClassificationstoreGuardedTypesTest extends Unit
         $result = $this->write($object, ['start_date' => 1700000000000, 'end_date' => 1700086400000]);
 
         $this->assertFalse($result['success']);
-        $this->assertStringContainsString('startDate', $result['message']);
+        $this->assertStringContainsString('start_date', $result['message'], 'the refused member is not named');
+        $this->assertStringContainsString(self::NOT_SAVED, $result['message']);
         $this->assertNull($this->stored($object));
     }
 

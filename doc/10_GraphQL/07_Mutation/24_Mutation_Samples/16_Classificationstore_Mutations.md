@@ -83,6 +83,9 @@ The editmode conversion of these types answers an unusable value with a PHP warn
 `null`, which would clear the slot the write was meant to fill. Each case is refused with a message instead, and
 nothing is saved:
 
+* a `numericRange`, `quantityValueRange` or `dateRange` naming a member its type does not publish, or naming
+  none of them - a misspelled bound would otherwise be written as `null`, and a value naming no bound at all
+  would clear the key it was meant to fill;
 * a bound of a `numericRange`, a `quantityValueRange` or a `dateRange` that is not a number - a
   `quantityValueRange` would otherwise store it as `0`;
 * a `dateRange` with only one of its two bounds;
