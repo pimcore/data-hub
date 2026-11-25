@@ -21,3 +21,10 @@ const registry = {
 
 // One instance for every call, as the container hands out one registry
 export const useInjection = (): typeof registry => registry
+
+// One stable instance, as the store hands out one dispatch: a fresh identity per render would
+// re-run every effect depending on it. It hands an RTK Query thunk straight back, so
+// `await dispatch(initiate(...))` resolves to what the endpoint answered.
+const dispatch = <T, >(action: T): T => action
+
+export const useAppDispatch = (): typeof dispatch => dispatch

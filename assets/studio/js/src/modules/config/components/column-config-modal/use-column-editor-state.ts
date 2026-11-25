@@ -25,11 +25,22 @@ import {
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { useAddColumnGroups } from './use-add-column-groups'
 import { deriveColumnFieldtype, hydrateDraft, isDraftHydrated } from './column-fieldtype'
-import { CLASSIFICATION_STORE_TYPE } from './column-identity'
+import {
+  CLASSIFICATION_STORE_TYPE,
+  classificationStoreId,
+  findStoreFieldEntry,
+  isClassificationStore,
+  type StoreKeyLabel
+} from './column-identity'
+import { useStoreKeyLabels, type StoreFieldRef } from './use-store-key-labels'
 import { trackConfigError } from '../../../../components/base-detail-view/track-config-error'
 
-/** One key of a Classification Store field, as the picker reports it */
-interface StoreKeyIds { groupId: number, keyId: number, fieldtype?: string }
+/**
+ * One key of a Classification Store field, as the picker reports it. The picker hands over the
+ * key's whole layout, so its resolved title comes with the ids and the row can label itself before
+ * the key-group-relations lookup answers.
+ */
+interface StoreKeyIds { groupId: number, keyId: number, fieldtype?: string, keyTitle?: string }
 
 interface UseColumnEditorStateOptions {
   entity: string
@@ -54,6 +65,8 @@ interface UseColumnEditorStateResult {
   isError: boolean
   resolvedClassId: string
   availableFields: GridColumnConfiguration[]
+  /** Labels of the Classification Store keys the draft addresses, for the configured rows */
+  storeKeyLabels: ReadonlyMap<string, StoreKeyLabel>
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
   onAddAdvancedColumn?: () => void
@@ -154,6 +167,7 @@ export const useColumnEditorState = ({
           type: CLASSIFICATION_STORE_TYPE,
           config: { groupId: ids.groupId, keyId: ids.keyId },
           localizable: field.localizable,
+          keyTitle: ids.keyTitle,
           isNew: true
         }
       }
@@ -173,6 +187,23 @@ export const useColumnEditorState = ({
   )
 
   const columnGroups = useAddColumnGroups(addColumnFields, resolvedClassId !== '')
+
+  // Only the fields a per-key column actually addresses: a whole-store column labels itself from the
+  // field definition and needs no key lookup.
+  const storeFields = useMemo((): StoreFieldRef[] => {
+    const fields = new Map<string, StoreFieldRef>()
+
+    draft.forEach((column) => {
+      if (!isClassificationStore(column.type) || column.config?.keyId === undefined) return
+      const entry = findStoreFieldEntry(column.key, availableFields)
+      if (entry === undefined) return
+      fields.set(column.key, { fieldName: column.key, storeId: classificationStoreId(entry.config) })
+    })
+
+    return [...fields.values()]
+  }, [draft, availableFields])
+
+  const storeKeyLabels = useStoreKeyLabels({ classId: resolvedClassId, storeFields })
 
   // The type first, so an ordinary field which happens to be keyed 'advanced' cannot be offered as the
   // advanced entry. The key is only a fallback for a payload which does not carry the type.
@@ -236,6 +267,7 @@ export const useColumnEditorState = ({
     isError: isError === true,
     resolvedClassId,
     availableFields,
+    storeKeyLabels,
     columnGroups,
     onAddAdvancedColumn,
     handleAddColumnOfType,

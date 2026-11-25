@@ -121,7 +121,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       isHydrated,
       isError,
       resolvedClassId,
-      availableFields,
+      availableFields, storeKeyLabels,
       columnGroups,
       onAddAdvancedColumn,
       handleAddColumnOfType, handleAddClassificationStoreKey,
@@ -147,7 +147,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
     const { marks, removedItems } = useColumnMarkItems(columns, previousColumns, readOnly)
     const stackItems: StackListProps['items'] = [...draft.map((col, index) => {
       const isAdvanced = col.type === ADVANCED_COLUMN_TYPE
-      const label = columnLabel(col)
+      const label = columnLabel(col, t, { availableFields, storeKeys: storeKeyLabels })
       return {
         id: col._id,
         sortable: !readOnly,
@@ -177,7 +177,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
                 body: <SimpleColumnPreview
                   availableField={ findAvailableField(col, availableFields) }
                   column={ col }
-                      /> 
+                      />
               }
             : {}),
         renderRightToolbar: (

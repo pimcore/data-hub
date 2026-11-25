@@ -11,6 +11,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
+import { settleKeyLabels } from './settle-key-labels'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
 
@@ -97,23 +98,26 @@ beforeEach(() => {
 })
 
 describe('classification-store preview against the real available-columns payload', () => {
-  test('the request carries the ids of the column, which only the column holds', () => {
+  test('the request carries the ids of the column, which only the column holds', async () => {
     open()
+    await settleKeyLabels()
     const request = apiState.calls.grid.filter(isSimpleRequest).pop()
     const column = request.body.columns.find((c: any) => c.key === FIELD)
 
     expect(column.config).toEqual(expect.objectContaining({ groupId: 1, keyId: 3 }))
   })
 
-  test('the value of the key is shown, not "no data"', () => {
+  test('the value of the key is shown, not "no data"', async () => {
     open()
+    await settleKeyLabels()
 
     expect(screen.queryByText('data-hub.column-config-modal.preview.no-data')).not.toBeInTheDocument()
     expect(screen.getByText(/"327"/)).toBeInTheDocument()
   })
 
-  test('the cell is rendered as the type of the key, not as the whole store', () => {
+  test('the cell is rendered as the type of the key, not as the whole store', async () => {
     open()
+    await settleKeyLabels()
 
     expect(screen.getByText(/:quantityValue=/)).toBeInTheDocument()
   })

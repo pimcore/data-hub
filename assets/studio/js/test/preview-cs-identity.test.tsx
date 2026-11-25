@@ -11,6 +11,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
+import { settleKeyLabels } from './settle-key-labels'
 import { ColumnConfigModal } from '../src/modules/config/components/column-config-modal/column-config-modal'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
 
@@ -64,28 +65,31 @@ const respond = (columns: any[]): void => {
 }
 
 describe('classification-store identity', () => {
-  test('AC1: siblings with the same key but different key or group id each send their own config', () => {
+  test('AC1: siblings with the same key but different key or group id each send their own config', async () => {
     respond([])
     open()
+    await settleKeyLabels()
     const request = apiState.calls.grid.filter(isSimpleRequest).pop()
     const colors = request.body.columns.filter((c: any) => c.key === 'color')
     expect(colors.map((c: any) => c.config.groupId)).toEqual([10, 11])
   })
 
-  test('AC2: each sibling shows its own value, and one without a matching entry shows no data', () => {
+  test('AC2: each sibling shows its own value, and one without a matching entry shows no data', async () => {
     respond([
       { key: 'color', type: CS, value: 'red', additionalAttributes: { keyId: 1, groupId: 10 } },
       { key: 'name', value: 'N' }
     ])
     open()
+    await settleKeyLabels()
     expect(screen.getByText(/"red"/)).toBeInTheDocument()
     expect(screen.getAllByText(/"red"/)).toHaveLength(1)
     expect(screen.getByText('data-hub.column-config-modal.preview.no-data')).toBeInTheDocument()
   })
 
-  test('AC3: a column that is not classification-store matches by key and locale', () => {
+  test('AC3: a column that is not classification-store matches by key and locale', async () => {
     respond([{ key: 'name', value: 'N' }])
     open()
+    await settleKeyLabels()
     expect(screen.getByText(/adapter:input="N"|dataobject.adapter:.*"N"/)).toBeInTheDocument()
   })
 })

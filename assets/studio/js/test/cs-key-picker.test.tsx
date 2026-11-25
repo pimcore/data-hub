@@ -13,6 +13,7 @@ import { flatMap } from 'lodash'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
+import { settleKeyLabels } from './settle-key-labels'
 import { applyClassificationStoreSelection, openClassificationStoreModal } from './mocks/studio-ui-bundle/modules-element'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
@@ -85,7 +86,7 @@ describe('the key picker affordance in the tree', () => {
     ])
   })
 
-  it('opens the modal on the key tab with the store of the field, and appends the picked key', () => {
+  it('opens the modal on the key tab with the store of the field, and appends the picked key', async () => {
     const editor = mountEditor(NO_COLUMNS)
 
     fireEvent.click(screen.getByTestId(PICK))
@@ -93,13 +94,14 @@ describe('the key picker affordance in the tree', () => {
       storeId: 3, fieldName: 'technicalAttributes', allowedTabs: ['group-by-key']
     }))
     act(() => { applyClassificationStoreSelection([{ groupId: 7, id: 42, name: 'rim' }]) })
+    await settleKeyLabels()
 
     expect(editor.current?.getColumns()).toEqual([
       expect.objectContaining({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 7, keyId: 42 } })
     ])
   })
 
-  it('opens it multi-select and appends one column per key of the selection', () => {
+  it('opens it multi-select and appends one column per key of the selection', async () => {
     const editor = mountEditor(NO_COLUMNS)
 
     fireEvent.click(screen.getByTestId(PICK))
@@ -110,6 +112,7 @@ describe('the key picker affordance in the tree', () => {
         { groupId: 7, id: 43, name: 'tyre' }
       ])
     })
+    await settleKeyLabels()
 
     expect(editor.current?.getColumns().map(column => column.config)).toEqual([
       { groupId: 7, keyId: 42 },

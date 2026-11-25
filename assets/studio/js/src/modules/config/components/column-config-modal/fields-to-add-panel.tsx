@@ -14,7 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { ClassificationStoreModalProvider, TabId, useClassificationStoreModal } from '@pimcore/studio-ui-bundle/modules/element'
 import { useStyles } from './base-column-editor.styles'
-import { PICK_KEY_SUFFIX, classificationStoreId } from './column-identity'
+import { PICK_KEY_SUFFIX, classificationStoreId, firstNonEmpty } from './column-identity'
 
 export interface FieldsToAddPanelProps {
   /** The class the picked store keys are scoped to */
@@ -23,14 +23,22 @@ export interface FieldsToAddPanelProps {
   /** The available-columns request failed: an empty tree then says nothing about the class */
   isError?: boolean
   onColumnSelect: (column: GridColumnConfiguration) => void
-  onKeySelect: (column: GridColumnConfiguration, keys: Array<{ groupId: number, keyId: number }>) => void
+  onKeySelect: (
+    column: GridColumnConfiguration,
+    keys: Array<{ groupId: number, keyId: number, keyTitle?: string }>
+  ) => void
   onClose: () => void
 }
 
-/** One selected row of the key tab: the group it was picked under, plus the key's own id. */
+/**
+ * One selected row of the key tab: the group it was picked under, plus the key's own layout. The
+ * modal reports the whole layout, so the key's resolved title comes with it.
+ */
 interface SelectedKeyRow {
   groupId: number
   id: number
+  name?: string
+  title?: string | null
 }
 
 /**
@@ -50,7 +58,12 @@ const FieldsToAddPanelContent = ({ classId, groups, isError = false, onColumnSel
 
     if (field === undefined || rows.length === 0) return
 
-    onKeySelect(field, rows.map((row) => ({ groupId: row.groupId, keyId: row.id })))
+    onKeySelect(field, rows.map((row) => ({
+      groupId: row.groupId,
+      keyId: row.id,
+      // the title falls back to the key name here, as the relations lookup does on the stored path
+      keyTitle: firstNonEmpty(row.title, row.name)
+    })))
   }, [onKeySelect])
 
   const { openModal } = useClassificationStoreModal({ onUpdate })
