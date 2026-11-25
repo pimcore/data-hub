@@ -46,6 +46,23 @@ interface RelationPage {
  */
 const relationsEndpoint = (api.endpoints as Record<string, any>).classificationStoreGetKeyGroupRelations
 
+/** The pages of every store field, flattened into one map keyed by {@see storeKeyId} */
+const labelsOf = (pages: RelationItem[][]): Map<string, StoreKeyLabel> => {
+  const resolved = new Map<string, StoreKeyLabel>()
+
+  for (const items of pages) {
+    for (const item of items) {
+      resolved.set(storeKeyId(item.groupId, item.keyId), {
+        keyName: item.keyName,
+        groupName: item.groupName,
+        keyTitle: item.keyTitle
+      })
+    }
+  }
+
+  return resolved
+}
+
 /**
  * The labels of every Classification Store key the given store fields offer, keyed by
  * {@see storeKeyId}. Group ids are unique across stores, so the fields share one map.
@@ -104,16 +121,7 @@ export const useStoreKeyLabels = (
     void Promise.all(storeFields.map(fetchField)).then((pages) => {
       if (cancelled) return
 
-      const resolved = new Map<string, StoreKeyLabel>()
-      pages.forEach((items) => {
-        items.forEach((item) => {
-          resolved.set(storeKeyId(item.groupId, item.keyId), {
-            keyName: item.keyName,
-            groupName: item.groupName,
-            keyTitle: item.keyTitle
-          })
-        })
-      })
+      const resolved = labelsOf(pages)
 
       // nothing to give and nothing given yet is not a change; re-rendering the editor over it is waste
       setLabels(prev => prev.size === 0 && resolved.size === 0 ? prev : resolved)

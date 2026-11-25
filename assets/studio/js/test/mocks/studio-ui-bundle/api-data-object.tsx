@@ -20,7 +20,7 @@ export const api = {
     dataObjectGetGridPreview: makeEndpoint('gridPreview', (arg) => apiState.gridPreview(arg)),
     // Dispatched rather than hooked, because the number of store fields is not known at render time
     classificationStoreGetKeyGroupRelations: {
-      initiate: async (arg: any) => {
+      initiate: (arg: any) => {
         apiState.calls.keyGroupRelations.push(arg)
         return apiState.keyGroupRelations(arg)
       }
