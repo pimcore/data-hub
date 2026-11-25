@@ -18,7 +18,7 @@ A name nothing is stored under creates a new configuration: read a similar one a
 
 - `general`: `active`, `group`, `description`. Name and type are the configuration's own and ignored. Each key you send replaces that key only.
 - `schema.queryEntities`, `schema.mutationEntities`: keyed by data object class name. Each entry is `{"id": "<Class>", "columnConfig": {"columns": [...]}}`, `id` equal to its key. A column is `{"isOperator": false, "attributes": {"attribute": "<field>", "dataType": "<field type>", ...}}`, or an operator with `"isOperator": true` and `attributes.class` plus `attributes.children`. Copy columns from a read document.
-- `schema.specialEntities`: keyed by generic type (`asset`, `asset_folder`, `asset_listing`, `document`, `document_folder`, `object_folder`, `translation`, `translation_listing`), each `{"read": true, ...}`.
+- `schema.specialEntities`: keyed by generic type, each `{"read": true, ...}`. The core types are `asset`, `asset_folder`, `asset_listing`, `document`, `document_folder`, `object_folder`, `translation`, `translation_listing`; installed bundles can add more, so take the names from a read document.
 - Merge under these three maps: send only the entries you change, each one **complete** (it replaces the stored entry); `"<Entry>": null` removes one; entries you leave out stay; an empty map `{}` removes them all.
 - `workspaces`: `asset`, `document`, `object`, each a list of `{"cpath": "/path", "read": true}`. A list is replaced whole, so send the full list for a type you change.
 - Other keys and lists are replaced whole by what you send.
