@@ -17,6 +17,18 @@ export const api = {
   endpoints: {
     dataObjectGetAvailableGridColumns: makeEndpoint('available', () => apiState.available),
     dataObjectGetGrid: makeEndpoint('grid', (arg) => apiState.grid(arg)),
-    dataObjectGetGridPreview: makeEndpoint('gridPreview', (arg) => apiState.gridPreview(arg))
+    dataObjectGetGridPreview: makeEndpoint('gridPreview', (arg) => apiState.gridPreview(arg)),
+    // Dispatched rather than hooked, because the number of store fields is not known at render time
+    classificationStoreGetKeyGroupRelations: {
+      // a query handle, as RTK Query returns one: awaited by the caller, and unsubscribed by it
+      initiate: (arg: any) => {
+        apiState.calls.keyGroupRelations.push(arg)
+
+        return {
+          ...apiState.keyGroupRelations(arg),
+          unsubscribe: () => { apiState.keyGroupRelationUnsubscribes++ }
+        }
+      }
+    }
   }
 }

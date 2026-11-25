@@ -22,6 +22,14 @@ interface IdentityColumn {
   locale?: string | null
   config?: Record<string, any>
   pipelineConfig?: Record<string, any>
+  /** Frontend-only, set when the key picker reported one; never persisted */
+  keyTitle?: string
+}
+
+/** As much of an available-columns entry as labelling a column reads */
+export interface LabelledField {
+  key: string
+  config?: Record<string, any> | null
 }
 
 const idPart = (value: unknown): string => value === undefined || value === null ? '' : String(value)
@@ -81,15 +89,91 @@ export const classificationStoreId = (config: unknown): number => {
   return typeof storeId === 'number' ? storeId : DEFAULT_STORE_ID
 }
 
-/** Row label of a column: `key-groupId-keyId` for a per-key classification-store column, else the key */
-export const columnLabel = (column: IdentityColumn): string => {
+/**
+ * The translation key a field is labelled by: the title of its field definition, else its own key.
+ * The one expression the add-column tree and the configured rows both label by, so the two agree.
+ */
+export const fieldLabelKey = (field: LabelledField): string => {
+  const config = field.config
+  if (config !== undefined && config !== null && 'fieldDefinition' in config) {
+    const fieldDefinition = config.fieldDefinition as Record<string, any> | undefined
+    return (fieldDefinition?.title ?? field.key) as string
+  }
+  return field.key
+}
+
+/** The labels of one Classification Store key, as the key-group-relations endpoint reports them */
+export interface StoreKeyLabel {
+  keyName: string
+  groupName: string
+  /** Resolved in the label language; absent where the backend predates the member */
+  keyTitle?: string | null
+}
+
+/** Lookup key of one Classification Store key inside a label map */
+export const storeKeyId = (groupId: unknown, keyId: unknown): string => `${idPart(groupId)}-${idPart(keyId)}`
+
+/** The identifier a per-key store column is composed under; also the label of last resort */
+const storeKeyIdentifier = (key: string, groupId: unknown, keyId: unknown): string =>
+  `${key}-${idPart(groupId)}-${idPart(keyId)}`
+
+/** The first of the given values that is a non-empty string; an empty title counts as absent */
+export const firstNonEmpty = (...values: Array<string | null | undefined>): string | undefined =>
+  values.find((value): value is string => typeof value === 'string' && value !== '')
+
+/** What a row shows a column under, beyond the key itself */
+export interface ColumnLabelSources {
+  /** The available-columns payload; the entry the column matches carries its field definition title */
+  availableFields?: Array<{ key: string, config?: any }>
+  /** Labels of the Classification Store keys in play, keyed by {@see storeKeyId} */
+  storeKeys?: ReadonlyMap<string, StoreKeyLabel>
+}
+
+/**
+ * Row label of a column: `Key Title [Group name]` for a per-key classification-store column, and
+ * otherwise the same translated field label the add-column tree offers it under.
+ *
+ * The key's labels are looked up rather than stored - a label persisted beside the column would be
+ * dropped by the next Apply and would never follow a renamed key - so until the lookup answers, a
+ * freshly picked key shows the title the picker reported and a stored one the technical identifier.
+ */
+export const columnLabel = (
+  column: IdentityColumn,
+  t: (key: string) => string,
+  sources: ColumnLabelSources = {}
+): string => {
   if (column.key === '') return ''
-  if (!isClassificationStore(column.type)) return column.key
+
+  const fieldLabel = (): string => t(fieldLabelKey(
+    (sources.availableFields === undefined ? undefined : findAvailableField(column, sources.availableFields)) ?? column
+  ))
+
+  if (!isClassificationStore(column.type)) return fieldLabel()
+
   // The persisted config only: the pipeline config is borrowed from an available entry and says nothing
   // about which key this column stands for, so a whole-store column must not read as one of its keys.
   const keyId = column.config?.keyId
   const groupId = column.config?.groupId
-  return keyId === undefined || groupId === undefined ? column.key : `${column.key}-${idPart(groupId)}-${idPart(keyId)}`
+  if (keyId === undefined || groupId === undefined) return fieldLabel()
+
+  const labels = sources.storeKeys?.get(storeKeyId(groupId, keyId))
+  if (labels !== undefined) {
+    return `${firstNonEmpty(labels.keyTitle, labels.keyName) ?? ''} [${labels.groupName}]`
+  }
+
+  return firstNonEmpty(column.keyTitle) ?? storeKeyIdentifier(column.key, groupId, keyId)
+}
+
+/**
+ * The whole-store available entry of a store field name: the one carrying no key ids, else the first
+ * entry of that name. It is where the field definition - and with it the store id - lives.
+ */
+export const findStoreFieldEntry = <T extends { key: string, type?: string, config?: any }>(
+  key: string,
+  availableFields: T[]
+): T | undefined => {
+  const sameKey = availableFields.filter(field => field.key === key && isClassificationStore(field.type))
+  return sameKey.find(field => field.config?.keyId === undefined) ?? sameKey[0]
 }
 
 /**

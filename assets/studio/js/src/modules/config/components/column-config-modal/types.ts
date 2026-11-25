@@ -87,6 +87,13 @@ export interface AdvancedEditorColumn {
   localizable?: boolean
   locale?: string | null
   /**
+   * Frontend-only label of the Classification Store key this column stands for, as the key picker
+   * reported it, so a freshly picked key does not read as its technical identifier while the
+   * key-group-relations lookup is in flight. Never persisted: `advancedToSchemaColumn` rebuilds every
+   * column from its five persisted members, and a stored label would never follow a renamed key.
+   */
+  keyTitle?: string
+  /**
    * Frontend-only: true for columns added during the current editing session.
    * Drives the initial collapse state — only freshly added advanced columns mount
    * expanded, while columns loaded from the persisted config stay collapsed. Never persisted.

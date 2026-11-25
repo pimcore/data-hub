@@ -13,7 +13,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { type ColumnPickerGroup } from '@pimcore/studio-ui-bundle/components'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { flatMap, isNil } from 'lodash'
-import { CLASSIFICATION_STORE_TYPE, PICK_KEY_SUFFIX } from './column-identity'
+import { CLASSIFICATION_STORE_TYPE, PICK_KEY_SUFFIX, fieldLabelKey } from './column-identity'
 import { ADVANCED_COLUMN_KEY, ADVANCED_COLUMN_TYPE } from './types'
 
 type PickerItem = ColumnPickerGroup<GridColumnConfiguration>['items'][number]
@@ -25,11 +25,7 @@ type PickerItem = ColumnPickerGroup<GridColumnConfiguration>['items'][number]
 const idText = (value: unknown): string => typeof value === 'number' || typeof value === 'string' ? String(value) : ''
 
 const leavesOf = (column: GridColumnConfiguration, t: (key: string) => string, withKeyPicker: boolean): PickerItem[] => {
-  let translationKey: string = column.key
-  if (!isNil(column.config) && 'fieldDefinition' in column.config) {
-    const fieldDefinition = column.config.fieldDefinition as Record<string, any>
-    translationKey = fieldDefinition?.title ?? column.key
-  }
+  const translationKey = fieldLabelKey(column)
   const storeIds = column.type === CLASSIFICATION_STORE_TYPE ? column.config as Record<string, unknown> | undefined : undefined
   const keyId = storeIds?.keyId
   const ids = keyId === undefined ? '' : `-${idText(storeIds?.groupId)}-${idText(keyId)}`

@@ -12,15 +12,12 @@ import React from 'react'
 import { type GridColumnConfiguration } from '@pimcore/studio-ui-bundle/api/data-object'
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import { apiState, resetApiState } from './mocks/studio-ui-bundle/api-state'
+import { settleKeyLabels } from './settle-key-labels'
 import { trackedErrors } from './mocks/studio-ui-bundle/modules-app'
 import { type ColumnEditorHandle } from '../src/modules/config/components/column-config-modal/types'
 import { BaseColumnEditor } from '../src/modules/config/components/column-config-modal/base-column-editor'
 import { useColumnEditorState } from '../src/modules/config/components/column-config-modal/use-column-editor-state'
-import {
-  CLASSIFICATION_STORE_TYPE,
-  classificationStoreId,
-  columnLabel
-} from '../src/modules/config/components/column-config-modal/column-identity'
+import { CLASSIFICATION_STORE_TYPE, classificationStoreId } from '../src/modules/config/components/column-config-modal/column-identity'
 
 jest.mock('../src/modules/config/components/column-config-modal/base-column-editor.styles', () => ({
   useStyles: () => ({ styles: {} })
@@ -83,7 +80,7 @@ describe('adding a Classification Store field from the tree', () => {
 })
 
 describe('adding one key of a Classification Store field', () => {
-  it('appends a column carrying groupId and keyId and leaves the whole-store path alone', () => {
+  it('appends a column carrying groupId and keyId and leaves the whole-store path alone', async () => {
     const { result } = renderHook(() => useColumnEditorState({
       entity: 'Product', columns: NO_COLUMNS, onApply: () => {}, onCancel: () => {}
     }))
@@ -103,9 +100,10 @@ describe('adding one key of a Classification Store field', () => {
       locale: undefined
     })
     expect(columns[2].config).toEqual({ groupId: 11, keyId: 4 })
+    await settleKeyLabels()
   })
 
-  it('appends every key of one selection, in the order it was reported', () => {
+  it('appends every key of one selection, in the order it was reported', async () => {
     const { result } = renderHook(() => useColumnEditorState({
       entity: 'Product', columns: NO_COLUMNS, onApply: () => {}, onCancel: () => {}
     }))
@@ -123,6 +121,7 @@ describe('adding one key of a Classification Store field', () => {
       { groupId: 11, keyId: 5 },
       { groupId: 12, keyId: 6 }
     ])
+    await settleKeyLabels()
   })
 })
 
@@ -132,7 +131,7 @@ describe('the type of a single key', () => {
     config: { groupId, keyId, fieldDefinition: { fieldtype } }
   }) as unknown as GridColumnConfiguration
 
-  it('is the key\'s own type, not that of the store, when the payload carries the key', () => {
+  it('is the key\'s own type, not that of the store, when the payload carries the key', async () => {
     apiState.available = { data: { columns: [storeField, keyEntry(10, 4, 'input')] }, isLoading: false }
     const { result } = renderHook(() => useColumnEditorState({
       entity: 'Product', columns: NO_COLUMNS, onApply: () => {}, onCancel: () => {}
@@ -141,13 +140,15 @@ describe('the type of a single key', () => {
     act(() => { result.current.handleAddClassificationStoreKey(storeField, [{ groupId: 10, keyId: 4 }]) })
 
     expect(result.current.getColumns()[0].fieldtype).toBe('input')
+    await settleKeyLabels()
   })
 
-  it('survives a reload unchanged next to a sibling key of the same field name', () => {
+  it('survives a reload unchanged next to a sibling key of the same field name', async () => {
     apiState.available = { data: { columns: [keyEntry(10, 1, 'input'), keyEntry(10, 2, 'classificationstore')] }, isLoading: false }
     const editor = mountEditor([
       { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 10, keyId: 2 }, fieldtype: 'classificationstore' }
     ])
+    await settleKeyLabels()
 
     expect(editor.current?.getColumns()[0].fieldtype).toBe('classificationstore')
   })
@@ -158,26 +159,6 @@ describe('the type of a single key', () => {
 
     expect(screen.getAllByText('technicalAttributes').some(node => node.className.includes('ant-tag'))).toBe(true)
     expect(screen.queryByText('technicalAttributes-10-1')).not.toBeInTheDocument()
-  })
-})
-
-describe('row label', () => {
-  it('tells the whole store and each key of it apart, reading the ids from config', () => {
-    expect(columnLabel({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE })).toBe('technicalAttributes')
-    expect(columnLabel({ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 10, keyId: 4 } }))
-      .toBe('technicalAttributes-10-4')
-    expect(columnLabel({ key: 'name', type: 'dataobject.input', config: { groupId: 10, keyId: 4 } })).toBe('name')
-    expect(columnLabel({ key: '', type: CLASSIFICATION_STORE_TYPE })).toBe('')
-  })
-
-  it('is rendered per row', () => {
-    mountEditor([
-      { key: 'technicalAttributes', fieldtype: 'classificationstore', type: CLASSIFICATION_STORE_TYPE },
-      { key: 'technicalAttributes', fieldtype: 'classificationstore', type: CLASSIFICATION_STORE_TYPE, config: { groupId: 10, keyId: 4 } }
-    ])
-
-    expect(screen.getByText('technicalAttributes-10-4')).toBeInTheDocument()
-    expect(screen.getAllByText('technicalAttributes')).toHaveLength(1) // the whole-store row only; the tree entry carries the field title
   })
 })
 
@@ -210,18 +191,21 @@ describe('a per-key column across save and reload', () => {
   it.each([
     ['integer ids', { groupId: 7, keyId: 42 }],
     ['identifier strings', { groupId: 'GRP_A', keyId: 'EF000010' }]
-  ])('is handed back unchanged with %s', (_name, config) => {
+  ])('is handed back unchanged with %s', async (_name, config) => {
     const editor = mountEditor([{ key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config }])
+    await settleKeyLabels()
 
     expect(editor.current?.getColumns()).toEqual([expect.objectContaining({ key: 'technicalAttributes', config })])
   })
 
-  it('reads as three different rows next to the whole-store column', () => {
+  it('reads as three different rows next to the whole-store column', async () => {
     mountEditor([
       { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore' },
       { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config: { groupId: 7, keyId: 42 } },
       { key: 'technicalAttributes', type: CLASSIFICATION_STORE_TYPE, fieldtype: 'classificationstore', config: { groupId: 7, keyId: 43 } }
     ])
+
+    await settleKeyLabels()
 
     expect(screen.getByText('technicalAttributes-7-42')).toBeInTheDocument()
     expect(screen.getByText('technicalAttributes-7-43')).toBeInTheDocument()

@@ -16,19 +16,26 @@ export const apiState: {
   available: QueryResult
   grid: Handler
   gridPreview: Handler
-  calls: { grid: any[], gridPreview: any[], available: any[] }
+  /** The key-group-relations page for one request; answers `{ data: { totalItems, items } }` */
+  keyGroupRelations: Handler
+  calls: { grid: any[], gridPreview: any[], available: any[], keyGroupRelations: any[] }
+  keyGroupRelationUnsubscribes: number
 } = {
   available: {},
   grid: () => ({}),
   gridPreview: () => ({}),
-  calls: { grid: [], gridPreview: [], available: [] }
+  keyGroupRelations: () => ({}),
+  calls: { grid: [], gridPreview: [], available: [], keyGroupRelations: [] },
+  keyGroupRelationUnsubscribes: 0
 }
 
 export const resetApiState = (): void => {
   apiState.available = { data: { columns: [] }, isLoading: false }
   apiState.grid = () => ({})
   apiState.gridPreview = () => ({})
-  apiState.calls = { grid: [], gridPreview: [], available: [] }
+  apiState.keyGroupRelations = () => ({ data: { totalItems: 0, items: [] } })
+  apiState.calls = { grid: [], gridPreview: [], available: [], keyGroupRelations: [] }
+  apiState.keyGroupRelationUnsubscribes = 0
 }
 
 export const makeEndpoint = (
