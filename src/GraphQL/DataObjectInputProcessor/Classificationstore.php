@@ -17,7 +17,12 @@ use Pimcore\Bundle\DataHubBundle\GraphQL\ClassificationstoreType\QualifiedValueR
 use Pimcore\Bundle\DataHubBundle\GraphQL\Exception\ClientSafeException;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Classificationstore as ClassificationstoreDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\DateRange as DateRangeDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\NumericRange as NumericRangeDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\QuantityValueRange as QuantityValueRangeDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Relations\AbstractRelations;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Table as TableDefinition;
+use Pimcore\Model\DataObject\ClassDefinition\Data\User as UserDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Video;
 use Pimcore\Model\DataObject\Classificationstore as ClassificationstoreModel;
 use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
@@ -26,6 +31,8 @@ use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
 use Pimcore\Model\DataObject\Classificationstore\Service as ClassificationstoreService;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Data\MultiValue;
+use Pimcore\Model\DataObject\QuantityValue\Unit;
+use Pimcore\Model\User as UserModel;
 use Pimcore\Tool;
 
 /**
@@ -39,6 +46,39 @@ final class Classificationstore extends Base
     private const DEFAULT_QUALIFIER = 'default';
 
     private const UNWRITABLE_TYPE = 'calculatedValue';
+
+    private const NOT_SAVED = 'Nothing was saved.';
+
+    private const UNIT = 'unit';
+
+    private const MINIMUM = 'minimum';
+
+    private const MAXIMUM = 'maximum';
+
+    /**
+     * The bounds of a dateRange value, as the read side publishes them and as a write must name them, and next
+     * to each the member name core's own editmode conversion reads, which the value is converted to.
+     */
+    private const DATE_BOUNDS = [
+        'startDate' => 'start_date',
+        'endDate' => 'end_date',
+    ];
+
+    /**
+     * The types whose conversion needs the value completed or refused before core sees it, by the method that
+     * does it. Core's conversion reads some members without a default and accepts values its own editor never
+     * sends, and a warning or a type error raised in there aborts the mutation with an internal message.
+     *
+     * @var array<class-string, string>
+     */
+    private const VALUE_PREPARERS = [
+        Video::class => 'prepareVideo',
+        NumericRangeDefinition::class => 'prepareNumericRange',
+        QuantityValueRangeDefinition::class => 'prepareQuantityValueRange',
+        DateRangeDefinition::class => 'prepareDateRange',
+        UserDefinition::class => 'prepareUser',
+        TableDefinition::class => 'prepareTable',
+    ];
 
     /**
      * The key types a write accepts: the ones the read side publishes, whatever generators are registered.
@@ -358,8 +398,9 @@ final class Classificationstore extends Base
         $value = $input['value'];
         if ($value !== null) {
             $definition = ClassificationstoreService::getFieldDefinitionFromKeyConfig($relation);
-            $converted = $definition->getDataFromEditmode(
-                $this->withOptionalMembers($definition, $value),
+            $converted = $this->convert(
+                $definition,
+                $this->prepareValue($definition, $relation, $value),
                 $store->getObject()
             );
             $this->assertRelationResolved($relation, $definition, $value, $converted);
@@ -370,16 +411,249 @@ final class Classificationstore extends Base
     }
 
     /**
+     * The class field route stores the rows it is given and never runs the editmode conversion
+     * (DataObjectInputProcessor\Table), whose emptiness check answers an all-blank row - and, through empty('0'), a row
+     * holding only '0' - with null, which would clear the key here. Both routes write the same value the same way.
+     */
+    private function convert(mixed $definition, mixed $value, ?Concrete $object): mixed
+    {
+        if ($definition instanceof TableDefinition) {
+            return $value;
+        }
+
+        return $definition->getDataFromEditmode($value, $object);
+    }
+
+    /**
+     * @throws ClientSafeException
+     */
+    private function prepareValue(mixed $definition, KeyGroupRelation $relation, mixed $value): mixed
+    {
+        foreach (self::VALUE_PREPARERS as $class => $preparer) {
+            if ($definition instanceof $class) {
+                return $this->$preparer($relation, $value);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Core's video conversion reads "poster" without a default, so a value that leaves it out raises "Undefined array
      * key". The plain-field input accepts such a value, so the member is filled with null here.
      */
-    private function withOptionalMembers(mixed $definition, mixed $value): mixed
+    private function prepareVideo(KeyGroupRelation $relation, mixed $value): mixed
     {
-        if ($definition instanceof Video && is_array($value)) {
+        if (is_array($value)) {
             $value['poster'] ??= null;
         }
 
         return $value;
+    }
+
+    /**
+     * Core enters its conversion on either bound but reads both, and its value object takes numbers only.
+     *
+     * @throws ClientSafeException
+     */
+    private function prepareNumericRange(KeyGroupRelation $relation, mixed $value): mixed
+    {
+        $value = $this->assertMembers($relation, $value, 'numericRange', [self::MINIMUM, self::MAXIMUM]);
+        $value[self::MINIMUM] = $this->numericBound($relation, $value, self::MINIMUM);
+        $value[self::MAXIMUM] = $this->numericBound($relation, $value, self::MAXIMUM);
+
+        return $value;
+    }
+
+    /**
+     * As numericRange, plus the unit, which is the id of a quantity value unit: core resolves it in the
+     * constructor of the value object and throws a NotFoundException the client never sees.
+     *
+     * @throws ClientSafeException
+     */
+    private function prepareQuantityValueRange(KeyGroupRelation $relation, mixed $value): mixed
+    {
+        $members = [self::MINIMUM, self::MAXIMUM, self::UNIT];
+        $value = $this->assertMembers($relation, $value, 'quantityValueRange', $members);
+        $value[self::MINIMUM] = $this->numericBound($relation, $value, self::MINIMUM);
+        $value[self::MAXIMUM] = $this->numericBound($relation, $value, self::MAXIMUM);
+        $value[self::UNIT] = $this->resolveUnit($relation, $value[self::UNIT]);
+
+        return $value;
+    }
+
+    /**
+     * Core needs both bounds and divides each by 1000, so the contract is milliseconds; one bound alone
+     * converts to null, which would clear the slot instead of writing it.
+     *
+     * @throws ClientSafeException
+     */
+    private function prepareDateRange(KeyGroupRelation $relation, mixed $value): mixed
+    {
+        $members = array_keys(self::DATE_BOUNDS);
+        $value = $this->assertMembers($relation, $value, 'dateRange', $members);
+
+        $converted = [];
+        foreach (self::DATE_BOUNDS as $member => $editmodeMember) {
+            if ($value[$member] === null) {
+                throw new ClientSafeException(sprintf(
+                    'The value of the classification store key "%s" needs both "%s" and "%s", '
+                    . 'in milliseconds since the epoch. Nothing was saved.',
+                    $relation->getName(),
+                    ...$members
+                ));
+            }
+            $converted[$editmodeMember] = $this->numericBound($relation, $value, $member);
+        }
+
+        return $converted;
+    }
+
+    /**
+     * Core casts the value to an int to look the user up, so every non-numeric value resolves to the user with
+     * the id 0 and is stored as it stands, and an id that does not resolve clears the slot instead.
+     *
+     * @throws ClientSafeException
+     */
+    private function prepareUser(KeyGroupRelation $relation, mixed $value): mixed
+    {
+        $id = is_int($value) || (is_string($value) && preg_match('/^-?\d+$/', $value) === 1)
+            ? (int) $value
+            : null;
+
+        if ($id === null || $id <= 0) {
+            throw new ClientSafeException(sprintf(
+                'The value of the classification store key "%s" is the id of a user, a positive integer. '
+                . self::NOT_SAVED,
+                $relation->getName()
+            ));
+        }
+
+        if (!UserModel::getById($id) instanceof UserModel) {
+            throw new ClientSafeException(sprintf(
+                'The user %d of the classification store key "%s" does not exist. Nothing was saved.',
+                $id,
+                $relation->getName()
+            ));
+        }
+
+        return $id;
+    }
+
+    /**
+     * The rows are stored as they stand, so the shape is asserted here instead.
+     *
+     * @throws ClientSafeException
+     */
+    private function prepareTable(KeyGroupRelation $relation, mixed $value): mixed
+    {
+        $rows = is_array($value) && array_is_list($value) ? $value : null;
+
+        foreach ($rows ?? [] as $row) {
+            if (!is_array($row) || !array_is_list($row) || !$this->areCells($row)) {
+                $rows = null;
+
+                break;
+            }
+        }
+
+        if ($rows === null) {
+            throw new ClientSafeException(sprintf(
+                'The value of the classification store key "%s" is a list of rows, each a list of cells. '
+                . self::NOT_SAVED,
+                $relation->getName()
+            ));
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param array<int, mixed> $row
+     */
+    private function areCells(array $row): bool
+    {
+        foreach ($row as $cell) {
+            if ($cell !== null && !is_scalar($cell)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string[] $members
+     *
+     * @return array<string, mixed>
+     *
+     * @throws ClientSafeException
+     */
+    private function assertMembers(KeyGroupRelation $relation, mixed $value, string $type, array $members): array
+    {
+        if (!is_array($value)) {
+            throw new ClientSafeException(sprintf(
+                'The value of the classification store key "%s" of the type "%s" carries the members %s. '
+                . self::NOT_SAVED,
+                $relation->getName(),
+                $type,
+                implode(', ', $members)
+            ));
+        }
+
+        foreach ($members as $member) {
+            $value[$member] ??= null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<string, mixed> $value
+     *
+     * @throws ClientSafeException
+     */
+    private function numericBound(KeyGroupRelation $relation, array $value, string $member): int|float|null
+    {
+        $bound = $value[$member];
+        if ($bound === null) {
+            return null;
+        }
+
+        if (is_int($bound) || is_float($bound)) {
+            return $bound;
+        }
+
+        if (is_string($bound) && is_numeric($bound)) {
+            return $bound + 0;
+        }
+
+        throw new ClientSafeException(sprintf(
+            'The member "%s" of the classification store key "%s" is not a number. Nothing was saved.',
+            $member,
+            $relation->getName()
+        ));
+    }
+
+    /**
+     * @throws ClientSafeException
+     */
+    private function resolveUnit(KeyGroupRelation $relation, mixed $unit): ?string
+    {
+        // core reads its own editor's "no unit" markers the same way
+        if ($unit === null || $unit === '' || $unit === -1) {
+            return null;
+        }
+
+        if ((is_string($unit) || is_int($unit)) && Unit::getById((string) $unit) instanceof Unit) {
+            return (string) $unit;
+        }
+
+        throw new ClientSafeException(sprintf(
+            'The unit "%s" of the classification store key "%s" does not exist. Nothing was saved.',
+            is_scalar($unit) ? (string) $unit : get_debug_type($unit),
+            $relation->getName()
+        ));
     }
 
     /**
@@ -410,7 +684,7 @@ final class Classificationstore extends Base
         if ($input !== [] && $actual !== $expected) {
             throw new ClientSafeException(sprintf(
                 'A target of the classification store key "%s" does not exist or is not of a type the key accepts. '
-                . 'Nothing was saved.',
+                . self::NOT_SAVED,
                 $relation->getName()
             ));
         }
