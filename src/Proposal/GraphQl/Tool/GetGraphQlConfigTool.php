@@ -45,9 +45,8 @@ final readonly class GetGraphQlConfigTool
             . 'as its id and its columnConfig, specialEntities keyed by generic type) and workspaces '
             . '(asset, document and object trees with read/create/update/delete flags) sections — the security '
             . 'settings with the API keys and per-configuration permissions are withheld and cannot '
-            . 'be proposed. To change it, send propose_graphql_config only what you change: the '
-            . 'sections and keys you edit, each changed query or mutation entity and generic type '
-            . 'complete, and "<Entity>": null to remove one.',
+            . 'be proposed. To change it, send it back to propose_graphql_config with only your changes; '
+            . 'see the data-hub-graphql-configuration skill.',
         annotations: new ToolAnnotations(
             readOnlyHint: true,
             destructiveHint: false,

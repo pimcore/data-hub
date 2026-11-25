@@ -20,7 +20,7 @@ They reach a caller in one of two ways:
 | Tool | Purpose | Read / write | Propose / direct-write | Studio-managed server |
 |---|---|---|---|---|
 | `list_graphql_configs` | List the GraphQL configurations the user may read, with group, description and whether each is active. | read | – | yes |
-| `get_graphql_config` | Read one GraphQL configuration in full, as the document a proposal sends back. | read | – | yes |
+| `get_graphql_config` | Read one GraphQL configuration in full; a proposal sends back only the sections and keys it changes. | read | – | yes |
 | `propose_graphql_config` | Propose changes to a GraphQL configuration, or a new one, for review in a change set. | write | propose | no, agent chat only |
 
 - **Read / write:** a read tool is annotated `readOnlyHint: true`, so a Studio-managed server offers it under the OAuth
