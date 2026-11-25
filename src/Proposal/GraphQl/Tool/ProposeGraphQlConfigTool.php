@@ -40,11 +40,10 @@ final readonly class ProposeGraphQlConfigTool
     #[McpTool(
         name: self::TOOL_NAME,
         title: 'Propose GraphQL Configuration Changes',
-        description: 'Propose changes to a Data Hub GraphQL endpoint configuration, or a new one under '
-            . 'an unused name. Does not write: the user reviews it. Load the data-hub-graphql-configuration '
-            . 'skill before the first call. Read the document with get_graphql_config first and send only '
-            . 'what you change. Allowed: general, schema, workspaces (read access only); refused: security, '
-            . 'permissions. Returns {proposalId, name}; end your turn after a successful proposal.',
+        description: 'Propose changes to a Data Hub GraphQL endpoint configuration, or a new one under an unused '
+            . 'name. Load the data-hub-graphql-configuration skill before the first call. Read the document '
+            . 'with get_graphql_config first and send only what you change. Allowed: general, schema, '
+            . 'workspaces (read access only); refused: security, permissions. Returns {proposalId, name}.',
         annotations: new ToolAnnotations(
             readOnlyHint: false,
             destructiveHint: false,
