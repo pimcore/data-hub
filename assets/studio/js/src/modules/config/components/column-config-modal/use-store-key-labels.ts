@@ -118,7 +118,9 @@ export const useStoreKeyLabels = (
 
       // every page the store reports, however many: a page that adds nothing ends it, so a total
       // the pages never reach cannot spin here
-      for (let page = 2; items.length < totalItems; page++) {
+      let page = 1
+      while (items.length < totalItems) {
+        page++
         const batch = (await fetchPage(field, page)).items ?? []
         if (batch.length === 0 || cancelled) break
         items.push(...batch)
