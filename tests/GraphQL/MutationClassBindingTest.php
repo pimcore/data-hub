@@ -82,6 +82,33 @@ class MutationClassBindingTest extends Unit
         $this->assertStringContainsString('Unknown id or fullpath', $result['message']);
     }
 
+    public function testUpdateRefusesPreBoundObjectOfOtherClass(): void
+    {
+        $type = $this->buildMutationType(null);
+        $resolver = $type->getUpdateObjectResolver(
+            [],
+            null,
+            $this->concrete('category', 0),
+            true,
+            $this->productClass()
+        );
+
+        $result = $resolver(null, ['id' => 5, 'published' => false], [], null);
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('Unknown id or fullpath', $result['message']);
+    }
+
+    public function testUpdateAcceptsPreBoundObjectOfClass(): void
+    {
+        $object = $this->concrete('product', 1);
+        $object->method('getId')->willReturn(5);
+        $type = $this->buildMutationType(null);
+        $resolver = $type->getUpdateObjectResolver([], null, $object, true, $this->productClass());
+
+        $result = $resolver(null, ['id' => 5, 'published' => false], [], null);
+        $this->assertTrue($result['success']);
+    }
+
     public function testUpdateRefusesUnknownElement(): void
     {
         $result = $this->invokeUpdate(null);

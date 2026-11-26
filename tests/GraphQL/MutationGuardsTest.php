@@ -93,6 +93,8 @@ class MutationGuardsTest extends Unit
             'deleteDocumentFolder' => $type->buildDeleteFolderMutation('document', $config, $context),
             'deleteObjectFolder' => $type->buildDeleteFolderMutation('object', $config, $context),
             'updateObjectFolder' => $type->buildUpdateFolderMutation('object', $config, $context),
+            'updateAssetFolder' => $type->buildUpdateFolderMutation('asset', $config, $context),
+            'updateDocumentFolder' => $type->buildUpdateFolderMutation('document', $config, $context),
             'deleteProduct' => $this->buildClassDelete($type, $config, $context),
         };
 
@@ -156,6 +158,55 @@ class MutationGuardsTest extends Unit
 
         $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => 7], $context, $this->info());
         $this->assertTrue($result['success']);
+    }
+
+    public function testDeleteClassStillDeletesVariantOfClass(): void
+    {
+        $configuration = $this->configuration([], ['delete' => true]);
+        $type = $this->buildType(null);
+        $config = [];
+        $context = ['configuration' => $configuration];
+        $this->buildClassDelete($type, $config, $context);
+        $type->element = $this->concrete($this->class->getId(), 1);
+
+        $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => 7], $context, $this->info());
+        $this->assertTrue($result['success']);
+    }
+
+    public function testUpdateAssetAndDocumentFoldersRefuseNonFolders(): void
+    {
+        $cases = [
+            'updateAssetFolder' => [Asset\Image::class, 'asset_folder'],
+            'updateDocumentFolder' => [Document\Page::class, 'document_folder'],
+        ];
+        foreach ($cases as $field => [$className, $entity]) {
+            $element = $this->createMock($className);
+            $element->expects($this->never())->method('save');
+            $result = $this->resolve(
+                $this->buildType($element),
+                $field,
+                $this->configuration([$entity => ['update' => true]])
+            );
+            $this->assertRefused($result);
+        }
+    }
+
+    public function testUpdateAssetAndDocumentFoldersAcceptFolders(): void
+    {
+        $cases = [
+            'updateAssetFolder' => [Asset\Folder::class, 'asset_folder'],
+            'updateDocumentFolder' => [Document\Folder::class, 'document_folder'],
+        ];
+        foreach ($cases as $field => [$className, $entity]) {
+            $element = $this->createMock($className);
+            $element->expects($this->once())->method('save');
+            $result = $this->resolve(
+                $this->buildType($element),
+                $field,
+                $this->configuration([$entity => ['update' => true]])
+            );
+            $this->assertTrue($result['success'], $field);
+        }
     }
 
     public function testDeleteAssetAndDocumentRefuseFolders(): void
