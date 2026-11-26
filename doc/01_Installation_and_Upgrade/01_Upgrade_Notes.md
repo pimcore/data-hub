@@ -1,5 +1,12 @@
 # Upgrade Notes
 
+## 1.9.8
+- [GraphQL] Mutations now only act on the element type they were generated for. `update<Class>` / `delete<Class>`
+only update or delete data objects (and variants) of `<Class>`; for objects of other classes or for object folders
+they return `success: false` with the message `Unknown id or fullpath`. `deleteAsset` / `deleteDocument` no longer
+delete folders, use `deleteAssetFolder` / `deleteDocumentFolder` instead. `update<Type>Folder` / `delete<Type>Folder`
+only act on folders of their type.
+
 ## 1.9.7
 - [GraphQL] The `filter` argument of `getAssetListing` and the data object listing queries only accepts the documented
 JSON syntax: an object, or an array of objects, at every level (including inside `$and` / `$or` and field arrays).
