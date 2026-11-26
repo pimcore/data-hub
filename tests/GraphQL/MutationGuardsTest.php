@@ -197,7 +197,11 @@ class MutationGuardsTest extends Unit
         $config = [];
         $context = ['configuration' => $configuration];
         $this->buildClassDelete($type, $config, $context);
-        $this->registerElement($this->concrete($this->class->getId(), 1));
+        $variant = $this->createMock(Concrete::class);
+        $variant->method('getClassId')->willReturn($this->class->getId());
+        $variant->method('getType')->willReturn('variant');
+        $variant->expects($this->once())->method('delete');
+        $this->registerElement($variant);
 
         $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => self::ELEMENT_ID], $context, $this->info());
         $this->assertTrue($result['success']);
