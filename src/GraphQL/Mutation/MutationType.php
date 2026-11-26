@@ -39,6 +39,7 @@ use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Document;
 use Pimcore\Model\Element\AbstractElement;
 use Pimcore\Model\Element\DuplicateFullPathException;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service as ElementService;
 use Pimcore\Model\Factory;
 use Pimcore\Model\Version;
@@ -735,7 +736,13 @@ final class MutationType extends ObjectType
                         'omitVersionCreate' => ['type' => Type::boolean()],
                         'userId' => ['type' => Type::int()],
                         'input' => ['type' => $inputType],
-                    ], 'resolve' => $this->getUpdateObjectResolver($processors, $localeService, null, $this->omitPermissionCheck),
+                    ], 'resolve' => $this->getUpdateObjectResolver(
+                        $processors,
+                        $localeService,
+                        null,
+                        $this->omitPermissionCheck,
+                        $class
+                    ),
                 ];
 
                 $config['fields'][$opName] = $updateField;
@@ -758,14 +765,14 @@ final class MutationType extends ObjectType
                     'args' => [
                         'id' => ['type' => Type::int()],
                         'fullpath' => ['type' => Type::string()],
-                    ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me) {
+                    ], 'resolve' => static function ($value, $args, $context, ResolveInfo $info) use ($me, $class) {
                         try {
                             /** @var Configuration $configuration */
                             $configuration = $context['configuration'];
 
                             $object = $me->getElementByTypeAndIdOrPath($args, 'object');
 
-                            if (!$object) {
+                            if (!$me->isObjectOfClass($object, $class)) {
                                 return [
                                     'success' => false,
                                     'message' => 'unable to delete object. Unknown id or fullpath',
@@ -838,18 +845,38 @@ final class MutationType extends ObjectType
      * @param LocaleServiceInterface $localeService
      * @param object|null $object
      * @param bool $omitPermissionCheck
+     * @param ClassDefinition|null $class if given, only objects (and variants) of this class are updated
      *
      * @return callable(mixed $value, array $args, array $context, ResolveInfo $info): mixed
      */
-    public function getUpdateObjectResolver($processors, $localeService, $object = null, $omitPermissionCheck = false)
-    {
+    public function getUpdateObjectResolver(
+        $processors,
+        $localeService,
+        $object = null,
+        $omitPermissionCheck = false,
+        ?ClassDefinition $class = null
+    ) {
         $me = $this;
 
-        return static function ($value, $args, $context, $info) use ($processors, $localeService, $object, $omitPermissionCheck, $me) {
+        return static function ($value, $args, $context, $info) use (
+            $processors,
+            $localeService,
+            $object,
+            $omitPermissionCheck,
+            $me,
+            $class
+        ) {
             try {
                 $parent = null;
                 if (!$object) {
                     $object = $me->getElementByTypeAndIdOrPath($args, 'object');
+
+                    if (!$object || ($class !== null && !$me->isObjectOfClass($object, $class))) {
+                        return [
+                            'success' => false,
+                            'message' => 'unable to update object. Unknown id or fullpath',
+                        ];
+                    }
 
                     if (isset($args['parentId'])) {
                         $parent = DataObject::getById($args['parentId']);
@@ -858,7 +885,7 @@ final class MutationType extends ObjectType
                     }
                 }
 
-                if (!$object) {
+                if (!$object || ($class !== null && !$me->isObjectOfClass($object, $class))) {
                     return [
                         'success' => false,
                         'message' => 'unable to update object. Unknown id or fullpath',
@@ -1478,6 +1505,13 @@ final class MutationType extends ObjectType
 
                         $element = $me->getElementByTypeAndIdOrPath($args, $type);
 
+                        if (!$element || $me->isFolderOfType($element, $type)) {
+                            return [
+                                'success' => false,
+                                'message' => 'unable to delete ' . $type . '. Unknown id or fullpath',
+                            ];
+                        }
+
                         if (!$omitPermissionCheck && !WorkspaceHelper::checkPermission($element, 'delete')) {
                             return [
                                     'success' => false,
@@ -1652,6 +1686,31 @@ final class MutationType extends ObjectType
             'asset' => Folder::class,
             'document' => Document\Folder::class,
             default => DataObject\Folder::class,
+        };
+    }
+
+    /**
+     * Whether the element is a data object (or variant) of the given class.
+     *
+     * @internal
+     */
+    public function isObjectOfClass(?ElementInterface $element, ClassDefinition $class): bool
+    {
+        return $element instanceof Concrete && $element->getClassId() === $class->getId();
+    }
+
+    /**
+     * Whether the element is a folder of the given element type ('object', 'asset' or 'document').
+     *
+     * @internal
+     */
+    public function isFolderOfType(?ElementInterface $element, string $type): bool
+    {
+        return match ($type) {
+            'object' => $element instanceof DataObject\Folder,
+            'asset' => $element instanceof Folder,
+            'document' => $element instanceof Document\Folder,
+            default => false,
         };
     }
 
