@@ -3,16 +3,13 @@
 declare(strict_types=1);
 
 /**
- * Pimcore
- *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Commercial License (PCL)
+ * This source file is available under the terms of the
+ * Pimcore Open Core License (POCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
+ *  @license    Pimcore Open Core License (POCL)
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
@@ -22,6 +19,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
@@ -35,20 +33,50 @@ class MutationGuardsTest extends Unit
 {
     private const CLASS_NAME = 'MutGuardProduct';
 
+    private const ELEMENT_ID = 987654307;
+
     private ?ClassDefinition $class = null;
+
+    /**
+     * @var string[]
+     */
+    private array $registeredKeys = [];
 
     protected function _after(): void
     {
+        foreach ($this->registeredKeys as $key) {
+            RuntimeCache::set($key, null);
+        }
+        $this->registeredKeys = [];
+
         if ($this->class !== null) {
             $this->class->delete();
             $this->class = null;
         }
     }
 
-    private function buildType(?ElementInterface $element): MutationGuardsStub
+    /**
+     * MutationType is final on this line, so the element lookup cannot be stubbed by a subclass.
+     * The element is registered in the runtime cache instead, which the getById() lookups of
+     * data objects, assets and documents consult first.
+     */
+    private function registerElement(?ElementInterface $element): void
     {
-        $type = (new ReflectionClass(MutationGuardsStub::class))->newInstanceWithoutConstructor();
-        $type->element = $element;
+        if ($element === null) {
+            return;
+        }
+
+        foreach (['object', 'asset', 'document'] as $elementType) {
+            $key = $elementType . '_' . self::ELEMENT_ID;
+            RuntimeCache::set($key, $element);
+            $this->registeredKeys[] = $key;
+        }
+    }
+
+    private function buildType(?ElementInterface $element): MutationType
+    {
+        $type = (new ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
+        $this->registerElement($element);
         $type->setOmitPermissionCheck(true);
 
         return $type;
@@ -84,7 +112,7 @@ class MutationGuardsTest extends Unit
     {
         $config = [];
         $context = ['configuration' => $configuration];
-        $args = ['id' => 7];
+        $args = ['id' => self::ELEMENT_ID];
 
         match ($field) {
             'deleteAsset' => $type->buildDeleteElementMutation($config, $context, 'asset'),
@@ -154,9 +182,9 @@ class MutationGuardsTest extends Unit
         $config = [];
         $context = ['configuration' => $configuration];
         $this->buildClassDelete($type, $config, $context);
-        $type->element = $this->concrete($this->class->getId(), 1);
+        $this->registerElement($this->concrete($this->class->getId(), 1));
 
-        $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => 7], $context, $this->info());
+        $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => self::ELEMENT_ID], $context, $this->info());
         $this->assertTrue($result['success']);
     }
 
@@ -167,9 +195,9 @@ class MutationGuardsTest extends Unit
         $config = [];
         $context = ['configuration' => $configuration];
         $this->buildClassDelete($type, $config, $context);
-        $type->element = $this->concrete($this->class->getId(), 1);
+        $this->registerElement($this->concrete($this->class->getId(), 1));
 
-        $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => 7], $context, $this->info());
+        $result = ($config['fields']['deleteProduct']['resolve'])(null, ['id' => self::ELEMENT_ID], $context, $this->info());
         $this->assertTrue($result['success']);
     }
 
@@ -288,23 +316,5 @@ class MutationGuardsTest extends Unit
         $folder = $this->createMock(ObjectFolder::class);
         $folder->expects($this->once())->method('save');
         $this->assertTrue($this->resolve($this->buildType($folder), 'updateObjectFolder', $configuration)['success']);
-    }
-}
-
-/**
- * @internal
- */
-class MutationGuardsStub extends MutationType
-{
-    public ?ElementInterface $element = null;
-
-    protected function getElementById($type, $id)
-    {
-        return $this->element;
-    }
-
-    protected function getElementByPath($type, $fullpath)
-    {
-        return $this->element;
     }
 }

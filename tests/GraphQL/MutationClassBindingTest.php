@@ -3,22 +3,20 @@
 declare(strict_types=1);
 
 /**
- * Pimcore
- *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Commercial License (PCL)
+ * This source file is available under the terms of the
+ * Pimcore Open Core License (POCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
+ *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
+ *  @license    Pimcore Open Core License (POCL)
  */
 
 namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
 use Codeception\Test\Unit;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
+use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Folder;
@@ -27,12 +25,34 @@ use ReflectionClass;
 
 class MutationClassBindingTest extends Unit
 {
+    private const ELEMENT_ID = 987654305;
+
+    /**
+     * @var string[]
+     */
+    private array $registeredKeys = [];
+
+    protected function _after(): void
+    {
+        foreach ($this->registeredKeys as $key) {
+            RuntimeCache::set($key, null);
+        }
+        $this->registeredKeys = [];
+    }
+
+    /**
+     * MutationType is final on this line, so the element lookup cannot be stubbed by a subclass.
+     * The element is registered in the runtime cache instead, which DataObject::getById() consults first.
+     */
     private function buildMutationType(?ElementInterface $element): MutationType
     {
-        $type = (new ReflectionClass(MutationTypeStub::class))->newInstanceWithoutConstructor();
-        $type->element = $element;
+        if ($element !== null) {
+            $key = 'object_' . self::ELEMENT_ID;
+            RuntimeCache::set($key, $element);
+            $this->registeredKeys[] = $key;
+        }
 
-        return $type;
+        return (new ReflectionClass(MutationType::class))->newInstanceWithoutConstructor();
     }
 
     private function productClass(): ClassDefinition
@@ -63,7 +83,7 @@ class MutationClassBindingTest extends Unit
             $this->productClass()
         );
 
-        return $resolver(null, ['id' => 5, 'published' => false], [], null);
+        return $resolver(null, ['id' => self::ELEMENT_ID, 'published' => false], [], null);
     }
 
     public function testUpdateRefusesObjectOfOtherClass(): void
@@ -93,7 +113,7 @@ class MutationClassBindingTest extends Unit
             $this->productClass()
         );
 
-        $result = $resolver(null, ['id' => 5, 'published' => false], [], null);
+        $result = $resolver(null, ['id' => self::ELEMENT_ID, 'published' => false], [], null);
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('Unknown id or fullpath', $result['message']);
     }
@@ -101,11 +121,11 @@ class MutationClassBindingTest extends Unit
     public function testUpdateAcceptsPreBoundObjectOfClass(): void
     {
         $object = $this->concrete('product', 1);
-        $object->method('getId')->willReturn(5);
+        $object->method('getId')->willReturn(self::ELEMENT_ID);
         $type = $this->buildMutationType(null);
         $resolver = $type->getUpdateObjectResolver([], null, $object, true, $this->productClass());
 
-        $result = $resolver(null, ['id' => 5, 'published' => false], [], null);
+        $result = $resolver(null, ['id' => self::ELEMENT_ID, 'published' => false], [], null);
         $this->assertTrue($result['success']);
     }
 
@@ -118,26 +138,8 @@ class MutationClassBindingTest extends Unit
     public function testUpdateStillWorksForObjectOfClass(): void
     {
         $object = $this->concrete('product', 1);
-        $object->method('getId')->willReturn(5);
+        $object->method('getId')->willReturn(self::ELEMENT_ID);
         $result = $this->invokeUpdate($object);
         $this->assertTrue($result['success']);
-    }
-}
-
-/**
- * @internal
- */
-class MutationTypeStub extends MutationType
-{
-    public ?ElementInterface $element = null;
-
-    protected function getElementById($type, $id)
-    {
-        return $this->element;
-    }
-
-    protected function getElementByPath($type, $fullpath)
-    {
-        return $this->element;
     }
 }
