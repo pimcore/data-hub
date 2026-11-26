@@ -888,7 +888,7 @@ final class MutationType extends ObjectType
                     }
                 }
 
-                if ($class !== null && !$me->isObjectOfClass($object, $class)) {
+                if (!$object || ($class !== null && !$me->isObjectOfClass($object, $class))) {
                     return [
                         'success' => false,
                         'message' => 'unable to update object. Unknown id or fullpath',
