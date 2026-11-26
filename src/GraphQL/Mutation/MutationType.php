@@ -887,7 +887,7 @@ class MutationType extends ObjectType
                     }
                 }
 
-                if (!$object) {
+                if (!$object || ($class !== null && !$me->isObjectOfClass($object, $class))) {
                     return [
                         'success' => false,
                         'message' => 'unable to update object. Unknown id or fullpath',
@@ -1606,10 +1606,6 @@ class MutationType extends ObjectType
     }
 
     /**
-     * @param AbstractElement|Asset|DataObject|Document $element
-     * @param array $options
-     */
-    /**
      * Whether the element is a data object (or variant) of the given class.
      *
      * @internal
@@ -1634,6 +1630,10 @@ class MutationType extends ObjectType
         };
     }
 
+    /**
+     * @param AbstractElement|Asset|DataObject|Document $element
+     * @param array $options
+     */
     protected function saveElement($element, $options): void
     {
         if (
