@@ -386,6 +386,11 @@ parameters:
 			path: src/GraphQL/General/FolderType.php
 
 		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/GraphQL/Mutation/MutationType.php
+
+		-
 			message: "#^Static property Pimcore\\\\Bundle\\\\DataHubBundle\\\\GraphQL\\\\Mutation\\\\MutationType\\:\\:\\$documentElementTypes \\(array\\) does not accept GraphQL\\\\Type\\\\Definition\\\\InputObjectType\\.$#"
 			count: 1
 			path: src/GraphQL/Mutation/MutationType.php
