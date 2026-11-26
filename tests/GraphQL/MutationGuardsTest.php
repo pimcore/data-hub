@@ -16,6 +16,7 @@ namespace Pimcore\Bundle\DataHubBundle\Tests\GraphQL;
 
 use Codeception\Test\Unit;
 use GraphQL\Type\Definition\ResolveInfo;
+use Pimcore;
 use Pimcore\Bundle\DataHubBundle\Configuration;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Mutation\MutationType;
 use Pimcore\Bundle\DataHubBundle\GraphQL\Service;
@@ -140,7 +141,8 @@ class MutationGuardsTest extends Unit
 
         $property = (new ReflectionClass(MutationType::class))->getProperty('eventDispatcher');
         $property->setValue($type, $this->createMock(EventDispatcherInterface::class));
-        $type->setGraphQLService($this->createMock(Service::class));
+        // Service is final on this line and cannot be doubled; the delete mutation only passes it on.
+        $type->setGraphQLService(Pimcore::getContainer()->get(Service::class));
 
         $type->buildDataObjectMutations($config, $context);
         $config['fields']['deleteProduct'] = $config['fields']['delete' . self::CLASS_NAME];
