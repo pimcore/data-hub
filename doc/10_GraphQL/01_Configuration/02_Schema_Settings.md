@@ -33,7 +33,7 @@ You will get a notice if you try to add an unsupported data type.
 Here you can decide if Data Objects for the selected class can be created, updated or deleted from the endpoint.
 The generated `update<Class>` and `delete<Class>` mutations only act on Data Objects (and variants) of that class;
 objects of other classes and folders are treated as unknown. Asset and document folders can only be deleted
-with the folder mutations (`asset_folder`, `document_folder`), and the folder mutations
+with the folder mutations (`deleteAssetFolder`, `deleteDocumentFolder`), and the folder mutations
 only act on folders.
 
 :::caution
