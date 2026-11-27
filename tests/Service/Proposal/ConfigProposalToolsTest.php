@@ -30,7 +30,6 @@ use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalResolverInterface;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalResolverRegistry;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalWidgetEmitter;
-use Pimcore\Bundle\PimcoreAgentBundle\Mcp\McpProposalContext;
 use Pimcore\Bundle\PimcoreAgentBundle\Repository\AgentSessionRepository;
 use Pimcore\Bundle\PimcoreAgentBundle\Security\BoundSessionReferenceResolver;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\AgentSessionServiceInterface;
@@ -39,7 +38,6 @@ use Pimcore\Bundle\StudioBackendBundle\Mcp\Exception\InvalidMcpToolArgumentExcep
 use Pimcore\Bundle\StudioBackendBundle\Mcp\Tool\McpToolErrorHandlerInterface;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
 use Pimcore\Model\User;
-use Pimcore\Model\Version\CoauthorContext;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -514,27 +512,16 @@ class ConfigProposalToolsTest extends Unit
         $security = $this->createStub(SecurityServiceInterface::class);
         $security->method('getCurrentUser')->willReturn($user);
 
-        // an external client's call to a Studio MCP server: no chat session is bound
-        $requests = McpRequests::stack(null);
-        $request = $requests->getCurrentRequest();
-        $request->attributes->set('_route', McpProposalContext::SERVER_ROUTE);
-        $request->attributes->set(McpProposalContext::SERVER_ROUTE_SLUG, 'erp-sync');
         $mcpSessions = $this->createStub(AgentSessionRepository::class);
         $mcpSessions->method('createMcpSessionIfMissing')->willReturn(true);
-        $resolver = new BoundSessionReferenceResolver(
-            $requests,
-            new McpProposalContext($requests, new CoauthorContext(), $security, $mcpSessions, 'test-secret'),
-        );
+        $resolver = McpRequests::serverResolver('erp-sync', $security, $mcpSessions);
 
         $result = $this->tools($user, $security, sessionResolver: $resolver)
             ->propose(new RecordingConfigPolicy(), self::TOOL, 'orders', ['general' => ['active' => false]], null);
 
         $this->payload($result);
         $this->assertCount(1, $this->recorded);
-        $this->assertSame(
-            McpProposalContext::sessionIdOf('test-secret', (int) $user->getId(), 'erp-sync'),
-            $this->recorded[0][0],
-        );
+        $this->assertSame(McpRequests::serverSessionId((int) $user->getId(), 'erp-sync'), $this->recorded[0][0]);
     }
 
     /**
