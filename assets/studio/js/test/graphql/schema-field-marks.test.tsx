@@ -94,6 +94,10 @@ vi.mock('../../src/modules/graphql/components/tabs/schema-definition-tab/schema-
   AddAllDefinitionsButton: () => null
 }))
 
+vi.mock('../../src/modules/graphql/components/tabs/schema-definition-tab/schema-fields-modal/components/sort-by-layout-button', () => ({
+  SortByLayoutButton: () => null
+}))
+
 const field = (key: string, attribute: string, label = attribute): PersistedColumnConfig => ({
   key, isOperator: false, attributes: { attribute, label, dataType: 'input' }
 })
