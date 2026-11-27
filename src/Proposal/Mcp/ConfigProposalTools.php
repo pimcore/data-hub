@@ -181,7 +181,8 @@ final readonly class ConfigProposalTools
         array|string $configuration,
         ?string $summary,
     ): CallToolResult {
-        $sessionId = $this->boundSessionReferenceResolver->resolve();
+        // the chat's session, or in a configured MCP server the acting user's session on that server
+        $sessionId = $this->boundSessionReferenceResolver->resolveProposalContext();
         $existing = $this->load($policy, $name);
         $proposed = $this->decode($configuration);
         // folded only once the sections are known to belong: a refused one never reaches a state

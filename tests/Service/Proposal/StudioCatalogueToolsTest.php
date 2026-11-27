@@ -36,7 +36,8 @@ use function trim;
 
 /**
  * Tools tagged for the Studio catalogue are served on Studio-managed MCP servers, whose clients carry no agent chat
- * session: only session-free tools may carry the tag, and the server derives its OAuth scope from readOnlyHint.
+ * session: its read tools must be session-free and declare readOnlyHint, a propose tool stores its proposal in the
+ * server's session; the server derives its OAuth scope from readOnlyHint.
  */
 final class StudioCatalogueToolsTest extends Unit
 {
@@ -56,10 +57,10 @@ final class StudioCatalogueToolsTest extends Unit
     ];
 
     /** the reviewed selection; extending it is a deliberate change to this list */
-    private const array CATALOGUE_TOOLS = ['get_graphql_config', 'list_graphql_configs'];
+    private const array CATALOGUE_TOOLS = ['get_graphql_config', 'list_graphql_configs', 'propose_graphql_config'];
 
-    /** the proposal is recorded in the chat session and reviewed on its card */
-    private const array CHAT_ONLY_TOOLS = ['propose_graphql_config'];
+    /** none: a proposal is stored in the chat's session or, in a configured MCP server, in the server's */
+    private const array CHAT_ONLY_TOOLS = [];
 
     public function testTheCatalogueCarriesExactlyTheReviewedTools(): void
     {
@@ -81,7 +82,9 @@ final class StudioCatalogueToolsTest extends Unit
     public function testCatalogueToolsNeedNoChatSession(): void
     {
         foreach ($this->tools(self::STUDIO_TAG) as $name => [$class]) {
-            $this->assertFalse(str_starts_with($name, 'propose_'), sprintf('%s is a proposal', $name));
+            if (str_starts_with($name, 'propose_')) {
+                continue;
+            }
             foreach ((new ReflectionClass($class))->getConstructor()?->getParameters() ?? [] as $parameter) {
                 $type = $parameter->getType();
                 $this->assertFalse(
@@ -95,7 +98,11 @@ final class StudioCatalogueToolsTest extends Unit
     public function testCatalogueToolsAreReadOnlyWithATitleAndADescription(): void
     {
         foreach ($this->tools(self::STUDIO_TAG) as $name => [, $tool]) {
-            $this->assertTrue($tool->annotations?->readOnlyHint, sprintf('%s must declare readOnlyHint: true', $name));
+            $this->assertSame(
+                !str_starts_with($name, 'propose_'),
+                (bool) $tool->annotations?->readOnlyHint,
+                sprintf('%s: only a read tool declares readOnlyHint: true', $name)
+            );
             $this->assertNotSame('', trim((string) $tool->title), sprintf('%s needs a title', $name));
             $this->assertNotSame('', trim((string) $tool->description), sprintf('%s needs a description', $name));
         }
@@ -116,7 +123,11 @@ final class StudioCatalogueToolsTest extends Unit
         sort($names);
         $this->assertSame(self::CATALOGUE_TOOLS, $names);
         foreach ($metadata as $name => $tool) {
-            $this->assertTrue($tool['annotations']['readOnlyHint'] ?? null, sprintf('%s is not read-only', $name));
+            $this->assertSame(
+                !str_starts_with($name, 'propose_'),
+                (bool) ($tool['annotations']['readOnlyHint'] ?? false),
+                sprintf('%s: readOnlyHint', $name)
+            );
         }
     }
 

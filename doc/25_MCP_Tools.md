@@ -14,20 +14,21 @@ They reach a caller in one of two ways:
   `pimcore-data-hub-graphql-propose`.
 - **Studio-managed MCP server:** only the tools tagged `pimcore.studio_backend.mcp_tool`. They are listed in the Studio
   tool catalogue (`GET /pimcore-studio/api/mcp/tools`), and an administrator can assign them to a configured MCP server
-  (`/pimcore-mcp/studio/<slug>`) that external MCP clients connect to. Such a client carries no agent chat session, so a
-  tool that needs one is not tagged and is not offered there.
+  (`/pimcore-mcp/studio/<slug>`) that external MCP clients connect to. Such a client carries no agent chat session; a
+  proposal it makes is stored in the calling user's session on that server.
 
 | Tool | Purpose | Read / write | Propose / direct-write | Studio-managed server |
 |---|---|---|---|---|
 | `list_graphql_configs` | List the GraphQL configurations the user may read, with group, description and whether each is active. | read | – | yes |
 | `get_graphql_config` | Read one GraphQL configuration in full; a proposal sends back only the sections and keys it changes. | read | – | yes |
-| `propose_graphql_config` | Propose changes to a GraphQL configuration, or a new one, for review in a change set. | write | propose | no, agent chat only |
+| `propose_graphql_config` | Propose changes to a GraphQL configuration, or a new one, for review in a change set. | write | propose | yes |
 
 - **Read / write:** a read tool is annotated `readOnlyHint: true`, so a Studio-managed server offers it under the OAuth
-  scope `mcp:read`.
+  scope `mcp:read`; the propose tool is offered under `mcp:write`.
 - **Propose / direct-write:** no tool of this bundle writes a configuration directly. `propose_graphql_config` records
-  the configuration as a proposal in a change set; it is applied only once a user approves it. The proposal is stored in
-  the agent chat session and reviewed on the chat's review card, so the tool needs the agent chat.
+  the configuration as a proposal in a change set; it is applied only once a user approves it. From the agent chat
+  the proposal is stored in the chat session and reviewed on its card; from a Studio-managed server it is stored in the
+  calling user's session on that server and reviewed in Studio's change requests.
 - **Permissions:** every tool runs as the calling user. It needs the `plugin_datahub_config` permission and, for a
   single configuration, read access to it (`list_graphql_configs` lists only those).
 - **Withheld fields:** `get_graphql_config` leaves out `security`, `permissions` and names them under `withheld`;
