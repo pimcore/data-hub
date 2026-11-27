@@ -19,6 +19,10 @@ export const LanguageSelectionWithProvider = (): React.JSX.Element => {
   return <select aria-label='preview-language'><option>{ currentLanguage }</option></select>
 }
 
-export const useClassDefinitions = (): { getByName: (name: string) => { id: string } | undefined } => ({
-  getByName: (name: string) => ({ id: `class-${name}` })
+const classDefinitions = ['Car', 'Category', 'Customer', 'News'].map(name => ({ id: `class-${name}`, name }))
+const getAllClassDefinitions = (): typeof classDefinitions => classDefinitions
+
+export const useClassDefinitions = (): { getByName: (name: string) => { id: string } | undefined, getAllClassDefinitions: () => Array<{ id: string, name: string }> } => ({
+  getByName: (name: string) => ({ id: `class-${name}` }),
+  getAllClassDefinitions
 })
