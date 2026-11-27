@@ -117,6 +117,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
       draft,
       isLoading,
       objectId,
+      resolvedClassId,
       columnGroups,
       onAddAdvancedColumn,
       openElementSelector,
@@ -195,7 +196,7 @@ export const BaseColumnEditor = forwardRef<ColumnEditorHandle, BaseColumnEditorP
 
     return (
       <LanguageSelectionContext.Provider value={ languageContextValue }>
-        <OptionalClassificationStoreFieldPickerProvider defaultClassId={ classDefinitionId }>
+        <OptionalClassificationStoreFieldPickerProvider defaultClassId={ resolvedClassId }>
           <ContentLayout
             renderToolbar={ hideToolbar
               ? undefined

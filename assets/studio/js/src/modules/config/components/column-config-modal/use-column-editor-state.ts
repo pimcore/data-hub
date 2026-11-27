@@ -43,6 +43,8 @@ interface UseColumnEditorStateResult {
   draft: AdvancedEditorColumn[]
   isLoading: boolean
   objectId: number | null
+  /** Class id the editor works on: `classDefinitionId`, or the class resolved from `entity` when it is omitted. */
+  resolvedClassId: string
   availableFields: GridColumnConfiguration[]
   columnGroups: Array<ColumnPickerGroup<GridColumnConfiguration>>
   /** Adds an advanced (pipeline) column, or undefined when the schema offers none. */
@@ -203,6 +205,7 @@ export const useColumnEditorState = ({
     draft,
     isLoading,
     objectId,
+    resolvedClassId,
     availableFields,
     columnGroups,
     onAddAdvancedColumn,
