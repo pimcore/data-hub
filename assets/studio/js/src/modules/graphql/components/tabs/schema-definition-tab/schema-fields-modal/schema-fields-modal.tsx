@@ -20,6 +20,7 @@ import { useSidebarEntries } from './hooks/use-sidebar-entries'
 import { AddAllDefinitionsButton } from './components/add-all-definitions-button'
 import { fieldMarks } from './field-marks'
 import { usePreviousColumns } from '../row-marks'
+import { SortByLayoutButton } from './components/sort-by-layout-button'
 
 /** Enough for the rail plus a readable attribute panel, and for the field tree beside it. */
 const SIDEBAR_MIN_WIDTH = 320
@@ -101,13 +102,22 @@ export const SchemaFieldsModal = ({
             gap="small"
             justify="space-between"
           >
-            <AddAllDefinitionsButton
-              classId={ classId }
-              enabled={ enabled }
-              entityConfig={ localEntityConfig }
-              mode={ type }
-              onEntityConfigChange={ setLocalEntityConfig }
-            />
+            <Flex gap="small">
+              <AddAllDefinitionsButton
+                classId={ classId }
+                enabled={ enabled }
+                entityConfig={ localEntityConfig }
+                mode={ type }
+                onEntityConfigChange={ setLocalEntityConfig }
+              />
+              <SortByLayoutButton
+                classId={ classId }
+                enabled={ enabled }
+                entityConfig={ localEntityConfig }
+                mode={ type }
+                onEntityConfigChange={ setLocalEntityConfig }
+              />
+            </Flex>
             <Button
               onClick={ handleApply }
               type="primary"
