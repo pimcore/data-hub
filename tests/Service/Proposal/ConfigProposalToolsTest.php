@@ -30,6 +30,8 @@ use Pimcore\Bundle\DataHubBundle\Utils\Constants\PermissionConstants;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalResolverInterface;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalResolverRegistry;
 use Pimcore\Bundle\PimcoreAgentBundle\Proposal\ProposalWidgetEmitter;
+use Pimcore\Bundle\PimcoreAgentBundle\Mcp\McpProposalContext;
+use Pimcore\Bundle\PimcoreAgentBundle\Repository\AgentSessionRepository;
 use Pimcore\Bundle\PimcoreAgentBundle\Security\BoundSessionReferenceResolver;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\AgentSessionServiceInterface;
 use Pimcore\Bundle\PimcoreAgentBundle\Service\TaskContextResolverInterface;
@@ -37,6 +39,7 @@ use Pimcore\Bundle\StudioBackendBundle\Mcp\Exception\InvalidMcpToolArgumentExcep
 use Pimcore\Bundle\StudioBackendBundle\Mcp\Tool\McpToolErrorHandlerInterface;
 use Pimcore\Bundle\StudioBackendBundle\Security\Service\SecurityServiceInterface;
 use Pimcore\Model\User;
+use Pimcore\Model\Version\CoauthorContext;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -504,6 +507,36 @@ class ConfigProposalToolsTest extends Unit
         $this->assertSame([], $this->recorded);
     }
 
+    public function testInAConfiguredMcpServerTheProposalGoesToTheServersSession(): void
+    {
+        $this->stored->put($this->configuration('orders', ['general' => ['active' => true]]));
+        $user = $this->user([PermissionConstants::PLUGIN_DATA_HUB_CONFIG]);
+        $security = $this->createStub(SecurityServiceInterface::class);
+        $security->method('getCurrentUser')->willReturn($user);
+
+        // an external client's call to a Studio MCP server: no chat session is bound
+        $requests = McpRequests::stack(null);
+        $request = $requests->getCurrentRequest();
+        $request->attributes->set('_route', McpProposalContext::SERVER_ROUTE);
+        $request->attributes->set(McpProposalContext::SERVER_ROUTE_SLUG, 'erp-sync');
+        $mcpSessions = $this->createStub(AgentSessionRepository::class);
+        $mcpSessions->method('createMcpSessionIfMissing')->willReturn(true);
+        $resolver = new BoundSessionReferenceResolver(
+            $requests,
+            new McpProposalContext($requests, new CoauthorContext(), $security, $mcpSessions, 'test-secret'),
+        );
+
+        $result = $this->tools($user, $security, sessionResolver: $resolver)
+            ->propose(new RecordingConfigPolicy(), self::TOOL, 'orders', ['general' => ['active' => false]], null);
+
+        $this->payload($result);
+        $this->assertCount(1, $this->recorded);
+        $this->assertSame(
+            McpProposalContext::sessionIdOf('test-secret', (int) $user->getId(), 'erp-sync'),
+            $this->recorded[0][0],
+        );
+    }
+
     /**
      * A Studio-managed MCP server's client has no agent chat session: reading must not touch it.
      */
@@ -597,6 +630,7 @@ class ConfigProposalToolsTest extends Unit
         ?StoredConfigurationsInterface $stored = null,
         ?AgentSessionServiceInterface $sessions = null,
         ?RequestStack $requests = null,
+        ?BoundSessionReferenceResolver $sessionResolver = null,
     ): ConfigProposalTools {
         if ($security === null) {
             $security = $this->createStub(SecurityServiceInterface::class);
@@ -627,7 +661,7 @@ class ConfigProposalToolsTest extends Unit
                 new ProposalResolverRegistry([$resolver]),
                 $this->createStub(TaskContextResolverInterface::class),
             ),
-            new BoundSessionReferenceResolver($requests),
+            $sessionResolver ?? new BoundSessionReferenceResolver($requests),
             $security,
             $errors ?? $this->createStub(McpToolErrorHandlerInterface::class),
             $stored ?? $this->stored,
