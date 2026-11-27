@@ -80,6 +80,14 @@ final class AssetType
         $eventDispatcher->dispatch($event, AssetMetadataEvents::PRE_RESOLVE);
         $metadata = $event->getArgument('metadata');
 
+        // filtered after the event, so names a listener adds or changes are filtered too
+        if (isset($args['keys'])) {
+            $metadata = array_values(array_filter(
+                $metadata,
+                static fn (array $item): bool => in_array($item['name'] ?? null, $args['keys'], true)
+            ));
+        }
+
         if (isset($args['ignore_language']) && $args['ignore_language']) {
             return $metadata;
         }
